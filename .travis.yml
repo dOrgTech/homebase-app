@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - 12
+cache: yarn
+before_script:
+  - yarn
+script:
+  - yarn lint:check
+  - yarn build
+deploy:
+  provider: heroku
+  repo: dorgtech/homebase-app
+  api_key:
+    secure: jv1eR5D6cVpjblMGChP/ISaA2Oede2zahscgqq9bVHbVdD7CH6fx24QB4ur77ycjIiddwq9IgogosYo6GXBOrSdI2b1hu8Qxf8BX5jwn80jsRyhLZRsIQ2LBaS+OKHv59EwMcaZ77kAMfzaH4nYurxRE4sge+NtHU9FhbwS5GNrCI3h09NmjCtJeiTz3JZQLRu9VYg0dGOLLpo/8u6qUjxUVitBSMzOGNL6eXimHhhALQdCHn7n+pOJrjrYgEonrDwCpEr2FWiCA8Xwn0LMcbxXbaIPX4fdZATkpYujAb4ldFqZjkRpdlGOHQGYaDHr+ZzxIU/WNEHu5eW2qFIscaBujUai+NJrQNRrpr+TD9jyfLKWdt8y4TI8zuA+gubsOE2HQTE1Xz283V6ppcm0qdYnwX0pLBOqKFYLFZGAg4KrqwSzbe1X5UDr3uEpGPP6TcCu34NBFxK9x6YQRXBbNQX5qRwYuufkeWjjFEGaCOnjfeGJ8sUceSJhD4DSV7GDnRdr1zHc4NCGLm56vrD2DUvGnqS5eo4vana1HJGJo7Tt2ikQS8rMOhDh3UEB2ejURaiOsO+6tnM676RGwjRXLhlqaEHKTlKgeAiTxeCj/9d4YapRr4uDbWEZwqsjDsO4pxtLRvPvigD0sqUd1HJ5O3cynmFoCwvgPVMEBLNnrgdI=
+  app:
+    develop: homebase-dapp-staging
+    master: homebase-dapp-production
+  skip_cleanup: "true"
