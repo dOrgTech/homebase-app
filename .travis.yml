@@ -1,18 +1,18 @@
 language: node_js
 node_js:
-  - 12
+- 12
 cache: yarn
 before_script:
-  - yarn
+- yarn
 script:
-  - yarn lint:check
-  - yarn build
+- yarn lint:check
+- yarn build
 deploy:
   provider: heroku
-  repo: dorgtech/homebase-app
+  repo: dOrgTech/homebase-app
   api_key:
-    secure: jv1eR5D6cVpjblMGChP/ISaA2Oede2zahscgqq9bVHbVdD7CH6fx24QB4ur77ycjIiddwq9IgogosYo6GXBOrSdI2b1hu8Qxf8BX5jwn80jsRyhLZRsIQ2LBaS+OKHv59EwMcaZ77kAMfzaH4nYurxRE4sge+NtHU9FhbwS5GNrCI3h09NmjCtJeiTz3JZQLRu9VYg0dGOLLpo/8u6qUjxUVitBSMzOGNL6eXimHhhALQdCHn7n+pOJrjrYgEonrDwCpEr2FWiCA8Xwn0LMcbxXbaIPX4fdZATkpYujAb4ldFqZjkRpdlGOHQGYaDHr+ZzxIU/WNEHu5eW2qFIscaBujUai+NJrQNRrpr+TD9jyfLKWdt8y4TI8zuA+gubsOE2HQTE1Xz283V6ppcm0qdYnwX0pLBOqKFYLFZGAg4KrqwSzbe1X5UDr3uEpGPP6TcCu34NBFxK9x6YQRXBbNQX5qRwYuufkeWjjFEGaCOnjfeGJ8sUceSJhD4DSV7GDnRdr1zHc4NCGLm56vrD2DUvGnqS5eo4vana1HJGJo7Tt2ikQS8rMOhDh3UEB2ejURaiOsO+6tnM676RGwjRXLhlqaEHKTlKgeAiTxeCj/9d4YapRr4uDbWEZwqsjDsO4pxtLRvPvigD0sqUd1HJ5O3cynmFoCwvgPVMEBLNnrgdI=
+    secure: nE+WjgnYLCQPXJomLiT8s4nNdERs4EWm/kaJPXXsrULb9LH4StZLGT41aOGITuuOSTU7bdfVuMt0iRqvO6O6ez1Zeob/PyreUWFeP+UzIM212k75LQ9AtWk58KxQyo8aMDzWRnebesnq1tlpHDavqWr83QCUOZvB0TMWD5QvT61+1Y2DlLM/eZbh/TJy/BpeSe9CYOOiH5QnOwSEIojJIWkJLbj9tRYjIsQhF0djkFx/z8dmK9XHdNqvUD47jMrY/wTM68oW4P93Yg8AuvK5kSQ4q8EMp1tU9SUuf9nvTy+ItBh1sm3pxIO/GicBd/m0THdOnNRh3SD5zTFK4XcsxnVpHkB0g5j5uiv93/8vb8bsuzHvKZ/Kd8vw+1ILKjeu8IuBCI1+nf5HaRSGJfe89MNDDjXZ6k2pupW+fkLXMkbSoL5VOfR+QZZbT+scsvPtl24aMfTal0iIDPIomkWL6IA3bR70gMIidKJItMXwQ1WU4t/5QU9houC9XtfdrL+3ESizHjFmXq9pPn2+GT2Ft79cySxGSZWRK5llHPKsF7oHKvu67JgDwWEzFx/4AkEH0SkQD4lbobX5DyTyHfBrhwtqlWY2aQLKUu6Ll6Un7JLeW8Q31mdjdo/Iv8u2AC1vqLJb5f5bOfLwiBsd1vAPJZ+PrJj7P/VGLcRpQBnIDE4=
   app:
     develop: homebase-dapp-staging
     master: homebase-dapp-production
-  skip_cleanup: "true"
+  skip_cleanup: 'true'
