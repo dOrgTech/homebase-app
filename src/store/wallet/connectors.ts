@@ -3,7 +3,7 @@ import { ThanosWallet } from "@thanos-wallet/dapp";
 
 export const connectToThanos = async (
   opts = { forcePermission: false }
-): Promise<string> => {
+): Promise<TezosToolkit> => {
   const available = await ThanosWallet.isAvailable();
   if (!available) {
     throw new Error("Thanos Wallet not installed");
@@ -11,6 +11,11 @@ export const connectToThanos = async (
 
   const wallet = new ThanosWallet("Homebase");
   await wallet.connect("carthagenet", opts);
-  const tezos = wallet.toTezos();
-  return tezos.rpc.getRpcUrl();
+  return wallet.toTezos();
 };
+
+export const connectorsMap = {
+  thanos: connectToThanos,
+};
+
+export type WalletProvider = keyof typeof connectorsMap;

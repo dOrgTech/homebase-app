@@ -1,30 +1,21 @@
-import { TezosToolkit } from "@taquito/taquito";
-import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect } from "react";
-import { connectToThanos } from "./connectors";
-import { updateConnectedWallet } from "./action";
-import { WalletState } from "./reducer";
+import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { connectorsMap, WalletProvider } from "./connectors";
 import { AppDispatch } from "..";
+import { TezosToolkit } from "@taquito/taquito";
 
-export const useConnectWallet = (): string | undefined => {
-  const savedTezosToolkit = useSelector<WalletState, string | undefined>(
-    (state) => state.provider
-  );
+export const useConnectWallet = (walletProvider: WalletProvider): TezosToolkit | undefined => {
+  const [tezosWithProvider, setTezosWithProvider] = useState<TezosToolkit>();
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
     (async () => {
-      if (!savedTezosToolkit) {
-        const tezos = await connectToThanos();
-
-        dispatch(
-          updateConnectedWallet({
-            provider: tezos,
-          })
-        );
+      if (!tezosWithProvider) {
+        const provider = await connectorsMap[walletProvider]();
+        setTezosWithProvider(provider);
       }
     })();
-  }, [dispatch, savedTezosToolkit]);
+  }, [dispatch, tezosWithProvider, walletProvider]);
 
-  return savedTezosToolkit;
+  return tezosWithProvider;
 };

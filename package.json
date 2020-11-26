@@ -11,8 +11,10 @@
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
+    "@airgap/beacon-sdk": "^1.2.0",
     "@material-ui/core": "^4.11.1",
     "@reduxjs/toolkit": "^1.4.0",
+    "@taquito/beacon-wallet": "^7.0.1-beta.0",
     "@taquito/taquito": "^7.0.1-beta.0",
     "@thanos-wallet/dapp": "^1.0.2",
     "react": "^17.0.1",
