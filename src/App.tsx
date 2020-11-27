@@ -1,24 +1,68 @@
 import React from "react";
-import logo from "./logo.svg";
+import { TezosToolkit, MichelsonMap } from "@taquito/taquito";
 import "./App.css";
 
-const App: React.FC = () => (
-  <div className="App">
-    <header className="App-header">
-      <img src={logo} className="App-logo" alt="logo" />
-      <p>
-        Edit <code>src/App.tsx</code> and save to reload.
-      </p>
-      <a
-        className="App-link"
-        href="https://reactjs.org"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Learn React
-      </a>
-    </header>
-  </div>
-);
+const Tezos = new TezosToolkit("https://api.tez.ie/rpc/carthagenet");
+import { importKey } from "@taquito/signer";
+
+import { code } from "./contracts/baseDAO";
+
+importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
+const App: React.FC = () => {
+  const deployContract = async () => {
+    const sLedger = new MichelsonMap();
+    sLedger.set({ 0: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb", 1: 1 }, 1);
+
+    const sOperators = new MichelsonMap();
+    sOperators.set(
+      {
+        owner: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
+        operator: "tz1PXnvy7VLyKjKgzGDSdrJv4iHhCh78S25p",
+      },
+      1
+    );
+
+    const sProposals = new MichelsonMap();
+    sProposals.set("", {
+      upvotes: 10000000000000000,
+      downvotes: 20000000000000000,
+      startDate: "1231223158132",
+      metadata: 1,
+      proposer: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+      proposer_frozen_token: 1,
+      voters: [],
+    });
+    try {
+      const t = await Tezos.contract.originate({
+        code,
+        storage: {
+          sLedger,
+          sOperators,
+          sTokenAddress: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+          sAdmin: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
+          sPendingOwner: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+          sMigrationStatus: {
+            migratingTo: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+          },
+          sVotingPeriod: 1,
+          sQuorumThreshold: 1,
+          sExtra: 1,
+          sProposals,
+          sProposalKeyListSortByDate: [""],
+        },
+      });
+      console.log("waiting for confirmation ", t);
+      await t.contract();
+      console.log("deployment completed");
+    } catch (e) {
+      console.log("error ", e);
+    }
+  };
+  return (
+    <div className="App">
+      <button onClick={deployContract}>Deploy contract</button>
+    </div>
+  );
+};
 
 export default App;
