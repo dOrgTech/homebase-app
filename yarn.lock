@@ -1675,6 +1675,15 @@
     "@svgr/plugin-svgo" "^5.4.0"
     loader-utils "^2.0.0"
 
+"@taquito/beacon-wallet@^7.0.1-beta.0":
+  version "7.0.1-beta.0"
+  resolved "https://registry.yarnpkg.com/@taquito/beacon-wallet/-/beacon-wallet-7.0.1-beta.0.tgz#d67d85d9840c560e22f5bd68bfe88505d0d0af0f"
+  integrity sha512-NQG7IB6ekDfPpL72/zGAb6BPbwlCyp89AFwnjhxFIeRBNEGaQKHzuHXOPD/HYjnDIG+rTWZMBvp+Cfyv3jSiQA==
+  dependencies:
+    "@airgap/beacon-sdk" "^1.2.0"
+    "@taquito/taquito" "^7.0.1-beta.0"
+    "@taquito/utils" "^7.0.1-beta.0"
+
 "@taquito/http-utils@^7.0.1-beta.0":
   version "7.0.1-beta.0"
   resolved "https://registry.yarnpkg.com/@taquito/http-utils/-/http-utils-7.0.1-beta.0.tgz#52ea209540b46b045d2a8919ee7c355ee88948b0"
@@ -1832,6 +1841,11 @@
   resolved "https://registry.yarnpkg.com/@types/har-format/-/har-format-1.2.5.tgz#4f6648814d0fdcb6a510e3364a9db439a753c4b1"
   integrity sha512-IG8AE1m2pWtPqQ7wXhFhy6Q59bwwnLwO36v5Rit2FrbXCIp8Sk8E2PfUCreyrdo17STwFSKDAkitVuVYbpEHvQ==
 
+"@types/history@*":
+  version "4.7.8"
+  resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.8.tgz#49348387983075705fe8f4e02fb67f7daaec4934"
+  integrity sha512-S78QIYirQcUoo6UJZx9CSP0O2ix9IaeAXwQi26Rhr/+mg7qqPy8TzaxHSUut7eGjL8WmLccT7/MXf304WjqHcA==
+
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/@types/hoist-non-react-statics/-/hoist-non-react-statics-3.3.1.tgz#1124aafe5118cb591977aeb1ceaaed1070eb039f"
@@ -1839,11 +1853,6 @@
   dependencies:
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
-
-"@types/history@*":
-  version "4.7.8"
-  resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.8.tgz#49348387983075705fe8f4e02fb67f7daaec4934"
-  integrity sha512-S78QIYirQcUoo6UJZx9CSP0O2ix9IaeAXwQi26Rhr/+mg7qqPy8TzaxHSUut7eGjL8WmLccT7/MXf304WjqHcA==
 
 "@types/html-minifier-terser@^5.0.0":
   version "5.1.1"

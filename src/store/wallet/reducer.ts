@@ -1,18 +1,20 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { TezosToolkit } from "@taquito/taquito";
-import { updateConnectedWallet } from "./action";
+import { updateConnectedAccount } from "./action";
+import { WalletProvider } from "./connectors";
 
-export interface WalletState {
-  provider: string | undefined;
+export interface AccountState {
+  address: string | undefined;
+  provider: WalletProvider | undefined;
 }
 
-export const initialState: WalletState = {
+export const initialState: AccountState = {
+  address: undefined,
   provider: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
-  builder.addCase(updateConnectedWallet, (state, action) => {
+  builder.addCase(updateConnectedAccount, (state, action) => {
+    state.address = action.payload.address;
     state.provider = action.payload.provider;
-    console.log(state);
   })
 );

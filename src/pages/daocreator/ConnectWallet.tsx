@@ -11,12 +11,17 @@ import {
 } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 import React from "react";
+import { useConnectWallet } from "../../store/wallet/hook";
 
 const PageContainer = styled(Grid)({
   height: "100%",
 });
 
 export const ConnectWallet: React.FC = () => {
+  const { tezos, connect } = useConnectWallet();
+
+  console.log(tezos);
+
   return (
     <PageContainer container justify="center" alignItems="center">
       <Grid item>
@@ -28,7 +33,7 @@ export const ConnectWallet: React.FC = () => {
         </Typography>
         <Box>
           <List>
-            <ListItem button={true}>
+            <ListItem button={true} onClick={() => connect("thanos")}>
               <ListItemAvatar>
                 <Avatar>
                   <ImageIcon />

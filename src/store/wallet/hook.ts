@@ -1,21 +1,33 @@
 import { useDispatch } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useContext } from "react";
 import { connectorsMap, WalletProvider } from "./connectors";
 import { AppDispatch } from "..";
-import { TezosToolkit } from "@taquito/taquito";
+import { updateConnectedAccount } from "./action";
+import { TezosToolkitContext } from "./context";
 
-export const useConnectWallet = (walletProvider: WalletProvider): TezosToolkit | undefined => {
-  const [tezosWithProvider, setTezosWithProvider] = useState<TezosToolkit>();
+export const useConnectWallet = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { tezosToolkit, setTezosToolkit } = useContext(TezosToolkitContext);
 
-  useEffect(() => {
-    (async () => {
-      if (!tezosWithProvider) {
-        const provider = await connectorsMap[walletProvider]();
-        setTezosWithProvider(provider);
-      }
-    })();
-  }, [dispatch, tezosWithProvider, walletProvider]);
+  return {
+    tezos: tezosToolkit,
+    connect: useCallback(
+      async (walletProvider: WalletProvider) => {
+        const tezos = await connectorsMap[walletProvider]();
+        const account = await tezos.wallet.pkh();
 
-  return tezosWithProvider;
+        dispatch(
+          updateConnectedAccount({
+            address: account,
+            provider: walletProvider,
+          })
+        );
+
+        if (setTezosToolkit) {
+          setTezosToolkit(tezos);
+        }
+      },
+      [dispatch, setTezosToolkit]
+    ),
+  };
 };

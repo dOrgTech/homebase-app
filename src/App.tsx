@@ -21,11 +21,4 @@ const App: React.FC = () => (
   </div>
 );
 
-  return (
-    <div className="App">
-      {/* <div>{provider && <div>{provider?.signer.publicKey}</div>}</div> */}
-    </div>
-  );
-};
-
 export default App;

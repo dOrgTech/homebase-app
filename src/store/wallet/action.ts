@@ -1,5 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
+import { WalletProvider } from "./connectors";
 
-export const updateConnectedWallet = createAction<{ provider: any }>(
-  "wallet/connect"
-);
+export const updateConnectedAccount = createAction<{
+  address: string;
+  provider: WalletProvider;
+}>("account/connect");
