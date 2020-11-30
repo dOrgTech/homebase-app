@@ -23,15 +23,15 @@ const App: React.FC = () => {
     );
 
     const sProposals = new MichelsonMap();
-    sProposals.set("", {
-      upvotes: 10000000000000000,
-      downvotes: 20000000000000000,
-      startDate: "1231223158132",
-      metadata: 1,
-      proposer: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-      proposer_frozen_token: 1,
-      voters: [],
-    });
+    // sProposals.set("", {
+    //   upvotes: 100,
+    //   downvotes: 200,
+    //   startDate: "1231223158132",
+    //   metadata: "1",
+    //   proposer: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
+    //   proposer_frozen_token: 1,
+    //   voters: [],
+    // });
     try {
       const t = await Tezos.contract.originate({
         code,
