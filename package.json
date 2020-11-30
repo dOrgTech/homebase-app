@@ -17,6 +17,8 @@
     "@reduxjs/toolkit": "^1.4.0",
     "@taquito/signer": "^7.0.1-beta.0",
     "@taquito/taquito": "^7.0.1-beta.0",
+    "@taquito/tezbridge-signer": "^7.0.1-beta.0",
+    "@taquito/tezbridge-wallet": "^7.0.1-beta.0",
     "@thanos-wallet/dapp": "^1.0.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

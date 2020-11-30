@@ -1675,15 +1675,6 @@
     "@svgr/plugin-svgo" "^5.4.0"
     loader-utils "^2.0.0"
 
-"@taquito/beacon-wallet@^7.0.1-beta.0":
-  version "7.0.1-beta.0"
-  resolved "https://registry.yarnpkg.com/@taquito/beacon-wallet/-/beacon-wallet-7.0.1-beta.0.tgz#d67d85d9840c560e22f5bd68bfe88505d0d0af0f"
-  integrity sha512-NQG7IB6ekDfPpL72/zGAb6BPbwlCyp89AFwnjhxFIeRBNEGaQKHzuHXOPD/HYjnDIG+rTWZMBvp+Cfyv3jSiQA==
-  dependencies:
-    "@airgap/beacon-sdk" "^1.2.0"
-    "@taquito/taquito" "^7.0.1-beta.0"
-    "@taquito/utils" "^7.0.1-beta.0"
-
 "@taquito/http-utils@^7.0.1-beta.0":
   version "7.0.1-beta.0"
   resolved "https://registry.yarnpkg.com/@taquito/http-utils/-/http-utils-7.0.1-beta.0.tgz#52ea209540b46b045d2a8919ee7c355ee88948b0"
@@ -1742,6 +1733,21 @@
     bignumber.js "^9.0.1"
     rx-sandbox "^1.0.3"
     rxjs "^6.6.3"
+
+"@taquito/tezbridge-signer@^7.0.1-beta.0":
+  version "7.0.1-beta.0"
+  resolved "https://registry.yarnpkg.com/@taquito/tezbridge-signer/-/tezbridge-signer-7.0.1-beta.0.tgz#343e16cfb0c8b4904df33b1d8aa911a27019e492"
+  integrity sha512-noCwlYrMZlTIyy4Nh5pMlWu+J7lURaIaNdtDdHleH6LcKKgus2VYhYnP2H7R3anZo9xTMBmn+XJ2fzKXCe1N7Q==
+  dependencies:
+    "@taquito/utils" "^7.0.1-beta.0"
+    typedarray-to-buffer "^3.1.5"
+
+"@taquito/tezbridge-wallet@^7.0.1-beta.0":
+  version "7.0.1-beta.0"
+  resolved "https://registry.yarnpkg.com/@taquito/tezbridge-wallet/-/tezbridge-wallet-7.0.1-beta.0.tgz#e8f0167b8cb249e83dbc74da5f718ce42e9f5914"
+  integrity sha512-muJishyEhjB5+UFUJON9i8RhEXJJ1mTaLB8hK8uAXwQ61aYkCwTDBj0yGFcQR7bAo7XIuNEXF7EVg9P2c4b+ow==
+  dependencies:
+    "@taquito/taquito" "^7.0.1-beta.0"
 
 "@taquito/utils@^7.0.1-beta.0":
   version "7.0.1-beta.0"
@@ -7475,7 +7481,7 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-libsodium-wrappers@^0.7.8:
+libsodium-wrappers@0.7.8, libsodium-wrappers@^0.7.8:
   version "0.7.8"
   resolved "https://registry.yarnpkg.com/libsodium-wrappers/-/libsodium-wrappers-0.7.8.tgz#d95cdf3e7236c2aef76844bf8e1929ba9eef3e9e"
   integrity sha512-PDhPWXBqd/SaqAFUBgH2Ux7b3VEEJgyD6BQB+VdNFJb9PbExGr/T/myc/MBoSvl8qLzfm0W0IVByOQS5L1MrCg==
