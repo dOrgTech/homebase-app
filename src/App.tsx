@@ -64,7 +64,18 @@ const App: React.FC = () => {
   };
   return (
     <div className="App">
+      <Navbar />
       <button onClick={deployContract}>Deploy contract</button>
+      <Router>
+        <Switch>
+          <Route path="/create/dao">
+            <DAOCreate />
+          </Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 };
