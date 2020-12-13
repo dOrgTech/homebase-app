@@ -64,13 +64,21 @@ export const theme = createMuiTheme({
         fill: "#000000",
       },
     },
-    MuiCardContent: {
-      root: {
-        padding: "27px 37px 0px 37px",
-        "&:last-child": {
-          paddingBottom: "0px",
+    MuiInput: {
+      underline: {
+        "&:before": {
+          borderBottom: "none",
+          transition: "none",
         },
-        minHeight: 330,
+        "&:after": {
+          borderBottom: "none",
+          transition: "none",
+        },
+      },
+    },
+    MuiInputBase: {
+      input: {
+        textAlign: "center",
       },
     },
     MuiDivider: {

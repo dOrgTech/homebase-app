@@ -10,6 +10,10 @@ import {
 } from "@material-ui/core";
 import React from "react";
 
+interface Props {
+  setActiveStep: any;
+}
+
 const CustomCard = styled(Card)({
   minHeight: 412,
   boxShadow: "none",
@@ -55,9 +59,47 @@ const CustomButton = styled(Paper)({
   fontSize: 16,
   fontWeight: 400,
   cursor: "pointer",
+  fontFamily: "system-ui",
+  height: "fit-content",
 });
 
-export const SelectTemplate: React.FC = () => {
+const CustomFooterCard = styled(Card)({
+  minHeight: 124,
+  boxShadow: "none",
+  background: "#fff",
+  border: "1px solid #E4E4E4",
+  boxSizing: "border-box",
+  borderRadius: "0px",
+  marginRight: "25px",
+  marginTop: 25,
+  "&:first-child": {
+    marginLeft: "0px",
+  },
+});
+
+const CustomCardContent = styled(CardContent)({
+  padding: "27px 37px 0px 37px",
+  "&:last-child": {
+    paddingBottom: "0px",
+  },
+  minHeight: 330,
+});
+
+const CustomCardFooterContent = styled(CardContent)({
+  padding: "27px 37px 0px 37px",
+  "&:last-child": {
+    paddingBottom: "inherit",
+    display: "flex",
+  },
+});
+
+const CustomRow = styled(Grid)({
+  padding: "15px 40px",
+  width: "70%",
+});
+
+export const SelectTemplate: React.FC<Props> = (props) => {
+  const { setActiveStep } = props;
   return (
     <>
       <Grid container direction="row">
@@ -73,7 +115,7 @@ export const SelectTemplate: React.FC = () => {
         <Grid item container direction="row" justify="space-between">
           <Grid item xs={6}>
             <CustomCard>
-              <CardContent>
+              <CustomCardContent>
                 <Circle />
                 <Typography variant="h3">Treasury</Typography>
                 <Typography variant="subtitle2" color="textSecondary">
@@ -83,15 +125,17 @@ export const SelectTemplate: React.FC = () => {
                 <Typography variant="subtitle2" color="textPrimary">
                   Manage resources collectively
                 </Typography>
-              </CardContent>
+              </CustomCardContent>
               <FooterContainer>
-                <CustomButton>View details</CustomButton>
+                <CustomButton onClick={() => setActiveStep(1)}>
+                  View details
+                </CustomButton>
               </FooterContainer>
             </CustomCard>
           </Grid>
           <Grid item xs={6}>
             <CustomCard>
-              <CardContent>
+              <CustomCardContent>
                 <Circle />
                 <Typography variant="h3">Registry</Typography>
                 <Typography variant="subtitle2" color="textSecondary">
@@ -101,11 +145,36 @@ export const SelectTemplate: React.FC = () => {
                 <Typography variant="subtitle2" color="textPrimary">
                   Manage a list, collectively
                 </Typography>
-              </CardContent>
+              </CustomCardContent>
               <FooterContainer>
-                <CustomButton>View details</CustomButton>
+                <CustomButton onClick={() => setActiveStep(1)}>
+                  View details
+                </CustomButton>
               </FooterContainer>
             </CustomCard>
+          </Grid>
+        </Grid>
+
+        <Grid item container direction="row" justify="space-between">
+          <Grid item xs={12}>
+            <CustomFooterCard>
+              <CustomCardFooterContent>
+                <Circle />
+
+                <CustomRow container direction="column">
+                  <Typography variant="h3">Blank slate</Typography>
+                  <Typography variant="subtitle2" color="textSecondary">
+                    Blank slate test
+                  </Typography>
+                </CustomRow>
+                <CustomButton
+                  style={{ margin: "auto" }}
+                  onClick={() => setActiveStep(1)}
+                >
+                  View details
+                </CustomButton>
+              </CustomCardFooterContent>
+            </CustomFooterCard>
           </Grid>
         </Grid>
       </Grid>

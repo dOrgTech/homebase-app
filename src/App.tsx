@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import "./App.css";
 import { Navbar } from "./components/common/toolbar";
 import { DAOCreate } from "./pages/daocreator";
@@ -11,7 +16,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
-        <Navbar />
+        {/* <Navbar /> */}
         <Router>
           <Switch>
             <Route path="/create/dao">
