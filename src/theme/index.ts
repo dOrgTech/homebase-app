@@ -30,6 +30,10 @@ export const theme = createMuiTheme({
     h3: {
       fontSize: 20,
     },
+    h2: {
+      fontSize: 18,
+      fontWeight: 300,
+    },
   },
   overrides: {
     MuiStepConnector: {

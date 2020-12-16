@@ -20,6 +20,8 @@ import { Governance } from "./Governance";
 import { SelectTemplate } from "./SelectTemplate";
 import { TokenSettings } from "./TokenSettings";
 import { DaoSettings } from "./DaoSettings";
+import { Summary } from "./Summary";
+import { Review } from "./Review";
 
 const PageContainer = styled(Grid)({
   // height: "calc(100% - 64px)",
@@ -43,13 +45,13 @@ const StepContentContainer = styled(Grid)({
   marginTop: 25,
   marginBottom: 25,
   height: "calc(100% - 112px)",
+  alignItems: "center",
 });
 
 const Footer = styled(Grid)({
   boxShadow: "none",
   background: "#000000",
   height: 62,
-  // marginTop: 58,
   paddingTop: "1%",
 });
 
@@ -68,7 +70,7 @@ const BackButton = styled(Paper)({
 
 const NextButton = styled(Paper)({
   boxShadow: "none",
-  width: "121px",
+  minWidth: "121px",
   height: 31,
   borderRadius: 21,
   textAlign: "center",
@@ -78,6 +80,8 @@ const NextButton = styled(Paper)({
   float: "right",
   marginRight: "4%",
   cursor: "pointer",
+  paddingLeft: "3%",
+  paddingRight: "3%",
 });
 
 const WhiteText = styled(Typography)({
@@ -110,12 +114,14 @@ export const DAOCreate: React.FC = () => {
           <DaoSettings />
         );
       case 2:
-        return `Try out different ad text to see what brings in the most customers,
-                and learn how to enhance your ads using features like ad extensions.
-                If you run into any problems with your ads, find out how to tell if
-                they're running and how to resolve approval issues.`;
-      default:
-        return "Unknown step";
+        return (
+          <Summary
+            setActiveStep={setActiveStep}
+            setGovernanceStep={setGovernanceStep}
+          />
+        );
+      case 3:
+        return <Review />;
     }
   }
 
@@ -152,7 +158,7 @@ export const DAOCreate: React.FC = () => {
           {getStepContent(activeStep)}
         </StepContentContainer>
 
-        {activeStep !== 0 && activeStep !== 1 ? (
+        {activeStep !== 0 && activeStep !== 1 && activeStep !== 3 ? (
           <Footer
             container
             direction="row"
@@ -167,7 +173,9 @@ export const DAOCreate: React.FC = () => {
             <Grid item xs={6}>
               <NextButton onClick={() => setActiveStep(activeStep + 1)}>
                 {" "}
-                <WhiteText>Continue</WhiteText>
+                <WhiteText>
+                  {activeStep !== 2 ? "Continue" : "Launch Organization"}
+                </WhiteText>
               </NextButton>
             </Grid>
           </Footer>
