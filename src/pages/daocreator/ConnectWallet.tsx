@@ -23,7 +23,6 @@ const PageContainer = styled(Grid)({
 
 export const ConnectWallet: React.FC = () => {
   const { tezos, connect } = useConnectWallet();
-  console.log(tezos);
 
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address

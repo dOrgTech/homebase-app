@@ -18,6 +18,8 @@ import { ClaimName } from "./ClaimName";
 import { ConnectWallet } from "./ConnectWallet";
 import { Governance } from "./Governance";
 import { SelectTemplate } from "./SelectTemplate";
+import { TokenSettings } from "./TokenSettings";
+import { DaoSettings } from "./DaoSettings";
 
 const PageContainer = styled(Grid)({
   // height: "calc(100% - 64px)",
@@ -39,13 +41,15 @@ const StepContentContainer = styled(Grid)({
   paddingLeft: "8%",
   paddingRight: "8%",
   marginTop: 25,
+  marginBottom: 25,
+  height: "calc(100% - 112px)",
 });
 
 const Footer = styled(Grid)({
   boxShadow: "none",
   background: "#000000",
   height: 62,
-  marginTop: 58,
+  // marginTop: 58,
   paddingTop: "1%",
 });
 
@@ -87,7 +91,8 @@ const STEPS = [
   "Launch organization",
 ];
 export const DAOCreate: React.FC = () => {
-  const [activeStepNumber, setActiveStepNumber] = useState(0);
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [governanceStep, setGovernanceStep] = useState(0);
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
@@ -97,7 +102,13 @@ export const DAOCreate: React.FC = () => {
       case 0:
         return <SelectTemplate setActiveStep={setActiveStep} />;
       case 1:
-        return <Governance />;
+        return governanceStep === 0 ? (
+          <Governance />
+        ) : governanceStep === 1 ? (
+          <TokenSettings />
+        ) : (
+          <DaoSettings />
+        );
       case 2:
         return `Try out different ad text to see what brings in the most customers,
                 and learn how to enhance your ads using features like ad extensions.
@@ -107,7 +118,22 @@ export const DAOCreate: React.FC = () => {
         return "Unknown step";
     }
   }
-  const [activeStep, setActiveStep] = React.useState(0);
+
+  const handleBackStep = () => {
+    if (activeStep === 1 && governanceStep === 0) {
+      return setActiveStep(0);
+    } else if (activeStep === 1 && governanceStep !== 0) {
+      return setGovernanceStep(governanceStep - 1);
+    }
+  };
+
+  const handleNextStep = () => {
+    if (activeStep === 1 && governanceStep === 2) {
+      return setActiveStep(2);
+    } else {
+      return setGovernanceStep(governanceStep + 1);
+    }
+  };
 
   return (
     <PageContainer container>
@@ -116,9 +142,6 @@ export const DAOCreate: React.FC = () => {
           {STEPS.map((label, index) => (
             <Step key={label} {...(!account && { active: false })}>
               <StepLabel>{label}</StepLabel>
-              {/* <StepContent>
-              <Typography>{getStepContent(index)}</Typography>
-            </StepContent> */}
             </Step>
           ))}
         </Stepper>
@@ -129,7 +152,7 @@ export const DAOCreate: React.FC = () => {
           {getStepContent(activeStep)}
         </StepContentContainer>
 
-        {activeStep !== 0 ? (
+        {activeStep !== 0 && activeStep !== 1 ? (
           <Footer
             container
             direction="row"
@@ -143,6 +166,27 @@ export const DAOCreate: React.FC = () => {
             </Grid>
             <Grid item xs={6}>
               <NextButton onClick={() => setActiveStep(activeStep + 1)}>
+                {" "}
+                <WhiteText>Continue</WhiteText>
+              </NextButton>
+            </Grid>
+          </Footer>
+        ) : null}
+
+        {activeStep === 1 ? (
+          <Footer
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item xs={6}>
+              <BackButton onClick={handleBackStep}>
+                <Typography>Back </Typography>{" "}
+              </BackButton>
+            </Grid>
+            <Grid item xs={6}>
+              <NextButton onClick={handleNextStep}>
                 {" "}
                 <WhiteText>Continue</WhiteText>
               </NextButton>

@@ -87,5 +87,53 @@ export const theme = createMuiTheme({
         marginBottom: 16,
       },
     },
+    MuiFormControl: {
+      root: {
+        width: "100%",
+      },
+    },
+    MuiSwitch: {
+      root: {
+        width: 75,
+        height: 50,
+      },
+      switchBase: {
+        color: "red",
+        top: 8,
+        left: 8,
+        "$checked$checked + &": {
+          opacity: 1,
+          backgroundColor: "#fff !important",
+          color: "black",
+        },
+      },
+      track: {
+        borderRadius: "40px",
+        backgroundColor: "white",
+        border: "1px solid black",
+        opacity: 0.5,
+        "$checked$checked + &": {
+          opacity: 1,
+          backgroundColor: "#fff !important",
+          color: "black",
+        },
+      },
+      thumb: {
+        width: 18,
+        height: 18,
+        "$checked$checked + &": {
+          color: "black",
+        },
+      },
+      colorSecondary: {
+        color: "black !important",
+        "$checked$checked + &": {
+          color: "black",
+        },
+        "& .Mui-checked": {
+          color: "black",
+        },
+      },
+    },
   },
 });
