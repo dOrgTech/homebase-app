@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import React, { useCallback, useContext } from "react";
-import { connectorsMap, WalletProvider } from "./connectors";
+import { connectWithBeacon } from "./connectors";
 import { AppDispatch } from "..";
 import { updateConnectedAccount } from "./action";
 import { TezosToolkitContext } from "./context";
@@ -11,23 +11,19 @@ export const useConnectWallet = () => {
 
   return {
     tezos: tezosToolkit,
-    connect: useCallback(
-      async (walletProvider: WalletProvider) => {
-        const tezos = await connectorsMap[walletProvider]();
-        const account = await tezos.wallet.pkh();
+    connect: useCallback(async () => {
+      const tezos = await connectWithBeacon();
+      const account = await tezos.wallet.pkh();
 
-        dispatch(
-          updateConnectedAccount({
-            address: account,
-            provider: walletProvider,
-          })
-        );
+      dispatch(
+        updateConnectedAccount({
+          address: account
+        })
+      );
 
-        if (setTezosToolkit) {
-          setTezosToolkit(tezos);
-        }
-      },
-      [dispatch, setTezosToolkit]
-    ),
+      if (setTezosToolkit) {
+        setTezosToolkit(tezos);
+      }
+    }, [dispatch, setTezosToolkit]),
   };
 };
