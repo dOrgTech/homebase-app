@@ -1,12 +1,13 @@
-import { DaoInformation } from "./types";
+import { createAction } from "@reduxjs/toolkit";
 
-export const SAVE_DAO_INFORMATION_ACTION = "saveDaoInformation";
-
-interface SaveDaoInformation {
-  type: typeof SAVE_DAO_INFORMATION_ACTION;
-  payload: {
-    userDetails: DaoInformation;
-  };
-}
-
-export type Action = SaveDaoInformation;
+export const saveDaoInformation = createAction<{
+  proposal_days: number;
+  proposal_hours: number;
+  proposal_minutes: number;
+  voting_days: number;
+  voting_hours: number;
+  voting_minutes: number;
+  min_stake: number;
+  min_support: number;
+  stake_returned: number;
+}>("dao/saveInformation");

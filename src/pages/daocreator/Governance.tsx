@@ -1,44 +1,43 @@
 import {
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
   Grid,
   Link,
   Paper,
   styled,
-  Switch,
   Typography,
   Slider,
   withStyles,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "@material-ui/core/Input";
+import { Field, Form, Formik, FormikProps } from "formik";
+import { useDispatch, useSelector } from "react-redux";
+import { AppState } from "../../store";
+import { TextField } from "formik-material-ui";
+import { saveDaoInformation } from "../../store/dao-info/action";
 
-const CustomUrlButton = styled(Paper)({
-  border: "1px solid #3866F9",
-  width: 165,
-  height: 31,
-  boxSizing: "border-box",
-  borderRadius: 21,
-  cursor: "pointer",
-  backgroundColor: "#fff",
-  boxShadow: "none",
-  textAlign: "center",
-  margin: "auto",
-  padding: 5,
-  color: "#3866F9",
-  marginTop: 12,
-  fontFamily: "system-ui",
-});
+interface Values {
+  proposal_days: number | undefined;
+  proposal_hours: number | undefined;
+  proposal_minutes: number | undefined;
+  voting_days: number | undefined;
+  voting_hours: number | undefined;
+  voting_minutes: number | undefined;
+  min_stake: number | undefined;
+  min_support: number | undefined;
+  stake_returned: number | undefined;
+}
 
 const CustomTypography = styled(Typography)({
-  paddingBottom: 21,
+  paddingBottom: 10,
   borderBottom: "1px solid #E4E4E4",
   marginTop: 10,
 });
 
 const SecondContainer = styled(Grid)({
+  marginTop: 10,
+});
+
+const SpacingContainer = styled(Grid)({
   marginTop: 25,
 });
 
@@ -67,11 +66,6 @@ const GridItemCenter = styled(Grid)({
 const ItemContainer = styled(Grid)({
   height: "100%",
   padding: 12,
-});
-
-const CustomLink = styled(Link)({
-  color: "#3866F9",
-  fontWeight: 700,
 });
 
 const Title = styled(Typography)({
@@ -112,27 +106,20 @@ const Value = styled(Typography)({
   padding: "30%",
 });
 
-export const Governance: React.FC = () => {
-  const preventDefault = (event: React.SyntheticEvent) =>
-    event.preventDefault();
-  const [stake, setStake] = useState(0);
-  const [support, setSupport] = useState(0);
+const GovernanceForm = ({
+  submitForm,
+  values,
+  defineSubmit,
+  stake,
+  setSupport,
+  support,
+  setStake,
+}: any) => {
+  useEffect(() => {
+    defineSubmit(submitForm);
+  }, [values]);
   return (
     <>
-      <Grid container direction="row" justify="space-between">
-        <Grid item xs={12}>
-          <Typography variant="h1">Proposals & Voting</Typography>
-        </Grid>
-      </Grid>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <CustomTypography variant="subtitle1">
-            These settings will define the duration, support and approval
-            required for proposals.
-          </CustomTypography>
-        </Grid>
-      </Grid>
-
       <SecondContainer container direction="row">
         <Typography variant="subtitle1">Proposal Period Duration</Typography>
       </SecondContainer>
@@ -146,7 +133,12 @@ export const Governance: React.FC = () => {
             justify="center"
           >
             <GridItemCenter item xs={6}>
-              <CustomInput type="number" placeholder="00" />
+              <Field
+                name="proposal_days"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography>days</Typography>
@@ -237,25 +229,25 @@ export const Governance: React.FC = () => {
         </CustomInputContainer>
       </Grid>
 
-      <SecondContainer container direction="row" alignItems="center">
-        <Switch
-          name="checkedA"
-          inputProps={{ "aria-label": "secondary checkbox" }}
-        />
-        <Typography variant="subtitle1">
-          Requires an
-          <CustomLink href="#" onClick={preventDefault}>
-            {" "}
-            Agora
-          </CustomLink>{" "}
-          Link to submit a proposal
-        </Typography>
-      </SecondContainer>
+      {/* <SecondContainer container direction="row" alignItems="center">
+      <Switch
+        name="checkedA"
+        inputProps={{ "aria-label": "secondary checkbox" }}
+      />
+      <Typography variant="subtitle1">
+        Requires an
+        <CustomLink href="#" onClick={preventDefault}>
+          {" "}
+          Agora
+        </CustomLink>{" "}
+        Link to submit a proposal
+      </Typography>
+    </SecondContainer> */}
 
-      <SecondContainer direction="row" container alignItems="center">
+      <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1">Minimum Stake </Typography>
         <Title variant="subtitle2">(% of proposal value)</Title>
-      </SecondContainer>
+      </SpacingContainer>
 
       <Grid container direction="row" alignItems="center" spacing={1}>
         <Grid item xs={11}>
@@ -271,9 +263,11 @@ export const Governance: React.FC = () => {
         </Grid>
       </Grid>
 
-      <SecondContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1">Minimum Support</Typography>
-      </SecondContainer>
+      <Grid direction="row" container alignItems="center">
+        <Typography variant="subtitle1">
+          Stake returned when rejected
+        </Typography>
+      </Grid>
 
       <Grid container direction="row" alignItems="center" spacing={1}>
         <Grid item xs={11}>
@@ -288,6 +282,110 @@ export const Governance: React.FC = () => {
           </CustomSliderValue>
         </Grid>
       </Grid>
+
+      <Grid direction="row" container alignItems="center">
+        <Typography variant="subtitle1">Minimum Support</Typography>
+      </Grid>
+
+      <Grid container direction="row" alignItems="center" spacing={1}>
+        <Grid item xs={11}>
+          <StyledSlider
+            value={support}
+            onChange={(value: any, newValue: any) => setSupport(newValue)}
+          />
+        </Grid>
+        <Grid item xs={1}>
+          <CustomSliderValue>
+            <Value variant="subtitle1">{support}%</Value>
+          </CustomSliderValue>
+        </Grid>
+      </Grid>
+    </>
+  );
+};
+
+export const Governance: React.FC<{ defineSubmit: any }> = ({
+  defineSubmit,
+}) => {
+  const [stake, setStake] = useState(0);
+  const [support, setSupport] = useState(0);
+
+  const storageDaoInformation = useSelector<
+    AppState,
+    AppState["saveDaoInformationReducer"]
+  >((state) => state.saveDaoInformationReducer);
+
+  const dispatch = useDispatch();
+
+  const h = (values: any, { setSubmitting }: any) => {
+    setSubmitting(true);
+    dispatch(saveDaoInformation(values));
+    console.log(values);
+  };
+
+  const validate = (values: Values) => {
+    const errors: any = {};
+
+    return errors;
+  };
+  return (
+    <>
+      <Grid container direction="row" justify="space-between">
+        <Grid item xs={12}>
+          <Typography variant="h1">Proposals & Voting</Typography>
+          {console.log(storageDaoInformation)}
+        </Grid>
+      </Grid>
+      <Grid container direction="row">
+        <Grid item xs={12}>
+          <CustomTypography variant="subtitle1">
+            These settings will define the duration, support and approval
+            required for proposals.
+          </CustomTypography>
+        </Grid>
+      </Grid>
+
+      <Formik
+        enableReinitialize
+        validate={validate}
+        onSubmit={h}
+        initialValues={storageDaoInformation}
+      >
+        {({
+          submitForm,
+          isSubmitting,
+          setFieldValue,
+          values,
+          errors,
+          touched,
+          handleBlur,
+          validateOnChange,
+          setFieldTouched,
+          handleChange,
+        }) => {
+          return (
+            <Form style={{ width: "100%" }}>
+              <GovernanceForm
+                defineSubmit={defineSubmit}
+                stake={stake}
+                support={support}
+                setStake={setStake}
+                setSupport={setSupport}
+                submitForm={submitForm}
+                isSubmitting={isSubmitting}
+                setFieldValue={setFieldValue}
+                errors={errors}
+                touched={touched}
+                values={values}
+                handleBlur={handleBlur}
+                validateOnChange={validateOnChange}
+                setFieldTouched={setFieldTouched}
+                handleChange={handleChange}
+              />
+            </Form>
+          );
+        }}
+      </Formik>
     </>
   );
 };

@@ -7,4 +7,5 @@ export interface DaoInformation {
   voting_minutes: number;
   min_stake: number;
   min_support: number;
+  stake_returned: number;
 }

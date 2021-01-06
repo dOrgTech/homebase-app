@@ -1,10 +1,7 @@
 import {
-  Box,
-  Button,
   Grid,
   Paper,
   Step,
-  StepContent,
   StepLabel,
   Stepper,
   styled,
@@ -12,9 +9,8 @@ import {
 } from "@material-ui/core";
 
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../store";
-import { ClaimName } from "./ClaimName";
 import { ConnectWallet } from "./ConnectWallet";
 import { Governance } from "./Governance";
 import { SelectTemplate } from "./SelectTemplate";
@@ -22,6 +18,8 @@ import { TokenSettings } from "./TokenSettings";
 import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
+
+import { saveDaoInformation } from "../../store/dao-info/action";
 
 const PageContainer = styled(Grid)({
   // height: "calc(100% - 64px)",
@@ -40,10 +38,10 @@ const CustomGrid = styled(Grid)({
 });
 
 const StepContentContainer = styled(Grid)({
-  paddingLeft: "8%",
-  paddingRight: "8%",
-  marginTop: 25,
-  marginBottom: 25,
+  paddingLeft: "16%",
+  paddingRight: "16%",
+  marginTop: "2.5%",
+  marginBottom: "2%",
   height: "calc(100% - 112px)",
   alignItems: "center",
 });
@@ -97,17 +95,23 @@ const STEPS = [
 export const DAOCreate: React.FC = () => {
   const [activeStep, setActiveStep] = React.useState(0);
   const [governanceStep, setGovernanceStep] = useState(0);
+  const [handleNextStep, setHandleNextStep] = useState(() => undefined);
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
 
-  function getStepContent(step: number) {
+  const storageDaoInformation = useSelector<
+    AppState,
+    AppState["saveDaoInformationReducer"]
+  >((state) => state.saveDaoInformationReducer);
+
+  function getStepContent(step: number, handleNextStep: any) {
     switch (step) {
       case 0:
         return <SelectTemplate setActiveStep={setActiveStep} />;
       case 1:
         return governanceStep === 0 ? (
-          <Governance />
+          <Governance defineSubmit={setHandleNextStep} />
         ) : governanceStep === 1 ? (
           <TokenSettings />
         ) : (
@@ -133,13 +137,13 @@ export const DAOCreate: React.FC = () => {
     }
   };
 
-  const handleNextStep = () => {
-    if (activeStep === 1 && governanceStep === 2) {
-      return setActiveStep(2);
-    } else {
-      return setGovernanceStep(governanceStep + 1);
-    }
-  };
+  // const handleNextStep = () => {
+  //   if (activeStep === 1 && governanceStep === 2) {
+  //     return setActiveStep(2);
+  //   } else {
+  //     return setGovernanceStep(governanceStep + 1);
+  //   }
+  // };
 
   return (
     <PageContainer container>
@@ -155,7 +159,7 @@ export const DAOCreate: React.FC = () => {
       <Grid item container justify="center" alignItems="center" xs={9}>
         <ConnectWallet />
         <StepContentContainer item container justify="center">
-          {getStepContent(activeStep)}
+          {getStepContent(activeStep, handleNextStep)}
         </StepContentContainer>
 
         {activeStep !== 0 && activeStep !== 1 && activeStep !== 3 ? (

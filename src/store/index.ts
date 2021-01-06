@@ -3,11 +3,14 @@ import { save, load } from "redux-localstorage-simple";
 
 import wallet from "./wallet/reducer";
 
+import saveDaoInformationReducer from "./dao-info/reducer";
+
 const PERSISTED_KEYS: string[] = [];
 
 const store = configureStore({
   reducer: {
     wallet,
+    saveDaoInformationReducer,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),

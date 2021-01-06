@@ -155,7 +155,7 @@ export const SelectTemplate: React.FC<Props> = (props) => {
           </Grid>
         </Grid>
 
-        <Grid item container direction="row" justify="space-between">
+        {/* <Grid item container direction="row" justify="space-between">
           <Grid item xs={12}>
             <CustomFooterCard>
               <CustomCardFooterContent>
@@ -176,7 +176,7 @@ export const SelectTemplate: React.FC<Props> = (props) => {
               </CustomCardFooterContent>
             </CustomFooterCard>
           </Grid>
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );
