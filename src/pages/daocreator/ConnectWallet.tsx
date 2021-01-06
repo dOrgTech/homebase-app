@@ -34,21 +34,13 @@ export const ConnectWallet: React.FC = () => {
         </Typography>
         <Box>
           <List>
-            <ListItem button={true} onClick={() => connect("thanos")}>
+            <ListItem button={true} onClick={() => connect()}>
               <ListItemAvatar>
                 <Avatar>
                   <ImageIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText primary="Thanos" />
-            </ListItem>
-            <ListItem button={true} onClick={() => connect("tezbridge")}>
-              <ListItemAvatar>
-                <Avatar>
-                  <ImageIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary="TezBridge" />
+              <ListItemText primary="Connect" />
             </ListItem>
           </List>
           {tezos && (

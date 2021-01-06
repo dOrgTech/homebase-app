@@ -1,32 +1,43 @@
+import { NetworkType } from "@airgap/beacon-sdk";
+import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
-import { TezBridgeWallet } from "@taquito/tezbridge-wallet";
-import { ThanosWallet } from "@thanos-wallet/dapp";
 
-export const connectToThanos = async (
-  opts = { forcePermission: false }
-): Promise<TezosToolkit> => {
-  const available = await ThanosWallet.isAvailable();
-  if (!available) {
-    throw new Error("Thanos Wallet not installed");
-  }
-
-  const wallet = new ThanosWallet("Homebase");
-  await wallet.connect("carthagenet", opts);
-
-  const tezos = new TezosToolkit("https://api.tez.ie/rpc/carthagenet");
-  tezos.setProvider({ wallet });
-  return tezos;
+const rpcNodes = {
+  carthagenet: "https://testnet-tezos.giganode.io",
+  delphinet: "https://delphinet-tezos.giganode.io",
+  mainnet: "https://mainnet-tezos.giganode.io",
 };
 
-export const connectToTezBridge = async () => {
-  const tezos = new TezosToolkit("https://api.tez.ie/rpc/carthagenet");
-  tezos.setProvider({ wallet: new TezBridgeWallet() });
-  return tezos;
-};
+export const connectWithBeacon = async (): Promise<TezosToolkit> => {
+  return await new Promise(async (resolve, reject) => {
+    const wallet = new BeaconWallet({
+      name: "Homebase",
+      iconUrl: "https://tezostaquito.io/img/favicon.png",
+      eventHandlers: {
+        PERMISSION_REQUEST_SUCCESS: {
+          handler: (data) => {
+            console.log("permission data:", data);
 
-export const connectorsMap = {
-  thanos: connectToThanos,
-  tezbridge: connectToTezBridge,
-};
+            const network = data.account.network.type as keyof typeof rpcNodes;
+            const rpcUrl = rpcNodes[network];
+            const tezos = new TezosToolkit(rpcUrl);
+            tezos.setWalletProvider(wallet);
 
-export type WalletProvider = keyof typeof connectorsMap;
+            resolve(tezos);
+          },
+        },
+        PERMISSION_REQUEST_ERROR: {
+          handler: () => {
+            reject("Permission request error");
+          },
+        },
+      },
+    });
+
+    await wallet.requestPermissions({
+      network: {
+        type: NetworkType.DELPHINET,
+      },
+    });
+  });
+};
