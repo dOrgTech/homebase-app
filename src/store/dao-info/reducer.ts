@@ -11,10 +11,16 @@ export interface DaoInformation {
   min_stake: number | undefined;
   min_support: number | undefined;
   stake_returned: number | undefined;
+  max_agent: number | undefined;
+  administrator: string | undefined;
+  token_name: string | undefined;
+  token_symbol: string | undefined;
+  lock_disabled: boolean;
+  description: string | undefined;
 }
 
 export const initialState: DaoInformation = {
-  proposal_days: 0,
+  proposal_days: undefined,
   proposal_hours: undefined,
   proposal_minutes: undefined,
   voting_days: undefined,
@@ -23,6 +29,12 @@ export const initialState: DaoInformation = {
   min_stake: 0,
   min_support: 0,
   stake_returned: 0,
+  max_agent: undefined,
+  administrator: undefined,
+  token_name: undefined,
+  token_symbol: undefined,
+  lock_disabled: false,
+  description: undefined,
 };
 
 export default createReducer(initialState, (builder) =>
@@ -36,5 +48,11 @@ export default createReducer(initialState, (builder) =>
     state.min_stake = action.payload.min_stake;
     state.min_support = action.payload.min_support;
     state.stake_returned = action.payload.stake_returned;
+    state.max_agent = action.payload.max_agent;
+    state.administrator = action.payload.administrator;
+    state.token_name = action.payload.token_name;
+    state.token_symbol = action.payload.token_symbol;
+    state.lock_disabled = action.payload.lock_disabled;
+    state.description = action.payload.description;
   })
 );

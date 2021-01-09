@@ -1,38 +1,24 @@
 import {
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
   Grid,
-  Link,
   Paper,
   styled,
-  Switch,
   Typography,
-  Slider,
   withStyles,
   TextField,
   InputAdornment,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import { useSelector, useDispatch } from "react-redux";
+import { AppState } from "../../store";
+import { saveDaoInformation } from "../../store/dao-info/action";
+import { Field, Form, Formik, getIn } from "formik";
+import { TextField as FormikTextField } from "formik-material-ui";
 
-const CustomUrlButton = styled(Paper)({
-  border: "1px solid #3866F9",
-  width: 165,
-  height: 31,
-  boxSizing: "border-box",
-  borderRadius: 21,
-  cursor: "pointer",
-  backgroundColor: "#fff",
-  boxShadow: "none",
-  textAlign: "center",
-  margin: "auto",
-  padding: 5,
-  color: "#3866F9",
-  marginTop: 12,
-  fontFamily: "system-ui",
-});
+interface Values {
+  max_agent: number | undefined;
+  administrator: string | undefined;
+}
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -82,6 +68,27 @@ const CustomTextField = withStyles({
   },
 })(TextField);
 
+const CustomFormikTextField = withStyles({
+  root: {
+    "& .MuiInput-root": {
+      fontWeight: 300,
+      textAlign: "initial",
+    },
+    "& .MuiInputBase-input": {
+      textAlign: "initial",
+    },
+    "& .MuiInput-underline:before": {
+      borderBottom: "none !important", // Semi-transparent underline
+    },
+    "& .MuiInput-underline:hover:before": {
+      borderBottom: "none !important", // Solid underline on hover
+    },
+    "& .MuiInput-underline:after": {
+      borderBottom: "none !important", // Solid underline on focus
+    },
+  },
+})(FormikTextField);
+
 const CustomTotalContainer = styled(Typography)({
   padding: "29px 21px",
   boxSizing: "border-box",
@@ -93,7 +100,133 @@ const CustomValueContainer = styled(Typography)({
   fontWeight: 700,
 });
 
-export const TokenSettings: React.FC = () => {
+const TokenSettingsForm = ({
+  values,
+  defineSubmit,
+  submitForm,
+  setFieldValue,
+  setBalanceAccountTwo,
+  setBalanceAccountOne,
+  balanceAccountOne,
+  balanceAccountTwo,
+  getTotalBalance,
+}: any) => {
+  useMemo(() => {
+    defineSubmit(() => submitForm);
+  }, [values]);
+
+  return (
+    <>
+      <SecondContainer item container direction="row">
+        <Grid item xs={9}>
+          <Typography variant="subtitle1"> Token holder </Typography>
+          <CustomInputContainer>
+            <CustomTextField type="text" placeholder="0xf8s8d...." />
+          </CustomInputContainer>
+          <CustomInputContainer>
+            <CustomTextField type="text" placeholder="0xf8s8d...." />
+          </CustomInputContainer>
+
+          <CustomTotalContainer variant="subtitle1">
+            {" "}
+            Total{" "}
+          </CustomTotalContainer>
+        </Grid>
+        <Grid item xs={3}>
+          <Typography variant="subtitle1"> Balance </Typography>
+          <CustomBalanceContainer>
+            <CustomTextField
+              type="number"
+              placeholder="0.00"
+              value={balanceAccountOne}
+              onChange={(e: any) => setBalanceAccountOne(e.target.value)}
+            />
+          </CustomBalanceContainer>
+          <CustomBalanceContainer>
+            <CustomTextField
+              type="number"
+              placeholder="0.00"
+              value={balanceAccountTwo}
+              onChange={(e: any) => setBalanceAccountTwo(e.target.value)}
+            />
+          </CustomBalanceContainer>
+
+          <CustomValueContainer variant="subtitle1">
+            {" "}
+            {getTotalBalance()}{" "}
+          </CustomValueContainer>
+        </Grid>
+      </SecondContainer>
+
+      <SecondContainer item container direction="row" alignItems="center">
+        <Grid item xs={12}>
+          <Typography variant="subtitle1">
+            {" "}
+            Maximum Agent Spend Per Cycle{" "}
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <CustomInputContainer>
+            <Field
+              component={CustomFormikTextField}
+              type="number"
+              name="max_agent"
+              placeholder="00"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">TKN</InputAdornment>
+                ),
+              }}
+            />
+          </CustomInputContainer>
+        </Grid>
+
+        <Grid item xs={6}>
+          <Grid container direction="row" justify="flex-end">
+            <InfoOutlinedIcon></InfoOutlinedIcon>
+          </Grid>
+        </Grid>
+      </SecondContainer>
+
+      <SecondContainer item container direction="row" alignItems="center">
+        <Grid item xs={12}>
+          <Typography variant="subtitle1"> Administrator </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <CustomInputContainer>
+            <Field
+              name="administrator"
+              type="text"
+              placeholder="0xf8s8d...."
+              component={CustomFormikTextField}
+            ></Field>
+          </CustomInputContainer>
+        </Grid>
+      </SecondContainer>
+    </>
+  );
+};
+
+export const TokenSettings: React.FC<{
+  defineSubmit: any;
+  setActiveStep: any;
+  setGovernanceStep: any;
+}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
+  const storageDaoInformation = useSelector<
+    AppState,
+    AppState["saveDaoInformationReducer"]
+  >((state) => state.saveDaoInformationReducer);
+
+  const dispatch = useDispatch();
+
+  const saveStepInfo = (values: any, { setSubmitting }: any) => {
+    console.log(values);
+    setSubmitting(true);
+    dispatch(saveDaoInformation(values));
+    setActiveStep(1);
+    setGovernanceStep(2);
+  };
+
   const [balanceAccountOne, setBalanceAccountOne] = useState(undefined);
   const [balanceAccountTwo, setBalanceAccountTwo] = useState(undefined);
 
@@ -108,6 +241,14 @@ export const TokenSettings: React.FC = () => {
       return "0.00";
     }
   };
+
+  const validate = (values: Values) => {
+    console.log(values);
+    const errors: any = {};
+
+    return errors;
+  };
+
   return (
     <>
       <Grid
@@ -125,87 +266,46 @@ export const TokenSettings: React.FC = () => {
             distribution of your token.
           </CustomTypography>
         </Grid>
-
-        <SecondContainer item container direction="row">
-          <Grid item xs={9}>
-            <Typography variant="subtitle1"> Token holder </Typography>
-            <CustomInputContainer>
-              <CustomTextField type="text" placeholder="0xf8s8d...." />
-            </CustomInputContainer>
-            <CustomInputContainer>
-              <CustomTextField type="text" placeholder="0xf8s8d...." />
-            </CustomInputContainer>
-
-            <CustomTotalContainer variant="subtitle1">
-              {" "}
-              Total{" "}
-            </CustomTotalContainer>
-          </Grid>
-          <Grid item xs={3}>
-            <Typography variant="subtitle1"> Balance </Typography>
-            <CustomBalanceContainer>
-              <CustomTextField
-                type="number"
-                placeholder="0.00"
-                value={balanceAccountOne}
-                onChange={(e: any) => setBalanceAccountOne(e.target.value)}
-              />
-            </CustomBalanceContainer>
-            <CustomBalanceContainer>
-              <CustomTextField
-                type="number"
-                placeholder="0.00"
-                value={balanceAccountTwo}
-                onChange={(e: any) => setBalanceAccountTwo(e.target.value)}
-              />
-            </CustomBalanceContainer>
-
-            <CustomValueContainer variant="subtitle1">
-              {" "}
-              {getTotalBalance()}{" "}
-            </CustomValueContainer>
-          </Grid>
-        </SecondContainer>
-
-        <SecondContainer item container direction="row" alignItems="center">
-          <Grid item xs={12}>
-            <Typography variant="subtitle1">
-              {" "}
-              Maximum Agent Spend Per Cycle{" "}
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <CustomInputContainer>
-              <CustomTextField
-                type="number"
-                placeholder="00"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="start">TKN</InputAdornment>
-                  ),
-                }}
-              />
-            </CustomInputContainer>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Grid container direction="row" justify="flex-end">
-              <InfoOutlinedIcon></InfoOutlinedIcon>
-            </Grid>
-          </Grid>
-        </SecondContainer>
-
-        <SecondContainer item container direction="row" alignItems="center">
-          <Grid item xs={12}>
-            <Typography variant="subtitle1"> Administrator </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <CustomInputContainer>
-              <CustomTextField type="number" placeholder="0xf8s8d...." />
-            </CustomInputContainer>
-          </Grid>
-        </SecondContainer>
       </Grid>
+      <Formik
+        enableReinitialize
+        validate={validate}
+        onSubmit={saveStepInfo}
+        initialValues={storageDaoInformation}
+      >
+        {({
+          submitForm,
+          isSubmitting,
+          setFieldValue,
+          values,
+          errors,
+          touched,
+          handleBlur,
+          validateOnChange,
+          setFieldTouched,
+          handleChange,
+        }) => {
+          return (
+            <Form style={{ width: "100%" }}>
+              <TokenSettingsForm
+                defineSubmit={defineSubmit}
+                validate={validate}
+                submitForm={submitForm}
+                isSubmitting={isSubmitting}
+                setFieldValue={setFieldValue}
+                errors={errors}
+                touched={touched}
+                values={values}
+                balanceAccountOne={balanceAccountOne}
+                balanceAccountTwo={balanceAccountTwo}
+                setBalanceAccountOne={setBalanceAccountOne}
+                setBalanceAccountTwo={setBalanceAccountTwo}
+                getTotalBalance={getTotalBalance}
+              />
+            </Form>
+          );
+        }}
+      </Formik>
     </>
   );
 };

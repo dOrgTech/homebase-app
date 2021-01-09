@@ -3,7 +3,7 @@ import { code } from "../contracts/baseDAO";
 import { importKey } from "@taquito/signer";
 
 const Tezos = new TezosToolkit("https://api.tez.ie/rpc/carthagenet");
-importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
+// importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
 
 export const deployContract = async (tezos: TezosToolkit) => {
   const sLedger = new MichelsonMap();

@@ -1,15 +1,14 @@
 import {
   Grid,
-  Link,
   Paper,
   styled,
   Typography,
   Slider,
   withStyles,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import Input from "@material-ui/core/Input";
-import { Field, Form, Formik, FormikProps } from "formik";
+import { Field, Form, Formik, getIn } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../store";
 import { TextField } from "formik-material-ui";
@@ -31,6 +30,11 @@ const CustomTypography = styled(Typography)({
   paddingBottom: 10,
   borderBottom: "1px solid #E4E4E4",
   marginTop: 10,
+});
+
+const ErrorText = styled(Typography)({
+  fontSize: 14,
+  color: "red",
 });
 
 const SecondContainer = styled(Grid)({
@@ -106,18 +110,25 @@ const Value = styled(Typography)({
   padding: "30%",
 });
 
+const styles = {
+  voting: {
+    marginTop: 6,
+  },
+};
+
 const GovernanceForm = ({
   submitForm,
   values,
   defineSubmit,
-  stake,
-  setSupport,
-  support,
-  setStake,
+  setFieldValue,
+  errors,
+  touched,
 }: any) => {
-  useEffect(() => {
-    defineSubmit(submitForm);
+  // console.log(values);
+  useMemo(() => {
+    defineSubmit(() => submitForm);
   }, [values]);
+
   return (
     <>
       <SecondContainer container direction="row">
@@ -144,6 +155,9 @@ const GovernanceForm = ({
               <Typography>days</Typography>
             </GridItemCenter>
           </ItemContainer>
+          {errors.proposal_days && touched.proposal_days ? (
+            <ErrorText>{errors.proposal_days}</ErrorText>
+          ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
           <ItemContainer
@@ -153,12 +167,20 @@ const GovernanceForm = ({
             justify="center"
           >
             <GridItemCenter item xs={6}>
-              <CustomInput type="number" placeholder="00" />
+              <Field
+                name="proposal_hours"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography>hours</Typography>
             </GridItemCenter>
           </ItemContainer>
+          {errors.proposal_hours && touched.proposal_hours ? (
+            <ErrorText>{errors.proposal_hours}</ErrorText>
+          ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
           <ItemContainer
@@ -168,17 +190,27 @@ const GovernanceForm = ({
             justify="center"
           >
             <GridItemCenter item xs={6}>
-              <CustomInput type="number" placeholder="00" />
+              <Field
+                name="proposal_minutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography>minutes</Typography>
             </GridItemCenter>
           </ItemContainer>
+          {errors.proposal_minutes && touched.proposal_minutes ? (
+            <ErrorText>{errors.proposal_minutes}</ErrorText>
+          ) : null}
         </CustomInputContainer>
       </Grid>
 
       <SecondContainer container direction="row">
-        <Typography variant="subtitle1">Voting Period Duration</Typography>
+        <Typography style={styles.voting} variant="subtitle1">
+          Voting Period Duration
+        </Typography>
       </SecondContainer>
 
       <Grid container direction="row">
@@ -190,12 +222,20 @@ const GovernanceForm = ({
             justify="center"
           >
             <GridItemCenter item xs={6}>
-              <CustomInput type="number" placeholder="00" />
+              <Field
+                name="voting_days"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography>days</Typography>
             </GridItemCenter>
           </ItemContainer>
+          {errors.voting_days && touched.voting_days ? (
+            <ErrorText>{errors.voting_days}</ErrorText>
+          ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
           <ItemContainer
@@ -205,12 +245,20 @@ const GovernanceForm = ({
             justify="center"
           >
             <GridItemCenter item xs={6}>
-              <CustomInput type="number" placeholder="00" />
+              <Field
+                name="voting_hours"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography>hours</Typography>
             </GridItemCenter>
           </ItemContainer>
+          {errors.voting_hours && touched.voting_hours ? (
+            <ErrorText>{errors.voting_hours}</ErrorText>
+          ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
           <ItemContainer
@@ -220,29 +268,22 @@ const GovernanceForm = ({
             justify="center"
           >
             <GridItemCenter item xs={6}>
-              <CustomInput type="number" placeholder="00" />
+              <Field
+                name="voting_minutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography>minutes</Typography>
             </GridItemCenter>
           </ItemContainer>
+          {errors.voting_minutes && touched.voting_minutes ? (
+            <ErrorText>{errors.voting_minutes}</ErrorText>
+          ) : null}
         </CustomInputContainer>
       </Grid>
-
-      {/* <SecondContainer container direction="row" alignItems="center">
-      <Switch
-        name="checkedA"
-        inputProps={{ "aria-label": "secondary checkbox" }}
-      />
-      <Typography variant="subtitle1">
-        Requires an
-        <CustomLink href="#" onClick={preventDefault}>
-          {" "}
-          Agora
-        </CustomLink>{" "}
-        Link to submit a proposal
-      </Typography>
-    </SecondContainer> */}
 
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1">Minimum Stake </Typography>
@@ -251,14 +292,20 @@ const GovernanceForm = ({
 
       <Grid container direction="row" alignItems="center" spacing={1}>
         <Grid item xs={11}>
-          <StyledSlider
-            value={stake}
-            onChange={(value: any, newValue: any) => setStake(newValue)}
-          />
+          <Field name="min_stake">
+            {({ field, form: { touched, errors }, meta }: any) => (
+              <StyledSlider
+                value={getIn(values, "min_stake")}
+                onChange={(value: any, newValue: any) =>
+                  setFieldValue("min_stake", newValue)
+                }
+              />
+            )}
+          </Field>
         </Grid>
         <Grid item xs={1}>
           <CustomSliderValue>
-            <Value variant="subtitle1">{stake}%</Value>
+            <Value variant="subtitle1">{getIn(values, "min_stake")}%</Value>
           </CustomSliderValue>
         </Grid>
       </Grid>
@@ -271,14 +318,22 @@ const GovernanceForm = ({
 
       <Grid container direction="row" alignItems="center" spacing={1}>
         <Grid item xs={11}>
-          <StyledSlider
-            value={support}
-            onChange={(value: any, newValue: any) => setSupport(newValue)}
-          />
+          <Field name="stake_returned">
+            {({ field, form: { touched, errors }, meta }: any) => (
+              <StyledSlider
+                value={getIn(values, "stake_returned")}
+                onChange={(value: any, newValue: any) =>
+                  setFieldValue("stake_returned", newValue)
+                }
+              />
+            )}
+          </Field>
         </Grid>
         <Grid item xs={1}>
           <CustomSliderValue>
-            <Value variant="subtitle1">{support}%</Value>
+            <Value variant="subtitle1">
+              {getIn(values, "stake_returned")}%
+            </Value>
           </CustomSliderValue>
         </Grid>
       </Grid>
@@ -289,14 +344,20 @@ const GovernanceForm = ({
 
       <Grid container direction="row" alignItems="center" spacing={1}>
         <Grid item xs={11}>
-          <StyledSlider
-            value={support}
-            onChange={(value: any, newValue: any) => setSupport(newValue)}
-          />
+          <Field name="min_support">
+            {({ field, form: { touched, errors }, meta }: any) => (
+              <StyledSlider
+                value={getIn(values, "min_support")}
+                onChange={(value: any, newValue: any) =>
+                  setFieldValue("min_support", newValue)
+                }
+              />
+            )}
+          </Field>
         </Grid>
         <Grid item xs={1}>
           <CustomSliderValue>
-            <Value variant="subtitle1">{support}%</Value>
+            <Value variant="subtitle1">{getIn(values, "min_support")}%</Value>
           </CustomSliderValue>
         </Grid>
       </Grid>
@@ -304,12 +365,11 @@ const GovernanceForm = ({
   );
 };
 
-export const Governance: React.FC<{ defineSubmit: any }> = ({
-  defineSubmit,
-}) => {
-  const [stake, setStake] = useState(0);
-  const [support, setSupport] = useState(0);
-
+export const Governance: React.FC<{
+  defineSubmit: any;
+  setActiveStep: any;
+  setGovernanceStep: any;
+}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
@@ -317,23 +377,44 @@ export const Governance: React.FC<{ defineSubmit: any }> = ({
 
   const dispatch = useDispatch();
 
-  const h = (values: any, { setSubmitting }: any) => {
+  const saveStepInfo = (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     dispatch(saveDaoInformation(values));
-    console.log(values);
+    setActiveStep(1);
+    setGovernanceStep(1);
   };
 
   const validate = (values: Values) => {
     const errors: any = {};
 
+    if (!values.proposal_days) {
+      errors.proposal_days = "Required";
+    }
+    if (!values.proposal_minutes) {
+      errors.proposal_minutes = "Required";
+    }
+    if (!values.proposal_hours) {
+      errors.proposal_hours = "Required";
+    }
+    if (!values.voting_days) {
+      errors.voting_days = "Required";
+    }
+    if (!values.voting_hours) {
+      errors.voting_hours = "Required";
+    }
+    if (!values.voting_minutes) {
+      errors.voting_minutes = "Required";
+    }
+    console.log(errors);
+
     return errors;
   };
+
   return (
     <>
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12}>
           <Typography variant="h1">Proposals & Voting</Typography>
-          {console.log(storageDaoInformation)}
         </Grid>
       </Grid>
       <Grid container direction="row">
@@ -348,7 +429,7 @@ export const Governance: React.FC<{ defineSubmit: any }> = ({
       <Formik
         enableReinitialize
         validate={validate}
-        onSubmit={h}
+        onSubmit={saveStepInfo}
         initialValues={storageDaoInformation}
       >
         {({
@@ -367,20 +448,13 @@ export const Governance: React.FC<{ defineSubmit: any }> = ({
             <Form style={{ width: "100%" }}>
               <GovernanceForm
                 defineSubmit={defineSubmit}
-                stake={stake}
-                support={support}
-                setStake={setStake}
-                setSupport={setSupport}
+                validate={validate}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}
                 errors={errors}
                 touched={touched}
                 values={values}
-                handleBlur={handleBlur}
-                validateOnChange={validateOnChange}
-                setFieldTouched={setFieldTouched}
-                handleChange={handleChange}
               />
             </Form>
           );

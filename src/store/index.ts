@@ -15,6 +15,10 @@ const store = configureStore({
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),
     save({ states: PERSISTED_KEYS }),
+    save({
+      states: ["saveDaoInformationReducer"],
+      namespace: "saveDaoInformationReducer",
+    }),
   ],
   preloadedState: load({ states: PERSISTED_KEYS }),
 });

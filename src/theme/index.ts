@@ -139,5 +139,10 @@ export const theme = createMuiTheme({
         },
       },
     },
+    MuiFormHelperText: {
+      root: {
+        display: "none",
+      },
+    },
   },
 });

@@ -111,11 +111,23 @@ export const DAOCreate: React.FC = () => {
         return <SelectTemplate setActiveStep={setActiveStep} />;
       case 1:
         return governanceStep === 0 ? (
-          <Governance defineSubmit={setHandleNextStep} />
+          <Governance
+            defineSubmit={setHandleNextStep}
+            setActiveStep={setActiveStep}
+            setGovernanceStep={setGovernanceStep}
+          />
         ) : governanceStep === 1 ? (
-          <TokenSettings />
+          <TokenSettings
+            defineSubmit={setHandleNextStep}
+            setActiveStep={setActiveStep}
+            setGovernanceStep={setGovernanceStep}
+          />
         ) : (
-          <DaoSettings />
+          <DaoSettings
+            defineSubmit={setHandleNextStep}
+            setActiveStep={setActiveStep}
+            setGovernanceStep={setGovernanceStep}
+          />
         );
       case 2:
         return (
@@ -157,7 +169,7 @@ export const DAOCreate: React.FC = () => {
         </Stepper>
       </CustomGrid>
       <Grid item container justify="center" alignItems="center" xs={9}>
-        <ConnectWallet />
+        {account ? null : <ConnectWallet />}
         <StepContentContainer item container justify="center">
           {getStepContent(activeStep, handleNextStep)}
         </StepContentContainer>

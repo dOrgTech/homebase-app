@@ -10,4 +10,10 @@ export const saveDaoInformation = createAction<{
   min_stake: number;
   min_support: number;
   stake_returned: number;
+  max_agent: number;
+  administrator: string;
+  token_name: string;
+  token_symbol: string;
+  lock_disabled: boolean;
+  description: string;
 }>("dao/saveInformation");

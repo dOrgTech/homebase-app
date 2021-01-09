@@ -1,39 +1,27 @@
 import {
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
   Grid,
-  Link,
-  Paper,
   styled,
-  Switch,
   Typography,
-  Slider,
   withStyles,
-  TextField,
-  InputAdornment,
   TextareaAutosize,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import { useSelector, useDispatch } from "react-redux";
+import { AppState } from "../../store";
+import { saveDaoInformation } from "../../store/dao-info/action";
+import { Field, Form, Formik, getIn } from "formik";
+import {
+  TextField as FormikTextField,
+  Switch as FormikSwitch,
+} from "formik-material-ui";
 
-const CustomUrlButton = styled(Paper)({
-  border: "1px solid #3866F9",
-  width: 165,
-  height: 31,
-  boxSizing: "border-box",
-  borderRadius: 21,
-  cursor: "pointer",
-  backgroundColor: "#fff",
-  boxShadow: "none",
-  textAlign: "center",
-  margin: "auto",
-  padding: 5,
-  color: "#3866F9",
-  marginTop: 12,
-  fontFamily: "system-ui",
-});
+interface Values {
+  token_name: string | undefined;
+  token_symbol: string | undefined;
+  lock_disabled: boolean;
+  description: string | undefined;
+}
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -53,16 +41,7 @@ const CustomInputContainer = styled(Grid)({
   boxSizing: "border-box",
 });
 
-const CustomBalanceContainer = styled(Grid)({
-  border: "1px solid #E4E4E4",
-  height: 62,
-  marginTop: 14,
-  borderLeft: "none",
-  padding: "18px 21px",
-  boxSizing: "border-box",
-});
-
-const CustomTextField = withStyles({
+const CustomFormikTextField = withStyles({
   root: {
     "& .MuiInput-root": {
       fontWeight: 300,
@@ -81,7 +60,7 @@ const CustomTextField = withStyles({
       borderBottom: "none !important", // Solid underline on focus
     },
   },
-})(TextField);
+})(FormikTextField);
 
 const CustomTotalContainer = styled(Typography)({
   padding: "29px 21px",
@@ -105,7 +84,114 @@ const CustomTextarea = styled(TextareaAutosize)({
   fontSize: 16,
 });
 
-export const DaoSettings: React.FC = () => {
+const DaoSettingsForm = ({
+  submitForm,
+  values,
+  defineSubmit,
+  setFieldValue,
+  errors,
+  touched,
+}: any) => {
+  useMemo(() => {
+    defineSubmit(() => submitForm);
+  }, [values]);
+
+  return (
+    <>
+      <SecondContainer container item direction="row" spacing={2}>
+        <Grid item xs={9}>
+          <Typography variant="subtitle1"> Token name </Typography>
+          <CustomInputContainer>
+            <Field
+              name="token_name"
+              type="text"
+              placeholder="My Group’s Token"
+              component={CustomFormikTextField}
+            ></Field>
+          </CustomInputContainer>
+        </Grid>
+
+        <Grid item xs={3}>
+          <Typography variant="subtitle1"> Token symbol </Typography>
+          <CustomInputContainer>
+            <Field
+              name="token_symbol"
+              type="text"
+              placeholder="MYTOK"
+              component={CustomFormikTextField}
+            ></Field>
+          </CustomInputContainer>
+        </Grid>
+      </SecondContainer>
+      <SecondContainer container direction="row" alignItems="center">
+        <Field
+          name="lock_disabled"
+          component={FormikSwitch}
+          type="checkbox"
+          inputProps={{ "aria-label": "secondary checkbox" }}
+        />
+
+        <Typography variant="subtitle1">
+          Disable locking until after first voting period.
+        </Typography>
+
+        <Grid item xs={12}>
+          <Grid container direction="row" justify="flex-end">
+            <InfoOutlinedIcon></InfoOutlinedIcon>
+          </Grid>
+        </Grid>
+      </SecondContainer>
+
+      <SecondContainer container direction="row" alignItems="center">
+        <Grid item xs={12}>
+          <Typography variant="subtitle1">Description</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Field name="description">
+            {({ field, form: { touched, errors }, meta }: any) => (
+              <CustomTextarea
+                aria-label="empty textarea"
+                placeholder="This is what we’re about..."
+                value={getIn(values, "description")}
+                onChange={(newValue: any) => {
+                  console.log(newValue);
+                  setFieldValue("description", newValue.target.value);
+                }}
+              />
+            )}
+          </Field>
+        </Grid>
+      </SecondContainer>
+    </>
+  );
+};
+export const DaoSettings: React.FC<{
+  defineSubmit: any;
+  setActiveStep: any;
+  setGovernanceStep: any;
+}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
+  const storageDaoInformation = useSelector<
+    AppState,
+    AppState["saveDaoInformationReducer"]
+  >((state) => state.saveDaoInformationReducer);
+
+  const dispatch = useDispatch();
+
+  const saveStepInfo = (values: any, { setSubmitting }: any) => {
+    setSubmitting(true);
+    dispatch(saveDaoInformation(values));
+    setActiveStep(2);
+    setGovernanceStep(2);
+  };
+
+  const validate = (values: Values) => {
+    const errors: any = {};
+
+    console.log(errors);
+
+    return errors;
+  };
+
   return (
     <>
       <Grid
@@ -123,50 +209,42 @@ export const DaoSettings: React.FC = () => {
             distribution of your token.
           </CustomTypography>
         </Grid>
-
-        <SecondContainer container item direction="row" spacing={2}>
-          <Grid item xs={9}>
-            <Typography variant="subtitle1"> Token name </Typography>
-            <CustomInputContainer>
-              <CustomTextField type="number" placeholder="My Group’s Token" />
-            </CustomInputContainer>
-          </Grid>
-
-          <Grid item xs={3}>
-            <Typography variant="subtitle1"> Token symbol </Typography>
-            <CustomInputContainer>
-              <CustomTextField type="number" placeholder="MYTOK" />
-            </CustomInputContainer>
-          </Grid>
-        </SecondContainer>
-        <SecondContainer container direction="row" alignItems="center">
-          <Switch
-            name="checkedA"
-            inputProps={{ "aria-label": "secondary checkbox" }}
-          />
-          <Typography variant="subtitle1">
-            Disable locking until after first voting period.
-          </Typography>
-
-          <Grid item xs={12}>
-            <Grid container direction="row" justify="flex-end">
-              <InfoOutlinedIcon></InfoOutlinedIcon>
-            </Grid>
-          </Grid>
-        </SecondContainer>
-
-        <SecondContainer container direction="row" alignItems="center">
-          <Grid item xs={12}>
-            <Typography variant="subtitle1">Description</Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <CustomTextarea
-              aria-label="empty textarea"
-              placeholder="This is what we’re about..."
-            />
-          </Grid>
-        </SecondContainer>
       </Grid>
+
+      <Formik
+        enableReinitialize
+        validate={validate}
+        onSubmit={saveStepInfo}
+        initialValues={storageDaoInformation}
+      >
+        {({
+          submitForm,
+          isSubmitting,
+          setFieldValue,
+          values,
+          errors,
+          touched,
+          handleBlur,
+          validateOnChange,
+          setFieldTouched,
+          handleChange,
+        }) => {
+          return (
+            <Form style={{ width: "100%" }}>
+              <DaoSettingsForm
+                defineSubmit={defineSubmit}
+                validate={validate}
+                submitForm={submitForm}
+                isSubmitting={isSubmitting}
+                setFieldValue={setFieldValue}
+                errors={errors}
+                touched={touched}
+                values={values}
+              />
+            </Form>
+          );
+        }}
+      </Formik>
     </>
   );
 };
