@@ -62,17 +62,6 @@ const CustomFormikTextField = withStyles({
   },
 })(FormikTextField);
 
-const CustomTotalContainer = styled(Typography)({
-  padding: "29px 21px",
-  boxSizing: "border-box",
-});
-
-const CustomValueContainer = styled(Typography)({
-  padding: "29px 21px",
-  boxSizing: "border-box",
-  fontWeight: 700,
-});
-
 const CustomTextarea = styled(TextareaAutosize)({
   height: "153px !important",
   width: "100%",
@@ -82,6 +71,11 @@ const CustomTextarea = styled(TextareaAutosize)({
   padding: "21px 20px",
   fontFamily: "system-ui",
   fontSize: 16,
+});
+
+const ErrorText = styled(Typography)({
+  fontSize: 14,
+  color: "red",
 });
 
 const DaoSettingsForm = ({
@@ -109,6 +103,9 @@ const DaoSettingsForm = ({
               component={CustomFormikTextField}
             ></Field>
           </CustomInputContainer>
+          {errors.token_name && touched.token_name ? (
+            <ErrorText>{errors.token_name}</ErrorText>
+          ) : null}
         </Grid>
 
         <Grid item xs={3}>
@@ -121,6 +118,9 @@ const DaoSettingsForm = ({
               component={CustomFormikTextField}
             ></Field>
           </CustomInputContainer>
+          {errors.token_symbol && touched.token_symbol ? (
+            <ErrorText>{errors.token_symbol}</ErrorText>
+          ) : null}
         </Grid>
       </SecondContainer>
       <SecondContainer container direction="row" alignItems="center">
@@ -161,6 +161,9 @@ const DaoSettingsForm = ({
             )}
           </Field>
         </Grid>
+        {errors.description && touched.description ? (
+          <ErrorText>{errors.description}</ErrorText>
+        ) : null}
       </SecondContainer>
     </>
   );
@@ -187,7 +190,15 @@ export const DaoSettings: React.FC<{
   const validate = (values: Values) => {
     const errors: any = {};
 
-    console.log(errors);
+    if (!values.token_name) {
+      errors.token_name = "Required";
+    }
+    if (!values.token_symbol) {
+      errors.token_symbol = "Required";
+    }
+    if (!values.description) {
+      errors.description = "Required";
+    }
 
     return errors;
   };

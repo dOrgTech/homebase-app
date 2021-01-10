@@ -1,14 +1,7 @@
-import {
-  Grid,
-  Link,
-  Paper,
-  styled,
-  Switch,
-  Typography,
-  withStyles,
-  TextField,
-} from "@material-ui/core";
-import React, { useState } from "react";
+import { Grid, Paper, styled, Typography } from "@material-ui/core";
+import React from "react";
+import { useSelector } from "react-redux";
+import { AppState } from "../../store";
 
 interface Props {
   setActiveStep: any;
@@ -80,6 +73,13 @@ const CustomToken = styled(Typography)({
 export const Summary: React.FC<Props> = (props) => {
   const { setActiveStep, setGovernanceStep } = props;
 
+  const storageDaoInformation = useSelector<
+    AppState,
+    AppState["saveDaoInformationReducer"]
+  >((state) => state.saveDaoInformationReducer);
+
+  console.log(storageDaoInformation);
+
   const goToVoting = () => {
     setGovernanceStep(0);
     setActiveStep(1);
@@ -116,43 +116,60 @@ export const Summary: React.FC<Props> = (props) => {
             <CustomColumnContainer container direction="column">
               <CustomGridItem item>
                 <Typography variant="subtitle2">Transfers locked?</Typography>
-                <Typography variant="subtitle1">NO</Typography>
+                <Typography variant="subtitle1">
+                  {storageDaoInformation.lock_disabled ? "YES" : "NO"}
+                </Typography>
               </CustomGridItem>
 
-              <CustomGridItem item>
+              {/* <CustomGridItem item>
                 <Typography variant="subtitle2">
                   Requires Agora Link?
                 </Typography>
                 <Typography variant="subtitle1">NO</Typography>
-              </CustomGridItem>
+              </CustomGridItem> */}
 
               <CustomGridItem item>
                 <Typography variant="subtitle2">Minimum Stake</Typography>
-                <Typography variant="subtitle1">5%</Typography>
+                <Typography variant="subtitle1">
+                  {storageDaoInformation.min_stake}%
+                </Typography>
               </CustomGridItem>
 
               <CustomGridItem item>
                 <Typography variant="subtitle2">
                   Proposal Period Duration
                 </Typography>
-                <Typography variant="subtitle1">10d 5h 20m</Typography>
+                <Typography variant="subtitle1">
+                  {storageDaoInformation.proposal_days}d{" "}
+                  {storageDaoInformation.proposal_hours}h{" "}
+                  {storageDaoInformation.proposal_minutes}m
+                </Typography>
               </CustomGridItem>
 
               <CustomGridItem item>
                 <Typography variant="subtitle2">
                   Voting Period Duration
                 </Typography>
-                <Typography variant="subtitle1">10d 5h 20m</Typography>
+                <Typography variant="subtitle1">
+                  {" "}
+                  {storageDaoInformation.voting_days}d{" "}
+                  {storageDaoInformation.voting_hours}h{" "}
+                  {storageDaoInformation.voting_minutes}m
+                </Typography>
               </CustomGridItem>
 
               <CustomGridItem item>
                 <Typography variant="subtitle2">Minimum Support</Typography>
-                <Typography variant="subtitle1">50%</Typography>
+                <Typography variant="subtitle1">
+                  {storageDaoInformation.min_support}%
+                </Typography>
               </CustomGridItem>
 
               <CustomGridItem item>
                 <Typography variant="subtitle2">Maximum Spend</Typography>
-                <Typography variant="subtitle1">2,323 MGT</Typography>
+                <Typography variant="subtitle1">
+                  {storageDaoInformation.max_agent} MGT
+                </Typography>
               </CustomGridItem>
             </CustomColumnContainer>
           </Grid>
@@ -164,16 +181,17 @@ export const Summary: React.FC<Props> = (props) => {
             </Grid>
             <CustomSettingsContainer container direction="column">
               <Grid item xs={12}>
-                <Typography variant="subtitle2">MYTOK</Typography>
+                <Typography variant="subtitle2">
+                  {storageDaoInformation.token_symbol}
+                </Typography>
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="subtitle1">My Great Token</Typography>
+                <Typography variant="subtitle1">
+                  {storageDaoInformation.token_name}
+                </Typography>
               </Grid>
               <Grid item xs={12}>
-                <CustomItalic>
-                  Here’s something that you wrote about your DAO. You could
-                  write anything here!
-                </CustomItalic>
+                <CustomItalic>{storageDaoInformation.description}</CustomItalic>
               </Grid>
               <Grid item xs={12}>
                 <SecondContainer container direction="row">
@@ -187,7 +205,14 @@ export const Summary: React.FC<Props> = (props) => {
               </Grid>
             </CustomSettingsContainer>
             <Grid item xs={12}>
-              <CustomItalicAdmin>Administrator: 0x090..dsd89</CustomItalicAdmin>
+              <CustomItalicAdmin>
+                Administrator:
+                {storageDaoInformation.administrator.slice(0, 4)}...
+                {storageDaoInformation.administrator.slice(
+                  storageDaoInformation.administrator.length - 4,
+                  storageDaoInformation.administrator.length
+                )}
+              </CustomItalicAdmin>
             </Grid>
           </Grid>
         </SecondContainer>

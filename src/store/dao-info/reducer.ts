@@ -12,7 +12,7 @@ export interface DaoInformation {
   min_support: number | undefined;
   stake_returned: number | undefined;
   max_agent: number | undefined;
-  administrator: string | undefined;
+  administrator: string;
   token_name: string | undefined;
   token_symbol: string | undefined;
   lock_disabled: boolean;
@@ -30,7 +30,7 @@ export const initialState: DaoInformation = {
   min_support: 0,
   stake_returned: 0,
   max_agent: undefined,
-  administrator: undefined,
+  administrator: "",
   token_name: undefined,
   token_symbol: undefined,
   lock_disabled: false,

@@ -12,7 +12,7 @@ import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../store";
 import { saveDaoInformation } from "../../store/dao-info/action";
-import { Field, Form, Formik, getIn } from "formik";
+import { Field, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 
 interface Values {
@@ -47,6 +47,11 @@ const CustomBalanceContainer = styled(Grid)({
   boxSizing: "border-box",
 });
 
+const ErrorText = styled(Typography)({
+  fontSize: 14,
+  color: "red",
+});
+
 const CustomTextField = withStyles({
   root: {
     "& .MuiInput-root": {
@@ -57,13 +62,13 @@ const CustomTextField = withStyles({
       textAlign: "initial",
     },
     "& .MuiInput-underline:before": {
-      borderBottom: "none !important", // Semi-transparent underline
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important", // Solid underline on hover
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:after": {
-      borderBottom: "none !important", // Solid underline on focus
+      borderBottom: "none !important",
     },
   },
 })(TextField);
@@ -78,13 +83,13 @@ const CustomFormikTextField = withStyles({
       textAlign: "initial",
     },
     "& .MuiInput-underline:before": {
-      borderBottom: "none !important", // Semi-transparent underline
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important", // Solid underline on hover
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:after": {
-      borderBottom: "none !important", // Solid underline on focus
+      borderBottom: "none !important",
     },
   },
 })(FormikTextField);
@@ -110,6 +115,8 @@ const TokenSettingsForm = ({
   balanceAccountOne,
   balanceAccountTwo,
   getTotalBalance,
+  touched,
+  errors,
 }: any) => {
   useMemo(() => {
     defineSubmit(() => submitForm);
@@ -179,6 +186,9 @@ const TokenSettingsForm = ({
               }}
             />
           </CustomInputContainer>
+          {errors.max_agent && touched.max_agent ? (
+            <ErrorText>{errors.max_agent}</ErrorText>
+          ) : null}
         </Grid>
 
         <Grid item xs={6}>
@@ -201,6 +211,9 @@ const TokenSettingsForm = ({
               component={CustomFormikTextField}
             ></Field>
           </CustomInputContainer>
+          {errors.administrator && touched.administrator ? (
+            <ErrorText>{errors.administrator}</ErrorText>
+          ) : null}
         </Grid>
       </SecondContainer>
     </>
@@ -246,6 +259,14 @@ export const TokenSettings: React.FC<{
     console.log(values);
     const errors: any = {};
 
+    if (!values.administrator) {
+      errors.administrator = "Required";
+    }
+
+    if (!values.max_agent) {
+      errors.max_agent = "Required";
+    }
+
     return errors;
   };
 
@@ -280,10 +301,6 @@ export const TokenSettings: React.FC<{
           values,
           errors,
           touched,
-          handleBlur,
-          validateOnChange,
-          setFieldTouched,
-          handleChange,
         }) => {
           return (
             <Form style={{ width: "100%" }}>

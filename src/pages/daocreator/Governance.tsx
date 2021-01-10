@@ -319,7 +319,7 @@ const GovernanceForm = ({
       <Grid container direction="row" alignItems="center" spacing={1}>
         <Grid item xs={11}>
           <Field name="stake_returned">
-            {({ field, form: { touched, errors }, meta }: any) => (
+            {({ form: { touched, errors }, meta }: any) => (
               <StyledSlider
                 value={getIn(values, "stake_returned")}
                 onChange={(value: any, newValue: any) =>
