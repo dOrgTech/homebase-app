@@ -11,7 +11,7 @@ import Input from "@material-ui/core/Input";
 import { Field, Form, Formik, getIn } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../store";
-import { TextField } from "formik-material-ui";
+import { TextField, Switch as FormikSwitch } from "formik-material-ui";
 import { saveDaoInformation } from "../../store/dao-info/action";
 
 interface Values {
@@ -55,12 +55,6 @@ const CustomInputContainer = styled(Grid)({
   "&:last-child": {
     borderLeft: "none",
   },
-});
-
-const CustomInput = styled(Input)({
-  fontSize: 21,
-  color: "rgba(0, 0, 0, 0.5)",
-  fontWeight: 300,
 });
 
 const GridItemCenter = styled(Grid)({
@@ -116,6 +110,12 @@ const styles = {
   },
 };
 
+const SwitchContainer = styled("div")({
+  position: "absolute",
+  right: "5%",
+  textAlign: "center",
+});
+
 const GovernanceForm = ({
   submitForm,
   values,
@@ -124,7 +124,6 @@ const GovernanceForm = ({
   errors,
   touched,
 }: any) => {
-  // console.log(values);
   useMemo(() => {
     defineSubmit(() => submitForm);
   }, [values]);
@@ -308,6 +307,15 @@ const GovernanceForm = ({
             <Value variant="subtitle1">{getIn(values, "min_stake")}%</Value>
           </CustomSliderValue>
         </Grid>
+        <SwitchContainer>
+          <Typography>0.0%</Typography>
+          <Field
+            // name="lock_disabled"
+            component={FormikSwitch}
+            type="checkbox"
+            inputProps={{ "aria-label": "secondary checkbox" }}
+          />
+        </SwitchContainer>
       </Grid>
 
       <Grid direction="row" container alignItems="center">
@@ -336,6 +344,15 @@ const GovernanceForm = ({
             </Value>
           </CustomSliderValue>
         </Grid>
+        <SwitchContainer>
+          <Typography>0.0%</Typography>
+          <Field
+            // name="lock_disabled"
+            component={FormikSwitch}
+            type="checkbox"
+            inputProps={{ "aria-label": "secondary checkbox" }}
+          />
+        </SwitchContainer>
       </Grid>
 
       <Grid direction="row" container alignItems="center">

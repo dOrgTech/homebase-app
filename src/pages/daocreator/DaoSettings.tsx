@@ -51,13 +51,13 @@ const CustomFormikTextField = withStyles({
       textAlign: "initial",
     },
     "& .MuiInput-underline:before": {
-      borderBottom: "none !important", // Semi-transparent underline
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important", // Solid underline on hover
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:after": {
-      borderBottom: "none !important", // Solid underline on focus
+      borderBottom: "none !important",
     },
   },
 })(FormikTextField);
