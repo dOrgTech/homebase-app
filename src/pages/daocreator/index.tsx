@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { AppState } from "../../store";
 import { ConnectWallet } from "./ConnectWallet";
 import { Governance } from "./Governance";
@@ -19,16 +19,8 @@ import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
 
-import { saveDaoInformation } from "../../store/dao-info/action";
-
 const PageContainer = styled(Grid)({
-  // height: "calc(100% - 64px)",
   height: "100%",
-});
-
-const StepsContainer = styled(Grid)({
-  width: "50%",
-  margin: "auto",
 });
 
 const CustomGrid = styled(Grid)({
@@ -100,11 +92,6 @@ export const DAOCreate: React.FC = () => {
     (state) => state.wallet.address
   );
 
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["saveDaoInformationReducer"]
-  >((state) => state.saveDaoInformationReducer);
-
   function getStepContent(step: number, handleNextStep: any) {
     switch (step) {
       case 0:
@@ -148,14 +135,6 @@ export const DAOCreate: React.FC = () => {
       return setGovernanceStep(governanceStep - 1);
     }
   };
-
-  // const handleNextStep = () => {
-  //   if (activeStep === 1 && governanceStep === 2) {
-  //     return setActiveStep(2);
-  //   } else {
-  //     return setGovernanceStep(governanceStep + 1);
-  //   }
-  // };
 
   return (
     <PageContainer container>
