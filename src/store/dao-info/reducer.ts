@@ -1,6 +1,8 @@
 import { createReducer } from "@reduxjs/toolkit";
 import { saveDaoInformation } from "./action";
 
+import { TokenHolders } from "./types";
+
 export interface DaoInformation {
   proposal_days: number | undefined;
   proposal_hours: number | undefined;
@@ -17,6 +19,9 @@ export interface DaoInformation {
   token_symbol: string | undefined;
   lock_disabled: boolean;
   description: string | undefined;
+  min_stake_percentage: boolean;
+  stake_returned_percentage: boolean;
+  token_holders: Array<TokenHolders>;
 }
 
 export const initialState: DaoInformation = {
@@ -35,6 +40,9 @@ export const initialState: DaoInformation = {
   token_symbol: undefined,
   lock_disabled: false,
   description: undefined,
+  min_stake_percentage: true,
+  stake_returned_percentage: true,
+  token_holders: [{ token_holder: "", balance: 0 }],
 };
 
 export default createReducer(initialState, (builder) =>
@@ -54,5 +62,8 @@ export default createReducer(initialState, (builder) =>
     state.token_symbol = action.payload.token_symbol;
     state.lock_disabled = action.payload.lock_disabled;
     state.description = action.payload.description;
+    state.min_stake_percentage = action.payload.min_stake_percentage;
+    state.stake_returned_percentage = action.payload.stake_returned_percentage;
+    state.token_holders = action.payload.token_holders;
   })
 );

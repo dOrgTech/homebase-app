@@ -9,3 +9,8 @@ export interface DaoInformation {
   min_support: number;
   stake_returned: number;
 }
+
+export interface TokenHolders {
+  token_holder: string;
+  balance: number;
+}

@@ -1,23 +1,24 @@
 import {
   Grid,
-  Paper,
   styled,
   Typography,
   withStyles,
-  TextField,
   InputAdornment,
 } from "@material-ui/core";
+import { Add } from "@material-ui/icons";
 import React, { useMemo, useState } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../store";
 import { saveDaoInformation } from "../../store/dao-info/action";
-import { Field, Form, Formik } from "formik";
+import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
+import { TokenHolders } from "../../store/dao-info/types";
 
 interface Values {
   max_agent: number | undefined;
   administrator: string | undefined;
+  token_holders: Array<TokenHolders>;
 }
 
 const CustomTypography = styled(Typography)({
@@ -48,30 +49,10 @@ const CustomBalanceContainer = styled(Grid)({
 });
 
 const ErrorText = styled(Typography)({
-  fontSize: 14,
+  fontSize: 10,
   color: "red",
+  marginTop: 10,
 });
-
-const CustomTextField = withStyles({
-  root: {
-    "& .MuiInput-root": {
-      fontWeight: 300,
-      textAlign: "initial",
-    },
-    "& .MuiInputBase-input": {
-      textAlign: "initial",
-    },
-    "& .MuiInput-underline:before": {
-      borderBottom: "none !important",
-    },
-    "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important",
-    },
-  },
-})(TextField);
 
 const CustomFormikTextField = withStyles({
   root: {
@@ -95,14 +76,30 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField);
 
 const CustomTotalContainer = styled(Typography)({
-  padding: "29px 21px",
+  padding: "21px 21px",
   boxSizing: "border-box",
 });
 
 const CustomValueContainer = styled(Typography)({
-  padding: "29px 21px",
+  padding: "21px 21px",
   boxSizing: "border-box",
   fontWeight: 700,
+});
+
+const AddButon = styled("button")({
+  background: "inherit",
+  border: "none",
+  outline: "none",
+  marginTop: 8,
+  textAlign: "end",
+  width: "100%",
+  cursor: "pointer",
+  textDecoration: "underline",
+});
+
+const TokenHoldersGrid = styled(Grid)({
+  height: 269,
+  overflowX: "scroll",
 });
 
 const TokenSettingsForm = ({
@@ -110,11 +107,6 @@ const TokenSettingsForm = ({
   defineSubmit,
   submitForm,
   setFieldValue,
-  setBalanceAccountTwo,
-  setBalanceAccountOne,
-  balanceAccountOne,
-  balanceAccountTwo,
-  getTotalBalance,
   touched,
   errors,
 }: any) => {
@@ -122,48 +114,99 @@ const TokenSettingsForm = ({
     defineSubmit(() => submitForm);
   }, [values]);
 
+  const getTotal = () => {
+    let total = 0;
+    total = values.token_holders.forEach(
+      (holder: any) => (total += holder.balance)
+    );
+    return total;
+  };
   return (
     <>
-      <SecondContainer item container direction="row">
+      <TokenHoldersGrid container direction="row">
         <Grid item xs={9}>
           <Typography variant="subtitle1"> Token holder </Typography>
-          <CustomInputContainer>
-            <CustomTextField type="text" placeholder="0xf8s8d...." />
-          </CustomInputContainer>
-          <CustomInputContainer>
-            <CustomTextField type="text" placeholder="0xf8s8d...." />
-          </CustomInputContainer>
 
+          <FieldArray
+            name="token_holders"
+            render={(arrayHelpers) => (
+              <>
+                {values.token_holders && values.token_holders.length > 0
+                  ? values.token_holders.map((holder: any, index: any) => (
+                      <div key={index}>
+                        {/* <Typography variant="subtitle1"> Token holder </Typography> */}
+                        <CustomInputContainer>
+                          <Field
+                            type="text"
+                            component={CustomFormikTextField}
+                            placeholder="0xf8s8d...."
+                            name={`token_holders.${index}.token_holder`}
+                          />
+                          {/* {errors.token_holders &&  errors.token_holders[index] && touched.token_holders[index] ? (
+                          <ErrorText>{errors.token_holders[index]}</ErrorText>
+                        ) : null} */}
+                        </CustomInputContainer>
+                      </div>
+                    ))
+                  : null}
+              </>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={3}>
+          <Typography variant="subtitle1"> Balance </Typography>
+
+          <FieldArray
+            name="token_holders"
+            render={(arrayHelpers) => (
+              <>
+                {values.token_holders && values.token_holders.length > 0
+                  ? values.token_holders.map((holder: any, index: any) => (
+                      <div key={index}>
+                        <CustomBalanceContainer>
+                          <Field
+                            type="number"
+                            component={CustomFormikTextField}
+                            placeholder="0.00"
+                            name={`token_holders.${index}.balance`}
+                          />
+                        </CustomBalanceContainer>
+                        {index + 1 === values.token_holders.length ? (
+                          <AddButon
+                            className="button"
+                            type="button"
+                            onClick={() =>
+                              arrayHelpers.insert(index + 1, {
+                                token_holder: "",
+                                balance: 0,
+                              })
+                            } // insert an empty string at a position
+                          >
+                            {" "}
+                            Add new row
+                          </AddButon>
+                        ) : null}
+                      </div>
+                    ))
+                  : null}
+              </>
+            )}
+          />
+        </Grid>
+      </TokenHoldersGrid>
+
+      <Grid container direction="row">
+        <Grid item xs={9}>
           <CustomTotalContainer variant="subtitle1">
             {" "}
             Total{" "}
           </CustomTotalContainer>
         </Grid>
         <Grid item xs={3}>
-          <Typography variant="subtitle1"> Balance </Typography>
-          <CustomBalanceContainer>
-            <CustomTextField
-              type="number"
-              placeholder="0.00"
-              value={balanceAccountOne}
-              onChange={(e: any) => setBalanceAccountOne(e.target.value)}
-            />
-          </CustomBalanceContainer>
-          <CustomBalanceContainer>
-            <CustomTextField
-              type="number"
-              placeholder="0.00"
-              value={balanceAccountTwo}
-              onChange={(e: any) => setBalanceAccountTwo(e.target.value)}
-            />
-          </CustomBalanceContainer>
-
-          <CustomValueContainer variant="subtitle1">
-            {" "}
-            {getTotalBalance()}{" "}
-          </CustomValueContainer>
+          <CustomValueContainer>0.00</CustomValueContainer>
         </Grid>
-      </SecondContainer>
+      </Grid>
 
       <SecondContainer item container direction="row" alignItems="center">
         <Grid item xs={12}>
@@ -233,30 +276,13 @@ export const TokenSettings: React.FC<{
   const dispatch = useDispatch();
 
   const saveStepInfo = (values: any, { setSubmitting }: any) => {
-    console.log(values);
     setSubmitting(true);
     dispatch(saveDaoInformation(values));
     setActiveStep(1);
     setGovernanceStep(2);
   };
 
-  const [balanceAccountOne, setBalanceAccountOne] = useState(undefined);
-  const [balanceAccountTwo, setBalanceAccountTwo] = useState(undefined);
-
-  const getTotalBalance = () => {
-    if (balanceAccountOne && !balanceAccountTwo) {
-      return (Number(balanceAccountOne) + Number(0)).toFixed(2);
-    } else if (!balanceAccountOne && balanceAccountTwo) {
-      return (Number(balanceAccountTwo) + Number(0)).toFixed(2);
-    } else if (balanceAccountOne && balanceAccountTwo) {
-      return (Number(balanceAccountTwo) + Number(balanceAccountOne)).toFixed(2);
-    } else {
-      return "0.00";
-    }
-  };
-
   const validate = (values: Values) => {
-    console.log(values);
     const errors: any = {};
 
     if (!values.administrator) {
@@ -267,6 +293,13 @@ export const TokenSettings: React.FC<{
       errors.max_agent = "Required";
     }
 
+    // if (values.token_holders && values.token_holders.length > 0) {
+    //   errors.token_holders = values.token_holders.map((holder: any) => {
+    //     console.log(holder);
+    //     if (!holder.token_holder || !holder.balance) {
+    //       return "Both fields are required"
+    //     }
+    //   })
     return errors;
   };
 
@@ -289,7 +322,7 @@ export const TokenSettings: React.FC<{
         </Grid>
       </Grid>
       <Formik
-        enableReinitialize
+        enableReinitialize={true}
         validate={validate}
         onSubmit={saveStepInfo}
         initialValues={storageDaoInformation}
@@ -313,11 +346,6 @@ export const TokenSettings: React.FC<{
                 errors={errors}
                 touched={touched}
                 values={values}
-                balanceAccountOne={balanceAccountOne}
-                balanceAccountTwo={balanceAccountTwo}
-                setBalanceAccountOne={setBalanceAccountOne}
-                setBalanceAccountTwo={setBalanceAccountTwo}
-                getTotalBalance={getTotalBalance}
               />
             </Form>
           );

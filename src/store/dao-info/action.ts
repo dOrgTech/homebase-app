@@ -1,5 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 
+import { TokenHolders } from "./types";
+
 export const saveDaoInformation = createAction<{
   proposal_days: number;
   proposal_hours: number;
@@ -16,4 +18,7 @@ export const saveDaoInformation = createAction<{
   token_symbol: string;
   lock_disabled: boolean;
   description: string;
+  min_stake_percentage: boolean;
+  stake_returned_percentage: boolean;
+  token_holders: Array<TokenHolders>;
 }>("dao/saveInformation");

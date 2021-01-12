@@ -24,6 +24,8 @@ interface Values {
   min_stake: number | undefined;
   min_support: number | undefined;
   stake_returned: number | undefined;
+  min_stake_percentage: boolean;
+  stake_returned_percentage: boolean;
 }
 
 const CustomTypography = styled(Typography)({
@@ -304,13 +306,16 @@ const GovernanceForm = ({
         </Grid>
         <Grid item xs={1}>
           <CustomSliderValue>
-            <Value variant="subtitle1">{getIn(values, "min_stake")}%</Value>
+            <Value variant="subtitle1">
+              {getIn(values, "min_stake")}
+              {values.min_stake_percentage ? "%" : null}
+            </Value>
           </CustomSliderValue>
         </Grid>
         <SwitchContainer>
-          <Typography>0.0%</Typography>
+          <Typography>{values.min_stake_percentage ? "0.0%" : "0"}</Typography>
           <Field
-            // name="lock_disabled"
+            name="min_stake_percentage"
             component={FormikSwitch}
             type="checkbox"
             inputProps={{ "aria-label": "secondary checkbox" }}
@@ -340,14 +345,17 @@ const GovernanceForm = ({
         <Grid item xs={1}>
           <CustomSliderValue>
             <Value variant="subtitle1">
-              {getIn(values, "stake_returned")}%
+              {getIn(values, "stake_returned")}
+              {values.stake_returned_percentage ? "%" : null}
             </Value>
           </CustomSliderValue>
         </Grid>
         <SwitchContainer>
-          <Typography>0.0%</Typography>
+          <Typography>
+            {values.stake_returned_percentage ? "0.0%" : "0"}
+          </Typography>
           <Field
-            // name="lock_disabled"
+            name="stake_returned_percentage"
             component={FormikSwitch}
             type="checkbox"
             inputProps={{ "aria-label": "secondary checkbox" }}
@@ -422,7 +430,6 @@ export const Governance: React.FC<{
     if (!values.voting_minutes) {
       errors.voting_minutes = "Required";
     }
-    console.log(errors);
 
     return errors;
   };
