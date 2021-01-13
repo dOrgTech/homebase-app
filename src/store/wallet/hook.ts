@@ -17,7 +17,7 @@ export const useConnectWallet = () => {
 
       dispatch(
         updateConnectedAccount({
-          address: account
+          address: account,
         })
       );
 

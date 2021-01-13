@@ -12,7 +12,9 @@ import {
 } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 import React from "react";
+import { useSelector } from "react-redux";
 import { deployContract } from "../../services/deployContract";
+import { AppState } from "../../store";
 import { useConnectWallet } from "../../store/wallet/hook";
 
 const PageContainer = styled(Grid)({
@@ -21,7 +23,10 @@ const PageContainer = styled(Grid)({
 
 export const ConnectWallet: React.FC = () => {
   const { tezos, connect } = useConnectWallet();
-  console.log(tezos);
+
+  const account = useSelector<AppState, AppState["wallet"]["address"]>(
+    (state) => state.wallet.address
+  );
 
   return (
     <PageContainer container justify="center" alignItems="center">
@@ -43,11 +48,6 @@ export const ConnectWallet: React.FC = () => {
               <ListItemText primary="Connect" />
             </ListItem>
           </List>
-          {tezos && (
-            <Button onClick={async () => await deployContract(tezos)}>
-              Deploy contract
-            </Button>
-          )}
         </Box>
       </Grid>
     </PageContainer>
