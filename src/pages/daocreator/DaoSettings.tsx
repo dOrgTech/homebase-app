@@ -154,7 +154,6 @@ const DaoSettingsForm = ({
                 placeholder="This is what we’re about..."
                 value={getIn(values, "description")}
                 onChange={(newValue: any) => {
-                  console.log(newValue);
                   setFieldValue("description", newValue.target.value);
                 }}
               />

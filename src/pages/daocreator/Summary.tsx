@@ -65,9 +65,22 @@ const CustomItalicAdmin = styled(Typography)({
   marginTop: 13,
 });
 
+const CustomItalicAdminText = styled(Typography)({
+  fontStyle: "italic",
+  fontWeight: 300,
+  fontSize: 14,
+  marginTop: 13,
+  marginRight: 4,
+});
+
 const CustomToken = styled(Typography)({
   color: "#000000",
   textAlign: "end",
+});
+
+const AddressContainer = styled(Grid)({
+  maxHeight: 212,
+  overflowY: "scroll",
 });
 
 export const Summary: React.FC<Props> = (props) => {
@@ -77,8 +90,6 @@ export const Summary: React.FC<Props> = (props) => {
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
-
-  console.log(storageDaoInformation);
 
   const goToVoting = () => {
     setGovernanceStep(0);
@@ -131,7 +142,8 @@ export const Summary: React.FC<Props> = (props) => {
               <CustomGridItem item>
                 <Typography variant="subtitle2">Minimum Stake</Typography>
                 <Typography variant="subtitle1">
-                  {storageDaoInformation.min_stake}%
+                  {storageDaoInformation.min_stake}
+                  {storageDaoInformation.min_stake_percentage ? "%" : null}
                 </Typography>
               </CustomGridItem>
 
@@ -193,21 +205,35 @@ export const Summary: React.FC<Props> = (props) => {
               <Grid item xs={12}>
                 <CustomItalic>{storageDaoInformation.description}</CustomItalic>
               </Grid>
-              <Grid item xs={12}>
-                <SecondContainer container direction="row">
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle1">0x9879...82dd</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <CustomToken variant="subtitle2">43 MGT</CustomToken>
-                  </Grid>
-                </SecondContainer>
-              </Grid>
+              <AddressContainer item xs={12}>
+                {storageDaoInformation.token_holders.map(
+                  (holder: any, index: any) => {
+                    return (
+                      <SecondContainer container direction="row" key={index}>
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle1">
+                            {holder.token_holder.slice(0, 6)}...
+                            {holder.token_holder.slice(
+                              holder.token_holder.length - 4,
+                              holder.token_holder.length
+                            )}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <CustomToken variant="subtitle2">
+                            {holder.balance} MGT
+                          </CustomToken>
+                        </Grid>
+                      </SecondContainer>
+                    );
+                  }
+                )}
+              </AddressContainer>
             </CustomSettingsContainer>
-            <Grid item xs={12}>
+            <Grid item xs={12} container direction="row">
+              <CustomItalicAdminText>Administrator:</CustomItalicAdminText>
               <CustomItalicAdmin>
-                Administrator:
-                {storageDaoInformation.administrator.slice(0, 4)}...
+                {storageDaoInformation.administrator.slice(0, 5)}...
                 {storageDaoInformation.administrator.slice(
                   storageDaoInformation.administrator.length - 4,
                   storageDaoInformation.administrator.length

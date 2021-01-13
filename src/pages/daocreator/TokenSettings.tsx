@@ -76,12 +76,12 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField);
 
 const CustomTotalContainer = styled(Typography)({
-  padding: "21px 21px",
+  padding: "11px 21px",
   boxSizing: "border-box",
 });
 
 const CustomValueContainer = styled(Typography)({
-  padding: "21px 21px",
+  padding: "11px 21px",
   boxSizing: "border-box",
   fontWeight: 700,
 });
@@ -116,9 +116,10 @@ const TokenSettingsForm = ({
 
   const getTotal = () => {
     let total = 0;
-    total = values.token_holders.forEach(
-      (holder: any) => (total += holder.balance)
-    );
+    values.token_holders.forEach((holder: any) => {
+      total += holder.balance;
+      return;
+    });
     return total;
   };
   return (
@@ -142,9 +143,11 @@ const TokenSettingsForm = ({
                             placeholder="0xf8s8d...."
                             name={`token_holders.${index}.token_holder`}
                           />
-                          {/* {errors.token_holders &&  errors.token_holders[index] && touched.token_holders[index] ? (
-                          <ErrorText>{errors.token_holders[index]}</ErrorText>
-                        ) : null} */}
+                          {errors.token_holders &&
+                          errors.token_holders[index] &&
+                          touched.token_holders[index] ? (
+                            <ErrorText>{errors.token_holders[index]}</ErrorText>
+                          ) : null}
                         </CustomInputContainer>
                       </div>
                     ))
@@ -181,7 +184,7 @@ const TokenSettingsForm = ({
                                 token_holder: "",
                                 balance: 0,
                               })
-                            } // insert an empty string at a position
+                            }
                           >
                             {" "}
                             Add new row
@@ -204,7 +207,7 @@ const TokenSettingsForm = ({
           </CustomTotalContainer>
         </Grid>
         <Grid item xs={3}>
-          <CustomValueContainer>0.00</CustomValueContainer>
+          <CustomValueContainer>{getTotal()}</CustomValueContainer>
         </Grid>
       </Grid>
 
@@ -293,13 +296,15 @@ export const TokenSettings: React.FC<{
       errors.max_agent = "Required";
     }
 
-    // if (values.token_holders && values.token_holders.length > 0) {
-    //   errors.token_holders = values.token_holders.map((holder: any) => {
-    //     console.log(holder);
-    //     if (!holder.token_holder || !holder.balance) {
-    //       return "Both fields are required"
-    //     }
-    //   })
+    if (values.token_holders && values.token_holders.length > 0) {
+      values.token_holders.map((holder: any, index: any) => {
+        if (!holder.token_holder || !holder.balance) {
+          errors.token_holders = [];
+          return (errors.token_holders[index] = "All fields are required");
+        }
+      });
+    }
+
     return errors;
   };
 
