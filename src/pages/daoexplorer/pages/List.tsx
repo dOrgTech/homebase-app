@@ -8,8 +8,8 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { SearchInput } from "./components/SearchInput";
-import { MockDAOs } from "../../store/mock/mock";
+import { SearchInput } from "../components/SearchInput";
+import { MockDAOs } from "../../../store/mock/mock";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -109,7 +109,14 @@ export const DAOsList: React.FC = () => {
       <GridBackground container direction="row">
         {currentDAOs.map((dao: any) => {
           return (
-            <DaoContainer item xs={6} key={dao.symbol}>
+            <DaoContainer
+              item
+              xs={6}
+              key={dao.symbol}
+              onClick={() =>
+                history.push("/explorer/treasury/" + dao.id, { dao: dao })
+              }
+            >
               <Typography variant="subtitle1" color="secondary">
                 {dao.symbol}
               </Typography>
