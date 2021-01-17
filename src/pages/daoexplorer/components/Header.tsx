@@ -22,18 +22,17 @@ const JustifyEndGrid = styled(withTheme(Grid))((props) => ({
 }));
 
 export const Header: React.FC<{
-  symbol: string;
   name: string;
   buttonLabel: string;
-}> = ({ symbol, name, buttonLabel }) => {
+}> = ({ name, buttonLabel }) => {
   return (
     <StyledContainer container direction="row">
       <Grid item xs={6}>
         <Typography variant="subtitle1" color="secondary">
-          {symbol}
+          {name}
         </Typography>
         <Typography variant="h4" color="textSecondary">
-          {name}
+          Treasury
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>

@@ -77,11 +77,7 @@ export const Treasury: React.FC = () => {
 
   return (
     <>
-      <Header
-        symbol={dao.symbol}
-        name={dao.name}
-        buttonLabel={"NEW TRANSFER"}
-      />
+      <Header name={dao.name} buttonLabel={"NEW TRANSFER"} />
       <Box
         bgcolor="primary.main"
         width="100%"
