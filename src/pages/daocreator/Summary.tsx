@@ -1,4 +1,4 @@
-import { Grid, Paper, styled, Typography } from "@material-ui/core";
+import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
 import React from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store";
@@ -8,9 +8,9 @@ interface Props {
   setGovernanceStep: any;
 }
 
-const CustomUrlButton = styled(Paper)({
-  border: "1px solid #3866F9",
-  background: "#3866F9",
+const CustomUrlButton = styled(withTheme(Paper))((props) => ({
+  border: "none",
+  background: "inherit",
   width: 69,
   height: 31,
   boxSizing: "border-box",
@@ -20,13 +20,13 @@ const CustomUrlButton = styled(Paper)({
   textAlign: "center",
   marginLeft: "12px",
   padding: 5,
-  color: "#fff",
+  color: props.theme.palette.secondary.main,
   fontFamily: "system-ui",
-});
+}));
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
-  borderBottom: "1px solid #E4E4E4",
+  borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
 });
 
@@ -35,12 +35,12 @@ const SecondContainer = styled(Grid)({
 });
 
 const CustomColumnContainer = styled(Grid)({
-  borderLeft: "1px solid #e4e4e4",
+  borderLeft: "1px solid #3D3D3D",
   marginTop: 25,
 });
 
 const CustomSettingsContainer = styled(Grid)({
-  border: "1px solid #e4e4e4",
+  border: "1px solid #3D3D3D",
   marginTop: 25,
   padding: 25,
 });
@@ -55,7 +55,9 @@ const CustomItalic = styled(Typography)({
   fontWeight: 300,
   fontSize: 14,
   paddingBottom: 12,
-  borderBottom: "1px solid #e4e4e4",
+  borderBottom: "1px solid #3D3D3D",
+  color: "#fff",
+  opacity: 0.5,
 });
 
 const CustomItalicAdmin = styled(Typography)({
@@ -71,10 +73,12 @@ const CustomItalicAdminText = styled(Typography)({
   fontSize: 14,
   marginTop: 13,
   marginRight: 4,
+  color: "#fff",
+  opacity: 0.5,
 });
 
 const CustomToken = styled(Typography)({
-  color: "#000000",
+  color: "#fff",
   textAlign: "end",
 });
 
@@ -110,10 +114,12 @@ export const Summary: React.FC<Props> = (props) => {
         style={{ height: "fit-content" }}
       >
         <Grid item xs={12}>
-          <Typography variant="h2">Review information</Typography>
+          <Typography variant="h3" color="textSecondary">
+            Review information
+          </Typography>
         </Grid>
         <Grid item xs={12}>
-          <CustomTypography variant="subtitle1">
+          <CustomTypography variant="subtitle1" color="textSecondary">
             Review your settings to ensure you’ve made the correct choices.
           </CustomTypography>
         </Grid>
@@ -121,13 +127,17 @@ export const Summary: React.FC<Props> = (props) => {
         <SecondContainer container direction="row">
           <Grid item xs={6}>
             <Grid container direction="row" alignItems="center">
-              <Typography variant="subtitle1">Voting</Typography>
-              <CustomUrlButton onClick={goToVoting}>Edit</CustomUrlButton>
+              <Typography variant="subtitle1" color="textSecondary">
+                Voting
+              </Typography>
+              <CustomUrlButton onClick={goToVoting}>EDIT</CustomUrlButton>
             </Grid>
             <CustomColumnContainer container direction="column">
               <CustomGridItem item>
-                <Typography variant="subtitle2">Transfers locked?</Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle2" color="textSecondary">
+                  Transfers locked?
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
                   {storageDaoInformation.lock_disabled ? "YES" : "NO"}
                 </Typography>
               </CustomGridItem>
@@ -140,18 +150,20 @@ export const Summary: React.FC<Props> = (props) => {
               </CustomGridItem> */}
 
               <CustomGridItem item>
-                <Typography variant="subtitle2">Minimum Stake</Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle2" color="textSecondary">
+                  Minimum Stake
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
                   {storageDaoInformation.min_stake}
                   {storageDaoInformation.min_stake_percentage ? "%" : null}
                 </Typography>
               </CustomGridItem>
 
               <CustomGridItem item>
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" color="textSecondary">
                   Proposal Period Duration
                 </Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" color="textSecondary">
                   {storageDaoInformation.proposal_days}d{" "}
                   {storageDaoInformation.proposal_hours}h{" "}
                   {storageDaoInformation.proposal_minutes}m
@@ -159,10 +171,10 @@ export const Summary: React.FC<Props> = (props) => {
               </CustomGridItem>
 
               <CustomGridItem item>
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" color="textSecondary">
                   Voting Period Duration
                 </Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" color="textSecondary">
                   {" "}
                   {storageDaoInformation.voting_days}d{" "}
                   {storageDaoInformation.voting_hours}h{" "}
@@ -171,15 +183,19 @@ export const Summary: React.FC<Props> = (props) => {
               </CustomGridItem>
 
               <CustomGridItem item>
-                <Typography variant="subtitle2">Minimum Support</Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle2" color="textSecondary">
+                  Minimum Support
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
                   {storageDaoInformation.min_support}%
                 </Typography>
               </CustomGridItem>
 
               <CustomGridItem item>
-                <Typography variant="subtitle2">Maximum Spend</Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle2" color="textSecondary">
+                  Maximum Spend
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
                   {storageDaoInformation.max_agent} MGT
                 </Typography>
               </CustomGridItem>
@@ -188,17 +204,19 @@ export const Summary: React.FC<Props> = (props) => {
 
           <Grid item xs={6}>
             <Grid container direction="row" alignItems="center">
-              <Typography variant="subtitle1">Token Settings</Typography>
-              <CustomUrlButton onClick={goToSettings}>Edit</CustomUrlButton>
+              <Typography variant="subtitle1" color="textSecondary">
+                Token Settings
+              </Typography>
+              <CustomUrlButton onClick={goToSettings}>EDIT</CustomUrlButton>
             </Grid>
             <CustomSettingsContainer container direction="column">
               <Grid item xs={12}>
-                <Typography variant="subtitle2">
+                <Typography variant="subtitle2" color="textSecondary">
                   {storageDaoInformation.token_symbol}
                 </Typography>
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" color="textSecondary">
                   {storageDaoInformation.token_name}
                 </Typography>
               </Grid>
@@ -211,7 +229,7 @@ export const Summary: React.FC<Props> = (props) => {
                     return (
                       <SecondContainer container direction="row" key={index}>
                         <Grid item xs={6}>
-                          <Typography variant="subtitle1">
+                          <Typography variant="subtitle1" color="textSecondary">
                             {holder.token_holder.slice(0, 6)}...
                             {holder.token_holder.slice(
                               holder.token_holder.length - 4,
@@ -220,7 +238,10 @@ export const Summary: React.FC<Props> = (props) => {
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
-                          <CustomToken variant="subtitle2">
+                          <CustomToken
+                            variant="subtitle2"
+                            color="textSecondary"
+                          >
                             {holder.balance} MGT
                           </CustomToken>
                         </Grid>
@@ -231,8 +252,10 @@ export const Summary: React.FC<Props> = (props) => {
               </AddressContainer>
             </CustomSettingsContainer>
             <Grid item xs={12} container direction="row">
-              <CustomItalicAdminText>Administrator:</CustomItalicAdminText>
-              <CustomItalicAdmin>
+              <CustomItalicAdminText color="textSecondary">
+                Administrator:
+              </CustomItalicAdminText>
+              <CustomItalicAdmin color="textSecondary">
                 {storageDaoInformation.administrator.slice(0, 5)}...
                 {storageDaoInformation.administrator.slice(
                   storageDaoInformation.administrator.length - 4,

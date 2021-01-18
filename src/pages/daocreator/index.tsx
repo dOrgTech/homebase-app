@@ -19,6 +19,7 @@ import { TokenSettings } from "./TokenSettings";
 import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
+import { useHistory } from "react-router-dom";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   height: "100%",
@@ -26,9 +27,9 @@ const PageContainer = styled(withTheme(Grid))((props) => ({
 }));
 
 const CustomGrid = styled(Grid)({
-  border: "1px solid #E4E4E4",
   alignItems: "center",
   justifyContent: "center",
+  borderRight: "2px solid #3D3D3D",
 });
 
 const StepContentContainer = styled(Grid)({
@@ -40,20 +41,20 @@ const StepContentContainer = styled(Grid)({
   alignItems: "center",
 });
 
-const Footer = styled(Grid)({
+const Footer = styled(withTheme(Grid))((props) => ({
   boxShadow: "none",
-  background: "#000000",
+  background: props.theme.palette.primary.main,
   height: 62,
   paddingTop: "1%",
-});
+  borderTop: "2px solid #3D3D3D",
+}));
 
 const BackButton = styled(Paper)({
   boxShadow: "none",
   width: "121px",
   height: 31,
-  background: "#EEEEEE",
-  borderRadius: 21,
-  color: "#000000",
+  background: "inherit",
+  color: "#fff",
   textAlign: "center",
   marginLeft: "4%",
   paddingTop: "1%",
@@ -67,8 +68,7 @@ const NextButton = styled(Paper)({
   borderRadius: 21,
   textAlign: "center",
   paddingTop: "1%",
-  background: "#3866F9",
-  color: "fff",
+  background: "inherit",
   float: "right",
   marginRight: "4%",
   cursor: "pointer",
@@ -76,9 +76,14 @@ const NextButton = styled(Paper)({
   paddingRight: "3%",
 });
 
-const WhiteText = styled(Typography)({
-  color: "#fff",
-});
+const WhiteText = styled(withTheme(Typography))((props) => ({
+  color: props.theme.palette.secondary.main,
+}));
+
+const StyledStepper = styled(withTheme(Stepper))((props) => ({
+  background: "inherit",
+}));
+
 const STEPS = [
   "Select template",
   // "Claim a name",
@@ -93,6 +98,8 @@ export const DAOCreate: React.FC = () => {
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
+
+  const history = useHistory<any>();
 
   function getStepContent(step: number, handleNextStep: any) {
     switch (step) {
@@ -141,13 +148,13 @@ export const DAOCreate: React.FC = () => {
   return (
     <PageContainer container>
       <CustomGrid container item xs={3} direction="column" justify="flex-end">
-        <Stepper activeStep={activeStep} orientation="vertical">
+        <StyledStepper activeStep={activeStep} orientation="vertical">
           {STEPS.map((label, index) => (
             <Step key={label} {...(!account && { active: false })}>
               <StepLabel>{label}</StepLabel>
             </Step>
           ))}
-        </Stepper>
+        </StyledStepper>
       </CustomGrid>
       <Grid item container justify="center" alignItems="center" xs={9}>
         {account ? null : <ConnectWallet />}
@@ -164,14 +171,14 @@ export const DAOCreate: React.FC = () => {
           >
             <Grid item xs={6}>
               <BackButton onClick={() => setActiveStep(activeStep - 1)}>
-                <Typography>Back </Typography>{" "}
+                <Typography>BACK</Typography>{" "}
               </BackButton>
             </Grid>
             <Grid item xs={6}>
               <NextButton onClick={() => setActiveStep(activeStep + 1)}>
                 {" "}
                 <WhiteText>
-                  {activeStep !== 2 ? "Continue" : "Launch Organization"}
+                  {activeStep !== 2 ? "CONTINUE" : "Launch Organization"}
                 </WhiteText>
               </NextButton>
             </Grid>
@@ -187,13 +194,13 @@ export const DAOCreate: React.FC = () => {
           >
             <Grid item xs={6}>
               <BackButton onClick={handleBackStep}>
-                <Typography>Back </Typography>{" "}
+                <Typography>BACK </Typography>{" "}
               </BackButton>
             </Grid>
             <Grid item xs={6}>
               <NextButton onClick={handleNextStep}>
                 {" "}
-                <WhiteText>Continue</WhiteText>
+                <WhiteText>CONTINUE</WhiteText>
               </NextButton>
             </Grid>
           </Footer>

@@ -16,9 +16,8 @@ export const theme = createMuiTheme({
   typography: {
     fontFamily: "Roboto Mono",
     h1: {
-      fontSize: 70,
+      fontSize: 35,
       letterSpacing: "-0.01em",
-      textDecorationLine: "underline",
     },
     subtitle1: {
       fontSize: 16,
@@ -27,7 +26,7 @@ export const theme = createMuiTheme({
       letterSpacing: "-0.01em",
     },
     subtitle2: {
-      color: "#81FEB7",
+      opacity: 0.5,
       fontSize: 16,
       fontWeight: 400,
     },
@@ -53,6 +52,25 @@ export const theme = createMuiTheme({
     },
   },
   overrides: {
+    MuiSlider: {
+      root: {
+        color: "#3D3D3D",
+      },
+    },
+    MuiStepLabel: {
+      label: {
+        color: "#fff",
+        opacity: 0.5,
+      },
+      active: {
+        color: "#fff !important",
+        opacity: 1,
+      },
+      completed: {
+        color: "#fff !important",
+        opacity: 0.5,
+      },
+    },
     MuiStepConnector: {
       lineVertical: {
         display: "none",
@@ -70,19 +88,27 @@ export const theme = createMuiTheme({
     },
     MuiStepIcon: {
       active: {
-        color: "#3866F9 !important",
+        color: "#1C1F23 !important",
+      },
+      completed: {
+        color: "#fff !important",
       },
       root: {
-        color: "#eeeeee",
+        color: "#1C1F23",
+        border: "1px solid #3D3D3D",
+        borderRadius: "50%",
         "&$active": {
-          fill: "#3866F9",
+          fill: "#fff",
+          border: "1px solid #3D3D3D",
+          borderRadius: "50%",
           "& $text": {
-            fill: "#fff",
+            fill: "#1C1F23",
+            border: "1px solid #3D3D3D",
           },
         },
       },
       text: {
-        fill: "#000000",
+        fill: "#fff",
       },
     },
     MuiInput: {
@@ -100,6 +126,7 @@ export const theme = createMuiTheme({
     MuiInputBase: {
       input: {
         textAlign: "center",
+        color: "#fff",
       },
     },
     MuiDivider: {
@@ -124,35 +151,35 @@ export const theme = createMuiTheme({
         left: 8,
         "$checked$checked + &": {
           opacity: 1,
-          backgroundColor: "#fff !important",
-          color: "black",
+          backgroundColor: "#1C1F23 !important",
+          color: "#81FEB7",
         },
       },
       track: {
         borderRadius: "40px",
-        backgroundColor: "white",
+        backgroundColor: "inherit",
         border: "1px solid black",
         opacity: 0.5,
         "$checked$checked + &": {
           opacity: 1,
-          backgroundColor: "#fff !important",
-          color: "black",
+          backgroundColor: "#1C1F23 !important",
+          color: "#81FEB7",
         },
       },
       thumb: {
         width: 18,
         height: 18,
         "$checked$checked + &": {
-          color: "black",
+          color: "#81FEB7",
         },
       },
       colorSecondary: {
-        color: "black !important",
+        color: "black",
         "$checked$checked + &": {
-          color: "black",
+          color: "#81FEB7 !important",
         },
         "& .Mui-checked": {
-          color: "black",
+          color: "#81FEB7 !important",
         },
       },
     },

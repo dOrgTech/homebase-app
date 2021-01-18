@@ -23,8 +23,9 @@ interface Values {
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
-  borderBottom: "1px solid #E4E4E4",
+  borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
+  marginBottom: 14,
 });
 
 const SecondContainer = styled(Grid)({
@@ -32,20 +33,28 @@ const SecondContainer = styled(Grid)({
 });
 
 const CustomInputContainer = styled(Grid)({
-  border: "1px solid #E4E4E4",
+  border: "1px solid #3D3D3D",
   height: 62,
   marginTop: 14,
   padding: "18px 21px",
   boxSizing: "border-box",
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+    borderLeft: "2px solid #81FEB7",
+  },
 });
 
 const CustomBalanceContainer = styled(Grid)({
-  border: "1px solid #E4E4E4",
+  border: "1px solid #3D3D3D",
   height: 62,
   marginTop: 14,
   borderLeft: "none",
   padding: "18px 21px",
   boxSizing: "border-box",
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+    borderLeft: "2px solid #81FEB7",
+  },
 });
 
 const ErrorText = styled(Typography)({
@@ -95,6 +104,7 @@ const AddButon = styled("button")({
   width: "100%",
   cursor: "pointer",
   textDecoration: "underline",
+  color: "#fff",
 });
 
 const TokenHoldersGrid = styled(Grid)({
@@ -126,7 +136,10 @@ const TokenSettingsForm = ({
     <>
       <TokenHoldersGrid container direction="row">
         <Grid item xs={9}>
-          <Typography variant="subtitle1"> Token holder </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Token holder{" "}
+          </Typography>
 
           <FieldArray
             name="token_holders"
@@ -158,7 +171,10 @@ const TokenSettingsForm = ({
         </Grid>
 
         <Grid item xs={3}>
-          <Typography variant="subtitle1"> Balance </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Balance{" "}
+          </Typography>
 
           <FieldArray
             name="token_holders"
@@ -201,19 +217,21 @@ const TokenSettingsForm = ({
 
       <Grid container direction="row">
         <Grid item xs={9}>
-          <CustomTotalContainer variant="subtitle1">
+          <CustomTotalContainer variant="subtitle1" color="textSecondary">
             {" "}
             Total{" "}
           </CustomTotalContainer>
         </Grid>
         <Grid item xs={3}>
-          <CustomValueContainer>{getTotal()}</CustomValueContainer>
+          <CustomValueContainer color="textSecondary">
+            {getTotal()}
+          </CustomValueContainer>
         </Grid>
       </Grid>
 
       <SecondContainer item container direction="row" alignItems="center">
         <Grid item xs={12}>
-          <Typography variant="subtitle1">
+          <Typography variant="subtitle1" color="textSecondary">
             {" "}
             Maximum Agent Spend Per Cycle{" "}
           </Typography>
@@ -236,17 +254,14 @@ const TokenSettingsForm = ({
             <ErrorText>{errors.max_agent}</ErrorText>
           ) : null}
         </Grid>
-
-        <Grid item xs={6}>
-          <Grid container direction="row" justify="flex-end">
-            <InfoOutlinedIcon></InfoOutlinedIcon>
-          </Grid>
-        </Grid>
       </SecondContainer>
 
       <SecondContainer item container direction="row" alignItems="center">
         <Grid item xs={12}>
-          <Typography variant="subtitle1"> Administrator </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Administrator{" "}
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <CustomInputContainer>
@@ -317,10 +332,12 @@ export const TokenSettings: React.FC<{
         style={{ height: "fit-content" }}
       >
         <Grid item xs={12}>
-          <Typography variant="h2">Distribution Settings</Typography>
+          <Typography variant="h3" color="textSecondary">
+            Distribution Settings
+          </Typography>
         </Grid>
         <Grid item xs={12}>
-          <CustomTypography variant="subtitle1">
+          <CustomTypography variant="subtitle1" color="textSecondary">
             These settings will define the name, symbol, and initial
             distribution of your token.
           </CustomTypography>
