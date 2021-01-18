@@ -2,14 +2,15 @@ import { createMuiTheme } from "@material-ui/core/styles";
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#000000",
+      main: "#1C1F23",
+      light: "#fff",
     },
     secondary: {
-      main: "rgba(0, 0, 0, 0.5)",
+      main: "#81FEB7",
     },
     text: {
       primary: "#000000",
-      secondary: "rgba(0, 0, 0, 0.5)",
+      secondary: "#fff",
     },
   },
   typography: {
@@ -21,9 +22,11 @@ export const theme = createMuiTheme({
     subtitle1: {
       fontSize: 16,
       fontWeight: 400,
+      lineHeight: "146.3%",
+      letterSpacing: "-0.01em",
     },
     subtitle2: {
-      color: "rgba(0, 0, 0, 0.5)",
+      color: "#81FEB7",
       fontSize: 16,
       fontWeight: 300,
     },
@@ -33,6 +36,10 @@ export const theme = createMuiTheme({
     h2: {
       fontSize: 18,
       fontWeight: 300,
+    },
+    h4: {
+      fontSize: 35,
+      lineHeight: "146.3%",
     },
   },
   overrides: {

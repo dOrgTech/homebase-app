@@ -1,10 +1,10 @@
-import React from 'react'
-import { useRouteMatch } from 'react-router-dom'
+import React from "react";
+import { useRouteMatch } from "react-router-dom";
 
 export const DAO = () => {
-  const match = useRouteMatch()
+  const match = useRouteMatch();
 
-  console.log(match)
+  console.log(match);
 
-  return <div>DAO</div>
-}
+  return <div>DAO</div>;
+};
