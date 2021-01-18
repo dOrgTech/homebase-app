@@ -104,7 +104,7 @@ export const SelectTemplate: React.FC<Props> = (props) => {
     <>
       <Grid container direction="row">
         <Grid item xs={12}>
-          <Typography variant="h1">Select template</Typography>
+          <Typography variant="h2">Select template</Typography>
         </Grid>
         <Grid item xs={12}>
           <Typography variant="subtitle1">
@@ -117,7 +117,7 @@ export const SelectTemplate: React.FC<Props> = (props) => {
             <CustomCard>
               <CustomCardContent>
                 <Circle />
-                <Typography variant="h3">Treasury</Typography>
+                <Typography variant="h4">Treasury</Typography>
                 <Typography variant="subtitle2" color="textSecondary">
                   Non-profits, Companies, Founders
                 </Typography>
@@ -137,7 +137,7 @@ export const SelectTemplate: React.FC<Props> = (props) => {
             <CustomCard>
               <CustomCardContent>
                 <Circle />
-                <Typography variant="h3">Registry</Typography>
+                <Typography variant="h4">Registry</Typography>
                 <Typography variant="subtitle2" color="textSecondary">
                   Non-profits, Companies, Founders
                 </Typography>
@@ -162,7 +162,7 @@ export const SelectTemplate: React.FC<Props> = (props) => {
                 <Circle />
 
                 <CustomRow container direction="column">
-                  <Typography variant="h3">Blank slate</Typography>
+                  <Typography variant="h4">Blank slate</Typography>
                   <Typography variant="subtitle2" color="textSecondary">
                     Blank slate test
                   </Typography>

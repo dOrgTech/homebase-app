@@ -111,22 +111,23 @@ export const DAOsList: React.FC = () => {
           return (
             <DaoContainer
               item
-              xs={6}
+              xs={12}
+              sm={6}
               key={dao.symbol}
               onClick={() =>
-                history.push("/explorer/treasury/" + dao.id, { dao: dao })
+                history.push("/explorer/dao/" + dao.id, { dao: dao })
               }
             >
               <Typography variant="subtitle1" color="secondary">
                 {dao.symbol}
               </Typography>
               <Grid container direction="row" alignItems="center">
-                <Grid item xs={6}>
-                  <Typography variant="h4" color="textSecondary">
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="h5" color="textSecondary">
                     {dao.name}
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle1" color="textSecondary">
                     {dao.voting_addresses} VOTING ADDRESSES
                   </Typography>
