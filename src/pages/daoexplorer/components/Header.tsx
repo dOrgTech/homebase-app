@@ -31,7 +31,7 @@ export const Header: React.FC<{
         <Typography variant="subtitle1" color="secondary">
           {name}
         </Typography>
-        <Typography variant="h4" color="textSecondary">
+        <Typography variant="h5" color="textSecondary">
           Treasury
         </Typography>
       </Grid>

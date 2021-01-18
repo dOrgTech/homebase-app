@@ -438,7 +438,7 @@ export const Governance: React.FC<{
     <>
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12}>
-          <Typography variant="h1">Proposals & Voting</Typography>
+          <Typography variant="h2">Proposals & Voting</Typography>
         </Grid>
       </Grid>
       <Grid container direction="row">

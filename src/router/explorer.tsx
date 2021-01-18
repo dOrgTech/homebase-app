@@ -9,10 +9,10 @@ export const DAOExplorerRouter = () => {
 
   return (
     <Switch>
-      <Route path={`${match.path}/daos`}>
+      <Route path={`${match.url}/daos`}>
         <DAOsList />
       </Route>
-      <Route path={`${match.path}/daos/:id`}>
+      <Route path={`${match.url}/dao/:id`}>
         <DAO />
       </Route>
       <Route path={`${match.url}/treasury/:id`}>
