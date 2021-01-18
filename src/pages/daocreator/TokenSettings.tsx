@@ -317,7 +317,7 @@ export const TokenSettings: React.FC<{
         style={{ height: "fit-content" }}
       >
         <Grid item xs={12}>
-          <Typography variant="h1">Distribution Settings</Typography>
+          <Typography variant="h2">Distribution Settings</Typography>
         </Grid>
         <Grid item xs={12}>
           <CustomTypography variant="subtitle1">

@@ -37,7 +37,7 @@ export const Review: React.FC = () => {
           <Circle />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="h3">
+          <Typography variant="h4">
             Deploying <strong> My Great Token </strong> to the Tezos Network
           </Typography>
         </Grid>

@@ -14,10 +14,11 @@ export const theme = createMuiTheme({
     },
   },
   typography: {
+    fontFamily: "Roboto Mono",
     h1: {
-      color: "#000000",
-      fontSize: 25,
-      fontWeight: 500,
+      fontSize: 70,
+      letterSpacing: "-0.01em",
+      textDecorationLine: "underline",
     },
     subtitle1: {
       fontSize: 16,
@@ -28,18 +29,27 @@ export const theme = createMuiTheme({
     subtitle2: {
       color: "#81FEB7",
       fontSize: 16,
-      fontWeight: 300,
+      fontWeight: 400,
     },
     h3: {
-      fontSize: 20,
+      fontSize: 35,
+      fontWeight: 400,
+      fontFamily: "Roboto",
     },
     h2: {
-      fontSize: 18,
-      fontWeight: 300,
+      color: "#000000",
+      fontSize: 25,
+      fontWeight: 500,
     },
     h4: {
+      fontSize: 20,
+    },
+    h5: {
       fontSize: 35,
       lineHeight: "146.3%",
+    },
+    body1: {
+      fontSize: 16,
     },
   },
   overrides: {

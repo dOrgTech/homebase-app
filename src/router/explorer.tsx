@@ -12,7 +12,7 @@ export const DAOExplorerRouter = () => {
       <Route path={`${match.url}/daos`}>
         <DAOsList />
       </Route>
-      <Route path={`${match.url}/daos/:id`}>
+      <Route path={`${match.url}/dao/:id`}>
         <DAO />
       </Route>
       <Route path={`${match.url}/treasury/:id`}>

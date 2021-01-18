@@ -41,7 +41,7 @@ export const ClaimName: React.FC = () => {
     <>
       <Grid container direction="row" justify="space-between">
         <Grid item xs={6}>
-          <Typography variant="h1">Claim a name</Typography>
+          <Typography variant="h2">Claim a name</Typography>
         </Grid>
         <Grid item xs={6}>
           <CustomUrlButton>Use a custom URL</CustomUrlButton>
