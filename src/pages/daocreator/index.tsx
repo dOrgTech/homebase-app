@@ -6,6 +6,7 @@ import {
   Stepper,
   styled,
   Typography,
+  withTheme,
 } from "@material-ui/core";
 
 import React, { useState } from "react";
@@ -19,9 +20,10 @@ import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
 
-const PageContainer = styled(Grid)({
+const PageContainer = styled(withTheme(Grid))((props) => ({
   height: "100%",
-});
+  background: props.theme.palette.primary.main,
+}));
 
 const CustomGrid = styled(Grid)({
   border: "1px solid #E4E4E4",
