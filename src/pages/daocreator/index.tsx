@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@material-ui/core";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store";
 import { ConnectWallet } from "./ConnectWallet";
@@ -18,6 +18,8 @@ import { TokenSettings } from "./TokenSettings";
 import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
+import { deployContract } from "../../services/deployContract";
+import { useConnectWallet } from "../../store/wallet/hook";
 
 const PageContainer = styled(Grid)({
   height: "100%",
@@ -134,7 +136,9 @@ export const DAOCreate: React.FC = () => {
     } else if (activeStep === 1 && governanceStep !== 0) {
       return setGovernanceStep(governanceStep - 1);
     }
-  };
+  }
+
+  const { tezos } = useConnectWallet()
 
   return (
     <PageContainer container>

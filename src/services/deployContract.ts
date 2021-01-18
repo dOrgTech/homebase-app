@@ -21,23 +21,31 @@ export const deployContract = async (tezos: TezosToolkit) => {
   const sProposals = new MichelsonMap();
 
   try {
+    console.log("Originating")
     const t = await tezos.wallet
       .originate({
         code,
         storage: {
-          sLedger,
-          sOperators,
-          sTokenAddress: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-          sAdmin: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-          sPendingOwner: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-          sMigrationStatus: {
-            migratingTo: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb",
-          },
+          sLedger: new MichelsonMap(),
+          sOperators: new MichelsonMap(),
+          sTokenAddress: "tz1U1HAnn7E3TTfYc18quYXeGtAzHX1Z3jCC",
+          sAdmin: "tz1U1HAnn7E3TTfYc18quYXeGtAzHX1Z3jCC",
+          sPendingOwner: "tz1U1HAnn7E3TTfYc18quYXeGtAzHX1Z3jCC",
+          sMigrationStatus: {notInMigration: 'Unit'},
           sVotingPeriod: 1,
           sQuorumThreshold: 1,
-          sExtra: 1,
-          sProposals,
-          sProposalKeyListSortByDate: [""],
+          sExtra: {
+          frozen_scale_value: 0,
+          frozen_extra_value: 1,
+          slash_scale_value: 0,
+          slash_division_value: 1,
+          min_xtz_amount: 1,
+          max_xtz_amount: 10,
+          max_proposal_size: 10,
+          },
+          sProposals: new MichelsonMap(),
+          sProposalKeyListSortByDate: [["2021-01-06T05:14:43Z", 'CAFE']],
+          sPermitsCounter: 0
         },
       })
       .send();

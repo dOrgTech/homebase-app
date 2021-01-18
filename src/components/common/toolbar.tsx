@@ -12,6 +12,8 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../store";
 import { toShortAddress } from "../../utils";
 import HomeButton from "../../assets/logos/homebase.svg";
+import { useConnectWallet } from "../../store/wallet/hook";
+import { deployContract } from "../../services/deployContract";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -46,6 +48,9 @@ export const Navbar: React.FC = () => {
     (state) => state.wallet.address
   );
 
+  const { tezos, connect } = useConnectWallet()
+  
+
   return (
     <StyledAppBar position="sticky" color="primary">
       <StyledToolbar>
@@ -54,6 +59,14 @@ export const Navbar: React.FC = () => {
             <Grid item>
               <img src={HomeButton} />
             </Grid>
+            {tezos?
+            <Button onClick={() => deployContract(tezos)}>
+              Test deployment
+            </Button>:
+            <Button onClick={connect}>
+              Connect
+            </Button>
+            }
             <Grid item>
               <Box paddingLeft="10px">
                 <LogoText color="textSecondary">Homebase</LogoText>
