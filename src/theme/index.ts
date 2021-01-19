@@ -26,7 +26,6 @@ export const theme = createMuiTheme({
       letterSpacing: "-0.01em",
     },
     subtitle2: {
-      opacity: 0.5,
       fontSize: 16,
       fontWeight: 400,
     },

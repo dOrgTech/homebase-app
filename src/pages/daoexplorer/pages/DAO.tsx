@@ -2,14 +2,14 @@ import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
 import React from "react";
 import { useRouteMatch } from "react-router-dom";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import HouseIcon from "../../assets/logos/house.svg";
-import VotingIcon from "../../assets/logos/voting.svg";
-import VotingPeriodIcon from "../../assets/logos/votingPeriod.svg";
-import VoteTimeIcon from "../../assets/logos/voteTime.svg";
+import HouseIcon from "../../../assets/logos/house.svg";
+import VotingIcon from "../../../assets/logos/voting.svg";
+import VotingPeriodIcon from "../../../assets/logos/votingPeriod.svg";
+import VoteTimeIcon from "../../../assets/logos/voteTime.svg";
 import {
   ProposalTableRow,
   ProposalTableRowData,
-} from "./components/ProposalTableRow";
+} from "../components/ProposalTableRow";
 
 const SideBar = styled(Grid)({
   width: 102,
@@ -140,7 +140,7 @@ export const DAO = () => {
         <MainContainer container justify="space-between">
           <DAOInfoTitleAndDesc item>
             <Box>
-              <Typography variant="subtitle2">TEZDAO</Typography>
+              <Typography variant="subtitle2" color="secondary">TEZDAO</Typography>
             </Box>
             <Box paddingBottom="20px">
               <Typography variant="h1" color="textSecondary">
@@ -166,7 +166,7 @@ export const DAO = () => {
                 <Grid item>
                   <Box paddingLeft="35px">
                     <Box>
-                      <Typography variant="subtitle2">PERIOD</Typography>
+                      <Typography variant="subtitle2" color="secondary">PERIOD</Typography>
                     </Box>
                     <Box>
                       <Typography variant="h3" color="textSecondary">
@@ -187,7 +187,7 @@ export const DAO = () => {
                 <Grid item>
                   <Box paddingLeft="35px">
                     <Box>
-                      <Typography variant="subtitle2">
+                      <Typography variant="subtitle2" color="secondary">
                         TIME LEFT TO VOTE
                       </Typography>
                     </Box>
@@ -214,7 +214,7 @@ export const DAO = () => {
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
                 <Box>
-                  <Typography variant="subtitle2">MGTO Locked</Typography>
+                  <Typography variant="subtitle2" color="secondary">MGTO Locked</Typography>
                 </Box>
                 <Box padding="12px 0">
                   <Typography variant="h3" color="textSecondary">
@@ -223,7 +223,7 @@ export const DAO = () => {
                 </Box>
               </Grid>
               <Grid item>
-                <Typography variant="subtitle2">View</Typography>
+                <Typography variant="subtitle2" color="secondary">View</Typography>
               </Grid>
             </Grid>
             <LockedTokensBar
@@ -240,7 +240,7 @@ export const DAO = () => {
             justify="center"
           >
             <Box>
-              <Typography variant="subtitle2">Voting Addresses</Typography>
+              <Typography variant="subtitle2" color="secondary">Voting Addresses</Typography>
               <Typography variant="h3" color="textSecondary">
                 215
               </Typography>
@@ -254,7 +254,7 @@ export const DAO = () => {
             justify="center"
           >
             <Box>
-              <Typography variant="subtitle2">Active Proposals</Typography>
+              <Typography variant="subtitle2" color="secondary">Active Proposals</Typography>
               <Typography variant="h3" color="textSecondary">
                 5
               </Typography>

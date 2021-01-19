@@ -20,6 +20,7 @@ import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
 import { useHistory } from "react-router-dom";
+import { useConnectWallet } from "../../store/wallet/hook";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   height: "100%",
