@@ -5,6 +5,7 @@ import {
   Typography,
   Slider,
   withStyles,
+  withTheme,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
 import Input from "@material-ui/core/Input";
@@ -30,7 +31,7 @@ interface Values {
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
-  borderBottom: "1px solid #E4E4E4",
+  borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
 });
 
@@ -48,7 +49,7 @@ const SpacingContainer = styled(Grid)({
 });
 
 const CustomInputContainer = styled(Grid)({
-  border: "1px solid #E4E4E4",
+  border: "1px solid #3D3D3D",
   height: 62,
   marginTop: 14,
   "&:first-child": {
@@ -66,6 +67,10 @@ const GridItemCenter = styled(Grid)({
 const ItemContainer = styled(Grid)({
   height: "100%",
   padding: 12,
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+    borderLeft: "2px solid #81FEB7",
+  },
 });
 
 const Title = styled(Typography)({
@@ -81,25 +86,26 @@ const StyledSlider = withStyles({
     textAlign: "center",
   },
   thumb: {
-    height: 28,
-    width: 28,
+    height: 20,
+    width: 20,
     top: "15.5%",
-    backgroundColor: "#000000",
-    border: "2px solid #000000",
+    backgroundColor: "#fff",
+    border: "3px solid #fff",
   },
   track: {
-    backgroundColor: "#3866F9",
+    backgroundColor: "#4BCF93",
     borderRadius: "4px",
     height: 2,
   },
 })(Slider);
 
-const CustomSliderValue = styled(Paper)({
+const CustomSliderValue = styled(withTheme(Paper))((props) => ({
   boxShadow: "none",
   height: 62,
-  border: "1px solid #000000",
+  border: "1px solid #3D3D3D",
   borderRadius: 0,
-});
+  background: props.theme.palette.primary.main,
+}));
 
 const Value = styled(Typography)({
   textAlign: "center",
@@ -133,7 +139,9 @@ const GovernanceForm = ({
   return (
     <>
       <SecondContainer container direction="row">
-        <Typography variant="subtitle1">Proposal Period Duration</Typography>
+        <Typography variant="subtitle1" color="textSecondary">
+          Proposal Period Duration
+        </Typography>
       </SecondContainer>
 
       <Grid container direction="row">
@@ -146,6 +154,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
+                color="textSecondary"
                 name="proposal_days"
                 type="number"
                 placeholder="00"
@@ -153,7 +162,7 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography>days</Typography>
+              <Typography color="textSecondary">days</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposal_days && touched.proposal_days ? (
@@ -176,7 +185,7 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography>hours</Typography>
+              <Typography color="textSecondary">hours</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposal_hours && touched.proposal_hours ? (
@@ -199,7 +208,7 @@ const GovernanceForm = ({
               ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography>minutes</Typography>
+              <Typography color="textSecondary">minutes</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposal_minutes && touched.proposal_minutes ? (
@@ -209,7 +218,11 @@ const GovernanceForm = ({
       </Grid>
 
       <SecondContainer container direction="row">
-        <Typography style={styles.voting} variant="subtitle1">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
           Voting Period Duration
         </Typography>
       </SecondContainer>
@@ -231,7 +244,7 @@ const GovernanceForm = ({
               ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography>days</Typography>
+              <Typography color="textSecondary">days</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.voting_days && touched.voting_days ? (
@@ -254,7 +267,7 @@ const GovernanceForm = ({
               ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography>hours</Typography>
+              <Typography color="textSecondary">hours</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.voting_hours && touched.voting_hours ? (
@@ -277,7 +290,7 @@ const GovernanceForm = ({
               ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography>minutes</Typography>
+              <Typography color="textSecondary">minutes</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.voting_minutes && touched.voting_minutes ? (
@@ -287,8 +300,12 @@ const GovernanceForm = ({
       </Grid>
 
       <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1">Minimum Stake </Typography>
-        <Title variant="subtitle2">(% of proposal value)</Title>
+        <Typography variant="subtitle1" color="textSecondary">
+          Minimum Stake{" "}
+        </Typography>
+        <Title variant="subtitle2" color="textSecondary">
+          (% of proposal value)
+        </Title>
       </SpacingContainer>
 
       <Grid container direction="row" alignItems="center" spacing={1}>
@@ -306,7 +323,7 @@ const GovernanceForm = ({
         </Grid>
         <Grid item xs={1}>
           <CustomSliderValue>
-            <Value variant="subtitle1">
+            <Value variant="subtitle1" color="textSecondary">
               {getIn(values, "min_stake")}
               {values.min_stake_percentage ? "%" : null}
             </Value>
@@ -324,7 +341,7 @@ const GovernanceForm = ({
       </Grid>
 
       <Grid direction="row" container alignItems="center">
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" color="textSecondary">
           Stake returned when rejected
         </Typography>
       </Grid>
@@ -344,7 +361,7 @@ const GovernanceForm = ({
         </Grid>
         <Grid item xs={1}>
           <CustomSliderValue>
-            <Value variant="subtitle1">
+            <Value variant="subtitle1" color="textSecondary">
               {getIn(values, "stake_returned")}
               {values.stake_returned_percentage ? "%" : null}
             </Value>
@@ -364,7 +381,9 @@ const GovernanceForm = ({
       </Grid>
 
       <Grid direction="row" container alignItems="center">
-        <Typography variant="subtitle1">Minimum Support</Typography>
+        <Typography variant="subtitle1" color="textSecondary">
+          Minimum Support
+        </Typography>
       </Grid>
 
       <Grid container direction="row" alignItems="center" spacing={1}>
@@ -382,7 +401,9 @@ const GovernanceForm = ({
         </Grid>
         <Grid item xs={1}>
           <CustomSliderValue>
-            <Value variant="subtitle1">{getIn(values, "min_support")}%</Value>
+            <Value variant="subtitle1" color="textSecondary">
+              {getIn(values, "min_support")}%
+            </Value>
           </CustomSliderValue>
         </Grid>
       </Grid>
@@ -438,12 +459,14 @@ export const Governance: React.FC<{
     <>
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12}>
-          <Typography variant="h2">Proposals & Voting</Typography>
+          <Typography variant="h3" color="textSecondary">
+            Proposals & Voting
+          </Typography>
         </Grid>
       </Grid>
       <Grid container direction="row">
         <Grid item xs={12}>
-          <CustomTypography variant="subtitle1">
+          <CustomTypography variant="subtitle1" color="textSecondary">
             These settings will define the duration, support and approval
             required for proposals.
           </CustomTypography>

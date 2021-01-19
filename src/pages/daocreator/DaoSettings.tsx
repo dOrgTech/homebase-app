@@ -4,6 +4,7 @@ import {
   Typography,
   withStyles,
   TextareaAutosize,
+  withTheme,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
@@ -25,7 +26,7 @@ interface Values {
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
-  borderBottom: "1px solid #E4E4E4",
+  borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
 });
 
@@ -34,7 +35,7 @@ const SecondContainer = styled(Grid)({
 });
 
 const CustomInputContainer = styled(Grid)({
-  border: "1px solid #E4E4E4",
+  border: "1px solid #3D3D3D",
   height: 62,
   marginTop: 14,
   padding: "18px 21px",
@@ -62,16 +63,18 @@ const CustomFormikTextField = withStyles({
   },
 })(FormikTextField);
 
-const CustomTextarea = styled(TextareaAutosize)({
+const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   height: "153px !important",
   width: "100%",
-  border: "1px solid #e4e4e4",
+  border: "1px solid #3D3D3D",
   marginTop: 14,
   fontWeight: 300,
   padding: "21px 20px",
   fontFamily: "system-ui",
   fontSize: 16,
-});
+  background: props.theme.palette.primary.main,
+  color: props.theme.palette.text.secondary,
+}));
 
 const ErrorText = styled(Typography)({
   fontSize: 14,
@@ -94,7 +97,10 @@ const DaoSettingsForm = ({
     <>
       <SecondContainer container item direction="row" spacing={2}>
         <Grid item xs={9}>
-          <Typography variant="subtitle1"> Token name </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Token name{" "}
+          </Typography>
           <CustomInputContainer>
             <Field
               name="token_name"
@@ -109,7 +115,10 @@ const DaoSettingsForm = ({
         </Grid>
 
         <Grid item xs={3}>
-          <Typography variant="subtitle1"> Token symbol </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Token symbol{" "}
+          </Typography>
           <CustomInputContainer>
             <Field
               name="token_symbol"
@@ -131,20 +140,16 @@ const DaoSettingsForm = ({
           inputProps={{ "aria-label": "secondary checkbox" }}
         />
 
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" color="textSecondary">
           Disable locking until after first voting period.
         </Typography>
-
-        <Grid item xs={12}>
-          <Grid container direction="row" justify="flex-end">
-            <InfoOutlinedIcon></InfoOutlinedIcon>
-          </Grid>
-        </Grid>
       </SecondContainer>
 
       <SecondContainer container direction="row" alignItems="center">
         <Grid item xs={12}>
-          <Typography variant="subtitle1">Description</Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            Description
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <Field name="description">
@@ -211,10 +216,12 @@ export const DaoSettings: React.FC<{
         style={{ height: "fit-content" }}
       >
         <Grid item xs={12}>
-          <Typography variant="h2">DAO Settings</Typography>
+          <Typography variant="h3" color="textSecondary">
+            DAO Settings
+          </Typography>
         </Grid>
         <Grid item xs={12}>
-          <CustomTypography variant="subtitle1">
+          <CustomTypography variant="subtitle1" color="textSecondary">
             These settings will define the name, symbol, and initial
             distribution of your token.
           </CustomTypography>
