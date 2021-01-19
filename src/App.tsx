@@ -26,10 +26,7 @@ const App: React.FC = () => {
             <Route path="/explorer">
               <DAOExplorerRouter />
             </Route>
-            <Route path="/">
-              <Home />
-            </Route>
-            <Redirect to="/" />
+            <Redirect to="/explorer"/>
           </Switch>
         </Router>
       </Box>

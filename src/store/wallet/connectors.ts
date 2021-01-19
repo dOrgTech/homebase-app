@@ -4,7 +4,7 @@ import { TezosToolkit } from "@taquito/taquito";
 
 const rpcNodes = {
   carthagenet: "https://testnet-tezos.giganode.io",
-  delphinet: "https://delphinet-tezos.giganode.io",
+  delphinet: "https://api.tez.ie/rpc/delphinet",
   mainnet: "https://mainnet-tezos.giganode.io",
 };
 

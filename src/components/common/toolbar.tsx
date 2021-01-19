@@ -13,7 +13,6 @@ import { AppState } from "../../store";
 import { toShortAddress } from "../../utils";
 import HomeButton from "../../assets/logos/homebase.svg";
 import { useConnectWallet } from "../../store/wallet/hook";
-import { deployContract } from "../../services/deployContract";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -48,8 +47,7 @@ export const Navbar: React.FC = () => {
     (state) => state.wallet.address
   );
 
-  const { tezos, connect } = useConnectWallet()
-  
+  const { tezos, connect } = useConnectWallet();
 
   return (
     <StyledAppBar position="sticky" color="primary">
@@ -59,14 +57,6 @@ export const Navbar: React.FC = () => {
             <Grid item>
               <img src={HomeButton} />
             </Grid>
-            {tezos?
-            <Button onClick={() => deployContract(tezos)}>
-              Test deployment
-            </Button>:
-            <Button onClick={connect}>
-              Connect
-            </Button>
-            }
             <Grid item>
               <Box paddingLeft="10px">
                 <LogoText color="textSecondary">Homebase</LogoText>
@@ -75,7 +65,7 @@ export const Navbar: React.FC = () => {
           </Grid>
         </Box>
 
-        {account ? (
+        {tezos && account ? (
           <AddressContainer
             container
             alignItems="center"
@@ -92,7 +82,9 @@ export const Navbar: React.FC = () => {
             </Grid>
           </AddressContainer>
         ) : (
-          <Button color="inherit">Connect Wallet</Button>
+          <Button color="secondary" variant="outlined" onClick={connect}>
+            Connect Wallet
+          </Button>
         )}
       </StyledToolbar>
     </StyledAppBar>
