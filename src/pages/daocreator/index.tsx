@@ -7,6 +7,8 @@ import {
   styled,
   Typography,
   withTheme,
+  CircularProgress,
+  makeStyles,
 } from "@material-ui/core";
 
 import React, { useContext, useState } from "react";
@@ -21,11 +23,23 @@ import { Summary } from "./Summary";
 import { Review } from "./Review";
 import { useHistory } from "react-router-dom";
 import { useConnectWallet } from "../../store/wallet/hook";
+import ProgressBar from "react-customizable-progressbar";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
-  height: "100%",
   background: props.theme.palette.primary.main,
 }));
+
+const fullHeightStyles = makeStyles({
+  root: {
+    height: "100%",
+  },
+});
+
+const reducedHeightStyles = makeStyles({
+  root: {
+    height: "87%",
+  },
+});
 
 const CustomGrid = styled(Grid)({
   alignItems: "center",
@@ -39,6 +53,15 @@ const StepContentContainer = styled(Grid)({
   marginTop: "2.5%",
   marginBottom: "2%",
   height: "calc(100% - 112px)",
+  alignItems: "center",
+});
+
+const StepOneContentContainer = styled(Grid)({
+  paddingLeft: "16%",
+  paddingRight: "16%",
+  marginTop: "2.5%",
+  marginBottom: "2%",
+  height: "80%",
   alignItems: "center",
 });
 
@@ -85,6 +108,24 @@ const StyledStepper = styled(withTheme(Stepper))((props) => ({
   background: "inherit",
 }));
 
+const IndicatorValue = styled(withTheme(Paper))((props) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  position: "absolute",
+  top: 0,
+  width: "100%",
+  height: "100%",
+  margin: "0 auto",
+  fontSize: 25,
+  color: props.theme.palette.text.secondary,
+  userSelect: "none",
+  boxShadow: "none",
+  background: "inherit",
+  fontFamily: "Roboto Mono",
+}));
+
 const STEPS = [
   "Select template",
   // "Claim a name",
@@ -99,6 +140,9 @@ export const DAOCreate: React.FC = () => {
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
+  const [progress, setProgress] = useState(0.5);
+  const fullHeight = fullHeightStyles();
+  const reducedHeight = reducedHeightStyles();
 
   const history = useHistory<any>();
 
@@ -109,6 +153,7 @@ export const DAOCreate: React.FC = () => {
       case 1:
         return governanceStep === 0 ? (
           <Governance
+            setProgress={setProgress}
             defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
             setGovernanceStep={setGovernanceStep}
@@ -143,14 +188,37 @@ export const DAOCreate: React.FC = () => {
       return setActiveStep(0);
     } else if (activeStep === 1 && governanceStep !== 0) {
       return setGovernanceStep(governanceStep - 1);
+    } else if (activeStep === 0) {
+      history.push("/explorer");
     }
-  }
+  };
 
-  const { tezos } = useConnectWallet()
+  const { tezos } = useConnectWallet();
 
   return (
-    <PageContainer container>
+    <PageContainer
+      container
+      classes={
+        !account || (account && activeStep === 0) ? reducedHeight : fullHeight
+      }
+    >
       <CustomGrid container item xs={3} direction="column" justify="flex-end">
+        {
+          <ProgressBar
+            progress={progress}
+            radius={62}
+            strokeWidth={4}
+            strokeColor={"#81FEB7"}
+            trackStrokeWidth={2}
+            trackStrokeColor={"#3d3d3d"}
+          >
+            <div className="indicator">
+              <IndicatorValue>
+                {progress === 0.5 ? 0 : progress}%
+              </IndicatorValue>
+            </div>
+          </ProgressBar>
+        }
         <StyledStepper activeStep={activeStep} orientation="vertical">
           {STEPS.map((label, index) => (
             <Step key={label} {...(!account && { active: false })}>
@@ -160,10 +228,15 @@ export const DAOCreate: React.FC = () => {
         </StyledStepper>
       </CustomGrid>
       <Grid item container justify="center" alignItems="center" xs={9}>
-        {account ? null : <ConnectWallet />}
-        <StepContentContainer item container justify="center">
-          {getStepContent(activeStep, handleNextStep)}
-        </StepContentContainer>
+        {account ? (
+          <StepContentContainer item container justify="center">
+            {getStepContent(activeStep, handleNextStep)}
+          </StepContentContainer>
+        ) : (
+          <StepOneContentContainer item container justify="center">
+            <ConnectWallet />
+          </StepOneContentContainer>
+        )}
 
         {activeStep !== 0 && activeStep !== 1 && activeStep !== 3 ? (
           <Footer
@@ -188,7 +261,7 @@ export const DAOCreate: React.FC = () => {
           </Footer>
         ) : null}
 
-        {activeStep === 1 ? (
+        {account && (activeStep === 1 || activeStep === 0) ? (
           <Footer
             container
             direction="row"
@@ -205,6 +278,21 @@ export const DAOCreate: React.FC = () => {
                 {" "}
                 <WhiteText>CONTINUE</WhiteText>
               </NextButton>
+            </Grid>
+          </Footer>
+        ) : null}
+
+        {!account ? (
+          <Footer
+            container
+            direction="row"
+            justify="space-between"
+            alignItems="center"
+          >
+            <Grid item xs={6}>
+              <BackButton onClick={() => history.push("/explorer")}>
+                <Typography>BACK </Typography>{" "}
+              </BackButton>
             </Grid>
           </Footer>
         ) : null}

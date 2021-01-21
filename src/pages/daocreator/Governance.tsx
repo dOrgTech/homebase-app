@@ -60,6 +60,12 @@ const CustomInputContainer = styled(Grid)({
   },
 });
 
+const AdditionContainer = styled(Grid)({
+  border: "1px solid #3D3D3D",
+  height: 62,
+  marginTop: 14,
+});
+
 const GridItemCenter = styled(Grid)({
   textAlign: "center",
 });
@@ -80,7 +86,7 @@ const Title = styled(Typography)({
 const StyledSlider = withStyles({
   root: {
     textAlign: "center",
-    width: "95%",
+    width: "100%",
   },
   valueLabel: {
     textAlign: "center",
@@ -109,7 +115,7 @@ const CustomSliderValue = styled(withTheme(Paper))((props) => ({
 
 const Value = styled(Typography)({
   textAlign: "center",
-  padding: "30%",
+  padding: "15%",
 });
 
 const styles = {
@@ -122,6 +128,10 @@ const SwitchContainer = styled("div")({
   position: "absolute",
   right: "5%",
   textAlign: "center",
+});
+
+const GridNoPadding = styled(Grid)({
+  padding: "0px !important",
 });
 
 const GovernanceForm = ({
@@ -299,6 +309,164 @@ const GovernanceForm = ({
         </CustomInputContainer>
       </Grid>
 
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Required Stake to Propose
+        </Typography>
+      </SecondContainer>
+
+      <Grid container direction="row" alignItems="center">
+        <AdditionContainer item xs={3}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="voting_days"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">MYGT</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {/* {errors.voting_days && touched.voting_days ? (
+            <ErrorText>{errors.voting_days}</ErrorText>
+          ) : null} */}
+        </AdditionContainer>
+        <Grid item xs={1}>
+          <Grid item container justify="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              +
+            </Typography>
+          </Grid>
+          {/* {errors.voting_hours && touched.voting_hours ? (
+            <ErrorText>{errors.voting_hours}</ErrorText>
+          ) : null} */}
+        </Grid>
+        <AdditionContainer item xs={2}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={9}>
+              <Field
+                name="voting_minutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
+            </GridItemCenter>
+            <GridItemCenter item xs={2}>
+              <Typography color="textSecondary">%</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.voting_minutes && touched.voting_minutes ? (
+            <ErrorText>{errors.voting_minutes}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+        <Grid item xs={3}>
+          <Grid item container>
+            <Typography variant="subtitle1" color="textSecondary">
+              of Proposal Value
+            </Typography>
+          </Grid>
+          {/* {errors.voting_hours && touched.voting_hours ? (
+            <ErrorText>{errors.voting_hours}</ErrorText>
+          ) : null} */}
+        </Grid>
+      </Grid>
+
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Required Stake to Vote
+        </Typography>
+      </SecondContainer>
+
+      <Grid container direction="row" alignItems="center">
+        <AdditionContainer item xs={3}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="voting_days"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">MYGT</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {/* {errors.voting_days && touched.voting_days ? (
+            <ErrorText>{errors.voting_days}</ErrorText>
+          ) : null} */}
+        </AdditionContainer>
+        <Grid item xs={1}>
+          <Grid item container justify="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              +
+            </Typography>
+          </Grid>
+          {/* {errors.voting_hours && touched.voting_hours ? (
+            <ErrorText>{errors.voting_hours}</ErrorText>
+          ) : null} */}
+        </Grid>
+        <AdditionContainer item xs={2}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={9}>
+              <Field
+                name="voting_minutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>{" "}
+            </GridItemCenter>
+            <GridItemCenter item xs={2}>
+              <Typography color="textSecondary">%</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.voting_minutes && touched.voting_minutes ? (
+            <ErrorText>{errors.voting_minutes}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+        <Grid item xs={3}>
+          <Grid item container>
+            <Typography variant="subtitle1" color="textSecondary">
+              of Proposal Value
+            </Typography>
+          </Grid>
+          {/* {errors.voting_hours && touched.voting_hours ? (
+            <ErrorText>{errors.voting_hours}</ErrorText>
+          ) : null} */}
+        </Grid>
+      </Grid>
+
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
           Minimum Stake{" "}
@@ -309,7 +477,7 @@ const GovernanceForm = ({
       </SpacingContainer>
 
       <Grid container direction="row" alignItems="center" spacing={1}>
-        <Grid item xs={11}>
+        <GridNoPadding item xs={10}>
           <Field name="min_stake">
             {({ field, form: { touched, errors }, meta }: any) => (
               <StyledSlider
@@ -320,16 +488,16 @@ const GovernanceForm = ({
               />
             )}
           </Field>
-        </Grid>
-        <Grid item xs={1}>
+        </GridNoPadding>
+        <GridNoPadding item xs={2}>
           <CustomSliderValue>
             <Value variant="subtitle1" color="textSecondary">
               {getIn(values, "min_stake")}
               {values.min_stake_percentage ? "%" : null}
             </Value>
           </CustomSliderValue>
-        </Grid>
-        <SwitchContainer>
+        </GridNoPadding>
+        {/* <SwitchContainer>
           <Typography>{values.min_stake_percentage ? "0.0%" : "0"}</Typography>
           <Field
             name="min_stake_percentage"
@@ -337,75 +505,7 @@ const GovernanceForm = ({
             type="checkbox"
             inputProps={{ "aria-label": "secondary checkbox" }}
           />
-        </SwitchContainer>
-      </Grid>
-
-      <Grid direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Stake returned when rejected
-        </Typography>
-      </Grid>
-
-      <Grid container direction="row" alignItems="center" spacing={1}>
-        <Grid item xs={11}>
-          <Field name="stake_returned">
-            {({ form: { touched, errors }, meta }: any) => (
-              <StyledSlider
-                value={getIn(values, "stake_returned")}
-                onChange={(value: any, newValue: any) =>
-                  setFieldValue("stake_returned", newValue)
-                }
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={1}>
-          <CustomSliderValue>
-            <Value variant="subtitle1" color="textSecondary">
-              {getIn(values, "stake_returned")}
-              {values.stake_returned_percentage ? "%" : null}
-            </Value>
-          </CustomSliderValue>
-        </Grid>
-        <SwitchContainer>
-          <Typography>
-            {values.stake_returned_percentage ? "0.0%" : "0"}
-          </Typography>
-          <Field
-            name="stake_returned_percentage"
-            component={FormikSwitch}
-            type="checkbox"
-            inputProps={{ "aria-label": "secondary checkbox" }}
-          />
-        </SwitchContainer>
-      </Grid>
-
-      <Grid direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Minimum Support
-        </Typography>
-      </Grid>
-
-      <Grid container direction="row" alignItems="center" spacing={1}>
-        <Grid item xs={11}>
-          <Field name="min_support">
-            {({ field, form: { touched, errors }, meta }: any) => (
-              <StyledSlider
-                value={getIn(values, "min_support")}
-                onChange={(value: any, newValue: any) =>
-                  setFieldValue("min_support", newValue)
-                }
-              />
-            )}
-          </Field>
-        </Grid>
-        <Grid item xs={1}>
-          <CustomSliderValue>
-            <Value variant="subtitle1" color="textSecondary">
-              {getIn(values, "min_support")}%
-            </Value>
-          </CustomSliderValue>
-        </Grid>
+        </SwitchContainer> */}
       </Grid>
     </>
   );
@@ -415,13 +515,16 @@ export const Governance: React.FC<{
   defineSubmit: any;
   setActiveStep: any;
   setGovernanceStep: any;
-}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
+  setProgress: any;
+}> = ({ defineSubmit, setActiveStep, setGovernanceStep, setProgress }) => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
 
   const dispatch = useDispatch();
+
+  setProgress(25);
 
   const saveStepInfo = (values: any, { setSubmitting }: any) => {
     setSubmitting(true);

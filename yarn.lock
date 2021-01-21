@@ -9850,6 +9850,11 @@ react-app-polyfill@^2.0.0:
     regenerator-runtime "^0.13.7"
     whatwg-fetch "^3.4.1"
 
+react-customizable-progressbar@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-customizable-progressbar/-/react-customizable-progressbar-1.0.2.tgz#5f231a4e47638ab203ebe3fa0382cff2142ac99b"
+  integrity sha512-PJTNgeXT/sGGN7U9ahYGqpJEX1SzkcMOhzRBdO5npkMJDbZwyXq4Elp7C2brEhRlItEnaTPzts+CFAFzosmh/w==
+
 react-dev-utils@^11.0.1:
   version "11.0.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-11.0.1.tgz#30106c2055acfd6b047d2dc478a85c356e66fe45"

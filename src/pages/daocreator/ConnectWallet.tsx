@@ -13,12 +13,15 @@ import {
 import ImageIcon from "@material-ui/icons/Image";
 import React from "react";
 import { useSelector } from "react-redux";
-import { deployContract } from "../../services/deployContract";
 import { AppState } from "../../store";
 import { useConnectWallet } from "../../store/wallet/hook";
 
 const PageContainer = styled(Grid)({
-  height: "100%",
+  height: "90%",
+});
+
+const SpacingTitle = styled(Typography)({
+  marginBottom: 15,
 });
 
 export const ConnectWallet: React.FC = () => {
@@ -29,14 +32,14 @@ export const ConnectWallet: React.FC = () => {
   );
 
   return (
-    <PageContainer container justify="center" alignItems="center">
+    <PageContainer container justify="flex-start" alignItems="center">
       <Grid item>
-        <Typography align="left" variant="h5">
+        <SpacingTitle align="left" variant="h3" color="textSecondary">
           Connect your wallet
-        </Typography>
-        <Typography align="left" variant="body2">
+        </SpacingTitle>
+        <SpacingTitle align="left" variant="subtitle1" color="textSecondary">
           Create an organization by picking a template below
-        </Typography>
+        </SpacingTitle>
         <Box>
           <List>
             <ListItem button={true} onClick={() => connect()}>
@@ -45,7 +48,12 @@ export const ConnectWallet: React.FC = () => {
                   <ImageIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText primary="Connect" />
+              <ListItemText>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {" "}
+                  Connect
+                </Typography>{" "}
+              </ListItemText>
             </ListItem>
           </List>
         </Box>
