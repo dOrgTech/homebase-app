@@ -23,7 +23,9 @@ export const deployContract = async (tezos: TezosToolkit) => {
 
   try {
     Tezos.setProvider({
-      signer: await InMemorySigner.fromSecretKey("edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"),
+      signer: await InMemorySigner.fromSecretKey(
+        "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
+      ),
     });
     console.log("Originating");
     const t = await Tezos.contract.originate({

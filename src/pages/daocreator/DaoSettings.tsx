@@ -21,7 +21,7 @@ interface Values {
   token_name: string | undefined;
   token_symbol: string | undefined;
   lock_disabled: boolean;
-  description: string | undefined;
+  description: string;
 }
 
 const CustomTypography = styled(Typography)({
@@ -40,6 +40,10 @@ const CustomInputContainer = styled(Grid)({
   marginTop: 14,
   padding: "18px 21px",
   boxSizing: "border-box",
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+    borderLeft: "2px solid #81FEB7",
+  },
 });
 
 const CustomFormikTextField = withStyles({
@@ -74,6 +78,10 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   fontSize: 16,
   background: props.theme.palette.primary.main,
   color: props.theme.palette.text.secondary,
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+    borderLeft: "2px solid #81FEB7",
+  },
 }));
 
 const ErrorText = styled(Typography)({
@@ -155,6 +163,7 @@ const DaoSettingsForm = ({
           <Field name="description">
             {({ field, form: { touched, errors }, meta }: any) => (
               <CustomTextarea
+                maxLength={1500}
                 aria-label="empty textarea"
                 placeholder="This is what we’re about..."
                 value={getIn(values, "description")}
@@ -175,8 +184,7 @@ const DaoSettingsForm = ({
 export const DaoSettings: React.FC<{
   defineSubmit: any;
   setActiveStep: any;
-  setGovernanceStep: any;
-}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
+}> = ({ defineSubmit, setActiveStep }) => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
@@ -188,19 +196,18 @@ export const DaoSettings: React.FC<{
     setSubmitting(true);
     dispatch(saveDaoInformation(values));
     setActiveStep(2);
-    setGovernanceStep(2);
   };
 
   const validate = (values: Values) => {
     const errors: any = {};
 
-    if (!values.token_name) {
+    if (values.token_name === undefined || !String(values.token_name)) {
       errors.token_name = "Required";
     }
-    if (!values.token_symbol) {
+    if (values.token_symbol === undefined || !String(values.token_symbol)) {
       errors.token_symbol = "Required";
     }
-    if (!values.description) {
+    if (values.description === undefined || !String(values.description)) {
       errors.description = "Required";
     }
 
@@ -241,10 +248,6 @@ export const DaoSettings: React.FC<{
           values,
           errors,
           touched,
-          handleBlur,
-          validateOnChange,
-          setFieldTouched,
-          handleChange,
         }) => {
           return (
             <Form style={{ width: "100%" }}>

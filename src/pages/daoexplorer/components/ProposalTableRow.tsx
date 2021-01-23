@@ -1,6 +1,13 @@
-import { styled, Grid, Box, Typography, useTheme, IconButton } from "@material-ui/core";
+import {
+  styled,
+  Grid,
+  Box,
+  Typography,
+  useTheme,
+  IconButton,
+} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import React from "react";
 
 type ProgressColor = "success" | "warning" | "danger";
@@ -13,7 +20,7 @@ const progressColorMap = {
 
 const ProposalTableRowContainer = styled(Grid)({
   height: 155,
-  borderBottom: "2px solid #3D3D3D"
+  borderBottom: "2px solid #3D3D3D",
 });
 
 export interface ProposalTableRowData {
@@ -46,8 +53,8 @@ const SupportText = styled(Typography)(
 );
 
 const ArrowButton = styled(IconButton)({
-  color: "#3D3D3D"
-})
+  color: "#3D3D3D",
+});
 
 export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
   title,
@@ -97,7 +104,7 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
         </Grid>
         <Grid item>
           <ArrowButton>
-            <ArrowForwardIcon fontSize={"large"} color="inherit"/>
+            <ArrowForwardIcon fontSize={"large"} color="inherit" />
           </ArrowButton>
         </Grid>
       </Grid>
