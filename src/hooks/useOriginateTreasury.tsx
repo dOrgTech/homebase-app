@@ -1,10 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
-  FA2MetadataParams,
   TreasuryStorageParams,
 } from "../contracts/treasuryDAO/types";
-import { deployContract } from "../contracts/treasuryDAO/deploy";
+import { deployTreasuryDAO } from "../contracts/treasuryDAO/deploy";
 import { TezosToolkitContext } from "../store/wallet/context";
+import { TezosToolkit } from "@taquito/taquito";
+import { FA2MetadataParams } from "../contracts/metadataCarrier/types";
 
 interface Props {
   storage: TreasuryStorageParams;
@@ -13,17 +14,12 @@ interface Props {
 
 export const useOriginateTreasury = ({ storage, metadata }: Props) => {
   const [loading, setLoading] = useState(false);
-  const { tezosToolkit } = useContext(TezosToolkitContext);
 
   const originate = useCallback(async () => {
     setLoading(true);
 
     try {
-      if (!tezosToolkit) {
-        throw new Error("You need to connect your wallet");
-      }
-
-      await deployContract(storage);
+      await deployTreasuryDAO(storage, metadata);
     } catch (error) {
       console.log(error);
     } finally {

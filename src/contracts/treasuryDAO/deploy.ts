@@ -1,7 +1,11 @@
 import { MichelsonMap } from "@taquito/taquito";
+import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { getTestProvider } from "../utils";
 import { code } from "./code";
-import { MemberTokenAllocation, MetadataCarrierDeploymentData, TreasuryStorageParams } from "./types";
+import {
+  MemberTokenAllocation,
+  TreasuryStorageParams,
+} from "./types";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();
@@ -16,7 +20,10 @@ const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   return map;
 };
 
-const setMetadata = ({ deployAddress, keyName }: MetadataCarrierDeploymentData) => {
+const setMetadata = ({
+  deployAddress,
+  keyName,
+}: MetadataCarrierDeploymentData) => {
   const map = new MichelsonMap();
 
   map.set("", `tezos-storage://${deployAddress}/${keyName}`);
@@ -24,24 +31,27 @@ const setMetadata = ({ deployAddress, keyName }: MetadataCarrierDeploymentData) 
   return map;
 };
 
-export const deployTreasuryDAO = async ({
-  membersTokenAllocation,
-  adminAddress,
-  frozenScaleValue,
-  frozenExtraValue,
-  slashScaleValue,
-  slashDivisionValue,
-  minXtzAmount,
-  maxXtzAmount,
-  maxProposalSize,
-  quorumTreshold,
-  votingPeriod,
-}: TreasuryStorageParams, metadataCarrierData: MetadataCarrierDeploymentData) => {
+export const deployTreasuryDAO = async (
+  {
+    membersTokenAllocation,
+    adminAddress,
+    frozenScaleValue,
+    frozenExtraValue,
+    slashScaleValue,
+    slashDivisionValue,
+    minXtzAmount,
+    maxXtzAmount,
+    maxProposalSize,
+    quorumTreshold,
+    votingPeriod,
+  }: TreasuryStorageParams,
+  metadataCarrierData: MetadataCarrierDeploymentData
+) => {
   const ledger = setMembersAllocation(membersTokenAllocation);
-  const metadata = setMetadata(metadataCarrierData)
+  const metadata = setMetadata(metadataCarrierData);
 
   try {
-    const Tezos = await getTestProvider()
+    const Tezos = await getTestProvider();
 
     console.log("Originating Treasury DAO contract...");
 
