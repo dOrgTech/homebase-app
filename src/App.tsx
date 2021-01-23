@@ -14,6 +14,7 @@ import { DAOExplorerRouter } from "./router/explorer";
 import { Navbar } from "./components/common/toolbar";
 
 const App: React.FC = () => {
+  localStorage.clear();
   return (
     <ThemeProvider theme={theme}>
       <Box height="100vh" bgcolor="primary.main">
@@ -26,7 +27,7 @@ const App: React.FC = () => {
             <Route path="/explorer">
               <DAOExplorerRouter />
             </Route>
-            <Redirect to="/explorer"/>
+            <Redirect to="/explorer" />
           </Switch>
         </Router>
       </Box>

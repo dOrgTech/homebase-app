@@ -65,7 +65,7 @@ export const Navbar: React.FC = () => {
           </Grid>
         </Box>
 
-        {tezos && account ? (
+        {account ? (
           <AddressContainer
             container
             alignItems="center"
