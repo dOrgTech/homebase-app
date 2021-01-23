@@ -6,7 +6,11 @@ const Tezos = new TezosToolkit("https://api.tez.ie/rpc/delphinet");
 // importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
 // importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
 
-export const deployContract = async (tezos: TezosToolkit) => {
+interface TreasuryContractParams {
+  
+}
+
+export const deployContract = async (tezos: TezosToolkit, parameters) => {
   const sLedger = new MichelsonMap();
   sLedger.set({ 0: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb", 1: 1 }, 1);
 
