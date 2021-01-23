@@ -1,14 +1,3 @@
-export interface TreasuryToken {
-  name: string;
-  symbol: string;
-  decimals: number;
-}
-
-export interface TreasuryMetadataParams {
-  unfrozenToken: TreasuryToken;
-  frozenToken: TreasuryToken;
-}
-
 export interface MemberTokenAllocation {
   address: string;
   tokenId: string;
@@ -25,4 +14,6 @@ export interface TreasuryStorageParams {
   minXtzAmount: number;
   maxXtzAmount: number;
   maxProposalSize: number;
+  quorumTreshold: number;
+  votingPeriod: number;
 }

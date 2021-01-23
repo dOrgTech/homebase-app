@@ -1,14 +1,14 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
-  TreasuryMetadataParams,
+  FA2MetadataParams,
   TreasuryStorageParams,
 } from "../contracts/treasuryDAO/types";
-import { deployContract } from "../services/deployContract";
+import { deployContract } from "../contracts/treasuryDAO/deploy";
 import { TezosToolkitContext } from "../store/wallet/context";
 
 interface Props {
   storage: TreasuryStorageParams;
-  metadata: TreasuryMetadataParams;
+  metadata: FA2MetadataParams;
 }
 
 export const useOriginateTreasury = ({ storage, metadata }: Props) => {

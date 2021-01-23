@@ -1,10 +1,10 @@
 import { stringToHex } from "../utils";
-import { TreasuryMetadataParams } from "./types";
+import { FA2MetadataParams } from "./types";
 
-export const getMetadata = ({
+export const setMetadataJSON = ({
   frozenToken: { name: fName, symbol: fSymbol, decimals: fDecimals },
   unfrozenToken: { name: uName, symbol: uSymbol, decimals: uDecimals },
-}: TreasuryMetadataParams): Record<string, any> => ({
+}: FA2MetadataParams): Record<string, any> => ({
   homepage: "https://github.com/tqtezos/baseDAO",
   interfaces: ["TZIP-12", "TZIP-17"],
   views: [
