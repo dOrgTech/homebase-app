@@ -1,4 +1,4 @@
-export const treasuryCode = `parameter (or
+export const code = `parameter (or
   (or
     (or
       (or

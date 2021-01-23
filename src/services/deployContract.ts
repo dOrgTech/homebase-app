@@ -1,57 +1,73 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
-import { treasuryCode } from "../contracts/treasuryDAO";
-import { importKey, InMemorySigner } from "@taquito/signer";
+import { code } from '../contracts/treasuryDAO/code'
+import { InMemorySigner } from "@taquito/signer";
+import {
+  MemberTokenAllocation,
+  TreasuryStorageParams,
+} from "../contracts/treasuryDAO/types";
 
 const Tezos = new TezosToolkit("https://api.tez.ie/rpc/delphinet");
-// importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
-// importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
 
-interface TreasuryContractParams {
+const membersAllocationToMichelsonMap = (
+  allocations: MemberTokenAllocation[]
+) => {
+  const map = new MichelsonMap();
+
+  allocations.forEach((allocation) => {
+    map.set(
+      { 0: allocation.address, 1: allocation.tokenId },
+      allocation.amount
+    );
+  });
+
+  return map;
+};
+
+export const deployContract = async ({
+  membersTokenAllocation,
+  adminAddress,
+  frozenScaleValue,
+  frozenExtraValue,
+  slashScaleValue,
+  slashDivisionValue,
+  minXtzAmount,
+  maxXtzAmount,
+  maxProposalSize,
+}: TreasuryStorageParams) => {
   
-}
-
-export const deployContract = async (tezos: TezosToolkit, parameters) => {
-  const sLedger = new MichelsonMap();
-  sLedger.set({ 0: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb", 1: 1 }, 1);
-
-  const sOperators = new MichelsonMap();
-  sOperators.set(
-    {
-      owner: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-      operator: "tz1PXnvy7VLyKjKgzGDSdrJv4iHhCh78S25p",
-    },
-    1
-  );
-
-  const sProposals = new MichelsonMap();
+  const ledger = membersAllocationToMichelsonMap(membersTokenAllocation)
+  const operators = new MichelsonMap();
+  const proposals = new MichelsonMap();
 
   try {
     Tezos.setProvider({
-      signer: await InMemorySigner.fromSecretKey("edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"),
+      signer: await InMemorySigner.fromSecretKey(
+        "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
+      ),
     });
     console.log("Originating");
     const t = await Tezos.contract.originate({
-      code: treasuryCode,
+      code,
       storage: {
-        sLedger: new MichelsonMap(),
-        sOperators: new MichelsonMap(),
-        sTokenAddress: "tz1U1HAnn7E3TTfYc18quYXeGtAzHX1Z3jCC",
-        sAdmin: "tz1U1HAnn7E3TTfYc18quYXeGtAzHX1Z3jCC",
-        sPendingOwner: "tz1U1HAnn7E3TTfYc18quYXeGtAzHX1Z3jCC",
+        sLedger: ledger,
+        sOperators: operators,
+        sTokenAddress: "",
+        sAdmin: adminAddress,
+        sPendingOwner: "",
         sMigrationStatus: { notInMigration: "Unit" },
         sVotingPeriod: 1,
         sQuorumThreshold: 1,
         sExtra: {
-          frozen_scale_value: 0,
-          frozen_extra_value: 1,
-          slash_scale_value: 0,
-          slash_division_value: 1,
-          min_xtz_amount: 1,
-          max_xtz_amount: 10,
-          max_proposal_size: 10,
+          frozen_scale_value: frozenScaleValue,
+          frozen_extra_value: frozenExtraValue,
+          slash_scale_value: slashScaleValue,
+          slash_division_value: slashDivisionValue,
+          min_xtz_amount: minXtzAmount,
+          max_xtz_amount: maxXtzAmount,
+          max_proposal_size: maxProposalSize,
         },
-        sProposals: new MichelsonMap(),
-        sProposalKeyListSortByDate: [["2021-01-06T05:14:43Z", "CAFE"]],
+        sProposals: proposals,
+        sProposalKeyListSortByDate: [],
         sPermitsCounter: 0,
       },
     });
