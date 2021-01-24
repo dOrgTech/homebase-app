@@ -17,9 +17,29 @@ const setMetadataMap = (keyName: string, metadata: FA2MetadataParams) => {
 export const deployMetadataCarrier = async ({
   keyName,
   metadata,
+  tezos,
 }: MetadataCarrierParameters) => {
-  const Tezos = await getTestProvider();
   const metadataMap = setMetadataMap(keyName, metadata);
+
+  if (tezos) {
+    console.log("Originating Metadata Carrier contract with wallet...");
+    const test = await tezos.wallet
+      .originate({
+        code,
+        storage: {
+          metadata: metadataMap,
+        },
+      })
+      .send();
+    console.log(
+      "Waiting for confirmation on Metadata Carrier contract...",
+      test
+    );
+    const c = await test.contract();
+    console.log("Metadata Carrier deployment completed", c);
+    return;
+  }
+  const Tezos = await getTestProvider();
 
   try {
     console.log("Originating Metadata Carrier contract...");

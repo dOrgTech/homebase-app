@@ -1,3 +1,5 @@
+import { TezosToolkit } from "@taquito/taquito";
+
 export interface FA2TokenMetadata {
   name: string;
   symbol: string;
@@ -17,4 +19,5 @@ export interface MetadataCarrierDeploymentData {
 export interface MetadataCarrierParameters {
   keyName: string;
   metadata: FA2MetadataParams;
+  tezos?: TezosToolkit;
 }

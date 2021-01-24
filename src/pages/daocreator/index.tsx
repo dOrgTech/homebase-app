@@ -137,23 +137,25 @@ const STEPS = [
   "Launch organization",
 ];
 
-const metadataCarrierParams = {
-  keyName: "jaja",
-  metadata: {
-    frozenToken: {
-      name: "J",
-      symbol: "JAJA",
-      decimals: 18,
-    },
-    unfrozenToken: {
-      name: "J",
-      symbol: "JAJA",
-      decimals: 18,
-    },
-  },
-};
-
 export const DAOCreate: React.FC = () => {
+  const { tezos: providerTest } = useConnectWallet();
+  console.log(providerTest);
+  const metadataCarrierParams = {
+    keyName: "jaja",
+    metadata: {
+      frozenToken: {
+        name: "J",
+        symbol: "JAJA",
+        decimals: 18,
+      },
+      unfrozenToken: {
+        name: "J",
+        symbol: "JAJA",
+        decimals: 18,
+      },
+    },
+    tezos: providerTest,
+  };
   const [
     originateMetaData,
     { loading: loadingMetadataContract, data: carrierData },
@@ -201,6 +203,7 @@ export const DAOCreate: React.FC = () => {
       deployAddress: carrierData ? carrierData.address : "",
       keyName: "jaja",
     },
+    tezos: providerTest,
   });
 
   useEffect(() => {
