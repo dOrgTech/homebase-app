@@ -8,7 +8,6 @@ import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 interface Props {
   setActiveStep: any;
   setGovernanceStep: any;
-  setProgress: any;
 }
 
 const CustomUrlButton = styled(withTheme(Paper))((props) => ({
@@ -123,14 +122,12 @@ const UnderlinedGrid = styled(Grid)({
 });
 
 export const Summary: React.FC<Props> = (props) => {
-  const { setActiveStep, setGovernanceStep, setProgress } = props;
+  const { setActiveStep, setGovernanceStep } = props;
 
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
-
-  setProgress(75);
 
   const goToVoting = () => {
     setGovernanceStep(0);

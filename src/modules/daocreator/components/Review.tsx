@@ -10,8 +10,7 @@ const WaitingText = styled(Typography)({
   marginTop: 9,
 });
 
-export const Review: React.FC<{ setProgress: any }> = ({ setProgress }) => {
-  setProgress(100);
+export const Review: React.FC = ({}) => {
   return (
     <>
       <Grid

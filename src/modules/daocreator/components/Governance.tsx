@@ -494,16 +494,13 @@ export const Governance: React.FC<{
   defineSubmit: any;
   setActiveStep: any;
   setGovernanceStep: any;
-  setProgress: any;
-}> = ({ defineSubmit, setActiveStep, setGovernanceStep, setProgress }) => {
+}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
 
   const dispatch = useDispatch();
-
-  setProgress(25);
 
   const saveStepInfo = (values: any, { setSubmitting }: any) => {
     setSubmitting(true);

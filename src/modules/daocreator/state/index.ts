@@ -8,7 +8,7 @@ export type CreatorState = typeof INITIAL_STATE;
 
 export enum StepperIndex {
   SELECT_TEMPLATE = 1,
-  CONFIGURE_TEPLATE,
+  CONFIGURE_TEMPLATE,
   REVIEW_INFORMATION,
   LAUNCH_ORGANIZATION,
 }
@@ -45,6 +45,33 @@ function updateGovernanceStep(step: number) {
   };
 }
 
+export const setActiveStep = (
+  dispatch: React.Dispatch<CreatorAction>,
+  step: number
+) =>
+  dispatch({
+    type: ActionTypes.UPDATE_STEP,
+    step,
+  });
+
+export const setHandleNextStep = (
+  dispatch: React.Dispatch<CreatorAction>,
+  handler: any
+) =>
+  dispatch({
+    type: ActionTypes.UPDATE_HANDLER,
+    handler,
+  });
+
+export const setGovernanceStep = (
+  dispatch: React.Dispatch<CreatorAction>,
+  step: number
+) =>
+  dispatch({
+    type: ActionTypes.UPDATE_GOVERNANCE_STEP,
+    step,
+  });
+
 export interface StepInfo {
   title: string;
   index: number;
@@ -52,7 +79,7 @@ export interface StepInfo {
 
 export const STEPS: StepInfo[] = [
   { title: "Select template", index: StepperIndex.SELECT_TEMPLATE },
-  { title: "Configure template", index: StepperIndex.CONFIGURE_TEPLATE },
+  { title: "Configure template", index: StepperIndex.CONFIGURE_TEMPLATE },
   { title: "Review information", index: StepperIndex.REVIEW_INFORMATION },
   { title: "Launch organization", index: StepperIndex.LAUNCH_ORGANIZATION },
 ];

@@ -10,7 +10,6 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { MockDAOs } from "../../../store/mock/mock";
-import { test } from "../../daocreator/state";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",

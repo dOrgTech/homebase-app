@@ -11,7 +11,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 
-import React, { useContext, useReducer, useState } from "react";
+import React, { useContext, useMemo, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { ConnectWallet } from "./ConnectWallet";
@@ -33,6 +33,9 @@ import {
   STEPS,
   StepInfo,
   ActionTypes,
+  setActiveStep,
+  setGovernanceStep,
+  setHandleNextStep,
 } from "../state";
 import { initialState } from "../../../store/wallet/reducer";
 
@@ -165,14 +168,12 @@ export const INITIAL_STATE = {
 
 export const DAOCreate: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const { activeStep, governanceStep, onNextStep } = state;
 
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [governanceStep, setGovernanceStep] = useState(0);
-  const [handleNextStep, setHandleNextStep] = useState(() => undefined);
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
-  const [progress, setProgress] = useState(0.5);
+
   const fullHeight = fullHeightStyles();
   const reducedHeight = reducedHeightStyles();
 
@@ -181,11 +182,10 @@ export const DAOCreate: React.FC = () => {
   function getStepContent(step: number) {
     switch (step) {
       case 0:
-        return <SelectTemplate setActiveStep={setActiveStep} />;
+        return <SelectTemplate setActiveStep={dispatch} />;
       case 1:
         return governanceStep === 0 ? (
           <Governance
-            setProgress={setProgress}
             defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
             setGovernanceStep={setGovernanceStep}
@@ -193,13 +193,12 @@ export const DAOCreate: React.FC = () => {
         ) : governanceStep === 1 ? (
           <DaoSettings
             defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
+            setActiveStep={dispatch}
           />
         ) : null;
       case 2:
         return (
           <TokenSettings
-            setProgress={setProgress}
             defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
             setGovernanceStep={setGovernanceStep}
@@ -208,29 +207,28 @@ export const DAOCreate: React.FC = () => {
       case 3:
         return (
           <Summary
-            setProgress={setProgress}
             setActiveStep={setActiveStep}
             setGovernanceStep={setGovernanceStep}
           />
         );
       case 4:
-        return <Review setProgress={setProgress} />;
+        return <Review />;
     }
   }
 
   const handleBackStep = () => {
     if (activeStep === 1 && governanceStep === 0) {
-      return setActiveStep(0);
+      return dispatch({ type: ActionTypes.UPDATE_STEP, step: 0 });
     } else if (activeStep === 1 && governanceStep !== 0) {
-      return setGovernanceStep(governanceStep - 1);
+      return setGovernanceStep(dispatch, governanceStep - 1);
     } else if (activeStep === 0) {
       history.push("/explorer");
     } else if (activeStep === 3 || activeStep === 2) {
-      return setActiveStep(activeStep - 1);
+      return dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 });
     }
   };
 
-  const { tezos } = useConnectWallet();
+  const progress = useMemo(() => activeStep * 25, [activeStep]);
 
   return (
     <PageContainer
@@ -251,7 +249,7 @@ export const DAOCreate: React.FC = () => {
           >
             <div className="indicator">
               <IndicatorValue>
-                {progress === 0.5 ? 0 : progress}%
+                {progress === 0.5 ? 0 : activeStep * 25}%
               </IndicatorValue>
             </div>
           </ProgressBar>
@@ -288,7 +286,9 @@ export const DAOCreate: React.FC = () => {
               </BackButton>
             </Grid>
             <Grid item xs={6}>
-              <NextButton onClick={() => setActiveStep(activeStep + 1)}>
+              <NextButton
+                onClick={() => setActiveStep(dispatch, activeStep + 1)}
+              >
                 {" "}
                 <WhiteText>{"LAUNCH"}</WhiteText>
               </NextButton>
@@ -311,7 +311,7 @@ export const DAOCreate: React.FC = () => {
 
             {activeStep === 1 || activeStep === 2 ? (
               <Grid item xs={6}>
-                <NextButton onClick={handleNextStep}>
+                <NextButton onClick={onNextStep}>
                   {" "}
                   <WhiteText>CONTINUE</WhiteText>
                 </NextButton>
