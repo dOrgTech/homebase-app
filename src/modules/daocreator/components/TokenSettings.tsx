@@ -6,7 +6,7 @@ import {
   InputAdornment,
 } from "@material-ui/core";
 import { Add } from "@material-ui/icons";
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../store";
@@ -14,6 +14,8 @@ import { saveDaoInformation } from "../../../store/dao-info/action";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 import { TokenHolders } from "../../../store/dao-info/types";
+import { CreatorContext } from "../state/context";
+import { ActionTypes } from "../state/types";
 
 interface Values {
   max_agent: number | undefined;
@@ -280,21 +282,18 @@ const TokenSettingsForm = ({
   );
 };
 
-export const TokenSettings: React.FC<{
-  defineSubmit: any;
-  setActiveStep: any;
-  setGovernanceStep: any;
-}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
+export const TokenSettings = () => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
 
   const dispatch = useDispatch();
+  const { dispatch: creatorDispatch } = useContext(CreatorContext);
   const saveStepInfo = (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     dispatch(saveDaoInformation(values));
-    setActiveStep(3);
+    creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 3 });
   };
 
   const validate = (values: Values) => {
@@ -357,7 +356,7 @@ export const TokenSettings: React.FC<{
           return (
             <Form style={{ width: "100%" }}>
               <TokenSettingsForm
-                defineSubmit={defineSubmit}
+                defineSubmit={() => undefined}
                 validate={validate}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

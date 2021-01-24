@@ -11,7 +11,13 @@ import {
   makeStyles,
 } from "@material-ui/core";
 
-import React, { useContext, useMemo, useReducer, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { useSelector } from "react-redux";
 
 import { ConnectWallet } from "./ConnectWallet";
@@ -26,17 +32,15 @@ import { useHistory } from "react-router-dom";
 import ProgressBar from "react-customizable-progressbar";
 import { useConnectWallet } from "../../../store/wallet/hook";
 import { AppState } from "../../../store";
-import {
-  INITIAL_STATE,
-  CreatorState,
-  CreatorAction,
-  STEPS,
-  StepInfo,
-  ActionTypes,
-  setActiveStep,
-  setGovernanceStep,
-  setHandleNextStep,
-} from "../state";
+// import {
+//   STEPS,
+//   StepInfo,
+//   setActiveStep,
+//   setGovernanceStep,
+//   setHandleNextStep,
+// } from "../state";
+import { CreatorContext } from "../state/context";
+import { ActionTypes, StepperIndex, StepInfo } from "../state/types";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -141,28 +145,18 @@ const IndicatorValue = styled(withTheme(Paper))((props) => ({
   fontFamily: "Roboto Mono",
 }));
 
-const reducer = (state: CreatorState, action: CreatorAction) => {
-  switch (action.type) {
-    case ActionTypes.UPDATE_HANDLER:
-      state.onNextStep = action.handler;
-      break;
-    case ActionTypes.UPDATE_STEP:
-      state.activeStep = action.step;
-      console.log(state);
-      break;
-    case ActionTypes.UPDATE_GOVERNANCE_STEP:
-      state.governanceStep = action.step;
-      break;
-    default:
-      return state;
-  }
-
-  return state;
-};
+const STEPS: StepInfo[] = [
+  { title: "Select template", index: StepperIndex.SELECT_TEMPLATE },
+  { title: "Configure template", index: StepperIndex.CONFIGURE_TEMPLATE },
+  { title: "Review information", index: StepperIndex.REVIEW_INFORMATION },
+  { title: "Launch organization", index: StepperIndex.LAUNCH_ORGANIZATION },
+];
 
 export const DAOCreate: React.FC = () => {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const { activeStep, governanceStep, onNextStep } = state;
+  const state = useContext(CreatorContext).state;
+  const { activeStep, governanceStep } = state;
+  console.log("F");
+  // console.log(onNextStep)
 
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
@@ -170,94 +164,42 @@ export const DAOCreate: React.FC = () => {
 
   const fullHeight = fullHeightStyles();
   const reducedHeight = reducedHeightStyles();
-
   const history = useHistory();
 
-  // const GetStep = (
-  //   switch (step) {
-  //     case 0:
-  //       return <SelectTemplate setActiveStep={dispatch} />;
-  //     case 1:
-  //       return governanceStep === 0 ? (
-  //         <Governance
-  //           defineSubmit={setHandleNextStep}
-  //           setActiveStep={setActiveStep}
-  //           setGovernanceStep={setGovernanceStep}
-  //         />
-  //       ) : governanceStep === 1 ? (
-  //         <DaoSettings
-  //           defineSubmit={setHandleNextStep}
-  //           setActiveStep={dispatch}
-  //         />
-  //       ) : null;
-  //     case 2:
-  //       return (
-  //         <TokenSettings
-  //           defineSubmit={setHandleNextStep}
-  //           setActiveStep={setActiveStep}
-  //           setGovernanceStep={setGovernanceStep}
-  //         />
-  //       );
-  //     case 3:
-  //       return (
-  //         <Summary
-  //           setActiveStep={setActiveStep}
-  //           setGovernanceStep={setGovernanceStep}
-  //         />
-  //       );
-  //     case 4:
-  //       return <Review />;
-  //   }
-  // )
-
-  function getStepContent(step: number) {
-    console.log("here ", step);
-    switch (step) {
+  const CurrentStep = () => {
+    switch (activeStep) {
       case 0:
-        return <SelectTemplate setActiveStep={dispatch} />;
+        return <SelectTemplate />;
       case 1:
         return governanceStep === 0 ? (
-          <Governance
-            defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
+          <Governance />
         ) : governanceStep === 1 ? (
-          <DaoSettings
-            defineSubmit={setHandleNextStep}
-            setActiveStep={dispatch}
-          />
-        ) : null;
+          <DaoSettings />
+        ) : (
+          <div />
+        );
       case 2:
-        return (
-          <TokenSettings
-            defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
-        );
+        return <TokenSettings />;
       case 3:
-        return (
-          <Summary
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
-        );
+        return <Summary />;
       case 4:
         return <Review />;
+
+      default:
+        return <div />;
     }
-  }
+  };
 
   const handleBackStep = () => {
-    if (activeStep === 1 && governanceStep === 0) {
-      return dispatch({ type: ActionTypes.UPDATE_STEP, step: 0 });
-    } else if (activeStep === 1 && governanceStep !== 0) {
-      return setGovernanceStep(dispatch, governanceStep - 1);
-    } else if (activeStep === 0) {
-      history.push("/explorer");
-    } else if (activeStep === 3 || activeStep === 2) {
-      return dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 });
-    }
+    // if (activeStep === 1 && governanceStep === 0) {
+    //   return dispatch({ type: ActionTypes.UPDATE_STEP, step: 0 });
+    // } else if (activeStep === 1 && governanceStep !== 0) {
+    //   return setGovernanceStep(dispatch, governanceStep - 1);
+    // } else if (activeStep === 0) {
+    //   history.push("/explorer");
+    // } else if (activeStep === 3 || activeStep === 2) {
+    //   return dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 });
+    // }
   };
 
   const progress = useMemo(() => activeStep * 25, [activeStep]);
@@ -297,7 +239,7 @@ export const DAOCreate: React.FC = () => {
       <Grid item container justify="center" alignItems="center" xs={9}>
         {account ? (
           <StepContentContainer item container justify="center">
-            {getStepContent(activeStep)}
+            <CurrentStep />
           </StepContentContainer>
         ) : (
           <StepOneContentContainer item container justify="center">
@@ -319,7 +261,7 @@ export const DAOCreate: React.FC = () => {
             </Grid>
             <Grid item xs={6}>
               <NextButton
-                onClick={() => setActiveStep(dispatch, activeStep + 1)}
+              // onClick={() => setActiveStep(dispatch, activeStep + 1)}
               >
                 {" "}
                 <WhiteText>{"LAUNCH"}</WhiteText>
@@ -343,7 +285,7 @@ export const DAOCreate: React.FC = () => {
 
             {activeStep === 1 || activeStep === 2 ? (
               <Grid item xs={6}>
-                <NextButton onClick={onNextStep}>
+                <NextButton /* onClick={onNextStep} */>
                   {" "}
                   <WhiteText>CONTINUE</WhiteText>
                 </NextButton>

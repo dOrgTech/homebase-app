@@ -6,7 +6,7 @@ import {
   TextareaAutosize,
   withTheme,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -17,6 +17,8 @@ import {
 } from "formik-material-ui";
 import { saveDaoInformation } from "../../../store/dao-info/action";
 import { AppState } from "../../../store";
+import { CreatorContext } from "../state/context";
+import { ActionTypes } from "../state/types";
 
 interface Values {
   token_name: string | undefined;
@@ -182,10 +184,10 @@ const DaoSettingsForm = ({
     </>
   );
 };
-export const DaoSettings: React.FC<{
-  defineSubmit: any;
-  setActiveStep: any;
-}> = ({ defineSubmit, setActiveStep }) => {
+export const DaoSettings = () => {
+  const creatorState = useContext(CreatorContext);
+  const updateState = creatorState.dispatch;
+
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
@@ -196,7 +198,7 @@ export const DaoSettings: React.FC<{
   const saveStepInfo = (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     dispatch(saveDaoInformation(values));
-    setActiveStep(2);
+    updateState({ type: ActionTypes.UPDATE_STEP, step: 2 });
   };
 
   const validate = (values: Values) => {
@@ -253,7 +255,7 @@ export const DaoSettings: React.FC<{
           return (
             <Form style={{ width: "100%" }}>
               <DaoSettingsForm
-                defineSubmit={defineSubmit}
+                defineSubmit={() => undefined}
                 validate={validate}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

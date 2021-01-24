@@ -11,6 +11,7 @@ import { theme } from "./theme";
 import { DAOExplorerRouter } from "./router/explorer";
 import { Navbar } from "./components/common/toolbar";
 import { DAOCreate } from "./modules/daocreator/components";
+import { CreatorProvider } from "./modules/daocreator/state/context";
 
 const App: React.FC = () => {
   return (
@@ -20,7 +21,9 @@ const App: React.FC = () => {
         <Router>
           <Switch>
             <Route path="/creator">
-              <DAOCreate />
+              <CreatorProvider>
+                <DAOCreate />
+              </CreatorProvider>
             </Route>
             <Route path="/explorer">
               <DAOExplorerRouter />

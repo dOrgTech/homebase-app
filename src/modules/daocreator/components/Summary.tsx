@@ -1,9 +1,11 @@
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-import React from "react";
+import React, { useContext } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../store";
 import { TokenHolders } from "../../../store/dao-info/types";
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
+import { CreatorContext } from "../state/context";
+import { ActionTypes } from "../state/types";
 
 interface Props {
   setActiveStep: any;
@@ -121,22 +123,21 @@ const UnderlinedGrid = styled(Grid)({
   padding: 2,
 });
 
-export const Summary: React.FC<Props> = (props) => {
-  const { setActiveStep, setGovernanceStep } = props;
-
+export const Summary = () => {
+  const { dispatch: creatorDispatch } = useContext(CreatorContext);
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
 
   const goToVoting = () => {
-    setGovernanceStep(0);
-    setActiveStep(1);
+    creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
+    creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
   };
 
   const goToSettings = () => {
-    // setGovernanceStep(1);
-    setActiveStep(2);
+    creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 2 });
+    creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
   };
 
   return (

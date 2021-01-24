@@ -7,11 +7,9 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React from "react";
-
-interface Props {
-  setActiveStep: any;
-}
+import React, { useContext } from "react";
+import { CreatorContext } from "../state/context";
+import { ActionTypes } from "../state/types";
 
 const CustomCard = styled(withTheme(Grid))((props) => ({
   minHeight: 248,
@@ -69,8 +67,8 @@ const Subtitle = styled(Typography)({
   marginTop: 10,
 });
 
-export const SelectTemplate: React.FC<Props> = (props) => {
-  const { setActiveStep } = props;
+export const SelectTemplate = () => {
+  const { dispatch } = useContext(CreatorContext);
   return (
     <>
       <Grid container direction="row">
@@ -104,7 +102,9 @@ export const SelectTemplate: React.FC<Props> = (props) => {
                 </Subtitle>
               </CustomCardContent>
               <FooterContainer
-                onClick={() => setActiveStep({ type: "UPDATE_STEP", step: 1 })}
+                onClick={() =>
+                  dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 })
+                }
               >
                 <Typography variant="subtitle1" color="textSecondary">
                   USE TEMPLATE
@@ -129,7 +129,11 @@ export const SelectTemplate: React.FC<Props> = (props) => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer onClick={() => setActiveStep(1)}>
+              <FooterContainer
+                onClick={() =>
+                  dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 })
+                }
+              >
                 <Typography variant="subtitle1" color="textSecondary">
                   USE TEMPLATE
                 </Typography>
