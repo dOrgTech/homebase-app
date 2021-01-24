@@ -11,7 +11,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store";
 import { ConnectWallet } from "./ConnectWallet";
@@ -24,6 +24,9 @@ import { Review } from "./Review";
 import { useHistory } from "react-router-dom";
 import { useConnectWallet } from "../../store/wallet/hook";
 import ProgressBar from "react-customizable-progressbar";
+import { useOriginate } from "../../hooks/useOriginate";
+import { MichelsonMap } from "@taquito/taquito";
+import { TokenHolders } from "../../store/dao-info/types";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -133,7 +136,83 @@ const STEPS = [
   "Review information",
   "Launch organization",
 ];
+
+const metadataCarrierParams = {
+  keyName: "jaja",
+  metadata: {
+    frozenToken: {
+      name: "J",
+      symbol: "JAJA",
+      decimals: 18,
+    },
+    unfrozenToken: {
+      name: "J",
+      symbol: "JAJA",
+      decimals: 18,
+    },
+  },
+};
+
 export const DAOCreate: React.FC = () => {
+  const [
+    originateMetaData,
+    { loading: loadingMetadataContract, data: carrierData },
+  ] = useOriginate("MetadataCarrier", metadataCarrierParams);
+
+  const daoInfo = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
+    (state) => state.saveDaoInformationReducer
+  );
+  const membersTokenAllocation = daoInfo.token_holders.map(
+    (holder: TokenHolders) => {
+      return {
+        address: holder.token_holder,
+        amount: holder.balance.toString(),
+        tokenId: "1",
+      };
+    }
+  );
+
+  const unfrozenScale = daoInfo.stake_returned_percentage;
+  const unfrozenExtra = daoInfo.stake_returned;
+  const frozenScale = daoInfo.min_stake_percentage;
+  const frozenExtra = daoInfo.min_stake;
+
+  const [
+    originateTreasury,
+    { loading: loadingTrasuryData, data: treasuryData },
+  ] = useOriginate("Treasury", {
+    storage: {
+      membersTokenAllocation,
+      adminAddress: daoInfo.administrator,
+      frozenScaleValue: 1,
+      frozenExtraValue: 0,
+      slashScaleValue: 1,
+      slashDivisionValue: 1,
+      minXtzAmount: 1,
+      maxXtzAmount: daoInfo.max_agent!,
+      maxProposalSize: 100,
+      quorumTreshold: 4,
+      votingPeriod:
+        daoInfo.voting_hours! * 3600 +
+        daoInfo.voting_days! * 24 * 3600 +
+        daoInfo.voting_minutes! * 60,
+    },
+    metadataCarrierDeploymentData: {
+      deployAddress: carrierData ? carrierData.address : "",
+      keyName: "jaja",
+    },
+  });
+
+  useEffect(() => {
+    console.log("loading data ", loadingTrasuryData);
+    if (treasuryData) {
+      console.log("trasury data ", treasuryData);
+    }
+  }, [loadingTrasuryData, treasuryData]);
+
+  console.log(carrierData);
+  console.log("loading: loadingMetadataContract ", loadingMetadataContract);
+
   const [activeStep, setActiveStep] = React.useState(0);
   const [governanceStep, setGovernanceStep] = useState(0);
   const [handleNextStep, setHandleNextStep] = useState(() => undefined);
@@ -145,6 +224,20 @@ export const DAOCreate: React.FC = () => {
   const reducedHeight = reducedHeightStyles();
 
   const history = useHistory<any>();
+
+  const handleStep = () => {
+    if (activeStep === 2) {
+      originateMetaData();
+    }
+
+    setActiveStep(activeStep + 1);
+  };
+
+  useEffect(() => {
+    if (carrierData) {
+      originateTreasury();
+    }
+  }, [carrierData]);
 
   function getStepContent(step: number, handleNextStep: any) {
     switch (step) {
@@ -251,7 +344,7 @@ export const DAOCreate: React.FC = () => {
               </BackButton>
             </Grid>
             <Grid item xs={6}>
-              <NextButton onClick={() => setActiveStep(activeStep + 1)}>
+              <NextButton onClick={handleStep}>
                 {" "}
                 <WhiteText>
                   {activeStep !== 2 ? "CONTINUE" : "Launch Organization"}

@@ -1685,6 +1685,13 @@
   dependencies:
     xhr2-cookies "^1.1.0"
 
+"@taquito/http-utils@^7.2.0-alpha.0", "@taquito/http-utils@^7.2.0-beta.2":
+  version "7.2.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@taquito/http-utils/-/http-utils-7.2.0-beta.2.tgz#19ac99df11083383102032e54f38835d1103f80f"
+  integrity sha512-COElCghypZt3QQhcsaMnC6oeTA0tJ5IvBnWT5kxZ6f1d6fWS8NZqcW2PPFbFFEsz1j9UaeAq9SAIvaUjsiTXNg==
+  dependencies:
+    xhr2-cookies "^1.1.0"
+
 "@taquito/michel-codec@^7.0.1-beta.0":
   version "7.0.1-beta.0"
   resolved "https://registry.yarnpkg.com/@taquito/michel-codec/-/michel-codec-7.0.1-beta.0.tgz#e6ec63b90ed5e7bfe2a59aa638552114faa9ae06"
@@ -1694,6 +1701,11 @@
   version "7.1.0-preview-lambdaview.0"
   resolved "https://registry.yarnpkg.com/@taquito/michel-codec/-/michel-codec-7.1.0-preview-lambdaview.0.tgz#514e9d1a2a567940edcd5e5ef6af2d437b72afdb"
   integrity sha512-0wka0USOtM9qBvLVpszVJIvgW3/qyqe92GFPQjeEUl8uHExgMk/ShnB/kxcKnWaH08aO2LF7Mad/dkQkcxAoxA==
+
+"@taquito/michel-codec@^7.2.0-beta.2":
+  version "7.2.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@taquito/michel-codec/-/michel-codec-7.2.0-beta.2.tgz#d1031c60d09abceb7acc8a1dfcc60124fdb6714e"
+  integrity sha512-3kENFAAJ97StRWxjiTmCIByJh/+OAwNEso7utoU103J3Qe4ZN3TkmVLqWtMYxNYSuwA4VG+b8fPJx1yL351AEQ==
 
 "@taquito/michelson-encoder@^7.0.1-beta.0":
   version "7.0.1-beta.0"
@@ -1715,6 +1727,16 @@
     bignumber.js "^9.0.1"
     fast-json-stable-stringify "^2.1.0"
 
+"@taquito/michelson-encoder@^7.2.0-alpha.0", "@taquito/michelson-encoder@^7.2.0-beta.2":
+  version "7.2.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@taquito/michelson-encoder/-/michelson-encoder-7.2.0-beta.2.tgz#2bb3debaf6b62f51225afbe2123453d5f1d5dc50"
+  integrity sha512-bFd6+vgWtOw/6ctNpq1Bk7Io+RAt6HinTQocEcgkyd+v5UUPu7D1zTbcwwiPf2Z8Z+9oFSLMbqqgVvPCZP/t3g==
+  dependencies:
+    "@taquito/rpc" "^7.2.0-beta.2"
+    "@taquito/utils" "^7.2.0-beta.2"
+    bignumber.js "^9.0.1"
+    fast-json-stable-stringify "^2.1.0"
+
 "@taquito/rpc@^7.0.1-beta.0":
   version "7.0.1-beta.0"
   resolved "https://registry.yarnpkg.com/@taquito/rpc/-/rpc-7.0.1-beta.0.tgz#95f39a45b5aa5ae378fcdc84eb781ad0bb4191c9"
@@ -1730,6 +1752,15 @@
   integrity sha512-je2gQmVPYxPQdYIOPvPWQhNaHVkMws5q8YyTxacWU93Y5IBw1a3hKX7J1dymomlfeP3fJWHViYuwJKPQdmifXg==
   dependencies:
     "@taquito/http-utils" "^7.1.0-preview-lambdaview.0"
+    bignumber.js "^9.0.1"
+    lodash "^4.17.20"
+
+"@taquito/rpc@^7.2.0-alpha.0", "@taquito/rpc@^7.2.0-beta.2":
+  version "7.2.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@taquito/rpc/-/rpc-7.2.0-beta.2.tgz#637f8ca78335da4cbffce326e68ea234b1398f48"
+  integrity sha512-891LKsy3m+J77T5GpswTl3Nh+XAU7FiQ1Vh1/qXaU08sgBd1Bb/uE6DHXZoTcw4FaR4rTpjCWy96XgqySsPWzQ==
+  dependencies:
+    "@taquito/http-utils" "^7.2.0-beta.2"
     bignumber.js "^9.0.1"
     lodash "^4.17.20"
 
@@ -1775,6 +1806,20 @@
     rx-sandbox "^1.0.3"
     rxjs "^6.6.3"
 
+"@taquito/taquito@^7.2.0-alpha.0":
+  version "7.2.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@taquito/taquito/-/taquito-7.2.0-beta.2.tgz#de7064194052ac16658f15c7bdf9cf0da3d13398"
+  integrity sha512-vRQJ7HRj2UY0yVzfalJn4/j1Suaf60PM5f6NEvjExOiED7g8X/Cqi8lSkHGgKnzM59M6Jbi30Q9yNmunwQayBg==
+  dependencies:
+    "@taquito/http-utils" "^7.2.0-beta.2"
+    "@taquito/michel-codec" "^7.2.0-beta.2"
+    "@taquito/michelson-encoder" "^7.2.0-beta.2"
+    "@taquito/rpc" "^7.2.0-beta.2"
+    "@taquito/utils" "^7.2.0-beta.2"
+    bignumber.js "^9.0.1"
+    rx-sandbox "^1.0.3"
+    rxjs "^6.6.3"
+
 "@taquito/tezbridge-signer@^7.0.1-beta.0":
   version "7.0.1-beta.0"
   resolved "https://registry.yarnpkg.com/@taquito/tezbridge-signer/-/tezbridge-signer-7.0.1-beta.0.tgz#343e16cfb0c8b4904df33b1d8aa911a27019e492"
@@ -1790,6 +1835,19 @@
   dependencies:
     "@taquito/taquito" "^7.0.1-beta.0"
 
+"@taquito/tzip16@^7.2.0-alpha.0":
+  version "7.2.0-alpha.0"
+  resolved "https://registry.yarnpkg.com/@taquito/tzip16/-/tzip16-7.2.0-alpha.0.tgz#584b6339380987b726dc662d07999d6207425913"
+  integrity sha512-TEUTR68Xbk7D2FDQYg7Ev4eNnp9IUtpinnSNfabVdhiYfx653B5BIqezv91Z4k5jJ74m/IUPzTnEnNqSkzT5NQ==
+  dependencies:
+    "@taquito/http-utils" "^7.2.0-alpha.0"
+    "@taquito/michelson-encoder" "^7.2.0-alpha.0"
+    "@taquito/rpc" "^7.2.0-alpha.0"
+    "@taquito/taquito" "^7.2.0-alpha.0"
+    "@taquito/utils" "^7.2.0-alpha.0"
+    "@types/crypto-js" "^4.0.1"
+    bignumber.js "^9.0.1"
+
 "@taquito/utils@^7.0.1-beta.0":
   version "7.0.1-beta.0"
   resolved "https://registry.yarnpkg.com/@taquito/utils/-/utils-7.0.1-beta.0.tgz#e6bdfdf7ed218c910ecaecf310e8286660997913"
@@ -1803,6 +1861,15 @@
   version "7.1.0-preview-lambdaview.0"
   resolved "https://registry.yarnpkg.com/@taquito/utils/-/utils-7.1.0-preview-lambdaview.0.tgz#89c5207ec7f753a0170dd41c10551a748dffa1d1"
   integrity sha512-Nm2v8TO+jho2ZsV3IGqymPkkiaZXVBVB6eMTDzqRx3BGzn2lTrYT5XqVoRCWZdkeavnrnu75ntMBrhMNpfDfLA==
+  dependencies:
+    blakejs "^1.1.0"
+    bs58check "^2.1.2"
+    buffer "^5.6.0"
+
+"@taquito/utils@^7.2.0-alpha.0", "@taquito/utils@^7.2.0-beta.2":
+  version "7.2.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@taquito/utils/-/utils-7.2.0-beta.2.tgz#a89b949c700575f00e15ff4091d6cade65901ec1"
+  integrity sha512-/xAznoXXnOX2RcZFvWbBB+f2sYox+t+PKPwKdWZd1w3kzK02Fui1TaRHTn9CNOdb36TyVKCRbUsdYkBMfd9NQg==
   dependencies:
     blakejs "^1.1.0"
     bs58check "^2.1.2"
@@ -1860,6 +1927,11 @@
   dependencies:
     "@types/filesystem" "*"
     "@types/har-format" "*"
+
+"@types/crypto-js@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.0.1.tgz#3a4bd24518b0e6c5940da4e2659eeb2ef0806963"
+  integrity sha512-6+OPzqhKX/cx5xh+yO8Cqg3u3alrkhoxhE5ZOdSEv0DOzJ13lwJ6laqGU0Kv6+XDMFmlnGId04LtY22PsFLQUw==
 
 "@types/eslint@^7.2.4":
   version "7.2.6"
@@ -4079,6 +4151,11 @@ crypto-browserify@^3.11.0:
     public-encrypt "^4.0.0"
     randombytes "^2.0.0"
     randomfill "^1.0.3"
+
+crypto-js@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.0.0.tgz#2904ab2677a9d042856a2ea2ef80de92e4a36dcc"
+  integrity sha512-bzHZN8Pn+gS7DQA6n+iUmBfl0hO5DJq++QP3U6uTucDtk/0iGpXd/Gg7CGR0p8tJhofJyaKoWBuJI4eAO00BBg==
 
 crypto-random-string@^1.0.0:
   version "1.0.0"

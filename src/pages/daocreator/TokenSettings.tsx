@@ -156,11 +156,11 @@ const TokenSettingsForm = ({
                             placeholder="0xf8s8d...."
                             name={`token_holders.${index}.token_holder`}
                           />
-                          {errors.token_holders &&
+                          {/* {errors.token_holders &&
                           errors.token_holders[index] &&
                           touched.token_holders[index] ? (
                             <ErrorText>{errors.token_holders[index]}</ErrorText>
-                          ) : null}
+                          ) : null} */}
                         </CustomInputContainer>
                       </div>
                     ))
