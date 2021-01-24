@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, Dispatch } from "react";
+import React, { createContext, useReducer, Dispatch, useMemo } from "react";
 import {
   CreatorAction,
   CreatorState,
@@ -49,9 +49,11 @@ export const reducer = (state: CreatorState, action: CreatorAction) => {
 
 const CreatorProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-
+  const contextValue = useMemo(() => {
+    return { state, dispatch };
+  }, [state, dispatch]);
   return (
-    <CreatorContext.Provider value={{ state, dispatch }}>
+    <CreatorContext.Provider value={contextValue}>
       {children}
     </CreatorContext.Provider>
   );

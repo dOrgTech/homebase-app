@@ -163,7 +163,7 @@ const GovernanceForm = ({
 
   useMemo(() => {
     console.log(values);
-    // creatorDispatcher(submitForm);
+    creatorDispatcher(submitForm);
   }, [values]);
 
   return (
