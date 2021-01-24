@@ -152,11 +152,34 @@ const STEPS: StepInfo[] = [
   { title: "Launch organization", index: StepperIndex.LAUNCH_ORGANIZATION },
 ];
 
+const CurrentStep = () => {
+  const { activeStep, governanceStep } = useContext(CreatorContext).state;
+
+  switch (activeStep) {
+    case 0:
+      return <SelectTemplate />;
+    case 1:
+      return governanceStep === 0 ? (
+        <Governance />
+      ) : governanceStep === 1 ? (
+        <DaoSettings />
+      ) : (
+        <div />
+      );
+    case 2:
+      return <TokenSettings />;
+    case 3:
+      return <Summary />;
+    case 4:
+      return <Review />;
+
+    default:
+      return <div />;
+  }
+};
+
 export const DAOCreate: React.FC = () => {
-  const state = useContext(CreatorContext).state;
-  const { activeStep, governanceStep } = state;
-  console.log("F");
-  // console.log(onNextStep)
+  const { activeStep, onNextStep } = useContext(CreatorContext).state;
 
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
@@ -165,30 +188,6 @@ export const DAOCreate: React.FC = () => {
   const fullHeight = fullHeightStyles();
   const reducedHeight = reducedHeightStyles();
   const history = useHistory();
-
-  const CurrentStep = () => {
-    switch (activeStep) {
-      case 0:
-        return <SelectTemplate />;
-      case 1:
-        return governanceStep === 0 ? (
-          <Governance />
-        ) : governanceStep === 1 ? (
-          <DaoSettings />
-        ) : (
-          <div />
-        );
-      case 2:
-        return <TokenSettings />;
-      case 3:
-        return <Summary />;
-      case 4:
-        return <Review />;
-
-      default:
-        return <div />;
-    }
-  };
 
   const handleBackStep = () => {
     // if (activeStep === 1 && governanceStep === 0) {
@@ -285,7 +284,7 @@ export const DAOCreate: React.FC = () => {
 
             {activeStep === 1 || activeStep === 2 ? (
               <Grid item xs={6}>
-                <NextButton /* onClick={onNextStep} */>
+                <NextButton onClick={onNextStep()}>
                   {" "}
                   <WhiteText>CONTINUE</WhiteText>
                 </NextButton>
