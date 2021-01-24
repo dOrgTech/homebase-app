@@ -1,5 +1,8 @@
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useOriginate } from "../../hooks/useOriginate";
+import { AppState } from "../../store";
 
 const Circle = styled(withTheme(Paper))((props) => ({
   background: props.theme.palette.secondary.main,
@@ -15,6 +18,10 @@ const WaitingText = styled(Typography)({
 });
 
 export const Review: React.FC = () => {
+  const test = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
+    (state) => state.saveDaoInformationReducer
+  );
+
   return (
     <>
       <Grid
