@@ -27,7 +27,7 @@ import ProgressBar from "react-customizable-progressbar";
 import { useConnectWallet } from "../../../store/wallet/hook";
 import { AppState } from "../../../store";
 import {
-  // INITIAL_STATE,
+  INITIAL_STATE,
   CreatorState,
   CreatorAction,
   STEPS,
@@ -37,7 +37,6 @@ import {
   setGovernanceStep,
   setHandleNextStep,
 } from "../state";
-import { initialState } from "../../../store/wallet/reducer";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -149,6 +148,7 @@ const reducer = (state: CreatorState, action: CreatorAction) => {
       break;
     case ActionTypes.UPDATE_STEP:
       state.activeStep = action.step;
+      console.log(state);
       break;
     case ActionTypes.UPDATE_GOVERNANCE_STEP:
       state.governanceStep = action.step;
@@ -158,12 +158,6 @@ const reducer = (state: CreatorState, action: CreatorAction) => {
   }
 
   return state;
-};
-
-export const INITIAL_STATE = {
-  activeStep: 0,
-  governanceStep: 0,
-  onNextStep: () => undefined,
 };
 
 export const DAOCreate: React.FC = () => {
@@ -179,7 +173,45 @@ export const DAOCreate: React.FC = () => {
 
   const history = useHistory();
 
+  // const GetStep = (
+  //   switch (step) {
+  //     case 0:
+  //       return <SelectTemplate setActiveStep={dispatch} />;
+  //     case 1:
+  //       return governanceStep === 0 ? (
+  //         <Governance
+  //           defineSubmit={setHandleNextStep}
+  //           setActiveStep={setActiveStep}
+  //           setGovernanceStep={setGovernanceStep}
+  //         />
+  //       ) : governanceStep === 1 ? (
+  //         <DaoSettings
+  //           defineSubmit={setHandleNextStep}
+  //           setActiveStep={dispatch}
+  //         />
+  //       ) : null;
+  //     case 2:
+  //       return (
+  //         <TokenSettings
+  //           defineSubmit={setHandleNextStep}
+  //           setActiveStep={setActiveStep}
+  //           setGovernanceStep={setGovernanceStep}
+  //         />
+  //       );
+  //     case 3:
+  //       return (
+  //         <Summary
+  //           setActiveStep={setActiveStep}
+  //           setGovernanceStep={setGovernanceStep}
+  //         />
+  //       );
+  //     case 4:
+  //       return <Review />;
+  //   }
+  // )
+
   function getStepContent(step: number) {
+    console.log("here ", step);
     switch (step) {
       case 0:
         return <SelectTemplate setActiveStep={dispatch} />;

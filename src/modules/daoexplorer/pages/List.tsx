@@ -78,7 +78,6 @@ export const DAOsList: React.FC = () => {
     }
     return;
   };
-  console.log(test);
 
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">

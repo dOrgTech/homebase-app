@@ -1,17 +1,18 @@
-export const INITIAL_STATE = {
-  activeStep: 0,
-  governanceStep: 0,
-  onNextStep: () => undefined,
-};
+import { Stepper } from "@material-ui/core";
 
 export type CreatorState = typeof INITIAL_STATE;
 
 export enum StepperIndex {
-  SELECT_TEMPLATE = 1,
+  SELECT_TEMPLATE,
   CONFIGURE_TEMPLATE,
   REVIEW_INFORMATION,
   LAUNCH_ORGANIZATION,
 }
+export const INITIAL_STATE = {
+  activeStep: StepperIndex.SELECT_TEMPLATE,
+  governanceStep: StepperIndex.SELECT_TEMPLATE,
+  onNextStep: () => undefined,
+};
 
 export type CreatorAction = ReturnType<
   typeof updateActiveStep | typeof updateGovernanceStep | typeof updateHandler

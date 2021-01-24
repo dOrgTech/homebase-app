@@ -103,7 +103,9 @@ export const SelectTemplate: React.FC<Props> = (props) => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer onClick={() => setActiveStep(1)}>
+              <FooterContainer
+                onClick={() => setActiveStep({ type: "UPDATE_STEP", step: 1 })}
+              >
                 <Typography variant="subtitle1" color="textSecondary">
                   USE TEMPLATE
                 </Typography>
