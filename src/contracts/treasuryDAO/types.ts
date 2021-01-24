@@ -1,4 +1,7 @@
-import { FA2MetadataParams, MetadataCarrierDeploymentData } from "../metadataCarrier/types";
+import {
+  FA2MetadataParams,
+  MetadataCarrierDeploymentData,
+} from "../metadataCarrier/types";
 
 export interface MemberTokenAllocation {
   address: string;
@@ -8,7 +11,7 @@ export interface MemberTokenAllocation {
 
 export interface TreasuryParams {
   storage: {
-    membersTokenAllocation: MemberTokenAllocation[],
+    membersTokenAllocation: MemberTokenAllocation[];
     adminAddress: string;
     frozenScaleValue: number;
     frozenExtraValue: number;
@@ -19,6 +22,6 @@ export interface TreasuryParams {
     maxProposalSize: number;
     quorumTreshold: number;
     votingPeriod: number;
-  },
+  };
   metadataCarrierDeploymentData: MetadataCarrierDeploymentData;
 }

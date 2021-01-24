@@ -2389,4 +2389,4 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                             DROP };
                      NIL operation;
                      PAIR } } } };
-DIP { DROP 2 } };`
+DIP { DROP 2 } };`;

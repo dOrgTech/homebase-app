@@ -2,10 +2,7 @@ import { MichelsonMap } from "@taquito/taquito";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { getTestProvider } from "../utils";
 import { code } from "./code";
-import {
-  MemberTokenAllocation,
-  TreasuryParams,
-} from "./types";
+import { MemberTokenAllocation, TreasuryParams } from "./types";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();
