@@ -52,7 +52,8 @@ const StepContentContainer = styled(Grid)({
   paddingRight: "16%",
   marginTop: "2.5%",
   marginBottom: "2%",
-  height: "calc(100% - 112px)",
+  // height: "calc(100% - 112px)",
+  minHeight: 650,
   alignItems: "center",
 });
 
@@ -61,8 +62,9 @@ const StepOneContentContainer = styled(Grid)({
   paddingRight: "16%",
   marginTop: "2.5%",
   marginBottom: "2%",
-  height: "80%",
+  // height: "80%",
   alignItems: "center",
+  minHeight: 650,
 });
 
 const Footer = styled(withTheme(Grid))((props) => ({
@@ -159,27 +161,30 @@ export const DAOCreate: React.FC = () => {
             setGovernanceStep={setGovernanceStep}
           />
         ) : governanceStep === 1 ? (
-          <TokenSettings
-            defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
-        ) : (
           <DaoSettings
             defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
           />
-        );
+        ) : null;
       case 2:
         return (
-          <Summary
+          <TokenSettings
+            setProgress={setProgress}
+            defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
             setGovernanceStep={setGovernanceStep}
           />
         );
       case 3:
-        return <Review />;
+        return (
+          <Summary
+            setProgress={setProgress}
+            setActiveStep={setActiveStep}
+            setGovernanceStep={setGovernanceStep}
+          />
+        );
+      case 4:
+        return <Review setProgress={setProgress} />;
     }
   }
 
@@ -190,6 +195,8 @@ export const DAOCreate: React.FC = () => {
       return setGovernanceStep(governanceStep - 1);
     } else if (activeStep === 0) {
       history.push("/explorer");
+    } else if (activeStep === 3 || activeStep === 2) {
+      return setActiveStep(activeStep - 1);
     }
   };
 
@@ -238,7 +245,7 @@ export const DAOCreate: React.FC = () => {
           </StepOneContentContainer>
         )}
 
-        {activeStep !== 0 && activeStep !== 1 && activeStep !== 3 ? (
+        {activeStep === 3 ? (
           <Footer
             container
             direction="row"
@@ -246,22 +253,20 @@ export const DAOCreate: React.FC = () => {
             alignItems="center"
           >
             <Grid item xs={6}>
-              <BackButton onClick={() => setActiveStep(activeStep - 1)}>
+              <BackButton onClick={handleBackStep}>
                 <Typography>BACK</Typography>{" "}
               </BackButton>
             </Grid>
             <Grid item xs={6}>
               <NextButton onClick={() => setActiveStep(activeStep + 1)}>
                 {" "}
-                <WhiteText>
-                  {activeStep !== 2 ? "CONTINUE" : "Launch Organization"}
-                </WhiteText>
+                <WhiteText>{"LAUNCH"}</WhiteText>
               </NextButton>
             </Grid>
           </Footer>
         ) : null}
 
-        {account && (activeStep === 1 || activeStep === 0) ? (
+        {account && activeStep !== 3 && activeStep !== 4 ? (
           <Footer
             container
             direction="row"
@@ -273,12 +278,15 @@ export const DAOCreate: React.FC = () => {
                 <Typography>BACK </Typography>{" "}
               </BackButton>
             </Grid>
-            <Grid item xs={6}>
-              <NextButton onClick={handleNextStep}>
-                {" "}
-                <WhiteText>CONTINUE</WhiteText>
-              </NextButton>
-            </Grid>
+
+            {activeStep === 1 || activeStep === 2 ? (
+              <Grid item xs={6}>
+                <NextButton onClick={handleNextStep}>
+                  {" "}
+                  <WhiteText>CONTINUE</WhiteText>
+                </NextButton>
+              </Grid>
+            ) : null}
           </Footer>
         ) : null}
 

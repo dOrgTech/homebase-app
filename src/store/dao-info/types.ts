@@ -6,8 +6,10 @@ export interface DaoInformation {
   voting_hours: number;
   voting_minutes: number;
   min_stake: number;
-  min_support: number;
-  stake_returned: number;
+  propose_stake_mygt: number;
+  propose_stake_percentage: number;
+  vote_stake_mygt: number;
+  vote_stake_percentage: number;
 }
 
 export interface TokenHolders {

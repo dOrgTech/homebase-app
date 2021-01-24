@@ -2,10 +2,13 @@ import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
 import React from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../store";
+import { TokenHolders } from "../../store/dao-info/types";
+import { TokenHoldersRow } from "../daoexplorer/components/TokenHoldersRow";
 
 interface Props {
   setActiveStep: any;
   setGovernanceStep: any;
+  setProgress: any;
 }
 
 const CustomUrlButton = styled(withTheme(Paper))((props) => ({
@@ -25,8 +28,6 @@ const CustomUrlButton = styled(withTheme(Paper))((props) => ({
 }));
 
 const CustomTypography = styled(Typography)({
-  paddingBottom: 21,
-  borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
 });
 
@@ -87,13 +88,49 @@ const AddressContainer = styled(Grid)({
   overflowY: "scroll",
 });
 
+const TitleSpacing = styled(Typography)({
+  marginTop: 12,
+});
+
+const ContainerSpacing = styled(Typography)({
+  marginTop: 24,
+});
+
+const ContainerSpacingButton = styled(Typography)({
+  marginTop: 24,
+  cursor: "pointer",
+});
+
+const ContainerButton = styled(Typography)({
+  paddingBottom: 8,
+  marginTop: 24,
+  borderBottom: "1px solid #3D3D3D",
+});
+
+const AdminContainer = styled(Grid)({
+  border: "1px solid #3D3D3D",
+  marginTop: 16,
+  padding: "16px 18px",
+});
+
+const AdminAddress = styled(Typography)({
+  wordBreak: "break-all",
+});
+
+const UnderlinedGrid = styled(Grid)({
+  borderBottom: "1px solid #3D3D3D",
+  padding: 2,
+});
+
 export const Summary: React.FC<Props> = (props) => {
-  const { setActiveStep, setGovernanceStep } = props;
+  const { setActiveStep, setGovernanceStep, setProgress } = props;
 
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
+
+  setProgress(75);
 
   const goToVoting = () => {
     setGovernanceStep(0);
@@ -101,8 +138,8 @@ export const Summary: React.FC<Props> = (props) => {
   };
 
   const goToSettings = () => {
-    setGovernanceStep(1);
-    setActiveStep(1);
+    // setGovernanceStep(1);
+    setActiveStep(2);
   };
 
   return (
@@ -119,150 +156,160 @@ export const Summary: React.FC<Props> = (props) => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <CustomTypography variant="subtitle1" color="textSecondary">
+          <CustomTypography variant="body1" color="textSecondary">
             Review your settings to ensure you’ve made the correct choices.
           </CustomTypography>
         </Grid>
 
         <SecondContainer container direction="row">
+          <Grid item xs={12}>
+            <TitleSpacing color="secondary" variant="subtitle1">
+              {storageDaoInformation.token_symbol}
+            </TitleSpacing>
+          </Grid>
+          <Grid item xs={12}>
+            <TitleSpacing color="textSecondary" variant="h3">
+              {storageDaoInformation.token_name}
+            </TitleSpacing>
+          </Grid>
+          <Grid item xs={12}>
+            <TitleSpacing color="textSecondary" variant="body1">
+              {storageDaoInformation.description}
+            </TitleSpacing>
+          </Grid>
+        </SecondContainer>
+
+        <SecondContainer container direction="row">
           <Grid item xs={6}>
-            <Grid container direction="row" alignItems="center">
-              <Typography variant="subtitle1" color="textSecondary">
-                Voting
-              </Typography>
-              <CustomUrlButton onClick={goToVoting}>EDIT</CustomUrlButton>
-            </Grid>
-            <CustomColumnContainer container direction="column">
-              <CustomGridItem item>
-                <Typography variant="subtitle2" color="textSecondary">
+            <ContainerSpacing color="textSecondary" variant="subtitle1">
+              TOKEN SETTINGS
+            </ContainerSpacing>
+          </Grid>
+          <Grid item xs={6}>
+            <ContainerSpacingButton
+              color="secondary"
+              variant="subtitle1"
+              align="right"
+              onClick={goToSettings}
+            >
+              EDIT
+            </ContainerSpacingButton>
+          </Grid>
+
+          <Grid item xs={12}>
+            <AdminContainer container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="subtitle1" color="textSecondary">
+                  Administrator
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <AdminAddress
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {storageDaoInformation.administrator}
+                </AdminAddress>
+              </Grid>
+            </AdminContainer>
+          </Grid>
+          {storageDaoInformation.token_holders.map(
+            (holder: TokenHolders, i: number) => {
+              return <TokenHoldersRow key={`holder-${i}`} {...holder} />;
+            }
+          )}
+        </SecondContainer>
+
+        <SecondContainer container direction="row">
+          <Grid item xs={12}>
+            <ContainerButton
+              color="secondary"
+              variant="subtitle1"
+              align="right"
+              onClick={goToVoting}
+            >
+              EDIT
+            </ContainerButton>
+          </Grid>
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
                   Transfers locked?
                 </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
                   {storageDaoInformation.lock_disabled ? "YES" : "NO"}
                 </Typography>
-              </CustomGridItem>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
 
-              {/* <CustomGridItem item>
-                <Typography variant="subtitle2">
-                  Requires Agora Link?
-                </Typography>
-                <Typography variant="subtitle1">NO</Typography>
-              </CustomGridItem> */}
-
-              <CustomGridItem item>
-                <Typography variant="subtitle2" color="textSecondary">
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
                   Minimum Stake
                 </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {storageDaoInformation.min_stake}
-                  {storageDaoInformation.min_stake_percentage ? "%" : null}
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {storageDaoInformation.min_stake}%
                 </Typography>
-              </CustomGridItem>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
 
-              <CustomGridItem item>
-                <Typography variant="subtitle2" color="textSecondary">
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
                   Proposal Period Duration
                 </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {storageDaoInformation.proposal_days}d{" "}
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {storageDaoInformation.voting_days}d{" "}
                   {storageDaoInformation.proposal_hours}h{" "}
                   {storageDaoInformation.proposal_minutes}m
                 </Typography>
-              </CustomGridItem>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
 
-              <CustomGridItem item>
-                <Typography variant="subtitle2" color="textSecondary">
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
                   Voting Period Duration
                 </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {" "}
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
                   {storageDaoInformation.voting_days}d{" "}
                   {storageDaoInformation.voting_hours}h{" "}
                   {storageDaoInformation.voting_minutes}m
                 </Typography>
-              </CustomGridItem>
-
-              <CustomGridItem item>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Minimum Support
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {storageDaoInformation.min_support}%
-                </Typography>
-              </CustomGridItem>
-
-              <CustomGridItem item>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Maximum Spend
-                </Typography>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {storageDaoInformation.max_agent} MGT
-                </Typography>
-              </CustomGridItem>
-            </CustomColumnContainer>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Grid container direction="row" alignItems="center">
-              <Typography variant="subtitle1" color="textSecondary">
-                Token Settings
-              </Typography>
-              <CustomUrlButton onClick={goToSettings}>EDIT</CustomUrlButton>
-            </Grid>
-            <CustomSettingsContainer container direction="column">
-              <Grid item xs={12}>
-                <Typography variant="subtitle2" color="textSecondary">
-                  {storageDaoInformation.token_symbol}
-                </Typography>
               </Grid>
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {storageDaoInformation.token_name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <CustomItalic>{storageDaoInformation.description}</CustomItalic>
-              </Grid>
-              <AddressContainer item xs={12}>
-                {storageDaoInformation.token_holders.map(
-                  (holder: any, index: any) => {
-                    return (
-                      <SecondContainer container direction="row" key={index}>
-                        <Grid item xs={6}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            {holder.token_holder.slice(0, 6)}...
-                            {holder.token_holder.slice(
-                              holder.token_holder.length - 4,
-                              holder.token_holder.length
-                            )}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <CustomToken
-                            variant="subtitle2"
-                            color="textSecondary"
-                          >
-                            {holder.balance} MGT
-                          </CustomToken>
-                        </Grid>
-                      </SecondContainer>
-                    );
-                  }
-                )}
-              </AddressContainer>
-            </CustomSettingsContainer>
-            <Grid item xs={12} container direction="row">
-              <CustomItalicAdminText color="textSecondary">
-                Administrator:
-              </CustomItalicAdminText>
-              <CustomItalicAdmin color="textSecondary">
-                {storageDaoInformation.administrator.slice(0, 5)}...
-                {storageDaoInformation.administrator.slice(
-                  storageDaoInformation.administrator.length - 4,
-                  storageDaoInformation.administrator.length
-                )}
-              </CustomItalicAdmin>
-            </Grid>
+            </UnderlinedGrid>
           </Grid>
         </SecondContainer>
       </Grid>

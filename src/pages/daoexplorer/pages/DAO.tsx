@@ -140,7 +140,9 @@ export const DAO = () => {
         <MainContainer container justify="space-between">
           <DAOInfoTitleAndDesc item>
             <Box>
-              <Typography variant="subtitle2" color="secondary">TEZDAO</Typography>
+              <Typography variant="subtitle2" color="secondary">
+                TEZDAO
+              </Typography>
             </Box>
             <Box paddingBottom="20px">
               <Typography variant="h1" color="textSecondary">
@@ -166,7 +168,9 @@ export const DAO = () => {
                 <Grid item>
                   <Box paddingLeft="35px">
                     <Box>
-                      <Typography variant="subtitle2" color="secondary">PERIOD</Typography>
+                      <Typography variant="subtitle2" color="secondary">
+                        PERIOD
+                      </Typography>
                     </Box>
                     <Box>
                       <Typography variant="h3" color="textSecondary">
@@ -214,7 +218,9 @@ export const DAO = () => {
             <Grid container justify="space-between" alignItems="center">
               <Grid item>
                 <Box>
-                  <Typography variant="subtitle2" color="secondary">MGTO Locked</Typography>
+                  <Typography variant="subtitle2" color="secondary">
+                    MGTO Locked
+                  </Typography>
                 </Box>
                 <Box padding="12px 0">
                   <Typography variant="h3" color="textSecondary">
@@ -223,7 +229,9 @@ export const DAO = () => {
                 </Box>
               </Grid>
               <Grid item>
-                <Typography variant="subtitle2" color="secondary">View</Typography>
+                <Typography variant="subtitle2" color="secondary">
+                  View
+                </Typography>
               </Grid>
             </Grid>
             <LockedTokensBar
@@ -240,7 +248,9 @@ export const DAO = () => {
             justify="center"
           >
             <Box>
-              <Typography variant="subtitle2" color="secondary">Voting Addresses</Typography>
+              <Typography variant="subtitle2" color="secondary">
+                Voting Addresses
+              </Typography>
               <Typography variant="h3" color="textSecondary">
                 215
               </Typography>
@@ -254,7 +264,9 @@ export const DAO = () => {
             justify="center"
           >
             <Box>
-              <Typography variant="subtitle2" color="secondary">Active Proposals</Typography>
+              <Typography variant="subtitle2" color="secondary">
+                Active Proposals
+              </Typography>
               <Typography variant="h3" color="textSecondary">
                 5
               </Typography>

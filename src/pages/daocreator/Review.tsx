@@ -1,20 +1,17 @@
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
 import React from "react";
+import Rocket from "../../assets/img/rocket.svg";
 
-const Circle = styled(withTheme(Paper))((props) => ({
-  background: props.theme.palette.secondary.main,
-  height: 186,
-  width: 186,
-  borderRadius: "50%",
-  boxShadow: "none",
-  marginBottom: 49,
-}));
+const RocketImg = styled("img")({
+  marginBottom: 46,
+});
 
 const WaitingText = styled(Typography)({
   marginTop: 9,
 });
 
-export const Review: React.FC = () => {
+export const Review: React.FC<{ setProgress: any }> = ({ setProgress }) => {
+  setProgress(100);
   return (
     <>
       <Grid
@@ -25,7 +22,7 @@ export const Review: React.FC = () => {
         style={{ height: "fit-content" }}
       >
         <Grid item xs={12}>
-          <Circle />
+          <RocketImg src={Rocket} alt="rocket" />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h4" color="textSecondary">

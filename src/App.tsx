@@ -14,10 +14,9 @@ import { DAOExplorerRouter } from "./router/explorer";
 import { Navbar } from "./components/common/toolbar";
 
 const App: React.FC = () => {
-  localStorage.clear();
   return (
     <ThemeProvider theme={theme}>
-      <Box height="100vh" bgcolor="primary.main">
+      <Box height="100%" bgcolor="primary.main">
         <Navbar />
         <Router>
           <Switch>

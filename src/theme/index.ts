@@ -49,6 +49,12 @@ export const theme = createMuiTheme({
     body1: {
       fontSize: 16,
     },
+    body2: {
+      fontSize: 16,
+      fontWeight: 300,
+      lineHeight: "413.4%",
+      opacity: 0.8,
+    },
   },
   overrides: {
     MuiSlider: {
