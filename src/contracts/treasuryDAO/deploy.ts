@@ -4,7 +4,7 @@ import { getTestProvider } from "../utils";
 import { code } from "./code";
 import {
   MemberTokenAllocation,
-  TreasuryStorageParams,
+  TreasuryParams,
 } from "./types";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
@@ -31,8 +31,8 @@ const setMetadata = ({
   return map;
 };
 
-export const deployTreasuryDAO = async (
-  {
+export const deployTreasuryDAO = async ({
+  storage: {
     membersTokenAllocation,
     adminAddress,
     frozenScaleValue,
@@ -44,11 +44,11 @@ export const deployTreasuryDAO = async (
     maxProposalSize,
     quorumTreshold,
     votingPeriod,
-  }: TreasuryStorageParams,
-  metadataCarrierData: MetadataCarrierDeploymentData
-) => {
+  },
+  metadataCarrierDeploymentData,
+}: TreasuryParams) => {
   const ledger = setMembersAllocation(membersTokenAllocation);
-  const metadata = setMetadata(metadataCarrierData);
+  const metadata = setMetadata(metadataCarrierDeploymentData);
 
   try {
     const Tezos = await getTestProvider();
@@ -84,6 +84,7 @@ export const deployTreasuryDAO = async (
     console.log("Waiting for confirmation on Treasury DAO contract...", t);
     const c = await t.contract();
     console.log("Treasury DAO deployment completed", c);
+    return c;
   } catch (e) {
     console.log("error ", e);
   }

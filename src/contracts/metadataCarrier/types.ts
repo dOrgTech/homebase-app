@@ -13,3 +13,8 @@ export interface MetadataCarrierDeploymentData {
   deployAddress: string;
   keyName: string;
 }
+
+export interface MetadataCarrierParameters {
+  keyName: string;
+  metadata: FA2MetadataParams;
+}
