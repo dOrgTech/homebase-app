@@ -1,4 +1,5 @@
 import { MichelsonMap } from "@taquito/taquito";
+import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { getTestProvider } from "../utils";
 import { code } from "./code";
@@ -23,7 +24,7 @@ const setMetadata = ({
 }: MetadataCarrierDeploymentData) => {
   const map = new MichelsonMap();
 
-  map.set("", `tezos-storage://${deployAddress}/${keyName}`);
+  map.set("", char2Bytes(`tezos-storage://${deployAddress}/${keyName}`));
 
   return map;
 };
@@ -57,9 +58,9 @@ export const deployTreasuryDAO = async ({
       storage: {
         ledger,
         operators: new MichelsonMap(),
-        // token_address: "Unit",
+        token_address: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
         admin: adminAddress,
-        pending_owner: "",
+        pending_owner: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
         migration_status: { notInMigration: "Unit" },
         voting_period: votingPeriod,
         quorum_threshold: quorumTreshold,

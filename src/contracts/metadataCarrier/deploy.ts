@@ -1,4 +1,5 @@
 import { MichelsonMap } from "@taquito/taquito";
+import { char2Bytes } from "@taquito/tzip16";
 import { getTestProvider } from "../utils";
 import { code } from "./code";
 import { setMetadataJSON } from "./metadata";
@@ -8,7 +9,7 @@ const setMetadataMap = (keyName: string, metadata: FA2MetadataParams) => {
   const map = new MichelsonMap();
   const json = setMetadataJSON(metadata);
 
-  map.set(keyName, json);
+  map.set(keyName, char2Bytes(JSON.stringify(json)));
 
   return map;
 };
