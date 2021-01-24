@@ -11,9 +11,9 @@ import React, { useMemo } from "react";
 import Input from "@material-ui/core/Input";
 import { Field, Form, Formik, getIn } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "../../store";
+import { AppState } from "../../../store";
 import { TextField, Switch as FormikSwitch } from "formik-material-ui";
-import { saveDaoInformation } from "../../store/dao-info/action";
+import { saveDaoInformation } from "../../../store/dao-info/action";
 
 interface Values {
   proposal_days: number | undefined;

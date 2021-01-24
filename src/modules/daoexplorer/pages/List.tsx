@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { MockDAOs } from "../../../store/mock/mock";
+import { test } from "../../daocreator/state";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -78,6 +79,7 @@ export const DAOsList: React.FC = () => {
     }
     return;
   };
+  console.log(test);
 
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">

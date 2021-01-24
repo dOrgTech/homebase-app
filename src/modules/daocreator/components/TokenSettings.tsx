@@ -9,11 +9,11 @@ import { Add } from "@material-ui/icons";
 import React, { useMemo, useState } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "../../store";
-import { saveDaoInformation } from "../../store/dao-info/action";
+import { AppState } from "../../../store";
+import { saveDaoInformation } from "../../../store/dao-info/action";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
-import { TokenHolders } from "../../store/dao-info/types";
+import { TokenHolders } from "../../../store/dao-info/types";
 
 interface Values {
   max_agent: number | undefined;

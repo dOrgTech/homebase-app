@@ -1,9 +1,9 @@
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
 import React from "react";
 import { useSelector } from "react-redux";
-import { AppState } from "../../store";
-import { TokenHolders } from "../../store/dao-info/types";
-import { TokenHoldersRow } from "../daoexplorer/components/TokenHoldersRow";
+import { AppState } from "../../../store";
+import { TokenHolders } from "../../../store/dao-info/types";
+import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 
 interface Props {
   setActiveStep: any;

@@ -9,13 +9,14 @@ import {
 import React, { useMemo } from "react";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "../../store";
-import { saveDaoInformation } from "../../store/dao-info/action";
+
 import { Field, Form, Formik, getIn } from "formik";
 import {
   TextField as FormikTextField,
   Switch as FormikSwitch,
 } from "formik-material-ui";
+import { saveDaoInformation } from "../../../store/dao-info/action";
+import { AppState } from "../../../store";
 
 interface Values {
   token_name: string | undefined;

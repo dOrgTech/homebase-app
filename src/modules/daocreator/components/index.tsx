@@ -11,9 +11,9 @@ import {
   makeStyles,
 } from "@material-ui/core";
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
-import { AppState } from "../../store";
+
 import { ConnectWallet } from "./ConnectWallet";
 import { Governance } from "./Governance";
 import { SelectTemplate } from "./SelectTemplate";
@@ -22,8 +22,19 @@ import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
 import { useHistory } from "react-router-dom";
-import { useConnectWallet } from "../../store/wallet/hook";
+
 import ProgressBar from "react-customizable-progressbar";
+import { useConnectWallet } from "../../../store/wallet/hook";
+import { AppState } from "../../../store";
+import {
+  // INITIAL_STATE,
+  CreatorState,
+  CreatorAction,
+  STEPS,
+  StepInfo,
+  ActionTypes,
+} from "../state";
+import { initialState } from "../../../store/wallet/reducer";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -128,14 +139,33 @@ const IndicatorValue = styled(withTheme(Paper))((props) => ({
   fontFamily: "Roboto Mono",
 }));
 
-const STEPS = [
-  "Select template",
-  // "Claim a name",
-  "Configure template",
-  "Review information",
-  "Launch organization",
-];
+const reducer = (state: CreatorState, action: CreatorAction) => {
+  switch (action.type) {
+    case ActionTypes.UPDATE_HANDLER:
+      state.onNextStep = action.handler;
+      break;
+    case ActionTypes.UPDATE_STEP:
+      state.activeStep = action.step;
+      break;
+    case ActionTypes.UPDATE_GOVERNANCE_STEP:
+      state.governanceStep = action.step;
+      break;
+    default:
+      return state;
+  }
+
+  return state;
+};
+
+export const INITIAL_STATE = {
+  activeStep: 0,
+  governanceStep: 0,
+  onNextStep: () => undefined,
+};
+
 export const DAOCreate: React.FC = () => {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
   const [activeStep, setActiveStep] = React.useState(0);
   const [governanceStep, setGovernanceStep] = useState(0);
   const [handleNextStep, setHandleNextStep] = useState(() => undefined);
@@ -146,9 +176,9 @@ export const DAOCreate: React.FC = () => {
   const fullHeight = fullHeightStyles();
   const reducedHeight = reducedHeightStyles();
 
-  const history = useHistory<any>();
+  const history = useHistory();
 
-  function getStepContent(step: number, handleNextStep: any) {
+  function getStepContent(step: number) {
     switch (step) {
       case 0:
         return <SelectTemplate setActiveStep={setActiveStep} />;
@@ -227,9 +257,9 @@ export const DAOCreate: React.FC = () => {
           </ProgressBar>
         }
         <StyledStepper activeStep={activeStep} orientation="vertical">
-          {STEPS.map((label, index) => (
-            <Step key={label} {...(!account && { active: false })}>
-              <StepLabel>{label}</StepLabel>
+          {STEPS.map(({ title }: StepInfo) => (
+            <Step key={title} {...(!account && { active: false })}>
+              <StepLabel>{title}</StepLabel>
             </Step>
           ))}
         </StyledStepper>
@@ -237,7 +267,7 @@ export const DAOCreate: React.FC = () => {
       <Grid item container justify="center" alignItems="center" xs={9}>
         {account ? (
           <StepContentContainer item container justify="center">
-            {getStepContent(activeStep, handleNextStep)}
+            {getStepContent(activeStep)}
           </StepContentContainer>
         ) : (
           <StepOneContentContainer item container justify="center">

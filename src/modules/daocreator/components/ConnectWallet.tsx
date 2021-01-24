@@ -13,8 +13,8 @@ import {
 import ImageIcon from "@material-ui/icons/Image";
 import React from "react";
 import { useSelector } from "react-redux";
-import { AppState } from "../../store";
-import { useConnectWallet } from "../../store/wallet/hook";
+import { AppState } from "../../../store";
+import { useConnectWallet } from "../../../store/wallet/hook";
 
 const PageContainer = styled(Grid)({
   height: "90%",

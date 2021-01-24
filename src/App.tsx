@@ -6,12 +6,11 @@ import {
   Redirect,
 } from "react-router-dom";
 import "./App.css";
-import { DAOCreate } from "./pages/daocreator";
-import { Home } from "./pages/Home";
 import { Box, ThemeProvider } from "@material-ui/core";
 import { theme } from "./theme";
 import { DAOExplorerRouter } from "./router/explorer";
 import { Navbar } from "./components/common/toolbar";
+import { DAOCreate } from "./modules/daocreator/components";
 
 const App: React.FC = () => {
   return (
