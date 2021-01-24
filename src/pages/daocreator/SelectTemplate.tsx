@@ -1,7 +1,6 @@
 import {
   Card,
   CardContent,
-  Divider,
   Grid,
   Paper,
   styled,
@@ -53,21 +52,6 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
   },
 }));
 
-const CustomButton = styled(withTheme(Paper))((props) => ({
-  boxShadow: "none",
-  width: 121,
-  background: "#3866F9",
-  borderRadius: 21,
-  color: props.theme.palette.primary.main,
-  padding: "6px 24px",
-  textAlign: "center",
-  fontSize: 16,
-  fontWeight: 400,
-  cursor: "pointer",
-  fontFamily: "system-ui",
-  height: "fit-content",
-}));
-
 const CustomCardContent = styled(CardContent)({
   padding: "27px 37px 0px 37px",
   "&:last-child": {
@@ -79,6 +63,10 @@ const CustomCardContent = styled(CardContent)({
 const Phrase = styled(Typography)({
   marginTop: 20,
   marginBottom: 39,
+});
+
+const Subtitle = styled(Typography)({
+  marginTop: 10,
 });
 
 export const SelectTemplate: React.FC<Props> = (props) => {
@@ -102,26 +90,23 @@ export const SelectTemplate: React.FC<Props> = (props) => {
             <CustomCard>
               <CustomCardContent>
                 <Grid container direction="row" alignItems="center">
-                  <Grid item xs={4}>
+                  <Grid item xs={12} sm={12} md={6} lg={4}>
                     <Circle />
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={12} sm={12} md={6} lg={8}>
                     <Typography variant="subtitle1" color="textSecondary">
                       Treasury
                     </Typography>
                   </Grid>
                 </Grid>
-                <Typography variant="subtitle1" color="textSecondary">
+                <Subtitle variant="subtitle1" color="textSecondary">
                   Non-profits, Companies, Founders
-                </Typography>
+                </Subtitle>
               </CustomCardContent>
               <FooterContainer onClick={() => setActiveStep(1)}>
                 <Typography variant="subtitle1" color="textSecondary">
                   USE TEMPLATE
                 </Typography>
-                {/* <CustomButton onClick={() => setActiveStep(1)}>
-                  View details
-                </CustomButton> */}
               </FooterContainer>
             </CustomCard>
           </Grid>
@@ -129,26 +114,23 @@ export const SelectTemplate: React.FC<Props> = (props) => {
             <CustomCard>
               <CustomCardContent>
                 <Grid container direction="row" alignItems="center">
-                  <Grid item xs={4}>
+                  <Grid item xs={12} sm={12} md={6} lg={4}>
                     <Circle />
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={12} sm={12} md={6} lg={8}>
                     <Typography variant="subtitle1" color="textSecondary">
                       Registry
                     </Typography>
                   </Grid>
                 </Grid>
-                <Typography variant="subtitle1" color="textSecondary">
+                <Subtitle variant="subtitle1" color="textSecondary">
                   Non-profits, Companies, Founders
-                </Typography>
+                </Subtitle>
               </CustomCardContent>
               <FooterContainer onClick={() => setActiveStep(1)}>
                 <Typography variant="subtitle1" color="textSecondary">
                   USE TEMPLATE
                 </Typography>
-                {/* <CustomButton >
-                  View details
-                </CustomButton> */}
               </FooterContainer>
             </CustomCard>
           </Grid>
