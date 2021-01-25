@@ -24,9 +24,8 @@ import { Review } from "./Review";
 import { useHistory } from "react-router-dom";
 import { useConnectWallet } from "../../store/wallet/hook";
 import ProgressBar from "react-customizable-progressbar";
-import { useOriginate } from "../../hooks/useOriginate";
-import { MichelsonMap } from "@taquito/taquito";
 import { TokenHolders } from "../../store/dao-info/types";
+import { useOriginate } from "../../hooks/useOriginate";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -55,7 +54,8 @@ const StepContentContainer = styled(Grid)({
   paddingRight: "16%",
   marginTop: "2.5%",
   marginBottom: "2%",
-  height: "calc(100% - 112px)",
+  // height: "calc(100% - 112px)",
+  minHeight: 650,
   alignItems: "center",
 });
 
@@ -64,8 +64,9 @@ const StepOneContentContainer = styled(Grid)({
   paddingRight: "16%",
   marginTop: "2.5%",
   marginBottom: "2%",
-  height: "80%",
+  // height: "80%",
   alignItems: "center",
+  minHeight: 650,
 });
 
 const Footer = styled(withTheme(Grid))((props) => ({
@@ -159,6 +160,14 @@ export const DAOCreate: React.FC = () => {
     { loading: loadingMetadataContract, data: carrierData },
   ] = useOriginate("MetadataCarrier", metadataCarrierParams);
 
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [governanceStep, setGovernanceStep] = useState(0);
+  const [handleNextStep, setHandleNextStep] = useState(() => undefined);
+  const account = useSelector<AppState, AppState["wallet"]["address"]>(
+    (state) => state.wallet.address
+  );
+  const [progress, setProgress] = useState(0.5);
+
   const daoInfo = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
     (state) => state.saveDaoInformationReducer
   );
@@ -171,11 +180,6 @@ export const DAOCreate: React.FC = () => {
       };
     }
   );
-
-  const unfrozenScale = daoInfo.stake_returned_percentage;
-  const unfrozenExtra = daoInfo.stake_returned;
-  const frozenScale = daoInfo.min_stake_percentage;
-  const frozenExtra = daoInfo.min_stake;
 
   const [
     originateTreasury,
@@ -210,23 +214,8 @@ export const DAOCreate: React.FC = () => {
     }
   }, [loadingTrasuryData, treasuryData]);
 
-  console.log(carrierData);
-  console.log("loading: loadingMetadataContract ", loadingMetadataContract);
-
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [governanceStep, setGovernanceStep] = useState(0);
-  const [handleNextStep, setHandleNextStep] = useState(() => undefined);
-  const account = useSelector<AppState, AppState["wallet"]["address"]>(
-    (state) => state.wallet.address
-  );
-  const [progress, setProgress] = useState(0.5);
-  const fullHeight = fullHeightStyles();
-  const reducedHeight = reducedHeightStyles();
-
-  const history = useHistory<any>();
-
   const handleStep = () => {
-    if (activeStep === 2) {
+    if (activeStep === 3) {
       originateMetaData();
     }
 
@@ -238,6 +227,11 @@ export const DAOCreate: React.FC = () => {
       originateTreasury();
     }
   }, [carrierData]);
+
+  const fullHeight = fullHeightStyles();
+  const reducedHeight = reducedHeightStyles();
+
+  const history = useHistory<any>();
 
   function getStepContent(step: number, handleNextStep: any) {
     switch (step) {
@@ -252,27 +246,30 @@ export const DAOCreate: React.FC = () => {
             setGovernanceStep={setGovernanceStep}
           />
         ) : governanceStep === 1 ? (
-          <TokenSettings
-            defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
-        ) : (
           <DaoSettings
             defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
           />
-        );
+        ) : null;
       case 2:
         return (
-          <Summary
+          <TokenSettings
+            setProgress={setProgress}
+            defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
             setGovernanceStep={setGovernanceStep}
           />
         );
       case 3:
-        return <Review />;
+        return (
+          <Summary
+            setProgress={setProgress}
+            setActiveStep={setActiveStep}
+            setGovernanceStep={setGovernanceStep}
+          />
+        );
+      case 4:
+        return <Review setProgress={setProgress} />;
     }
   }
 
@@ -283,6 +280,8 @@ export const DAOCreate: React.FC = () => {
       return setGovernanceStep(governanceStep - 1);
     } else if (activeStep === 0) {
       history.push("/explorer");
+    } else if (activeStep === 3 || activeStep === 2) {
+      return setActiveStep(activeStep - 1);
     }
   };
 
@@ -331,7 +330,7 @@ export const DAOCreate: React.FC = () => {
           </StepOneContentContainer>
         )}
 
-        {activeStep !== 0 && activeStep !== 1 && activeStep !== 3 ? (
+        {activeStep === 3 ? (
           <Footer
             container
             direction="row"
@@ -339,22 +338,20 @@ export const DAOCreate: React.FC = () => {
             alignItems="center"
           >
             <Grid item xs={6}>
-              <BackButton onClick={() => setActiveStep(activeStep - 1)}>
+              <BackButton onClick={handleBackStep}>
                 <Typography>BACK</Typography>{" "}
               </BackButton>
             </Grid>
             <Grid item xs={6}>
               <NextButton onClick={handleStep}>
                 {" "}
-                <WhiteText>
-                  {activeStep !== 2 ? "CONTINUE" : "Launch Organization"}
-                </WhiteText>
+                <WhiteText>{"LAUNCH"}</WhiteText>
               </NextButton>
             </Grid>
           </Footer>
         ) : null}
 
-        {account && (activeStep === 1 || activeStep === 0) ? (
+        {account && activeStep !== 3 && activeStep !== 4 ? (
           <Footer
             container
             direction="row"
@@ -366,12 +363,15 @@ export const DAOCreate: React.FC = () => {
                 <Typography>BACK </Typography>{" "}
               </BackButton>
             </Grid>
-            <Grid item xs={6}>
-              <NextButton onClick={handleNextStep}>
-                {" "}
-                <WhiteText>CONTINUE</WhiteText>
-              </NextButton>
-            </Grid>
+
+            {activeStep === 1 || activeStep === 2 ? (
+              <Grid item xs={6}>
+                <NextButton onClick={handleNextStep}>
+                  {" "}
+                  <WhiteText>CONTINUE</WhiteText>
+                </NextButton>
+              </Grid>
+            ) : null}
           </Footer>
         ) : null}
 

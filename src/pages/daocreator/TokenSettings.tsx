@@ -108,7 +108,7 @@ const AddButon = styled("button")({
 });
 
 const TokenHoldersGrid = styled(Grid)({
-  height: 269,
+  maxHeight: 269,
   overflowX: "scroll",
 });
 
@@ -116,7 +116,6 @@ const TokenSettingsForm = ({
   values,
   defineSubmit,
   submitForm,
-  setFieldValue,
   touched,
   errors,
 }: any) => {
@@ -285,40 +284,40 @@ export const TokenSettings: React.FC<{
   defineSubmit: any;
   setActiveStep: any;
   setGovernanceStep: any;
-}> = ({ defineSubmit, setActiveStep, setGovernanceStep }) => {
+  setProgress: any;
+}> = ({ defineSubmit, setActiveStep, setGovernanceStep, setProgress }) => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
 
   const dispatch = useDispatch();
-
+  setProgress(50);
   const saveStepInfo = (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     dispatch(saveDaoInformation(values));
-    setActiveStep(1);
-    setGovernanceStep(2);
+    setActiveStep(3);
   };
 
   const validate = (values: Values) => {
     const errors: any = {};
 
-    if (!values.administrator) {
+    if (values.administrator === undefined || !String(values.administrator)) {
       errors.administrator = "Required";
     }
 
-    if (!values.max_agent) {
+    if (values.max_agent === undefined || !String(values.max_agent)) {
       errors.max_agent = "Required";
     }
 
-    if (values.token_holders && values.token_holders.length > 0) {
-      values.token_holders.map((holder: any, index: any) => {
-        if (!holder.token_holder || !holder.balance) {
-          errors.token_holders = [];
-          return (errors.token_holders[index] = "All fields are required");
-        }
-      });
-    }
+    // if (values.token_holders && values.token_holders.length > 0) {
+    //   values.token_holders.map((holder: any, index: any) => {
+    //     if (!holder.token_holder || !holder.balance) {
+    //       errors.token_holders = [];
+    //       return (errors.token_holders[index] = "All fields are required");
+    //     }
+    //   });
+    // }
 
     return errors;
   };

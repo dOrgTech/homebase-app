@@ -23,10 +23,10 @@ interface Values {
   voting_hours: number | undefined;
   voting_minutes: number | undefined;
   min_stake: number | undefined;
-  min_support: number | undefined;
-  stake_returned: number | undefined;
-  min_stake_percentage: boolean;
-  stake_returned_percentage: boolean;
+  propose_stake_mygt: number | undefined;
+  propose_stake_percentage: number | undefined;
+  vote_stake_mygt: number | undefined;
+  vote_stake_percentage: number | undefined;
 }
 
 const CustomTypography = styled(Typography)({
@@ -94,7 +94,7 @@ const StyledSlider = withStyles({
   thumb: {
     height: 20,
     width: 20,
-    top: "15.5%",
+    top: "24.5%",
     backgroundColor: "#fff",
     border: "3px solid #fff",
   },
@@ -329,7 +329,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voting_days"
+                name="propose_stake_mygt"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -339,9 +339,9 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {/* {errors.voting_days && touched.voting_days ? (
-            <ErrorText>{errors.voting_days}</ErrorText>
-          ) : null} */}
+          {errors.propose_stake_mygt && touched.propose_stake_mygt ? (
+            <ErrorText>{errors.propose_stake_mygt}</ErrorText>
+          ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
           <Grid item container justify="center">
@@ -349,9 +349,6 @@ const GovernanceForm = ({
               +
             </Typography>
           </Grid>
-          {/* {errors.voting_hours && touched.voting_hours ? (
-            <ErrorText>{errors.voting_hours}</ErrorText>
-          ) : null} */}
         </Grid>
         <AdditionContainer item xs={2}>
           <ItemContainer
@@ -362,7 +359,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={9}>
               <Field
-                name="voting_minutes"
+                name="propose_stake_percentage"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -372,19 +369,17 @@ const GovernanceForm = ({
               <Typography color="textSecondary">%</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voting_minutes && touched.voting_minutes ? (
-            <ErrorText>{errors.voting_minutes}</ErrorText>
+          {errors.propose_stake_percentage &&
+          touched.propose_stake_percentage ? (
+            <ErrorText>{errors.propose_stake_percentage}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={3}>
           <Grid item container>
-            <Typography variant="subtitle1" color="textSecondary">
+            <Title variant="subtitle1" color="textSecondary">
               of Proposal Value
-            </Typography>
+            </Title>
           </Grid>
-          {/* {errors.voting_hours && touched.voting_hours ? (
-            <ErrorText>{errors.voting_hours}</ErrorText>
-          ) : null} */}
         </Grid>
       </Grid>
 
@@ -408,7 +403,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voting_days"
+                name="vote_stake_mygt"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -418,9 +413,9 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {/* {errors.voting_days && touched.voting_days ? (
-            <ErrorText>{errors.voting_days}</ErrorText>
-          ) : null} */}
+          {errors.vote_stake_mygt && touched.vote_stake_mygt ? (
+            <ErrorText>{errors.vote_stake_mygt}</ErrorText>
+          ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
           <Grid item container justify="center">
@@ -428,9 +423,6 @@ const GovernanceForm = ({
               +
             </Typography>
           </Grid>
-          {/* {errors.voting_hours && touched.voting_hours ? (
-            <ErrorText>{errors.voting_hours}</ErrorText>
-          ) : null} */}
         </Grid>
         <AdditionContainer item xs={2}>
           <ItemContainer
@@ -441,7 +433,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={9}>
               <Field
-                name="voting_minutes"
+                name="vote_stake_percentage"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -451,19 +443,16 @@ const GovernanceForm = ({
               <Typography color="textSecondary">%</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voting_minutes && touched.voting_minutes ? (
-            <ErrorText>{errors.voting_minutes}</ErrorText>
+          {errors.vote_stake_percentage && touched.vote_stake_percentage ? (
+            <ErrorText>{errors.vote_stake_percentage}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={3}>
           <Grid item container>
-            <Typography variant="subtitle1" color="textSecondary">
+            <Title variant="subtitle1" color="textSecondary">
               of Proposal Value
-            </Typography>
+            </Title>
           </Grid>
-          {/* {errors.voting_hours && touched.voting_hours ? (
-            <ErrorText>{errors.voting_hours}</ErrorText>
-          ) : null} */}
         </Grid>
       </Grid>
 
@@ -492,20 +481,10 @@ const GovernanceForm = ({
         <GridNoPadding item xs={2}>
           <CustomSliderValue>
             <Value variant="subtitle1" color="textSecondary">
-              {getIn(values, "min_stake")}
-              {values.min_stake_percentage ? "%" : null}
+              {getIn(values, "min_stake")}%
             </Value>
           </CustomSliderValue>
         </GridNoPadding>
-        {/* <SwitchContainer>
-          <Typography>{values.min_stake_percentage ? "0.0%" : "0"}</Typography>
-          <Field
-            name="min_stake_percentage"
-            component={FormikSwitch}
-            type="checkbox"
-            inputProps={{ "aria-label": "secondary checkbox" }}
-          />
-        </SwitchContainer> */}
       </Grid>
     </>
   );
@@ -536,23 +515,50 @@ export const Governance: React.FC<{
   const validate = (values: Values) => {
     const errors: any = {};
 
-    if (!values.proposal_days) {
+    if (values.proposal_days === undefined || !String(values.proposal_days)) {
       errors.proposal_days = "Required";
     }
-    if (!values.proposal_minutes) {
+    if (
+      values.proposal_minutes === undefined ||
+      !String(values.proposal_minutes)
+    ) {
       errors.proposal_minutes = "Required";
     }
-    if (!values.proposal_hours) {
+    if (values.proposal_hours === undefined || !String(values.proposal_hours)) {
       errors.proposal_hours = "Required";
     }
-    if (!values.voting_days) {
+    if (values.voting_days === undefined || !String(values.voting_days)) {
       errors.voting_days = "Required";
     }
-    if (!values.voting_hours) {
+    if (values.voting_hours === undefined || !String(values.voting_hours)) {
       errors.voting_hours = "Required";
     }
-    if (!values.voting_minutes) {
+    if (values.voting_minutes === undefined || !String(values.voting_minutes)) {
       errors.voting_minutes = "Required";
+    }
+    if (
+      values.propose_stake_mygt === undefined ||
+      !String(values.propose_stake_mygt)
+    ) {
+      errors.propose_stake_mygt = "Required";
+    }
+    if (
+      values.propose_stake_percentage === undefined ||
+      !String(values.propose_stake_percentage)
+    ) {
+      errors.propose_stake_percentage = "Required";
+    }
+    if (
+      values.vote_stake_mygt === undefined ||
+      !String(values.vote_stake_mygt)
+    ) {
+      errors.vote_stake_mygt = "Required";
+    }
+    if (
+      values.vote_stake_percentage === undefined ||
+      !String(values.vote_stake_percentage)
+    ) {
+      errors.vote_stake_percentage = "Required";
     }
 
     return errors;
