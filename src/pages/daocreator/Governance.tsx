@@ -33,6 +33,7 @@ const CustomTypography = styled(Typography)({
   paddingBottom: 10,
   borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
+  marginBottom: 33,
 });
 
 const ErrorText = styled(Typography)({

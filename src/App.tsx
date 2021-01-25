@@ -16,7 +16,7 @@ import { Navbar } from "./components/common/toolbar";
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <Box height="100%" bgcolor="primary.main">
+      <Box height="87vh" bgcolor="primary.main">
         <Navbar />
         <Router>
           <Switch>

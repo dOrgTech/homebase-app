@@ -28,7 +28,7 @@ import { useOriginate } from "../../hooks/useOriginate";
 
 const PageContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
-  minHeight: "100vh",
+  minHeight: "100%",
 }));
 
 const fullHeightStyles = makeStyles({
@@ -112,6 +112,11 @@ const ContentContainer = styled(Grid)({
   maxWidth: "100%",
   alignItems: "center",
   display: "flex",
+  minHeight: "90%",
+});
+
+const FooterContainer = styled(Grid)({
+  width: "100%",
 });
 
 const IndicatorValue = styled(withTheme(Paper))((props) => ({
@@ -329,7 +334,7 @@ export const DAOCreate: React.FC = () => {
         </StyledStepper>
       </ProgressContainer>
 
-      <Grid item xs={9} container direction="column">
+      <Grid item xs={9} container>
         <ContentContainer item xs={11}>
           {account ? (
             <StepContentContainer item container justify="center">
@@ -341,7 +346,7 @@ export const DAOCreate: React.FC = () => {
             </StepOneContentContainer>
           )}
         </ContentContainer>
-        <Grid item>
+        <FooterContainer item>
           {activeStep === 3 ? (
             <Footer
               container
@@ -401,7 +406,7 @@ export const DAOCreate: React.FC = () => {
               </Grid>
             </Footer>
           ) : null}
-        </Grid>
+        </FooterContainer>
       </Grid>
     </PageContainer>
   );
