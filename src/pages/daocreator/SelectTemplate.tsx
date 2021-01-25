@@ -11,6 +11,7 @@ import React from "react";
 
 interface Props {
   setActiveStep: any;
+  setProgress: any;
 }
 
 const CustomCard = styled(withTheme(Grid))((props) => ({
@@ -70,7 +71,8 @@ const Subtitle = styled(Typography)({
 });
 
 export const SelectTemplate: React.FC<Props> = (props) => {
-  const { setActiveStep } = props;
+  const { setActiveStep, setProgress } = props;
+  setProgress(0);
   return (
     <>
       <Grid container direction="row">
