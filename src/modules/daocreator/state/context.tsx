@@ -43,8 +43,6 @@ export const reducer = (state: CreatorState, action: CreatorAction) => {
     default:
       return state;
   }
-
-  // return state;
 };
 
 const CreatorProvider: React.FC = ({ children }) => {

@@ -7,7 +7,6 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React, { useContext, useMemo } from "react";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
 
 import { Field, Form, Formik, getIn } from "formik";
@@ -95,14 +94,18 @@ const ErrorText = styled(Typography)({
 const DaoSettingsForm = ({
   submitForm,
   values,
-  defineSubmit,
   setFieldValue,
   errors,
   touched,
 }: any) => {
+  const dispatch = useContext(CreatorContext).dispatch;
+
   useMemo(() => {
-    defineSubmit(() => submitForm);
-  }, [values]);
+    dispatch({
+      type: ActionTypes.UPDATE_HANDLER,
+      handler: () => submitForm,
+    });
+  }, [dispatch, submitForm]);
 
   return (
     <>
@@ -164,7 +167,7 @@ const DaoSettingsForm = ({
         </Grid>
         <Grid item xs={12}>
           <Field name="description">
-            {({ field, form: { touched, errors }, meta }: any) => (
+            {() => (
               <CustomTextarea
                 maxLength={1500}
                 aria-label="empty textarea"
@@ -255,7 +258,6 @@ export const DaoSettings = () => {
           return (
             <Form style={{ width: "100%" }}>
               <DaoSettingsForm
-                defineSubmit={() => undefined}
                 validate={validate}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

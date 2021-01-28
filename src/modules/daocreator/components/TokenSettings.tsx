@@ -121,9 +121,14 @@ const TokenSettingsForm = ({
   touched,
   errors,
 }: any) => {
+  const dispatch = useContext(CreatorContext).dispatch;
+
   useMemo(() => {
-    defineSubmit(() => submitForm);
-  }, [values]);
+    dispatch({
+      type: ActionTypes.UPDATE_HANDLER,
+      handler: () => submitForm,
+    });
+  }, [dispatch, submitForm]);
 
   const getTotal = () => {
     let total = 0;
@@ -306,15 +311,6 @@ export const TokenSettings = () => {
     if (values.max_agent === undefined || !String(values.max_agent)) {
       errors.max_agent = "Required";
     }
-
-    // if (values.token_holders && values.token_holders.length > 0) {
-    //   values.token_holders.map((holder: any, index: any) => {
-    //     if (!holder.token_holder || !holder.balance) {
-    //       errors.token_holders = [];
-    //       return (errors.token_holders[index] = "All fields are required");
-    //     }
-    //   });
-    // }
 
     return errors;
   };
