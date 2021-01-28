@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import { DAOCreate } from "./pages/daocreator";
-import { Home } from "./pages/Home";
 import { Box, ThemeProvider } from "@material-ui/core";
 import { theme } from "./theme";
 import { DAOExplorerRouter } from "./router/explorer";
@@ -16,9 +15,13 @@ import { Navbar } from "./components/common/toolbar";
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <Box height="87vh" bgcolor="primary.main">
-        <Navbar />
+      <Box
+        height="calc(100% - 105px)"
+        bgcolor="primary.main"
+        position="absolute"
+      >
         <Router>
+          <Navbar />
           <Switch>
             <Route path="/creator">
               <DAOCreate />

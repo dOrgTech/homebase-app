@@ -5,9 +5,7 @@ import {
   withStyles,
   InputAdornment,
 } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
-import React, { useMemo, useState } from "react";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import React, { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../store";
 import { saveDaoInformation } from "../../store/dao-info/action";
@@ -283,9 +281,8 @@ const TokenSettingsForm = ({
 export const TokenSettings: React.FC<{
   defineSubmit: any;
   setActiveStep: any;
-  setGovernanceStep: any;
   setProgress: any;
-}> = ({ defineSubmit, setActiveStep, setGovernanceStep, setProgress }) => {
+}> = ({ defineSubmit, setActiveStep, setProgress }) => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]

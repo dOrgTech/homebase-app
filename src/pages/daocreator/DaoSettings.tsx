@@ -7,7 +7,6 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../store";
 import { saveDaoInformation } from "../../store/dao-info/action";
@@ -161,7 +160,7 @@ const DaoSettingsForm = ({
         </Grid>
         <Grid item xs={12}>
           <Field name="description">
-            {({ field, form: { touched, errors }, meta }: any) => (
+            {() => (
               <CustomTextarea
                 maxLength={1500}
                 aria-label="empty textarea"

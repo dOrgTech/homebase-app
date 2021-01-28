@@ -7,7 +7,6 @@ import {
   styled,
   Typography,
   withTheme,
-  makeStyles,
 } from "@material-ui/core";
 
 import React, { useContext, useEffect, useState } from "react";
@@ -31,46 +30,28 @@ const PageContainer = styled(withTheme(Grid))((props) => ({
   minHeight: "100%",
 }));
 
-const fullHeightStyles = makeStyles({
-  root: {
-    height: "100%",
-  },
-});
-
-const reducedHeightStyles = makeStyles({
-  root: {
-    height: "100%",
-  },
-});
-
-const CustomGrid = styled(Grid)({
-  alignItems: "center",
-  justifyContent: "center",
-  borderRight: "2px solid #3D3D3D",
-});
-
 const StepContentContainer = styled(Grid)({
   paddingLeft: "16%",
   paddingRight: "16%",
-  marginTop: "2.5%",
-  marginBottom: "2%",
   alignItems: "center",
+  height: "inherit",
+  overflow: "scroll",
 });
 
 const StepOneContentContainer = styled(Grid)({
   paddingLeft: "16%",
   paddingRight: "16%",
-  marginTop: "2.5%",
-  marginBottom: "2%",
   alignItems: "center",
 });
 
 const Footer = styled(withTheme(Grid))((props) => ({
   boxShadow: "none",
   background: props.theme.palette.primary.main,
-  height: 62,
+  height: "inherit",
   paddingTop: "1%",
   borderTop: "2px solid #3D3D3D",
+  marginLeft: "24.85%",
+  borderLeft: "2px solid #3D3D3D",
 }));
 
 const BackButton = styled(Paper)({
@@ -108,15 +89,15 @@ const StyledStepper = styled(withTheme(Stepper))((props) => ({
   background: "inherit",
 }));
 
-const ContentContainer = styled(Grid)({
-  maxWidth: "100%",
-  alignItems: "center",
-  display: "flex",
-  minHeight: "90%",
+const StepContentHeigth = styled(Grid)({
+  height: "80vh",
 });
 
-const FooterContainer = styled(Grid)({
-  width: "100%",
+const ContentContainer = styled(Grid)({
+  height: "inherit",
+  overflowY: "scroll",
+  alignItems: "center",
+  display: "flex",
 });
 
 const IndicatorValue = styled(withTheme(Paper))((props) => ({
@@ -238,9 +219,6 @@ export const DAOCreate: React.FC = () => {
     }
   }, [carrierData]);
 
-  const fullHeight = fullHeightStyles();
-  const reducedHeight = reducedHeightStyles();
-
   const history = useHistory<any>();
 
   function getStepContent(step: number, handleNextStep: any) {
@@ -272,7 +250,6 @@ export const DAOCreate: React.FC = () => {
             setProgress={setProgress}
             defineSubmit={setHandleNextStep}
             setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
           />
         );
       case 3:
@@ -334,7 +311,7 @@ export const DAOCreate: React.FC = () => {
         </StyledStepper>
       </ProgressContainer>
 
-      <Grid item xs={9} container>
+      <StepContentHeigth item xs={9} container>
         <ContentContainer item xs={11}>
           {account ? (
             <StepContentContainer item container justify="center">
@@ -346,68 +323,66 @@ export const DAOCreate: React.FC = () => {
             </StepOneContentContainer>
           )}
         </ContentContainer>
-        <FooterContainer item>
-          {activeStep === 3 ? (
-            <Footer
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={6}>
-                <BackButton onClick={handleBackStep}>
-                  <Typography>BACK</Typography>{" "}
-                </BackButton>
-              </Grid>
-              <Grid item xs={6}>
-                <NextButton onClick={handleStep}>
-                  {" "}
-                  <WhiteText>{"LAUNCH"}</WhiteText>
-                </NextButton>
-              </Grid>
-            </Footer>
-          ) : null}
+      </StepContentHeigth>
+      {account && activeStep !== 3 && activeStep !== 4 ? (
+        <Footer
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={6}>
+            <BackButton onClick={handleBackStep}>
+              <Typography>BACK </Typography>{" "}
+            </BackButton>
+          </Grid>
 
-          {account && activeStep !== 3 && activeStep !== 4 ? (
-            <Footer
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={6}>
-                <BackButton onClick={handleBackStep}>
-                  <Typography>BACK </Typography>{" "}
-                </BackButton>
-              </Grid>
-
-              {activeStep === 1 || activeStep === 2 ? (
-                <Grid item xs={6}>
-                  <NextButton onClick={handleNextStep}>
-                    {" "}
-                    <WhiteText>CONTINUE</WhiteText>
-                  </NextButton>
-                </Grid>
-              ) : null}
-            </Footer>
+          {activeStep === 1 || activeStep === 2 ? (
+            <Grid item xs={6}>
+              <NextButton onClick={handleNextStep}>
+                {" "}
+                <WhiteText>CONTINUE</WhiteText>
+              </NextButton>
+            </Grid>
           ) : null}
+        </Footer>
+      ) : null}
 
-          {!account ? (
-            <Footer
-              container
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={6}>
-                <BackButton onClick={() => history.push("/explorer")}>
-                  <Typography>BACK </Typography>{" "}
-                </BackButton>
-              </Grid>
-            </Footer>
-          ) : null}
-        </FooterContainer>
-      </Grid>
+      {!account ? (
+        <Footer
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={6}>
+            <BackButton onClick={() => history.push("/explorer")}>
+              <Typography>BACK </Typography>{" "}
+            </BackButton>
+          </Grid>
+        </Footer>
+      ) : null}
+
+      {activeStep === 3 ? (
+        <Footer
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={6}>
+            <BackButton onClick={handleBackStep}>
+              <Typography>BACK</Typography>{" "}
+            </BackButton>
+          </Grid>
+          <Grid item xs={6}>
+            <NextButton onClick={handleStep}>
+              {" "}
+              <WhiteText>{"LAUNCH"}</WhiteText>
+            </NextButton>
+          </Grid>
+        </Footer>
+      ) : null}
     </PageContainer>
   );
 };

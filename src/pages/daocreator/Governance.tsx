@@ -8,11 +8,10 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React, { useMemo } from "react";
-import Input from "@material-ui/core/Input";
 import { Field, Form, Formik, getIn } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../../store";
-import { TextField, Switch as FormikSwitch } from "formik-material-ui";
+import { TextField } from "formik-material-ui";
 import { saveDaoInformation } from "../../store/dao-info/action";
 
 interface Values {
@@ -119,17 +118,15 @@ const Value = styled(Typography)({
   padding: "15%",
 });
 
+const LastElement = styled(Grid)({
+  marginBottom: 37,
+});
+
 const styles = {
   voting: {
     marginTop: 6,
   },
 };
-
-const SwitchContainer = styled("div")({
-  position: "absolute",
-  right: "5%",
-  textAlign: "center",
-});
 
 const GridNoPadding = styled(Grid)({
   padding: "0px !important",
@@ -466,10 +463,10 @@ const GovernanceForm = ({
         </Title>
       </SpacingContainer>
 
-      <Grid container direction="row" alignItems="center" spacing={1}>
+      <LastElement container direction="row" alignItems="center" spacing={1}>
         <GridNoPadding item xs={10}>
           <Field name="min_stake">
-            {({ field, form: { touched, errors }, meta }: any) => (
+            {() => (
               <StyledSlider
                 value={getIn(values, "min_stake")}
                 onChange={(value: any, newValue: any) =>
@@ -486,7 +483,7 @@ const GovernanceForm = ({
             </Value>
           </CustomSliderValue>
         </GridNoPadding>
-      </Grid>
+      </LastElement>
     </>
   );
 };
@@ -596,10 +593,6 @@ export const Governance: React.FC<{
           values,
           errors,
           touched,
-          handleBlur,
-          validateOnChange,
-          setFieldTouched,
-          handleChange,
         }) => {
           return (
             <Form style={{ width: "100%" }}>
