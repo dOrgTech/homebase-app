@@ -1,11 +1,16 @@
 import { stringToHex } from "../utils";
-import { FA2MetadataParams } from "./types";
+import { MetadataParams } from "./types";
 
 export const setMetadataJSON = ({
+  description,
+  authors,
   frozenToken: { name: fName, symbol: fSymbol, decimals: fDecimals },
   unfrozenToken: { name: uName, symbol: uSymbol, decimals: uDecimals },
-}: FA2MetadataParams): Record<string, any> => ({
+}: MetadataParams): Record<string, any> => ({
   homepage: "https://github.com/tqtezos/baseDAO",
+  name: uName,
+  description,
+  authors,
   interfaces: ["TZIP-12", "TZIP-17"],
   views: [
     {
@@ -571,8 +576,7 @@ export const setMetadataJSON = ({
         "Returns the next counter value with which a permit should be created.",
     },
   ],
-  authors: ["Serokell", "Tocqueville Group"],
-  version: "0.1.0.0",
+  version: "1.0.0",
   license: {
     name: "MIT",
   },

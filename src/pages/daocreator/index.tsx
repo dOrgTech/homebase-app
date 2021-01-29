@@ -151,6 +151,8 @@ const metadataCarrierParams = {
       symbol: "JAJA",
       decimals: 18,
     },
+    description: "Description",
+    authors: ["dOrg"]
   },
 };
 
@@ -180,6 +182,8 @@ export const DAOCreate: React.FC = () => {
       };
     }
   );
+
+  console.log(daoInfo)
 
   const [
     originateTreasury,
@@ -216,7 +220,7 @@ export const DAOCreate: React.FC = () => {
 
   const handleStep = () => {
     if (activeStep === 3) {
-      originateMetaData();
+      // originateMetaData();
     }
 
     setActiveStep(activeStep + 1);
@@ -224,7 +228,7 @@ export const DAOCreate: React.FC = () => {
 
   useEffect(() => {
     if (carrierData) {
-      originateTreasury();
+      // originateTreasury();
     }
   }, [carrierData]);
 

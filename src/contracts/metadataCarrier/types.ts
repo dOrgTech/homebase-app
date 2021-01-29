@@ -9,6 +9,12 @@ export interface FA2MetadataParams {
   frozenToken: FA2TokenMetadata;
 }
 
+export interface DAOMetadataParams {
+  description: string,
+  authors: string[]
+}
+
+export type MetadataParams = FA2MetadataParams & DAOMetadataParams
 export interface MetadataCarrierDeploymentData {
   deployAddress: string;
   keyName: string;
@@ -16,5 +22,5 @@ export interface MetadataCarrierDeploymentData {
 
 export interface MetadataCarrierParameters {
   keyName: string;
-  metadata: FA2MetadataParams;
+  metadata: MetadataParams;
 }

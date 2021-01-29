@@ -1,9 +1,6 @@
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, Paper, styled, Typography } from "@material-ui/core";
 import Rocket from "../../assets/img/rocket.svg";
-import React, { useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useOriginate } from "../../hooks/useOriginate";
-import { AppState } from "../../store";
+import React from "react";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
