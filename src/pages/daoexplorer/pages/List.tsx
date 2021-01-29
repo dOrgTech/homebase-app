@@ -6,10 +6,11 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { MockDAOs } from "../../../store/mock/mock";
+import { getContractsAddresses } from "../../../contracts/store";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -78,6 +79,12 @@ export const DAOsList: React.FC = () => {
     }
     return;
   };
+
+  useEffect(() => {
+    (async () => {
+      await getContractsAddresses();
+    })();
+  }, []);
 
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">

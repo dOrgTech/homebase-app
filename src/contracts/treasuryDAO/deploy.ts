@@ -1,6 +1,7 @@
 import { MichelsonMap } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
+import { addNewContractToIPFS } from "../store";
 import { getTestProvider } from "../utils";
 import { code } from "./code";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
@@ -82,6 +83,8 @@ export const deployTreasuryDAO = async ({
     console.log("Waiting for confirmation on Treasury DAO contract...", t);
     const c = await t.contract();
     console.log("Treasury DAO deployment completed", c);
+    console.log("Let's store the contract address in IPFS :-D");
+    await addNewContractToIPFS(c.address);
     return c;
   } catch (e) {
     console.log("error ", e);
