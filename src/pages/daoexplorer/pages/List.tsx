@@ -6,11 +6,11 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { MockDAOs } from "../../../store/mock/mock";
-import { getPinnedJSON, pinContractAddress } from "../../../contracts/store";
+import { getContractsAddresses } from "../../../contracts/store";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -80,6 +80,13 @@ export const DAOsList: React.FC = () => {
     return;
   };
 
+  useEffect(() => {
+    (async () => {
+      console.log("jaja");
+      await getContractsAddresses();
+    })();
+  }, []);
+
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">
       <GridContainer container direction="row" alignItems="center">
@@ -98,20 +105,6 @@ export const DAOsList: React.FC = () => {
           <TotalDao color="textSecondary" variant="subtitle1">
             {currentDAOs.length} DAOs
           </TotalDao>
-          <StyledButton
-            color="secondary"
-            variant="outlined"
-            onClick={getPinnedJSON}
-          >
-            Get Pin
-          </StyledButton>
-          <StyledButton
-            color="secondary"
-            variant="outlined"
-            onClick={pinContractAddress}
-          >
-            Pin to IPFS
-          </StyledButton>
           <StyledButton
             color="secondary"
             variant="outlined"
