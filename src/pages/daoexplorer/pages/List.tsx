@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { MockDAOs } from "../../../store/mock/mock";
+import { getPinnedJSON, pinContractAddress } from "../../../contracts/store";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -97,6 +98,20 @@ export const DAOsList: React.FC = () => {
           <TotalDao color="textSecondary" variant="subtitle1">
             {currentDAOs.length} DAOs
           </TotalDao>
+          <StyledButton
+            color="secondary"
+            variant="outlined"
+            onClick={getPinnedJSON}
+          >
+            Get Pin
+          </StyledButton>
+          <StyledButton
+            color="secondary"
+            variant="outlined"
+            onClick={pinContractAddress}
+          >
+            Pin to IPFS
+          </StyledButton>
           <StyledButton
             color="secondary"
             variant="outlined"
