@@ -82,7 +82,6 @@ export const DAOsList: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      console.log("jaja");
       await getContractsAddresses();
     })();
   }, []);

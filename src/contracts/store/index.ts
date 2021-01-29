@@ -88,7 +88,6 @@ export const addNewContractToIPFS = async (
           contracts: JSON.stringify(addresses),
         },
       };
-      console.log("Contract added, let's update IPFS JSON");
       await fetch(URL, {
         method: "PUT",
         body: JSON.stringify(body),
