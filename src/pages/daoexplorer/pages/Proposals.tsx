@@ -22,8 +22,6 @@ import { SideBar } from "../components/SideBar";
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
   height: 184,
-  paddingLeft: "6%",
-  paddingRight: "6%",
   paddingTop: "4%",
   boxSizing: "border-box",
 }));
@@ -46,6 +44,9 @@ const MainContainer = styled(Grid)({
 const StatsBox = styled(Grid)({
   borderRight: "2px solid #3D3D3D",
   width: "unset",
+  "&:last-child": {
+    borderRight: "none",
+  },
 });
 
 const StatsContainer = styled(Grid)({

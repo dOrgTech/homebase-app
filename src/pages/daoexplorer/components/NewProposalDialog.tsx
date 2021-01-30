@@ -147,6 +147,13 @@ export const NewProposalDialog: React.FC = () => {
 
   const onSubmit = (values: any, { setSubmitting }: any) => {
     console.log(values);
+    setSubmitting(true);
+    if (!isBatch) {
+      const actualReceipt = values.receipts.filter(
+        (item: any, index: any) => index + 1 === activeReceipt
+      );
+      console.log(actualReceipt);
+    }
   };
   return (
     <div>
