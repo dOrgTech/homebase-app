@@ -11,6 +11,7 @@ import { Box, ThemeProvider } from "@material-ui/core";
 import { theme } from "./theme";
 import { DAOExplorerRouter } from "./router/explorer";
 import { Navbar } from "./components/common/toolbar";
+import ScrollToTop from "./components/common/scrollToTop";
 
 const App: React.FC = () => {
   return (
@@ -23,6 +24,7 @@ const App: React.FC = () => {
       >
         <Router>
           <Navbar />
+          <ScrollToTop />
           <Switch>
             <Route path="/creator">
               <DAOCreate />

@@ -9,6 +9,7 @@ import {
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 type ProgressColor = "success" | "warning" | "danger";
 
@@ -21,6 +22,7 @@ const progressColorMap = {
 const ProposalTableRowContainer = styled(Grid)({
   height: 155,
   borderBottom: "2px solid #3D3D3D",
+  cursor: "pointer",
 });
 
 export interface ProposalTableRowData {
@@ -65,9 +67,15 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
   color,
 }) => {
   const theme = useTheme();
+  const history = useHistory();
 
   return (
-    <ProposalTableRowContainer item container alignItems="center">
+    <ProposalTableRowContainer
+      item
+      container
+      alignItems="center"
+      onClick={() => history.push("/explorer/voting")}
+    >
       <Grid item xs={5}>
         <Box>
           <Typography variant="body1" color="textSecondary">
