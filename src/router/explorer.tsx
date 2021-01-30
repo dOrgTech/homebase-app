@@ -4,7 +4,7 @@ import { DAOsList } from "../modules/daoexplorer/pages/List";
 import { DAO } from "../modules/daoexplorer/pages/DAO";
 import { Treasury } from "../modules/daoexplorer/pages/Treasury";
 
-export const DAOExplorerRouter = () => {
+export const DAOExplorerRouter = (): JSX.Element => {
   const match = useRouteMatch();
 
   return (

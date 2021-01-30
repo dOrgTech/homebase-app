@@ -1,4 +1,4 @@
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from "../../../store";
@@ -7,86 +7,12 @@ import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 
-interface Props {
-  setActiveStep: any;
-  setGovernanceStep: any;
-}
-
-const CustomUrlButton = styled(withTheme(Paper))((props) => ({
-  border: "none",
-  background: "inherit",
-  width: 69,
-  height: 31,
-  boxSizing: "border-box",
-  borderRadius: 21,
-  cursor: "pointer",
-  boxShadow: "none",
-  textAlign: "center",
-  marginLeft: "12px",
-  padding: 5,
-  color: props.theme.palette.secondary.main,
-  fontFamily: "system-ui",
-}));
-
 const CustomTypography = styled(Typography)({
   marginTop: 10,
 });
 
 const SecondContainer = styled(Grid)({
   marginTop: 25,
-});
-
-const CustomColumnContainer = styled(Grid)({
-  borderLeft: "1px solid #3D3D3D",
-  marginTop: 25,
-});
-
-const CustomSettingsContainer = styled(Grid)({
-  border: "1px solid #3D3D3D",
-  marginTop: 25,
-  padding: 25,
-});
-
-const CustomGridItem = styled(Grid)({
-  paddingLeft: 27,
-  marginBottom: 12,
-});
-
-const CustomItalic = styled(Typography)({
-  fontStyle: "italic",
-  fontWeight: 300,
-  fontSize: 14,
-  paddingBottom: 12,
-  borderBottom: "1px solid #3D3D3D",
-  color: "#fff",
-  opacity: 0.5,
-});
-
-const CustomItalicAdmin = styled(Typography)({
-  fontStyle: "italic",
-  fontWeight: 300,
-  fontSize: 14,
-  marginTop: 13,
-});
-
-const CustomItalicAdminText = styled(Typography)({
-  fontStyle: "italic",
-  fontWeight: 300,
-  fontSize: 14,
-  marginTop: 13,
-  marginRight: 4,
-  color: "#fff",
-  opacity: 0.5,
-});
-
-const CustomToken = styled(Typography)({
-  color: "#fff",
-  textAlign: "end",
-});
-
-const AddressContainer = styled(Grid)({
-  maxHeight: 212,
-  overflowY: "scroll",
 });
 
 const TitleSpacing = styled(Typography)({
@@ -123,7 +49,7 @@ const UnderlinedGrid = styled(Grid)({
   padding: 2,
 });
 
-export const Summary = () => {
+export const Summary = (): JSX.Element => {
   const { dispatch: creatorDispatch } = useContext(CreatorContext);
   const storageDaoInformation = useSelector<
     AppState,

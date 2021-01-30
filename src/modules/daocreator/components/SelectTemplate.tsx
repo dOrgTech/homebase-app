@@ -1,5 +1,4 @@
 import {
-  Card,
   CardContent,
   Grid,
   Paper,
@@ -67,7 +66,7 @@ const Subtitle = styled(Typography)({
   marginTop: 10,
 });
 
-export const SelectTemplate = () => {
+export const SelectTemplate = (): JSX.Element => {
   const { dispatch } = useContext(CreatorContext);
   return (
     <>

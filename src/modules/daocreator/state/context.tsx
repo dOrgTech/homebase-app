@@ -20,7 +20,10 @@ const CreatorContext = createContext<{
   dispatch: () => null,
 });
 
-export const reducer = (state: CreatorState, action: CreatorAction) => {
+export const reducer = (
+  state: CreatorState,
+  action: CreatorAction
+): CreatorState => {
   switch (action.type) {
     case ActionTypes.UPDATE_HANDLER:
       state = {

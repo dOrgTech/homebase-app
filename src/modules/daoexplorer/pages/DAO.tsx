@@ -1,6 +1,5 @@
 import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
 import React from "react";
-import { useRouteMatch } from "react-router-dom";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import HouseIcon from "../../../assets/logos/house.svg";
 import VotingIcon from "../../../assets/logos/voting.svg";
@@ -123,173 +122,159 @@ const proposals: ProposalTableRowData[] = [
   },
 ];
 
-export const DAO = () => {
-  const match = useRouteMatch();
-
-  return (
-    <PageLayout container wrap="nowrap">
-      <SideBar item>
-        <SidebarButton>
-          <img src={HouseIcon} />
-        </SidebarButton>
-        <SidebarButton>
-          <img src={VotingIcon} />
-        </SidebarButton>
-      </SideBar>
-      <Grid item xs>
-        <MainContainer container justify="space-between">
-          <DAOInfoTitleAndDesc item>
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                TEZDAO
-              </Typography>
-            </Box>
-            <Box paddingBottom="20px">
-              <Typography variant="h1" color="textSecondary">
-                TezDAO
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="body1" color="textSecondary">
-                The TezDAO was founded as a partnership between some of the most
-                known Tezos Influencers. The purpose of this DAO is to manage a
-                treasury of funds to further the organization’s goals.
-              </Typography>
-            </Box>
-          </DAOInfoTitleAndDesc>
-          <DAOInfoVotingPeriod item>
-            <Box paddingBottom="32px">
-              <Grid container>
-                <Grid item>
-                  <BigIconContainer>
-                    <img src={VotingPeriodIcon} />
-                  </BigIconContainer>
-                </Grid>
-                <Grid item>
-                  <Box paddingLeft="35px">
-                    <Box>
-                      <Typography variant="subtitle2" color="secondary">
-                        PERIOD
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h3" color="textSecondary">
-                        Voting
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-            <Box paddingBottom="32px">
-              <Grid container>
-                <Grid item>
-                  <BigIconContainer>
-                    <img src={VoteTimeIcon} />
-                  </BigIconContainer>
-                </Grid>
-                <Grid item>
-                  <Box paddingLeft="35px">
-                    <Box>
-                      <Typography variant="subtitle2" color="secondary">
-                        TIME LEFT TO VOTE
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h3" color="textSecondary">
-                        5d 2m 3h
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </DAOInfoVotingPeriod>
-        </MainContainer>
-        <StatsContainer container>
-          <TokensLocked
-            item
-            xs={6}
-            container
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <Grid container justify="space-between" alignItems="center">
+export const DAO = (): JSX.Element => (
+  <PageLayout container wrap="nowrap">
+    <SideBar item>
+      <SidebarButton>
+        <img src={HouseIcon} />
+      </SidebarButton>
+      <SidebarButton>
+        <img src={VotingIcon} />
+      </SidebarButton>
+    </SideBar>
+    <Grid item xs>
+      <MainContainer container justify="space-between">
+        <DAOInfoTitleAndDesc item>
+          <Box>
+            <Typography variant="subtitle2" color="secondary">
+              TEZDAO
+            </Typography>
+          </Box>
+          <Box paddingBottom="20px">
+            <Typography variant="h1" color="textSecondary">
+              TezDAO
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="body1" color="textSecondary">
+              The TezDAO was founded as a partnership between some of the most
+              known Tezos Influencers. The purpose of this DAO is to manage a
+              treasury of funds to further the organization’s goals.
+            </Typography>
+          </Box>
+        </DAOInfoTitleAndDesc>
+        <DAOInfoVotingPeriod item>
+          <Box paddingBottom="32px">
+            <Grid container>
               <Grid item>
-                <Box>
-                  <Typography variant="subtitle2" color="secondary">
-                    MGTO Locked
-                  </Typography>
-                </Box>
-                <Box padding="12px 0">
-                  <Typography variant="h3" color="textSecondary">
-                    21,202
-                  </Typography>
-                </Box>
+                <BigIconContainer>
+                  <img src={VotingPeriodIcon} />
+                </BigIconContainer>
               </Grid>
               <Grid item>
+                <Box paddingLeft="35px">
+                  <Box>
+                    <Typography variant="subtitle2" color="secondary">
+                      PERIOD
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="h3" color="textSecondary">
+                      Voting
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box paddingBottom="32px">
+            <Grid container>
+              <Grid item>
+                <BigIconContainer>
+                  <img src={VoteTimeIcon} />
+                </BigIconContainer>
+              </Grid>
+              <Grid item>
+                <Box paddingLeft="35px">
+                  <Box>
+                    <Typography variant="subtitle2" color="secondary">
+                      TIME LEFT TO VOTE
+                    </Typography>
+                  </Box>
+                  <Box>
+                    <Typography variant="h3" color="textSecondary">
+                      5d 2m 3h
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        </DAOInfoVotingPeriod>
+      </MainContainer>
+      <StatsContainer container>
+        <TokensLocked
+          item
+          xs={6}
+          container
+          direction="column"
+          alignItems="center"
+          justify="center"
+        >
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <Box>
                 <Typography variant="subtitle2" color="secondary">
-                  View
+                  MGTO Locked
                 </Typography>
-              </Grid>
+              </Box>
+              <Box padding="12px 0">
+                <Typography variant="h3" color="textSecondary">
+                  21,202
+                </Typography>
+              </Box>
             </Grid>
-            <LockedTokensBar
-              variant="determinate"
-              value={60}
-              color="secondary"
-            />
-          </TokensLocked>
-          <VotingAddresses
-            item
-            container
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <Box>
+            <Grid item>
               <Typography variant="subtitle2" color="secondary">
-                Voting Addresses
+                View
               </Typography>
-              <Typography variant="h3" color="textSecondary">
-                215
-              </Typography>
-            </Box>
-          </VotingAddresses>
-          <ActiveProposals
-            item
-            xs
-            container
-            direction="column"
-            justify="center"
-          >
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                Active Proposals
-              </Typography>
-              <Typography variant="h3" color="textSecondary">
-                5
-              </Typography>
-            </Box>
-          </ActiveProposals>
-        </StatsContainer>
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={5}>
-              <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
             </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={5}>
-              <ProposalTableHeadText>STATUS</ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {proposals.map((proposal, i) => (
-            <ProposalTableRow key={`proposal-${i}`} {...proposal} />
-          ))}
-        </TableContainer>
-      </Grid>
-    </PageLayout>
-  );
-};
+          </Grid>
+          <LockedTokensBar variant="determinate" value={60} color="secondary" />
+        </TokensLocked>
+        <VotingAddresses
+          item
+          container
+          direction="column"
+          alignItems="center"
+          justify="center"
+        >
+          <Box>
+            <Typography variant="subtitle2" color="secondary">
+              Voting Addresses
+            </Typography>
+            <Typography variant="h3" color="textSecondary">
+              215
+            </Typography>
+          </Box>
+        </VotingAddresses>
+        <ActiveProposals item xs container direction="column" justify="center">
+          <Box>
+            <Typography variant="subtitle2" color="secondary">
+              Active Proposals
+            </Typography>
+            <Typography variant="h3" color="textSecondary">
+              5
+            </Typography>
+          </Box>
+        </ActiveProposals>
+      </StatsContainer>
+      <TableContainer>
+        <TableHeader container wrap="nowrap">
+          <Grid item xs={5}>
+            <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
+          </Grid>
+          <Grid item xs={2}>
+            <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
+          </Grid>
+          <Grid item xs={5}>
+            <ProposalTableHeadText>STATUS</ProposalTableHeadText>
+          </Grid>
+        </TableHeader>
+        {proposals.map((proposal, i) => (
+          <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+        ))}
+      </TableContainer>
+    </Grid>
+  </PageLayout>
+);

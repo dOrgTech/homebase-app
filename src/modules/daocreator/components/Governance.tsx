@@ -125,12 +125,6 @@ const styles = {
   },
 };
 
-const SwitchContainer = styled("div")({
-  position: "absolute",
-  right: "5%",
-  textAlign: "center",
-});
-
 const GridNoPadding = styled(Grid)({
   padding: "0px !important",
 });
@@ -473,7 +467,7 @@ const GovernanceForm = ({
       <Grid container direction="row" alignItems="center" spacing={1}>
         <GridNoPadding item xs={10}>
           <Field name="min_stake">
-            {({ field, form: { touched, errors }, meta }: any) => (
+            {() => (
               <StyledSlider
                 value={getIn(values, "min_stake")}
                 onChange={(value: any, newValue: any) =>

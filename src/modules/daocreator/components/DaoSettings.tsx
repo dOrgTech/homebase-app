@@ -187,7 +187,7 @@ const DaoSettingsForm = ({
     </>
   );
 };
-export const DaoSettings = () => {
+export const DaoSettings = (): JSX.Element => {
   const creatorState = useContext(CreatorContext);
   const updateState = creatorState.dispatch;
 

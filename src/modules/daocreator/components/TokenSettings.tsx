@@ -5,9 +5,7 @@ import {
   withStyles,
   InputAdornment,
 } from "@material-ui/core";
-import { Add } from "@material-ui/icons";
-import React, { useContext, useMemo, useState } from "react";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import React, { useContext, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppState } from "../../../store";
 import { saveDaoInformation } from "../../../store/dao-info/action";
@@ -114,13 +112,7 @@ const TokenHoldersGrid = styled(Grid)({
   overflowX: "scroll",
 });
 
-const TokenSettingsForm = ({
-  values,
-  defineSubmit,
-  submitForm,
-  touched,
-  errors,
-}: any) => {
+const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
   const dispatch = useContext(CreatorContext).dispatch;
 
   useMemo(() => {
@@ -149,7 +141,7 @@ const TokenSettingsForm = ({
 
           <FieldArray
             name="token_holders"
-            render={(arrayHelpers) => (
+            render={() => (
               <>
                 {values.token_holders && values.token_holders.length > 0
                   ? values.token_holders.map((holder: any, index: any) => (
@@ -287,7 +279,7 @@ const TokenSettingsForm = ({
   );
 };
 
-export const TokenSettings = () => {
+export const TokenSettings = (): JSX.Element => {
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]

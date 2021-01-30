@@ -1,10 +1,8 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
 import { treasuryCode } from "../contracts/treasuryDAO";
-import { importKey, InMemorySigner } from "@taquito/signer";
+import { InMemorySigner } from "@taquito/signer";
 
 const Tezos = new TezosToolkit("https://api.tez.ie/rpc/delphinet");
-// importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
-// importKey(Tezos, "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq");
 
 export const deployContract = async (tezos: TezosToolkit) => {
   const sLedger = new MichelsonMap();
@@ -18,8 +16,6 @@ export const deployContract = async (tezos: TezosToolkit) => {
     },
     1
   );
-
-  const sProposals = new MichelsonMap();
 
   try {
     Tezos.setProvider({
@@ -49,7 +45,7 @@ export const deployContract = async (tezos: TezosToolkit) => {
           max_proposal_size: 10,
         },
         sProposals: new MichelsonMap(),
-        sProposalKeyListSortByDate: [["2021-01-06T05:14:43Z", "CAFE"]],
+        sProposalKeyListSortByDate: [],
         sPermitsCounter: 0,
       },
     });
