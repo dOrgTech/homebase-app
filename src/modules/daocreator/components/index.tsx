@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   Grid,
   Paper,
@@ -10,7 +11,6 @@ import {
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import ProgressBar from "react-customizable-progressbar";
-import React, { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import { ConnectWallet } from "./ConnectWallet";
@@ -20,10 +20,11 @@ import { TokenSettings } from "./TokenSettings";
 import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
-
+import { TokenHolders } from "../../../store/dao-info/types";
+import { useOriginate } from "../../../hooks/useOriginate";
+import { ActionTypes, StepperIndex, StepInfo } from "../state/types";
 import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
-import { ActionTypes, StepperIndex, StepInfo } from "../state/types";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -137,7 +138,7 @@ const STEPS: StepInfo[] = [
 
 const CurrentStep = () => {
   const { activeStep, governanceStep } = useContext(CreatorContext).state;
-
+  console.log("In current step ", activeStep);
   switch (activeStep) {
     case 0:
       return <SelectTemplate />;
@@ -155,6 +156,22 @@ const CurrentStep = () => {
   }
 };
 
+const metadataCarrierParams = {
+  keyName: "jaja",
+  metadata: {
+    frozenToken: {
+      name: "J",
+      symbol: "JAJA",
+      decimals: 18,
+    },
+    unfrozenToken: {
+      name: "J",
+      symbol: "JAJA",
+      decimals: 18,
+    },
+  },
+};
+
 export const DAOCreate: React.FC = () => {
   const { activeStep, governanceStep, onNextStep } = useContext(
     CreatorContext
@@ -164,6 +181,67 @@ export const DAOCreate: React.FC = () => {
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
+
+  const [originateMetaData, { data: carrierData }] = useOriginate(
+    "MetadataCarrier",
+    metadataCarrierParams
+  );
+
+  const daoInfo = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
+    (state) => state.saveDaoInformationReducer
+  );
+  const membersTokenAllocation = daoInfo.token_holders.map(
+    (holder: TokenHolders) => {
+      return {
+        address: holder.token_holder,
+        amount: holder.balance.toString(),
+        tokenId: "1",
+      };
+    }
+  );
+
+  const launchOrganization = () => {
+    dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
+    originateMetaData();
+  };
+
+  const [
+    originateTreasury,
+    { loading: loadingTreasuryData, data: treasuryData },
+  ] = useOriginate("Treasury", {
+    storage: {
+      membersTokenAllocation,
+      adminAddress: daoInfo.administrator,
+      frozenScaleValue: 1,
+      frozenExtraValue: 0,
+      slashScaleValue: 1,
+      slashDivisionValue: 1,
+      minXtzAmount: 1,
+      maxXtzAmount: daoInfo.max_agent || 0,
+      maxProposalSize: 100,
+      quorumTreshold: 4,
+      votingPeriod:
+        (daoInfo.voting_hours || 1) * 3600 +
+        (daoInfo.voting_days || 1) * 24 * 3600 +
+        (daoInfo.voting_minutes || 1) * 60,
+    },
+    metadataCarrierDeploymentData: {
+      deployAddress: carrierData ? carrierData.address : "",
+      keyName: "jaja",
+    },
+  });
+
+  useEffect(() => {
+    if (carrierData && !loadingTreasuryData) {
+      originateTreasury();
+    }
+  }, [carrierData, originateTreasury, loadingTreasuryData]);
+
+  useEffect(() => {
+    if (treasuryData) {
+      console.log("Treasury DAO contract data: ", treasuryData);
+    }
+  }, [treasuryData]);
 
   const fullHeight = fullHeightStyles();
   const reducedHeight = reducedHeightStyles();
@@ -247,14 +325,7 @@ export const DAOCreate: React.FC = () => {
               </BackButton>
             </Grid>
             <Grid item xs={6}>
-              <NextButton
-                onClick={() =>
-                  dispatch({
-                    type: ActionTypes.UPDATE_STEP,
-                    step: activeStep + 1,
-                  })
-                }
-              >
+              <NextButton onClick={launchOrganization}>
                 {" "}
                 <WhiteText>{"LAUNCH"}</WhiteText>
               </NextButton>
@@ -277,7 +348,7 @@ export const DAOCreate: React.FC = () => {
 
             {activeStep === 1 || activeStep === 2 ? (
               <Grid item xs={6}>
-                <NextButton onClick={onNextStep()}>
+                <NextButton onClick={onNextStep}>
                   {" "}
                   <WhiteText>CONTINUE</WhiteText>
                 </NextButton>

@@ -6,14 +6,14 @@ import {
   TextareaAutosize,
   withTheme,
 } from "@material-ui/core";
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
 import { Field, Form, Formik, getIn } from "formik";
 import {
   TextField as FormikTextField,
   Switch as FormikSwitch,
 } from "formik-material-ui";
+
 import { saveDaoInformation } from "../../../store/dao-info/action";
 import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
@@ -91,6 +91,7 @@ const ErrorText = styled(Typography)({
   color: "red",
 });
 
+//@TODO: Remove any from this component
 const DaoSettingsForm = ({
   submitForm,
   values,
@@ -100,12 +101,14 @@ const DaoSettingsForm = ({
 }: any) => {
   const dispatch = useContext(CreatorContext).dispatch;
 
-  useMemo(() => {
-    dispatch({
-      type: ActionTypes.UPDATE_HANDLER,
-      handler: () => submitForm,
-    });
-  }, [dispatch, submitForm]);
+  useEffect(() => {
+    if (values) {
+      dispatch({
+        type: ActionTypes.UPDATE_HANDLER,
+        handler: (values: any) => submitForm(values),
+      });
+    }
+  }, [dispatch, submitForm, values]);
 
   return (
     <>

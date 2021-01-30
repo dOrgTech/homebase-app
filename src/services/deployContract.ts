@@ -1,6 +1,6 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
-import { treasuryCode } from "../contracts/treasuryDAO";
 import { InMemorySigner } from "@taquito/signer";
+import { code as treasuryCode } from "../contracts/treasuryDAO/code";
 
 const Tezos = new TezosToolkit("https://api.tez.ie/rpc/delphinet");
 

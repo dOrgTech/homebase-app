@@ -5,8 +5,9 @@ import {
   withStyles,
   InputAdornment,
 } from "@material-ui/core";
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
 import { AppState } from "../../../store";
 import { saveDaoInformation } from "../../../store/dao-info/action";
 import { Field, FieldArray, Form, Formik } from "formik";
@@ -115,12 +116,14 @@ const TokenHoldersGrid = styled(Grid)({
 const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
   const dispatch = useContext(CreatorContext).dispatch;
 
-  useMemo(() => {
-    dispatch({
-      type: ActionTypes.UPDATE_HANDLER,
-      handler: () => submitForm,
-    });
-  }, [dispatch, submitForm]);
+  useEffect(() => {
+    if (values) {
+      dispatch({
+        type: ActionTypes.UPDATE_HANDLER,
+        handler: (values: any) => submitForm(values),
+      });
+    }
+  }, [dispatch, submitForm, values]);
 
   const getTotal = () => {
     let total = 0;

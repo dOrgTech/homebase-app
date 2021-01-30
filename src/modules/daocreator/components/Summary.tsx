@@ -1,6 +1,7 @@
 import { Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import { useSelector } from "react-redux";
+
 import { AppState } from "../../../store";
 import { TokenHolders } from "../../../store/dao-info/types";
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";

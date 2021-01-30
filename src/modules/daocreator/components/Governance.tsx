@@ -7,11 +7,12 @@ import {
   withStyles,
   withTheme,
 } from "@material-ui/core";
-import React, { useCallback, useContext, useMemo } from "react";
+import { TextField } from "formik-material-ui";
+import React, { useCallback, useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
 import { useDispatch, useSelector } from "react-redux";
+
 import { AppState } from "../../../store";
-import { TextField } from "formik-material-ui";
 import { saveDaoInformation } from "../../../store/dao-info/action";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
@@ -129,6 +130,7 @@ const GridNoPadding = styled(Grid)({
   padding: "0px !important",
 });
 
+//@TODO: Remove any from this component
 const GovernanceForm = ({
   submitForm,
   values,
@@ -138,12 +140,14 @@ const GovernanceForm = ({
 }: any) => {
   const dispatch = useContext(CreatorContext).dispatch;
 
-  useMemo(() => {
-    dispatch({
-      type: ActionTypes.UPDATE_HANDLER,
-      handler: () => submitForm,
-    });
-  }, [dispatch, submitForm]);
+  useEffect(() => {
+    if (values) {
+      dispatch({
+        type: ActionTypes.UPDATE_HANDLER,
+        handler: (values: any) => submitForm(values),
+      });
+    }
+  }, [dispatch, submitForm, values]);
 
   return (
     <>
@@ -501,6 +505,7 @@ export const Governance: React.FC = () => {
 
   const saveStepInfo = useCallback(
     (values: any, { setSubmitting }: any) => {
+      console.log("first");
       setSubmitting(true);
       dispatch(saveDaoInformation(values));
       creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
