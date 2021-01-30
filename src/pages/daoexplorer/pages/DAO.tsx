@@ -1,6 +1,6 @@
 import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
 import React from "react";
-import { useRouteMatch } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import HouseIcon from "../../../assets/logos/house.svg";
 import VotingIcon from "../../../assets/logos/voting.svg";
@@ -82,12 +82,22 @@ const LockedTokensBar = styled(LinearProgress)({
 const TableContainer = styled(Box)({
   width: "100%",
   padding: "72px 112px",
+  paddingBottom: 30,
   boxSizing: "border-box",
 });
 
 const TableHeader = styled(Grid)({
   borderBottom: "2px solid #3D3D3D",
   paddingBottom: 20,
+});
+
+const ProposalsContainer = styled(Grid)({
+  paddingBottom: 72,
+});
+
+const UnderlineText = styled(Typography)({
+  textDecoration: "underline",
+  cursor: "pointer",
 });
 
 const ProposalTableHeadText: React.FC = ({ children }) => (
@@ -125,6 +135,8 @@ const proposals: ProposalTableRowData[] = [
 
 export const DAO = () => {
   const match = useRouteMatch();
+
+  const history = useHistory();
 
   return (
     <PageLayout container wrap="nowrap">
@@ -289,6 +301,21 @@ export const DAO = () => {
             <ProposalTableRow key={`proposal-${i}`} {...proposal} />
           ))}
         </TableContainer>
+        <ProposalsContainer
+          container
+          direction="row"
+          alignItems="center"
+          justify="center"
+        >
+          <UnderlineText
+            color="textSecondary"
+            variant="subtitle1"
+            align="center"
+            onClick={() => history.push("/explorer/proposals")}
+          >
+            VIEW ALL PROPOSALS
+          </UnderlineText>
+        </ProposalsContainer>
       </Grid>
     </PageLayout>
   );

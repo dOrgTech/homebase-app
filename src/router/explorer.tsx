@@ -3,9 +3,12 @@ import React from "react";
 import { DAOsList } from "../pages/daoexplorer/pages/List";
 import { DAO } from "../pages/daoexplorer/pages/DAO";
 import { Treasury } from "../pages/daoexplorer/pages/Treasury";
+import { Proposals } from "../pages/daoexplorer/pages/Proposals";
 
 export const DAOExplorerRouter = () => {
   const match = useRouteMatch();
+
+  console.log(match);
 
   return (
     <Switch>
@@ -17,6 +20,9 @@ export const DAOExplorerRouter = () => {
       </Route>
       <Route path={`${match.url}/treasury/:id`}>
         <Treasury />
+      </Route>
+      <Route path={`${match.url}/proposals`}>
+        <Proposals />
       </Route>
       <Redirect to={`${match.url}/daos`} />
     </Switch>

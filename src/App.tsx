@@ -19,6 +19,7 @@ const App: React.FC = () => {
         height="calc(100% - 105px)"
         bgcolor="primary.main"
         position="absolute"
+        width="100%"
       >
         <Router>
           <Navbar />
