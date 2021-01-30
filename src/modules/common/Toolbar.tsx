@@ -13,7 +13,7 @@ import { AppState } from "../../store";
 import { toShortAddress } from "../../utils";
 import HomeButton from "../../assets/logos/homebase.svg";
 import { useConnectWallet } from "../../store/wallet/hook";
-import { useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -43,6 +43,7 @@ const AddressContainer = styled(Grid)({
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "18px",
+  cursor: "pointer",
 });
 
 const custom = {
@@ -69,6 +70,7 @@ export const Navbar: React.FC = () => {
 
   const { tezos, connect } = useConnectWallet();
   const location = useLocation();
+  const history = useHistory();
 
   return (
     <StyledAppBar
@@ -94,6 +96,11 @@ export const Navbar: React.FC = () => {
           >
             <Box
               style={location.pathname === "/creator" ? custom.logo : undefined}
+              onClick={
+                location.pathname === "/creator"
+                  ? () => history.push("/creator")
+                  : () => history.push("/dao")
+              }
             >
               <Grid
                 container
