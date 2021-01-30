@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   Grid,
   Paper,
@@ -6,14 +7,12 @@ import {
   Stepper,
   styled,
   Typography,
-  withTheme,
-  CircularProgress,
   makeStyles,
 } from "@material-ui/core";
-
-import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import ProgressBar from "react-customizable-progressbar";
 import { useSelector } from "react-redux";
-import { AppState } from "../../store";
+
 import { ConnectWallet } from "./ConnectWallet";
 import { Governance } from "./Governance";
 import { SelectTemplate } from "./SelectTemplate";
@@ -21,14 +20,14 @@ import { TokenSettings } from "./TokenSettings";
 import { DaoSettings } from "./DaoSettings";
 import { Summary } from "./Summary";
 import { Review } from "./Review";
-import { useHistory } from "react-router-dom";
-import { useConnectWallet } from "../../store/wallet/hook";
-import ProgressBar from "react-customizable-progressbar";
-import { TokenHolders } from "../../store/dao-info/types";
-import { useOriginate } from "../../hooks/useOriginate";
+import { TokenHolders } from "../../../store/dao-info/types";
+import { useOriginate } from "../../../hooks/useOriginate";
+import { ActionTypes, StepperIndex, StepInfo } from "../state/types";
+import { AppState } from "../../../store";
+import { CreatorContext } from "../state/context";
 
-const PageContainer = styled(withTheme(Grid))((props) => ({
-  background: props.theme.palette.primary.main,
+const PageContainer = styled(Grid)(({ theme }) => ({
+  background: theme.palette.primary.main,
 }));
 
 const fullHeightStyles = makeStyles({
@@ -69,9 +68,9 @@ const StepOneContentContainer = styled(Grid)({
   minHeight: 650,
 });
 
-const Footer = styled(withTheme(Grid))((props) => ({
+const Footer = styled(Grid)(({ theme }) => ({
   boxShadow: "none",
-  background: props.theme.palette.primary.main,
+  background: theme.palette.primary.main,
   height: 62,
   paddingTop: "1%",
   borderTop: "2px solid #3D3D3D",
@@ -104,15 +103,15 @@ const NextButton = styled(Paper)({
   paddingRight: "3%",
 });
 
-const WhiteText = styled(withTheme(Typography))((props) => ({
-  color: props.theme.palette.secondary.main,
+const WhiteText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.main,
 }));
 
-const StyledStepper = styled(withTheme(Stepper))((props) => ({
+const StyledStepper = styled(Stepper)({
   background: "inherit",
-}));
+});
 
-const IndicatorValue = styled(withTheme(Paper))((props) => ({
+const IndicatorValue = styled(Paper)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -123,20 +122,39 @@ const IndicatorValue = styled(withTheme(Paper))((props) => ({
   height: "100%",
   margin: "0 auto",
   fontSize: 25,
-  color: props.theme.palette.text.secondary,
+  color: theme.palette.text.secondary,
   userSelect: "none",
   boxShadow: "none",
   background: "inherit",
   fontFamily: "Roboto Mono",
 }));
 
-const STEPS = [
-  "Select template",
-  // "Claim a name",
-  "Configure template",
-  "Review information",
-  "Launch organization",
+const STEPS: StepInfo[] = [
+  { title: "Select template", index: StepperIndex.SELECT_TEMPLATE },
+  { title: "Configure template", index: StepperIndex.CONFIGURE_TEMPLATE },
+  { title: "Review information", index: StepperIndex.REVIEW_INFORMATION },
+  { title: "Launch organization", index: StepperIndex.LAUNCH_ORGANIZATION },
 ];
+
+const CurrentStep = () => {
+  const { activeStep, governanceStep } = useContext(CreatorContext).state;
+  console.log("In current step ", activeStep);
+  switch (activeStep) {
+    case 0:
+      return <SelectTemplate />;
+    case 1:
+      return governanceStep ? <DaoSettings /> : <Governance />;
+    case 2:
+      return <TokenSettings />;
+    case 3:
+      return <Summary />;
+    case 4:
+      return <Review />;
+
+    default:
+      return <div />;
+  }
+};
 
 const metadataCarrierParams = {
   keyName: "jaja",
@@ -155,18 +173,19 @@ const metadataCarrierParams = {
 };
 
 export const DAOCreate: React.FC = () => {
-  const [
-    originateMetaData,
-    { loading: loadingMetadataContract, data: carrierData },
-  ] = useOriginate("MetadataCarrier", metadataCarrierParams);
+  const { activeStep, governanceStep, onNextStep } = useContext(
+    CreatorContext
+  ).state;
+  const dispatch = useContext(CreatorContext).dispatch;
 
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [governanceStep, setGovernanceStep] = useState(0);
-  const [handleNextStep, setHandleNextStep] = useState(() => undefined);
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
-  const [progress, setProgress] = useState(0.5);
+
+  const [originateMetaData, { data: carrierData }] = useOriginate(
+    "MetadataCarrier",
+    metadataCarrierParams
+  );
 
   const daoInfo = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
     (state) => state.saveDaoInformationReducer
@@ -181,9 +200,14 @@ export const DAOCreate: React.FC = () => {
     }
   );
 
+  const launchOrganization = () => {
+    dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
+    originateMetaData();
+  };
+
   const [
     originateTreasury,
-    { loading: loadingTrasuryData, data: treasuryData },
+    { loading: loadingTreasuryData, data: treasuryData },
   ] = useOriginate("Treasury", {
     storage: {
       membersTokenAllocation,
@@ -193,13 +217,13 @@ export const DAOCreate: React.FC = () => {
       slashScaleValue: 1,
       slashDivisionValue: 1,
       minXtzAmount: 1,
-      maxXtzAmount: daoInfo.max_agent!,
+      maxXtzAmount: daoInfo.max_agent || 0,
       maxProposalSize: 100,
       quorumTreshold: 4,
       votingPeriod:
-        daoInfo.voting_hours! * 3600 +
-        daoInfo.voting_days! * 24 * 3600 +
-        daoInfo.voting_minutes! * 60,
+        (daoInfo.voting_hours || 1) * 3600 +
+        (daoInfo.voting_days || 1) * 24 * 3600 +
+        (daoInfo.voting_minutes || 1) * 60,
     },
     metadataCarrierDeploymentData: {
       deployAddress: carrierData ? carrierData.address : "",
@@ -208,113 +232,71 @@ export const DAOCreate: React.FC = () => {
   });
 
   useEffect(() => {
-    console.log("loading data ", loadingTrasuryData);
-    if (treasuryData) {
-      console.log("trasury data ", treasuryData);
-    }
-  }, [loadingTrasuryData, treasuryData]);
-
-  const handleStep = () => {
-    if (activeStep === 3) {
-      originateMetaData();
-    }
-
-    setActiveStep(activeStep + 1);
-  };
-
-  useEffect(() => {
-    if (carrierData) {
+    if (carrierData && !loadingTreasuryData) {
       originateTreasury();
     }
-  }, [carrierData]);
+  }, [carrierData, originateTreasury, loadingTreasuryData]);
+
+  useEffect(() => {
+    if (treasuryData) {
+      console.log("Treasury DAO contract data: ", treasuryData);
+    }
+  }, [treasuryData]);
 
   const fullHeight = fullHeightStyles();
   const reducedHeight = reducedHeightStyles();
-
-  const history = useHistory<any>();
-
-  function getStepContent(step: number, handleNextStep: any) {
-    switch (step) {
-      case 0:
-        return <SelectTemplate setActiveStep={setActiveStep} />;
-      case 1:
-        return governanceStep === 0 ? (
-          <Governance
-            setProgress={setProgress}
-            defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
-        ) : governanceStep === 1 ? (
-          <DaoSettings
-            defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
-          />
-        ) : null;
-      case 2:
-        return (
-          <TokenSettings
-            setProgress={setProgress}
-            defineSubmit={setHandleNextStep}
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
-        );
-      case 3:
-        return (
-          <Summary
-            setProgress={setProgress}
-            setActiveStep={setActiveStep}
-            setGovernanceStep={setGovernanceStep}
-          />
-        );
-      case 4:
-        return <Review setProgress={setProgress} />;
-    }
-  }
+  const history = useHistory();
 
   const handleBackStep = () => {
-    if (activeStep === 1 && governanceStep === 0) {
-      return setActiveStep(0);
-    } else if (activeStep === 1 && governanceStep !== 0) {
-      return setGovernanceStep(governanceStep - 1);
-    } else if (activeStep === 0) {
+    if (activeStep === 1 && !governanceStep) {
+      return dispatch({ type: ActionTypes.UPDATE_STEP, step: 0 });
+    }
+
+    if (activeStep === 1 && governanceStep) {
+      return dispatch({
+        type: ActionTypes.UPDATE_GOVERNANCE_STEP,
+        step: governanceStep - 1,
+      });
+    }
+
+    if (!activeStep) {
       history.push("/explorer");
-    } else if (activeStep === 3 || activeStep === 2) {
-      return setActiveStep(activeStep - 1);
+      return;
+    }
+
+    if (activeStep === 3 || activeStep === 2) {
+      return dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 });
     }
   };
 
-  const { tezos } = useConnectWallet();
+  const progress = useMemo(() => activeStep * 25, [activeStep]);
 
   return (
     <PageContainer
       container
       classes={
-        !account || (account && activeStep === 0) ? reducedHeight : fullHeight
+        !account || (account && !activeStep) ? reducedHeight : fullHeight
       }
     >
       <CustomGrid container item xs={3} direction="column" justify="flex-end">
-        {
-          <ProgressBar
-            progress={progress}
-            radius={62}
-            strokeWidth={4}
-            strokeColor={"#81FEB7"}
-            trackStrokeWidth={2}
-            trackStrokeColor={"#3d3d3d"}
-          >
-            <div className="indicator">
-              <IndicatorValue>
-                {progress === 0.5 ? 0 : progress}%
-              </IndicatorValue>
-            </div>
-          </ProgressBar>
-        }
+        <ProgressBar
+          progress={progress}
+          radius={62}
+          strokeWidth={4}
+          strokeColor={"#81FEB7"}
+          trackStrokeWidth={2}
+          trackStrokeColor={"#3d3d3d"}
+        >
+          <div className="indicator">
+            <IndicatorValue>
+              {progress === 0.5 ? 0 : activeStep * 25}%
+            </IndicatorValue>
+          </div>
+        </ProgressBar>
         <StyledStepper activeStep={activeStep} orientation="vertical">
-          {STEPS.map((label, index) => (
-            <Step key={label} {...(!account && { active: false })}>
-              <StepLabel>{label}</StepLabel>
+          {STEPS.map(({ title }: StepInfo) => (
+            <Step key={title} {...(!account && { active: false })}>
+              <StepLabel>{title}</StepLabel>
             </Step>
           ))}
         </StyledStepper>
@@ -322,7 +304,7 @@ export const DAOCreate: React.FC = () => {
       <Grid item container justify="center" alignItems="center" xs={9}>
         {account ? (
           <StepContentContainer item container justify="center">
-            {getStepContent(activeStep, handleNextStep)}
+            <CurrentStep />
           </StepContentContainer>
         ) : (
           <StepOneContentContainer item container justify="center">
@@ -343,7 +325,7 @@ export const DAOCreate: React.FC = () => {
               </BackButton>
             </Grid>
             <Grid item xs={6}>
-              <NextButton onClick={handleStep}>
+              <NextButton onClick={launchOrganization}>
                 {" "}
                 <WhiteText>{"LAUNCH"}</WhiteText>
               </NextButton>
@@ -366,7 +348,7 @@ export const DAOCreate: React.FC = () => {
 
             {activeStep === 1 || activeStep === 2 ? (
               <Grid item xs={6}>
-                <NextButton onClick={handleNextStep}>
+                <NextButton onClick={onNextStep}>
                   {" "}
                   <WhiteText>CONTINUE</WhiteText>
                 </NextButton>

@@ -1,10 +1,10 @@
 import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 import React from "react";
-import { DAOsList } from "../pages/daoexplorer/pages/List";
-import { DAO } from "../pages/daoexplorer/pages/DAO";
-import { Treasury } from "../pages/daoexplorer/pages/Treasury";
+import { DAOsList } from "../modules/daoexplorer/pages/List";
+import { DAO } from "../modules/daoexplorer/pages/DAO";
+import { Treasury } from "../modules/daoexplorer/pages/Treasury";
 
-export const DAOExplorerRouter = () => {
+export const DAOExplorerRouter = (): JSX.Element => {
   const match = useRouteMatch();
 
   return (

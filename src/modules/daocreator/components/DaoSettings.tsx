@@ -6,16 +6,18 @@ import {
   TextareaAutosize,
   withTheme,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
-import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
+import React, { useContext, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { AppState } from "../../store";
-import { saveDaoInformation } from "../../store/dao-info/action";
 import { Field, Form, Formik, getIn } from "formik";
 import {
   TextField as FormikTextField,
   Switch as FormikSwitch,
 } from "formik-material-ui";
+
+import { saveDaoInformation } from "../../../store/dao-info/action";
+import { AppState } from "../../../store";
+import { CreatorContext } from "../state/context";
+import { ActionTypes } from "../state/types";
 
 interface Values {
   token_name: string | undefined;
@@ -89,17 +91,24 @@ const ErrorText = styled(Typography)({
   color: "red",
 });
 
+//@TODO: Remove any from this component
 const DaoSettingsForm = ({
   submitForm,
   values,
-  defineSubmit,
   setFieldValue,
   errors,
   touched,
 }: any) => {
-  useMemo(() => {
-    defineSubmit(() => submitForm);
-  }, [values]);
+  const dispatch = useContext(CreatorContext).dispatch;
+
+  useEffect(() => {
+    if (values) {
+      dispatch({
+        type: ActionTypes.UPDATE_HANDLER,
+        handler: (values: any) => submitForm(values),
+      });
+    }
+  }, [dispatch, submitForm, values]);
 
   return (
     <>
@@ -161,7 +170,7 @@ const DaoSettingsForm = ({
         </Grid>
         <Grid item xs={12}>
           <Field name="description">
-            {({ field, form: { touched, errors }, meta }: any) => (
+            {() => (
               <CustomTextarea
                 maxLength={1500}
                 aria-label="empty textarea"
@@ -181,10 +190,10 @@ const DaoSettingsForm = ({
     </>
   );
 };
-export const DaoSettings: React.FC<{
-  defineSubmit: any;
-  setActiveStep: any;
-}> = ({ defineSubmit, setActiveStep }) => {
+export const DaoSettings = (): JSX.Element => {
+  const creatorState = useContext(CreatorContext);
+  const updateState = creatorState.dispatch;
+
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
@@ -195,7 +204,7 @@ export const DaoSettings: React.FC<{
   const saveStepInfo = (values: any, { setSubmitting }: any) => {
     setSubmitting(true);
     dispatch(saveDaoInformation(values));
-    setActiveStep(2);
+    updateState({ type: ActionTypes.UPDATE_STEP, step: 2 });
   };
 
   const validate = (values: Values) => {
@@ -252,7 +261,6 @@ export const DaoSettings: React.FC<{
           return (
             <Form style={{ width: "100%" }}>
               <DaoSettingsForm
-                defineSubmit={defineSubmit}
                 validate={validate}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

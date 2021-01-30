@@ -1,4 +1,8 @@
-import { MichelsonMap } from "@taquito/taquito";
+import {
+  ContractAbstraction,
+  ContractProvider,
+  MichelsonMap,
+} from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { getTestProvider } from "../utils";
 import { code } from "./code";
@@ -17,7 +21,9 @@ const setMetadataMap = (keyName: string, metadata: FA2MetadataParams) => {
 export const deployMetadataCarrier = async ({
   keyName,
   metadata,
-}: MetadataCarrierParameters) => {
+}: MetadataCarrierParameters): Promise<
+  ContractAbstraction<ContractProvider> | undefined
+> => {
   const Tezos = await getTestProvider();
   const metadataMap = setMetadataMap(keyName, metadata);
 
