@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
+import { ContractAbstraction, ContractProvider } from "@taquito/taquito";
+
 import { MetadataCarrierParameters } from "../contracts/metadataCarrier/types";
 import { deployMetadataCarrier } from "../contracts/metadataCarrier/deploy";
 import { TreasuryParams } from "../contracts/treasuryDAO/types";
-import { ContractAbstraction, ContractProvider } from "@taquito/taquito";
 import { deployTreasuryDAO } from "../contracts/treasuryDAO/deploy";
 
 type ContractName = "Treasury" | "MetadataCarrier";

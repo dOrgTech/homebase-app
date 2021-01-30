@@ -1,31 +1,12 @@
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-import React from "react";
+import { Grid, styled, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
 import { useSelector } from "react-redux";
-import { AppState } from "../../store";
-import { TokenHolders } from "../../store/dao-info/types";
-import { TokenHoldersRow } from "../daoexplorer/components/TokenHoldersRow";
 
-interface Props {
-  setActiveStep: any;
-  setGovernanceStep: any;
-  setProgress: any;
-}
-
-const CustomUrlButton = styled(withTheme(Paper))((props) => ({
-  border: "none",
-  background: "inherit",
-  width: 69,
-  height: 31,
-  boxSizing: "border-box",
-  borderRadius: 21,
-  cursor: "pointer",
-  boxShadow: "none",
-  textAlign: "center",
-  marginLeft: "12px",
-  padding: 5,
-  color: props.theme.palette.secondary.main,
-  fontFamily: "system-ui",
-}));
+import { AppState } from "../../../store";
+import { TokenHolders } from "../../../store/dao-info/types";
+import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
+import { CreatorContext } from "../state/context";
+import { ActionTypes } from "../state/types";
 
 const CustomTypography = styled(Typography)({
   marginTop: 10,
@@ -33,59 +14,6 @@ const CustomTypography = styled(Typography)({
 
 const SecondContainer = styled(Grid)({
   marginTop: 25,
-});
-
-const CustomColumnContainer = styled(Grid)({
-  borderLeft: "1px solid #3D3D3D",
-  marginTop: 25,
-});
-
-const CustomSettingsContainer = styled(Grid)({
-  border: "1px solid #3D3D3D",
-  marginTop: 25,
-  padding: 25,
-});
-
-const CustomGridItem = styled(Grid)({
-  paddingLeft: 27,
-  marginBottom: 12,
-});
-
-const CustomItalic = styled(Typography)({
-  fontStyle: "italic",
-  fontWeight: 300,
-  fontSize: 14,
-  paddingBottom: 12,
-  borderBottom: "1px solid #3D3D3D",
-  color: "#fff",
-  opacity: 0.5,
-});
-
-const CustomItalicAdmin = styled(Typography)({
-  fontStyle: "italic",
-  fontWeight: 300,
-  fontSize: 14,
-  marginTop: 13,
-});
-
-const CustomItalicAdminText = styled(Typography)({
-  fontStyle: "italic",
-  fontWeight: 300,
-  fontSize: 14,
-  marginTop: 13,
-  marginRight: 4,
-  color: "#fff",
-  opacity: 0.5,
-});
-
-const CustomToken = styled(Typography)({
-  color: "#fff",
-  textAlign: "end",
-});
-
-const AddressContainer = styled(Grid)({
-  maxHeight: 212,
-  overflowY: "scroll",
 });
 
 const TitleSpacing = styled(Typography)({
@@ -122,24 +50,21 @@ const UnderlinedGrid = styled(Grid)({
   padding: 2,
 });
 
-export const Summary: React.FC<Props> = (props) => {
-  const { setActiveStep, setGovernanceStep, setProgress } = props;
-
+export const Summary = (): JSX.Element => {
+  const { dispatch: creatorDispatch } = useContext(CreatorContext);
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
   >((state) => state.saveDaoInformationReducer);
 
-  setProgress(75);
-
   const goToVoting = () => {
-    setGovernanceStep(0);
-    setActiveStep(1);
+    creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
+    creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
   };
 
   const goToSettings = () => {
-    // setGovernanceStep(1);
-    setActiveStep(2);
+    creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 2 });
+    creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
   };
 
   return (

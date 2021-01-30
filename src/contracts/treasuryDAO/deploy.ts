@@ -1,4 +1,8 @@
-import { MichelsonMap } from "@taquito/taquito";
+import {
+  ContractAbstraction,
+  ContractProvider,
+  MichelsonMap,
+} from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { addNewContractToIPFS } from "../store";
@@ -45,7 +49,9 @@ export const deployTreasuryDAO = async ({
     votingPeriod,
   },
   metadataCarrierDeploymentData,
-}: TreasuryParams) => {
+}: TreasuryParams): Promise<
+  ContractAbstraction<ContractProvider> | undefined
+> => {
   const ledger = setMembersAllocation(membersTokenAllocation);
   const metadata = setMetadata(metadataCarrierDeploymentData);
 

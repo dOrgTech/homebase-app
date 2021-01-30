@@ -1,5 +1,5 @@
-import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React from "react";
+import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -17,9 +17,9 @@ const StyledButton = styled(withTheme(Button))((props) => ({
   minWidth: 171,
 }));
 
-const JustifyEndGrid = styled(withTheme(Grid))((props) => ({
+const JustifyEndGrid = styled(Grid)({
   textAlign: "end",
-}));
+});
 
 export const Header: React.FC<{
   name: string;

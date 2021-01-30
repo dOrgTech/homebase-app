@@ -1,14 +1,11 @@
+import React from "react";
 import {
-  Box,
-  Grid,
   InputAdornment,
-  makeStyles,
   styled,
   TextField,
   Theme,
   withStyles,
 } from "@material-ui/core";
-import React from "react";
 import { SearchOutlined } from "@material-ui/icons";
 
 const StyledInput = withStyles((theme: Theme) => ({

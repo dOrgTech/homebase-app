@@ -8,13 +8,10 @@ import {
   Avatar,
   ListItemText,
   styled,
-  Button,
 } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 import React from "react";
-import { useSelector } from "react-redux";
-import { AppState } from "../../store";
-import { useConnectWallet } from "../../store/wallet/hook";
+import { useConnectWallet } from "../../../store/wallet/hook";
 
 const PageContainer = styled(Grid)({
   height: "90%",
@@ -25,11 +22,7 @@ const SpacingTitle = styled(Typography)({
 });
 
 export const ConnectWallet: React.FC = () => {
-  const { tezos, connect } = useConnectWallet();
-
-  const account = useSelector<AppState, AppState["wallet"]["address"]>(
-    (state) => state.wallet.address
-  );
+  const { connect } = useConnectWallet();
 
   return (
     <PageContainer container justify="flex-start" alignItems="center">
