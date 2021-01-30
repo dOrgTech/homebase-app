@@ -35,7 +35,6 @@ const StepContentContainer = styled(Grid)({
   paddingRight: "16%",
   alignItems: "center",
   height: "inherit",
-  overflow: "scroll",
 });
 
 const StepOneContentContainer = styled(Grid)({
@@ -95,7 +94,6 @@ const StepContentHeigth = styled(Grid)({
 
 const ContentContainer = styled(Grid)({
   height: "inherit",
-  overflowY: "scroll",
   alignItems: "center",
   display: "flex",
 });
