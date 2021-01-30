@@ -1,7 +1,7 @@
 import { InMemorySigner } from "@taquito/signer";
 import { TezosToolkit } from "@taquito/taquito";
 
-export const getTestProvider = async () => {
+export const getTestProvider = async (): Promise<TezosToolkit> => {
   const Tezos = new TezosToolkit("https://api.tez.ie/rpc/delphinet");
 
   Tezos.setProvider({

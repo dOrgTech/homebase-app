@@ -1,6 +1,6 @@
-import { Grid, Paper, styled, Typography } from "@material-ui/core";
-import Rocket from "../../assets/img/rocket.svg";
 import React from "react";
+import { Grid, styled, Typography } from "@material-ui/core";
+import Rocket from "../../../assets/img/rocket.svg";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
@@ -10,8 +10,7 @@ const WaitingText = styled(Typography)({
   marginTop: 9,
 });
 
-export const Review: React.FC<{ setProgress: any }> = ({ setProgress }) => {
-  setProgress(100);
+export const Review: React.FC = ({}) => {
   return (
     <>
       <Grid

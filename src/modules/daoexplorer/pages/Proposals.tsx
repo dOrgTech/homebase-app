@@ -1,30 +1,27 @@
-import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
-import React from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import HouseIcon from "../../../assets/logos/house.svg";
-import VotingIcon from "../../../assets/logos/voting.svg";
-import VotingPeriodIcon from "../../../assets/logos/votingPeriod.svg";
-import VoteTimeIcon from "../../../assets/logos/voteTime.svg";
 import {
-  ProposalTableRow,
+  Box,
+  Grid,
+  styled,
+  Typography,
+  LinearProgress,
+} from "@material-ui/core";
+import React from "react";
+import { NewProposalDialog } from "../components/NewProposalDialog";
+import {
   ProposalTableRowData,
+  ProposalTableRow,
 } from "../components/ProposalTableRow";
+import { SideBar } from "../components/SideBar";
 
-const SideBar = styled(Grid)({
-  width: 102,
-  borderRight: "2px solid #3D3D3D",
-});
+const StyledContainer = styled(Grid)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  height: 184,
+  paddingTop: "4%",
+  boxSizing: "border-box",
+}));
 
-const MainContainer = styled(Grid)({
-  minHeight: 325,
-  padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
-
-const SidebarButton = styled(IconButton)({
-  paddingTop: 32,
-  width: "100%",
+const JustifyEndGrid = styled(Grid)({
+  textAlign: "end",
 });
 
 const PageLayout = styled(Grid)(({ theme }) => ({
@@ -32,21 +29,17 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   minHeight: "calc(100vh - 102px)",
 }));
 
-const DAOInfoTitleAndDesc = styled(Grid)({
-  maxWidth: 600,
-  marginBottom: 40,
+const MainContainer = styled(Grid)({
+  paddingBottom: 0,
+  padding: "40px 112px",
+  borderBottom: "2px solid #3D3D3D",
 });
 
-const DAOInfoVotingPeriod = styled(Grid)({
-  minWidth: 320,
-});
-
-const BigIconContainer = styled(Box)({
-  width: 112,
-
-  "& > img": {
-    display: "block",
-    margin: "auto",
+const StatsBox = styled(Grid)({
+  borderRight: "2px solid #3D3D3D",
+  width: "unset",
+  "&:last-child": {
+    borderRight: "none",
   },
 });
 
@@ -55,13 +48,15 @@ const StatsContainer = styled(Grid)({
   borderBottom: "2px solid #3D3D3D",
 });
 
-const StatsBox = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
-  width: "unset",
-});
-
 const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
+});
+
+const LockedTokensBar = styled(LinearProgress)({
+  width: "100%",
+  "&.MuiLinearProgress-colorSecondary": {
+    background: "#3D3D3D",
+  },
 });
 
 const VotingAddresses = styled(StatsBox)({
@@ -70,13 +65,6 @@ const VotingAddresses = styled(StatsBox)({
 
 const ActiveProposals = styled(StatsBox)({
   paddingLeft: "42px",
-});
-
-const LockedTokensBar = styled(LinearProgress)({
-  width: "100%",
-  "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D",
-  },
 });
 
 const TableContainer = styled(Box)({
@@ -133,90 +121,25 @@ const proposals: ProposalTableRowData[] = [
   },
 ];
 
-export const DAO = () => {
-  const match = useRouteMatch();
-
-  const history = useHistory();
-
-  return (
+export const Proposals: React.FC = () => (
+  <>
     <PageLayout container wrap="nowrap">
-      <SideBar item>
-        <SidebarButton>
-          <img src={HouseIcon} />
-        </SidebarButton>
-        <SidebarButton>
-          <img src={VotingIcon} />
-        </SidebarButton>
-      </SideBar>
+      <SideBar />
       <Grid item xs>
-        <MainContainer container justify="space-between">
-          <DAOInfoTitleAndDesc item>
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                TEZDAO
+        <MainContainer>
+          <StyledContainer container direction="row">
+            <Grid item xs={6}>
+              <Typography variant="subtitle1" color="secondary">
+                MY GREAT TOKEN
               </Typography>
-            </Box>
-            <Box paddingBottom="20px">
-              <Typography variant="h1" color="textSecondary">
-                TezDAO
+              <Typography variant="h5" color="textSecondary">
+                Proposals
               </Typography>
-            </Box>
-            <Box>
-              <Typography variant="body1" color="textSecondary">
-                The TezDAO was founded as a partnership between some of the most
-                known Tezos Influencers. The purpose of this DAO is to manage a
-                treasury of funds to further the organization’s goals.
-              </Typography>
-            </Box>
-          </DAOInfoTitleAndDesc>
-          <DAOInfoVotingPeriod item>
-            <Box paddingBottom="32px">
-              <Grid container>
-                <Grid item>
-                  <BigIconContainer>
-                    <img src={VotingPeriodIcon} />
-                  </BigIconContainer>
-                </Grid>
-                <Grid item>
-                  <Box paddingLeft="35px">
-                    <Box>
-                      <Typography variant="subtitle2" color="secondary">
-                        PERIOD
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h3" color="textSecondary">
-                        Voting
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-            <Box paddingBottom="32px">
-              <Grid container>
-                <Grid item>
-                  <BigIconContainer>
-                    <img src={VoteTimeIcon} />
-                  </BigIconContainer>
-                </Grid>
-                <Grid item>
-                  <Box paddingLeft="35px">
-                    <Box>
-                      <Typography variant="subtitle2" color="secondary">
-                        TIME LEFT TO VOTE
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h3" color="textSecondary">
-                        5d 2m 3h
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </DAOInfoVotingPeriod>
+            </Grid>
+            <JustifyEndGrid item xs={6}>
+              <NewProposalDialog />
+            </JustifyEndGrid>
+          </StyledContainer>
         </MainContainer>
         <StatsContainer container>
           <TokensLocked
@@ -294,7 +217,7 @@ export const DAO = () => {
               <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
             </Grid>
             <Grid item xs={5}>
-              <ProposalTableHeadText>STATUS</ProposalTableHeadText>
+              <ProposalTableHeadText>{""}</ProposalTableHeadText>
             </Grid>
           </TableHeader>
           {proposals.map((proposal, i) => (
@@ -311,12 +234,11 @@ export const DAO = () => {
             color="textSecondary"
             variant="subtitle1"
             align="center"
-            onClick={() => history.push("/explorer/proposals")}
           >
-            VIEW ALL PROPOSALS
+            LOAD MORE
           </UnderlineText>
         </ProposalsContainer>
       </Grid>
     </PageLayout>
-  );
-};
+  </>
+);

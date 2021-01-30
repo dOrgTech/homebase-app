@@ -1,7 +1,6 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -13,10 +12,11 @@ import {
   withTheme,
   Paper,
 } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "../../../store";
+import { useSelector } from "react-redux";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
+
+import { AppState } from "../../../store";
 import { Receipt } from "../../../store/funds/types";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
@@ -129,7 +129,6 @@ export const NewProposalDialog: React.FC = () => {
     AppState["fundsInformationReducer"]
   >((state) => state.fundsInformationReducer);
 
-  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeReceipt, setActiveReceipt] = React.useState(1);
@@ -150,7 +149,7 @@ export const NewProposalDialog: React.FC = () => {
     setSubmitting(true);
     if (!isBatch) {
       const actualReceipt = values.receipts.filter(
-        (item: any, index: any) => index + 1 === activeReceipt
+        (_: any, index: any) => index + 1 === activeReceipt
       );
       console.log(actualReceipt);
     }
@@ -209,7 +208,7 @@ export const NewProposalDialog: React.FC = () => {
             </ListItem>
 
             <Formik initialValues={storageDaoInformation} onSubmit={onSubmit}>
-              {({ submitForm, isSubmitting, errors, touched, values }) => (
+              {({ submitForm, values }) => (
                 <Form autoComplete="off">
                   <>
                     <FieldArray
@@ -218,7 +217,7 @@ export const NewProposalDialog: React.FC = () => {
                         <>
                           {isBatch ? (
                             <BatchBar container direction="row">
-                              {totalReceipt.map((item, index) => {
+                              {totalReceipt.map((_, index) => {
                                 return (
                                   <ReceiptActive
                                     item
@@ -262,7 +261,7 @@ export const NewProposalDialog: React.FC = () => {
                           ) : null}
 
                           {values.receipts && values.receipts.length > 0
-                            ? values.receipts.map((holder: any, index: any) => (
+                            ? values.receipts.map((index: any) => (
                                 <div
                                   key={index}
                                   style={

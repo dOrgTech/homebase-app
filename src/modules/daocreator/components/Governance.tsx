@@ -7,12 +7,15 @@ import {
   withStyles,
   withTheme,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
+import { TextField } from "formik-material-ui";
+import React, { useCallback, useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "../../store";
-import { TextField } from "formik-material-ui";
-import { saveDaoInformation } from "../../store/dao-info/action";
+
+import { AppState } from "../../../store";
+import { saveDaoInformation } from "../../../store/dao-info/action";
+import { CreatorContext } from "../state/context";
+import { ActionTypes } from "../state/types";
 
 interface Values {
   proposal_days: number | undefined;
@@ -132,17 +135,24 @@ const GridNoPadding = styled(Grid)({
   padding: "0px !important",
 });
 
+//@TODO: Remove any from this component
 const GovernanceForm = ({
   submitForm,
   values,
-  defineSubmit,
   setFieldValue,
   errors,
   touched,
 }: any) => {
-  useMemo(() => {
-    defineSubmit(() => submitForm);
-  }, [values]);
+  const dispatch = useContext(CreatorContext).dispatch;
+
+  useEffect(() => {
+    if (values) {
+      dispatch({
+        type: ActionTypes.UPDATE_HANDLER,
+        handler: (values: any) => submitForm(values),
+      });
+    }
+  }, [dispatch, submitForm, values]);
 
   return (
     <>
@@ -488,12 +498,9 @@ const GovernanceForm = ({
   );
 };
 
-export const Governance: React.FC<{
-  defineSubmit: any;
-  setActiveStep: any;
-  setGovernanceStep: any;
-  setProgress: any;
-}> = ({ defineSubmit, setActiveStep, setGovernanceStep, setProgress }) => {
+export const Governance: React.FC = () => {
+  const { dispatch: creatorDispatch } = useContext(CreatorContext);
+
   const storageDaoInformation = useSelector<
     AppState,
     AppState["saveDaoInformationReducer"]
@@ -501,14 +508,16 @@ export const Governance: React.FC<{
 
   const dispatch = useDispatch();
 
-  setProgress(25);
-
-  const saveStepInfo = (values: any, { setSubmitting }: any) => {
-    setSubmitting(true);
-    dispatch(saveDaoInformation(values));
-    setActiveStep(1);
-    setGovernanceStep(1);
-  };
+  const saveStepInfo = useCallback(
+    (values: any, { setSubmitting }: any) => {
+      console.log("first");
+      setSubmitting(true);
+      dispatch(saveDaoInformation(values));
+      creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
+      creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
+    },
+    [creatorDispatch, dispatch]
+  );
 
   const validate = (values: Values) => {
     const errors: any = {};
@@ -597,7 +606,6 @@ export const Governance: React.FC<{
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm
-                defineSubmit={defineSubmit}
                 validate={validate}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

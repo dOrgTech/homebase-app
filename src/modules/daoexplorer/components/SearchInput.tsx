@@ -1,3 +1,4 @@
+import React from "react";
 import {
   InputAdornment,
   styled,
@@ -5,7 +6,6 @@ import {
   Theme,
   withStyles,
 } from "@material-ui/core";
-import React from "react";
 import { SearchOutlined } from "@material-ui/icons";
 
 const StyledInput = withStyles((theme: Theme) => ({
