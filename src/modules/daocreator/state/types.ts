@@ -51,6 +51,7 @@ function updateVotingSettings(voting: VotingSettings) {
     voting,
   };
 }
+
 function updateMemberSettings(members: MemberSettings) {
   return <const>{
     type: ActionTypes.UPDATE_MEMBERS_SETTINGS,

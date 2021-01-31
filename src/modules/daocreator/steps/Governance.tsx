@@ -321,7 +321,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="proposeStake"
+                name="proposeStakeMygt"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -331,8 +331,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposeStake && touched.proposeStake ? (
-            <ErrorText>{errors.proposeStake}</ErrorText>
+          {errors.proposeStakeMygt && touched.proposeStakeMygt ? (
+            <ErrorText>{errors.proposeStakeMygt}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
@@ -394,7 +394,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voteStake"
+                name="voteStakeMygt"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -404,8 +404,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voteStake && touched.voteStake ? (
-            <ErrorText>{errors.voteStake}</ErrorText>
+          {errors.voteStakeMygt && touched.voteStakeMygt ? (
+            <ErrorText>{errors.voteStakeMygt}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
