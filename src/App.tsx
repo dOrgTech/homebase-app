@@ -9,16 +9,23 @@ import "./App.css";
 import { Box, ThemeProvider } from "@material-ui/core";
 import { theme } from "./theme";
 import { DAOExplorerRouter } from "./router/explorer";
-import { Navbar } from "./components/common/toolbar";
+import { Navbar } from "./modules/common/Toolbar";
 import { DAOCreate } from "./modules/daocreator/components";
 import { CreatorProvider } from "./modules/daocreator/state/context";
+import ScrollToTop from "./modules/common/ScrollToTop";
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <Box height="100%" bgcolor="primary.main">
-        <Navbar />
+      <Box
+        height="calc(100% - 105px)"
+        bgcolor="primary.main"
+        position="absolute"
+        width="100%"
+      >
         <Router>
+          <Navbar />
+          <ScrollToTop />
           <Switch>
             <Route path="/creator">
               <CreatorProvider>
