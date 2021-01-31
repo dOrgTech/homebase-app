@@ -151,7 +151,6 @@ export const DAOCreate: React.FC = () => {
   const dispatch = useContext(CreatorContext).dispatch;
   const originateMetaData = useDeployer();
   const history = useHistory();
-
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );

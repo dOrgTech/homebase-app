@@ -1,17 +1,13 @@
-import { useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useContext, useEffect, useMemo } from "react";
 
-import { getTokensInfo } from "../../../contracts/store/dependency/treasury";
 import { useOriginate } from "../../../hooks/useOriginate";
 import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import { TokenHolder } from "../../../services/contracts/baseDAO/types";
-import { AppState } from "../../../store";
+import { CreatorContext } from "../state/context";
+import { getTokensInfo } from "../state/utils";
 
 export const useDeployer = (): (() => Promise<void>) => {
-  const info = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
-    (state) => state.saveDaoInformationReducer
-  );
-
+  const info = useContext(CreatorContext).state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
   const metadataCarrierParams: MetadataCarrierParameters = {
     keyName: info.orgSettings.name,
@@ -63,7 +59,7 @@ export const useDeployer = (): (() => Promise<void>) => {
   });
 
   useEffect(() => {
-    if (carrierData?.address && !loadingTreasuryData) {
+    if (carrierData && !loadingTreasuryData) {
       originateTreasury();
     }
   }, [carrierData, originateTreasury, loadingTreasuryData]);

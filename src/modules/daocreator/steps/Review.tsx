@@ -10,7 +10,7 @@ const WaitingText = styled(Typography)({
   marginTop: 9,
 });
 
-export const Review: React.FC = ({}) => {
+export const Review: React.FC = () => {
   return (
     <>
       <Grid

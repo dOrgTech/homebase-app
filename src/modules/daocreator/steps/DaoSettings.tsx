@@ -7,15 +7,11 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Field, Form, Formik, getIn } from "formik";
 import {
   TextField as FormikTextField,
   Switch as FormikSwitch,
 } from "formik-material-ui";
-
-import { saveOrgSettings } from "../../../store/dao-info/action";
-import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 import { handleErrorMessages } from "../utils";
@@ -186,20 +182,12 @@ const DaoSettingsForm = ({
   );
 };
 export const DaoSettings = (): JSX.Element => {
-  const creatorState = useContext(CreatorContext);
-  const updateState = creatorState.dispatch;
-
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["saveDaoInformationReducer"]
-  >((state) => state.saveDaoInformationReducer);
-
-  const dispatch = useDispatch();
-
-  const saveStepInfo = (values: any, { setSubmitting }: any) => {
+  const { state, dispatch } = useContext(CreatorContext);
+  const { orgSettings } = state.data;
+  const saveStepInfo = (values: OrgSettings, { setSubmitting }: any) => {
     setSubmitting(true);
-    dispatch(saveOrgSettings(values));
-    updateState({ type: ActionTypes.UPDATE_STEP, step: 2 });
+    dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
+    dispatch({ type: ActionTypes.UPDATE_STEP, step: 2 });
   };
 
   return (
@@ -227,7 +215,7 @@ export const DaoSettings = (): JSX.Element => {
         enableReinitialize
         validate={(values: OrgSettings) => handleErrorMessages(values)}
         onSubmit={saveStepInfo}
-        initialValues={storageDaoInformation.orgSettings}
+        initialValues={orgSettings}
       >
         {({
           submitForm,

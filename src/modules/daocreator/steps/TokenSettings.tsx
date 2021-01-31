@@ -6,12 +6,9 @@ import {
   InputAdornment,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 
-import { AppState } from "../../../store";
-import { saveMemberSettings } from "../../../store/dao-info/action";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 import { handleErrorMessages } from "../utils";
@@ -337,17 +334,12 @@ const TokenSettingsForm = ({
 };
 
 export const TokenSettings = (): JSX.Element => {
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["saveDaoInformationReducer"]
-  >((state) => state.saveDaoInformationReducer);
-
-  const dispatch = useDispatch();
-  const { dispatch: creatorDispatch } = useContext(CreatorContext);
-  const saveStepInfo = (values: any, { setSubmitting }: any) => {
+  const { dispatch, state } = useContext(CreatorContext);
+  const { memberSettings } = state.data;
+  const saveStepInfo = (values: MemberSettings, { setSubmitting }: any) => {
     setSubmitting(true);
-    dispatch(saveMemberSettings(values));
-    creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 3 });
+    dispatch({ type: ActionTypes.UPDATE_MEMBERS_SETTINGS, members: values });
+    dispatch({ type: ActionTypes.UPDATE_STEP, step: 3 });
   };
 
   return (
@@ -374,7 +366,7 @@ export const TokenSettings = (): JSX.Element => {
         enableReinitialize={true}
         validate={validate}
         onSubmit={saveStepInfo}
-        initialValues={storageDaoInformation.memberSettings}
+        initialValues={memberSettings}
       >
         {({
           submitForm,

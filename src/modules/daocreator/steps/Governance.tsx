@@ -10,10 +10,7 @@ import {
 import { TextField } from "formik-material-ui";
 import React, { useCallback, useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
-import { useDispatch, useSelector } from "react-redux";
 
-import { AppState } from "../../../store";
-import { saveVotingSettings } from "../../../store/dao-info/action";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 import { handleErrorMessages } from "../utils";
@@ -135,7 +132,6 @@ const GovernanceForm = ({
 
   useEffect(() => {
     if (values) {
-      console.log("yah");
       dispatch({
         type: ActionTypes.UPDATE_HANDLER,
         handler: (values: any) => submitForm(values),
@@ -489,23 +485,17 @@ const GovernanceForm = ({
 //@TODO: Remove any from this component
 
 export const Governance: React.FC = () => {
-  const { dispatch: creatorDispatch } = useContext(CreatorContext);
-
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["saveDaoInformationReducer"]
-  >((state) => state.saveDaoInformationReducer);
-
-  const dispatch = useDispatch();
+  const { dispatch, state } = useContext(CreatorContext);
+  const { votingSettings } = state.data;
 
   const saveStepInfo = useCallback(
-    (values: any, { setSubmitting }: any) => {
+    (values: VotingSettings, { setSubmitting }: any) => {
       setSubmitting(true);
-      dispatch(saveVotingSettings(values));
-      creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
-      creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
+      dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
+      dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
+      dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
     },
-    [creatorDispatch, dispatch]
+    [dispatch]
   );
 
   return (
@@ -530,7 +520,7 @@ export const Governance: React.FC = () => {
         enableReinitialize
         validate={(values: VotingSettings) => handleErrorMessages(values)}
         onSubmit={saveStepInfo}
-        initialValues={storageDaoInformation.votingSettings}
+        initialValues={votingSettings}
       >
         {({
           submitForm,
