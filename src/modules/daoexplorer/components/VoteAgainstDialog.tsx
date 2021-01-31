@@ -1,23 +1,16 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import {
   Grid,
   styled,
-  Switch,
   Typography,
   withTheme,
-  Paper,
+  TextField,
 } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "../../../store";
-import { Formik, Form, Field, FieldArray } from "formik";
-import { TextField } from "formik-material-ui";
-import { Receipt } from "../../../store/funds/types";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
   height: 53,
@@ -26,6 +19,7 @@ const StyledButton = styled(withTheme(Button))((props) => ({
   minWidth: 171,
   marginLeft: 22,
   borderRadius: 4,
+  marginTop: 5,
 }));
 
 const CloseButton = styled(Typography)({
@@ -34,110 +28,56 @@ const CloseButton = styled(Typography)({
 });
 
 const Title = styled(DialogTitle)({
-  borderBottom: "2px solid #3D3D3D",
   height: 30,
-  paddingTop: 28,
+  paddingBottom: 0,
   minWidth: 500,
 });
 
-const ListItem = styled(Grid)({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  borderBottom: "2px solid #3D3D3D",
-  padding: "0px 24px",
+const CustomDialog = styled(Dialog)({
+  "& .MuiDialog-paperWidthSm": {
+    minHeight: "400px !important",
+  },
 });
 
-const SendContainer = styled(Grid)({
-  height: 55,
+const Content = styled(Grid)({
+  padding: "0px 66px",
 });
 
-const BatchBar = styled(Grid)({
-  height: 55,
-  display: "flex",
-  alignItems: "center",
+const TitleText = styled(Typography)({
+  marginTop: 8,
+  lineHeight: "146.3% !important",
+  marginBottom: 45,
+});
+
+const ProposalInfoExtra = styled(Grid)({
+  minHeight: 50,
+});
+
+const FeeContainer = styled(Grid)({
+  borderTop: "2px solid #3D3D3D",
+  padding: "30px 66px",
   borderBottom: "2px solid #3D3D3D",
-  padding: "0px 24px",
+});
+
+const SubmitContainer = styled(Grid)({
+  height: 80,
+  display: "flex",
   cursor: "pointer",
 });
 
-const SwitchContainer = styled(Grid)({
-  textAlign: "end",
+const OpposeText = styled(Typography)({
+  color: "#FF5555",
 });
 
-const ReceiptActive = styled(Grid)({
-  height: 53,
-  width: 51,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-});
-
-const AddButton = styled(Paper)({
-  marginLeft: 12,
-  height: 31,
-  width: 31,
-  textAlign: "center",
-  padding: 0,
-  background: "#383939",
-  color: "#fff",
-  alignItems: "center",
-  display: "flex",
-  justifyContent: "center",
-  cursor: "pointer",
-});
-
-const styles = {
-  visible: {
-    display: "none",
-  },
-  active: {
-    background: "#3866F9",
-  },
-};
-
-const DescriptionContainer = styled(Grid)({
-  minHeight: 250,
-  paddingLeft: 24,
-  paddingRight: 24,
-  paddingTop: 24,
-  borderBottom: "2px solid #3D3D3D",
-});
-
-const CustomTextField = styled(TextField)({
-  textAlign: "end",
+const CustomInput = styled(TextField)({
   "& .MuiInputBase-input": {
     textAlign: "end",
-    paddingRight: 12,
-  },
-});
-
-const CustomTextarea = styled(TextField)({
-  textAlign: "end",
-  "& .MuiInputBase-multiline": {
-    textAlign: "initial",
-    border: "1px solid #434242",
-    boxSizing: "border-box",
-    "& .MuiInputBase-inputMultiline": {
-      padding: 12,
-      textAlign: "initial",
-    },
   },
 });
 
 export const VoteAgainstDialog: React.FC = () => {
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["fundsInformationReducer"]
-  >((state) => state.fundsInformationReducer);
-
-  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
-  const [isBatch, setIsBatch] = React.useState(false);
-  const [activeReceipt, setActiveReceipt] = React.useState(1);
-  const [totalReceipt, setTotalReceipt] = React.useState(
-    storageDaoInformation.receipts
-  );
+  const [amount, setAmount] = React.useState<any>();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -147,22 +87,16 @@ export const VoteAgainstDialog: React.FC = () => {
     setOpen(false);
   };
 
-  const onSubmit = (values: any, { setSubmitting }: any) => {
-    console.log(values);
-    setSubmitting(true);
-    if (!isBatch) {
-      const actualReceipt = values.receipts.filter(
-        (item: any, index: any) => index + 1 === activeReceipt
-      );
-      console.log(actualReceipt);
-    }
+  const onSubmit = () => {
+    console.log("submit amount value = " + amount);
   };
+
   return (
     <div>
       <StyledButton variant="outlined" onClick={handleClickOpen}>
         VOTE AGAINST
       </StyledButton>
-      <Dialog
+      <CustomDialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -170,12 +104,7 @@ export const VoteAgainstDialog: React.FC = () => {
       >
         <Title id="alert-dialog-title" color="textSecondary">
           <Grid container direction="row">
-            <Grid item xs={6}>
-              <Typography variant="subtitle1" color="textSecondary">
-                SEND FUNDS
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <CloseButton
                 color="textSecondary"
                 align="right"
@@ -188,30 +117,53 @@ export const VoteAgainstDialog: React.FC = () => {
         </Title>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <ListItem container direction="row">
+            <Content container direction="row">
+              <Grid item xs={12}>
+                <OpposeText variant="subtitle1">OPPOSE</OpposeText>
+              </Grid>
+              <Grid item xs={12}>
+                <TitleText variant="h3" color="textSecondary">
+                  Confirm your vote to support Proposal #45
+                </TitleText>
+              </Grid>
+
+              <ProposalInfoExtra item xs={12}>
+                <Typography color="textSecondary" variant="subtitle1">
+                  More data about the proposal
+                </Typography>
+              </ProposalInfoExtra>
+            </Content>
+
+            <FeeContainer container direction="row">
               <Grid item xs={6}>
                 <Typography variant="subtitle1" color="textSecondary">
-                  Batch Transfer?
+                  Amount
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <SwitchContainer item xs={12} justify="flex-end">
-                  <Switch
-                    checked={isBatch}
-                    onChange={() => {
-                      setIsBatch(!isBatch);
-                      //   setTotalReceipt(totalReceipt.push(1));
-                      return;
-                    }}
-                    name="checkedA"
-                    inputProps={{ "aria-label": "secondary checkbox" }}
-                  />
-                </SwitchContainer>
+                <CustomInput
+                  id="standard-basic"
+                  value={amount}
+                  type="number"
+                  placeholder="Type an Amount"
+                  onChange={(newValue: any) => setAmount(newValue.target.value)}
+                />
               </Grid>
-            </ListItem>
+            </FeeContainer>
+            <SubmitContainer
+              container
+              direction="row"
+              alignItems="center"
+              justify="center"
+              onClick={onSubmit}
+            >
+              <Typography color="textSecondary" variant="subtitle1">
+                SUBMIT VOTE
+              </Typography>
+            </SubmitContainer>
           </DialogContentText>
         </DialogContent>
-      </Dialog>
+      </CustomDialog>
     </div>
   );
 };

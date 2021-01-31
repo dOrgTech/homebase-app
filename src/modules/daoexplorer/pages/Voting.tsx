@@ -1,31 +1,25 @@
 import {
   Box,
   Grid,
-  Paper,
   styled,
   Typography,
   withTheme,
-  Button,
-  IconButton,
   LinearProgress,
 } from "@material-ui/core";
 import React from "react";
-import { useHistory } from "react-router-dom";
-import { Header } from "../components/Header";
-
 import { SideBar } from "../components/SideBar";
 import { VoteAgainstDialog } from "../components/VoteAgainstDialog";
 import { VoteForDialog } from "../components/VoteForDialog";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
-  height: 184,
+  minHeight: 184,
   boxSizing: "border-box",
 }));
 
-const JustifyEndGrid = styled(withTheme(Grid))((props) => ({
+const JustifyEndGrid = styled(Grid)({
   textAlign: "end",
-}));
+});
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -33,9 +27,14 @@ const PageLayout = styled(Grid)(({ theme }) => ({
 }));
 
 const MainContainer = styled(Grid)({
-  paddingBottom: 0,
   padding: "40px 112px",
   borderBottom: "2px solid #3D3D3D",
+  paddingBottom: "4vh",
+});
+
+const DetailsContainer = styled(Grid)({
+  paddingBottom: 0,
+  padding: "40px 112px",
 });
 
 const CycleContainer = styled(Grid)({
@@ -67,16 +66,26 @@ const LockedTokensBar = styled(LinearProgress)({
   },
 });
 
+const LockedTokensAgainstBar = styled(LinearProgress)({
+  width: "100%",
+  "&.MuiLinearProgress-colorSecondary": {
+    background: "#3D3D3D",
+    color: "#ED254E",
+    "& .MuiLinearProgress-bar": {
+      backgroundColor: "#ED254E !important",
+    },
+  },
+  "& .MuiLinearProgress-bar": {
+    backgroundColor: "#ED254E !important",
+  },
+});
+
+const TextAgainst = styled(Typography)({
+  color: "#ED254E !important",
+});
+
 const Container = styled(Grid)({
   paddingTop: "4%",
-});
-
-const VotingAddresses = styled(StatsBox)({
-  minWidth: 250,
-});
-
-const ActiveProposals = styled(StatsBox)({
-  paddingLeft: "42px",
 });
 
 const Subtitle = styled(Typography)({
@@ -91,9 +100,86 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-export const Voting: React.FC = () => {
-  const history = useHistory<any>();
+const BoxItem = styled(Grid)({
+  paddingBottom: 24,
+  borderBottom: "2px solid #3D3D3D",
+});
 
+const Detail = styled(Grid)({
+  height: 93,
+  display: "flex",
+  alignItems: "center",
+  paddingBottom: 0,
+  borderBottom: "2px solid #3D3D3D",
+});
+
+const MetaData = styled(Grid)({
+  height: 70,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  marginBottom: 20,
+});
+
+const HistoryContent = styled(Grid)({
+  paddingBottom: 24,
+  paddingLeft: 53,
+});
+
+const HistoryItem = styled(Grid)({
+  paddingLeft: 63,
+  marginTop: 20,
+  paddingBottom: 12,
+  display: "flex",
+  height: "auto",
+});
+
+const HistoryBadge = styled(Grid)({
+  borderRadius: 4,
+  textAlign: "center",
+});
+
+const styles = {
+  blue: {
+    background: "#3866F9",
+    color: "white",
+    padding: 2,
+  },
+  yellow: {
+    background: "#DBDE39",
+    color: "#1C1F23",
+    padding: 2,
+  },
+};
+
+const Details = [
+  {
+    message: "Reduces DAO’s Treasury by 50ETH",
+  },
+  {
+    message: "Increases 0x89878 wallet by 50ETH",
+  },
+  {
+    message: "Reduces DAO’s Treasury by 50ETH",
+  },
+];
+
+const History = [
+  {
+    date: "December 19th, 2020. 11:09:21 AM",
+    status: "created",
+  },
+  {
+    date: "December 20th, 2020. 11:09:21 AM",
+    status: "active",
+  },
+  {
+    date: "December 21st, 2020. 11:09:21 AM",
+    status: "passed",
+  },
+];
+
+export const Voting: React.FC = () => {
   return (
     <>
       <PageLayout container wrap="nowrap">
@@ -178,39 +264,120 @@ export const Voting: React.FC = () => {
                 </Grid>
               </Grid>
             </TokensLocked>
-            <VotingAddresses
+
+            <TokensLocked
               item
+              xs={6}
               container
               direction="column"
               alignItems="center"
               justify="center"
             >
-              <Box>
-                <Typography variant="subtitle2" color="secondary">
-                  Voting Addresses
-                </Typography>
-                <Typography variant="h3" color="textSecondary">
-                  215
-                </Typography>
-              </Box>
-            </VotingAddresses>
-            <ActiveProposals
-              item
-              xs
-              container
-              direction="column"
-              justify="center"
-            >
-              <Box>
-                <Typography variant="subtitle2" color="secondary">
-                  Active Proposals
-                </Typography>
-                <Typography variant="h3" color="textSecondary">
-                  5
-                </Typography>
-              </Box>
-            </ActiveProposals>
+              <Grid container justify="space-between" alignItems="center">
+                <Grid item>
+                  <Box>
+                    <TextAgainst variant="subtitle2">OPPOSE</TextAgainst>
+                  </Box>
+                  <Box padding="12px 0">
+                    <Typography variant="h3" color="textSecondary">
+                      87,202
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <TextAgainst variant="subtitle2" color="secondary">
+                    VIEW ADDRESSES
+                  </TextAgainst>
+                </Grid>
+              </Grid>
+              <Grid container direction="row" alignItems="center">
+                <Grid item xs={10}>
+                  <LockedTokensAgainstBar variant="determinate" value={60} />
+                </Grid>
+                <Grid item xs={2}>
+                  <Typography color="textSecondary" align="right">
+                    60%
+                  </Typography>
+                </Grid>
+              </Grid>
+            </TokensLocked>
           </StatsContainer>
+          <DetailsContainer container direction="row">
+            <Grid item xs={6}>
+              <Grid container direction="row">
+                <BoxItem item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    DETAILS
+                  </Typography>
+                </BoxItem>
+
+                {Details.map((item: any, index: any) => {
+                  return (
+                    <Detail item xs={12} key={index}>
+                      <Grid container direction="row">
+                        <Grid item xs={2}>
+                          <Typography
+                            variant="subtitle1"
+                            color="textSecondary"
+                            align="center"
+                          >
+                            {index + 1}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={10}>
+                          <Typography variant="subtitle1" color="textSecondary">
+                            {item.message}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Detail>
+                  );
+                })}
+
+                <MetaData item xs={12}>
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="center"
+                  >
+                    Proposal Metadata & #
+                  </Typography>
+                </MetaData>
+              </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <Grid container direction="row">
+                <HistoryContent item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    HISTORY
+                  </Typography>
+                </HistoryContent>
+                {History.map((item: any, index: any) => {
+                  return (
+                    <HistoryItem container direction="row" key={index}>
+                      <HistoryBadge
+                        item
+                        lg={2}
+                        md={6}
+                        sm={6}
+                        style={
+                          item.status === "active" ? styles.yellow : styles.blue
+                        }
+                      >
+                        <Typography> {item.status.toUpperCase()} </Typography>
+                      </HistoryBadge>
+                      <Grid item lg={1} md={1} sm={1}></Grid>
+                      <Grid item lg={9} md={12} sm={12}>
+                        <Typography color="textSecondary">
+                          {item.date}
+                        </Typography>
+                      </Grid>
+                    </HistoryItem>
+                  );
+                })}
+              </Grid>
+            </Grid>
+          </DetailsContainer>
         </Grid>
       </PageLayout>
     </>

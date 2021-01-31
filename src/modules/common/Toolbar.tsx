@@ -68,7 +68,7 @@ export const Navbar: React.FC = () => {
     (state) => state.wallet.address
   );
 
-  const { tezos, connect } = useConnectWallet();
+  const { connect } = useConnectWallet();
   const location = useLocation();
   const history = useHistory();
 
