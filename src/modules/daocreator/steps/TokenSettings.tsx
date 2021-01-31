@@ -10,12 +10,8 @@ import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 
 import { CreatorContext } from "../state/context";
-import { ActionTypes } from "../state/types";
+import { ActionTypes, MemberSettings, TokenHolder } from "../state/types";
 import { handleErrorMessages } from "../utils";
-import {
-  MemberSettings,
-  TokenHolder,
-} from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,

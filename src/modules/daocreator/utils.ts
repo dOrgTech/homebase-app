@@ -1,4 +1,4 @@
-import { ErrorValues, Settings } from "../../services/contracts/baseDAO/types";
+import { ErrorValues, Settings } from "./state/types";
 
 // @TODO: Make it more generic to handle different cases
 export const handleErrorMessages = (

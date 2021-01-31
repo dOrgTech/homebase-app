@@ -8,13 +8,12 @@ import {
   withTheme,
 } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
 
 import { CreatorContext } from "../state/context";
-import { ActionTypes } from "../state/types";
+import { ActionTypes, VotingSettings } from "../state/types";
 import { handleErrorMessages } from "../utils";
-import { VotingSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
@@ -128,13 +127,13 @@ const GovernanceForm = ({
   errors,
   touched,
 }: any) => {
-  const dispatch = useContext(CreatorContext).dispatch;
+  const { dispatch } = useContext(CreatorContext);
 
   useEffect(() => {
     if (values) {
       dispatch({
         type: ActionTypes.UPDATE_HANDLER,
-        handler: (values: any) => submitForm(values),
+        handler: (values: VotingSettings) => submitForm(values),
       });
     }
   }, [dispatch, submitForm, values]);
@@ -322,7 +321,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="proposeStakeMygt"
+                name="proposeStake"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -332,8 +331,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposeStakeMygt && touched.proposeStakeMygt ? (
-            <ErrorText>{errors.proposeStakeMygt}</ErrorText>
+          {errors.proposeStake && touched.proposeStake ? (
+            <ErrorText>{errors.proposeStake}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
@@ -395,7 +394,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voteStakeMygt"
+                name="voteStake"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -405,8 +404,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voteStakeMygt && touched.voteStakeMygt ? (
-            <ErrorText>{errors.voteStakeMygt}</ErrorText>
+          {errors.voteStake && touched.voteStake ? (
+            <ErrorText>{errors.voteStake}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
@@ -483,20 +482,16 @@ const GovernanceForm = ({
 };
 
 //@TODO: Remove any from this component
-
 export const Governance: React.FC = () => {
   const { dispatch, state } = useContext(CreatorContext);
   const { votingSettings } = state.data;
 
-  const saveStepInfo = useCallback(
-    (values: VotingSettings, { setSubmitting }: any) => {
-      setSubmitting(true);
-      dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
-      dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
-      dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
-    },
-    [dispatch]
-  );
+  const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
+    console.log("saving");
+    setSubmitting(true);
+    dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
+    dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
+  };
 
   return (
     <>

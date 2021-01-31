@@ -100,9 +100,9 @@ export type VotingSettings = {
   votingDays: number;
   votingHours: number;
   votingMinutes: number;
-  proposeStakeMygt: number;
+  proposeStakeRequired: number;
   proposeStakePercentage: number;
-  voteStakeMygt: number;
+  voteStakeRequired: number;
   voteStakePercentage: number;
   minStake: number;
 };
@@ -130,9 +130,9 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     votingDays: 0,
     votingHours: 0,
     votingMinutes: 0,
-    proposeStakeMygt: 0,
+    proposeStakeRequired: 0,
     proposeStakePercentage: 0,
-    voteStakeMygt: 0,
+    voteStakeRequired: 0,
     voteStakePercentage: 0,
     minStake: 0,
   },

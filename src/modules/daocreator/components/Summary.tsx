@@ -1,10 +1,9 @@
 import { Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
-import { TokenHolder } from "../../../services/contracts/baseDAO/types";
 
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 import { CreatorContext } from "../state/context";
-import { ActionTypes } from "../state/types";
+import { ActionTypes, TokenHolder } from "../state/types";
 
 const CustomTypography = styled(Typography)({
   marginTop: 10,

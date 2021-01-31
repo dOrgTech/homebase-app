@@ -10,7 +10,10 @@ import {
 export const INITIAL_STATE: CreatorState = {
   activeStep: StepperIndex.SELECT_TEMPLATE,
   governanceStep: StepperIndex.SELECT_TEMPLATE,
-  onNextStep: () => undefined,
+  onNextStep: () => {
+    console.log("si br");
+    return undefined;
+  },
   data: INITIAL_MIGRATION_STATE,
 };
 

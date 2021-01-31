@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, styled, Typography } from "@material-ui/core";
-import { TokenHolder } from "../../../services/contracts/baseDAO/types";
+import { TokenHolder } from "../../daocreator/state/types";
 
 const Container = styled(Grid)({
   borderBottom: "1px solid #3D3D3D",

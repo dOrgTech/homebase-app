@@ -2,12 +2,12 @@ import { useContext, useEffect, useMemo } from "react";
 
 import { useOriginate } from "../../../hooks/useOriginate";
 import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
-import { TokenHolder } from "../../../services/contracts/baseDAO/types";
 import { CreatorContext } from "../state/context";
+import { MigrationParams, TokenHolder } from "../state/types";
 import { getTokensInfo } from "../state/utils";
 
 export const useDeployer = (): (() => Promise<void>) => {
-  const info = useContext(CreatorContext).state.data;
+  const info: MigrationParams = useContext(CreatorContext).state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
   const metadataCarrierParams: MetadataCarrierParameters = {
     keyName: info.orgSettings.name,
@@ -38,19 +38,21 @@ export const useDeployer = (): (() => Promise<void>) => {
   ] = useOriginate("Treasury", {
     storage: {
       membersTokenAllocation,
-      adminAddress: info.memberSettings?.administrator || "",
-      frozenScaleValue: 1,
-      frozenExtraValue: 0,
-      slashScaleValue: 1,
-      slashDivisionValue: 1,
-      minXtzAmount: 1,
-      maxXtzAmount: info.memberSettings?.maxAgent || 0,
+      adminAddress: info.memberSettings.administrator || "",
+      // Make sure these four are well connected
+      frozenScaleValue: info.votingSettings.proposeStakeRequired,
+      frozenExtraValue: info.votingSettings.proposeStakePercentage,
+      slashScaleValue: info.votingSettings.voteStakeRequired,
+      slashDivisionValue: info.votingSettings.voteStakePercentage,
+
+      minXtzAmount: info.votingSettings.minStake,
+      maxXtzAmount: info.memberSettings.maxAgent || 0,
       maxProposalSize: 100,
       quorumTreshold: 4,
       votingPeriod:
-        (info.votingSettings?.votingHours || 1) * 3600 +
-        (info.votingSettings?.votingDays || 1) * 24 * 3600 +
-        (info.votingSettings?.votingMinutes || 1) * 60,
+        (info.votingSettings.votingHours || 1) * 3600 +
+        (info.votingSettings.votingDays || 1) * 24 * 3600 +
+        (info.votingSettings.votingMinutes || 1) * 60,
     },
     metadataCarrierDeploymentData: {
       deployAddress: carrierData ? carrierData.address : "",

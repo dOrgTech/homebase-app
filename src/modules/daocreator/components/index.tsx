@@ -145,10 +145,8 @@ const CurrentStep = () => {
 };
 
 export const DAOCreate: React.FC = () => {
-  const { activeStep, governanceStep, onNextStep } = useContext(
-    CreatorContext
-  ).state;
-  const dispatch = useContext(CreatorContext).dispatch;
+  const { state, dispatch } = useContext(CreatorContext);
+  const { activeStep, governanceStep, onNextStep } = state;
   const originateMetaData = useDeployer();
   const history = useHistory();
   const account = useSelector<AppState, AppState["wallet"]["address"]>(

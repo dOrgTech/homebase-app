@@ -13,9 +13,8 @@ import {
   Switch as FormikSwitch,
 } from "formik-material-ui";
 import { CreatorContext } from "../state/context";
-import { ActionTypes } from "../state/types";
+import { ActionTypes, OrgSettings } from "../state/types";
 import { handleErrorMessages } from "../utils";
-import { OrgSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
