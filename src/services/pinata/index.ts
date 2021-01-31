@@ -1,20 +1,8 @@
 import { TezosToolkit } from "@taquito/taquito";
 import { tzip16, View } from "@taquito/tzip16";
 import { JWT } from "./keys.json";
+import { MetadataInfo, PinnedDataFromPinataDTO } from "./types";
 import { TreasuryStorage } from "./types";
-
-type MetadataInfo = {
-  ipfs_pin_hash: string;
-  metadata: {
-    keyvalues: {
-      contracts: string;
-    };
-  };
-};
-interface PinnedDataFromPinataDTO {
-  count: number;
-  rows: MetadataInfo[];
-}
 
 const pinContractsMetadata = async (): Promise<string | Error> => {
   const URL = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
@@ -120,17 +108,3 @@ export const addNewContractToIPFS = async (
   }
 };
 
-export const getDAOInfoFromContract = async (
-  contractAddress: string,
-  tezos: TezosToolkit
-) => {
-  console.log("RAN");
-  const contract = await tezos.wallet.at(contractAddress, tzip16);
-
-  const metadata = await contract.tzip16().getMetadata();
-  const storage: TreasuryStorage = await contract.storage();
-
-  storage.ledger.get()
-
-  console.log(metadata, storage);
-};

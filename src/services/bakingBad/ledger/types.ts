@@ -1,17 +1,13 @@
-interface MapValue {
-  prim: string;
-  type: string;
-  value: string;
-}
+import { UnnamedMapValue } from "../types";
 
 export interface LedgerDTOItem {
   data: {
     key: {
       prim: string;
       type: string;
-      children: MapValue[];
+      children: UnnamedMapValue[];
     };
-    value: MapValue;
+    value: UnnamedMapValue;
     key_hash: string;
     key_string: string;
     level: number;

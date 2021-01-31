@@ -1,9 +1,8 @@
 import { BigMapAbstraction } from "@taquito/taquito";
+import { API_URL } from "..";
 import { Network } from "../types";
 import { dtoToLedger } from "./mappers";
 import { Ledger, LedgerDTO } from "./types";
-
-const API_URL = "https://api.better-call.dev/v1";
 
 export const getLedgerAddresses = async (
   ledgerMap: BigMapAbstraction,
