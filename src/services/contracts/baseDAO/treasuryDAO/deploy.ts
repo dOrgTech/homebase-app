@@ -5,10 +5,10 @@ import {
 } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
-import { addNewContractToIPFS } from "../store";
-import { getTestProvider } from "../utils";
+import { getTestProvider } from "../../utils";
 import { code } from "./code";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
+import { addNewContractToIPFS } from "../../../pinata";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();

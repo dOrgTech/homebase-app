@@ -1,17 +1,5 @@
-import { JWT } from "./keys.json";
-
-type MetadataInfo = {
-  ipfs_pin_hash: string;
-  metadata: {
-    keyvalues: {
-      contracts: string;
-    };
-  };
-};
-interface PinnedDataFromPinataDTO {
-  count: number;
-  rows: MetadataInfo[];
-}
+import { MetadataInfo, PinnedDataFromPinataDTO } from "./types";
+import { getAuthHeader } from "./utils";
 
 const pinContractsMetadata = async (): Promise<string | Error> => {
   const URL = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
@@ -30,10 +18,11 @@ const pinContractsMetadata = async (): Promise<string | Error> => {
 
   try {
     console.log("Creating pin...");
+
     const response = await fetch(URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${JWT}`,
+        Authorization: `Bearer ${process.env.JWT}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -45,16 +34,14 @@ const pinContractsMetadata = async (): Promise<string | Error> => {
   }
 };
 
-export const getContractsAddresses = async (): Promise<
+export const getPinnedMetadata = async (): Promise<
   MetadataInfo | undefined
 > => {
   try {
     const URL = "https://api.pinata.cloud/data/pinList?status=pinned";
     console.log("Querying available information in IPFS");
     const response = await fetch(URL, {
-      headers: {
-        Authorization: `Bearer ${JWT}`,
-      },
+      headers: getAuthHeader(),
     });
     const result: PinnedDataFromPinataDTO = await response.json();
     if ("rows" in result && result.rows.length) {
@@ -67,6 +54,26 @@ export const getContractsAddresses = async (): Promise<
   }
 };
 
+export const metadataToAddresses = (
+  pinnedContractMetadata: MetadataInfo
+): string[] => {
+  const addresses: string[] = JSON.parse(
+    pinnedContractMetadata.metadata.keyvalues.contracts
+  );
+
+  return addresses;
+};
+
+export const getContractsAddresses = async (): Promise<string[]> => {
+  const metadata = await getPinnedMetadata();
+
+  if (!metadata) {
+    return [];
+  }
+
+  return metadataToAddresses(metadata);
+};
+
 export const addNewContractToIPFS = async (
   contractAddress: string
 ): Promise<void | Error> => {
@@ -74,13 +81,12 @@ export const addNewContractToIPFS = async (
     const URL = "https://api.pinata.cloud/pinning/hashMetadata";
 
     console.log("Checking if there's a pin already to map contract addresses");
-    const pinnedContractMetadata = await getContractsAddresses();
+    const pinnedContractMetadata = await getPinnedMetadata();
 
     if (pinnedContractMetadata) {
       console.log("We have a pin! Let's add the new contract");
-      const addresses: string[] = JSON.parse(
-        pinnedContractMetadata.metadata.keyvalues.contracts
-      );
+      const addresses = metadataToAddresses(pinnedContractMetadata);
+
       addresses.push(contractAddress);
       const body = {
         ipfsPinHash: pinnedContractMetadata.ipfs_pin_hash,
@@ -93,7 +99,7 @@ export const addNewContractToIPFS = async (
         body: JSON.stringify(body),
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${JWT}`,
+          ...getAuthHeader(),
         },
       });
       console.log("Content updated");

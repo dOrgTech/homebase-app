@@ -14,8 +14,11 @@ import { AppState } from "../../../store";
 import { saveMemberSettings } from "../../../store/dao-info/action";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
-import { MemberSettings } from "../../../contracts/store/dependency/types";
 import { handleErrorMessages } from "../utils";
+import {
+  MemberSettings,
+  TokenHolder,
+} from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -109,17 +112,20 @@ const TokenHoldersGrid = styled(Grid)({
 });
 
 const Total = ({ values }: { values: MemberSettings }) => {
-  const totalTokens = values.tokenHolders.reduce((a, b) => a + b.balance, 0);
+  const totalTokens = values.tokenHolders.reduce(
+    (a: number, b: TokenHolder) => a + b.balance,
+    0
+  );
   return <div>{isNaN(totalTokens) ? "0" : totalTokens}</div>;
 };
 
 const validate = (values: MemberSettings) => {
-  const handleLedgerValidation = (field: keyof MemberSettings) => {
+  const handleLedgerValidation = (field: any) => {
     if (field === "tokenHolders") {
-      return !!values[field].length;
+      return !!values["tokenHolders"].length;
     }
 
-    return !values[field];
+    return !values[field as keyof MemberSettings];
   };
 
   handleErrorMessages(values, handleLedgerValidation);

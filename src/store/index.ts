@@ -2,8 +2,10 @@ import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { save, load } from "redux-localstorage-simple";
 
 import wallet from "./wallet/reducer";
-
+import daos from "./daos/reducer";
 import saveDaoInformationReducer from "./dao-info/reducer";
+
+import fundsInformationReducer from "./funds/reducer";
 
 const PERSISTED_KEYS: string[] = [];
 
@@ -11,6 +13,7 @@ const store = configureStore({
   reducer: {
     wallet,
     saveDaoInformationReducer,
+    fundsInformationReducer,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),
@@ -18,6 +21,10 @@ const store = configureStore({
     save({
       states: ["saveDaoInformationReducer"],
       namespace: "saveDaoInformationReducer",
+    }),
+    save({
+      states: ["fundsInformationReducer"],
+      namespace: "fundsInformationReducer",
     }),
   ],
   preloadedState: load({ states: PERSISTED_KEYS }),

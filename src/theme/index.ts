@@ -118,13 +118,26 @@ export const theme = createMuiTheme({
     },
     MuiInput: {
       underline: {
-        "&:before": {
-          borderBottom: "none",
-          transition: "none",
-        },
         "&:after": {
           borderBottom: "none",
-          transition: "none",
+        },
+        "&$focused:after": {
+          borderBottom: "none",
+        },
+        "&$error:after": {
+          borderBottom: "none",
+        },
+        "&:before": {
+          borderBottom: "none",
+        },
+        "&:hover:not($disabled):not($focused):not($error):before": {
+          borderBottom: "none",
+        },
+        "&$disabled:before": {
+          borderBottom: "none",
+        },
+        "&:active:not($disabled):not($focused):not($error):before": {
+          borderBottom: "none",
         },
       },
     },
@@ -140,9 +153,27 @@ export const theme = createMuiTheme({
         marginBottom: 16,
       },
     },
+    MuiDialog: {
+      paper: {
+        background: "#1C1F23",
+      },
+      root: {
+        minHeight: 600,
+        height: "auto",
+      },
+      paperWidthSm: {
+        minHeight: 600,
+        height: "auto",
+      },
+    },
     MuiFormControl: {
       root: {
         width: "100%",
+      },
+    },
+    MuiDialogContent: {
+      root: {
+        padding: 0,
       },
     },
     MuiSwitch: {
@@ -156,18 +187,18 @@ export const theme = createMuiTheme({
         left: 8,
         "$checked$checked + &": {
           opacity: 1,
-          backgroundColor: "#1C1F23 !important",
+          backgroundColor: "#1C1F23",
           color: "#81FEB7",
         },
       },
       track: {
         borderRadius: "40px",
         backgroundColor: "inherit",
-        border: "1px solid black",
+        border: "1px solid #fff",
         opacity: 0.5,
         "$checked$checked + &": {
           opacity: 1,
-          backgroundColor: "#1C1F23 !important",
+          backgroundColor: "#1C1F23",
           color: "#81FEB7",
         },
       },
@@ -179,12 +210,12 @@ export const theme = createMuiTheme({
         },
       },
       colorSecondary: {
-        color: "black",
+        color: "#fff",
         "$checked$checked + &": {
-          color: "#81FEB7 !important",
+          color: "#81FEB7",
         },
         "& .Mui-checked": {
-          color: "#81FEB7 !important",
+          color: "#81FEB7",
         },
       },
     },

@@ -18,8 +18,8 @@ import { saveOrgSettings } from "../../../store/dao-info/action";
 import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
-import { OrgSettings } from "../../../contracts/store/dependency/types";
 import { handleErrorMessages } from "../utils";
+import { OrgSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,

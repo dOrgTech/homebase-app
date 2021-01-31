@@ -16,13 +16,14 @@ import { AppState } from "../../../store";
 import { saveVotingSettings } from "../../../store/dao-info/action";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
-import { VotingSettings } from "../../../contracts/store/dependency/types";
 import { handleErrorMessages } from "../utils";
+import { VotingSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
   borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
+  marginBottom: 33,
 });
 
 const ErrorText = styled(Typography)({
@@ -106,6 +107,10 @@ const CustomSliderValue = styled(withTheme(Paper))((props) => ({
 const Value = styled(Typography)({
   textAlign: "center",
   padding: "15%",
+});
+
+const LastElement = styled(Grid)({
+  marginBottom: 37,
 });
 
 const styles = {
@@ -456,7 +461,7 @@ const GovernanceForm = ({
         </Title>
       </SpacingContainer>
 
-      <Grid container direction="row" alignItems="center" spacing={1}>
+      <LastElement container direction="row" alignItems="center" spacing={1}>
         <GridNoPadding item xs={10}>
           <Field name="minStake">
             {() => (
@@ -476,7 +481,7 @@ const GovernanceForm = ({
             </Value>
           </CustomSliderValue>
         </GridNoPadding>
-      </Grid>
+      </LastElement>
     </>
   );
 };

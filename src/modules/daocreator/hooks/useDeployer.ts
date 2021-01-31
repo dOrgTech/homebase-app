@@ -2,18 +2,26 @@ import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 
 import { extractMetadataInformation } from "../../../contracts/store/dependency/treasury";
-import { TokenHolder } from "../../../contracts/store/dependency/types";
 import { useOriginate } from "../../../hooks/useOriginate";
+import { setMetadataJSON } from "../../../services/contracts/baseDAO/metadataCarrier/metadata";
+import { TokenHolder } from "../../../services/contracts/baseDAO/types";
 import { AppState } from "../../../store";
 
 export const useDeployer = (): (() => Promise<void>) => {
   const info = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
     (state) => state.saveDaoInformationReducer
   );
-  const metadataCarrierParams = extractMetadataInformation(info);
+
+  const test = extractMetadataInformation(info);
+  const metadataCarrierParams = setMetadataJSON({
+    authors: [info.memberSettings.administrator],
+    description: info.orgSettings.description,
+    frozenToken: test.metadata.frozenToken,
+    unfrozenToken: test.metadata.unfrozenToken,
+  });
   const [originateMetaData, { data: carrierData }] = useOriginate(
     "MetadataCarrier",
-    metadataCarrierParams
+    test
   );
 
   const membersTokenAllocation = useMemo(() => {

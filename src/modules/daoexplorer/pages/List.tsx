@@ -6,11 +6,11 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { MockDAOs } from "../../../store/mock/mock";
-import { getContractsAddresses } from "../../../contracts/store";
+import { useDAOs } from "../../../services/contracts/baseDAO/hooks/useDAOs";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -63,28 +63,36 @@ const GridBackground = styled(Grid)({
 
 export const DAOsList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
-  const [currentDAOs, setCurrentDAOs] = useState(MockDAOs);
+  const { data: daos, error, isLoading } = useDAOs();
+
+  const currentDAOs = useMemo(() => {
+    if (daos) {
+      const formattedDAOs = daos.map((dao) => ({
+        id: dao.name,
+        name: dao.unfrozenToken.name,
+        symbol: dao.unfrozenToken.symbol,
+        voting_addresses: dao.ledger.length,
+      }));
+
+      if (searchText) {
+        return formattedDAOs.filter((formattedDao) =>
+          formattedDao.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+      }
+
+      return formattedDAOs;
+    }
+
+    return [];
+  }, [daos, searchText]);
+
+  console.log(daos, error, isLoading);
 
   const history = useHistory();
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter);
-    const filtered = MockDAOs.filter((dao: any) => {
-      return dao.name.toLowerCase().includes(searchText);
-    });
-    if (filtered.length > 0 && filter !== "") {
-      setCurrentDAOs(filtered);
-    } else {
-      setCurrentDAOs(MockDAOs);
-    }
-    return;
   };
-
-  useEffect(() => {
-    (async () => {
-      await getContractsAddresses();
-    })();
-  }, []);
 
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">

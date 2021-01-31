@@ -1,10 +1,10 @@
 import { createAction } from "@reduxjs/toolkit";
 import {
-  OrgSettings,
-  MemberSettings,
   MigrationParams,
+  OrgSettings,
   VotingSettings,
-} from "../../contracts/store/dependency/types";
+  MemberSettings,
+} from "../../services/contracts/baseDAO/types";
 
 export const saveDaoInformation = createAction<MigrationParams>(
   "dao/saveInformation"

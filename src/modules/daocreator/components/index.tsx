@@ -7,7 +7,6 @@ import {
   Stepper,
   styled,
   Typography,
-  makeStyles,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import ProgressBar from "react-customizable-progressbar";
@@ -29,50 +28,27 @@ const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
 }));
 
-const fullHeightStyles = makeStyles({
-  root: {
-    height: "100%",
-  },
-});
-
-const reducedHeightStyles = makeStyles({
-  root: {
-    height: "87%",
-  },
-});
-
-const CustomGrid = styled(Grid)({
-  alignItems: "center",
-  justifyContent: "center",
-  borderRight: "2px solid #3D3D3D",
-});
-
 const StepContentContainer = styled(Grid)({
   paddingLeft: "16%",
   paddingRight: "16%",
-  marginTop: "2.5%",
-  marginBottom: "2%",
-  // height: "calc(100% - 112px)",
-  minHeight: 650,
   alignItems: "center",
+  height: "inherit",
 });
 
 const StepOneContentContainer = styled(Grid)({
   paddingLeft: "16%",
   paddingRight: "16%",
-  marginTop: "2.5%",
-  marginBottom: "2%",
-  // height: "80%",
   alignItems: "center",
-  minHeight: 650,
 });
 
 const Footer = styled(Grid)(({ theme }) => ({
   boxShadow: "none",
   background: theme.palette.primary.main,
-  height: 62,
+  height: "inherit",
   paddingTop: "1%",
   borderTop: "2px solid #3D3D3D",
+  marginLeft: "24.85%",
+  borderLeft: "2px solid #3D3D3D",
 }));
 
 const BackButton = styled(Paper)({
@@ -110,6 +86,16 @@ const StyledStepper = styled(Stepper)({
   background: "inherit",
 });
 
+const StepContentHeigth = styled(Grid)({
+  height: "80vh",
+});
+
+const ContentContainer = styled(Grid)({
+  height: "inherit",
+  alignItems: "center",
+  display: "flex",
+});
+
 const IndicatorValue = styled(Paper)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -127,6 +113,10 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   background: "inherit",
   fontFamily: "Roboto Mono",
 }));
+
+const ProgressContainer = styled(Grid)({
+  borderRight: "2px solid #3D3D3D",
+});
 
 const STEPS: StepInfo[] = [
   { title: "Select template", index: StepperIndex.SELECT_TEMPLATE },
@@ -171,9 +161,6 @@ export const DAOCreate: React.FC = () => {
     originateMetaData();
   };
 
-  const fullHeight = fullHeightStyles();
-  const reducedHeight = reducedHeightStyles();
-
   const handleBackStep = () => {
     if (activeStep === 1 && !governanceStep) {
       return dispatch({ type: ActionTypes.UPDATE_STEP, step: 0 });
@@ -199,13 +186,15 @@ export const DAOCreate: React.FC = () => {
   const progress = useMemo(() => activeStep * 25, [activeStep]);
 
   return (
-    <PageContainer
-      container
-      classes={
-        !account || (account && !activeStep) ? reducedHeight : fullHeight
-      }
-    >
-      <CustomGrid container item xs={3} direction="column" justify="flex-end">
+    <PageContainer container direction="row">
+      <ProgressContainer
+        item
+        xs={3}
+        container
+        justify="center"
+        alignItems="center"
+        direction="column"
+      >
         <ProgressBar
           progress={progress}
           radius={62}
@@ -227,25 +216,54 @@ export const DAOCreate: React.FC = () => {
             </Step>
           ))}
         </StyledStepper>
-      </CustomGrid>
-      <Grid item container justify="center" alignItems="center" xs={9}>
-        {account ? (
-          <StepContentContainer item container justify="center">
-            <CurrentStep />
-          </StepContentContainer>
-        ) : (
-          <StepOneContentContainer item container justify="center">
-            <ConnectWallet />
-          </StepOneContentContainer>
-        )}
+      </ProgressContainer>
+
+      <StepContentHeigth item xs={9} container>
+        <ContentContainer item xs={11}>
+          {account ? (
+            <StepContentContainer item container justify="center">
+              <CurrentStep />
+            </StepContentContainer>
+          ) : (
+            <StepOneContentContainer item container justify="center">
+              <ConnectWallet />
+            </StepOneContentContainer>
+          )}
+        </ContentContainer>
+      </StepContentHeigth>
+      <Footer
+        container
+        direction="row"
+        justify="space-between"
+        alignItems="center"
+      >
+        {account && activeStep !== 3 && activeStep !== 4 ? (
+          <Grid item xs={6}>
+            <BackButton onClick={handleBackStep}>
+              <Typography>BACK </Typography>{" "}
+            </BackButton>
+          </Grid>
+        ) : null}
+
+        {activeStep === 1 || activeStep === 2 ? (
+          <Grid item xs={6}>
+            <NextButton onClick={onNextStep}>
+              {" "}
+              <WhiteText>CONTINUE</WhiteText>
+            </NextButton>
+          </Grid>
+        ) : null}
+
+        {!account ? (
+          <Grid item xs={6}>
+            <BackButton onClick={() => history.push("/explorer")}>
+              <Typography>BACK </Typography>{" "}
+            </BackButton>
+          </Grid>
+        ) : null}
 
         {activeStep === 3 ? (
-          <Footer
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-          >
+          <>
             <Grid item xs={6}>
               <BackButton onClick={handleBackStep}>
                 <Typography>BACK</Typography>{" "}
@@ -257,48 +275,9 @@ export const DAOCreate: React.FC = () => {
                 <WhiteText>{"LAUNCH"}</WhiteText>
               </NextButton>
             </Grid>
-          </Footer>
+          </>
         ) : null}
-
-        {account && activeStep !== 3 && activeStep !== 4 ? (
-          <Footer
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item xs={6}>
-              <BackButton onClick={handleBackStep}>
-                <Typography>BACK </Typography>{" "}
-              </BackButton>
-            </Grid>
-
-            {activeStep === 1 || activeStep === 2 ? (
-              <Grid item xs={6}>
-                <NextButton onClick={onNextStep}>
-                  {" "}
-                  <WhiteText>CONTINUE</WhiteText>
-                </NextButton>
-              </Grid>
-            ) : null}
-          </Footer>
-        ) : null}
-
-        {!account ? (
-          <Footer
-            container
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item xs={6}>
-              <BackButton onClick={() => history.push("/explorer")}>
-                <Typography>BACK </Typography>{" "}
-              </BackButton>
-            </Grid>
-          </Footer>
-        ) : null}
-      </Grid>
+      </Footer>
     </PageContainer>
   );
 };

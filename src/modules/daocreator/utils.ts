@@ -1,4 +1,4 @@
-import { ErrorValues, Settings } from "../../contracts/store/dependency/types";
+import { ErrorValues, Settings } from "../../services/contracts/baseDAO/types";
 
 // @TODO: Make it more generic to handle different cases
 export const handleErrorMessages = (
