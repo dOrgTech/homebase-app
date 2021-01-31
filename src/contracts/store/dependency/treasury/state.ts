@@ -32,3 +32,16 @@ export interface TreasuryDAOState {
   permitsCounter: number;
   metadata: any;
 }
+
+export type Token = {
+  name: string;
+  symbol: string;
+  decimals: number;
+};
+export interface MetadataStorageState {
+  keyName: string;
+  metadata: {
+    frozenToken: Token;
+    unfrozenToken: Token;
+  };
+}

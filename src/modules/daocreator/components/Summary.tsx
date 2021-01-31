@@ -1,9 +1,9 @@
 import { Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext } from "react";
 import { useSelector } from "react-redux";
+import { TokenHolder } from "../../../contracts/store/dependency/types";
 
 import { AppState } from "../../../store";
-import { TokenHolders } from "../../../store/dao-info/types";
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
@@ -89,17 +89,17 @@ export const Summary = (): JSX.Element => {
         <SecondContainer container direction="row">
           <Grid item xs={12}>
             <TitleSpacing color="secondary" variant="subtitle1">
-              {storageDaoInformation.token_symbol}
+              {storageDaoInformation.orgSettings.symbol}
             </TitleSpacing>
           </Grid>
           <Grid item xs={12}>
             <TitleSpacing color="textSecondary" variant="h3">
-              {storageDaoInformation.token_name}
+              {storageDaoInformation.orgSettings.name}
             </TitleSpacing>
           </Grid>
           <Grid item xs={12}>
             <TitleSpacing color="textSecondary" variant="body1">
-              {storageDaoInformation.description}
+              {storageDaoInformation.orgSettings.description}
             </TitleSpacing>
           </Grid>
         </SecondContainer>
@@ -134,13 +134,13 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {storageDaoInformation.administrator}
+                  {storageDaoInformation.memberSettings.administrator}
                 </AdminAddress>
               </Grid>
             </AdminContainer>
           </Grid>
-          {storageDaoInformation.token_holders.map(
-            (holder: TokenHolders, i: number) => {
+          {storageDaoInformation.memberSettings.tokenHolders.map(
+            (holder: TokenHolder, i: number) => {
               return <TokenHoldersRow key={`holder-${i}`} {...holder} />;
             }
           )}
@@ -158,7 +158,7 @@ export const Summary = (): JSX.Element => {
             </ContainerButton>
           </Grid>
           <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
+            {/* <UnderlinedGrid item container direction="row" alignItems="center">
               <Grid item xs={6}>
                 <Typography variant="body2" color="textSecondary">
                   Transfers locked?
@@ -170,10 +170,10 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {storageDaoInformation.lock_disabled ? "YES" : "NO"}
+                  {storageDaoInformation. ? "YES" : "NO"}
                 </Typography>
               </Grid>
-            </UnderlinedGrid>
+            </UnderlinedGrid> */}
           </Grid>
 
           <Grid item xs={12}>
@@ -189,7 +189,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {storageDaoInformation.min_stake}%
+                  {storageDaoInformation.votingSettings.minStake}%
                 </Typography>
               </Grid>
             </UnderlinedGrid>
@@ -208,9 +208,9 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {storageDaoInformation.voting_days}d{" "}
-                  {storageDaoInformation.proposal_hours}h{" "}
-                  {storageDaoInformation.proposal_minutes}m
+                  {storageDaoInformation.votingSettings.proposalDays}d{" "}
+                  {storageDaoInformation.votingSettings.proposalHours}h{" "}
+                  {storageDaoInformation.votingSettings.proposalMinutes}m
                 </Typography>
               </Grid>
             </UnderlinedGrid>
@@ -229,9 +229,9 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {storageDaoInformation.voting_days}d{" "}
-                  {storageDaoInformation.voting_hours}h{" "}
-                  {storageDaoInformation.voting_minutes}m
+                  {storageDaoInformation.votingSettings.votingDays}d{" "}
+                  {storageDaoInformation.votingSettings.votingHours}h{" "}
+                  {storageDaoInformation.votingSettings.votingMinutes}m
                 </Typography>
               </Grid>
             </UnderlinedGrid>

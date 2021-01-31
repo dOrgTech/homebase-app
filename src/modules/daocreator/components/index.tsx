@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import {
   Grid,
   Paper,
@@ -14,18 +14,16 @@ import ProgressBar from "react-customizable-progressbar";
 import { useSelector } from "react-redux";
 
 import { ConnectWallet } from "./ConnectWallet";
-import { Governance } from "./Governance";
+import { Governance } from "../steps/Governance";
 import { SelectTemplate } from "./SelectTemplate";
-import { TokenSettings } from "./TokenSettings";
-import { DaoSettings } from "./DaoSettings";
+import { TokenSettings } from "../steps/TokenSettings";
+import { DaoSettings } from "../steps/DaoSettings";
 import { Summary } from "./Summary";
-import { Review } from "./Review";
-import { TokenHolders } from "../../../store/dao-info/types";
-import { useOriginate } from "../../../hooks/useOriginate";
+import { Review } from "../steps/Review";
 import { ActionTypes, StepperIndex, StepInfo } from "../state/types";
 import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
-import { TokenHolder } from "../../../contracts/store/dependency/types";
+import { useDeployer } from "../hooks/useDeployer";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -139,7 +137,6 @@ const STEPS: StepInfo[] = [
 
 const CurrentStep = () => {
   const { activeStep, governanceStep } = useContext(CreatorContext).state;
-  console.log("In current step ", activeStep);
   switch (activeStep) {
     case 0:
       return <SelectTemplate />;
@@ -157,48 +154,16 @@ const CurrentStep = () => {
   }
 };
 
-const metadataCarrierParams = {
-  keyName: "jaja",
-  metadata: {
-    frozenToken: {
-      name: "J",
-      symbol: "JAJA",
-      decimals: 18,
-    },
-    unfrozenToken: {
-      name: "J",
-      symbol: "JAJA",
-      decimals: 18,
-    },
-  },
-};
-
 export const DAOCreate: React.FC = () => {
   const { activeStep, governanceStep, onNextStep } = useContext(
     CreatorContext
   ).state;
   const dispatch = useContext(CreatorContext).dispatch;
+  const originateMetaData = useDeployer();
+  const history = useHistory();
 
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
-  );
-
-  const [originateMetaData, { data: carrierData }] = useOriginate(
-    "MetadataCarrier",
-    metadataCarrierParams
-  );
-
-  const daoInfo = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
-    (state) => state.saveDaoInformationReducer
-  );
-  const membersTokenAllocation = daoInfo.tokenHolders.map(
-    (holder: TokenHolder) => {
-      return {
-        address: holder.address,
-        amount: holder.balance.toString(),
-        tokenId: "1",
-      };
-    }
   );
 
   const launchOrganization = () => {
@@ -206,47 +171,8 @@ export const DAOCreate: React.FC = () => {
     originateMetaData();
   };
 
-  const [
-    originateTreasury,
-    { loading: loadingTreasuryData, data: treasuryData },
-  ] = useOriginate("Treasury", {
-    storage: {
-      membersTokenAllocation,
-      adminAddress: daoInfo.administrator,
-      frozenScaleValue: 1,
-      frozenExtraValue: 0,
-      slashScaleValue: 1,
-      slashDivisionValue: 1,
-      minXtzAmount: 1,
-      maxXtzAmount: daoInfo.maxAgent || 0,
-      maxProposalSize: 100,
-      quorumTreshold: 4,
-      votingPeriod:
-        (daoInfo.votingHours || 1) * 3600 +
-        (daoInfo.votingDays || 1) * 24 * 3600 +
-        (daoInfo.votingMinutes || 1) * 60,
-    },
-    metadataCarrierDeploymentData: {
-      deployAddress: carrierData ? carrierData.address : "",
-      keyName: "jaja",
-    },
-  });
-
-  useEffect(() => {
-    if (carrierData && !loadingTreasuryData) {
-      originateTreasury();
-    }
-  }, [carrierData, originateTreasury, loadingTreasuryData]);
-
-  useEffect(() => {
-    if (treasuryData) {
-      console.log("Treasury DAO contract data: ", treasuryData);
-    }
-  }, [treasuryData]);
-
   const fullHeight = fullHeightStyles();
   const reducedHeight = reducedHeightStyles();
-  const history = useHistory();
 
   const handleBackStep = () => {
     if (activeStep === 1 && !governanceStep) {

@@ -13,23 +13,11 @@ import { Field, Form, Formik, getIn } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 
 import { AppState } from "../../../store";
-import { saveDaoInformation } from "../../../store/dao-info/action";
+import { saveVotingSettings } from "../../../store/dao-info/action";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
-
-interface Values {
-  proposal_days: number | undefined;
-  proposal_hours: number | undefined;
-  proposal_minutes: number | undefined;
-  voting_days: number | undefined;
-  voting_hours: number | undefined;
-  voting_minutes: number | undefined;
-  min_stake: number | undefined;
-  propose_stake_mygt: number | undefined;
-  propose_stake_percentage: number | undefined;
-  vote_stake_mygt: number | undefined;
-  vote_stake_percentage: number | undefined;
-}
+import { VotingSettings } from "../../../contracts/store/dependency/types";
+import { handleErrorMessages } from "../utils";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
@@ -142,6 +130,7 @@ const GovernanceForm = ({
 
   useEffect(() => {
     if (values) {
+      console.log("yah");
       dispatch({
         type: ActionTypes.UPDATE_HANDLER,
         handler: (values: any) => submitForm(values),
@@ -168,7 +157,7 @@ const GovernanceForm = ({
             <GridItemCenter item xs={6}>
               <Field
                 color="textSecondary"
-                name="proposal_days"
+                name="proposalDays"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -178,8 +167,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">days</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposal_days && touched.proposal_days ? (
-            <ErrorText>{errors.proposal_days}</ErrorText>
+          {errors.proposalDays && touched.proposalDays ? (
+            <ErrorText>{errors.proposalDays}</ErrorText>
           ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
@@ -191,7 +180,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="proposal_hours"
+                name="proposalHours"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -201,8 +190,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">hours</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposal_hours && touched.proposal_hours ? (
-            <ErrorText>{errors.proposal_hours}</ErrorText>
+          {errors.proposalHours && touched.proposalHours ? (
+            <ErrorText>{errors.proposalHours}</ErrorText>
           ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
@@ -214,7 +203,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="proposal_minutes"
+                name="proposalMinutes"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -224,8 +213,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">minutes</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposal_minutes && touched.proposal_minutes ? (
-            <ErrorText>{errors.proposal_minutes}</ErrorText>
+          {errors.proposalMinutes && touched.proposalMinutes ? (
+            <ErrorText>{errors.proposalMinutes}</ErrorText>
           ) : null}
         </CustomInputContainer>
       </Grid>
@@ -250,7 +239,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voting_days"
+                name="votingDays"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -260,8 +249,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">days</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voting_days && touched.voting_days ? (
-            <ErrorText>{errors.voting_days}</ErrorText>
+          {errors.votingDays && touched.votingDays ? (
+            <ErrorText>{errors.votingDays}</ErrorText>
           ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
@@ -273,7 +262,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voting_hours"
+                name="votingHours"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -283,8 +272,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">hours</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voting_hours && touched.voting_hours ? (
-            <ErrorText>{errors.voting_hours}</ErrorText>
+          {errors.votingHours && touched.votingHours ? (
+            <ErrorText>{errors.votingHours}</ErrorText>
           ) : null}
         </CustomInputContainer>
         <CustomInputContainer item xs={4}>
@@ -296,7 +285,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voting_minutes"
+                name="votingMinutes"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -306,8 +295,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">minutes</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voting_minutes && touched.voting_minutes ? (
-            <ErrorText>{errors.voting_minutes}</ErrorText>
+          {errors.votingMinutes && touched.votingMinutes ? (
+            <ErrorText>{errors.votingMinutes}</ErrorText>
           ) : null}
         </CustomInputContainer>
       </Grid>
@@ -332,7 +321,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="propose_stake_mygt"
+                name="proposeStakeMygt"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -342,8 +331,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.propose_stake_mygt && touched.propose_stake_mygt ? (
-            <ErrorText>{errors.propose_stake_mygt}</ErrorText>
+          {errors.proposeStakeMygt && touched.proposeStakeMygt ? (
+            <ErrorText>{errors.proposeStakeMygt}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
@@ -362,7 +351,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={9}>
               <Field
-                name="propose_stake_percentage"
+                name="proposeStakePercentage"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -372,9 +361,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">%</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.propose_stake_percentage &&
-          touched.propose_stake_percentage ? (
-            <ErrorText>{errors.propose_stake_percentage}</ErrorText>
+          {errors.proposeStakePercentage && touched.proposeStakePercentage ? (
+            <ErrorText>{errors.proposeStakePercentage}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={3}>
@@ -406,7 +394,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="vote_stake_mygt"
+                name="voteStakeMygt"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -416,8 +404,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.vote_stake_mygt && touched.vote_stake_mygt ? (
-            <ErrorText>{errors.vote_stake_mygt}</ErrorText>
+          {errors.voteStakeMygt && touched.voteStakeMygt ? (
+            <ErrorText>{errors.voteStakeMygt}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
@@ -436,7 +424,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={9}>
               <Field
-                name="vote_stake_percentage"
+                name="voteStakePercentage"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -446,8 +434,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">%</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.vote_stake_percentage && touched.vote_stake_percentage ? (
-            <ErrorText>{errors.vote_stake_percentage}</ErrorText>
+          {errors.voteStakePercentage && touched.voteStakePercentage ? (
+            <ErrorText>{errors.voteStakePercentage}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={3}>
@@ -470,12 +458,12 @@ const GovernanceForm = ({
 
       <Grid container direction="row" alignItems="center" spacing={1}>
         <GridNoPadding item xs={10}>
-          <Field name="min_stake">
+          <Field name="minStake">
             {() => (
               <StyledSlider
-                value={getIn(values, "min_stake")}
+                value={getIn(values, "minStake")}
                 onChange={(value: any, newValue: any) =>
-                  setFieldValue("min_stake", newValue)
+                  setFieldValue("minStake", newValue)
                 }
               />
             )}
@@ -484,7 +472,7 @@ const GovernanceForm = ({
         <GridNoPadding item xs={2}>
           <CustomSliderValue>
             <Value variant="subtitle1" color="textSecondary">
-              {getIn(values, "min_stake")}%
+              {getIn(values, "minStake")}%
             </Value>
           </CustomSliderValue>
         </GridNoPadding>
@@ -492,6 +480,8 @@ const GovernanceForm = ({
     </>
   );
 };
+
+//@TODO: Remove any from this component
 
 export const Governance: React.FC = () => {
   const { dispatch: creatorDispatch } = useContext(CreatorContext);
@@ -505,66 +495,13 @@ export const Governance: React.FC = () => {
 
   const saveStepInfo = useCallback(
     (values: any, { setSubmitting }: any) => {
-      console.log("first");
       setSubmitting(true);
-      dispatch(saveDaoInformation(values));
+      dispatch(saveVotingSettings(values));
       creatorDispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
       creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
     },
     [creatorDispatch, dispatch]
   );
-
-  const validate = (values: Values) => {
-    const errors: any = {};
-
-    if (values.proposal_days === undefined || !String(values.proposal_days)) {
-      errors.proposal_days = "Required";
-    }
-    if (
-      values.proposal_minutes === undefined ||
-      !String(values.proposal_minutes)
-    ) {
-      errors.proposal_minutes = "Required";
-    }
-    if (values.proposal_hours === undefined || !String(values.proposal_hours)) {
-      errors.proposal_hours = "Required";
-    }
-    if (values.voting_days === undefined || !String(values.voting_days)) {
-      errors.voting_days = "Required";
-    }
-    if (values.voting_hours === undefined || !String(values.voting_hours)) {
-      errors.voting_hours = "Required";
-    }
-    if (values.voting_minutes === undefined || !String(values.voting_minutes)) {
-      errors.voting_minutes = "Required";
-    }
-    if (
-      values.propose_stake_mygt === undefined ||
-      !String(values.propose_stake_mygt)
-    ) {
-      errors.propose_stake_mygt = "Required";
-    }
-    if (
-      values.propose_stake_percentage === undefined ||
-      !String(values.propose_stake_percentage)
-    ) {
-      errors.propose_stake_percentage = "Required";
-    }
-    if (
-      values.vote_stake_mygt === undefined ||
-      !String(values.vote_stake_mygt)
-    ) {
-      errors.vote_stake_mygt = "Required";
-    }
-    if (
-      values.vote_stake_percentage === undefined ||
-      !String(values.vote_stake_percentage)
-    ) {
-      errors.vote_stake_percentage = "Required";
-    }
-
-    return errors;
-  };
 
   return (
     <>
@@ -586,9 +523,9 @@ export const Governance: React.FC = () => {
 
       <Formik
         enableReinitialize
-        validate={validate}
+        validate={(values: VotingSettings) => handleErrorMessages(values)}
         onSubmit={saveStepInfo}
-        initialValues={storageDaoInformation}
+        initialValues={storageDaoInformation.votingSettings}
       >
         {({
           submitForm,
@@ -601,7 +538,9 @@ export const Governance: React.FC = () => {
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm
-                validate={validate}
+                validate={(values: VotingSettings) =>
+                  handleErrorMessages(values)
+                }
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}
