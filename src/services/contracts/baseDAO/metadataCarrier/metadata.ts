@@ -1,4 +1,4 @@
-import { stringToHex } from "../utils";
+import { stringToHex } from "../../utils";
 import { MetadataParams } from "./types";
 
 export const setMetadataJSON = ({

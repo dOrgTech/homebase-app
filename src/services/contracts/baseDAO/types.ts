@@ -1,3 +1,7 @@
+import { BigMapAbstraction } from "@taquito/taquito";
+import { Ledger } from "../../bakingBad/ledger/types";
+import { DAOListMetadata } from "./metadataCarrier/types"
+
 export interface MigrationParams {
   // DAO Settings
   orgName: string;
@@ -54,3 +58,13 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
   maxAgent: 0,
   administrator: "",
 };
+
+export type DAOItem = {
+  ledger: Ledger
+} & DAOListMetadata
+
+export interface DAOStorageDTO {
+  //TODO
+
+  ledger: BigMapAbstraction
+}

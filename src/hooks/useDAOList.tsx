@@ -5,16 +5,14 @@ import { AppState } from "../store";
 import { saveDaos } from "../store/daos/action";
 
 export const useDAOList = () => {
-  const { daos } = useSelector<AppState, AppState["daos"]>(
-    (state) => state.daos
-  );
+  // const { daos } = useSelector<AppState, AppState["daos"]>(
+  //   (state) => state.daos
+  // );
   const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
-      const pinnedMetadata = await getPinnedMetadata();
-      const contractAddresses =
-        pinnedMetadata && (await getContractsAddresses(pinnedMetadata));
+      const contractAddresses = await getContractsAddresses();
 
       if (contractAddresses) {
         dispatch(
@@ -29,5 +27,5 @@ export const useDAOList = () => {
     })();
   }, [dispatch]);
 
-  return daos;
+  return [];
 };

@@ -24,7 +24,7 @@ import { useOriginate } from "../../../hooks/useOriginate";
 import { ActionTypes, StepperIndex, StepInfo } from "../state/types";
 import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
-import { TokenHolder } from "../../../contracts/store/dependency/types";
+import { TokenHolder } from "../../../services/contracts/baseDAO/types";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,

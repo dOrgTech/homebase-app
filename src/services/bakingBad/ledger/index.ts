@@ -11,12 +11,13 @@ export const getLedgerAddresses = async (
   const mapId = ledgerMap.toString();
   const url = `${API_URL}/bigmap/${network}/${mapId}/keys`;
 
-  const { json, ok } = await fetch(url);
-  if (!ok) {
+  const response = await fetch(url);
+
+  if (!response.ok) {
     throw new Error("Failed to fetch ledger addresses from BakingBad API");
   }
 
-  const response: LedgerDTO = await json();
+  const result: LedgerDTO = await response.json();
 
-  return dtoToLedger(response);
+  return dtoToLedger(result);
 };
