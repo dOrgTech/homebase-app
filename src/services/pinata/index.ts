@@ -1,8 +1,5 @@
-import { TezosToolkit } from "@taquito/taquito";
-import { tzip16, View } from "@taquito/tzip16";
 import { JWT } from "./keys.json";
 import { MetadataInfo, PinnedDataFromPinataDTO } from "./types";
-import { TreasuryStorage } from "./types";
 
 const pinContractsMetadata = async (): Promise<string | Error> => {
   const URL = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
