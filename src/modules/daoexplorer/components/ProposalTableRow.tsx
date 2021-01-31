@@ -1,7 +1,14 @@
-import { styled, Grid, Box, Typography, IconButton } from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import React from "react";
+import {
+  styled,
+  Grid,
+  Box,
+  Typography,
+  IconButton,
+  CircularProgress,
+} from "@material-ui/core";
+import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import { useHistory } from "react-router-dom";
 
 type ProgressColor = "success" | "warning" | "danger";
 
@@ -14,6 +21,7 @@ const progressColorMap = {
 const ProposalTableRowContainer = styled(Grid)({
   height: 155,
   borderBottom: "2px solid #3D3D3D",
+  cursor: "pointer",
 });
 
 export interface ProposalTableRowData {
@@ -56,47 +64,55 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
   cycle,
   support,
   color,
-}): JSX.Element => (
-  <ProposalTableRowContainer item container alignItems="center">
-    <Grid item xs={5}>
-      <Box>
+}) => {
+  const history = useHistory();
+  return (
+    <ProposalTableRowContainer
+      item
+      container
+      alignItems="center"
+      onClick={() => history.push("/explorer/voting")}
+    >
+      <Grid item xs={5}>
+        <Box>
+          <Typography variant="body1" color="textSecondary">
+            {title}
+          </Typography>
+        </Box>
+        <Box>
+          <Typography variant="body1" color="textSecondary">
+            #{number} • {date}
+          </Typography>
+        </Box>
+      </Grid>
+      <Grid item xs={2}>
         <Typography variant="body1" color="textSecondary">
-          {title}
+          {cycle}
         </Typography>
-      </Box>
-      <Box>
-        <Typography variant="body1" color="textSecondary">
-          #{number} • {date}
-        </Typography>
-      </Box>
-    </Grid>
-    <Grid item xs={2}>
-      <Typography variant="body1" color="textSecondary">
-        {cycle}
-      </Typography>
-    </Grid>
-    <Grid item xs={5} container justify="space-between" alignItems="center">
-      <Grid item>
-        <Grid container alignItems="center">
-          <Grid item>
-            <StyledProgress
-              value={support}
-              circleColor={progressColorMap[color]}
-              variant="determinate"
-            />
-          </Grid>
-          <Grid item>
-            <SupportText textColor={progressColorMap[color]}>
-              Support
-            </SupportText>
+      </Grid>
+      <Grid item xs={5} container justify="space-between" alignItems="center">
+        <Grid item>
+          <Grid container alignItems="center">
+            <Grid item>
+              <StyledProgress
+                value={support}
+                circleColor={progressColorMap[color]}
+                variant="determinate"
+              />
+            </Grid>
+            <Grid item>
+              <SupportText textColor={progressColorMap[color]}>
+                Support
+              </SupportText>
+            </Grid>
           </Grid>
         </Grid>
+        <Grid item>
+          <ArrowButton>
+            <ArrowForwardIcon fontSize={"large"} color="inherit" />
+          </ArrowButton>
+        </Grid>
       </Grid>
-      <Grid item>
-        <ArrowButton>
-          <ArrowForwardIcon fontSize={"large"} color="inherit" />
-        </ArrowButton>
-      </Grid>
-    </Grid>
-  </ProposalTableRowContainer>
-);
+    </ProposalTableRowContainer>
+  );
+};

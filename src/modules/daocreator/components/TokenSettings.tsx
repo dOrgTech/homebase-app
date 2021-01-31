@@ -110,7 +110,6 @@ const AddButon = styled("button")({
 
 const TokenHoldersGrid = styled(Grid)({
   maxHeight: 269,
-  overflowX: "scroll",
 });
 
 const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {

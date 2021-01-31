@@ -1,6 +1,7 @@
-import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
 import React from "react";
+import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
 import LinearProgress from "@material-ui/core/LinearProgress";
+
 import HouseIcon from "../../../assets/logos/house.svg";
 import VotingIcon from "../../../assets/logos/voting.svg";
 import VotingPeriodIcon from "../../../assets/logos/votingPeriod.svg";
