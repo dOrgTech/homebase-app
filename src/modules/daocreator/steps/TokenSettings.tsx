@@ -170,8 +170,8 @@ const TokenSettingsForm = ({
                         <Field
                           type="text"
                           component={CustomFormikTextField}
-                          placeholder="0xf8s8d...."
-                          name={`tokenHolders.${index}.tokenHolder`}
+                          placeholder="tz1PXn...."
+                          name={`tokenHolders.${index}.address`}
                         />
                         {/* {errors.tokenHolder &&
                           errors.tokenHolder[index] &&
@@ -187,7 +187,7 @@ const TokenSettingsForm = ({
                       type="text"
                       component={CustomFormikTextField}
                       placeholder="0xf8s8d...."
-                      name={`tokenHolders.0.tokenHolder`}
+                      name={`tokenHolders.0.address`}
                     />
                     {/* {errors.tokenHolder &&
                   errors.tokenHolder[index] &&

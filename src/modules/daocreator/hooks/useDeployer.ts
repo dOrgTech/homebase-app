@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 
-import { extractMetadataInformation } from "../../../contracts/store/dependency/treasury";
+import { getTokensInfo } from "../../../contracts/store/dependency/treasury";
 import { useOriginate } from "../../../hooks/useOriginate";
-import { setMetadataJSON } from "../../../services/contracts/baseDAO/metadataCarrier/metadata";
+import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import { TokenHolder } from "../../../services/contracts/baseDAO/types";
 import { AppState } from "../../../store";
 
@@ -12,16 +12,20 @@ export const useDeployer = (): (() => Promise<void>) => {
     (state) => state.saveDaoInformationReducer
   );
 
-  const test = extractMetadataInformation(info);
-  const metadataCarrierParams = setMetadataJSON({
-    authors: [info.memberSettings.administrator],
-    description: info.orgSettings.description,
-    frozenToken: test.metadata.frozenToken,
-    unfrozenToken: test.metadata.unfrozenToken,
-  });
+  const { frozenToken, unfrozenToken } = getTokensInfo(info);
+  const metadataCarrierParams: MetadataCarrierParameters = {
+    keyName: info.orgSettings.name,
+    metadata: {
+      frozenToken,
+      unfrozenToken,
+      description: info.orgSettings.description,
+      authors: [info.memberSettings.administrator],
+    },
+  };
+
   const [originateMetaData, { data: carrierData }] = useOriginate(
     "MetadataCarrier",
-    test
+    metadataCarrierParams
   );
 
   const membersTokenAllocation = useMemo(() => {
@@ -54,15 +58,9 @@ export const useDeployer = (): (() => Promise<void>) => {
     },
     metadataCarrierDeploymentData: {
       deployAddress: carrierData ? carrierData.address : "",
-      keyName: "jaja",
+      keyName: metadataCarrierParams.keyName,
     },
   });
-
-  // useEffect(() => {
-  //   (async () => {
-  //     await addNewContractToIPFS("KT1FvSHdoD6gJX6LgMJRJ1Fr7bXpGLLv6xEP");
-  //   })();
-  // }, []);
 
   useEffect(() => {
     if (carrierData?.address && !loadingTreasuryData) {

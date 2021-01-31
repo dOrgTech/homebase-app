@@ -14,6 +14,7 @@ const store = configureStore({
     wallet,
     saveDaoInformationReducer,
     fundsInformationReducer,
+    daos,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),

@@ -1,23 +1,18 @@
-import { MetadataCarrierParameters } from "../../../../services/contracts/baseDAO/metadataCarrier/types";
-import { Token } from "../../../../services/contracts/baseDAO/treasuryDAO/types";
+import {
+  MetadataStorageState,
+  Token,
+} from "../../../../services/contracts/baseDAO/treasuryDAO/types";
 import { MigrationParams } from "../../../../services/contracts/baseDAO/types";
 
 // export const toStateFromMigration = () => undefined;
 // export const toMigrationFromState = () => undefined;
 
-export const extractMetadataInformation = (
+export const getTokensInfo = (
   state: MigrationParams
-): MetadataCarrierParameters => {
-  const tokenInformation: Omit<Token, "decimals"> = {
-    ...state.orgSettings,
-  };
+): MetadataStorageState["metadata"] => {
+  const tokenInformation: Omit<Token, "decimals"> = { ...state.orgSettings };
   return {
-    keyName: tokenInformation.name,
-    metadata: {
-      frozenToken: { ...tokenInformation, decimals: 18 },
-      unfrozenToken: { ...tokenInformation, decimals: 18 },
-      authors: ["a"],
-      description: "a",
-    },
+    frozenToken: { ...tokenInformation, decimals: 18 },
+    unfrozenToken: { ...tokenInformation, decimals: 18 },
   };
 };
