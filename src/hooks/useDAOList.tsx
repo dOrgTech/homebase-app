@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getContractsAddresses } from "../contracts/store";
+import { getContractsAddresses } from "../services/pinata";
 import { AppState } from "../store";
 import { saveDaos } from "../store/daos/action";
 
