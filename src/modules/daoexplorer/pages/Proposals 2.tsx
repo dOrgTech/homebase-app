@@ -238,23 +238,6 @@ export const Proposals: React.FC = () => (
             LOAD MORE
           </UnderlineText>
         </ProposalsContainer>
-
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={5}>
-              <ProposalTableHeadText>PASSED PROPOSALS</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText>{""}</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={5}>
-              <ProposalTableHeadText>{""}</ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {proposals.map((proposal, i) => (
-            <ProposalTableRow key={`proposal-${i}`} {...proposal} />
-          ))}
-        </TableContainer>
       </Grid>
     </PageLayout>
   </>
