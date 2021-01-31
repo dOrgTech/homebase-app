@@ -1,5 +1,5 @@
-import { JWT } from "./keys.json";
 import { MetadataInfo, PinnedDataFromPinataDTO } from "./types";
+import { getAuthHeader } from "./utils";
 
 const pinContractsMetadata = async (): Promise<string | Error> => {
   const URL = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
@@ -18,10 +18,11 @@ const pinContractsMetadata = async (): Promise<string | Error> => {
 
   try {
     console.log("Creating pin...");
+
     const response = await fetch(URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${JWT}`,
+        Authorization: `Bearer ${process.env.JWT}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -40,9 +41,7 @@ export const getPinnedMetadata = async (): Promise<
     const URL = "https://api.pinata.cloud/data/pinList?status=pinned";
     console.log("Querying available information in IPFS");
     const response = await fetch(URL, {
-      headers: {
-        Authorization: `Bearer ${JWT}`,
-      },
+      headers: getAuthHeader(),
     });
     const result: PinnedDataFromPinataDTO = await response.json();
     if ("rows" in result && result.rows.length) {
@@ -55,7 +54,7 @@ export const getPinnedMetadata = async (): Promise<
   }
 };
 
-export const getContractsAddresses = (
+export const metadataToAddresses = (
   pinnedContractMetadata: MetadataInfo
 ): string[] => {
   const addresses: string[] = JSON.parse(
@@ -63,6 +62,16 @@ export const getContractsAddresses = (
   );
 
   return addresses;
+};
+
+export const getContractsAddresses = async (): Promise<string[]> => {
+  const metadata = await getPinnedMetadata();
+
+  if (!metadata) {
+    return [];
+  }
+
+  return metadataToAddresses(metadata);
 };
 
 export const addNewContractToIPFS = async (
@@ -76,7 +85,7 @@ export const addNewContractToIPFS = async (
 
     if (pinnedContractMetadata) {
       console.log("We have a pin! Let's add the new contract");
-      const addresses = getContractsAddresses(pinnedContractMetadata);
+      const addresses = metadataToAddresses(pinnedContractMetadata);
 
       addresses.push(contractAddress);
       const body = {
@@ -90,7 +99,7 @@ export const addNewContractToIPFS = async (
         body: JSON.stringify(body),
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${JWT}`,
+          ...getAuthHeader(),
         },
       });
       console.log("Content updated");
@@ -104,4 +113,3 @@ export const addNewContractToIPFS = async (
     throw Error(`Error updating pin with new data: ${e.message}`);
   }
 };
-

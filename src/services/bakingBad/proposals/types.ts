@@ -39,7 +39,7 @@ export type ProposalsDTO = {
     timestamp: string;
   };
   count: number;
-}[]
+}[];
 
 export interface Proposal {
   id: string;

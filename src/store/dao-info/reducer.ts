@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { INITIAL_MIGRATION_STATE } from "../../contracts/store/dependency/types";
+import { INITIAL_MIGRATION_STATE } from "../../services/contracts/baseDAO/types";
 import { saveDaoInformation } from "./action";
 
 import { TokenHolders } from "./types";

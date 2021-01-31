@@ -24,11 +24,11 @@ interface LedgerBalances {
 
 export interface LedgerMap {
   [address: string]: {
-    balances: LedgerBalances
-  }
+    balances: LedgerBalances;
+  };
 }
 
 export type Ledger = {
   address: string;
-  balances: LedgerBalances
-}[]
+  balances: LedgerBalances;
+}[];
