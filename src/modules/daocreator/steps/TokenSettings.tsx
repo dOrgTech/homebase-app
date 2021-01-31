@@ -6,21 +6,12 @@ import {
   InputAdornment,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-
-import { AppState } from "../../../store";
-import { saveDaoInformation } from "../../../store/dao-info/action";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
-import { TokenHolders } from "../../../store/dao-info/types";
-import { CreatorContext } from "../state/context";
-import { ActionTypes } from "../state/types";
 
-interface Values {
-  max_agent: number | undefined;
-  administrator: string | undefined;
-  token_holders: Array<TokenHolders>;
-}
+import { CreatorContext } from "../state/context";
+import { ActionTypes, MemberSettings, TokenHolder } from "../state/types";
+import { handleErrorMessages } from "../utils";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -110,61 +101,94 @@ const AddButon = styled("button")({
 
 const TokenHoldersGrid = styled(Grid)({
   maxHeight: 269,
+  overflowY: "auto",
 });
 
-const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
+const Total = ({ values }: { values: MemberSettings }) => {
+  const totalTokens = values.tokenHolders.reduce(
+    (a: number, b: TokenHolder) => a + b.balance,
+    0
+  );
+  return <div>{isNaN(totalTokens) ? "0" : totalTokens}</div>;
+};
+
+const validate = (values: MemberSettings) => {
+  const handleLedgerValidation = (field: any) => {
+    if (field === "tokenHolders") {
+      return !!values["tokenHolders"].length;
+    }
+
+    return !values[field as keyof MemberSettings];
+  };
+
+  handleErrorMessages(values, handleLedgerValidation);
+};
+
+const TokenSettingsForm = ({
+  values,
+  submitForm,
+  touched,
+  errors,
+}: { values: MemberSettings } & any) => {
   const dispatch = useContext(CreatorContext).dispatch;
 
   useEffect(() => {
     if (values) {
       dispatch({
         type: ActionTypes.UPDATE_HANDLER,
-        handler: (values: any) => submitForm(values),
+        handler: (values: MemberSettings) => submitForm(values),
       });
     }
   }, [dispatch, submitForm, values]);
 
-  const getTotal = () => {
-    let total = 0;
-    values.token_holders.forEach((holder: any) => {
-      total += holder.balance;
-      return;
-    });
-    return total;
-  };
+  //@TODO: Refactor token holder and balance inputs to use same logic
   return (
     <>
       <TokenHoldersGrid container direction="row">
         <Grid item xs={9}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
-            Token holder{" "}
+            Token holders{" "}
           </Typography>
 
           <FieldArray
-            name="token_holders"
+            name="tokenHolders"
             render={() => (
               <>
-                {values.token_holders && values.token_holders.length > 0
-                  ? values.token_holders.map((holder: any, index: any) => (
-                      <div key={index}>
-                        {/* <Typography variant="subtitle1"> Token holder </Typography> */}
-                        <CustomInputContainer>
-                          <Field
-                            type="text"
-                            component={CustomFormikTextField}
-                            placeholder="0xf8s8d...."
-                            name={`token_holders.${index}.token_holder`}
-                          />
-                          {/* {errors.token_holders &&
-                          errors.token_holders[index] &&
-                          touched.token_holders[index] ? (
-                            <ErrorText>{errors.token_holders[index]}</ErrorText>
+                {values.tokenHolder && values.tokenHolder.length > 0 ? (
+                  values.tokenHolder.map((_: string, index: number) => (
+                    <div key={index}>
+                      {/* <Typography variant="subtitle1"> Token holder </Typography> */}
+                      <CustomInputContainer>
+                        <Field
+                          type="text"
+                          component={CustomFormikTextField}
+                          placeholder="tz1PXn...."
+                          name={`tokenHolders.${index}.address`}
+                        />
+                        {/* {errors.tokenHolder &&
+                          errors.tokenHolder[index] &&
+                          touched.tokenHolder[index] ? (
+                            <ErrorText>{errors.tokenHolder[index]}</ErrorText>
                           ) : null} */}
-                        </CustomInputContainer>
-                      </div>
-                    ))
-                  : null}
+                      </CustomInputContainer>
+                    </div>
+                  ))
+                ) : (
+                  <CustomInputContainer>
+                    <Field
+                      type="text"
+                      component={CustomFormikTextField}
+                      placeholder="0xf8s8d...."
+                      name={`tokenHolders.0.address`}
+                    />
+                    {/* {errors.tokenHolder &&
+                  errors.tokenHolder[index] &&
+                  touched.tokenHolder[index] ? (
+                    <ErrorText>{errors.tokenHolder[index]}</ErrorText>
+                  ) : null} */}
+                  </CustomInputContainer>
+                )}
               </>
             )}
           />
@@ -177,38 +201,62 @@ const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
           </Typography>
 
           <FieldArray
-            name="token_holders"
+            name="tokenHolders"
             render={(arrayHelpers) => (
               <>
-                {values.token_holders && values.token_holders.length > 0
-                  ? values.token_holders.map((holder: any, index: any) => (
-                      <div key={index}>
-                        <CustomBalanceContainer>
-                          <Field
-                            type="number"
-                            component={CustomFormikTextField}
-                            placeholder="0.00"
-                            name={`token_holders.${index}.balance`}
-                          />
-                        </CustomBalanceContainer>
-                        {index + 1 === values.token_holders.length ? (
-                          <AddButon
-                            className="button"
-                            type="button"
-                            onClick={() =>
-                              arrayHelpers.insert(index + 1, {
-                                token_holder: "",
-                                balance: 0,
-                              })
-                            }
-                          >
-                            {" "}
-                            Add new row
-                          </AddButon>
-                        ) : null}
-                      </div>
-                    ))
-                  : null}
+                {values.tokenHolder && values.tokenHolder.length > 0 ? (
+                  values.tokenHolder.map((_: string, index: number) => (
+                    <div key={index}>
+                      <CustomBalanceContainer>
+                        <Field
+                          type="number"
+                          component={CustomFormikTextField}
+                          placeholder="0.00"
+                          name={`tokenHolders.${index}.balance`}
+                        />
+                      </CustomBalanceContainer>
+                      {index + 1 === values.tokenHolder.length ? (
+                        <AddButon
+                          className="button"
+                          type="button"
+                          onClick={() =>
+                            arrayHelpers.insert(index + 1, {
+                              token_holder: "",
+                              balance: 0,
+                            })
+                          }
+                        >
+                          {" "}
+                          Add new row
+                        </AddButon>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <CustomBalanceContainer>
+                      <Field
+                        type="number"
+                        component={CustomFormikTextField}
+                        placeholder="0.00"
+                        name={`tokenHolders.0.balance`}
+                      />
+                    </CustomBalanceContainer>
+                    <AddButon
+                      className="button"
+                      type="button"
+                      onClick={() =>
+                        arrayHelpers.insert(1, {
+                          token_holder: "",
+                          balance: 0,
+                        })
+                      }
+                    >
+                      {" "}
+                      Add new row
+                    </AddButon>
+                  </>
+                )}
               </>
             )}
           />
@@ -224,7 +272,7 @@ const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
         </Grid>
         <Grid item xs={3}>
           <CustomValueContainer color="textSecondary">
-            {getTotal()}
+            <Total values={values} />
           </CustomValueContainer>
         </Grid>
       </Grid>
@@ -241,7 +289,7 @@ const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
             <Field
               component={CustomFormikTextField}
               type="number"
-              name="max_agent"
+              name="maxAgent"
               placeholder="00"
               InputProps={{
                 endAdornment: (
@@ -250,8 +298,8 @@ const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
               }}
             />
           </CustomInputContainer>
-          {errors.max_agent && touched.max_agent ? (
-            <ErrorText>{errors.max_agent}</ErrorText>
+          {errors.maxAgent && touched.maxAgent ? (
+            <ErrorText>{errors.maxAgent}</ErrorText>
           ) : null}
         </Grid>
       </SecondContainer>
@@ -282,31 +330,12 @@ const TokenSettingsForm = ({ values, submitForm, touched, errors }: any) => {
 };
 
 export const TokenSettings = (): JSX.Element => {
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["saveDaoInformationReducer"]
-  >((state) => state.saveDaoInformationReducer);
-
-  const dispatch = useDispatch();
-  const { dispatch: creatorDispatch } = useContext(CreatorContext);
-  const saveStepInfo = (values: any, { setSubmitting }: any) => {
+  const { dispatch, state } = useContext(CreatorContext);
+  const { memberSettings } = state.data;
+  const saveStepInfo = (values: MemberSettings, { setSubmitting }: any) => {
     setSubmitting(true);
-    dispatch(saveDaoInformation(values));
-    creatorDispatch({ type: ActionTypes.UPDATE_STEP, step: 3 });
-  };
-
-  const validate = (values: Values) => {
-    const errors: any = {};
-
-    if (values.administrator === undefined || !String(values.administrator)) {
-      errors.administrator = "Required";
-    }
-
-    if (values.max_agent === undefined || !String(values.max_agent)) {
-      errors.max_agent = "Required";
-    }
-
-    return errors;
+    dispatch({ type: ActionTypes.UPDATE_MEMBERS_SETTINGS, members: values });
+    dispatch({ type: ActionTypes.UPDATE_STEP, step: 3 });
   };
 
   return (
@@ -333,7 +362,7 @@ export const TokenSettings = (): JSX.Element => {
         enableReinitialize={true}
         validate={validate}
         onSubmit={saveStepInfo}
-        initialValues={storageDaoInformation}
+        initialValues={memberSettings}
       >
         {({
           submitForm,

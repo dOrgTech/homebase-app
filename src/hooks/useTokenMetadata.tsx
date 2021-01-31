@@ -17,7 +17,7 @@ export const useMetadataViews = (contractAddress: string) => {
         try {
           const contract = await tezos.contract.at(contractAddress, tzip16);
           const views = await contract.tzip16().metadataViews();
-          console.log(await contract.tzip16().getMetadata())
+          console.log(await contract.tzip16().getMetadata());
           setMetadataViews(views);
           setIsLoading(false);
         } catch (error) {
@@ -25,7 +25,7 @@ export const useMetadataViews = (contractAddress: string) => {
         }
       })();
     } else {
-      connect()
+      connect();
     }
   }, [contractAddress, tezos]);
 

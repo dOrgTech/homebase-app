@@ -6,10 +6,9 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
-import { MockDAOs } from "../../../store/mock/mock";
 import { useDAOs } from "../../../services/contracts/baseDAO/hooks/useDAOs";
 
 const GridContainer = styled(Grid)({

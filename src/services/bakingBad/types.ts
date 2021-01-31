@@ -10,5 +10,5 @@ export interface NamedMapValue {
   prim: string;
   type: string;
   value: string;
-  name: string
+  name: string;
 }

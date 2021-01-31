@@ -47,5 +47,5 @@ export interface DAOListMetadata {
     symbol: string;
     name: string;
     decimals: string;
-  }
+  };
 }

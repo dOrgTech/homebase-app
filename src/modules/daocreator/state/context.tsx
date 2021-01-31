@@ -4,12 +4,17 @@ import {
   CreatorState,
   StepperIndex,
   ActionTypes,
+  INITIAL_MIGRATION_STATE,
 } from "./types";
 
 export const INITIAL_STATE: CreatorState = {
   activeStep: StepperIndex.SELECT_TEMPLATE,
   governanceStep: StepperIndex.SELECT_TEMPLATE,
-  onNextStep: () => undefined,
+  onNextStep: () => {
+    console.log("si br");
+    return undefined;
+  },
+  data: INITIAL_MIGRATION_STATE,
 };
 
 const CreatorContext = createContext<{
@@ -41,6 +46,33 @@ export const reducer = (
       state = {
         ...state,
         governanceStep: action.step,
+      };
+      return state;
+    case ActionTypes.UPDATE_ORGANIZATION_SETTINGS:
+      state = {
+        ...state,
+        data: {
+          ...state.data,
+          orgSettings: action.org,
+        },
+      };
+      return state;
+    case ActionTypes.UPDATE_VOTING_SETTINGS:
+      state = {
+        ...state,
+        data: {
+          ...state.data,
+          votingSettings: action.voting,
+        },
+      };
+      return state;
+    case ActionTypes.UPDATE_MEMBERS_SETTINGS:
+      state = {
+        ...state,
+        data: {
+          ...state.data,
+          memberSettings: action.members,
+        },
       };
       return state;
     default:

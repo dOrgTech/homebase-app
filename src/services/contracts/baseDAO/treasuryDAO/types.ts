@@ -1,5 +1,5 @@
+import { TokenHolder } from "../../../../modules/daocreator/state/types";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
-import { TokenHolder } from "../types";
 
 export interface MemberTokenAllocation {
   address: string;
@@ -55,4 +55,17 @@ export interface TreasuryDAOState {
   proposalKeyListSortByDate: any;
   permitsCounter: number;
   metadata: any;
+}
+
+export type Token = {
+  name: string;
+  symbol: string;
+  decimals: number;
+};
+export interface MetadataStorageState {
+  keyName: string;
+  metadata: {
+    frozenToken: Token;
+    unfrozenToken: Token;
+  };
 }

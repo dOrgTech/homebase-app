@@ -5,12 +5,18 @@ import { useConnectWallet } from "../../../../store/wallet/hook";
 import { getContractsAddresses } from "../../../pinata";
 import { DAOItem } from "../types";
 
-export const useDAOs = () => {
+interface QueryResult {
+  data?: DAOItem[];
+  error: Error | null;
+  isLoading: boolean;
+}
+
+export const useDAOs = (): QueryResult => {
   const { tezos, connect } = useConnectWallet();
 
   const { data: addresses } = useQuery("daosAddresses", getContractsAddresses);
 
-  console.log(addresses)
+  console.log(addresses);
 
   const daosAddresses = addresses || [];
 

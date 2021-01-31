@@ -7,24 +7,14 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { Field, Form, Formik, getIn } from "formik";
 import {
   TextField as FormikTextField,
   Switch as FormikSwitch,
 } from "formik-material-ui";
-
-import { saveDaoInformation } from "../../../store/dao-info/action";
-import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
-import { ActionTypes } from "../state/types";
-
-interface Values {
-  token_name: string | undefined;
-  token_symbol: string | undefined;
-  lock_disabled: boolean;
-  description: string;
-}
+import { ActionTypes, OrgSettings } from "../state/types";
+import { handleErrorMessages } from "../utils";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -120,14 +110,14 @@ const DaoSettingsForm = ({
           </Typography>
           <CustomInputContainer>
             <Field
-              name="token_name"
+              name="name"
               type="text"
               placeholder="My Group’s Token"
               component={CustomFormikTextField}
             ></Field>
           </CustomInputContainer>
-          {errors.token_name && touched.token_name ? (
-            <ErrorText>{errors.token_name}</ErrorText>
+          {errors.name && touched.name ? (
+            <ErrorText>{errors.name}</ErrorText>
           ) : null}
         </Grid>
 
@@ -138,14 +128,14 @@ const DaoSettingsForm = ({
           </Typography>
           <CustomInputContainer>
             <Field
-              name="token_symbol"
+              name="symbol"
               type="text"
               placeholder="MYTOK"
               component={CustomFormikTextField}
             ></Field>
           </CustomInputContainer>
-          {errors.token_symbol && touched.token_symbol ? (
-            <ErrorText>{errors.token_symbol}</ErrorText>
+          {errors.symbol && touched.symbol ? (
+            <ErrorText>{errors.symbol}</ErrorText>
           ) : null}
         </Grid>
       </SecondContainer>
@@ -191,36 +181,12 @@ const DaoSettingsForm = ({
   );
 };
 export const DaoSettings = (): JSX.Element => {
-  const creatorState = useContext(CreatorContext);
-  const updateState = creatorState.dispatch;
-
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["saveDaoInformationReducer"]
-  >((state) => state.saveDaoInformationReducer);
-
-  const dispatch = useDispatch();
-
-  const saveStepInfo = (values: any, { setSubmitting }: any) => {
+  const { state, dispatch } = useContext(CreatorContext);
+  const { orgSettings } = state.data;
+  const saveStepInfo = (values: OrgSettings, { setSubmitting }: any) => {
     setSubmitting(true);
-    dispatch(saveDaoInformation(values));
-    updateState({ type: ActionTypes.UPDATE_STEP, step: 2 });
-  };
-
-  const validate = (values: Values) => {
-    const errors: any = {};
-
-    if (values.token_name === undefined || !String(values.token_name)) {
-      errors.token_name = "Required";
-    }
-    if (values.token_symbol === undefined || !String(values.token_symbol)) {
-      errors.token_symbol = "Required";
-    }
-    if (values.description === undefined || !String(values.description)) {
-      errors.description = "Required";
-    }
-
-    return errors;
+    dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
+    dispatch({ type: ActionTypes.UPDATE_STEP, step: 2 });
   };
 
   return (
@@ -246,9 +212,9 @@ export const DaoSettings = (): JSX.Element => {
 
       <Formik
         enableReinitialize
-        validate={validate}
+        validate={(values: OrgSettings) => handleErrorMessages(values)}
         onSubmit={saveStepInfo}
-        initialValues={storageDaoInformation}
+        initialValues={orgSettings}
       >
         {({
           submitForm,
@@ -261,7 +227,7 @@ export const DaoSettings = (): JSX.Element => {
           return (
             <Form style={{ width: "100%" }}>
               <DaoSettingsForm
-                validate={validate}
+                validate={(values: OrgSettings) => handleErrorMessages(values)}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}
