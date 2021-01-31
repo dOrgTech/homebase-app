@@ -29,7 +29,7 @@ export interface TokenHolder {
   balance: number;
 }
 
-export const INITIAL_MIGRATION_STATE = {
+export const INITIAL_MIGRATION_STATE: MigrationParams = {
   // DAO Settings
   orgName: "",
   orgSymbol: "",

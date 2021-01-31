@@ -25,6 +25,7 @@ import { useOriginate } from "../../../hooks/useOriginate";
 import { ActionTypes, StepperIndex, StepInfo } from "../state/types";
 import { AppState } from "../../../store";
 import { CreatorContext } from "../state/context";
+import { TokenHolder } from "../../../contracts/store/dependency/types";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -190,10 +191,10 @@ export const DAOCreate: React.FC = () => {
   const daoInfo = useSelector<AppState, AppState["saveDaoInformationReducer"]>(
     (state) => state.saveDaoInformationReducer
   );
-  const membersTokenAllocation = daoInfo.token_holders.map(
-    (holder: TokenHolders) => {
+  const membersTokenAllocation = daoInfo.tokenHolders.map(
+    (holder: TokenHolder) => {
       return {
-        address: holder.token_holder,
+        address: holder.address,
         amount: holder.balance.toString(),
         tokenId: "1",
       };
@@ -217,13 +218,13 @@ export const DAOCreate: React.FC = () => {
       slashScaleValue: 1,
       slashDivisionValue: 1,
       minXtzAmount: 1,
-      maxXtzAmount: daoInfo.max_agent || 0,
+      maxXtzAmount: daoInfo.maxAgent || 0,
       maxProposalSize: 100,
       quorumTreshold: 4,
       votingPeriod:
-        (daoInfo.voting_hours || 1) * 3600 +
-        (daoInfo.voting_days || 1) * 24 * 3600 +
-        (daoInfo.voting_minutes || 1) * 60,
+        (daoInfo.votingHours || 1) * 3600 +
+        (daoInfo.votingDays || 1) * 24 * 3600 +
+        (daoInfo.votingMinutes || 1) * 60,
     },
     metadataCarrierDeploymentData: {
       deployAddress: carrierData ? carrierData.address : "",
