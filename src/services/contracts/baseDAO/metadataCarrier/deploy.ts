@@ -7,9 +7,9 @@ import { char2Bytes } from "@taquito/tzip16";
 import { getTestProvider } from "../utils";
 import { code } from "./code";
 import { setMetadataJSON } from "./metadata";
-import { FA2MetadataParams, MetadataCarrierParameters } from "./types";
+import { MetadataCarrierParameters, MetadataParams } from "./types";
 
-const setMetadataMap = (keyName: string, metadata: FA2MetadataParams) => {
+const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
   const map = new MichelsonMap();
   const json = setMetadataJSON(metadata);
 

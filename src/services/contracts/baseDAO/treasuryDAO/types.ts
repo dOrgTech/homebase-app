@@ -1,4 +1,28 @@
+import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { TokenHolder } from "../types";
+
+export interface MemberTokenAllocation {
+  address: string;
+  tokenId: string;
+  amount: string;
+}
+
+export interface TreasuryParams {
+  storage: {
+    membersTokenAllocation: MemberTokenAllocation[];
+    adminAddress: string;
+    frozenScaleValue: number;
+    frozenExtraValue: number;
+    slashScaleValue: number;
+    slashDivisionValue: number;
+    minXtzAmount: number;
+    maxXtzAmount: number;
+    maxProposalSize: number;
+    quorumTreshold: number;
+    votingPeriod: number;
+  };
+  metadataCarrierDeploymentData: MetadataCarrierDeploymentData;
+}
 
 type ExtraState = {
   extra: {

@@ -1,6 +1,7 @@
 import { NetworkType } from "@airgap/beacon-sdk";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
+import { Tzip16Module } from "@taquito/tzip16";
 
 const rpcNodes = {
   carthagenet: "https://testnet-tezos.giganode.io",
@@ -21,6 +22,7 @@ export const connectWithBeacon = async (): Promise<TezosToolkit> => {
             const network = data.account.network.type as keyof typeof rpcNodes;
             const rpcUrl = rpcNodes[network];
             const tezos = new TezosToolkit(rpcUrl);
+            tezos.addExtension(new Tzip16Module());
             tezos.setWalletProvider(wallet);
 
             resolve(tezos);
@@ -36,7 +38,7 @@ export const connectWithBeacon = async (): Promise<TezosToolkit> => {
 
     await wallet.requestPermissions({
       network: {
-        type: NetworkType.DELPHINET,
+        type: NetworkType.DELPHINET as any,
       },
     });
   });
