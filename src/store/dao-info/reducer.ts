@@ -1,4 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
+import { INITIAL_MIGRATION_STATE } from "../../contracts/store/dependency/types";
 import { saveDaoInformation } from "./action";
 
 import { TokenHolders } from "./types";
@@ -27,47 +28,30 @@ export interface DaoInformation {
   token_holders: Array<TokenHolders>;
 }
 
-export const initialState: DaoInformation = {
-  proposal_days: undefined,
-  proposal_hours: undefined,
-  proposal_minutes: undefined,
-  voting_days: undefined,
-  voting_hours: undefined,
-  voting_minutes: undefined,
-  min_stake: 0,
-  propose_stake_mygt: undefined,
-  propose_stake_percentage: undefined,
-  vote_stake_mygt: undefined,
-  vote_stake_percentage: undefined,
-
-  max_agent: undefined,
-  administrator: "",
-  token_name: "",
-  token_symbol: "",
-  lock_disabled: false,
-  description: "",
-  token_holders: [{ token_holder: "", balance: 0 }],
-};
-
-export default createReducer(initialState, (builder) =>
+export default createReducer(INITIAL_MIGRATION_STATE, (builder) =>
   builder.addCase(saveDaoInformation, (state, action) => {
-    state.proposal_days = action.payload.proposal_days;
-    state.proposal_hours = action.payload.proposal_hours;
-    state.proposal_minutes = action.payload.proposal_minutes;
-    state.voting_days = action.payload.voting_days;
-    state.voting_hours = action.payload.voting_hours;
-    state.voting_minutes = action.payload.voting_minutes;
-    state.min_stake = action.payload.min_stake;
-    state.max_agent = action.payload.max_agent;
-    state.administrator = action.payload.administrator;
-    state.token_name = action.payload.token_name;
-    state.token_symbol = action.payload.token_symbol;
-    state.lock_disabled = action.payload.lock_disabled;
+    // DAO Settings
+    state.orgName = action.payload.orgName;
+    state.orgSymbol = action.payload.orgSymbol;
     state.description = action.payload.description;
-    state.propose_stake_mygt = action.payload.propose_stake_mygt;
-    state.propose_stake_percentage = action.payload.propose_stake_percentage;
-    state.vote_stake_percentage = action.payload.vote_stake_percentage;
-    state.vote_stake_mygt = action.payload.vote_stake_mygt;
-    state.token_holders = action.payload.token_holders;
+
+    // Voting Settings
+    state.proposalDays = action.payload.proposalDays;
+    state.proposalHours = action.payload.proposalHours;
+    state.proposalMinutes = action.payload.proposalMinutes;
+    state.votingDays = action.payload.votingDays;
+    state.votingHours = action.payload.votingHours;
+    state.votingMinutes = action.payload.votingMinutes;
+
+    state.proposeStakeMygt = action.payload.proposeStakeMygt;
+    state.proposeStakePercentage = action.payload.proposeStakePercentage;
+    state.voteStakeMygt = action.payload.voteStakeMygt;
+    state.voteStakePercentage = action.payload.voteStakePercentage;
+    state.minStake = action.payload.minStake;
+
+    // Member Settings
+    state.tokenHolders = action.payload.tokenHolders;
+    state.maxAgent = action.payload.maxAgent;
+    state.administrator = action.payload.administrator;
   })
 );
