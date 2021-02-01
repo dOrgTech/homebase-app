@@ -41,7 +41,7 @@ const StyledStepper = styled(Stepper)({
 
 const StepContentHeigth = styled(Grid)({
   height: "80vh",
-  overflowY: "auto"
+  overflowY: "auto",
 });
 
 const ContentContainer = styled(Grid)({
@@ -78,8 +78,6 @@ export const DAOCreate: React.FC = () => {
   const account = useSelector<AppState, AppState["wallet"]["address"]>(
     (state) => state.wallet.address
   );
-
-  console.log(activeStep, governanceStep)
 
   const progress = useMemo(() => activeStep * 25, [activeStep]);
 

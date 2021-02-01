@@ -13,7 +13,7 @@ import { Field, Form, Formik, getIn } from "formik";
 
 import { CreatorContext } from "../state/context";
 import { ActionTypes, VotingSettings } from "../state/types";
-import { handleErrorMessages } from "../utils";
+import { handleGovernanceFormErrors } from "../utils";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
@@ -129,7 +129,11 @@ const GovernanceForm = ({
 }: any) => {
   const {
     dispatch,
-    state: { governanceStep, activeStep },
+    state: {
+      governanceStep,
+      activeStep,
+      data: { orgSettings },
+    },
   } = useContext(CreatorContext);
 
   useEffect(() => {
@@ -344,7 +348,9 @@ const GovernanceForm = ({
               ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">MYGT</Typography>
+              <Typography color="textSecondary">
+                {orgSettings.symbol}
+              </Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposeStakeRequired && touched.proposeStakeRequired ? (
@@ -417,7 +423,9 @@ const GovernanceForm = ({
               ></Field>{" "}
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">MYGT</Typography>
+              <Typography color="textSecondary">
+                {orgSettings.symbol}
+              </Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.voteStakeRequired && touched.voteStakeRequired ? (
@@ -530,7 +538,9 @@ export const Governance: React.FC = () => {
 
       <Formik
         enableReinitialize
-        validate={(values: VotingSettings) => handleErrorMessages(values)}
+        validate={(values: VotingSettings) =>
+          handleGovernanceFormErrors(values)
+        }
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
       >
@@ -542,12 +552,12 @@ export const Governance: React.FC = () => {
           errors,
           touched,
         }) => {
-          console.log(errors)
+          console.log(errors);
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm
                 validate={(values: VotingSettings) =>
-                  handleErrorMessages(values)
+                  handleGovernanceFormErrors(values)
                 }
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
