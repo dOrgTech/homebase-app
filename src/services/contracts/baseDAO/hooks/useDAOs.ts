@@ -12,7 +12,7 @@ interface QueryResult {
 }
 
 export const useDAOs = (): QueryResult => {
-  const { tezos, connect } = useTezos();
+  const { tezos, connect, network } = useTezos();
 
   const {
     data: addresses,
@@ -24,7 +24,7 @@ export const useDAOs = (): QueryResult => {
 
   const result = useQuery<DAOItem[], Error>(
     ["daos", addresses],
-    async () => getDAOs(daosAddresses, tezos),
+    async () => getDAOs(daosAddresses, tezos, network),
     {
       enabled: !!daosAddresses.length && !!tezos,
     }
