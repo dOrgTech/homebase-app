@@ -2,14 +2,18 @@ import { NetworkType } from "@airgap/beacon-sdk";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
+import { Network } from "./context";
 
-const rpcNodes = {
-  carthagenet: "https://testnet-tezos.giganode.io",
+const rpcNodes: Record<Network, string> = {
+  edonet: "https://edonet-tezos.giganode.io",
   delphinet: "https://api.tez.ie/rpc/delphinet",
   mainnet: "https://mainnet-tezos.giganode.io",
 };
 
-export const connectWithBeacon = async (): Promise<TezosToolkit> => {
+export const connectWithBeacon = async (): Promise<{
+  tezos: TezosToolkit;
+  network: Network;
+}> => {
   return await new Promise(async (resolve, reject) => {
     const wallet = new BeaconWallet({
       name: "Homebase",
@@ -25,7 +29,7 @@ export const connectWithBeacon = async (): Promise<TezosToolkit> => {
             tezos.addExtension(new Tzip16Module());
             tezos.setWalletProvider(wallet);
 
-            resolve(tezos);
+            resolve({ tezos, network });
           },
         },
         PERMISSION_REQUEST_ERROR: {
