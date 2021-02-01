@@ -1,5 +1,5 @@
-import { Grid, styled, Typography } from "@material-ui/core";
-import React, { useContext } from "react";
+import { Box, Grid, styled, Typography } from "@material-ui/core";
+import React, { useContext, useEffect } from "react";
 
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 import { CreatorContext } from "../state/context";
@@ -47,8 +47,17 @@ const UnderlinedGrid = styled(Grid)({
   padding: 2,
 });
 
+const TokenHoldersContainer = styled(Box)({
+  marginTop: 5,
+  maxHeight: 200,
+  overflowY: "auto",
+  width: "100%"
+})
+
 export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
+  const { activeStep } = state;
+
   const goToVoting = () => {
     dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
     dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
@@ -56,8 +65,24 @@ export const Summary = (): JSX.Element => {
 
   const goToSettings = () => {
     dispatch({ type: ActionTypes.UPDATE_STEP, step: 2 });
-    dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
+    dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
   };
+
+  useEffect(() => {
+    dispatch({
+      type: ActionTypes.UPDATE_NAVIGATION_BAR,
+      next: {
+        handler: () =>
+          dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 }),
+        text: "LAUNCH",
+      },
+      back: {
+        handler: () =>
+          dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 }),
+        text: "BACK",
+      },
+    });
+  }, [activeStep, dispatch]);
 
   return (
     <>
@@ -131,12 +156,15 @@ export const Summary = (): JSX.Element => {
               </Grid>
             </AdminContainer>
           </Grid>
+        </SecondContainer>
+
+        <TokenHoldersContainer>
           {state.data.memberSettings.tokenHolders.map(
             (holder: TokenHolder, i: number) => {
               return <TokenHoldersRow key={`holder-${i}`} {...holder} />;
             }
           )}
-        </SecondContainer>
+        </TokenHoldersContainer>
 
         <SecondContainer container direction="row">
           <Grid item xs={12}>

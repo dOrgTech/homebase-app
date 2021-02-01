@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { AppState } from "../../store";
 import { toShortAddress } from "../../utils";
 import HomeButton from "../../assets/logos/homebase.svg";
-import { useConnectWallet } from "../../store/wallet/hook";
+import { useTezos } from "../../services/beacon/hooks/useTezos";
 import { useHistory, useLocation } from "react-router-dom";
 
 const StyledAppBar = styled(AppBar)({
@@ -33,6 +33,7 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
+  marginLeft: 8
 });
 
 const AddressContainer = styled(Grid)({
@@ -64,11 +65,7 @@ const custom = {
   },
 };
 export const Navbar: React.FC = () => {
-  const account = useSelector<AppState, AppState["wallet"]["address"]>(
-    (state) => state.wallet.address
-  );
-
-  const { connect } = useConnectWallet();
+  const { connect, account } = useTezos();
   const location = useLocation();
   const history = useHistory();
 
@@ -132,7 +129,6 @@ export const Navbar: React.FC = () => {
                 container
                 alignItems="center"
                 wrap="nowrap"
-                spacing={1}
                 justify="flex-end"
               >
                 <Grid item>

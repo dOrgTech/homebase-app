@@ -1,15 +1,13 @@
-import { BigMapAbstraction } from "@taquito/taquito";
 import { API_URL } from "..";
-import { Network } from "../types";
+import { Network } from "../../beacon/context";
 import { dtoToLedger } from "./mappers";
 import { Ledger, LedgerDTO } from "./types";
 
 export const getLedgerAddresses = async (
-  ledgerMap: BigMapAbstraction,
+  ledgerMapNumber: number,
   network: Network
 ): Promise<Ledger> => {
-  const mapId = ledgerMap.toString();
-  const url = `${API_URL}/bigmap/${network}/${mapId}/keys`;
+  const url = `${API_URL}/bigmap/${network}/${ledgerMapNumber}/keys`;
 
   const response = await fetch(url);
 

@@ -15,12 +15,7 @@ export type ProposalsDTO = {
           type: string;
           name: string;
           children: [
-            {
-              prim: string;
-              type: string;
-              name: string;
-              value: string;
-            },
+            NamedMapValue,
             {
               prim: string;
               type: string;

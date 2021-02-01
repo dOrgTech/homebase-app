@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 import React from "react";
-import { useConnectWallet } from "../../../store/wallet/hook";
+import { useTezos } from "../../../services/beacon/hooks/useTezos";
 
 const PageContainer = styled(Grid)({
   height: "90%",
@@ -22,7 +22,7 @@ const SpacingTitle = styled(Typography)({
 });
 
 export const ConnectWallet: React.FC = () => {
-  const { connect } = useConnectWallet();
+  const { connect } = useTezos();
 
   return (
     <PageContainer container justify="flex-start" alignItems="center">

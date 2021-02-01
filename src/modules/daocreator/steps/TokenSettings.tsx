@@ -130,16 +130,29 @@ const TokenSettingsForm = ({
   touched,
   errors,
 }: { values: MemberSettings } & any) => {
-  const dispatch = useContext(CreatorContext).dispatch;
+  const {
+    dispatch,
+    state: { activeStep },
+  } = useContext(CreatorContext);
 
   useEffect(() => {
     if (values) {
       dispatch({
-        type: ActionTypes.UPDATE_HANDLER,
-        handler: (values: MemberSettings) => submitForm(values),
+        type: ActionTypes.UPDATE_NAVIGATION_BAR,
+        next: {
+          text: "CONTINUE",
+          handler: () => {
+            submitForm(values);
+          },
+        },
+        back: {
+          text: "BACK",
+          handler: () =>
+            dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 }),
+        },
       });
     }
-  }, [dispatch, submitForm, values]);
+  }, [activeStep, dispatch, errors, submitForm, values]);
 
   //@TODO: Refactor token holder and balance inputs to use same logic
   return (
@@ -155,8 +168,8 @@ const TokenSettingsForm = ({
             name="tokenHolders"
             render={() => (
               <>
-                {values.tokenHolder && values.tokenHolder.length > 0 ? (
-                  values.tokenHolder.map((_: string, index: number) => (
+                {values.tokenHolders && values.tokenHolders.length > 0 ? (
+                  values.tokenHolders.map((_: string, index: number) => (
                     <div key={index}>
                       {/* <Typography variant="subtitle1"> Token holder </Typography> */}
                       <CustomInputContainer>
@@ -204,8 +217,8 @@ const TokenSettingsForm = ({
             name="tokenHolders"
             render={(arrayHelpers) => (
               <>
-                {values.tokenHolder && values.tokenHolder.length > 0 ? (
-                  values.tokenHolder.map((_: string, index: number) => (
+                {values.tokenHolders && values.tokenHolders.length > 0 ? (
+                  values.tokenHolders.map((_: string, index: number) => (
                     <div key={index}>
                       <CustomBalanceContainer>
                         <Field
@@ -215,7 +228,7 @@ const TokenSettingsForm = ({
                           name={`tokenHolders.${index}.balance`}
                         />
                       </CustomBalanceContainer>
-                      {index + 1 === values.tokenHolder.length ? (
+                      {index + 1 === values.tokenHolders.length ? (
                         <AddButon
                           className="button"
                           type="button"
@@ -375,7 +388,6 @@ export const TokenSettings = (): JSX.Element => {
           return (
             <Form style={{ width: "100%" }}>
               <TokenSettingsForm
-                defineSubmit={() => undefined}
                 validate={validate}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

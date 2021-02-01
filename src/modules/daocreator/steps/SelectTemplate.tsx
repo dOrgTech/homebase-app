@@ -6,7 +6,8 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 
@@ -68,6 +69,18 @@ const Subtitle = styled(Typography)({
 
 export const SelectTemplate = (): JSX.Element => {
   const { dispatch } = useContext(CreatorContext);
+  const history = useHistory();
+
+  useEffect(() => {
+    dispatch({
+      type: ActionTypes.UPDATE_NAVIGATION_BAR,
+      back: {
+        text: "BACK",
+        handler: () => history.push("/explorer"),
+      },
+    });
+  }, [dispatch, history]);
+
   return (
     <>
       <Grid container direction="row">
