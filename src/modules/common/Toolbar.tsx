@@ -33,6 +33,7 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
+  marginLeft: 8
 });
 
 const AddressContainer = styled(Grid)({
@@ -132,7 +133,6 @@ export const Navbar: React.FC = () => {
                 container
                 alignItems="center"
                 wrap="nowrap"
-                spacing={1}
                 justify="flex-end"
               >
                 <Grid item>

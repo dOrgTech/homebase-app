@@ -1,9 +1,19 @@
+export interface NavigationBarProps {
+  back?: {
+    text: string;
+    handler: () => void;
+  };
+  next?: {
+    text: string;
+    handler: () => void;
+  };
+}
+
 export type CreatorState = {
   activeStep: number;
   governanceStep: number;
-  onNextStep: () => undefined;
   data: MigrationParams;
-};
+} & NavigationBarProps;
 
 export enum StepperIndex {
   SELECT_TEMPLATE,
@@ -17,10 +27,10 @@ export interface StepInfo {
   index: number;
 }
 
-function updateHandler(handler: any) {
+function updateNavigationBar(props: NavigationBarProps) {
   return <const>{
-    type: ActionTypes.UPDATE_HANDLER,
-    handler,
+    type: ActionTypes.UPDATE_NAVIGATION_BAR,
+    ...props,
   };
 }
 
@@ -62,14 +72,14 @@ function updateMemberSettings(members: MemberSettings) {
 export type CreatorAction = ReturnType<
   | typeof updateActiveStep
   | typeof updateGovernanceStep
-  | typeof updateHandler
+  | typeof updateNavigationBar
   | typeof updateOrgSettings
   | typeof updateVotingSettings
   | typeof updateMemberSettings
 >;
 
 export enum ActionTypes {
-  UPDATE_HANDLER = "UPDATE_HANDLER",
+  UPDATE_NAVIGATION_BAR = "UPDATE_NAVIGATION_BAR",
   UPDATE_STEP = "UPDATE_STEP",
   UPDATE_GOVERNANCE_STEP = "UPDATE_GOVERNANCE_STEP",
   UPDATE_VOTING_SETTINGS = "UPDATE_VOTING_SETTINGS",

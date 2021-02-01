@@ -85,8 +85,6 @@ export const DAOsList: React.FC = () => {
     return [];
   }, [daos, searchText]);
 
-  console.log(daos, error, isLoading);
-
   const history = useHistory();
 
   const filterDAOs = (filter: string) => {
