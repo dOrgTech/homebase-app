@@ -5,13 +5,7 @@ import { useTezos } from "../../../beacon/hooks/useTezos";
 import { getContractsAddresses } from "../../../pinata";
 import { DAOItem } from "../types";
 
-interface QueryResult {
-  data?: DAOItem[];
-  error: Error | null;
-  isLoading: boolean;
-}
-
-export const useDAOs = (): QueryResult => {
+export const useDAOs = () => {
   const { tezos, connect, network } = useTezos();
 
   const {
