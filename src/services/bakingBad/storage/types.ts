@@ -1,6 +1,6 @@
 import { NamedMapNumberValue, NamedMapValue, UnnamedMapValue } from "../types";
 
- export interface Storage {
+export interface Storage {
   //TODO: add more fields
 
   proposalsMapNumber: number;

@@ -10,6 +10,7 @@ import React, { useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { useDAOs } from "../../../services/contracts/baseDAO/hooks/useDAOs";
+import { MockDAOs } from "../../../store/mock/mock";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -62,28 +63,31 @@ const GridBackground = styled(Grid)({
 
 export const DAOsList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
-  const { data: daos, error, isLoading } = useDAOs();
+  // const { data: daos, error, isLoading } = useDAOs();
 
-  const currentDAOs = useMemo(() => {
-    if (daos) {
-      const formattedDAOs = daos.map((dao) => ({
-        id: dao.name,
-        name: dao.unfrozenToken.name,
-        symbol: dao.unfrozenToken.symbol,
-        voting_addresses: dao.ledger.length,
-      }));
+  // const currentDAOs = useMemo(() => {
+  //   if (daos) {
+  //     const formattedDAOs = daos.map((dao) => ({
+  //       id: dao.name,
+  //       name: dao.unfrozenToken.name,
+  //       symbol: dao.unfrozenToken.symbol,
+  //       voting_addresses: dao.ledger.length,
+  //     }));
 
-      if (searchText) {
-        return formattedDAOs.filter((formattedDao) =>
-          formattedDao.name.toLowerCase().includes(searchText.toLowerCase())
-        );
-      }
+  //     if (searchText) {
+  //       return formattedDAOs.filter((formattedDao) =>
+  //         formattedDao.name.toLowerCase().includes(searchText.toLowerCase())
+  //       );
+  //     }
 
-      return formattedDAOs;
-    }
+  //     return formattedDAOs;
+  //   }
 
-    return [];
-  }, [daos, searchText]);
+  //   return [];
+  // }, [daos, searchText]);
+
+  // console.log(daos, error, isLoading);
+  const currentDAOs = MockDAOs;
 
   const history = useHistory();
 

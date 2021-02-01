@@ -17,7 +17,7 @@ export const usePropose = (
   { tokensToFreeze, agoraPostId, transfers }: ProposeParams
 ) => {
   // const contract = useContract(contractAddress);
-
+  
   // return useCallback(async () => {
   //   if (contract) {
   //     return await contract.methods
