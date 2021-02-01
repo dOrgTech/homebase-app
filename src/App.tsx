@@ -10,7 +10,7 @@ import { Box, ThemeProvider } from "@material-ui/core";
 import { theme } from "./theme";
 import { DAOExplorerRouter } from "./router/explorer";
 import { Navbar } from "./modules/common/Toolbar";
-import { DAOCreate } from "./modules/daocreator/components";
+import { DAOCreate } from "./modules/daocreator";
 import { CreatorProvider } from "./modules/daocreator/state/context";
 import ScrollToTop from "./modules/common/ScrollToTop";
 import { QueryClient, QueryClientProvider } from "react-query";

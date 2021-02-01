@@ -1,15 +1,13 @@
-import { Network } from "@airgap/beacon-sdk";
-import { BigMapAbstraction } from "@taquito/taquito";
 import { API_URL } from "..";
+import { Network } from "../../beacon/context";
 import { dtoToProposals } from "./mappers";
 import { Proposal, ProposalsDTO } from "./types";
 
 export const getProposals = async (
-  proposalsMap: BigMapAbstraction,
+  proposalsMapNumber: number,
   network: Network
 ): Promise<Proposal[]> => {
-  const mapId = proposalsMap.toString();
-  const url = `${API_URL}/bigmap/${network}/${mapId}/keys`;
+  const url = `${API_URL}/bigmap/${network}/${proposalsMapNumber}/keys`;
 
   const { json, ok } = await fetch(url);
   if (!ok) {

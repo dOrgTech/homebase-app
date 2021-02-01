@@ -127,16 +127,32 @@ const GovernanceForm = ({
   errors,
   touched,
 }: any) => {
-  const { dispatch } = useContext(CreatorContext);
+  const {
+    dispatch,
+    state: { governanceStep, activeStep },
+  } = useContext(CreatorContext);
 
   useEffect(() => {
     if (values) {
       dispatch({
-        type: ActionTypes.UPDATE_HANDLER,
-        handler: (values: VotingSettings) => submitForm(values),
+        type: ActionTypes.UPDATE_NAVIGATION_BAR,
+        next: {
+          text: "CONTINUE",
+          handler: () => {
+            submitForm(values);
+          },
+        },
+        back: {
+          text: "BACK",
+          handler: () =>
+            dispatch({
+              type: ActionTypes.UPDATE_GOVERNANCE_STEP,
+              step: governanceStep - 1,
+            }),
+        },
       });
     }
-  }, [dispatch, submitForm, values]);
+  }, [activeStep, dispatch, errors, governanceStep, submitForm, values]);
 
   return (
     <>
@@ -321,7 +337,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="proposeStakeMygt"
+                name="proposeStakeRequired"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -331,8 +347,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposeStakeMygt && touched.proposeStakeMygt ? (
-            <ErrorText>{errors.proposeStakeMygt}</ErrorText>
+          {errors.proposeStakeRequired && touched.proposeStakeRequired ? (
+            <ErrorText>{errors.proposeStakeRequired}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
@@ -394,7 +410,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voteStakeMygt"
+                name="voteStakeRequired"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -404,8 +420,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">MYGT</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voteStakeMygt && touched.voteStakeMygt ? (
-            <ErrorText>{errors.voteStakeMygt}</ErrorText>
+          {errors.voteStakeRequired && touched.voteStakeRequired ? (
+            <ErrorText>{errors.voteStakeRequired}</ErrorText>
           ) : null}
         </AdditionContainer>
         <Grid item xs={1}>
@@ -484,13 +500,14 @@ const GovernanceForm = ({
 //@TODO: Remove any from this component
 export const Governance: React.FC = () => {
   const { dispatch, state } = useContext(CreatorContext);
+  const { activeStep } = state;
   const { votingSettings } = state.data;
 
   const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
     console.log("saving");
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
-    dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 1 });
+    dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
   };
 
   return (
@@ -525,6 +542,7 @@ export const Governance: React.FC = () => {
           errors,
           touched,
         }) => {
+          console.log(errors);
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm

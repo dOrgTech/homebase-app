@@ -3,15 +3,15 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import App from "./App";
 import store from "./store";
-import { TezosToolkitProvider } from "./store/wallet/context";
+import { TezosProvider } from "./services/beacon/context";
 
 ReactDOM.render(
   <React.StrictMode>
-    <TezosToolkitProvider>
+    <TezosProvider>
       <Provider store={store}>
         <App />
       </Provider>
-    </TezosToolkitProvider>
+    </TezosProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

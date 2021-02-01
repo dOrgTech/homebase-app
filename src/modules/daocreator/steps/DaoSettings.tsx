@@ -89,16 +89,28 @@ const DaoSettingsForm = ({
   errors,
   touched,
 }: any) => {
-  const dispatch = useContext(CreatorContext).dispatch;
+  const {
+    dispatch,
+    state: { governanceStep },
+  } = useContext(CreatorContext);
 
   useEffect(() => {
     if (values) {
       dispatch({
-        type: ActionTypes.UPDATE_HANDLER,
-        handler: (values: any) => submitForm(values),
+        type: ActionTypes.UPDATE_NAVIGATION_BAR,
+        next: {
+          handler: () => {
+            submitForm(values);
+          },
+          text: "CONTINUE",
+        },
+        back: {
+          handler: () => dispatch({ type: ActionTypes.UPDATE_STEP, step: 0 }),
+          text: "BACK",
+        },
       });
     }
-  }, [dispatch, submitForm, values]);
+  }, [dispatch, errors, governanceStep, submitForm, values]);
 
   return (
     <>
@@ -140,19 +152,6 @@ const DaoSettingsForm = ({
         </Grid>
       </SecondContainer>
       <SecondContainer container direction="row" alignItems="center">
-        <Field
-          name="lock_disabled"
-          component={FormikSwitch}
-          type="checkbox"
-          inputProps={{ "aria-label": "secondary checkbox" }}
-        />
-
-        <Typography variant="subtitle1" color="textSecondary">
-          Disable locking until after first voting period.
-        </Typography>
-      </SecondContainer>
-
-      <SecondContainer container direction="row" alignItems="center">
         <Grid item xs={12}>
           <Typography variant="subtitle1" color="textSecondary">
             Description
@@ -182,11 +181,15 @@ const DaoSettingsForm = ({
 };
 export const DaoSettings = (): JSX.Element => {
   const { state, dispatch } = useContext(CreatorContext);
+  const { governanceStep } = state;
   const { orgSettings } = state.data;
   const saveStepInfo = (values: OrgSettings, { setSubmitting }: any) => {
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
-    dispatch({ type: ActionTypes.UPDATE_STEP, step: 2 });
+    dispatch({
+      type: ActionTypes.UPDATE_GOVERNANCE_STEP,
+      step: governanceStep + 1,
+    });
   };
 
   return (

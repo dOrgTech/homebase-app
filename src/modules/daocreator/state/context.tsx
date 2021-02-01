@@ -10,10 +10,6 @@ import {
 export const INITIAL_STATE: CreatorState = {
   activeStep: StepperIndex.SELECT_TEMPLATE,
   governanceStep: StepperIndex.SELECT_TEMPLATE,
-  onNextStep: () => {
-    console.log("si br");
-    return undefined;
-  },
   data: INITIAL_MIGRATION_STATE,
 };
 
@@ -30,10 +26,11 @@ export const reducer = (
   action: CreatorAction
 ): CreatorState => {
   switch (action.type) {
-    case ActionTypes.UPDATE_HANDLER:
+    case ActionTypes.UPDATE_NAVIGATION_BAR:
       state = {
         ...state,
-        onNextStep: action.handler,
+        next: action.next,
+        back: action.back,
       };
       return state;
     case ActionTypes.UPDATE_STEP:

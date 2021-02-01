@@ -1,28 +1,24 @@
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { getDAOs } from "..";
-import { useConnectWallet } from "../../../../store/wallet/hook";
+import { useTezos } from "../../../beacon/hooks/useTezos";
 import { getContractsAddresses } from "../../../pinata";
 import { DAOItem } from "../types";
 
-interface QueryResult {
-  data?: DAOItem[];
-  error: Error | null;
-  isLoading: boolean;
-}
+export const useDAOs = () => {
+  const { tezos, connect, network } = useTezos();
 
-export const useDAOs = (): QueryResult => {
-  const { tezos, connect } = useConnectWallet();
-
-  const { data: addresses } = useQuery("daosAddresses", getContractsAddresses);
-
-  console.log(addresses);
+  const {
+    data: addresses,
+    isLoading: addressesLoading,
+    error: addressesError,
+  } = useQuery<string[], Error>("daosAddresses", getContractsAddresses);
 
   const daosAddresses = addresses || [];
 
   const result = useQuery<DAOItem[], Error>(
     ["daos", addresses],
-    async () => getDAOs(daosAddresses, tezos),
+    async () => getDAOs(daosAddresses, tezos, network),
     {
       enabled: !!daosAddresses.length && !!tezos,
     }
@@ -34,5 +30,9 @@ export const useDAOs = (): QueryResult => {
     }
   }, [connect, tezos]);
 
-  return result;
+  return {
+    ...result,
+    isLoading: result.isLoading || addressesLoading,
+    error: result.error || addressesError,
+  };
 };
