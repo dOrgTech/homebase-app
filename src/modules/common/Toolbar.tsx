@@ -33,7 +33,7 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
-  marginLeft: 8
+  marginLeft: 8,
 });
 
 const AddressContainer = styled(Grid)({

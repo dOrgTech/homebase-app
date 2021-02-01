@@ -33,7 +33,7 @@ export const getDAOInfoFromContract = async (
   network: Network
 ): Promise<DAOItem> => {
   const contract = await getContract(tezos, contractAddress);
-  const storage = await getStorage(contractAddress, network)
+  const storage = await getStorage(contractAddress, network);
   const metadata = await getDAOListMetadata(contract);
   const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
 
@@ -47,9 +47,9 @@ export const getDAOProposals = async (
   contractAddress: string,
   network: Network
 ): Promise<Proposal[]> => {
-  const storage = await getStorage(contractAddress, network)
-  const proposals = await getProposals(storage.proposalsMapNumber, network)
-  console.log(proposals)
+  const storage = await getStorage(contractAddress, network);
+  const proposals = await getProposals(storage.proposalsMapNumber, network);
+  console.log(proposals);
 
   return proposals;
 };
