@@ -8,6 +8,7 @@ import { getDAOListMetadata } from "./metadataCarrier";
 import { DAOItem } from "./types";
 import { getProposals } from "../../bakingBad/proposals";
 import { Proposal } from "../../bakingBad/proposals/types";
+import { Ledger } from "../../bakingBad/ledger/types";
 
 const getContract = async (tezos: TezosToolkit, contractAddress: string) => {
   return await tezos.wallet.at(contractAddress, tzip16);
@@ -49,7 +50,16 @@ export const getDAOProposals = async (
 ): Promise<Proposal[]> => {
   const storage = await getStorage(contractAddress, network);
   const proposals = await getProposals(storage.proposalsMapNumber, network);
-  console.log(proposals);
 
   return proposals;
+};
+
+export const getDAOTokenHolders = async (
+  contractAddress: string,
+  network: Network
+): Promise<Ledger> => {
+  const storage = await getStorage(contractAddress, network);
+  const ledger = await getLedgerAddresses(storage.proposalsMapNumber, network);
+
+  return ledger;
 };
