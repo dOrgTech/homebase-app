@@ -6,11 +6,12 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { useDAOs } from "../../../services/contracts/baseDAO/hooks/useDAOs";
 import { MockDAOs } from "../../../store/mock/mock";
+import { addNewContractToIPFS } from "../../../services/pinata";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
@@ -94,6 +95,12 @@ export const DAOsList: React.FC = () => {
   const filterDAOs = (filter: string) => {
     setSearchText(filter);
   };
+
+  // useEffect(() => {
+  //   (async () => {
+  //     await addNewContractToIPFS("KT1FvSHdoD6gJX6LgMJRJ1Fr7bXpGLLv6xEP");
+  //   })();
+  // }, []);
 
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">

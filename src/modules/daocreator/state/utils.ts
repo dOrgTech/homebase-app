@@ -25,7 +25,7 @@ export const getTokensInfo = (
 
 export const fromStateToTreasuryStorage = (
   info: MigrationParams,
-  carrier: Contract,
+  carrierAddress: string,
   carrierParams: MetadataCarrierParameters
 ) => {
   const membersTokenAllocation = info.memberSettings.tokenHolders.map(
@@ -56,7 +56,7 @@ export const fromStateToTreasuryStorage = (
         (info.votingSettings.votingMinutes || 1) * SECONDS_IN_MINUTE,
     },
     metadataCarrierDeploymentData: {
-      deployAddress: carrier ? carrier.address : "",
+      deployAddress: carrierAddress,
       keyName: carrierParams.keyName,
     },
   };
