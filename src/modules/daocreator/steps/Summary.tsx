@@ -51,8 +51,8 @@ const TokenHoldersContainer = styled(Box)({
   marginTop: 5,
   maxHeight: 200,
   overflowY: "auto",
-  width: "100%"
-})
+  width: "100%",
+});
 
 export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);

@@ -7,7 +7,7 @@ export const usePropose = (
   contractAddress: string,
 ) => {
   // const contract = useContract(contractAddress);
-
+  
   // return useCallback(async () => {
   //   if (contract) {
   //     return await contract.methods
