@@ -47,6 +47,11 @@ export const deployTreasuryDAO = async ({
   },
   metadataCarrierDeploymentData,
 }: TreasuryParams): Promise<Contract> => {
+  if (!metadataCarrierDeploymentData.deployAddress) {
+    throw new Error(
+      "Error deploying treasury DAO: There's not address of metadata"
+    );
+  }
   const ledger = setMembersAllocation(membersTokenAllocation);
   const metadata = setMetadata(metadataCarrierDeploymentData);
 

@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 
 import { useOriginate } from "../../../hooks/useOriginate";
 import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
@@ -7,6 +7,7 @@ import { ActionTypes } from "../state/types";
 import { fromStateToTreasuryStorage, getTokensInfo } from "../state/utils";
 import {
   Contract,
+  INITIAL_MIGRATION_STATE,
   MigrationParams,
 } from "../../../services/contracts/baseDAO/types";
 
@@ -17,29 +18,35 @@ export const useDeployer = (): (() => Promise<
     }
   | undefined
 >) => {
-  const { state, dispatch } = useContext(CreatorContext);
+  const { state, dispatch, updateCache } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
-  const metadataCarrierParams: MetadataCarrierParameters = {
-    keyName: info.orgSettings.name,
-    metadata: {
-      frozenToken,
-      unfrozenToken,
-      description: info.orgSettings.description,
-      authors: [info.memberSettings.administrator],
-    },
-  };
+  const metadataCarrierParams: MetadataCarrierParameters = useMemo(
+    () => ({
+      keyName: info.orgSettings.name,
+      metadata: {
+        frozenToken,
+        unfrozenToken,
+        description: info.orgSettings.description,
+        authors: [info.memberSettings.administrator],
+      },
+    }),
+    [info, frozenToken, unfrozenToken]
+  );
 
   const [originateMetaData, { data: carrierData }] = useOriginate(
     "MetadataCarrier",
     metadataCarrierParams
   );
 
-  const treasuryParams = fromStateToTreasuryStorage(
-    info,
-    carrierData,
-    metadataCarrierParams
-  );
+  const treasuryParams = useMemo(() => {
+    return fromStateToTreasuryStorage(
+      info,
+      carrierData?.address || "",
+      metadataCarrierParams
+    );
+  }, [carrierData, info, metadataCarrierParams]);
+
   const [originateTreasury] = useOriginate("Treasury", treasuryParams);
 
   const deploy = useCallback(async () => {
@@ -53,8 +60,10 @@ export const useDeployer = (): (() => Promise<
       });
       const metadata = await originateMetaData();
       if (!metadata) throw new Error("Error deploying metadata contract");
+      console.log(treasuryParams);
       const treasury = await originateTreasury();
       if (!treasury) throw new Error("Error deploying treasury contract");
+
       dispatch({
         type: ActionTypes.UPDATE_DEPLOYMENT_STATUS,
         status: {
@@ -62,6 +71,7 @@ export const useDeployer = (): (() => Promise<
           contract: treasury.address,
         },
       });
+      updateCache(INITIAL_MIGRATION_STATE);
       return {
         treasury,
         metadata,
@@ -69,7 +79,7 @@ export const useDeployer = (): (() => Promise<
     } catch (e) {
       console.log("Error deploying treasury DAO: ", e);
     }
-  }, [originateMetaData, originateTreasury]);
+  }, [originateMetaData, originateTreasury, dispatch, updateCache]);
 
   return deploy;
 };
