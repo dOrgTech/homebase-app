@@ -2,9 +2,8 @@ import {
   OrgSettings,
   VotingSettings,
 } from "../../services/contracts/baseDAO/types";
-import { ErrorValues, Settings } from "./state/types";
+import { ErrorValues } from "./state/types";
 
-// @TODO: Make it more generic to handle different cases
 export const handleOrgFormErrors = (
   values: OrgSettings
 ): ErrorValues<OrgSettings> => {
@@ -22,9 +21,6 @@ export const handleGovernanceFormErrors = (values: VotingSettings) => {
     votingDays,
     votingHours,
     votingMinutes,
-    proposalMinutes,
-    proposalHours,
-    proposalDays,
     proposeStakePercentage,
     proposeStakeRequired,
     voteStakePercentage,
@@ -34,11 +30,6 @@ export const handleGovernanceFormErrors = (values: VotingSettings) => {
   if (!votingDays && !votingHours && !votingMinutes) {
     errors.votingMinutes = "The voting time must be greater than 0 minutes";
   }
-
-  if (!proposalDays && !proposalHours && !proposalMinutes) {
-    errors.proposalMinutes = "The proposal time must be greater than 0 minutes";
-  }
-
   if (!proposeStakePercentage && !proposeStakeRequired) {
     errors.proposeStakePercentage = "The sum must be greater than 0";
   }

@@ -14,6 +14,7 @@ import { Field, Form, Formik, getIn } from "formik";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, VotingSettings } from "../state/types";
 import { handleGovernanceFormErrors } from "../utils";
+import useLocalStorage from "../../../hooks/useLocalStorage";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
@@ -160,85 +161,6 @@ const GovernanceForm = ({
 
   return (
     <>
-      <SecondContainer container direction="row">
-        <Typography variant="subtitle1" color="textSecondary">
-          Proposal Period Duration
-        </Typography>
-      </SecondContainer>
-
-      <Grid container direction="row">
-        <CustomInputContainer item xs={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                color="textSecondary"
-                name="proposalDays"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">days</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.proposalDays && touched.proposalDays ? (
-            <ErrorText>{errors.proposalDays}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalHours"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">hours</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.proposalHours && touched.proposalHours ? (
-            <ErrorText>{errors.proposalHours}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalMinutes"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>{" "}
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">minutes</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.proposalMinutes && touched.proposalMinutes ? (
-            <ErrorText>{errors.proposalMinutes}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-      </Grid>
-
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -507,12 +429,19 @@ const GovernanceForm = ({
 
 //@TODO: Remove any from this component
 export const Governance: React.FC = () => {
-  const { dispatch, state } = useContext(CreatorContext);
+  const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { activeStep } = state;
   const { votingSettings } = state.data;
 
-  const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
-    console.log("saving");
+  const saveStepInfo = (
+    values: VotingSettings,
+    { setSubmitting }: { setSubmitting: (b: boolean) => void }
+  ) => {
+    const newState = {
+      ...state.data,
+      votingSettings: values,
+    };
+    updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
     dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });

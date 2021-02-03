@@ -1,6 +1,12 @@
-import { BigMapAbstraction } from "@taquito/taquito";
+import {
+  BigMapAbstraction,
+  ContractAbstraction,
+  ContractProvider,
+} from "@taquito/taquito";
 import { Ledger } from "../../bakingBad/ledger/types";
 import { DAOListMetadata } from "./metadataCarrier/types";
+
+export type Contract = ContractAbstraction<ContractProvider> | undefined;
 
 export interface MigrationParams {
   orgSettings: OrgSettings;
@@ -20,9 +26,6 @@ export type OrgSettings = {
 };
 
 export type VotingSettings = {
-  proposalDays: number;
-  proposalHours: number;
-  proposalMinutes: number;
   votingDays: number;
   votingHours: number;
   votingMinutes: number;
@@ -52,9 +55,6 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
   },
   // Voting Settings
   votingSettings: {
-    proposalDays: 0,
-    proposalHours: 0,
-    proposalMinutes: 0,
     votingDays: 0,
     votingHours: 0,
     votingMinutes: 0,

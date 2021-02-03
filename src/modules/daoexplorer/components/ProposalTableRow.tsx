@@ -1,14 +1,8 @@
 import React from "react";
-import {
-  styled,
-  Grid,
-  Box,
-  Typography,
-  IconButton,
-  CircularProgress,
-} from "@material-ui/core";
+import { styled, Grid, Box, Typography, IconButton } from "@material-ui/core";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
+import ProgressBar from "react-customizable-progressbar";
 
 type ProgressColor = "success" | "warning" | "danger";
 
@@ -33,23 +27,30 @@ export interface ProposalTableRowData {
   color: ProgressColor;
 }
 
-const StyledProgress = styled(CircularProgress)(
-  ({ circleColor }: { circleColor: string }) => ({
-    height: 68,
-    width: 68,
-    "& .MuiCircularProgress-root": {
-      background: "#3D3D3D",
-    },
-    "& .MuiCircularProgress-circle": {
-      color: circleColor,
-    },
-  })
-);
-
 const SupportText = styled(Typography)(
   ({ textColor }: { textColor: string }) => ({
     paddingLeft: 20,
     color: textColor,
+  })
+);
+
+const ProgressText = styled(Typography)(
+  ({ textColor }: { textColor: string }) => ({
+    paddingLeft: 20,
+    color: textColor,
+    display: "flex",
+    alignItems: "center",
+    textAlign: "center",
+    position: "absolute",
+    top: 0,
+    width: "100%",
+    height: "100%",
+    margin: "0px 20px",
+    fontSize: 16,
+    userSelect: "none",
+    boxShadow: "none",
+    background: "inherit",
+    fontFamily: "Roboto Mono",
   })
 );
 
@@ -94,15 +95,24 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
         <Grid item>
           <Grid container alignItems="center">
             <Grid item>
-              <StyledProgress
-                value={support}
-                circleColor={progressColorMap[color]}
-                variant="determinate"
-              />
+              <ProgressBar
+                progress={support}
+                radius={32}
+                strokeWidth={4}
+                strokeColor={progressColorMap[color]}
+                trackStrokeWidth={2}
+                trackStrokeColor={"#3d3d3d"}
+              >
+                <div className="indicator">
+                  <ProgressText textColor={progressColorMap[color]}>
+                    {support}%
+                  </ProgressText>
+                </div>
+              </ProgressBar>
             </Grid>
             <Grid item>
               <SupportText textColor={progressColorMap[color]}>
-                Support
+                {color === "danger" ? "OPPOSE" : "SUPPORT"}
               </SupportText>
             </Grid>
           </Grid>

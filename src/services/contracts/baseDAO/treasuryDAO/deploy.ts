@@ -1,14 +1,11 @@
-import {
-  ContractAbstraction,
-  ContractProvider,
-  MichelsonMap,
-} from "@taquito/taquito";
+import { MichelsonMap } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { getTestProvider } from "../../utils";
 import { code } from "./code";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
 import { addNewContractToIPFS } from "../../../pinata";
+import { Contract } from "../types";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();
@@ -49,9 +46,7 @@ export const deployTreasuryDAO = async ({
     votingPeriod,
   },
   metadataCarrierDeploymentData,
-}: TreasuryParams): Promise<
-  ContractAbstraction<ContractProvider> | undefined
-> => {
+}: TreasuryParams): Promise<Contract> => {
   const ledger = setMembersAllocation(membersTokenAllocation);
   const metadata = setMetadata(metadataCarrierDeploymentData);
 

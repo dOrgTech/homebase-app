@@ -2,6 +2,7 @@ import { Box, Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
+import { useDeployer } from "../hooks/useDeployer";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, TokenHolder } from "../state/types";
 
@@ -58,6 +59,8 @@ export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
   const { activeStep } = state;
 
+  const deploy = useDeployer();
+
   const goToVoting = () => {
     dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
     dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
@@ -72,8 +75,10 @@ export const Summary = (): JSX.Element => {
     dispatch({
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
-        handler: () =>
-          dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 }),
+        handler: () => {
+          deploy();
+          dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
+        },
         text: "LAUNCH",
       },
       back: {
@@ -178,25 +183,6 @@ export const Summary = (): JSX.Element => {
             </ContainerButton>
           </Grid>
           <Grid item xs={12}>
-            {/* <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Transfers locked?
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
-                  {state.data. ? "YES" : "NO"}
-                </Typography>
-              </Grid>
-            </UnderlinedGrid> */}
-          </Grid>
-
-          <Grid item xs={12}>
             <UnderlinedGrid item container direction="row" alignItems="center">
               <Grid item xs={6}>
                 <Typography variant="body2" color="textSecondary">
@@ -210,27 +196,6 @@ export const Summary = (): JSX.Element => {
                   align="right"
                 >
                   {state.data.votingSettings.minStake}%
-                </Typography>
-              </Grid>
-            </UnderlinedGrid>
-          </Grid>
-
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Proposal Period Duration
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
-                  {state.data.votingSettings.proposalDays}d{" "}
-                  {state.data.votingSettings.proposalHours}h{" "}
-                  {state.data.votingSettings.proposalMinutes}m
                 </Typography>
               </Grid>
             </UnderlinedGrid>

@@ -5,6 +5,7 @@ import { MetadataCarrierParameters } from "../services/contracts/baseDAO/metadat
 import { deployMetadataCarrier } from "../services/contracts/baseDAO/metadataCarrier/deploy";
 import { TreasuryParams } from "../services/contracts/baseDAO/treasuryDAO/types";
 import { deployTreasuryDAO } from "../services/contracts/baseDAO/treasuryDAO/deploy";
+import { Contract } from "../services/contracts/baseDAO/types";
 
 type ContractName = "Treasury" | "MetadataCarrier";
 
@@ -12,9 +13,7 @@ type Parameters<T extends ContractName> = T extends "Treasury"
   ? TreasuryParams
   : MetadataCarrierParameters;
 
-type DeployFunction = (
-  parameters: any
-) => Promise<ContractAbstraction<ContractProvider> | undefined>;
+type DeployFunction = (parameters: any) => Promise<Contract>;
 
 const deployFunctionMap: Record<ContractName, DeployFunction> = {
   Treasury: deployTreasuryDAO,
@@ -25,9 +24,9 @@ export const useOriginate = <T extends ContractName>(
   contractName: T,
   parameters: Parameters<T>
 ): [
-  () => Promise<void>,
+  () => Promise<Contract>,
   {
-    data: ContractAbstraction<ContractProvider> | undefined;
+    data: Contract;
     loading: boolean;
     error: any;
   }
@@ -43,6 +42,7 @@ export const useOriginate = <T extends ContractName>(
     try {
       const result = await deployFunctionMap[contractName](parameters);
       setContract(result);
+      return result;
     } catch (error) {
       console.log(error);
       setError(error);

@@ -177,10 +177,18 @@ const DaoSettingsForm = ({
   );
 };
 export const DaoSettings = (): JSX.Element => {
-  const { state, dispatch } = useContext(CreatorContext);
+  const { state, dispatch, updateCache } = useContext(CreatorContext);
   const { governanceStep } = state;
   const { orgSettings } = state.data;
-  const saveStepInfo = (values: OrgSettings, { setSubmitting }: any) => {
+  const saveStepInfo = (
+    values: OrgSettings,
+    { setSubmitting }: { setSubmitting: (b: boolean) => void }
+  ) => {
+    const newState = {
+      ...state.data,
+      orgSettings: values,
+    };
+    updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
     dispatch({
