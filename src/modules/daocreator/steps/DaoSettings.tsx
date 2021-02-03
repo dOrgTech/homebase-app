@@ -8,13 +8,10 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
-import {
-  TextField as FormikTextField,
-  Switch as FormikSwitch,
-} from "formik-material-ui";
+import { TextField as FormikTextField } from "formik-material-ui";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, OrgSettings } from "../state/types";
-import { handleErrorMessages } from "../utils";
+import { handleOrgFormErrors } from "../utils";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -180,10 +177,18 @@ const DaoSettingsForm = ({
   );
 };
 export const DaoSettings = (): JSX.Element => {
-  const { state, dispatch } = useContext(CreatorContext);
+  const { state, dispatch, updateCache } = useContext(CreatorContext);
   const { governanceStep } = state;
   const { orgSettings } = state.data;
-  const saveStepInfo = (values: OrgSettings, { setSubmitting }: any) => {
+  const saveStepInfo = (
+    values: OrgSettings,
+    { setSubmitting }: { setSubmitting: (b: boolean) => void }
+  ) => {
+    const newState = {
+      ...state.data,
+      orgSettings: values,
+    };
+    updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
     dispatch({
@@ -215,7 +220,7 @@ export const DaoSettings = (): JSX.Element => {
 
       <Formik
         enableReinitialize
-        validate={(values: OrgSettings) => handleErrorMessages(values)}
+        validate={(values: OrgSettings) => handleOrgFormErrors(values)}
         onSubmit={saveStepInfo}
         initialValues={orgSettings}
       >
@@ -230,7 +235,7 @@ export const DaoSettings = (): JSX.Element => {
           return (
             <Form style={{ width: "100%" }}>
               <DaoSettingsForm
-                validate={(values: OrgSettings) => handleErrorMessages(values)}
+                validate={(values: OrgSettings) => handleOrgFormErrors(values)}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}

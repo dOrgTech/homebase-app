@@ -11,7 +11,6 @@ import { TextField as FormikTextField } from "formik-material-ui";
 
 import { CreatorContext } from "../state/context";
 import { ActionTypes, MemberSettings, TokenHolder } from "../state/types";
-import { handleErrorMessages } from "../utils";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -121,7 +120,7 @@ const validate = (values: MemberSettings) => {
     return !values[field as keyof MemberSettings];
   };
 
-  handleErrorMessages(values, handleLedgerValidation);
+  // handleErrorMessages(values, handleLedgerValidation);
 };
 
 const TokenSettingsForm = ({
@@ -160,8 +159,7 @@ const TokenSettingsForm = ({
       <TokenHoldersGrid container direction="row">
         <Grid item xs={9}>
           <Typography variant="subtitle1" color="textSecondary">
-            {" "}
-            Token holders{" "}
+            Token holders
           </Typography>
 
           <FieldArray
@@ -171,7 +169,6 @@ const TokenSettingsForm = ({
                 {values.tokenHolders && values.tokenHolders.length > 0 ? (
                   values.tokenHolders.map((_: string, index: number) => (
                     <div key={index}>
-                      {/* <Typography variant="subtitle1"> Token holder </Typography> */}
                       <CustomInputContainer>
                         <Field
                           type="text"
@@ -179,11 +176,6 @@ const TokenSettingsForm = ({
                           placeholder="tz1PXn...."
                           name={`tokenHolders.${index}.address`}
                         />
-                        {/* {errors.tokenHolder &&
-                          errors.tokenHolder[index] &&
-                          touched.tokenHolder[index] ? (
-                            <ErrorText>{errors.tokenHolder[index]}</ErrorText>
-                          ) : null} */}
                       </CustomInputContainer>
                     </div>
                   ))

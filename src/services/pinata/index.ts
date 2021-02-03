@@ -22,7 +22,7 @@ const pinContractsMetadata = async (): Promise<string | Error> => {
     const response = await fetch(URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.JWT}`,
+        ...getAuthHeader(),
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),

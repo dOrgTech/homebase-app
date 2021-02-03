@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -17,6 +17,8 @@ import { AppState } from "../../store";
 import { CreatorContext } from "./state/context";
 import { CurrentStep, STEPS } from "./steps";
 import { NavigationBar } from "./components/NavigationBar";
+import { TezosContext } from "../../services/beacon/context";
+import { addNewContractToIPFS } from "../../services/pinata";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -73,15 +75,12 @@ const ProgressContainer = styled(Grid)({
 });
 
 export const DAOCreate: React.FC = () => {
-  const { state } = useContext(CreatorContext);
-  const { activeStep, governanceStep, back, next } = state;
-  const account = useSelector<AppState, AppState["wallet"]["address"]>(
-    (state) => state.wallet.address
-  );
-
-  console.log(activeStep, governanceStep);
-
+  const creator = useContext(CreatorContext);
+  // const tezos = useContext(TezosContext);
+  
+  const { activeStep, governanceStep, back, next } = creator.state;
   const progress = useMemo(() => activeStep * 25, [activeStep]);
+
 
   return (
     <PageContainer container direction="row">
@@ -109,7 +108,7 @@ export const DAOCreate: React.FC = () => {
         </ProgressBar>
         <StyledStepper activeStep={activeStep} orientation="vertical">
           {STEPS.map(({ title }: StepInfo) => (
-            <Step key={title} {...(!account && { active: false })}>
+            <Step key={title} {...(!true && { active: false })}>
               <StepLabel>{title}</StepLabel>
             </Step>
           ))}
@@ -118,7 +117,7 @@ export const DAOCreate: React.FC = () => {
 
       <StepContentHeigth item xs={9} container>
         <ContentContainer item xs={11}>
-          {account ? (
+          {true ? (
             <StepContentContainer item container justify="center">
               <CurrentStep
                 governanceStep={governanceStep}
@@ -132,7 +131,7 @@ export const DAOCreate: React.FC = () => {
           )}
         </ContentContainer>
       </StepContentHeigth>
-      <NavigationBar back={back} next={next} />
+      {activeStep < 4 && <NavigationBar back={back} next={next} />}
     </PageContainer>
   );
 };

@@ -1,3 +1,5 @@
+import { MigrationParams } from "../../../services/contracts/baseDAO/types";
+
 export interface NavigationBarProps {
   back?: {
     text: string;
@@ -9,10 +11,16 @@ export interface NavigationBarProps {
   };
 }
 
+type DeploymentStatus = {
+  deploying: boolean;
+  contract?: string;
+};
+
 export type CreatorState = {
   activeStep: number;
   governanceStep: number;
   data: MigrationParams;
+  deploymentStatus: DeploymentStatus;
 } & NavigationBarProps;
 
 export enum StepperIndex {
@@ -69,6 +77,13 @@ function updateMemberSettings(members: MemberSettings) {
   };
 }
 
+function updateDeploymentStatus({ deploying, contract }: DeploymentStatus) {
+  return <const>{
+    type: ActionTypes.UPDATE_DEPLOYMENT_STATUS,
+    status: { deploying, contract },
+  };
+}
+
 export type CreatorAction = ReturnType<
   | typeof updateActiveStep
   | typeof updateGovernanceStep
@@ -76,6 +91,7 @@ export type CreatorAction = ReturnType<
   | typeof updateOrgSettings
   | typeof updateVotingSettings
   | typeof updateMemberSettings
+  | typeof updateDeploymentStatus
 >;
 
 export enum ActionTypes {
@@ -85,14 +101,8 @@ export enum ActionTypes {
   UPDATE_VOTING_SETTINGS = "UPDATE_VOTING_SETTINGS",
   UPDATE_MEMBERS_SETTINGS = "UPDATE_MEMBERS_SETTINGS",
   UPDATE_ORGANIZATION_SETTINGS = "UPDATE_ORGANIZATION_SETTINGS",
+  UPDATE_DEPLOYMENT_STATUS = "UPDATE_DEPLOYMENT_STATUS",
 }
-
-export interface MigrationParams {
-  orgSettings: OrgSettings;
-  votingSettings: VotingSettings;
-  memberSettings: MemberSettings;
-}
-
 export interface TokenHolder {
   address: string;
   balance: number;
@@ -105,9 +115,6 @@ export type OrgSettings = {
 };
 
 export type VotingSettings = {
-  proposalDays: number;
-  proposalHours: number;
-  proposalMinutes: number;
   votingDays: number;
   votingHours: number;
   votingMinutes: number;
@@ -135,9 +142,6 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     description: "",
   },
   votingSettings: {
-    proposalDays: 0,
-    proposalHours: 0,
-    proposalMinutes: 0,
     votingDays: 0,
     votingHours: 0,
     votingMinutes: 0,

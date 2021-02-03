@@ -1,19 +1,42 @@
-import { ErrorValues, Settings } from "./state/types";
+import {
+  OrgSettings,
+  VotingSettings,
+} from "../../services/contracts/baseDAO/types";
+import { ErrorValues } from "./state/types";
 
-// @TODO: Make it more generic to handle different cases
-export const handleErrorMessages = (
-  settings: Settings,
-  customValidator?: (field: keyof Settings) => boolean
-): ErrorValues<Settings> => {
-  const errors: ErrorValues<Settings> = {};
-  Object.keys(settings).map((field) => {
-    const passedCustomValidation =
-      customValidator?.(field as keyof Settings) || true;
-    if (!settings[field as keyof Settings] && passedCustomValidation) {
-      // eslint-disable-next-line
-      //@ts-ignore - MUST REMOVE THIS
-      errors[field as keyof Settings] = "Required";
-    }
+export const handleOrgFormErrors = (
+  values: OrgSettings
+): ErrorValues<OrgSettings> => {
+  const errors: ErrorValues<OrgSettings> = {};
+  Object.keys(values).map((field) => {
+    const value = field as keyof OrgSettings;
+    if (!values[value]) errors[value] = "Required";
   });
+  return errors;
+};
+
+export const handleGovernanceFormErrors = (values: VotingSettings) => {
+  const errors: ErrorValues<VotingSettings> = {};
+  const {
+    votingDays,
+    votingHours,
+    votingMinutes,
+    proposeStakePercentage,
+    proposeStakeRequired,
+    voteStakePercentage,
+    voteStakeRequired,
+  } = values;
+
+  if (!votingDays && !votingHours && !votingMinutes) {
+    errors.votingMinutes = "The voting time must be greater than 0 minutes";
+  }
+  if (!proposeStakePercentage && !proposeStakeRequired) {
+    errors.proposeStakePercentage = "The sum must be greater than 0";
+  }
+
+  if (!voteStakePercentage && !voteStakeRequired) {
+    errors.voteStakePercentage = "The sum must be greater than 0";
+  }
+
   return errors;
 };

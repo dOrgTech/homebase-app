@@ -1,6 +1,7 @@
-import React from "react";
-import { Grid, styled, Typography } from "@material-ui/core";
+import React, { useContext } from "react";
+import { Button, Grid, styled, Typography } from "@material-ui/core";
 import Rocket from "../../../assets/img/rocket.svg";
+import { CreatorContext } from "../state/context";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
@@ -11,6 +12,8 @@ const WaitingText = styled(Typography)({
 });
 
 export const Review: React.FC = () => {
+  const { state } = useContext(CreatorContext);
+  const { contract, deploying } = state.deploymentStatus;
   return (
     <>
       <Grid
@@ -25,13 +28,26 @@ export const Review: React.FC = () => {
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h4" color="textSecondary">
-            Deploying <strong> My Great Token </strong> to the Tezos Network
+            Deploying <strong> {state.data.orgSettings.name} </strong> to the
+            Tezos Network
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <WaitingText variant="subtitle1" color="textSecondary">
-            Waiting for confirmation...
-          </WaitingText>
+          {deploying ? (
+            <WaitingText variant="subtitle1" color="textSecondary">
+              Waiting for confirmation...
+            </WaitingText>
+          ) : (
+            <>
+              <WaitingText variant="subtitle1" color="textSecondary">
+                Your DAO has been deployed!
+              </WaitingText>
+              <WaitingText variant="subtitle1" color="textSecondary">
+                {contract}
+              </WaitingText>
+              <Button>Go to my DAO</Button>
+            </>
+          )}
         </Grid>
       </Grid>
     </>
