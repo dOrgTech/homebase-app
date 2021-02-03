@@ -1,4 +1,4 @@
-import { BigMapAbstraction } from "@taquito/taquito";
+import { BigMapAbstraction, TezosToolkit } from "@taquito/taquito";
 import { Ledger } from "../../bakingBad/ledger/types";
 import { DAOListMetadata } from "./metadataCarrier/types";
 
@@ -81,4 +81,19 @@ export interface DAOStorageDTO {
   //TODO
 
   ledger: BigMapAbstraction;
+}
+
+export interface Transfer {
+  amount: number;
+  recipient: string;
+}
+
+export interface ProposeParams {
+  contractAddress: string;
+  tezos: TezosToolkit;
+  contractParams: {
+    tokensToFreeze: number;
+    agoraPostId: number;
+    transfers: Transfer[];
+  };
 }

@@ -5,7 +5,7 @@ import { getLedgerAddresses } from "../../bakingBad/ledger";
 import { getStorage } from "../../bakingBad/storage";
 import { Network } from "../../beacon/context";
 import { getDAOListMetadata } from "./metadataCarrier";
-import { DAOItem } from "./types";
+import { DAOItem, ProposeParams } from "./types";
 import { getProposals } from "../../bakingBad/proposals";
 import { Proposal } from "../../bakingBad/proposals/types";
 import { Ledger } from "../../bakingBad/ledger/types";
@@ -34,7 +34,7 @@ export const getDAOInfoFromContract = async (
   network: Network
 ): Promise<DAOItem> => {
   const contract = await getContract(tezos, contractAddress);
-  const storage = await getStorage(contractAddress, network)
+  const storage = await getStorage(contractAddress, network);
   const metadata = await getDAOListMetadata(contract);
   const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
 
@@ -48,8 +48,8 @@ export const getDAOProposals = async (
   contractAddress: string,
   network: Network
 ): Promise<Proposal[]> => {
-  const storage = await getStorage(contractAddress, network)
-  const proposals = await getProposals(storage.proposalsMapNumber, network)
+  const storage = await getStorage(contractAddress, network);
+  const proposals = await getProposals(storage.proposalsMapNumber, network);
 
   return proposals;
 };
@@ -58,8 +58,31 @@ export const getDAOTokenHolders = async (
   contractAddress: string,
   network: Network
 ): Promise<Ledger> => {
-  const storage = await getStorage(contractAddress, network)
-  const ledger = await getLedgerAddresses(storage.proposalsMapNumber, network)
+  const storage = await getStorage(contractAddress, network);
+  const ledger = await getLedgerAddresses(storage.proposalsMapNumber, network);
 
   return ledger;
-}
+};
+
+export const doDAOPropose = async ({
+  contractAddress,
+  tezos,
+  contractParams: { tokensToFreeze, agoraPostId, transfers },
+}: ProposeParams) => {
+  const contract = await getContract(tezos, contractAddress);
+
+  const result = await contract.methods
+    .propose(
+      tokensToFreeze,
+      agoraPostId,
+      transfers.map(({ amount, recipient }) => ({
+        transfer_type: {
+          amount,
+          recipient,
+        },
+      }))
+    )
+    .send();
+
+  return result;
+};

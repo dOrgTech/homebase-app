@@ -1,20 +1,10 @@
 import React, { useCallback } from "react";
 // import { useContract } from "./useContract";
 
-interface Transfer {
-  amount: number;
-  recipient: string;
-}
 
-interface ProposeParams {
-  tokensToFreeze: number;
-  agoraPostId: number;
-  transfers: Transfer[];
-}
 
 export const usePropose = (
   contractAddress: string,
-  { tokensToFreeze, agoraPostId, transfers }: ProposeParams
 ) => {
   // const contract = useContract(contractAddress);
 
