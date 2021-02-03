@@ -5,7 +5,7 @@ import { getLedgerAddresses } from "../../bakingBad/ledger";
 import { getStorage } from "../../bakingBad/storage";
 import { Network } from "../../beacon/context";
 import { getDAOListMetadata } from "./metadataCarrier";
-import { DAOItem } from "./types";
+import { DAOItem, ProposeParams } from "./types";
 import { getProposals } from "../../bakingBad/proposals";
 import { Proposal } from "../../bakingBad/proposals/types";
 import { Ledger } from "../../bakingBad/ledger/types";
@@ -62,4 +62,27 @@ export const getDAOTokenHolders = async (
   const ledger = await getLedgerAddresses(storage.proposalsMapNumber, network);
 
   return ledger;
+};
+
+export const doDAOPropose = async ({
+  contractAddress,
+  tezos,
+  contractParams: { tokensToFreeze, agoraPostId, transfers },
+}: ProposeParams) => {
+  const contract = await getContract(tezos, contractAddress);
+
+  const result = await contract.methods
+    .propose(
+      tokensToFreeze,
+      agoraPostId,
+      transfers.map(({ amount, recipient }) => ({
+        transfer_type: {
+          amount,
+          recipient,
+        },
+      }))
+    )
+    .send();
+
+  return result;
 };
