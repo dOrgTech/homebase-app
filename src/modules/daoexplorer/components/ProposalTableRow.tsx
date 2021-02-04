@@ -1,8 +1,18 @@
-import React from "react";
-import { styled, Grid, Box, Typography, IconButton } from "@material-ui/core";
+import React, { useMemo } from "react";
+import {
+  styled,
+  Grid,
+  Box,
+  Typography,
+  IconButton,
+  Link,
+} from "@material-ui/core";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
 import ProgressBar from "react-customizable-progressbar";
+import dayjs from "dayjs";
+import { toShortAddress } from "../../../utils";
+import { Proposal } from "../../../services/bakingBad/proposals/types";
 
 type ProgressColor = "success" | "warning" | "danger";
 
@@ -22,9 +32,11 @@ export interface ProposalTableRowData {
   title: string;
   number: number;
   date: string;
-  cycle: number;
-  support: number;
-  color: ProgressColor;
+  cycle?: number;
+  votes: {
+    value: number;
+    support: boolean;
+  };
 }
 
 const SupportText = styled(Typography)(
@@ -58,15 +70,35 @@ const ArrowButton = styled(IconButton)({
   color: "#3D3D3D",
 });
 
+export const mapProposalData = (proposalData: Proposal): ProposalTableRowData => {
+  const votes =
+    proposalData.upVotes >= proposalData.downVotes
+      ? {
+          value: Number(proposalData.upVotes),
+          support: true,
+        }
+      : {
+          value: Number(proposalData.downVotes),
+          support: false,
+        };
+  return {
+    title: proposalData.id,
+    number: Number(proposalData.agoraPostId),
+    date: proposalData.startDate,
+    votes,
+  };
+};
+
 export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
   title,
   number,
   date,
-  cycle,
-  support,
-  color,
+  votes: { value, support },
 }) => {
   const history = useHistory();
+  const color = support ? "success" : "danger";
+  const formattedDate = dayjs(date).format("MM/DD/YYYY");
+
   return (
     <ProposalTableRowContainer
       item
@@ -74,29 +106,31 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
       alignItems="center"
       onClick={() => history.push("/explorer/voting")}
     >
-      <Grid item xs={5}>
+      <Grid item xs={6}>
         <Box>
-          <Typography variant="body1" color="textSecondary">
-            {title}
-          </Typography>
+          <Link href={`https://forum.tezosagora.org/t/${number}`}>
+            <Typography variant="body1" color="textSecondary">
+              {toShortAddress(title)}
+            </Typography>
+          </Link>
         </Box>
         <Box>
           <Typography variant="body1" color="textSecondary">
-            #{number} • {date}
+            #{number} • {formattedDate}
           </Typography>
         </Box>
       </Grid>
-      <Grid item xs={2}>
+      {/* <Grid item xs={2}>
         <Typography variant="body1" color="textSecondary">
-          {cycle}
+          {cycle || "-"}
         </Typography>
-      </Grid>
-      <Grid item xs={5} container justify="space-between" alignItems="center">
+      </Grid> */}
+      <Grid item xs={6} container justify="space-between" alignItems="center">
         <Grid item>
           <Grid container alignItems="center">
             <Grid item>
               <ProgressBar
-                progress={support}
+                progress={value}
                 radius={32}
                 strokeWidth={4}
                 strokeColor={progressColorMap[color]}
@@ -105,7 +139,7 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
               >
                 <div className="indicator">
                   <ProgressText textColor={progressColorMap[color]}>
-                    {support}%
+                    {value}%
                   </ProgressText>
                 </div>
               </ProgressBar>

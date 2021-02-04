@@ -2,11 +2,16 @@ import {
   BigMapAbstraction,
   ContractAbstraction,
   ContractProvider,
-  TezosToolkit
+  TezosToolkit,
 } from "@taquito/taquito";
 
 import { Ledger } from "../../bakingBad/ledger/types";
-import { DAOListMetadata } from "./metadataCarrier/types";
+import { Storage } from "../../bakingBad/storage/types";
+import {
+  DAOListMetadata,
+  MetadataCarrierParameters,
+} from "./metadataCarrier/types";
+import { TreasuryParams, TreasuryParamsWithoutMetadata } from "./treasuryDAO/types";
 
 export type Contract = ContractAbstraction<ContractProvider> | undefined;
 
@@ -76,8 +81,10 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
 };
 
 export type DAOItem = {
+  address: string;
   ledger: Ledger;
-} & DAOListMetadata;
+} & DAOListMetadata &
+  Storage;
 
 export interface DAOStorageDTO {
   //TODO
@@ -98,4 +105,9 @@ export interface ProposeParams {
     agoraPostId: number;
     transfers: Transfer[];
   };
+}
+
+export interface OriginateTreasuryParams {
+  metadataParams: MetadataCarrierParameters;
+  treasuryParams: TreasuryParamsWithoutMetadata;
 }

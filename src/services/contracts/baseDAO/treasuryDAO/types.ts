@@ -24,6 +24,11 @@ export interface TreasuryParams {
   metadataCarrierDeploymentData: MetadataCarrierDeploymentData;
 }
 
+export type TreasuryParamsWithoutMetadata = Omit<
+  TreasuryParams,
+  "metadataCarrierDeploymentData"
+>;
+
 type ExtraState = {
   extra: {
     frozenScaleValue: number;

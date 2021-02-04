@@ -18,11 +18,17 @@ const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
   return map;
 };
 
+interface MetadataDeploymentResult {
+  contract: ContractAbstraction<ContractProvider>;
+  keyName: string;
+  deployAddress: string;
+}
+
 export const deployMetadataCarrier = async ({
   keyName,
   metadata,
 }: MetadataCarrierParameters): Promise<
-  ContractAbstraction<ContractProvider> | undefined
+  MetadataDeploymentResult | undefined
 > => {
   const Tezos = await getTestProvider();
   const metadataMap = setMetadataMap(keyName, metadata);
@@ -39,7 +45,7 @@ export const deployMetadataCarrier = async ({
     console.log("Waiting for confirmation on Metadata Carrier contract...", t);
     const c = await t.contract();
     console.log("Metadata Carrier deployment completed", c);
-    return c;
+    return { contract: c, keyName, deployAddress: c.address };
   } catch (e) {
     console.log("error ", e);
   }

@@ -1,10 +1,8 @@
-import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import {
   MetadataStorageState,
   Token,
 } from "../../../services/contracts/baseDAO/treasuryDAO/types";
 import {
-  Contract,
   MigrationParams,
 } from "../../../services/contracts/baseDAO/types";
 import { TokenHolder } from "./types";
@@ -25,14 +23,12 @@ export const getTokensInfo = (
 
 export const fromStateToTreasuryStorage = (
   info: MigrationParams,
-  carrier: Contract,
-  carrierParams: MetadataCarrierParameters
 ) => {
   const membersTokenAllocation = info.memberSettings.tokenHolders.map(
     (holder: TokenHolder) => ({
       address: holder.address,
       amount: holder.balance.toString(),
-      tokenId: "1",
+      tokenId: "0",
     })
   );
 
@@ -54,11 +50,7 @@ export const fromStateToTreasuryStorage = (
         (info.votingSettings.votingHours || 1) * SECONDS_IN_HOUR +
         (info.votingSettings.votingDays || 1) * SECONDS_IN_DAY +
         (info.votingSettings.votingMinutes || 1) * SECONDS_IN_MINUTE,
-    },
-    metadataCarrierDeploymentData: {
-      deployAddress: carrier ? carrier.address : "",
-      keyName: carrierParams.keyName,
-    },
+    }
   };
 
   return storageData;

@@ -46,7 +46,7 @@ export const deployTreasuryDAO = async ({
     votingPeriod,
   },
   metadataCarrierDeploymentData,
-}: TreasuryParams): Promise<Contract> => {
+}: TreasuryParams): Promise<Contract | undefined> => {
   const ledger = setMembersAllocation(membersTokenAllocation);
   const metadata = setMetadata(metadataCarrierDeploymentData);
 

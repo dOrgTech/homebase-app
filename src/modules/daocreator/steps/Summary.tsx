@@ -1,8 +1,6 @@
 import { Box, Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
-import { useDeployer } from "../hooks/useDeployer";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, TokenHolder } from "../state/types";
 
@@ -59,8 +57,6 @@ export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
   const { activeStep } = state;
 
-  const deploy = useDeployer();
-
   const goToVoting = () => {
     dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
     dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
@@ -76,7 +72,6 @@ export const Summary = (): JSX.Element => {
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          deploy();
           dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
         },
         text: "LAUNCH",

@@ -5,10 +5,12 @@ import { getLedgerAddresses } from "../../bakingBad/ledger";
 import { getStorage } from "../../bakingBad/storage";
 import { Network } from "../../beacon/context";
 import { getDAOListMetadata } from "./metadataCarrier";
-import { DAOItem, ProposeParams } from "./types";
+import { DAOItem, OriginateTreasuryParams, ProposeParams } from "./types";
 import { getProposals } from "../../bakingBad/proposals";
 import { Proposal } from "../../bakingBad/proposals/types";
 import { Ledger } from "../../bakingBad/ledger/types";
+import { deployMetadataCarrier } from "./metadataCarrier/deploy";
+import { deployTreasuryDAO } from "./treasuryDAO/deploy";
 
 const getContract = async (tezos: TezosToolkit, contractAddress: string) => {
   return await tezos.wallet.at(contractAddress, tzip16);
@@ -19,6 +21,7 @@ export const getDAOs = async (
   tezos: TezosToolkit | undefined,
   network: Network
 ): Promise<DAOItem[]> => {
+  console.log(addresses)
   if (!tezos) {
     return [];
   }
@@ -40,6 +43,8 @@ export const getDAOInfoFromContract = async (
 
   return {
     ...metadata,
+    address: contractAddress,
+    ...storage,
     ledger,
   };
 };
@@ -64,6 +69,30 @@ export const getDAOTokenHolders = async (
   return ledger;
 };
 
+export const doDAOOriginateTreasury = async ({
+  metadataParams,
+  treasuryParams,
+}: OriginateTreasuryParams) => {
+  const metadata = await deployMetadataCarrier(metadataParams);
+
+  if (!metadata) {
+    throw new Error(
+      `Could not deploy TreasuryDAO because MetadataCarrier contract deployment failed`
+    );
+  }
+
+  const treasury = await deployTreasuryDAO({
+    ...treasuryParams,
+    metadataCarrierDeploymentData: metadata,
+  });
+
+  if (!treasury) {
+    throw new Error(`Error deploying TreasuryDAO`);
+  }
+
+  return treasury;
+};
+
 export const doDAOPropose = async ({
   contractAddress,
   tezos,
@@ -85,4 +114,12 @@ export const doDAOPropose = async ({
     .send();
 
   return result;
+};
+
+export const getDAO = async (
+  address: string,
+  tezos: TezosToolkit,
+  network: Network
+): Promise<DAOItem> => {
+  return await getDAOInfoFromContract(address, tezos, network);
 };

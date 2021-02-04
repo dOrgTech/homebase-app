@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, Dispatch, useMemo } from "react";
-import useLocalStorage from "../../../hooks/useLocalStorage";
+import useLocalStorage from "../../common/hooks/useLocalStorage";
 import { MigrationParams } from "../../../services/contracts/baseDAO/types";
 import {
   CreatorAction,

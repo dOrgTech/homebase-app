@@ -1,7 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { Button, Grid, styled, Typography } from "@material-ui/core";
 import Rocket from "../../../assets/img/rocket.svg";
 import { CreatorContext } from "../state/context";
+import { useOriginateTreasury } from "../../../services/contracts/baseDAO/hooks/useOriginateTreasury";
+import { fromStateToTreasuryStorage, getTokensInfo } from "../state/utils";
+import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
+import { MigrationParams } from "../../../services/contracts/baseDAO/types";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
@@ -13,7 +17,41 @@ const WaitingText = styled(Typography)({
 
 export const Review: React.FC = () => {
   const { state } = useContext(CreatorContext);
-  const { contract, deploying } = state.deploymentStatus;
+  const info: MigrationParams = state.data;
+  const { frozenToken, unfrozenToken } = getTokensInfo(info);
+  const metadataCarrierParams: MetadataCarrierParameters = useMemo(
+    () => ({
+      keyName: info.orgSettings.name,
+      metadata: {
+        frozenToken,
+        unfrozenToken,
+        description: info.orgSettings.description,
+        authors: [info.memberSettings.administrator],
+      },
+    }),
+    [
+      frozenToken,
+      info.memberSettings.administrator,
+      info.orgSettings.description,
+      info.orgSettings.name,
+      unfrozenToken,
+    ]
+  );
+
+  const { mutate, isLoading, error, data } = useOriginateTreasury();
+
+  useEffect(() => {
+    (async () => {
+      if (!data && info && metadataCarrierParams)
+        mutate({
+          metadataParams: metadataCarrierParams,
+          treasuryParams: fromStateToTreasuryStorage(info),
+        });
+    })();
+  }, []);
+
+  console.log(error);
+
   return (
     <>
       <Grid
@@ -33,7 +71,7 @@ export const Review: React.FC = () => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {deploying ? (
+          {isLoading ? (
             <WaitingText variant="subtitle1" color="textSecondary">
               Waiting for confirmation...
             </WaitingText>
@@ -43,7 +81,7 @@ export const Review: React.FC = () => {
                 Your DAO has been deployed!
               </WaitingText>
               <WaitingText variant="subtitle1" color="textSecondary">
-                {contract}
+                {data?.address}
               </WaitingText>
               <Button>Go to my DAO</Button>
             </>

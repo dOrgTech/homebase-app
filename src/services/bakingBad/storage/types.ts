@@ -2,7 +2,8 @@ import { NamedMapNumberValue, NamedMapValue, UnnamedMapValue } from "../types";
 
 export interface Storage {
   //TODO: add more fields
-
+  votingPeriod: number;
+  quorumTreshold: number;
   proposalsMapNumber: number;
   ledgerMapNumber: number;
 }
