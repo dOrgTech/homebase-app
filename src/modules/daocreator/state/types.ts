@@ -120,14 +120,16 @@ export type VotingSettings = {
   votingMinutes: number;
   proposeStakeRequired: number;
   proposeStakePercentage: number;
-  voteStakeRequired: number;
-  voteStakePercentage: number;
-  minStake: number;
+  frozenScaleValue: number;
+  frozenDivisionValue: number;
+  minXtzAmount: number;
+  maxXtzAmount: number;
+  maxProposalSize: number;
+  quorumTreshold: number;
 };
 
 export type MemberSettings = {
   tokenHolders: TokenHolder[];
-  maxAgent: number;
   administrator: string;
 };
 
@@ -147,13 +149,15 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     votingMinutes: 0,
     proposeStakeRequired: 0,
     proposeStakePercentage: 0,
-    voteStakeRequired: 0,
-    voteStakePercentage: 0,
-    minStake: 0,
+    frozenScaleValue: 0,
+    frozenDivisionValue: 1,
+    minXtzAmount: 0,
+    maxXtzAmount: 0,
+    maxProposalSize: 0,
+    quorumTreshold: 0,
   },
   memberSettings: {
     tokenHolders: [],
-    maxAgent: 0,
     administrator: "",
   },
 };

@@ -7,9 +7,10 @@ const Container = styled(Grid)({
   padding: 2,
 });
 
-export const TokenHoldersRow: React.FC<TokenHolder> = ({
+export const TokenHoldersRow: React.FC<TokenHolder & { symbol: string }> = ({
   address,
   balance,
+  symbol
 }) => {
   return (
     <Container
@@ -30,7 +31,7 @@ export const TokenHoldersRow: React.FC<TokenHolder> = ({
       </Grid>
       <Grid item xs={6}>
         <Typography variant="subtitle1" color="textSecondary" align="right">
-          {balance} MGT
+          {balance} {symbol}
         </Typography>
       </Grid>
     </Container>

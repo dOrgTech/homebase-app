@@ -50,7 +50,6 @@ const CustomInputContainer = styled(Grid)({
 const AdditionContainer = styled(Grid)({
   border: "1px solid #3D3D3D",
   height: 62,
-  marginTop: 14,
 });
 
 const GridItemCenter = styled(Grid)({
@@ -96,6 +95,9 @@ const CustomSliderValue = styled(withTheme(Paper))((props) => ({
   boxShadow: "none",
   height: 62,
   border: "1px solid #3D3D3D",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   borderRadius: 0,
   background: props.theme.palette.primary.main,
 }));
@@ -184,7 +186,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
-              ></Field>{" "}
+              ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography color="textSecondary">days</Typography>
@@ -207,7 +209,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
-              ></Field>{" "}
+              ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography color="textSecondary">hours</Typography>
@@ -230,7 +232,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
-              ></Field>{" "}
+              ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography color="textSecondary">minutes</Typography>
@@ -252,7 +254,12 @@ const GovernanceForm = ({
         </Typography>
       </SecondContainer>
 
-      <Grid container direction="row" alignItems="center">
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
         <AdditionContainer item xs={3}>
           <ItemContainer
             container
@@ -266,7 +273,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
-              ></Field>{" "}
+              ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
               <Typography color="textSecondary">
@@ -292,26 +299,23 @@ const GovernanceForm = ({
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item xs={9}>
+            <GridItemCenter item>
               <Field
                 name="proposeStakePercentage"
                 type="number"
                 placeholder="00"
                 component={TextField}
-              ></Field>{" "}
-            </GridItemCenter>
-            <GridItemCenter item xs={2}>
-              <Typography color="textSecondary">%</Typography>
+              ></Field>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposeStakePercentage && touched.proposeStakePercentage ? (
             <ErrorText>{errors.proposeStakePercentage}</ErrorText>
           ) : null}
         </AdditionContainer>
-        <Grid item xs={3}>
+        <Grid item xs={5}>
           <Grid item container>
             <Title variant="subtitle1" color="textSecondary">
-              of Proposal Value
+              * Proposal size
             </Title>
           </Grid>
         </Grid>
@@ -323,12 +327,45 @@ const GovernanceForm = ({
           variant="subtitle1"
           color="textSecondary"
         >
-          Required Stake to Vote
+          Returned Stake After Proposal Rejection
         </Typography>
+
+        <Grid container direction="row" alignItems="center" spacing={1}>
+          <GridNoPadding item xs={8}>
+            <Field name="frozenScaleValue">
+              {() => (
+                <StyledSlider
+                  value={getIn(values, "frozenScaleValue")}
+                  onChange={(value: any, newValue: any) =>
+                    setFieldValue("frozenScaleValue", newValue)
+                  }
+                />
+              )}
+            </Field>
+          </GridNoPadding>
+          <GridNoPadding item xs={4}>
+            <CustomSliderValue>
+              <Value variant="subtitle1" color="textSecondary">
+                {getIn(values, "frozenScaleValue")}% of Frozen {orgSettings.symbol}
+              </Value>
+            </CustomSliderValue>
+          </GridNoPadding>
+        </Grid>
       </SecondContainer>
 
-      <Grid container direction="row" alignItems="center">
-        <AdditionContainer item xs={3}>
+      <SpacingContainer direction="row" container alignItems="center">
+        <Typography variant="subtitle1" color="textSecondary">
+          Transfer Amounts
+        </Typography>
+      </SpacingContainer>
+
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={4}>
           <ItemContainer
             container
             direction="row"
@@ -337,91 +374,118 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="voteStakeRequired"
+                name="minXtzAmount"
                 type="number"
                 placeholder="00"
                 component={TextField}
-              ></Field>{" "}
+              ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">
-                {orgSettings.symbol}
-              </Typography>
+              <Typography color="textSecondary">Min. XTZ</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voteStakeRequired && touched.voteStakeRequired ? (
-            <ErrorText>{errors.voteStakeRequired}</ErrorText>
+          {errors.minXtzAmount && touched.minXtzAmount ? (
+            <ErrorText>{errors.minXtzAmount}</ErrorText>
           ) : null}
         </AdditionContainer>
-        <Grid item xs={1}>
-          <Grid item container justify="center">
-            <Typography variant="subtitle1" color="textSecondary">
-              +
-            </Typography>
-          </Grid>
-        </Grid>
-        <AdditionContainer item xs={2}>
+        <AdditionContainer item xs={4}>
           <ItemContainer
             container
             direction="row"
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item xs={9}>
+            <GridItemCenter item xs={6}>
               <Field
-                name="voteStakePercentage"
+                name="maxXtzAmount"
                 type="number"
                 placeholder="00"
                 component={TextField}
-              ></Field>{" "}
+              ></Field>
             </GridItemCenter>
-            <GridItemCenter item xs={2}>
-              <Typography color="textSecondary">%</Typography>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">Max. XTZ </Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.voteStakePercentage && touched.voteStakePercentage ? (
-            <ErrorText>{errors.voteStakePercentage}</ErrorText>
+          {errors.maxXtzAmount && touched.maxXtzAmount ? (
+            <ErrorText>{errors.maxXtzAmount}</ErrorText>
           ) : null}
         </AdditionContainer>
-        <Grid item xs={3}>
-          <Grid item container>
-            <Title variant="subtitle1" color="textSecondary">
-              of Proposal Value
-            </Title>
-          </Grid>
-        </Grid>
       </Grid>
 
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
-          Minimum Stake{" "}
+          Quorum Treshold
         </Typography>
-        <Title variant="subtitle2" color="textSecondary">
-          (% of proposal value)
-        </Title>
       </SpacingContainer>
 
-      <LastElement container direction="row" alignItems="center" spacing={1}>
-        <GridNoPadding item xs={10}>
-          <Field name="minStake">
-            {() => (
-              <StyledSlider
-                value={getIn(values, "minStake")}
-                onChange={(value: any, newValue: any) =>
-                  setFieldValue("minStake", newValue)
-                }
-              />
-            )}
-          </Field>
-        </GridNoPadding>
-        <GridNoPadding item xs={2}>
-          <CustomSliderValue>
-            <Value variant="subtitle1" color="textSecondary">
-              {getIn(values, "minStake")}%
-            </Value>
-          </CustomSliderValue>
-        </GridNoPadding>
-      </LastElement>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="quorumTreshold"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">{orgSettings.symbol}</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.quorumTreshold && touched.quorumTreshold ? (
+            <ErrorText>{errors.quorumTreshold}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+      </Grid>
+
+      <SpacingContainer direction="row" container alignItems="center">
+        <Typography variant="subtitle1" color="textSecondary">
+          Maximum Proposal Size
+        </Typography>
+      </SpacingContainer>
+
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14, marginBottom: 37 }}
+      >
+        <AdditionContainer item xs={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="maxProposalSize"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">{orgSettings.symbol}</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.maxProposalSize && touched.maxProposalSize ? (
+            <ErrorText>{errors.maxProposalSize}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+      </Grid>
     </>
   );
 };

@@ -5,7 +5,7 @@ import { TezosToolkit } from "@taquito/taquito";
 
 type WalletConnectReturn = {
   tezos: TezosToolkit | undefined;
-  connect: () => void;
+  connect: () => Promise<TezosToolkit>;
   account: string | undefined;
   network: Network;
 };
@@ -39,6 +39,8 @@ export const useTezos = (): WalletConnectReturn => {
           tezos: toolkit,
         },
       });
+
+      return toolkit;
     }, [dispatch]),
     account,
     network,

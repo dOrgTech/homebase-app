@@ -39,17 +39,17 @@ export const fromStateToTreasuryStorage = (
 
       frozenScaleValue: info.votingSettings.proposeStakePercentage,
       frozenExtraValue: info.votingSettings.proposeStakeRequired,
-      slashScaleValue: info.votingSettings.voteStakePercentage,
-      slashDivisionValue: info.votingSettings.voteStakeRequired,
+      slashScaleValue: info.votingSettings.frozenScaleValue,
+      slashDivisionValue: 100,
 
-      minXtzAmount: info.votingSettings.minStake,
-      maxXtzAmount: info.memberSettings.maxAgent || 0,
-      maxProposalSize: 100, // maybe this is max s ?
-      quorumTreshold: 4, // ask for this
+      minXtzAmount: info.votingSettings.minXtzAmount,
+      maxXtzAmount: info.votingSettings.maxXtzAmount || 0,
+      maxProposalSize: info.votingSettings.maxProposalSize,
+      quorumTreshold: info.votingSettings.quorumTreshold,
       votingPeriod:
-        (info.votingSettings.votingHours || 1) * SECONDS_IN_HOUR +
-        (info.votingSettings.votingDays || 1) * SECONDS_IN_DAY +
-        (info.votingSettings.votingMinutes || 1) * SECONDS_IN_MINUTE,
+        (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
+        (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
+        (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
     }
   };
 

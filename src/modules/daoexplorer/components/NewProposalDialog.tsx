@@ -18,6 +18,9 @@ import { TextField } from "formik-material-ui";
 
 import { AppState } from "../../../store";
 import { Receipt } from "../../../store/funds/types";
+import { usePropose } from "../../../services/contracts/baseDAO/hooks/usePropose";
+import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
+import { useParams } from "react-router";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
   height: 53,
@@ -135,6 +138,9 @@ export const NewProposalDialog: React.FC = () => {
   const [totalReceipt, setTotalReceipt] = React.useState(
     storageDaoInformation.receipts
   );
+  const { mutate, data, error, isLoading } = usePropose();
+  const { id } = useParams<{ id: string }>();
+  const { data: dao } = useDAO(id);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -153,7 +159,21 @@ export const NewProposalDialog: React.FC = () => {
       );
       console.log(actualReceipt);
     }
+
+    if (dao) {
+      mutate({
+        contractAddress: dao.address,
+        contractParams: {
+          transfers: [],
+          tokensToFreeze: 5,
+          agoraPostId: 0
+        },
+      });
+    }
   };
+
+  console.log(data, error, isLoading)
+
   return (
     <div>
       <StyledButton variant="outlined" onClick={handleClickOpen}>
