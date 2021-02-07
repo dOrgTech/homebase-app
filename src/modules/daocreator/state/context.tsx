@@ -1,12 +1,14 @@
 import React, { createContext, useReducer, Dispatch, useMemo } from "react";
-import useLocalStorage from "../../common/hooks/useLocalStorage";
-import { MigrationParams } from "../../../services/contracts/baseDAO/types";
+import useLocalStorage from "../../../hooks/useLocalStorage";
+import {
+  INITIAL_MIGRATION_STATE,
+  MigrationParams,
+} from "../../../services/contracts/baseDAO/types";
 import {
   CreatorAction,
   CreatorState,
   StepperIndex,
   ActionTypes,
-  INITIAL_MIGRATION_STATE,
 } from "./types";
 
 const deploymentStatus = {
@@ -97,19 +99,17 @@ export const reducer = (
 };
 
 const CreatorProvider: React.FC = ({ children }) => {
-  const [DAOParams, updateCache] = useLocalStorage<MigrationParams>(
+  const [data, updateCache] = useLocalStorage<MigrationParams>(
     "creatorParams",
     INITIAL_STATE.data
   );
 
-  console.log(DAOParams);
   const stateWithCache = {
     ...INITIAL_STATE,
-    data: DAOParams,
+    data,
   };
 
   const [state, dispatch] = useReducer(reducer, stateWithCache);
-  console.log(state.data);
   const contextValue = useMemo(() => {
     return { state, dispatch };
   }, [state, dispatch]);

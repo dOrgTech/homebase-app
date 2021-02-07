@@ -1,4 +1,9 @@
-import { MigrationParams } from "../../../services/contracts/baseDAO/types";
+import {
+  MemberSettings,
+  MigrationParams,
+  OrgSettings,
+  VotingSettings,
+} from "../../../services/contracts/baseDAO/types";
 
 export interface NavigationBarProps {
   back?: {
@@ -107,57 +112,3 @@ export interface TokenHolder {
   address: string;
   balance: number;
 }
-
-export type OrgSettings = {
-  name: string;
-  symbol: string;
-  description: string;
-};
-
-export type VotingSettings = {
-  votingDays: number;
-  votingHours: number;
-  votingMinutes: number;
-  proposeStakeRequired: number;
-  proposeStakePercentage: number;
-  frozenScaleValue: number;
-  frozenDivisionValue: number;
-  minXtzAmount: number;
-  maxXtzAmount: number;
-  maxProposalSize: number;
-  quorumTreshold: number;
-};
-
-export type MemberSettings = {
-  tokenHolders: TokenHolder[];
-  administrator: string;
-};
-
-export type Settings = OrgSettings | VotingSettings | MemberSettings;
-
-export type ErrorValues<T> = Partial<Record<keyof T, string>>;
-
-export const INITIAL_MIGRATION_STATE: MigrationParams = {
-  orgSettings: {
-    name: "",
-    symbol: "",
-    description: "",
-  },
-  votingSettings: {
-    votingDays: 0,
-    votingHours: 0,
-    votingMinutes: 0,
-    proposeStakeRequired: 0,
-    proposeStakePercentage: 0,
-    frozenScaleValue: 0,
-    frozenDivisionValue: 1,
-    minXtzAmount: 0,
-    maxXtzAmount: 0,
-    maxProposalSize: 0,
-    quorumTreshold: 0,
-  },
-  memberSettings: {
-    tokenHolders: [],
-    administrator: "",
-  },
-};

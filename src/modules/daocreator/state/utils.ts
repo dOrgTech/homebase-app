@@ -23,6 +23,8 @@ export const getTokensInfo = (
 
 export const fromStateToTreasuryStorage = (
   info: MigrationParams,
+  carrierAddress: string,
+  carrierParams: MetadataCarrierParameters
 ) => {
   const membersTokenAllocation = info.memberSettings.tokenHolders.map(
     (holder: TokenHolder) => ({
@@ -47,10 +49,14 @@ export const fromStateToTreasuryStorage = (
       maxProposalSize: info.votingSettings.maxProposalSize,
       quorumTreshold: info.votingSettings.quorumTreshold,
       votingPeriod:
-        (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
-        (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
-        (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
-    }
+        (info.votingSettings.votingHours || 1) * SECONDS_IN_HOUR +
+        (info.votingSettings.votingDays || 1) * SECONDS_IN_DAY +
+        (info.votingSettings.votingMinutes || 1) * SECONDS_IN_MINUTE,
+    },
+    metadataCarrierDeploymentData: {
+      deployAddress: carrierAddress,
+      keyName: carrierParams.keyName,
+    },
   };
 
   return storageData;

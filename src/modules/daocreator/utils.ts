@@ -1,8 +1,8 @@
 import {
+  ErrorValues,
   OrgSettings,
   VotingSettings,
 } from "../../services/contracts/baseDAO/types";
-import { ErrorValues } from "./state/types";
 
 export const handleOrgFormErrors = (
   values: OrgSettings

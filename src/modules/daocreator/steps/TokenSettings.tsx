@@ -10,7 +10,8 @@ import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 
 import { CreatorContext } from "../state/context";
-import { ActionTypes, MemberSettings, TokenHolder } from "../state/types";
+import { ActionTypes, TokenHolder } from "../state/types";
+import { MemberSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -308,9 +309,16 @@ const TokenSettingsForm = ({
 };
 
 export const TokenSettings = (): JSX.Element => {
-  const { dispatch, state } = useContext(CreatorContext);
+  const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { memberSettings } = state.data;
-  const saveStepInfo = (values: MemberSettings, { setSubmitting }: any) => {
+  const saveStepInfo = (
+    values: MemberSettings,
+    { setSubmitting }: { setSubmitting: (b: boolean) => void }
+  ) => {
+    updateCache({
+      ...state.data,
+      memberSettings: values,
+    });
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_MEMBERS_SETTINGS, members: values });
     dispatch({ type: ActionTypes.UPDATE_STEP, step: 3 });

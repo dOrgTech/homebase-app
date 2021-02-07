@@ -10,8 +10,9 @@ import React, { useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 import { CreatorContext } from "../state/context";
-import { ActionTypes, OrgSettings } from "../state/types";
+import { ActionTypes } from "../state/types";
 import { handleOrgFormErrors } from "../utils";
+import { OrgSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
