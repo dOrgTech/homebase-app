@@ -14,7 +14,6 @@ import { Field, Form, Formik, getIn } from "formik";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 import { handleGovernanceFormErrors } from "../utils";
-import useLocalStorage from "../../../hooks/useLocalStorage";
 import { VotingSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({

@@ -1,9 +1,8 @@
 import React, { createContext, useReducer, Dispatch, useMemo } from "react";
-import useLocalStorage from "../../../hooks/useLocalStorage";
 import {
-  INITIAL_MIGRATION_STATE,
   MigrationParams,
 } from "../../../services/contracts/baseDAO/types";
+import useLocalStorage from "../../common/hooks/useLocalStorage";
 import {
   CreatorAction,
   CreatorState,
@@ -13,6 +12,31 @@ import {
 
 const deploymentStatus = {
   deploying: false,
+};
+
+export const INITIAL_MIGRATION_STATE: MigrationParams = {
+  orgSettings: {
+    name: "",
+    symbol: "",
+    description: "",
+  },
+  votingSettings: {
+    votingDays: 0,
+    votingHours: 0,
+    votingMinutes: 0,
+    proposeStakeRequired: 0,
+    proposeStakePercentage: 0,
+    frozenScaleValue: 0,
+    frozenDivisionValue: 1,
+    minXtzAmount: 0,
+    maxXtzAmount: 0,
+    maxProposalSize: 0,
+    quorumTreshold: 0,
+  },
+  memberSettings: {
+    tokenHolders: [],
+    administrator: "",
+  },
 };
 
 export const INITIAL_STATE: CreatorState = {

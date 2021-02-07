@@ -1,10 +1,9 @@
+import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import {
   MetadataStorageState,
   Token,
 } from "../../../services/contracts/baseDAO/treasuryDAO/types";
-import {
-  MigrationParams,
-} from "../../../services/contracts/baseDAO/types";
+import { MigrationParams } from "../../../services/contracts/baseDAO/types";
 import { TokenHolder } from "./types";
 
 const SECONDS_IN_MINUTE = 60;
@@ -21,11 +20,7 @@ export const getTokensInfo = (
   };
 };
 
-export const fromStateToTreasuryStorage = (
-  info: MigrationParams,
-  carrierAddress: string,
-  carrierParams: MetadataCarrierParameters
-) => {
+export const fromStateToTreasuryStorage = (info: MigrationParams) => {
   const membersTokenAllocation = info.memberSettings.tokenHolders.map(
     (holder: TokenHolder) => ({
       address: holder.address,
@@ -49,13 +44,9 @@ export const fromStateToTreasuryStorage = (
       maxProposalSize: info.votingSettings.maxProposalSize,
       quorumTreshold: info.votingSettings.quorumTreshold,
       votingPeriod:
-        (info.votingSettings.votingHours || 1) * SECONDS_IN_HOUR +
-        (info.votingSettings.votingDays || 1) * SECONDS_IN_DAY +
-        (info.votingSettings.votingMinutes || 1) * SECONDS_IN_MINUTE,
-    },
-    metadataCarrierDeploymentData: {
-      deployAddress: carrierAddress,
-      keyName: carrierParams.keyName,
+        (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
+        (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
+        (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
     },
   };
 
