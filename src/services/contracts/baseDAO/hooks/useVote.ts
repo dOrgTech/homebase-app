@@ -1,25 +1,25 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
-import { doDAOPropose } from "..";
+import { doDAOVote } from "..";
 import { useTezos } from "../../../beacon/hooks/useTezos";
-import { ProposeParams } from "../types";
+import { VoteParams } from "../types";
 
-type UseProposeParams = Omit<ProposeParams, "tezos">;
+type UseVoteParams = Omit<VoteParams, "tezos">;
 
-export const usePropose = () => {
+export const useVote = () => {
   const queryClient = useQueryClient();
   const { tezos, connect } = useTezos();
 
-  return useMutation<TransactionWalletOperation, Error, UseProposeParams>(
+  return useMutation<TransactionWalletOperation, Error, UseVoteParams>(
     async (params) => {
-      return await doDAOPropose({
+      return await doDAOVote({
         ...params,
         tezos: tezos || (await connect()),
       });
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("proposals");
+        queryClient.invalidateQueries("votes");
       },
     }
   );

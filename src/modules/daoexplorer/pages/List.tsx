@@ -64,36 +64,39 @@ const GridBackground = styled(Grid)({
 
 export const DAOsList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
-  // const { data: daos, error, isLoading } = useDAOs();
+  const { data: daos, error, isLoading } = useDAOs();
 
-  // const currentDAOs = useMemo(() => {
-  //   if (daos) {
-  //     const formattedDAOs = daos.map((dao) => ({
-  //       id: dao.name,
-  //       name: dao.unfrozenToken.name,
-  //       symbol: dao.unfrozenToken.symbol,
-  //       voting_addresses: dao.ledger.length,
-  //     }));
+  console.log(daos, error, isLoading)
 
-  //     if (searchText) {
-  //       return formattedDAOs.filter((formattedDao) =>
-  //         formattedDao.name.toLowerCase().includes(searchText.toLowerCase())
-  //       );
-  //     }
+  const currentDAOs = useMemo(() => {
+    if (daos) {
+      const formattedDAOs = daos.map((dao) => ({
+        id: dao.address,
+        name: dao.unfrozenToken.name,
+        symbol: dao.unfrozenToken.symbol,
+        voting_addresses: dao.ledger.length,
+      }));
 
-  //     return formattedDAOs;
-  //   }
+      if (searchText) {
+        return formattedDAOs.filter(
+          (formattedDao) =>
+            formattedDao.name
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) ||
+            formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase())
+        );
+      }
 
-  //   return [];
-  // }, [daos, searchText]);
+      return formattedDAOs;
+    }
 
-  // console.log(daos, error, isLoading);
-  const currentDAOs = MockDAOs;
+    return [];
+  }, [daos, searchText]);
 
   const history = useHistory();
 
   const filterDAOs = (filter: string) => {
-    setSearchText(filter);
+    setSearchText(filter.trim());
   };
 
   // useEffect(() => {
@@ -137,9 +140,7 @@ export const DAOsList: React.FC = () => {
               xs={12}
               sm={6}
               key={dao.symbol}
-              onClick={() =>
-                history.push("/explorer/dao/" + dao.id, { dao: dao })
-              }
+              onClick={() => history.push(`/explorer/dao/${dao.id}`)}
             >
               <Typography variant="subtitle1" color="secondary">
                 {dao.symbol}

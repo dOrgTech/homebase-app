@@ -1,8 +1,6 @@
 import { Box, Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
-import { useDeployer } from "../hooks/useDeployer";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, TokenHolder } from "../state/types";
 
@@ -59,8 +57,6 @@ export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
   const { activeStep } = state;
 
-  const deploy = useDeployer();
-
   const goToVoting = () => {
     dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
     dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
@@ -76,7 +72,6 @@ export const Summary = (): JSX.Element => {
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          deploy();
           dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
         },
         text: "LAUNCH",
@@ -166,7 +161,13 @@ export const Summary = (): JSX.Element => {
         <TokenHoldersContainer>
           {state.data.memberSettings.tokenHolders.map(
             (holder: TokenHolder, i: number) => {
-              return <TokenHoldersRow key={`holder-${i}`} {...holder} />;
+              return (
+                <TokenHoldersRow
+                  key={`holder-${i}`}
+                  {...holder}
+                  symbol={state.data.orgSettings.symbol}
+                />
+              );
             }
           )}
         </TokenHoldersContainer>
@@ -181,24 +182,6 @@ export const Summary = (): JSX.Element => {
             >
               EDIT
             </ContainerButton>
-          </Grid>
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Minimum Stake
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
-                  {state.data.votingSettings.minStake}%
-                </Typography>
-              </Grid>
-            </UnderlinedGrid>
           </Grid>
 
           <Grid item xs={12}>
@@ -217,6 +200,124 @@ export const Summary = (): JSX.Element => {
                   {state.data.votingSettings.votingDays}d{" "}
                   {state.data.votingSettings.votingHours}h{" "}
                   {state.data.votingSettings.votingMinutes}m
+                </Typography>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
+                  Stake required to propose
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.votingSettings.proposeStakePercentage} * Proposal
+                  size + {state.data.votingSettings.proposeStakeRequired} (
+                  {state.data.orgSettings.symbol})
+                </Typography>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
+                  Stake returned if rejected
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.votingSettings.frozenScaleValue}% of locked{" "}
+                  {state.data.orgSettings.symbol}
+                </Typography>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
+                  Transfer maximum XTZ amount
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.votingSettings.maxXtzAmount} XTZ
+                </Typography>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
+                  Transfer minimum XTZ amount
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.votingSettings.minXtzAmount} XTZ
+                </Typography>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
+                  Quorum treshold
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.votingSettings.quorumTreshold}{" "}
+                  {state.data.orgSettings.symbol}
+                </Typography>
+              </Grid>
+            </UnderlinedGrid>
+          </Grid>
+
+          <Grid item xs={12}>
+            <UnderlinedGrid item container direction="row" alignItems="center">
+              <Grid item xs={6}>
+                <Typography variant="body2" color="textSecondary">
+                  Maximum proposal size
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.votingSettings.maxProposalSize}
                 </Typography>
               </Grid>
             </UnderlinedGrid>

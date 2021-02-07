@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
@@ -10,8 +10,10 @@ import {
   ProposalTableRow,
   ProposalTableRowData,
 } from "../components/ProposalTableRow";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import { TokenHoldersDialog } from "../components/TokenHoldersDialog";
+import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
+import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
 
 const SideBar = styled(Grid)({
   width: 102,
@@ -106,34 +108,46 @@ const ProposalTableHeadText: React.FC = ({ children }) => (
 );
 
 const proposals: ProposalTableRowData[] = [
-  {
-    title: "Contribute to the fund",
-    number: 43,
-    date: "11/06/2020",
-    cycle: 7,
-    support: 65,
-    color: "success",
-  },
-  {
-    title: "Contribute to the fund",
-    number: 42,
-    date: "11/06/2020",
-    cycle: 7,
-    support: 65,
-    color: "warning",
-  },
-  {
-    title: "Contribute to the fund",
-    number: 41,
-    date: "11/06/2020",
-    cycle: 7,
-    support: 65,
-    color: "danger",
-  },
+
 ];
 
 export const DAO: React.FC = () => {
   const history = useHistory();
+  const { id } = useParams<{ id: string }>();
+  const { data, isLoading, isError } = useDAO(id);
+
+  const name = data && data.unfrozenToken.name;
+  const description = data && data.description;
+  const symbol = data && data.unfrozenToken.symbol.toUpperCase();
+  const amountLocked = useMemo(() => {
+    if (!data) {
+      return 0;
+    }
+
+    return data.ledger.reduce((acc, current) => {
+      const frozenBalance = current.balances[1] || 0;
+      return acc + frozenBalance;
+    }, 0);
+  }, [data]);
+
+  const addressesWithUnfrozenBalance = useMemo(() => {
+    if (!data) {
+      return 0;
+    }
+
+    return data.ledger.reduce((acc, current) => {
+      const frozenBalance = current.balances[0];
+      if (frozenBalance) {
+        return acc + 1;
+      }
+
+      return acc;
+    }, 0);
+  }, [data]);
+
+  const { data: proposalss } = useProposals(data ? data.address : "");
+
+  console.log(proposalss)
 
   return (
     <PageLayout container wrap="nowrap">
@@ -150,19 +164,17 @@ export const DAO: React.FC = () => {
           <DAOInfoTitleAndDesc item>
             <Box>
               <Typography variant="subtitle2" color="secondary">
-                TEZDAO
+                {symbol}
               </Typography>
             </Box>
             <Box paddingBottom="20px">
               <Typography variant="h1" color="textSecondary">
-                TezDAO
+                {name}
               </Typography>
             </Box>
             <Box>
               <Typography variant="body1" color="textSecondary">
-                The TezDAO was founded as a partnership between some of the most
-                known Tezos Influencers. The purpose of this DAO is to manage a
-                treasury of funds to further the organization’s goals.
+                {description}
               </Typography>
             </Box>
           </DAOInfoTitleAndDesc>
@@ -228,12 +240,12 @@ export const DAO: React.FC = () => {
               <Grid item>
                 <Box>
                   <Typography variant="subtitle2" color="secondary">
-                    MGTO Locked
+                    {symbol} Locked
                   </Typography>
                 </Box>
                 <Box padding="12px 0">
                   <Typography variant="h3" color="textSecondary">
-                    21,202
+                    {amountLocked}
                   </Typography>
                 </Box>
               </Grid>
@@ -259,7 +271,7 @@ export const DAO: React.FC = () => {
                 VOTING ADDRESSES
               </Typography>
               <Typography variant="h3" color="textSecondary">
-                215
+                {addressesWithUnfrozenBalance}
               </Typography>
             </Box>
           </VotingAddresses>

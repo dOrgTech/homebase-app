@@ -38,10 +38,22 @@ export type ProposalsDTO = {
 
 export interface Proposal {
   id: string;
-  upVotes: string;
-  downVotes: string;
+  upVotes: number;
+  downVotes: number;
   startDate: string;
   agoraPostId: string;
   proposer: string;
   proposerFrozenTokens: string;
 }
+
+export enum ProposalStatus {
+  ACTIVE = "active",
+  PASSED = "passed",
+  REJECTED = "rejected",
+  DROPPED = "dropped",
+}
+
+export type ProposalWithStatus = Proposal & {
+  cycle: number;
+  status: ProposalStatus;
+};

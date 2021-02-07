@@ -10,8 +10,8 @@ export interface DaoInformation {
 
 export const initialState: DaoInformation = {
   description: "",
-  fee: 15,
-  receipts: [{ recipient: "", amount: undefined }],
+  fee: 0,
+  receipts: [{ recipient: "", amount: 0 }],
 };
 
 export default createReducer(initialState, (builder) =>

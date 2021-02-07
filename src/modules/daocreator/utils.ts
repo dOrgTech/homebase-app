@@ -23,8 +23,9 @@ export const handleGovernanceFormErrors = (values: VotingSettings) => {
     votingMinutes,
     proposeStakePercentage,
     proposeStakeRequired,
-    voteStakePercentage,
-    voteStakeRequired,
+    maxProposalSize,
+    minXtzAmount,
+    maxXtzAmount,
   } = values;
 
   if (!votingDays && !votingHours && !votingMinutes) {
@@ -34,8 +35,16 @@ export const handleGovernanceFormErrors = (values: VotingSettings) => {
     errors.proposeStakePercentage = "The sum must be greater than 0";
   }
 
-  if (!voteStakePercentage && !voteStakeRequired) {
-    errors.voteStakePercentage = "The sum must be greater than 0";
+  if (!maxProposalSize || maxProposalSize <= 0) {
+    errors.maxProposalSize = "Must be greater than 0";
+  }
+
+  if (!minXtzAmount || minXtzAmount <= 0) {
+    errors.minXtzAmount = "Must be greater than 0";
+  }
+
+  if (!maxXtzAmount || maxXtzAmount <= 0) {
+    errors.maxXtzAmount = "Must be greater than 0";
   }
 
   return errors;

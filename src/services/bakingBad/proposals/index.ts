@@ -9,12 +9,12 @@ export const getProposals = async (
 ): Promise<Proposal[]> => {
   const url = `${API_URL}/bigmap/${network}/${proposalsMapNumber}/keys`;
 
-  const { json, ok } = await fetch(url);
-  if (!ok) {
+  const response = await fetch(url);
+  if (!response.ok) {
     throw new Error("Failed to fetch proposals from BakingBad API");
   }
 
-  const response: ProposalsDTO = await json();
+  const result: ProposalsDTO = await response.json();
 
-  return dtoToProposals(response);
+  return dtoToProposals(result);
 };

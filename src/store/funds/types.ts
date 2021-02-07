@@ -6,5 +6,5 @@ export interface FundsInfo {
 
 export interface Receipt {
   recipient: string;
-  amount: number | undefined;
+  amount: number;
 }

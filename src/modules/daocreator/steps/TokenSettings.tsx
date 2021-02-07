@@ -287,33 +287,6 @@ const TokenSettingsForm = ({
         <Grid item xs={12}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
-            Maximum Agent Spend Per Cycle{" "}
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <CustomInputContainer>
-            <Field
-              component={CustomFormikTextField}
-              type="number"
-              name="maxAgent"
-              placeholder="00"
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">TKN</InputAdornment>
-                ),
-              }}
-            />
-          </CustomInputContainer>
-          {errors.maxAgent && touched.maxAgent ? (
-            <ErrorText>{errors.maxAgent}</ErrorText>
-          ) : null}
-        </Grid>
-      </SecondContainer>
-
-      <SecondContainer item container direction="row" alignItems="center">
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
             Administrator{" "}
           </Typography>
         </Grid>

@@ -5,13 +5,18 @@ import {
   Typography,
   LinearProgress,
 } from "@material-ui/core";
-import React from "react";
+import React, { useMemo } from "react";
+import { useParams } from "react-router-dom";
 import { NewProposalDialog } from "../components/NewProposalDialog";
 import {
   ProposalTableRowData,
   ProposalTableRow,
+  mapProposalData,
 } from "../components/ProposalTableRow";
 import { SideBar } from "../components/SideBar";
+import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
+import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
+import { ProposalStatus } from "../../../services/bakingBad/proposals/types";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -94,168 +99,225 @@ const ProposalTableHeadText: React.FC = ({ children }) => (
   </Typography>
 );
 
-const proposals: ProposalTableRowData[] = [
-  {
-    title: "Contribute to the fund",
-    number: 43,
-    date: "11/06/2020",
-    cycle: 7,
-    support: 65,
-    color: "success",
-  },
-  {
-    title: "Contribute to the fund",
-    number: 42,
-    date: "11/06/2020",
-    cycle: 7,
-    support: 65,
-    color: "warning",
-  },
-  {
-    title: "Contribute to the fund",
-    number: 41,
-    date: "11/06/2020",
-    cycle: 7,
-    support: 65,
-    color: "danger",
-  },
-];
+export const Proposals: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { data: dao, error: daoError, isLoading: daoLoading } = useDAO(id);
 
-export const Proposals: React.FC = () => (
-  <>
-    <PageLayout container wrap="nowrap">
-      <SideBar />
-      <Grid item xs>
-        <MainContainer>
-          <StyledContainer container direction="row">
-            <Grid item xs={6}>
-              <Typography variant="subtitle1" color="secondary">
-                MY GREAT TOKEN
-              </Typography>
-              <Typography variant="h5" color="textSecondary">
-                Proposals
-              </Typography>
-            </Grid>
-            <JustifyEndGrid item xs={6}>
-              <NewProposalDialog />
-            </JustifyEndGrid>
-          </StyledContainer>
-        </MainContainer>
-        <StatsContainer container>
-          <TokensLocked
-            item
-            xs={6}
-            container
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item>
-                <Box>
-                  <Typography variant="subtitle2" color="secondary">
-                    MGTO Locked
-                  </Typography>
-                </Box>
-                <Box padding="12px 0">
-                  <Typography variant="h3" color="textSecondary">
-                    21,202
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item>
-                <Typography variant="subtitle2" color="secondary">
-                  View
+  const name = dao && dao.unfrozenToken.name;
+  const description = dao && dao.description;
+  const symbol = dao && dao.unfrozenToken.symbol.toUpperCase();
+  const quorumTreshold = dao && dao.quorumTreshold;
+  const amountLocked = useMemo(() => {
+    if (!dao) {
+      return 0;
+    }
+
+    return dao.ledger.reduce((acc, current) => {
+      const frozenBalance = current.balances[1] || 0;
+      return acc + frozenBalance;
+    }, 0);
+  }, [dao]);
+
+  const addressesWithUnfrozenBalance = useMemo(() => {
+    if (!dao) {
+      return 0;
+    }
+
+    return dao.ledger.reduce((acc, current) => {
+      const frozenBalance = current.balances[0];
+      if (frozenBalance) {
+        return acc + 1;
+      }
+
+      return acc;
+    }, 0);
+  }, [dao]);
+
+  const { data: proposalsData, isLoading, error } = useProposals(
+    dao && dao.address
+  );
+
+  const activeProposals = useMemo<ProposalTableRowData[]>(() => {
+    if (!proposalsData) {
+      return [];
+    }
+
+    return proposalsData
+      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
+      .map((proposal) => mapProposalData(proposal, dao?.address));
+  }, [proposalsData]);
+
+  const passedProposals = useMemo<ProposalTableRowData[]>(() => {
+    if (!proposalsData) {
+      return [];
+    }
+
+    return proposalsData
+      .filter((proposalData) => proposalData.status === ProposalStatus.PASSED)
+      .map((proposal) => mapProposalData(proposal, dao?.address));
+  }, [proposalsData]);
+
+  const allProposals = useMemo(() => {
+    if (!proposalsData) {
+      return [];
+    }
+
+    return proposalsData.map((proposal) => mapProposalData(proposal, dao?.address));
+  }, [proposalsData]);
+
+  return (
+    <>
+      <PageLayout container wrap="nowrap">
+        <SideBar />
+        <Grid item xs>
+          <MainContainer>
+            <StyledContainer container direction="row">
+              <Grid item xs={6}>
+                <Typography variant="subtitle1" color="secondary">
+                  {name}
+                </Typography>
+                <Typography variant="h5" color="textSecondary">
+                  Proposals
                 </Typography>
               </Grid>
-            </Grid>
-            <LockedTokensBar
-              variant="determinate"
-              value={60}
-              color="secondary"
-            />
-          </TokensLocked>
-          <VotingAddresses
-            item
+              <JustifyEndGrid item xs={6}>
+                <NewProposalDialog />
+              </JustifyEndGrid>
+            </StyledContainer>
+          </MainContainer>
+          <StatsContainer container>
+            <TokensLocked
+              item
+              xs={6}
+              container
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <Grid container justify="space-between" alignItems="center">
+                <Grid item>
+                  <Box>
+                    <Typography variant="subtitle2" color="secondary">
+                      {symbol} Locked
+                    </Typography>
+                  </Box>
+                  <Box padding="12px 0">
+                    <Typography variant="h3" color="textSecondary">
+                      {amountLocked}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <Typography variant="subtitle2" color="secondary">
+                    View
+                  </Typography>
+                </Grid>
+              </Grid>
+              <LockedTokensBar
+                variant="determinate"
+                value={60}
+                color="secondary"
+              />
+            </TokensLocked>
+            <VotingAddresses
+              item
+              container
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <Box>
+                <Typography variant="subtitle2" color="secondary">
+                  Voting Addresses
+                </Typography>
+                <Typography variant="h3" color="textSecondary">
+                  {addressesWithUnfrozenBalance}
+                </Typography>
+              </Box>
+            </VotingAddresses>
+            <ActiveProposals
+              item
+              xs
+              container
+              direction="column"
+              justify="center"
+            >
+              <Box>
+                <Typography variant="subtitle2" color="secondary">
+                  Active Proposals
+                </Typography>
+                <Typography variant="h3" color="textSecondary">
+                  {activeProposals?.length}
+                </Typography>
+              </Box>
+            </ActiveProposals>
+          </StatsContainer>
+          <TableContainer>
+            <TableHeader container wrap="nowrap">
+              <Grid item xs={5}>
+                <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={5}>
+                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+              </Grid>
+            </TableHeader>
+            {activeProposals.map((proposal, i) => (
+              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+            ))}
+          </TableContainer>
+          <ProposalsContainer
             container
-            direction="column"
+            direction="row"
             alignItems="center"
             justify="center"
           >
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                Voting Addresses
-              </Typography>
-              <Typography variant="h3" color="textSecondary">
-                215
-              </Typography>
-            </Box>
-          </VotingAddresses>
-          <ActiveProposals
-            item
-            xs
-            container
-            direction="column"
-            justify="center"
-          >
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                Active Proposals
-              </Typography>
-              <Typography variant="h3" color="textSecondary">
-                5
-              </Typography>
-            </Box>
-          </ActiveProposals>
-        </StatsContainer>
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={5}>
-              <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={5}>
-              <ProposalTableHeadText>{""}</ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {proposals.map((proposal, i) => (
-            <ProposalTableRow key={`proposal-${i}`} {...proposal} />
-          ))}
-        </TableContainer>
-        <ProposalsContainer
-          container
-          direction="row"
-          alignItems="center"
-          justify="center"
-        >
-          <UnderlineText
-            color="textSecondary"
-            variant="subtitle1"
-            align="center"
-          >
-            LOAD MORE
-          </UnderlineText>
-        </ProposalsContainer>
+            <UnderlineText
+              color="textSecondary"
+              variant="subtitle1"
+              align="center"
+            >
+              LOAD MORE
+            </UnderlineText>
+          </ProposalsContainer>
 
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={5}>
-              <ProposalTableHeadText>PASSED PROPOSALS</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText>{""}</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={5}>
-              <ProposalTableHeadText>{""}</ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {proposals.map((proposal, i) => (
-            <ProposalTableRow key={`proposal-${i}`} {...proposal} />
-          ))}
-        </TableContainer>
-      </Grid>
-    </PageLayout>
-  </>
-);
+          <TableContainer>
+            <TableHeader container wrap="nowrap">
+              <Grid item xs={5}>
+                <ProposalTableHeadText>PASSED PROPOSALS</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={5}>
+                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+              </Grid>
+            </TableHeader>
+            {passedProposals.map((proposal, i) => (
+              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+            ))}
+          </TableContainer>
+
+          <TableContainer>
+            <TableHeader container wrap="nowrap">
+              <Grid item xs={5}>
+                <ProposalTableHeadText>ALL PROPOSALS</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={5}>
+                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+              </Grid>
+            </TableHeader>
+            {allProposals.map((proposal, i) => (
+              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+            ))}
+          </TableContainer>
+        </Grid>
+      </PageLayout>
+    </>
+  );
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -12,12 +12,12 @@ import {
   withTheme,
   Paper,
 } from "@material-ui/core";
-import { useSelector } from "react-redux";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
-
-import { AppState } from "../../../store";
-import { Receipt } from "../../../store/funds/types";
+import { usePropose } from "../../../services/contracts/baseDAO/hooks/usePropose";
+import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
+import { useParams } from "react-router";
+import { useVote } from "../../../services/contracts/baseDAO/hooks/useVote";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
   height: 53,
@@ -63,7 +63,7 @@ const SwitchContainer = styled(Grid)({
   textAlign: "end",
 });
 
-const ReceiptActive = styled(Grid)({
+const TransferActive = styled(Grid)({
   height: 53,
   width: 51,
   display: "flex",
@@ -123,18 +123,38 @@ const CustomTextarea = styled(TextField)({
   },
 });
 
-export const NewProposalDialog: React.FC = () => {
-  const storageDaoInformation = useSelector<
-    AppState,
-    AppState["fundsInformationReducer"]
-  >((state) => state.fundsInformationReducer);
+interface Transfer {
+  recipient: string;
+  amount: 0;
+}
 
+interface Values {
+  transfers: Transfer[];
+  description: string;
+  agoraPostId: number;
+}
+
+const PROPOSAL_SIZE = 1;
+const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0 };
+const INITIAL_FORM_VALUES: Values = {
+  transfers: [EMPTY_TRANSFER],
+  description: "",
+  agoraPostId: 0,
+};
+
+export const NewProposalDialog: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [isBatch, setIsBatch] = React.useState(false);
-  const [activeReceipt, setActiveReceipt] = React.useState(1);
-  const [totalReceipt, setTotalReceipt] = React.useState(
-    storageDaoInformation.receipts
-  );
+  const [activeTransfer, setActiveTransfer] = React.useState(1);
+  const { mutate } = usePropose();
+  const { id } = useParams<{ id: string }>();
+  const { data: dao } = useDAO(id);
+  const { mutate: vote, data: voteData, error: voteError } = useVote();
+
+  const proposalFee = useMemo(() => {
+    //TODO: redo calculation when PACK ed size gets figured out
+    return dao ? dao.frozenExtraValue : 0;
+  }, [dao]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -144,21 +164,44 @@ export const NewProposalDialog: React.FC = () => {
     setOpen(false);
   };
 
-  const onSubmit = (values: any, { setSubmitting }: any) => {
-    console.log(values);
+  const onSubmit = (values: Values, { setSubmitting }: any) => {
     setSubmitting(true);
-    if (!isBatch) {
-      const actualReceipt = values.receipts.filter(
-        (_: any, index: any) => index + 1 === activeReceipt
-      );
-      console.log(actualReceipt);
+    if (dao) {
+      mutate({
+        contractAddress: dao.address,
+        contractParams: {
+          transfers: values.transfers,
+          tokensToFreeze: proposalFee,
+          agoraPostId: values.agoraPostId,
+        },
+      });
     }
   };
+
   return (
     <div>
-      <StyledButton variant="outlined" onClick={handleClickOpen}>
+      <StyledButton
+        variant="outlined"
+        onClick={handleClickOpen}
+        disabled={!dao}
+      >
         NEW PROPOSAL
       </StyledButton>
+      <Button
+        onClick={() => {
+          console.log(voteData, voteError);
+
+          vote({
+            contractAddress: "KT1FvSHdoD6gJX6LgMJRJ1Fr7bXpGLLv6xEP",
+            amount: 1,
+            proposalKey:
+              "70674a2002903eebc7f5780be6a1efa2eed3c619f4eb07be75f4a792a381f8fa",
+            support: true,
+          });
+        }}
+      >
+        VOTE
+      </Button>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -197,7 +240,6 @@ export const NewProposalDialog: React.FC = () => {
                     checked={isBatch}
                     onChange={() => {
                       setIsBatch(!isBatch);
-                      //   setTotalReceipt(totalReceipt.push(1));
                       return;
                     }}
                     name="checkedA"
@@ -207,24 +249,24 @@ export const NewProposalDialog: React.FC = () => {
               </Grid>
             </ListItem>
 
-            <Formik initialValues={storageDaoInformation} onSubmit={onSubmit}>
+            <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
               {({ submitForm, values }) => (
                 <Form autoComplete="off">
                   <>
                     <FieldArray
-                      name="receipts"
+                      name="transfers"
                       render={(arrayHelpers) => (
                         <>
                           {isBatch ? (
                             <BatchBar container direction="row">
-                              {totalReceipt.map((_, index) => {
+                              {values.transfers.map((_, index) => {
                                 return (
-                                  <ReceiptActive
+                                  <TransferActive
                                     item
                                     key={index}
-                                    onClick={() => setActiveReceipt(index + 1)}
+                                    onClick={() => setActiveTransfer(index + 1)}
                                     style={
-                                      Number(index + 1) === activeReceipt
+                                      Number(index + 1) === activeTransfer
                                         ? styles.active
                                         : undefined
                                     }
@@ -235,24 +277,16 @@ export const NewProposalDialog: React.FC = () => {
                                     >
                                       #{index + 1}
                                     </Typography>
-                                  </ReceiptActive>
+                                  </TransferActive>
                                 );
                               })}
 
                               <AddButton
                                 onClick={() => {
-                                  arrayHelpers.insert(totalReceipt.length + 1, {
-                                    recipient: "",
-                                    amount: 0,
-                                  });
-                                  const newField = ({
-                                    recipient: "",
-                                    amount: 0,
-                                  } as unknown) as Receipt;
-                                  const newArray = [...totalReceipt, newField];
-                                  console.log(newArray);
-                                  setTotalReceipt(newArray);
-                                  return;
+                                  arrayHelpers.insert(
+                                    values.transfers.length + 1,
+                                    EMPTY_TRANSFER
+                                  );
                                 }}
                               >
                                 +
@@ -260,68 +294,51 @@ export const NewProposalDialog: React.FC = () => {
                             </BatchBar>
                           ) : null}
 
-                          {values.receipts && values.receipts.length > 0
-                            ? values.receipts.map((index: any) => (
-                                <div
-                                  key={index}
-                                  style={
-                                    Number(index + 1) !== activeReceipt
-                                      ? styles.visible
-                                      : undefined
-                                  }
-                                >
-                                  <ListItem container direction="row">
-                                    <Grid item xs={6}>
-                                      <Typography
-                                        variant="subtitle1"
-                                        color="textSecondary"
-                                      >
-                                        Recipient
-                                      </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                      <SwitchContainer
-                                        item
-                                        xs={12}
-                                        justify="flex-end"
-                                      >
-                                        <Field
-                                          name={`receipts.${index}.recipient`}
-                                          type="string"
-                                          placeholder="Type an Address Here"
-                                          component={CustomTextField}
-                                        />
-                                      </SwitchContainer>
-                                    </Grid>
-                                  </ListItem>
+                          <ListItem container direction="row">
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="subtitle1"
+                                color="textSecondary"
+                              >
+                                Recipient
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <SwitchContainer item xs={12} justify="flex-end">
+                                <Field
+                                  name={`transfers.${
+                                    activeTransfer - 1
+                                  }.recipient`}
+                                  type="string"
+                                  placeholder="Type an Address Here"
+                                  component={CustomTextField}
+                                />
+                              </SwitchContainer>
+                            </Grid>
+                          </ListItem>
 
-                                  <ListItem container direction="row">
-                                    <Grid item xs={6}>
-                                      <Typography
-                                        variant="subtitle1"
-                                        color="textSecondary"
-                                      >
-                                        Amount
-                                      </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                      <SwitchContainer
-                                        item
-                                        xs={12}
-                                        justify="flex-end"
-                                      >
-                                        <Field
-                                          name={`receipts.${index}.amount`}
-                                          type="number"
-                                          placeholder="Type an Amount"
-                                          component={CustomTextField}
-                                        />
-                                      </SwitchContainer>
-                                    </Grid>
-                                  </ListItem>
-                                </div>
-                              ))
-                            : null}
+                          <ListItem container direction="row">
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="subtitle1"
+                                color="textSecondary"
+                              >
+                                Amount
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <SwitchContainer item xs={12} justify="flex-end">
+                                <Field
+                                  name={`transfers.${
+                                    activeTransfer - 1
+                                  }.amount`}
+                                  type="number"
+                                  placeholder="Type an Amount"
+                                  component={CustomTextField}
+                                />
+                              </SwitchContainer>
+                            </Grid>
+                          </ListItem>
                         </>
                       )}
                     />
@@ -347,7 +364,10 @@ export const NewProposalDialog: React.FC = () => {
                               variant="subtitle1"
                               color="textSecondary"
                             >
-                              0 Words
+                              {values.description
+                                ? values.description.trim().split(" ").length
+                                : 0}{" "}
+                              Words
                             </Typography>
                           </Grid>
                         </Grid>
@@ -367,6 +387,24 @@ export const NewProposalDialog: React.FC = () => {
                     <ListItem container direction="row">
                       <Grid item xs={6}>
                         <Typography variant="subtitle1" color="textSecondary">
+                          Agora Post ID
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <SwitchContainer item xs={12} justify="flex-end">
+                          <Field
+                            name={`agoraPostId`}
+                            type="number"
+                            placeholder="Type an Agora Post ID"
+                            component={CustomTextField}
+                          />
+                        </SwitchContainer>
+                      </Grid>
+                    </ListItem>
+
+                    <ListItem container direction="row">
+                      <Grid item xs={6}>
+                        <Typography variant="subtitle1" color="textSecondary">
                           Proposal Fee
                         </Typography>
                       </Grid>
@@ -376,7 +414,7 @@ export const NewProposalDialog: React.FC = () => {
                           variant="subtitle1"
                           color="secondary"
                         >
-                          15 MYGT
+                          {proposalFee} {dao ? dao.unfrozenToken.symbol : ""}
                         </Typography>
                       </Grid>
                     </ListItem>
