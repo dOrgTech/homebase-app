@@ -4,15 +4,21 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, styled, Typography, TextField, Theme } from "@material-ui/core";
+import { useVote } from "../../../services/contracts/baseDAO/hooks/useVote";
+import { useParams } from "react-router-dom";
 
-const StyledButton = styled(withTheme(Button))((props) => ({
-  height: 53,
-  color: props.theme.palette.text.secondary,
-  borderColor: props.theme.palette.secondary.main,
-  minWidth: 171,
-  marginTop: 5,
-}));
+const StyledButton = styled(Button)(
+  ({ theme, support }: { theme: Theme; support: boolean }) => ({
+    height: 53,
+    color: theme.palette.text.secondary,
+    borderColor: support ? theme.palette.secondary.main : "#ED254E",
+    minWidth: 171,
+    marginLeft: 22,
+    borderRadius: 4,
+    marginTop: 5,
+  })
+);
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -27,7 +33,7 @@ const Title = styled(DialogTitle)({
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthSm": {
-    minHeight: "700px !important",
+    minHeight: "400px !important",
   },
 });
 
@@ -41,12 +47,8 @@ const TitleText = styled(Typography)({
   marginBottom: 45,
 });
 
-const ProposalInfo = styled(Grid)({
-  minHeight: 100,
-});
-
 const ProposalInfoExtra = styled(Grid)({
-  minHeight: 200,
+  minHeight: 50,
 });
 
 const FeeContainer = styled(Grid)({
@@ -61,10 +63,33 @@ const SubmitContainer = styled(Grid)({
   cursor: "pointer",
 });
 
-export const VoteForDialog: React.FC = () => {
-  const [open, setOpen] = React.useState(false);
+const SupportText = styled(Typography)(
+  ({ theme, support }: { theme: Theme; support: boolean }) => ({
+    color: support ? theme.palette.secondary.main : "#FF5555",
+  })
+);
 
-  const handleClickOpen = () => {
+const CustomInput = styled(TextField)({
+  "& .MuiInputBase-input": {
+    textAlign: "end",
+  },
+});
+
+export const VoteDialog: React.FC = () => {
+  const [support, setSupport] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
+  const [amount, setAmount] = React.useState<any>();
+  const { proposalId, id: daoId } = useParams<{
+    proposalId: string;
+    id: string;
+  }>();
+
+  const { mutate, isLoading, error, data } = useVote();
+
+  console.log(isLoading, error, data);
+
+  const handleClickOpen = (isFor: boolean) => {
+    setSupport(isFor);
     setOpen(true);
   };
 
@@ -73,13 +98,31 @@ export const VoteForDialog: React.FC = () => {
   };
 
   const onSubmit = () => {
-    console.log("submit");
+    mutate({
+      proposalKey: proposalId,
+      contractAddress: daoId,
+      amount,
+      support,
+    });
+
+    handleClose();
   };
 
   return (
     <div>
-      <StyledButton variant="outlined" onClick={handleClickOpen}>
+      <StyledButton
+        variant="outlined"
+        onClick={() => handleClickOpen(true)}
+        support={true}
+      >
         VOTE FOR
+      </StyledButton>
+      <StyledButton
+        variant="outlined"
+        onClick={() => handleClickOpen(false)}
+        support={false}
+      >
+        VOTE AGAINST
       </StyledButton>
       <CustomDialog
         open={open}
@@ -104,22 +147,15 @@ export const VoteForDialog: React.FC = () => {
           <DialogContentText id="alert-dialog-description">
             <Content container direction="row">
               <Grid item xs={12}>
-                <Typography variant="subtitle1" color="secondary">
-                  SUPPORT
-                </Typography>
+                <SupportText variant="subtitle1" support={support}>
+                  {support ? "SUPPORT" : "OPPOSE"}
+                </SupportText>
               </Grid>
               <Grid item xs={12}>
                 <TitleText variant="h3" color="textSecondary">
-                  Confirm your vote to support Proposal #45
+                  Confirm your vote to {support ? "support" : "oppose"} Proposal
                 </TitleText>
               </Grid>
-
-              <ProposalInfo item xs={12}>
-                <Typography color="textSecondary" variant="subtitle1">
-                  This Proposal was created to fund a new project as the
-                  governing body of such and such and other can go here.
-                </Typography>
-              </ProposalInfo>
 
               <ProposalInfoExtra item xs={12}>
                 <Typography color="textSecondary" variant="subtitle1">
@@ -131,13 +167,17 @@ export const VoteForDialog: React.FC = () => {
             <FeeContainer container direction="row">
               <Grid item xs={6}>
                 <Typography variant="subtitle1" color="textSecondary">
-                  Fee
+                  Amount
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="subtitle1" color="secondary" align="right">
-                  15 MYGT
-                </Typography>
+                <CustomInput
+                  id="standard-basic"
+                  value={amount}
+                  type="number"
+                  placeholder="Type an Amount"
+                  onChange={(newValue: any) => setAmount(newValue.target.value)}
+                />
               </Grid>
             </FeeContainer>
             <SubmitContainer

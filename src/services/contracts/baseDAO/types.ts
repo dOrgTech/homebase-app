@@ -58,6 +58,7 @@ export type ErrorValues<T> = Partial<Record<keyof T, string>>;
 export type DAOItem = {
   address: string;
   ledger: Ledger;
+  cycle: number;
 } & DAOListMetadata &
   Storage;
 
@@ -85,4 +86,12 @@ export interface ProposeParams {
 export interface OriginateTreasuryParams {
   metadataParams: MetadataCarrierParameters;
   treasuryParams: TreasuryParamsWithoutMetadata;
+}
+
+export interface VoteParams {
+  proposalKey: string;
+  amount: number;
+  tezos: TezosToolkit;
+  contractAddress: string;
+  support: boolean;
 }

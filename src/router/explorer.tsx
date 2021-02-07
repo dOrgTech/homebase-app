@@ -14,14 +14,14 @@ export const DAOExplorerRouter = (): JSX.Element => {
       <Route path={`${match.url}/daos`}>
         <DAOsList />
       </Route>
+      <Route path={`${match.url}/dao/:id/proposal/:proposalId`}>
+        <Voting />
+      </Route>
       <Route path={`${match.url}/dao/:id`}>
         <Proposals />
       </Route>
       <Route path={`${match.url}/treasury/:id`}>
         <Treasury />
-      </Route>
-      <Route path={`${match.url}/voting`}>
-        <Voting />
       </Route>
       <Redirect to={`${match.url}/daos`} />
     </Switch>

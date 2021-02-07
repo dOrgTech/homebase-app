@@ -1,7 +1,13 @@
 import { NamedMapNumberValue, NamedMapValue, UnnamedMapValue } from "../types";
 
 export interface Storage {
-  //TODO: add more fields
+  slashDivisionValue: number;
+  slashScaleValue: number;
+  frozenScaleValue: number;
+  frozenExtraValue: number;
+  maxProposalSize: number;
+  maxXtzAmount: string;
+  minXtzAmount: string;
   votingPeriod: number;
   quorumTreshold: number;
   proposalsMapNumber: number;

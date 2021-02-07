@@ -16,6 +16,7 @@ import {
 import { SideBar } from "../components/SideBar";
 import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
+import { ProposalStatus } from "../../../services/bakingBad/proposals/types";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -102,8 +103,6 @@ export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao, error: daoError, isLoading: daoLoading } = useDAO(id);
 
-  console.log(dao, daoError, daoLoading);
-
   const name = dao && dao.unfrozenToken.name;
   const description = dao && dao.description;
   const symbol = dao && dao.unfrozenToken.symbol.toUpperCase();
@@ -139,28 +138,32 @@ export const Proposals: React.FC = () => {
   );
 
   const activeProposals = useMemo<ProposalTableRowData[]>(() => {
-    if (!proposalsData || !quorumTreshold) {
+    if (!proposalsData) {
       return [];
     }
 
     return proposalsData
-      .filter(
-        (proposalData) =>
-          Number(proposalData.upVotes) < quorumTreshold &&
-          Number(proposalData.downVotes) < quorumTreshold
-      )
-      .map(mapProposalData);
-  }, [proposalsData, quorumTreshold]);
+      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
+      .map((proposal) => mapProposalData(proposal, dao?.address));
+  }, [proposalsData]);
 
   const passedProposals = useMemo<ProposalTableRowData[]>(() => {
-    if (!proposalsData || !quorumTreshold) {
+    if (!proposalsData) {
       return [];
     }
 
     return proposalsData
-      .filter((proposalData) => Number(proposalData.upVotes) > quorumTreshold)
-      .map(mapProposalData);
-  }, [proposalsData, quorumTreshold]);
+      .filter((proposalData) => proposalData.status === ProposalStatus.PASSED)
+      .map((proposal) => mapProposalData(proposal, dao?.address));
+  }, [proposalsData]);
+
+  const allProposals = useMemo(() => {
+    if (!proposalsData) {
+      return [];
+    }
+
+    return proposalsData.map((proposal) => mapProposalData(proposal, dao?.address));
+  }, [proposalsData]);
 
   return (
     <>
@@ -251,13 +254,13 @@ export const Proposals: React.FC = () => {
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
               </Grid>
-              {/* <Grid item xs={2}>
+              <Grid item xs={2}>
                 <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
-              </Grid> */}
-              <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={5}>
                 <ProposalTableHeadText>{""}</ProposalTableHeadText>
               </Grid>
             </TableHeader>
@@ -293,6 +296,23 @@ export const Proposals: React.FC = () => {
               </Grid>
             </TableHeader>
             {passedProposals.map((proposal, i) => (
+              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+            ))}
+          </TableContainer>
+
+          <TableContainer>
+            <TableHeader container wrap="nowrap">
+              <Grid item xs={5}>
+                <ProposalTableHeadText>ALL PROPOSALS</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={5}>
+                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+              </Grid>
+            </TableHeader>
+            {allProposals.map((proposal, i) => (
               <ProposalTableRow key={`proposal-${i}`} {...proposal} />
             ))}
           </TableContainer>

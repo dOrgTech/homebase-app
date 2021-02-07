@@ -1,17 +1,19 @@
 import { useQuery } from "react-query";
 import { useTezos } from "../../../beacon/hooks/useTezos";
 import { getDAOProposals } from "..";
-import { Proposal } from "../../../bakingBad/proposals/types";
+import { ProposalWithStatus } from "../../../bakingBad/proposals/types";
+import { useDAO } from "./useDAO";
+import { DAOItem } from "../types";
 
 export const useProposals = (contractAddress: string | undefined) => {
   const { network } = useTezos();
-  console.log(contractAddress)
+  const { data: daoData } = useDAO(contractAddress);
 
-  const result = useQuery<Proposal[], Error>(
+  const result = useQuery<ProposalWithStatus[], Error>(
     ["proposals", contractAddress],
-    async () => await getDAOProposals(contractAddress as string, network),
+    () => getDAOProposals(daoData as DAOItem, network),
     {
-      enabled: !!contractAddress,
+      enabled: !!daoData,
     }
   );
 

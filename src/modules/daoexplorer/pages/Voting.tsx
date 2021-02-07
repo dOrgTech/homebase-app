@@ -7,9 +7,11 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 import React from "react";
+import { useParams } from "react-router";
+import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
+import { useProposal } from "../../../services/contracts/baseDAO/hooks/useProposal";
 import { SideBar } from "../components/SideBar";
-import { VoteAgainstDialog } from "../components/VoteAgainstDialog";
-import { VoteForDialog } from "../components/VoteForDialog";
+import { VoteDialog } from "../components/VoteDialog";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -180,6 +182,22 @@ const History = [
 ];
 
 export const Voting: React.FC = () => {
+  const { proposalId, id: daoId } = useParams<{
+    proposalId: string;
+    id: string;
+  }>();
+
+  const proposal = useProposal(daoId, proposalId);
+  const { data: dao } = useDAO(daoId);
+
+  const proposalCycle = proposal ? proposal.cycle : "-";
+  const upVotes = proposal ? proposal.upVotes : 0;
+  const downVotes = proposal ? proposal.downVotes : 0;
+  const daoName = dao ? dao.unfrozenToken.name : "";
+  const totalVotes = upVotes + downVotes;
+  const upVotesPercentage = totalVotes && (upVotes * 100) / totalVotes;
+  const downVotesPercentage = totalVotes && (downVotes * 100) / totalVotes;
+
   return (
     <>
       <PageLayout container wrap="nowrap">
@@ -189,18 +207,17 @@ export const Voting: React.FC = () => {
             <Container container direction="row">
               <Grid item xs={12}>
                 <Typography variant="subtitle1" color="secondary">
-                  MY GREAT TOKEN &gt; PROPOSALS
+                  {daoName} &gt; PROPOSALS
                 </Typography>
               </Grid>
               <Grid item xs={12}>
                 <StyledContainer container direction="row">
                   <Grid item xs={6}>
                     <Subtitle variant="h3" color="textSecondary">
-                      Should the DAO fund a new project?
+                      Proposal Title
                     </Subtitle>
                     <Subtitle color="textSecondary">
-                      This Proposal was created to fund a new project as the
-                      governing body of such and such and other can go here.
+                      Proposal Description
                     </Subtitle>
                   </Grid>
                   <JustifyEndGrid item xs={6}>
@@ -210,8 +227,7 @@ export const Voting: React.FC = () => {
                       alignItems="center"
                       justify="flex-end"
                     >
-                      <VoteForDialog />
-                      <VoteAgainstDialog />
+                      <VoteDialog />
                     </ButtonsContainer>
                   </JustifyEndGrid>
                 </StyledContainer>
@@ -219,7 +235,9 @@ export const Voting: React.FC = () => {
             </Container>
           </MainContainer>
           <CycleContainer container direction="row">
-            <Cycle color="textSecondary">CYCLE: 14 POSITION: 4</Cycle>
+            <Cycle color="textSecondary">
+              CYCLE: {proposalCycle} POSITION: -
+            </Cycle>
           </CycleContainer>
           <StatsContainer container>
             <TokensLocked
@@ -239,7 +257,7 @@ export const Voting: React.FC = () => {
                   </Box>
                   <Box padding="12px 0">
                     <Typography variant="h3" color="textSecondary">
-                      21,202
+                      {upVotes}
                     </Typography>
                   </Box>
                 </Grid>
@@ -253,13 +271,13 @@ export const Voting: React.FC = () => {
                 <Grid item xs={10}>
                   <LockedTokensBar
                     variant="determinate"
-                    value={60}
+                    value={upVotesPercentage}
                     color="secondary"
                   />
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    40%
+                    {upVotesPercentage}%
                   </Typography>
                 </Grid>
               </Grid>
@@ -280,7 +298,7 @@ export const Voting: React.FC = () => {
                   </Box>
                   <Box padding="12px 0">
                     <Typography variant="h3" color="textSecondary">
-                      87,202
+                      {downVotes}
                     </Typography>
                   </Box>
                 </Grid>
@@ -292,17 +310,20 @@ export const Voting: React.FC = () => {
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item xs={10}>
-                  <LockedTokensAgainstBar variant="determinate" value={60} />
+                  <LockedTokensAgainstBar
+                    variant="determinate"
+                    value={downVotesPercentage}
+                  />
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    60%
+                    {downVotesPercentage}%
                   </Typography>
                 </Grid>
               </Grid>
             </TokensLocked>
           </StatsContainer>
-          <DetailsContainer container direction="row">
+          {/* <DetailsContainer container direction="row">
             <Grid item xs={6}>
               <Grid container direction="row">
                 <BoxItem item xs={12}>
@@ -377,7 +398,7 @@ export const Voting: React.FC = () => {
                 })}
               </Grid>
             </Grid>
-          </DetailsContainer>
+          </DetailsContainer> */}
         </Grid>
       </PageLayout>
     </>
