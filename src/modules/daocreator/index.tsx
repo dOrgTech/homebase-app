@@ -29,6 +29,8 @@ const StepContentContainer = styled(Grid)({
   paddingRight: "16%",
   alignItems: "center",
   height: "inherit",
+  marginTop: "15%",
+  display: "block",
 });
 
 const StepOneContentContainer = styled(Grid)({
@@ -39,6 +41,7 @@ const StepOneContentContainer = styled(Grid)({
 
 const StyledStepper = styled(Stepper)({
   background: "inherit",
+  marginTop: 70
 });
 
 const StepContentHeigth = styled(Grid)({
@@ -107,9 +110,9 @@ export const DAOCreate: React.FC = () => {
           </Box>
         </ProgressBar>
         <StyledStepper activeStep={activeStep} orientation="vertical">
-          {STEPS.map(({ title }: StepInfo) => (
+          {STEPS.map(({ title }: StepInfo, index: any) => (
             <Step key={title} {...(!true && { active: false })}>
-              <StepLabel>{title}</StepLabel>
+              <StepLabel icon={index + 1}>{title}</StepLabel>
             </Step>
           ))}
         </StyledStepper>

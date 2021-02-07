@@ -140,12 +140,12 @@ export const Summary = (): JSX.Element => {
 
           <Grid item xs={12}>
             <AdminContainer container direction="row" alignItems="center">
-              <Grid item xs={6}>
+              <Grid item xs={3}>
                 <Typography variant="subtitle1" color="textSecondary">
                   Administrator
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={9}>
                 <AdminAddress
                   variant="subtitle1"
                   color="textSecondary"

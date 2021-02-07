@@ -5,7 +5,7 @@ import {
   styled,
   Typography,
   Box,
-  Grid,
+  Grid
 } from "@material-ui/core";
 import React from "react";
 import { useSelector } from "react-redux";
@@ -16,7 +16,7 @@ import { useTezos } from "../../services/beacon/hooks/useTezos";
 import { useHistory, useLocation } from "react-router-dom";
 
 const StyledAppBar = styled(AppBar)({
-  boxShadow: "none",
+  boxShadow: "none"
 });
 
 const StyledToolbar = styled(Toolbar)({
@@ -25,7 +25,7 @@ const StyledToolbar = styled(Toolbar)({
   flexWrap: "wrap",
   height: 100,
   paddingLeft: 0,
-  paddingRight: 0,
+  paddingRight: 0
 });
 
 const StatusDot = styled(Box)({
@@ -33,25 +33,35 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
-  marginLeft: 8,
+  marginLeft: 8
 });
 
 const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
+  alignItems: "baseline",
+  marginTop: 22,
 });
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "18px",
-  cursor: "pointer",
+  cursor: "pointer"
 });
+
+const ConnectWallet = styled(Button)({
+  maxHeight: 50,
+  alignSelf: "baseline",
+  marginTop: 22,
+  marginRight: 14,
+})
 
 const custom = {
   logo: {
     height: "100%",
-    alignItems: "center",
+    alignItems: "baseline",
     display: "flex",
+    marginTop: 22,
   },
   appBorder: {
     borderBottom: "2px solid #3D3D3D",
@@ -62,8 +72,13 @@ const custom = {
   appLogoHeight: {
     height: "inherit",
     borderRight: "2px solid #3D3D3D",
-  },
+  }
 };
+
+const LogoItem = styled("img")({
+  cursor: "pointer",
+});
+
 export const Navbar: React.FC = () => {
   const { connect, account } = useTezos();
   const location = useLocation();
@@ -93,11 +108,7 @@ export const Navbar: React.FC = () => {
           >
             <Box
               style={location.pathname === "/creator" ? custom.logo : undefined}
-              onClick={
-                location.pathname === "/creator"
-                  ? () => history.push("/creator")
-                  : () => history.push("/dao")
-              }
+              onClick={() => history.push("/explorer")}
             >
               <Grid
                 container
@@ -106,7 +117,7 @@ export const Navbar: React.FC = () => {
                 justify="center"
               >
                 <Grid item>
-                  <img src={HomeButton} />
+                  <LogoItem src={HomeButton} />
                 </Grid>
                 <Grid item>
                   <Box paddingLeft="10px">
@@ -141,9 +152,9 @@ export const Navbar: React.FC = () => {
                 </Grid>
               </AddressContainer>
             ) : (
-              <Button color="secondary" variant="outlined" onClick={connect}>
+              <ConnectWallet color="secondary" variant="outlined" onClick={connect}>
                 Connect Wallet
-              </Button>
+              </ConnectWallet>
             )}
           </Grid>
         </Grid>

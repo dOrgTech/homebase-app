@@ -6,6 +6,7 @@ import { useOriginateTreasury } from "../../../services/contracts/baseDAO/hooks/
 import { fromStateToTreasuryStorage, getTokensInfo } from "../state/utils";
 import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import { MigrationParams } from "../../../services/contracts/baseDAO/types";
+import { useHistory } from "react-router-dom";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
@@ -13,6 +14,11 @@ const RocketImg = styled("img")({
 
 const WaitingText = styled(Typography)({
   marginTop: 9,
+});
+
+
+const CustomButton = styled(Button)({
+  marginTop: 20,
 });
 
 export const Review: React.FC = () => {
@@ -39,6 +45,7 @@ export const Review: React.FC = () => {
   );
 
   const { mutate, isLoading, error, data } = useOriginateTreasury();
+  const history = useHistory();
 
   useEffect(() => {
     (async () => {
@@ -80,10 +87,11 @@ export const Review: React.FC = () => {
               <WaitingText variant="subtitle1" color="textSecondary">
                 Your DAO has been deployed!
               </WaitingText>
-              <WaitingText variant="subtitle1" color="textSecondary">
-                {data?.address}
-              </WaitingText>
-              <Button>Go to my DAO</Button>
+
+              {data && data.address ? (
+                <CustomButton color="secondary" variant="outlined" onClick={() => history.push("/explorer/dao/" + data.address)}>Go to my DAO</CustomButton>
+              ) : null}
+
             </>
           )}
         </Grid>
