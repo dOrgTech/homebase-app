@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo } from "react";
-import { Button, Grid, styled, Typography } from "@material-ui/core";
+import { Button, Grid, styled as styledMat, Typography } from "@material-ui/core";
 import Rocket from "../../../assets/img/rocket.svg";
 import { CreatorContext } from "../state/context";
 import { useOriginateTreasury } from "../../../services/contracts/baseDAO/hooks/useOriginateTreasury";
@@ -7,24 +7,98 @@ import { fromStateToTreasuryStorage, getTokensInfo } from "../state/utils";
 import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import { MigrationParams } from "../../../services/contracts/baseDAO/types";
 import { useHistory } from "react-router-dom";
+import styled, { keyframes } from "styled-components";
 
-const RocketImg = styled("img")({
+const RocketImg = styledMat("img")({
   marginBottom: 46,
 });
 
-const WaitingText = styled(Typography)({
+const WaitingText = styledMat(Typography)({
   marginTop: 9,
 });
 
 
-const CustomButton = styled(Button)({
+const CustomButton = styledMat(Button)({
   marginTop: 20,
 });
+
+
+const animation1 = keyframes`
+  0% {
+  opacity: 1;
+  }
+  65% {
+  opacity: 1;
+  }
+  66% {
+  opacity: 0;
+  }
+  100% {
+  opacity: 0;
+  }
+ `;
+
+ const animation2 = keyframes`
+  0% {
+   opacity: 0;
+  }
+  21% {
+   opacity: 0;
+  }
+  22% {
+   opacity: 1;
+  }
+  65% {
+   opacity: 1;
+  }
+  66% {
+   opacity: 0;
+  }
+  100% {
+   opacity: 0;
+  }
+ `;
+
+ const animation3 = keyframes`
+  0% {
+   opacity: 0;
+  }
+  43% {
+   opacity: 0;
+  }
+  44% {
+   opacity: 1;
+  }
+  65% {
+   opacity: 1;
+  }
+  66% {
+   opacity: 0;
+  }
+  100% {
+   opacity: 0;
+  }
+ }`;
+
+ const Dot1 = styled.span`
+ animation: ${animation1} 2s linear infinite;
+`;
+
+const Dot2 = styled.span`
+ animation: ${animation2} 2s linear infinite;
+`;
+
+const Dot3 = styled.span`
+ animation: ${animation3} 2s linear infinite;
+`;
 
 export const Review: React.FC = () => {
   const { state } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
+
+
+
   const metadataCarrierParams: MetadataCarrierParameters = useMemo(
     () => ({
       keyName: info.orgSettings.name,
@@ -78,9 +152,9 @@ export const Review: React.FC = () => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          {isLoading ? (
+          {!isLoading ? (
             <WaitingText variant="subtitle1" color="textSecondary">
-              Waiting for confirmation...
+              Waiting for confirmation <Dot1>.</Dot1><Dot2>.</Dot2><Dot3>.</Dot3>
             </WaitingText>
           ) : (
             <>

@@ -5,18 +5,16 @@ import {
   styled,
   Typography,
   Box,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import React from "react";
-import { useSelector } from "react-redux";
-import { AppState } from "../../store";
 import { toShortAddress } from "../../utils";
 import HomeButton from "../../assets/logos/homebase.svg";
 import { useTezos } from "../../services/beacon/hooks/useTezos";
 import { useHistory, useLocation } from "react-router-dom";
 
 const StyledAppBar = styled(AppBar)({
-  boxShadow: "none"
+  boxShadow: "none",
 });
 
 const StyledToolbar = styled(Toolbar)({
@@ -25,7 +23,7 @@ const StyledToolbar = styled(Toolbar)({
   flexWrap: "wrap",
   height: 100,
   paddingLeft: 0,
-  paddingRight: 0
+  paddingRight: 0,
 });
 
 const StatusDot = styled(Box)({
@@ -33,7 +31,7 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
-  marginLeft: 8
+  marginLeft: 8,
 });
 
 const AddressContainer = styled(Grid)({
@@ -46,7 +44,7 @@ const AddressContainer = styled(Grid)({
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "18px",
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const ConnectWallet = styled(Button)({
@@ -54,7 +52,7 @@ const ConnectWallet = styled(Button)({
   alignSelf: "baseline",
   marginTop: 22,
   marginRight: 14,
-})
+});
 
 const custom = {
   logo: {
@@ -72,7 +70,7 @@ const custom = {
   appLogoHeight: {
     height: "inherit",
     borderRight: "2px solid #3D3D3D",
-  }
+  },
 };
 
 const LogoItem = styled("img")({
@@ -152,7 +150,8 @@ export const Navbar: React.FC = () => {
                 </Grid>
               </AddressContainer>
             ) : (
-              <ConnectWallet color="secondary" variant="outlined" onClick={connect}>
+              <ConnectWallet 
+                color="secondary"  variant="outlined" onClick={connect}>
                 Connect Wallet
               </ConnectWallet>
             )}

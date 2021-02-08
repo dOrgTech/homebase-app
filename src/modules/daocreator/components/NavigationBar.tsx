@@ -46,7 +46,7 @@ const FooterContainer = styled(Grid)({
   padding: 0,
   margin: 0,
   height: "inherit",
-})
+});
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
   return (
@@ -58,23 +58,22 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
     >
       <FooterContainer item xs={12}>
         <Grid item container>
-        <Grid item xs={6}>
-        {back && (
-          <BackButton onClick={back.handler}>
-            <Typography>{back.text}</Typography>
-          </BackButton>
-        )}
-      </Grid>
-      <Grid item xs={6}>
-        {next && (
-          <NextButton onClick={next.handler}>
-            <Typography color="secondary">{next.text}</Typography>
-          </NextButton>
-        )}
-      </Grid>
+          <Grid item xs={6}>
+            {back && (
+              <BackButton onClick={back.handler}>
+                <Typography>{back.text}</Typography>
+              </BackButton>
+            )}
+          </Grid>
+          <Grid item xs={6}>
+            {next && (
+              <NextButton onClick={next.handler}>
+                <Typography color="secondary">{next.text}</Typography>
+              </NextButton>
+            )}
+          </Grid>
         </Grid>
       </FooterContainer>
-
     </Footer>
   );
 };

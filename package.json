@@ -24,6 +24,7 @@
     "@taquito/tzip16": "^8.0.0-beta.2",
     "@thanos-wallet/dapp": "^1.0.2",
     "@types/async": "^3.2.5",
+    "@types/styled-components": "^5.1.7",
     "async": "^3.2.0",
     "crypto-js": "^4.0.0",
     "dayjs": "^1.10.4",
@@ -38,6 +39,7 @@
     "react-scripts": "4.0.1",
     "redux-localstorage-simple": "^2.3.1",
     "serve": "^11.3.2",
+    "styled-components": "^5.2.1",
     "typescript": "^4.1.0-beta"
   },
   "devDependencies": {
