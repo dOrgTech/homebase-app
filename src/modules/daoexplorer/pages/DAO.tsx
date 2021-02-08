@@ -7,13 +7,16 @@ import VotingIcon from "../../../assets/logos/voting.svg";
 import VotingPeriodIcon from "../../../assets/logos/votingPeriod.svg";
 import VoteTimeIcon from "../../../assets/logos/voteTime.svg";
 import {
+  mapProposalData,
   ProposalTableRow,
   ProposalTableRowData,
 } from "../components/ProposalTableRow";
-import { useHistory, useParams, useRouteMatch } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { TokenHoldersDialog } from "../components/TokenHoldersDialog";
 import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
+import { ProposalStatus } from "../../../services/bakingBad/proposals/types";
+import Timer from "react-compound-timer";
 
 const SideBar = styled(Grid)({
   width: 102,
@@ -107,14 +110,10 @@ const ProposalTableHeadText: React.FC = ({ children }) => (
   </Typography>
 );
 
-const proposals: ProposalTableRowData[] = [
-
-];
-
 export const DAO: React.FC = () => {
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading, isError } = useDAO(id);
+  const { data } = useDAO(id);
 
   const name = data && data.unfrozenToken.name;
   const description = data && data.description;
@@ -145,9 +144,17 @@ export const DAO: React.FC = () => {
     }, 0);
   }, [data]);
 
-  const { data: proposalss } = useProposals(data ? data.address : "");
+  const { data: proposalsData } = useProposals(data ? data.address : "");
 
-  console.log(proposalss)
+  const activeProposals = useMemo<ProposalTableRowData[]>(() => {
+    if (!proposalsData) {
+      return [];
+    }
+
+    return proposalsData
+      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
+      .map((proposal) => mapProposalData(proposal, data?.address));
+  }, [data?.address, proposalsData]);
 
   return (
     <PageLayout container wrap="nowrap">
@@ -218,7 +225,16 @@ export const DAO: React.FC = () => {
                     </Box>
                     <Box>
                       <Typography variant="h3" color="textSecondary">
-                        5d 2m 3h
+                        <Timer initialTime={54555000} startImmediately={true}>
+                          {() => (
+                            <React.Fragment>
+                              <Box>
+                                <Timer.Days />d <Timer.Hours />h{" "}
+                                <Timer.Minutes />m
+                              </Box>
+                            </React.Fragment>
+                          )}
+                        </Timer>
                       </Typography>
                     </Box>
                   </Box>
@@ -287,7 +303,7 @@ export const DAO: React.FC = () => {
                 ACTIVE PROPOSALS
               </Typography>
               <Typography variant="h3" color="textSecondary">
-                5
+                {activeProposals.length}
               </Typography>
             </Box>
           </ActiveProposals>
@@ -304,7 +320,7 @@ export const DAO: React.FC = () => {
               <ProposalTableHeadText>STATUS</ProposalTableHeadText>
             </Grid>
           </TableHeader>
-          {proposals.map((proposal, i) => (
+          {activeProposals.map((proposal, i) => (
             <ProposalTableRow key={`proposal-${i}`} {...proposal} />
           ))}
         </TableContainer>
@@ -312,7 +328,7 @@ export const DAO: React.FC = () => {
           <UnderlineText
             variant="subtitle1"
             color="textSecondary"
-            onClick={() => history.push("/explorer/proposals")}
+            onClick={() => history.push(`/explorer/proposals/${id}`)}
           >
             VIEW ALL PROPOSALS
           </UnderlineText>

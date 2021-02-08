@@ -187,21 +187,6 @@ export const NewProposalDialog: React.FC = () => {
       >
         NEW PROPOSAL
       </StyledButton>
-      <Button
-        onClick={() => {
-          console.log(voteData, voteError);
-
-          vote({
-            contractAddress: "KT1FvSHdoD6gJX6LgMJRJ1Fr7bXpGLLv6xEP",
-            amount: 1,
-            proposalKey:
-              "70674a2002903eebc7f5780be6a1efa2eed3c619f4eb07be75f4a792a381f8fa",
-            support: true,
-          });
-        }}
-      >
-        VOTE
-      </Button>
       <Dialog
         open={open}
         onClose={handleClose}

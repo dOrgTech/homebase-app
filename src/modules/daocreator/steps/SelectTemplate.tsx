@@ -30,7 +30,6 @@ const Circle = styled(Paper)({
   width: 70,
   borderRadius: "50%",
   boxShadow: "none",
-  marginBottom: 20,
 });
 
 const FooterContainer = styled(withTheme(Paper))((props) => ({
@@ -59,12 +58,12 @@ const CustomCardContent = styled(CardContent)({
 });
 
 const Phrase = styled(Typography)({
-  marginTop: 20,
-  marginBottom: 39,
+  marginTop: 12,
+  marginBottom: 19,
 });
 
 const Subtitle = styled(Typography)({
-  marginTop: 10,
+  marginTop: 26,
 });
 
 export const SelectTemplate = (): JSX.Element => {

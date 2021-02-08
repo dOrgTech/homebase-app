@@ -6,10 +6,7 @@ const Footer = styled(Grid)(({ theme }) => ({
   boxShadow: "none",
   background: theme.palette.primary.main,
   height: "inherit",
-  paddingTop: "1%",
-  borderTop: "2px solid #3D3D3D",
-  marginLeft: "24.85%",
-  borderLeft: "2px solid #3D3D3D",
+  justifyContent: "flex-end",
 }));
 
 const BackButton = styled(Paper)({
@@ -39,6 +36,18 @@ const NextButton = styled(Paper)({
   paddingRight: "3%",
 });
 
+const FooterContainer = styled(Grid)({
+  flexGrow: 0,
+  maxWidth: "75.13vw",
+  paddingTop: "1%",
+  paddingBottom: "1%",
+  borderTop: "2px solid rgb(61, 61, 61)",
+  borderLeft: "2px solid rgb(61, 61, 61)",
+  padding: 0,
+  margin: 0,
+  height: "inherit",
+});
+
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
   return (
     <Footer
@@ -47,20 +56,24 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
       justify="space-between"
       alignItems="center"
     >
-      <Grid item xs={6}>
-        {back && (
-          <BackButton onClick={back.handler}>
-            <Typography>{back.text}</Typography>
-          </BackButton>
-        )}
-      </Grid>
-      <Grid item xs={6}>
-        {next && (
-          <NextButton onClick={next.handler}>
-            <Typography color="secondary">{next.text}</Typography>
-          </NextButton>
-        )}
-      </Grid>
+      <FooterContainer item xs={12}>
+        <Grid item container>
+          <Grid item xs={6}>
+            {back && (
+              <BackButton onClick={back.handler}>
+                <Typography>{back.text}</Typography>
+              </BackButton>
+            )}
+          </Grid>
+          <Grid item xs={6}>
+            {next && (
+              <NextButton onClick={next.handler}>
+                <Typography color="secondary">{next.text}</Typography>
+              </NextButton>
+            )}
+          </Grid>
+        </Grid>
+      </FooterContainer>
     </Footer>
   );
 };

@@ -1,61 +1,70 @@
 import { Box, Grid, styled, Typography } from "@material-ui/core";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, TokenHolder } from "../state/types";
 
 const CustomTypography = styled(Typography)({
-  marginTop: 10,
+  marginTop: 10
 });
 
 const SecondContainer = styled(Grid)({
-  marginTop: 25,
+  marginTop: 25
 });
 
 const TitleSpacing = styled(Typography)({
-  marginTop: 12,
+  marginTop: 12
 });
 
 const ContainerSpacing = styled(Typography)({
-  marginTop: 24,
+  marginTop: 24
 });
 
 const ContainerSpacingButton = styled(Typography)({
   marginTop: 24,
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const ContainerButton = styled(Typography)({
   paddingBottom: 8,
   marginTop: 24,
   borderBottom: "1px solid #3D3D3D",
+  cursor: "pointer",
 });
 
 const AdminContainer = styled(Grid)({
   border: "1px solid #3D3D3D",
   marginTop: 16,
-  padding: "16px 18px",
+  padding: "16px 18px"
 });
 
 const AdminAddress = styled(Typography)({
-  wordBreak: "break-all",
+  wordBreak: "break-all"
 });
 
 const UnderlinedGrid = styled(Grid)({
   borderBottom: "1px solid #3D3D3D",
-  padding: 2,
+  padding: 2
 });
 
 const TokenHoldersContainer = styled(Box)({
   marginTop: 5,
   maxHeight: 200,
   overflowY: "auto",
-  width: "100%",
+  width: "100%"
+});
+
+const ViewMore = styled(Typography)({
+  cursor: "pointer",
+  marginTop: 30,
+  marginBottom: 30,
+  textDecoration: "underline"
 });
 
 export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
   const { activeStep } = state;
+  const [showMore, setShowMore] = useState(false);
 
   const goToVoting = () => {
     dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
@@ -74,13 +83,13 @@ export const Summary = (): JSX.Element => {
         handler: () => {
           dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
         },
-        text: "LAUNCH",
+        text: "LAUNCH"
       },
       back: {
         handler: () =>
           dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 }),
-        text: "BACK",
-      },
+        text: "BACK"
+      }
     });
   }, [activeStep, dispatch]);
 
@@ -140,12 +149,12 @@ export const Summary = (): JSX.Element => {
 
           <Grid item xs={12}>
             <AdminContainer container direction="row" alignItems="center">
-              <Grid item xs={6}>
+              <Grid item xs={3}>
                 <Typography variant="subtitle1" color="textSecondary">
                   Administrator
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={9}>
                 <AdminAddress
                   variant="subtitle1"
                   color="textSecondary"
@@ -265,63 +274,93 @@ export const Summary = (): JSX.Element => {
             </UnderlinedGrid>
           </Grid>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Transfer minimum XTZ amount
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
+          {showMore ? (
+            <>
+              <Grid item xs={12}>
+                <UnderlinedGrid
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
                 >
-                  {state.data.votingSettings.minXtzAmount} XTZ
-                </Typography>
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="textSecondary">
+                      Transfer minimum XTZ amount
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography
+                      variant="subtitle1"
+                      color="textSecondary"
+                      align="right"
+                    >
+                      {state.data.votingSettings.minXtzAmount} XTZ
+                    </Typography>
+                  </Grid>
+                </UnderlinedGrid>
               </Grid>
-            </UnderlinedGrid>
-          </Grid>
+
+              <Grid item xs={12}>
+                <UnderlinedGrid
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="textSecondary">
+                      Quorum treshold
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography
+                      variant="subtitle1"
+                      color="textSecondary"
+                      align="right"
+                    >
+                      {state.data.votingSettings.quorumTreshold}{" "}
+                      {state.data.orgSettings.symbol}
+                    </Typography>
+                  </Grid>
+                </UnderlinedGrid>
+              </Grid>
+
+              <Grid item xs={12}>
+                <UnderlinedGrid
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <Grid item xs={6}>
+                    <Typography variant="body2" color="textSecondary">
+                      Maximum proposal size
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography
+                      variant="subtitle1"
+                      color="textSecondary"
+                      align="right"
+                    >
+                      {state.data.votingSettings.maxProposalSize}
+                    </Typography>
+                  </Grid>
+                </UnderlinedGrid>
+              </Grid>
+            </>
+          ) : null}
 
           <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Quorum treshold
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
-                  {state.data.votingSettings.quorumTreshold}{" "}
-                  {state.data.orgSettings.symbol}
-                </Typography>
-              </Grid>
-            </UnderlinedGrid>
+            <Grid container direction="row" justify="center">
+              <ViewMore variant="subtitle1" color="textSecondary" onClick={() => setShowMore(!showMore)}>
+                {" "}
+                {!showMore ? "VIEW ALL" : "VIEW LESS"}{" "}
+              </ViewMore>
+            </Grid>
           </Grid>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Maximum proposal size
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
-                  {state.data.votingSettings.maxProposalSize}
-                </Typography>
-              </Grid>
-            </UnderlinedGrid>
-          </Grid>
+
         </SecondContainer>
       </Grid>
     </>

@@ -118,6 +118,11 @@ const styles = {
   },
 };
 
+const LastInput = styled(Grid)({
+  marginTop: 14, 
+  paddingBottom: 37,
+});
+
 const GridNoPadding = styled(Grid)({
   padding: "0px !important",
 });
@@ -457,11 +462,10 @@ const GovernanceForm = ({
         </Typography>
       </SpacingContainer>
 
-      <Grid
+      <LastInput
         container
         direction="row"
         alignItems="center"
-        style={{ marginTop: 14, marginBottom: 37 }}
       >
         <AdditionContainer item xs={4}>
           <ItemContainer
@@ -486,7 +490,7 @@ const GovernanceForm = ({
             <ErrorText>{errors.maxProposalSize}</ErrorText>
           ) : null}
         </AdditionContainer>
-      </Grid>
+      </LastInput>
     </>
   );
 };

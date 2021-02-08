@@ -18,6 +18,9 @@ export const DAOExplorerRouter = (): JSX.Element => {
         <Voting />
       </Route>
       <Route path={`${match.url}/dao/:id`}>
+        <DAO />
+      </Route>
+      <Route path={`${match.url}/proposals/:id`}>
         <Proposals />
       </Route>
       <Route path={`${match.url}/treasury/:id`}>
