@@ -14,10 +14,10 @@ import { ActionTypes, TokenHolder } from "../state/types";
 import { MemberSettings } from "../../../services/contracts/baseDAO/types";
 
 const CustomTypography = styled(Typography)({
-  paddingBottom: 21,
+  paddingBottom: 10,
   borderBottom: "1px solid #3D3D3D",
   marginTop: 10,
-  marginBottom: 14,
+  marginBottom: 39,
 });
 
 const SecondContainer = styled(Grid)({
