@@ -4,6 +4,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Grid, LinearProgress, styled, Typography } from "@material-ui/core";
+import { useTokenHolders } from "../../../services/contracts/baseDAO/hooks/useTokenHolders";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -66,8 +67,10 @@ const TokenHolders = [
   },
 ];
 
-export const TokenHoldersDialog: React.FC = () => {
+export const TokenHoldersDialog: React.FC<{address: string}> = ({address}) => {
+  const { data } = useTokenHolders(address);
   const [open, setOpen] = React.useState(false);
+  // console.log(data);
 
   const handleClickOpen = () => {
     setOpen(true);
