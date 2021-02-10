@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
   styled,
   Grid,
@@ -13,7 +13,6 @@ import ProgressBar from "react-customizable-progressbar";
 import dayjs from "dayjs";
 import { toShortAddress } from "../../../utils";
 import {
-  Proposal,
   ProposalWithStatus,
 } from "../../../services/bakingBad/proposals/types";
 

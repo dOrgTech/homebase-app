@@ -145,7 +145,7 @@ export const Proposals: React.FC = () => {
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
       .map((proposal) => mapProposalData(proposal, dao?.address));
-  }, [proposalsData]);
+  }, [dao?.address, proposalsData]);
 
   const passedProposals = useMemo<ProposalTableRowData[]>(() => {
     if (!proposalsData) {
@@ -155,7 +155,7 @@ export const Proposals: React.FC = () => {
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.PASSED)
       .map((proposal) => mapProposalData(proposal, dao?.address));
-  }, [proposalsData]);
+  }, [dao?.address, proposalsData]);
 
   const allProposals = useMemo(() => {
     if (!proposalsData) {
@@ -163,7 +163,7 @@ export const Proposals: React.FC = () => {
     }
 
     return proposalsData.map((proposal) => mapProposalData(proposal, dao?.address));
-  }, [proposalsData]);
+  }, [dao?.address, proposalsData]);
 
   return (
     <>

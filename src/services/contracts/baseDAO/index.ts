@@ -13,13 +13,12 @@ import {
 } from "./types";
 import { getProposals } from "../../bakingBad/proposals";
 import {
-  Proposal,
   ProposalStatus,
   ProposalWithStatus,
 } from "../../bakingBad/proposals/types";
 import { Ledger } from "../../bakingBad/ledger/types";
 import { deployMetadataCarrier } from "./metadataCarrier/deploy";
-import { deployTreasuryDAO } from "./treasuryDAO/deploy";
+import { deployTreasuryDAO } from "./treasuryDAO";
 import dayjs from "dayjs";
 import { getOriginationTime } from "../../bakingBad/operations";
 
@@ -143,18 +142,18 @@ export const doDAOPropose = async ({
 }: ProposeParams) => {
   const contract = await getContract(tezos, contractAddress);
 
-  const result = await contract.methods
-    .propose(
-      tokensToFreeze,
-      agoraPostId,
-      transfers.map(({ amount, recipient }) => ({
-        transfer_type: {
-          amount,
-          recipient,
-        },
-      }))
-    )
-    .send();
+  const contractMethod = contract.methods.propose(
+    tokensToFreeze,
+    agoraPostId,
+    transfers.map(({ amount, recipient }) => ({
+      transfer_type: {
+        amount,
+        recipient,
+      },
+    }))
+  );
+
+  const result = await contractMethod.send();
 
   return result;
 };

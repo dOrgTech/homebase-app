@@ -1,11 +1,19 @@
-import { MichelsonMap } from "@taquito/taquito";
+import {
+  ContractMethod,
+  MichelsonMap,
+  TezosToolkit,
+  Wallet,
+} from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { getTestProvider } from "../../utils";
-import { code } from "./code";
+import code from "./michelson/contract";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
 import { addNewContractToIPFS } from "../../../pinata";
-import { Contract } from "../types";
+import { Contract, DAOItem, ProposeParams } from "../types";
+import { Parser } from "@taquito/michel-codec";
+import { MichelsonV1Expression } from "@taquito/rpc";
+import proposeMetadataCode from "./michelson/propose";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();
@@ -96,3 +104,43 @@ export const deployTreasuryDAO = async ({
     console.log("error ", e);
   }
 };
+
+export const calculateProposalSize = async (
+  contractAddress: string,
+  {
+    transfers,
+    agoraPostId,
+  }: Omit<ProposeParams["contractParams"], "tokensToFreeze">,
+  tezos: TezosToolkit
+): Promise<number> => {
+  const contract = await tezos.wallet.at(contractAddress);
+
+  const p = new Parser();
+
+  const { parameter } = contract.methods
+    .propose(
+      0,
+      agoraPostId,
+      transfers.map(({ amount, recipient }) => ({
+        transfer_type: {
+          amount,
+          recipient,
+        },
+      }))
+    )
+    .toTransferParams();
+  const dataJSON = (parameter?.value as any).args[1];
+
+  const typeJSON = p.parseMichelineExpression(proposeMetadataCode);
+  delete (typeJSON as any).annots;
+
+  const pack = await tezos.rpc.packData({
+    data: dataJSON as MichelsonV1Expression,
+    type: typeJSON as MichelsonV1Expression,
+  });
+
+  return pack.packed.length;
+};
+
+export const getTokensToStakeInPropose = (dao: DAOItem, proposalSize: number) =>
+  proposalSize * dao.frozenScaleValue + dao.frozenExtraValue;
