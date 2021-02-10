@@ -144,7 +144,8 @@ export const Proposals: React.FC = () => {
 
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) => mapProposalData(proposal, dao?.address));
+      .map((proposal) => 
+        mapProposalData(proposal, dao?.address));
   }, [proposalsData]);
 
   const passedProposals = useMemo<ProposalTableRowData[]>(() => {

@@ -34,11 +34,6 @@ const MainContainer = styled(Grid)({
   paddingBottom: "4vh",
 });
 
-const DetailsContainer = styled(Grid)({
-  paddingBottom: 0,
-  padding: "40px 112px",
-});
-
 const CycleContainer = styled(Grid)({
   padding: "20px 112px",
   borderBottom: "2px solid #3D3D3D",
@@ -101,58 +96,6 @@ const ButtonsContainer = styled(Grid)({
 const Cycle = styled(Typography)({
   opacity: 0.8,
 });
-
-const BoxItem = styled(Grid)({
-  paddingBottom: 24,
-  borderBottom: "2px solid #3D3D3D",
-});
-
-const Detail = styled(Grid)({
-  height: 93,
-  display: "flex",
-  alignItems: "center",
-  paddingBottom: 0,
-  borderBottom: "2px solid #3D3D3D",
-});
-
-const MetaData = styled(Grid)({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginBottom: 20,
-});
-
-const HistoryContent = styled(Grid)({
-  paddingBottom: 24,
-  paddingLeft: 53,
-});
-
-const HistoryItem = styled(Grid)({
-  paddingLeft: 63,
-  marginTop: 20,
-  paddingBottom: 12,
-  display: "flex",
-  height: "auto",
-});
-
-const HistoryBadge = styled(Grid)({
-  borderRadius: 4,
-  textAlign: "center",
-});
-
-const styles = {
-  blue: {
-    background: "#3866F9",
-    color: "white",
-    padding: 2,
-  },
-  yellow: {
-    background: "#DBDE39",
-    color: "#1C1F23",
-    padding: 2,
-  },
-};
 
 const Details = [
   {

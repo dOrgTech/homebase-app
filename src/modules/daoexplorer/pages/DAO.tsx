@@ -5,7 +5,7 @@ import {
   Grid,
   IconButton,
   styled,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
@@ -16,7 +16,7 @@ import VoteTimeIcon from "../../../assets/logos/voteTime.svg";
 import {
   mapProposalData,
   ProposalTableRow,
-  ProposalTableRowData
+  ProposalTableRowData,
 } from "../components/ProposalTableRow";
 import { useHistory, useParams } from "react-router-dom";
 import { TokenHoldersDialog } from "../components/TokenHoldersDialog";
@@ -24,40 +24,41 @@ import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "../../../services/bakingBad/proposals/types";
 import Timer from "react-compound-timer";
+import { TopHoldersTableRow } from "../components/TopHoldersTableRow";
 
 const SideBar = styled(Grid)({
   width: 102,
-  borderRight: "2px solid #3D3D3D"
+  borderRight: "2px solid #3D3D3D",
 });
 
 const MainContainer = styled(Grid)({
   minHeight: 325,
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D"
+  borderBottom: "2px solid #3D3D3D",
 });
 
 const SidebarButton = styled(IconButton)({
   paddingTop: 32,
-  width: "100%"
+  width: "100%",
 });
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
-  paddingBottom: 40
+  paddingBottom: 40,
 });
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
-  minHeight: "calc(100vh - 102px)"
+  minHeight: "calc(100vh - 102px)",
 }));
 
 const DAOInfoTitleAndDesc = styled(Grid)({
   maxWidth: 600,
-  marginBottom: 40
+  marginBottom: 40,
 });
 
 const DAOInfoVotingPeriod = styled(Grid)({
-  minWidth: 320
+  minWidth: 320,
 });
 
 const BigIconContainer = styled(Box)({
@@ -65,72 +66,72 @@ const BigIconContainer = styled(Box)({
 
   "& > img": {
     display: "block",
-    margin: "auto"
-  }
+    margin: "auto",
+  },
 });
 
 const StatsContainer = styled(Grid)({
   height: 175,
-  borderBottom: "2px solid #3D3D3D"
+  borderBottom: "2px solid #3D3D3D",
 });
 
 const StatsBox = styled(Grid)({
   borderRight: "2px solid #3D3D3D",
-  width: "unset"
+  width: "unset",
 });
 
 const TokensLocked = styled(StatsBox)({
-  padding: "0 50px 0 112px"
+  padding: "0 50px 0 112px",
 });
 
 const VotingAddresses = styled(StatsBox)({
-  minWidth: 250
+  minWidth: 250,
 });
 
 const ActiveProposals = styled(StatsBox)({
-  paddingLeft: "42px"
+  paddingLeft: "42px",
+  cursor: "pointer",
 });
 
 const LockedTokensBar = styled(LinearProgress)({
   width: "100%",
   "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D"
-  }
+    background: "#3D3D3D",
+  },
 });
 
 const TableContainer = styled(Box)({
   width: "100%",
   padding: "72px 112px",
   boxSizing: "border-box",
-  paddingBottom: "24px"
+  paddingBottom: "24px",
 });
 
 const TableHeader = styled(Grid)({
   borderBottom: "2px solid #3D3D3D",
-  paddingBottom: 20
+  paddingBottom: 20,
 });
 
 const UnderlineText = styled(Typography)({
   textDecoration: "underline",
   cursor: "pointer",
-  marginBottom: 28
+  marginBottom: 28,
 });
 
 const CustomH1 = styled(Typography)({
   fontSize: 55,
   lineHeight: "92px",
   textDecoration: "underline",
-  fontWeight: 400
+  fontWeight: 400,
+});
+
+const NoProposals = styled(Typography)({
+  marginTop: 20,
+  marginBottom: 20,
 });
 
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
-    {children}
-  </Typography>
-);
-
-const ProposalTableHeadTextRight: React.FC = ({ children }) => (
-  <Typography variant="subtitle1" color="textSecondary" align="center">
     {children}
   </Typography>
 );
@@ -181,9 +182,24 @@ export const DAO: React.FC = () => {
     }
 
     return proposalsData
-      .filter(proposalData => proposalData.status === ProposalStatus.ACTIVE)
-      .map(proposal => mapProposalData(proposal, data?.address));
+      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
+      .map((proposal) => mapProposalData(proposal, data?.address));
   }, [data?.address, proposalsData]);
+
+  const tokenHolders = [
+    {
+      username: "Username89",
+      votes: "1,232,123.02",
+      weight: "22.33",
+      proposals_voted: 12,
+    },
+    {
+      username: "Username90",
+      votes: "454,555.50",
+      weight: "15,34",
+      proposals_voted: 20,
+    },
+  ];
 
   return (
     <PageLayout container wrap="nowrap">
@@ -205,9 +221,7 @@ export const DAO: React.FC = () => {
                 </Typography>
               </Box>
               <Box paddingBottom="10px">
-                <CustomH1  color="textSecondary">
-                  {name}
-                </CustomH1>
+                <CustomH1 color="textSecondary">{name}</CustomH1>
               </Box>
               <Box>
                 <Typography variant="body1" color="textSecondary">
@@ -327,6 +341,7 @@ export const DAO: React.FC = () => {
               container
               direction="column"
               justify="center"
+              onClick={() => history.push(`/explorer/proposals/${id}`)}
             >
               <Box>
                 <Typography variant="subtitle2" color="secondary">
@@ -350,9 +365,16 @@ export const DAO: React.FC = () => {
                 <ProposalTableHeadText>STATUS</ProposalTableHeadText>
               </Grid>
             </TableHeader>
-            {activeProposals.map((proposal, i) => (
-              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
-            ))}
+            {activeProposals.length > 0 &&
+              activeProposals.map((proposal, i) => (
+                <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+              ))}
+
+            {activeProposals.length === 0 ? (
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No active proposals
+              </NoProposals>
+            ) : null}
           </TableContainer>
           <Grid container direction="row" justify="center">
             <UnderlineText
@@ -367,20 +389,22 @@ export const DAO: React.FC = () => {
           <TableContainer>
             <TableHeader container wrap="nowrap">
               <Grid item xs={5}>
-                <ProposalTableHeadText>TOP TOKEN HOLDERS BY ADDRESS</ProposalTableHeadText>
+                <ProposalTableHeadText>
+                  TOP TOKEN HOLDERS BY ADDRESS
+                </ProposalTableHeadText>
               </Grid>
               <Grid item xs={3}>
-                <ProposalTableHeadTextRight>VOTES</ProposalTableHeadTextRight>
+                <ProposalTableHeadText>VOTES</ProposalTableHeadText>
               </Grid>
-              <Grid item xs={3}>
-                <ProposalTableHeadTextRight>WEIGHT</ProposalTableHeadTextRight>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>WEIGHT</ProposalTableHeadText>
               </Grid>
-              <Grid item xs={3}>
-                <ProposalTableHeadTextRight>WEIGHT</ProposalTableHeadTextRight>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
               </Grid>
             </TableHeader>
-            {activeProposals.map((proposal, i) => (
-              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+            {tokenHolders.map((holder, i) => (
+              <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
             ))}
           </TableContainer>
         </Grid>

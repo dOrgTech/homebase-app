@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -9,16 +9,11 @@ import {
   styled,
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
-import { useSelector } from "react-redux";
-
 import { ConnectWallet } from "./components/ConnectWallet";
 import { StepInfo } from "./state/types";
-import { AppState } from "../../store";
 import { CreatorContext } from "./state/context";
 import { CurrentStep, STEPS } from "./steps";
 import { NavigationBar } from "./components/NavigationBar";
-import { TezosContext } from "../../services/beacon/context";
-import { addNewContractToIPFS } from "../../services/pinata";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -41,7 +36,7 @@ const StepOneContentContainer = styled(Grid)({
 
 const StyledStepper = styled(Stepper)({
   background: "inherit",
-  marginTop: 70
+  marginTop: 70,
 });
 
 const StepContentHeigth = styled(Grid)({
@@ -79,11 +74,8 @@ const ProgressContainer = styled(Grid)({
 
 export const DAOCreate: React.FC = () => {
   const creator = useContext(CreatorContext);
-  // const tezos = useContext(TezosContext);
-  
   const { activeStep, governanceStep, back, next } = creator.state;
   const progress = useMemo(() => activeStep * 25, [activeStep]);
-
 
   return (
     <PageContainer container direction="row">

@@ -108,10 +108,6 @@ const Value = styled(Typography)({
   padding: "15%",
 });
 
-const LastElement = styled(Grid)({
-  marginBottom: 37,
-});
-
 const styles = {
   voting: {
     marginTop: 6,
@@ -119,7 +115,7 @@ const styles = {
 };
 
 const LastInput = styled(Grid)({
-  marginTop: 14, 
+  marginTop: 14,
   paddingBottom: 37,
 });
 
@@ -352,7 +348,8 @@ const GovernanceForm = ({
           <GridNoPadding item xs={4}>
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
-                {getIn(values, "frozenScaleValue")}% of Frozen {orgSettings.symbol}
+                {getIn(values, "frozenScaleValue")}% of Frozen{" "}
+                {orgSettings.symbol}
               </Value>
             </CustomSliderValue>
           </GridNoPadding>
@@ -447,7 +444,9 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">{orgSettings.symbol}</Typography>
+              <Typography color="textSecondary">
+                {orgSettings.symbol}
+              </Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.quorumTreshold && touched.quorumTreshold ? (
@@ -462,11 +461,7 @@ const GovernanceForm = ({
         </Typography>
       </SpacingContainer>
 
-      <LastInput
-        container
-        direction="row"
-        alignItems="center"
-      >
+      <LastInput container direction="row" alignItems="center">
         <AdditionContainer item xs={4}>
           <ItemContainer
             container
@@ -483,7 +478,9 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">{orgSettings.symbol}</Typography>
+              <Typography color="textSecondary">
+                {orgSettings.symbol}
+              </Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.maxProposalSize && touched.maxProposalSize ? (

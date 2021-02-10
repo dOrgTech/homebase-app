@@ -1,10 +1,4 @@
-import {
-  Grid,
-  styled,
-  Typography,
-  withStyles,
-  InputAdornment,
-} from "@material-ui/core";
+import { Grid, styled, Typography, withStyles } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
@@ -113,13 +107,13 @@ const Total = ({ values }: { values: MemberSettings }) => {
 };
 
 const validate = (values: MemberSettings) => {
-  const handleLedgerValidation = (field: any) => {
-    if (field === "tokenHolders") {
-      return !!values["tokenHolders"].length;
-    }
+  // const handleLedgerValidation = (field: any) => {
+  //   if (field === "tokenHolders") {
+  //     return !!values["tokenHolders"].length;
+  //   }
 
-    return !values[field as keyof MemberSettings];
-  };
+  //   return !values[field as keyof MemberSettings];
+  // };
 
   // handleErrorMessages(values, handleLedgerValidation);
 };

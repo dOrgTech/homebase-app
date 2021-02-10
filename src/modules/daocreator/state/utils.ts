@@ -1,4 +1,3 @@
-import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import {
   MetadataStorageState,
   Token,

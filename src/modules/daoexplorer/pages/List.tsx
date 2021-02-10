@@ -5,34 +5,32 @@ import {
   Grid,
   styled,
   Typography,
-  withTheme
+  withTheme,
 } from "@material-ui/core";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { useDAOs } from "../../../services/contracts/baseDAO/hooks/useDAOs";
-import { MockDAOs } from "../../../store/mock/mock";
-import { addNewContractToIPFS } from "../../../services/pinata";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",
   paddingLeft: "6%",
   paddingTop: "4%",
   marginBottom: 60,
-  background: "inherit"
+  background: "inherit",
 });
 
 const StyledButton = styled(Button)({
-  height: 69
+  height: 69,
 });
 
 const TotalDao = styled(Typography)({
   marginRight: 37,
   lineHeight: "124.3%",
-  letterSpacing: "-0.01em"
+  letterSpacing: "-0.01em",
 });
 
-const DaoContainer = styled(withTheme(Grid))(props => ({
+const DaoContainer = styled(withTheme(Grid))((props) => ({
   height: 179,
   border: "2px solid #3D3D3D",
   boxSizing: "border-box",
@@ -43,29 +41,29 @@ const DaoContainer = styled(withTheme(Grid))(props => ({
   borderTop: "none",
   "&:nth-child(odd)": {
     borderLeft: "none",
-    paddingLeft: "6%"
+    paddingLeft: "6%",
   },
   "&:nth-child(even)": {
     borderRight: "none",
     borderLeft: "none",
     paddingLeft: "3%",
-    paddingRight: "6%"
+    paddingRight: "6%",
   },
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: "2px solid #81FEB7",
-    cursor: "pointer"
-  }
+    cursor: "pointer",
+  },
 }));
 
 const GridBackground = styled(Grid)({
   background: "inherit",
-  borderTop: "2px solid #3D3D3D"
+  borderTop: "2px solid #3D3D3D",
 });
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
-  paddingBottom: 40
+  paddingBottom: 40,
 });
 
 export const DAOsList: React.FC = () => {
@@ -76,16 +74,16 @@ export const DAOsList: React.FC = () => {
 
   const currentDAOs = useMemo(() => {
     if (daos) {
-      const formattedDAOs = daos.map(dao => ({
+      const formattedDAOs = daos.map((dao) => ({
         id: dao.address,
         name: dao.unfrozenToken.name,
         symbol: dao.unfrozenToken.symbol,
-        voting_addresses: dao.ledger.length
+        voting_addresses: dao.ledger.length,
       }));
 
       if (searchText) {
         return formattedDAOs.filter(
-          formattedDao =>
+          (formattedDao) =>
             formattedDao.name
               .toLowerCase()
               .includes(searchText.toLowerCase()) ||
@@ -104,12 +102,6 @@ export const DAOsList: React.FC = () => {
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim());
   };
-
-  // useEffect(() => {
-  //   (async () => {
-  //     await addNewContractToIPFS("KT1FvSHdoD6gJX6LgMJRJ1Fr7bXpGLLv6xEP");
-  //   })();
-  // }, []);
 
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">
@@ -157,7 +149,7 @@ export const DAOsList: React.FC = () => {
                 {dao.symbol}
               </Typography>
               <Grid container direction="row" alignItems="center">
-                <Grid item xs={12} sm={12} lg={6} >
+                <Grid item xs={12} sm={12} lg={6}>
                   <Typography variant="h5" color="textSecondary">
                     {dao.name}
                   </Typography>

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
   styled,
   Grid,
@@ -12,12 +12,7 @@ import { useHistory } from "react-router-dom";
 import ProgressBar from "react-customizable-progressbar";
 import dayjs from "dayjs";
 import { toShortAddress } from "../../../utils";
-import {
-  Proposal,
-  ProposalWithStatus,
-} from "../../../services/bakingBad/proposals/types";
-
-type ProgressColor = "success" | "warning" | "danger";
+import { ProposalWithStatus } from "../../../services/bakingBad/proposals/types";
 
 const progressColorMap = {
   success: "#81FEB7",
@@ -107,7 +102,7 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
   votes: { value, support },
   cycle,
   daoId,
-  id
+  id,
 }) => {
   const history = useHistory();
   const color = support ? "success" : "danger";

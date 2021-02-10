@@ -1,5 +1,10 @@
 import React, { useContext, useEffect, useMemo } from "react";
-import { Button, Grid, styled as styledMat, Typography } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  styled as styledMat,
+  Typography,
+} from "@material-ui/core";
 import Rocket from "../../../assets/img/rocket.svg";
 import { CreatorContext } from "../state/context";
 import { useOriginateTreasury } from "../../../services/contracts/baseDAO/hooks/useOriginateTreasury";
@@ -17,11 +22,9 @@ const WaitingText = styledMat(Typography)({
   marginTop: 9,
 });
 
-
 const CustomButton = styledMat(Button)({
   marginTop: 20,
 });
-
 
 const animation1 = keyframes`
   0% {
@@ -38,7 +41,7 @@ const animation1 = keyframes`
   }
  `;
 
- const animation2 = keyframes`
+const animation2 = keyframes`
   0% {
    opacity: 0;
   }
@@ -59,7 +62,7 @@ const animation1 = keyframes`
   }
  `;
 
- const animation3 = keyframes`
+const animation3 = keyframes`
   0% {
    opacity: 0;
   }
@@ -80,24 +83,22 @@ const animation1 = keyframes`
   }
  }`;
 
- const Dot1 = styled.span`
- animation: ${animation1} 2s linear infinite;
+const Dot1 = styled.span`
+  animation: ${animation1} 2s linear infinite;
 `;
 
 const Dot2 = styled.span`
- animation: ${animation2} 2s linear infinite;
+  animation: ${animation2} 2s linear infinite;
 `;
 
 const Dot3 = styled.span`
- animation: ${animation3} 2s linear infinite;
+  animation: ${animation3} 2s linear infinite;
 `;
 
 export const Review: React.FC = () => {
   const { state } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
-
-
 
   const metadataCarrierParams: MetadataCarrierParameters = useMemo(
     () => ({
@@ -154,7 +155,9 @@ export const Review: React.FC = () => {
         <Grid item xs={12}>
           {!isLoading ? (
             <WaitingText variant="subtitle1" color="textSecondary">
-              Waiting for confirmation <Dot1>.</Dot1><Dot2>.</Dot2><Dot3>.</Dot3>
+              Waiting for confirmation <Dot1>.</Dot1>
+              <Dot2>.</Dot2>
+              <Dot3>.</Dot3>
             </WaitingText>
           ) : (
             <>
@@ -163,9 +166,14 @@ export const Review: React.FC = () => {
               </WaitingText>
 
               {data && data.address ? (
-                <CustomButton color="secondary" variant="outlined" onClick={() => history.push("/explorer/dao/" + data.address)}>Go to my DAO</CustomButton>
+                <CustomButton
+                  color="secondary"
+                  variant="outlined"
+                  onClick={() => history.push("/explorer/dao/" + data.address)}
+                >
+                  Go to my DAO
+                </CustomButton>
               ) : null}
-
             </>
           )}
         </Grid>

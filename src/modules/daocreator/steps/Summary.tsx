@@ -5,24 +5,24 @@ import { CreatorContext } from "../state/context";
 import { ActionTypes, TokenHolder } from "../state/types";
 
 const CustomTypography = styled(Typography)({
-  marginTop: 10
+  marginTop: 10,
 });
 
 const SecondContainer = styled(Grid)({
-  marginTop: 25
+  marginTop: 25,
 });
 
 const TitleSpacing = styled(Typography)({
-  marginTop: 12
+  marginTop: 12,
 });
 
 const ContainerSpacing = styled(Typography)({
-  marginTop: 24
+  marginTop: 24,
 });
 
 const ContainerSpacingButton = styled(Typography)({
   marginTop: 24,
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const ContainerButton = styled(Typography)({
@@ -35,30 +35,30 @@ const ContainerButton = styled(Typography)({
 const AdminContainer = styled(Grid)({
   border: "1px solid #3D3D3D",
   marginTop: 16,
-  padding: "16px 18px"
+  padding: "16px 18px",
 });
 
 const AdminAddress = styled(Typography)({
-  wordBreak: "break-all"
+  wordBreak: "break-all",
 });
 
 const UnderlinedGrid = styled(Grid)({
   borderBottom: "1px solid #3D3D3D",
-  padding: 2
+  padding: 2,
 });
 
 const TokenHoldersContainer = styled(Box)({
   marginTop: 5,
   maxHeight: 200,
   overflowY: "auto",
-  width: "100%"
+  width: "100%",
 });
 
 const ViewMore = styled(Typography)({
   cursor: "pointer",
   marginTop: 30,
   marginBottom: 30,
-  textDecoration: "underline"
+  textDecoration: "underline",
 });
 
 export const Summary = (): JSX.Element => {
@@ -83,13 +83,13 @@ export const Summary = (): JSX.Element => {
         handler: () => {
           dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
         },
-        text: "LAUNCH"
+        text: "LAUNCH",
       },
       back: {
         handler: () =>
           dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 }),
-        text: "BACK"
-      }
+        text: "BACK",
+      },
     });
   }, [activeStep, dispatch]);
 
@@ -353,14 +353,16 @@ export const Summary = (): JSX.Element => {
 
           <Grid item xs={12}>
             <Grid container direction="row" justify="center">
-              <ViewMore variant="subtitle1" color="textSecondary" onClick={() => setShowMore(!showMore)}>
+              <ViewMore
+                variant="subtitle1"
+                color="textSecondary"
+                onClick={() => setShowMore(!showMore)}
+              >
                 {" "}
                 {!showMore ? "VIEW ALL" : "VIEW LESS"}{" "}
               </ViewMore>
             </Grid>
           </Grid>
-
-
         </SecondContainer>
       </Grid>
     </>
