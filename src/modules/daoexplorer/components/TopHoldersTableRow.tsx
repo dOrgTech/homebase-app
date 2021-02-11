@@ -47,17 +47,17 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
         </Grid>
       </Grid>
       <Grid item xs={3}>
-        <Typography variant="body1" color="textSecondary" align="center">
+        <Typography variant="body1" color="textSecondary">
           {votes}
         </Typography>
       </Grid>
       <Grid item xs={2}>
-        <Typography variant="body1" color="textSecondary" align="center">
+        <Typography variant="body1" color="textSecondary">
           {weight}%
         </Typography>
       </Grid>
       <Grid item xs={2}>
-        <Typography variant="body1" color="textSecondary" align="center">
+        <Typography variant="body1" color="textSecondary">
           {proposals_voted}
         </Typography>
       </Grid>

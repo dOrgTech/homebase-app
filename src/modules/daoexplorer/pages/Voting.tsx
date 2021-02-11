@@ -10,7 +10,9 @@ import React from "react";
 import { useParams } from "react-router";
 import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "../../../services/contracts/baseDAO/hooks/useProposal";
+import { DownVotesDialog } from "../components/DownVotesDialog";
 import { SideBar } from "../components/SideBar";
+import { UpVotesDialog } from "../components/UpVotesDialog";
 import { VoteDialog } from "../components/VoteDialog";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
@@ -97,32 +99,32 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-const Details = [
-  {
-    message: "Reduces DAO’s Treasury by 50ETH",
-  },
-  {
-    message: "Increases 0x89878 wallet by 50ETH",
-  },
-  {
-    message: "Reduces DAO’s Treasury by 50ETH",
-  },
-];
+// const Details = [
+//   {
+//     message: "Reduces DAO’s Treasury by 50ETH"
+//   },
+//   {
+//     message: "Increases 0x89878 wallet by 50ETH"
+//   },
+//   {
+//     message: "Reduces DAO’s Treasury by 50ETH"
+//   }
+// ];
 
-const History = [
-  {
-    date: "December 19th, 2020. 11:09:21 AM",
-    status: "created",
-  },
-  {
-    date: "December 20th, 2020. 11:09:21 AM",
-    status: "active",
-  },
-  {
-    date: "December 21st, 2020. 11:09:21 AM",
-    status: "passed",
-  },
-];
+// const History = [
+//   {
+//     date: "December 19th, 2020. 11:09:21 AM",
+//     status: "created"
+//   },
+//   {
+//     date: "December 20th, 2020. 11:09:21 AM",
+//     status: "active"
+//   },
+//   {
+//     date: "December 21st, 2020. 11:09:21 AM",
+//     status: "passed"
+//   }
+// ];
 
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
@@ -205,9 +207,10 @@ export const Voting: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item>
-                  <Typography variant="subtitle2" color="secondary">
-                    VIEW ADDRESSES
-                  </Typography>
+                  <UpVotesDialog
+                    totalVotes={totalVotes}
+                    upVotesPercentage={upVotesPercentage}
+                  />
                 </Grid>
               </Grid>
               <Grid container direction="row" alignItems="center">
@@ -246,9 +249,10 @@ export const Voting: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item>
-                  <TextAgainst variant="subtitle2" color="secondary">
-                    VIEW ADDRESSES
-                  </TextAgainst>
+                  <DownVotesDialog
+                    totalVotes={totalVotes}
+                    downVotesPercentage={downVotesPercentage}
+                  />
                 </Grid>
               </Grid>
               <Grid container direction="row" alignItems="center">
