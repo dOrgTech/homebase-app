@@ -7,7 +7,7 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 
@@ -69,6 +69,7 @@ const Subtitle = styled(Typography)({
 export const SelectTemplate = (): JSX.Element => {
   const { dispatch } = useContext(CreatorContext);
   const history = useHistory();
+  const match = useRouteMatch();
 
   useEffect(() => {
     dispatch({
@@ -112,11 +113,7 @@ export const SelectTemplate = (): JSX.Element => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer
-                onClick={() =>
-                  dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 })
-                }
-              >
+              <FooterContainer onClick={() => history.push(`${match.url}/dao`)}>
                 <Typography variant="subtitle1" color="textSecondary">
                   USE TEMPLATE
                 </Typography>
@@ -140,11 +137,7 @@ export const SelectTemplate = (): JSX.Element => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer
-                onClick={() =>
-                  dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 })
-                }
-              >
+              <FooterContainer onClick={() => history.push(`${match.url}/dao`)}>
                 <Typography variant="subtitle1" color="textSecondary">
                   USE TEMPLATE
                 </Typography>

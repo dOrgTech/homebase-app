@@ -122,10 +122,7 @@ export const DAOCreate: React.FC = () => {
         <ContentContainer item xs={11}>
           {true ? (
             <StepContentContainer item container justify="center">
-              <CurrentStep
-                governanceStep={governanceStep}
-                activeStep={activeStep}
-              />
+              <CurrentStep />
             </StepContentContainer>
           ) : (
             <StepOneContentContainer item container justify="center">

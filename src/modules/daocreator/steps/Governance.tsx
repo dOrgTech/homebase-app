@@ -15,6 +15,8 @@ import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 import { handleGovernanceFormErrors } from "../utils";
 import { VotingSettings } from "../../../services/contracts/baseDAO/types";
+import { useHistory } from "react-router";
+import { useRouteMatch } from "react-router-dom";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
@@ -108,10 +110,6 @@ const Value = styled(Typography)({
   padding: "15%",
 });
 
-const LastElement = styled(Grid)({
-  marginBottom: 37,
-});
-
 const styles = {
   voting: {
     marginTop: 6,
@@ -119,7 +117,7 @@ const styles = {
 };
 
 const LastInput = styled(Grid)({
-  marginTop: 14, 
+  marginTop: 14,
   paddingBottom: 37,
 });
 
@@ -143,6 +141,8 @@ const GovernanceForm = ({
       data: { orgSettings },
     },
   } = useContext(CreatorContext);
+  const match = useRouteMatch();
+  const history = useHistory();
 
   useEffect(() => {
     if (values) {
@@ -156,15 +156,21 @@ const GovernanceForm = ({
         },
         back: {
           text: "BACK",
-          handler: () =>
-            dispatch({
-              type: ActionTypes.UPDATE_GOVERNANCE_STEP,
-              step: governanceStep - 1,
-            }),
+          handler: () => history.push(`dao`),
         },
       });
     }
-  }, [activeStep, dispatch, errors, governanceStep, submitForm, values]);
+  }, [
+    activeStep,
+    dispatch,
+    errors,
+    governanceStep,
+    history,
+    match.path,
+    match.url,
+    submitForm,
+    values,
+  ]);
 
   return (
     <>
@@ -352,7 +358,8 @@ const GovernanceForm = ({
           <GridNoPadding item xs={4}>
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
-                {getIn(values, "frozenScaleValue")}% of Frozen {orgSettings.symbol}
+                {getIn(values, "frozenScaleValue")}% of Frozen{" "}
+                {orgSettings.symbol}
               </Value>
             </CustomSliderValue>
           </GridNoPadding>
@@ -447,7 +454,9 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">{orgSettings.symbol}</Typography>
+              <Typography color="textSecondary">
+                {orgSettings.symbol}
+              </Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.quorumTreshold && touched.quorumTreshold ? (
@@ -462,11 +471,7 @@ const GovernanceForm = ({
         </Typography>
       </SpacingContainer>
 
-      <LastInput
-        container
-        direction="row"
-        alignItems="center"
-      >
+      <LastInput container direction="row" alignItems="center">
         <AdditionContainer item xs={4}>
           <ItemContainer
             container
@@ -483,7 +488,9 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">{orgSettings.symbol}</Typography>
+              <Typography color="textSecondary">
+                {orgSettings.symbol}
+              </Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.maxProposalSize && touched.maxProposalSize ? (
@@ -498,8 +505,9 @@ const GovernanceForm = ({
 //@TODO: Remove any from this component
 export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
-  const { activeStep } = state;
   const { votingSettings } = state.data;
+  const history = useHistory();
+  const match = useRouteMatch();
 
   const saveStepInfo = (
     values: VotingSettings,
@@ -512,7 +520,7 @@ export const Governance: React.FC = () => {
     updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
-    dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
+    history.push(`token`);
   };
 
   return (

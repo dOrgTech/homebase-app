@@ -12,6 +12,7 @@ import { TextField as FormikTextField } from "formik-material-ui";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, TokenHolder } from "../state/types";
 import { MemberSettings } from "../../../services/contracts/baseDAO/types";
+import { useHistory, useRouteMatch } from "react-router";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
@@ -135,6 +136,9 @@ const TokenSettingsForm = ({
     state: { activeStep },
   } = useContext(CreatorContext);
 
+  const history = useHistory();
+  const match = useRouteMatch();
+
   useEffect(() => {
     if (values) {
       dispatch({
@@ -147,12 +151,20 @@ const TokenSettingsForm = ({
         },
         back: {
           text: "BACK",
-          handler: () =>
-            dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 }),
+          handler: () => history.push(`voting`),
         },
       });
     }
-  }, [activeStep, dispatch, errors, submitForm, values]);
+  }, [
+    activeStep,
+    dispatch,
+    errors,
+    history,
+    match.path,
+    match.url,
+    submitForm,
+    values,
+  ]);
 
   //@TODO: Refactor token holder and balance inputs to use same logic
   return (
@@ -311,6 +323,9 @@ const TokenSettingsForm = ({
 export const TokenSettings = (): JSX.Element => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { memberSettings } = state.data;
+  const history = useHistory();
+  const match = useRouteMatch();
+
   const saveStepInfo = (
     values: MemberSettings,
     { setSubmitting }: { setSubmitting: (b: boolean) => void }
@@ -321,7 +336,7 @@ export const TokenSettings = (): JSX.Element => {
     });
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_MEMBERS_SETTINGS, members: values });
-    dispatch({ type: ActionTypes.UPDATE_STEP, step: 3 });
+    history.push(`summary`);
   };
 
   return (
