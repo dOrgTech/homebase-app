@@ -6,6 +6,7 @@ import {
   Slider,
   withStyles,
   withTheme,
+  Box,
 } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
 import React, { useContext, useEffect } from "react";
@@ -507,7 +508,6 @@ export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { votingSettings } = state.data;
   const history = useHistory();
-  const match = useRouteMatch();
 
   const saveStepInfo = (
     values: VotingSettings,
@@ -524,7 +524,7 @@ export const Governance: React.FC = () => {
   };
 
   return (
-    <>
+    <Box maxWidth={620} marginLeft="-8vw">
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12}>
           <Typography variant="h3" color="textSecondary">
@@ -575,6 +575,6 @@ export const Governance: React.FC = () => {
           );
         }}
       </Formik>
-    </>
+    </Box>
   );
 };

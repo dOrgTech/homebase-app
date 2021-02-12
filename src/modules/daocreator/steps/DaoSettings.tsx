@@ -5,6 +5,7 @@ import {
   withStyles,
   TextareaAutosize,
   withTheme,
+  Box,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
@@ -190,7 +191,6 @@ const DaoSettingsForm = withRouter(
 export const DaoSettings = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext);
   const { orgSettings } = state.data;
-  const match = useRouteMatch();
   const history = useHistory();
 
   const saveStepInfo = (
@@ -208,7 +208,7 @@ export const DaoSettings = (): JSX.Element => {
   };
 
   return (
-    <>
+    <Box maxWidth="620px">
       <Grid
         container
         direction="row"
@@ -257,6 +257,6 @@ export const DaoSettings = (): JSX.Element => {
           );
         }}
       </Formik>
-    </>
+    </Box>
   );
 };

@@ -1,4 +1,5 @@
 import {
+  Box,
   CardContent,
   Grid,
   Paper,
@@ -7,18 +8,18 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 
 const CustomCard = styled(withTheme(Grid))((props) => ({
   minHeight: 248,
   boxShadow: "none",
+  width: 380,
   background: props.theme.palette.primary.main,
   border: "1px solid #3D3D3D",
   boxSizing: "border-box",
   borderRadius: "0px",
-  marginTop: 25,
   "&:first-child": {
     marginLeft: "0px",
   },
@@ -69,7 +70,6 @@ const Subtitle = styled(Typography)({
 export const SelectTemplate = (): JSX.Element => {
   const { dispatch } = useContext(CreatorContext);
   const history = useHistory();
-  const match = useRouteMatch();
 
   useEffect(() => {
     dispatch({
@@ -82,21 +82,17 @@ export const SelectTemplate = (): JSX.Element => {
   }, [dispatch, history]);
 
   return (
-    <>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <Typography variant="h3" color="textSecondary">
-            Select template
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Phrase variant="subtitle1" color="textSecondary">
-            Create an organization by picking a template below.
-          </Phrase>
-        </Grid>
+    <Box>
+      <Box>
+        <Typography variant="h3" color="textSecondary">
+          Select template
+        </Typography>
+        <Phrase variant="subtitle1" color="textSecondary">
+          Create an organization by picking a template below.
+        </Phrase>
 
-        <Grid item container direction="row" justify="space-between">
-          <Grid item xs={6}>
+        <Grid container direction="row" justify="center" wrap="wrap">
+          <Grid item>
             <CustomCard>
               <CustomCardContent>
                 <Grid container direction="row" alignItems="center">
@@ -113,14 +109,19 @@ export const SelectTemplate = (): JSX.Element => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer onClick={() => history.push(`${match.url}/dao`)}>
-                <Typography variant="subtitle1" color="textSecondary">
+              <FooterContainer onClick={() => history.push(`dao`)}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  display="block"
+                  style={{ margin: "auto" }}
+                >
                   USE TEMPLATE
                 </Typography>
               </FooterContainer>
             </CustomCard>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item>
             <CustomCard>
               <CustomCardContent>
                 <Grid container direction="row" alignItems="center">
@@ -137,15 +138,20 @@ export const SelectTemplate = (): JSX.Element => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer onClick={() => history.push(`${match.url}/dao`)}>
-                <Typography variant="subtitle1" color="textSecondary">
+              <FooterContainer onClick={() => history.push(`dao`)}>
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  display="block"
+                  style={{ margin: "auto" }}
+                >
                   USE TEMPLATE
                 </Typography>
               </FooterContainer>
             </CustomCard>
           </Grid>
         </Grid>
-      </Grid>
-    </>
+      </Box>
+    </Box>
   );
 };

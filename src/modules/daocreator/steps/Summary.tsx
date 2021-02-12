@@ -94,7 +94,7 @@ export const Summary = (): JSX.Element => {
   }, [activeStep, dispatch, history, match.path, match.url]);
 
   return (
-    <>
+    <Box maxWidth={650}>
       <Grid
         container
         direction="row"
@@ -365,6 +365,6 @@ export const Summary = (): JSX.Element => {
           </Grid>
         </SecondContainer>
       </Grid>
-    </>
+    </Box>
   );
 };

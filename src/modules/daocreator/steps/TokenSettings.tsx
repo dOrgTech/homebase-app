@@ -4,6 +4,7 @@ import {
   Typography,
   withStyles,
   InputAdornment,
+  Box,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
@@ -324,7 +325,6 @@ export const TokenSettings = (): JSX.Element => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { memberSettings } = state.data;
   const history = useHistory();
-  const match = useRouteMatch();
 
   const saveStepInfo = (
     values: MemberSettings,
@@ -340,7 +340,7 @@ export const TokenSettings = (): JSX.Element => {
   };
 
   return (
-    <>
+    <Box maxWidth={650}>
       <Grid
         container
         direction="row"
@@ -388,6 +388,6 @@ export const TokenSettings = (): JSX.Element => {
           );
         }}
       </Formik>
-    </>
+    </Box>
   );
 };

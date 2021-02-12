@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -9,28 +9,23 @@ import {
   styled,
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
-import { useSelector } from "react-redux";
 
 import { ConnectWallet } from "./components/ConnectWallet";
 import { StepInfo } from "./state/types";
-import { AppState } from "../../store";
 import { CreatorContext } from "./state/context";
-import { CurrentStep, STEPS } from "./steps";
+import { CurrentStep, STEPS, useStepNumber } from "./steps";
 import { NavigationBar } from "./components/NavigationBar";
-import { TezosContext } from "../../services/beacon/context";
-import { addNewContractToIPFS } from "../../services/pinata";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
+  minHeight: "calc(100vh - 102px)",
 }));
 
 const StepContentContainer = styled(Grid)({
-  paddingLeft: "16%",
-  paddingRight: "16%",
   alignItems: "center",
-  height: "inherit",
-  marginTop: "15%",
-  display: "block",
+  height: "100%",
+  maxHeight: "calc(100vh - 177px)",
+  overflowY: "auto"
 });
 
 const StepOneContentContainer = styled(Grid)({
@@ -41,18 +36,12 @@ const StepOneContentContainer = styled(Grid)({
 
 const StyledStepper = styled(Stepper)({
   background: "inherit",
-  marginTop: 70
+  marginTop: 70,
 });
 
 const StepContentHeigth = styled(Grid)({
-  height: "80vh",
+  minHeight: "80vh",
   overflowY: "auto",
-});
-
-const ContentContainer = styled(Grid)({
-  height: "inherit",
-  alignItems: "center",
-  display: "flex",
 });
 
 const IndicatorValue = styled(Paper)(({ theme }) => ({
@@ -80,10 +69,10 @@ const ProgressContainer = styled(Grid)({
 export const DAOCreate: React.FC = () => {
   const creator = useContext(CreatorContext);
   // const tezos = useContext(TezosContext);
-  
-  const { activeStep, governanceStep, back, next } = creator.state;
-  const progress = useMemo(() => activeStep * 25, [activeStep]);
 
+  const { back, next } = creator.state;
+  const step = useStepNumber();
+  const progress = useMemo(() => step * 25, [step]);
 
   return (
     <PageContainer container direction="row">
@@ -104,12 +93,10 @@ export const DAOCreate: React.FC = () => {
           trackStrokeColor={"#3d3d3d"}
         >
           <Box className="indicator">
-            <IndicatorValue>
-              {progress === 0.5 ? 0 : activeStep * 25}%
-            </IndicatorValue>
+            <IndicatorValue>{progress === 0.5 ? 0 : step * 25}%</IndicatorValue>
           </Box>
         </ProgressBar>
-        <StyledStepper activeStep={activeStep} orientation="vertical">
+        <StyledStepper activeStep={step} orientation="vertical">
           {STEPS.map(({ title }: StepInfo, index: any) => (
             <Step key={title} {...(!true && { active: false })}>
               <StepLabel icon={index + 1}>{title}</StepLabel>
@@ -118,20 +105,18 @@ export const DAOCreate: React.FC = () => {
         </StyledStepper>
       </ProgressContainer>
 
-      <StepContentHeigth item xs={9} container>
-        <ContentContainer item xs={11}>
-          {true ? (
-            <StepContentContainer item container justify="center">
-              <CurrentStep />
-            </StepContentContainer>
-          ) : (
-            <StepOneContentContainer item container justify="center">
-              <ConnectWallet />
-            </StepOneContentContainer>
-          )}
-        </ContentContainer>
+      <StepContentHeigth item xs={9} container justify="center">
+        {true ? (
+          <StepContentContainer item container justify="center">
+            <CurrentStep />
+          </StepContentContainer>
+        ) : (
+          <StepOneContentContainer item container justify="center">
+            <ConnectWallet />
+          </StepOneContentContainer>
+        )}
       </StepContentHeigth>
-      {activeStep < 4 && <NavigationBar back={back} next={next} />}
+      {step < 4 && <NavigationBar back={back} next={next} />}
     </PageContainer>
   );
 };
