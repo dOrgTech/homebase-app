@@ -11,7 +11,10 @@ import {
   DAOListMetadata,
   MetadataCarrierParameters,
 } from "./metadataCarrier/types";
-import { TreasuryParams, TreasuryParamsWithoutMetadata } from "./treasuryDAO/types";
+import {
+  TreasuryParams,
+  TreasuryParamsWithoutMetadata,
+} from "./treasuryDAO/types";
 
 export type Contract = ContractAbstraction<ContractProvider> | undefined;
 
@@ -59,6 +62,7 @@ export type DAOItem = {
   address: string;
   ledger: Ledger;
   cycle: number;
+  originationTime: string;
 } & DAOListMetadata &
   Storage;
 

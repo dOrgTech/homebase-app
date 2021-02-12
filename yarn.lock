@@ -1799,6 +1799,13 @@
     "@taquito/taquito" "^8.0.0-beta.3"
     "@taquito/utils" "^8.0.0-beta.3"
 
+"@taquito/http-utils@^7.1.0-beta.0":
+  version "7.1.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@taquito/http-utils/-/http-utils-7.1.0-beta.0.tgz#2c8586b41f80abc7a255342da0b43f2528e2b030"
+  integrity sha512-froP2kp0R0cxnBFEswbPry18PUDVW6NbbGsSeI00SKEQJp4k6tTAu3ccrqb2bYzcQcLVzB0Vicq2SaYjWa0ULA==
+  dependencies:
+    xhr2-cookies "^1.1.0"
+
 "@taquito/http-utils@^8.0.0-beta.3":
   version "8.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@taquito/http-utils/-/http-utils-8.0.0-beta.3.tgz#de452c0d73b05a78ab4f2737d20c4f62b5a318cd"
@@ -1820,6 +1827,15 @@
     "@taquito/utils" "^8.0.0-beta.3"
     bignumber.js "^9.0.1"
     fast-json-stable-stringify "^2.1.0"
+
+"@taquito/rpc@^7.1.0-beta.0":
+  version "7.1.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@taquito/rpc/-/rpc-7.1.0-beta.0.tgz#b34204cac7a6f83ea48aecdfb27f2d0ad59179ba"
+  integrity sha512-5En7+KDjcVgD1+weSKlTpdjIE3GtODP+Rm0Zz440FvbvFFbzWmS2rqbNL247xf0CI2us9RBCrXcMQFfse5rXhQ==
+  dependencies:
+    "@taquito/http-utils" "^7.1.0-beta.0"
+    bignumber.js "^9.0.1"
+    lodash "^4.17.20"
 
 "@taquito/rpc@^8.0.0-beta.3":
   version "8.0.0-beta.3"

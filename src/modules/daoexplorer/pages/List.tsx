@@ -11,8 +11,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { SearchInput } from "../components/SearchInput";
 import { useDAOs } from "../../../services/contracts/baseDAO/hooks/useDAOs";
-import { MockDAOs } from "../../../store/mock/mock";
-import { addNewContractToIPFS } from "../../../services/pinata";
 
 const GridContainer = styled(Grid)({
   paddingRight: "6%",

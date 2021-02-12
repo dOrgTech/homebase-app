@@ -149,7 +149,6 @@ export const NewProposalDialog: React.FC = () => {
   const { mutate } = usePropose();
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
-  const { mutate: vote, data: voteData, error: voteError } = useVote();
 
   const proposalFee = useMemo(() => {
     //TODO: redo calculation when PACK ed size gets figured out

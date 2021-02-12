@@ -107,6 +107,7 @@ export const Proposals: React.FC = () => {
   const description = dao && dao.description;
   const symbol = dao && dao.unfrozenToken.symbol.toUpperCase();
   const quorumTreshold = dao && dao.quorumTreshold;
+  const cycle = dao && dao.cycle;
   const amountLocked = useMemo(() => {
     if (!dao) {
       return 0;
@@ -162,7 +163,9 @@ export const Proposals: React.FC = () => {
       return [];
     }
 
-    return proposalsData.map((proposal) => mapProposalData(proposal, dao?.address));
+    return proposalsData.map((proposal) =>
+      mapProposalData(proposal, dao?.address)
+    );
   }, [proposalsData]);
 
   return (
@@ -232,6 +235,22 @@ export const Proposals: React.FC = () => {
                 </Typography>
                 <Typography variant="h3" color="textSecondary">
                   {addressesWithUnfrozenBalance}
+                </Typography>
+              </Box>
+            </VotingAddresses>
+            <VotingAddresses
+              item
+              container
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <Box>
+                <Typography variant="subtitle2" color="secondary">
+                  Current Cycle
+                </Typography>
+                <Typography variant="h3" color="textSecondary">
+                  {cycle || 0}
                 </Typography>
               </Box>
             </VotingAddresses>

@@ -22,6 +22,7 @@ import { deployMetadataCarrier } from "./metadataCarrier/deploy";
 import { deployTreasuryDAO } from "./treasuryDAO/deploy";
 import dayjs from "dayjs";
 import { getOriginationTime } from "../../bakingBad/operations";
+import { RpcClient } from "@taquito/rpc";
 
 const getContract = async (tezos: TezosToolkit, contractAddress: string) => {
   return await tezos.wallet.at(contractAddress, tzip16);
@@ -52,8 +53,7 @@ export const getDAOInfoFromContract = async (
   const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
   const originationTime = await getOriginationTime(contractAddress, network);
   const cycle = Math.floor(
-    (Number(dayjs().unix()) - Number(dayjs(originationTime).unix())) /
-      storage.votingPeriod
+    (dayjs().unix() - dayjs(originationTime).unix()) / storage.votingPeriod
   );
 
   return {
@@ -62,6 +62,7 @@ export const getDAOInfoFromContract = async (
     ...storage,
     ledger,
     cycle,
+    originationTime,
   };
 };
 
@@ -71,17 +72,15 @@ export const getDAOProposals = async (
 ): Promise<ProposalWithStatus[]> => {
   const { proposalsMapNumber } = dao;
   const proposals = await getProposals(proposalsMapNumber, network);
+  const originationTime = await getOriginationTime(dao.address, network);
 
+  const { votingPeriod, cycle: daoCycle, quorumTreshold } = dao;
   return proposals.map((proposal) => {
-    const { votingPeriod, cycle: daoCycle, quorumTreshold } = dao;
     const { startDate, upVotes, downVotes } = proposal;
 
-    const cycle = Math.floor(
-      (Number(dayjs().unix()) - Number(dayjs(startDate).unix())) / votingPeriod
-    );
-
+    const exactCycle = dayjs(startDate).unix() - dayjs(originationTime).unix();
+    const cycle = Math.floor(exactCycle / votingPeriod);
     //TODO: this business logic will change in the future
-
     let status: ProposalStatus;
 
     if (cycle === daoCycle) {

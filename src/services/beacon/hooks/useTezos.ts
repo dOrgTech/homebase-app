@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { connectWithBeacon } from "..";
 import { Network, TezosContext } from "../context";
 import { TezosToolkit } from "@taquito/taquito";
+import { RpcClient } from "@taquito/rpc";
 
 type WalletConnectReturn = {
   tezos: TezosToolkit | undefined;
@@ -17,6 +18,11 @@ export const useTezos = (): WalletConnectReturn => {
     state: { tezos, network },
     dispatch,
   } = useContext(TezosContext);
+
+  const rpcNodeConnection = new RpcClient(
+    "https://delphinet-tezos.giganode.io",
+    network
+  );
 
   useEffect(() => {
     if (tezos) {

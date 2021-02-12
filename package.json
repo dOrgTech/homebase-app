@@ -16,6 +16,7 @@
     "@material-ui/icons": "^4.9.1",
     "@reduxjs/toolkit": "^1.4.0",
     "@taquito/beacon-wallet": "^8.0.0-beta.2",
+    "@taquito/rpc": "^7.1.0-beta.0",
     "@taquito/signer": "^8.0.0-beta.2",
     "@taquito/taquito": "^8.0.0-beta.2",
     "@taquito/tezbridge-signer": "^8.0.0-beta.2",

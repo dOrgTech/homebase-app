@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
@@ -17,6 +17,8 @@ import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "../../../services/bakingBad/proposals/types";
 import Timer from "react-compound-timer";
+import { useCycleInfo } from "../../../services/contracts/baseDAO/hooks/useTimeLeft";
+import dayjs from "dayjs";
 
 const SideBar = styled(Grid)({
   width: 102,
@@ -118,6 +120,32 @@ export const DAO: React.FC = () => {
   const name = data && data.unfrozenToken.name;
   const description = data && data.description;
   const symbol = data && data.unfrozenToken.symbol.toUpperCase();
+
+  const votingPeriod = data && data.votingPeriod;
+  const originationTime = data && data.originationTime;
+  const cycleInfo = useCycleInfo(originationTime, votingPeriod);
+  const time = cycleInfo && cycleInfo.time;
+  const [currentCycle, setCurrentCycle] = useState(
+    cycleInfo && cycleInfo.current
+  );
+  const [timeLeft, setTimeLeft] = useState<number>(time || 0);
+  const [finished, setFinished] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (votingPeriod && finished && cycleInfo?.current) {
+      setFinished(false);
+      setTimeLeft(votingPeriod);
+      setCurrentCycle(cycleInfo.current + 1);
+      return;
+    }
+  }, [finished, votingPeriod, cycleInfo?.current]);
+
+  useEffect(() => {
+    if (time) {
+      setTimeLeft(time);
+    }
+  }, [time]);
+
   const amountLocked = useMemo(() => {
     if (!data) {
       return 0;
@@ -147,14 +175,14 @@ export const DAO: React.FC = () => {
   const { data: proposalsData } = useProposals(data ? data.address : "");
 
   const activeProposals = useMemo<ProposalTableRowData[]>(() => {
-    if (!proposalsData) {
+    if (!proposalsData || finished) {
       return [];
     }
 
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
       .map((proposal) => mapProposalData(proposal, data?.address));
-  }, [data?.address, proposalsData]);
+  }, [data?.address, proposalsData, finished]);
 
   return (
     <PageLayout container wrap="nowrap">
@@ -197,12 +225,12 @@ export const DAO: React.FC = () => {
                   <Box paddingLeft="35px">
                     <Box>
                       <Typography variant="subtitle2" color="secondary">
-                        PERIOD
+                        CURRENT CYCLE
                       </Typography>
                     </Box>
                     <Box>
                       <Typography variant="h3" color="textSecondary">
-                        Voting
+                        {currentCycle || cycleInfo?.current}
                       </Typography>
                     </Box>
                   </Box>
@@ -225,16 +253,29 @@ export const DAO: React.FC = () => {
                     </Box>
                     <Box>
                       <Typography variant="h3" color="textSecondary">
-                        <Timer initialTime={54555000} startImmediately={true}>
-                          {() => (
-                            <React.Fragment>
-                              <Box>
-                                <Timer.Days />d <Timer.Hours />h{" "}
-                                <Timer.Minutes />m
-                              </Box>
-                            </React.Fragment>
-                          )}
-                        </Timer>
+                        {!finished && time && timeLeft ? (
+                          <Timer
+                            initialTime={timeLeft * 1000}
+                            direction="backward"
+                            checkpoints={[
+                              {
+                                time: 0,
+                                callback: () => {
+                                  setFinished(true);
+                                },
+                              },
+                            ]}
+                          >
+                            {() => (
+                              <React.Fragment>
+                                <Box>
+                                  <Timer.Days />d <Timer.Hours />h{" "}
+                                  <Timer.Minutes />m <Timer.Seconds />s
+                                </Box>
+                              </React.Fragment>
+                            )}
+                          </Timer>
+                        ) : null}
                       </Typography>
                     </Box>
                   </Box>
