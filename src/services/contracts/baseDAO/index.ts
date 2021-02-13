@@ -112,30 +112,6 @@ export const getDAOTokenHolders = async (
   return ledger;
 };
 
-export const doDAOOriginateTreasury = async ({
-  metadataParams,
-  treasuryParams,
-}: OriginateTreasuryParams) => {
-  const metadata = await deployMetadataCarrier(metadataParams);
-
-  if (!metadata) {
-    throw new Error(
-      `Could not deploy TreasuryDAO because MetadataCarrier contract deployment failed`
-    );
-  }
-
-  const treasury = await deployTreasuryDAO({
-    ...treasuryParams,
-    metadataCarrierDeploymentData: metadata,
-  });
-
-  if (!treasury) {
-    throw new Error(`Error deploying TreasuryDAO`);
-  }
-
-  return treasury;
-};
-
 export const doDAOPropose = async ({
   contractAddress,
   tezos,

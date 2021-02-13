@@ -20,9 +20,9 @@ const urlToStepMap: Record<string, number> = {
   templates: 0,
   dao: 1,
   voting: 1,
-  token: 1,
-  summary: 2,
-  review: 3,
+  token: 2,
+  summary: 3,
+  review: 4,
 };
 
 export const CurrentStep: React.FC = () => {
