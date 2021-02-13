@@ -16,6 +16,8 @@ export const getOriginationTime = async (
 
   const result: any = await response.json();
 
+  console.log(result)
+
   return result.operations.find(
     (operation: any) => operation.kind === "origination"
   ).timestamp;

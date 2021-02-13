@@ -1,9 +1,11 @@
 import { useEffect } from "react";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { getDAOs } from "..";
 import { useTezos } from "../../../beacon/hooks/useTezos";
 import { getContractsAddresses } from "../../../pinata";
 import { DAOItem } from "../types";
+
+const PAGE_SIZE = 6;
 
 export const useDAOs = () => {
   const { tezos, connect, network } = useTezos();
@@ -16,11 +18,23 @@ export const useDAOs = () => {
 
   const daosAddresses = addresses || [];
 
-  const result = useQuery<DAOItem[], Error>(
+  const result = useInfiniteQuery<DAOItem[], Error>(
     ["daos", addresses],
-    async () => getDAOs(daosAddresses, tezos, network),
+    async ({ pageParam = 0 }) => {
+      const addressesToFetch = daosAddresses.slice(
+        pageParam,
+        pageParam + PAGE_SIZE
+      );
+      return await getDAOs(addressesToFetch, tezos, network);
+    },
     {
       enabled: !!daosAddresses.length && !!tezos,
+      getNextPageParam: (_, allPages) => {
+        const pagesFetched = allPages.flat().length;
+        const currentPage = Math.ceil(pagesFetched / PAGE_SIZE);
+        const maxPages = Math.ceil(daosAddresses.length / PAGE_SIZE);
+        return currentPage < maxPages ? currentPage + 1 : false;
+      },
     }
   );
 
