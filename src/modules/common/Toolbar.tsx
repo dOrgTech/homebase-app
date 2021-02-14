@@ -38,7 +38,7 @@ const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
   alignItems: "baseline",
-  marginTop: 22,
+  margin: "auto 0",
 });
 
 const LogoText = styled(Typography)({
