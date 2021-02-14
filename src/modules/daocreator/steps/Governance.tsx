@@ -524,7 +524,7 @@ export const Governance: React.FC = () => {
   };
 
   return (
-    <Box maxWidth={620} marginLeft="-8vw">
+    <Box maxWidth={620}>
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12}>
           <Typography variant="h3" color="textSecondary">

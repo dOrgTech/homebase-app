@@ -3,9 +3,7 @@ import React from "react";
 import { NavigationBarProps } from "../state/types";
 
 const Footer = styled(Grid)(({ theme }) => ({
-  boxShadow: "none",
   background: theme.palette.primary.main,
-  height: "inherit",
   justifyContent: "flex-end",
 }));
 

@@ -137,7 +137,7 @@ export const Review: React.FC = () => {
   }, []);
 
   return (
-    <Box maxWidth={650} marginLeft="-8vw">
+    <Box maxWidth={650}>
       <Grid
         container
         direction="column"

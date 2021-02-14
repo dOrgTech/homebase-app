@@ -1,25 +1,16 @@
 import { TezosToolkit } from "@taquito/taquito";
 import { tzip16 } from "@taquito/tzip16";
-import { mapLimit } from "async";
 import { getLedgerAddresses } from "../../bakingBad/ledger";
 import { getStorage } from "../../bakingBad/storage";
 import { Network } from "../../beacon/context";
 import { getDAOListMetadata } from "./metadataCarrier";
-import {
-  DAOItem,
-  OriginateTreasuryParams,
-  ProposeParams,
-  VoteParams,
-} from "./types";
+import { DAOItem, ProposeParams, VoteParams } from "./types";
 import { getProposals } from "../../bakingBad/proposals";
 import {
-  Proposal,
   ProposalStatus,
   ProposalWithStatus,
 } from "../../bakingBad/proposals/types";
 import { Ledger } from "../../bakingBad/ledger/types";
-import { deployMetadataCarrier } from "./metadataCarrier/deploy";
-import { deployTreasuryDAO } from "./treasuryDAO/deploy";
 import dayjs from "dayjs";
 import { getOriginationTime } from "../../bakingBad/operations";
 
@@ -36,8 +27,10 @@ export const getDAOs = async (
     return [];
   }
 
-  return mapLimit(addresses, 5, async (address) =>
-    getDAOInfoFromContract(address, tezos, network)
+  return await Promise.all(
+    addresses.map(async (address) =>
+      getDAOInfoFromContract(address, tezos, network)
+    )
   );
 };
 
