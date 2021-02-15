@@ -5,6 +5,7 @@ import {
   withStyles,
   TextareaAutosize,
   withTheme,
+  Box,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, Form, Formik, getIn } from "formik";
@@ -13,6 +14,8 @@ import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 import { handleOrgFormErrors } from "../utils";
 import { OrgSettings } from "../../../services/contracts/baseDAO/types";
+import { useHistory, withRouter } from "react-router";
+import { useRouteMatch } from "react-router-dom";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 21,
@@ -80,107 +83,116 @@ const ErrorText = styled(Typography)({
 });
 
 //@TODO: Remove any from this component
-const DaoSettingsForm = ({
-  submitForm,
-  values,
-  setFieldValue,
-  errors,
-  touched,
-}: any) => {
-  const {
-    dispatch,
-    state: { governanceStep },
-  } = useContext(CreatorContext);
+const DaoSettingsForm = withRouter(
+  ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+    const {
+      dispatch,
+      state: { governanceStep },
+    } = useContext(CreatorContext);
+    const match = useRouteMatch();
+    const history = useHistory();
 
-  useEffect(() => {
-    if (values) {
-      dispatch({
-        type: ActionTypes.UPDATE_NAVIGATION_BAR,
-        next: {
-          handler: () => {
-            submitForm(values);
+    useEffect(() => {
+      if (values) {
+        dispatch({
+          type: ActionTypes.UPDATE_NAVIGATION_BAR,
+          next: {
+            handler: () => {
+              submitForm(values);
+            },
+            text: "CONTINUE",
           },
-          text: "CONTINUE",
-        },
-        back: {
-          handler: () => dispatch({ type: ActionTypes.UPDATE_STEP, step: 0 }),
-          text: "BACK",
-        },
-      });
-    }
-  }, [dispatch, errors, governanceStep, submitForm, values]);
+          back: {
+            handler: () => history.push(`templates`),
+            text: "BACK",
+          },
+        });
+      }
+    }, [
+      dispatch,
+      errors,
+      governanceStep,
+      history,
+      match.path,
+      match.url,
+      submitForm,
+      values,
+    ]);
 
-  return (
-    <>
-      <SecondContainer container item direction="row" spacing={2}>
-        <Grid item xs={9}>
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
-            Token name{" "}
-          </Typography>
-          <CustomInputContainer>
-            <Field
-              name="name"
-              type="text"
-              placeholder="My Group’s Token"
-              component={CustomFormikTextField}
-            ></Field>
-          </CustomInputContainer>
-          {errors.name && touched.name ? (
-            <ErrorText>{errors.name}</ErrorText>
-          ) : null}
-        </Grid>
+    return (
+      <>
+        <SecondContainer container item direction="row" spacing={2}>
+          <Grid item xs={9}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Token name{" "}
+            </Typography>
+            <CustomInputContainer>
+              <Field
+                name="name"
+                type="text"
+                placeholder="My Group’s Token"
+                component={CustomFormikTextField}
+              ></Field>
+            </CustomInputContainer>
+            {errors.name && touched.name ? (
+              <ErrorText>{errors.name}</ErrorText>
+            ) : null}
+          </Grid>
 
-        <Grid item xs={3}>
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
-            Token symbol{" "}
-          </Typography>
-          <CustomInputContainer>
-            <Field
-              name="symbol"
-              type="text"
-              placeholder="MYTOK"
-              component={CustomFormikTextField}
-            ></Field>
-          </CustomInputContainer>
-          {errors.symbol && touched.symbol ? (
-            <ErrorText>{errors.symbol}</ErrorText>
+          <Grid item xs={3}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Token symbol{" "}
+            </Typography>
+            <CustomInputContainer>
+              <Field
+                name="symbol"
+                type="text"
+                placeholder="MYTOK"
+                component={CustomFormikTextField}
+              ></Field>
+            </CustomInputContainer>
+            {errors.symbol && touched.symbol ? (
+              <ErrorText>{errors.symbol}</ErrorText>
+            ) : null}
+          </Grid>
+        </SecondContainer>
+        <SecondContainer container direction="row" alignItems="center">
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" color="textSecondary">
+              Description
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Field name="description">
+              {() => (
+                <CustomTextarea
+                  maxLength={1500}
+                  aria-label="empty textarea"
+                  placeholder="This is what we’re about..."
+                  value={getIn(values, "description")}
+                  onChange={(newValue: any) => {
+                    setFieldValue("description", newValue.target.value);
+                  }}
+                />
+              )}
+            </Field>
+          </Grid>
+          {errors.description && touched.description ? (
+            <ErrorText>{errors.description}</ErrorText>
           ) : null}
-        </Grid>
-      </SecondContainer>
-      <SecondContainer container direction="row" alignItems="center">
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" color="textSecondary">
-            Description
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Field name="description">
-            {() => (
-              <CustomTextarea
-                maxLength={1500}
-                aria-label="empty textarea"
-                placeholder="This is what we’re about..."
-                value={getIn(values, "description")}
-                onChange={(newValue: any) => {
-                  setFieldValue("description", newValue.target.value);
-                }}
-              />
-            )}
-          </Field>
-        </Grid>
-        {errors.description && touched.description ? (
-          <ErrorText>{errors.description}</ErrorText>
-        ) : null}
-      </SecondContainer>
-    </>
-  );
-};
+        </SecondContainer>
+      </>
+    );
+  }
+);
+
 export const DaoSettings = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext);
-  const { governanceStep } = state;
   const { orgSettings } = state.data;
+  const history = useHistory();
+
   const saveStepInfo = (
     values: OrgSettings,
     { setSubmitting }: { setSubmitting: (b: boolean) => void }
@@ -192,14 +204,11 @@ export const DaoSettings = (): JSX.Element => {
     updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
-    dispatch({
-      type: ActionTypes.UPDATE_GOVERNANCE_STEP,
-      step: governanceStep + 1,
-    });
+    history.push(`voting`);
   };
 
   return (
-    <>
+    <Box maxWidth="620px">
       <Grid
         container
         direction="row"
@@ -248,6 +257,6 @@ export const DaoSettings = (): JSX.Element => {
           );
         }}
       </Formik>
-    </>
+    </Box>
   );
 };

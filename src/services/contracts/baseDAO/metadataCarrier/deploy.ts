@@ -18,7 +18,7 @@ const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
   return map;
 };
 
-interface MetadataDeploymentResult {
+export interface MetadataDeploymentResult {
   contract: ContractAbstraction<ContractProvider>;
   keyName: string;
   deployAddress: string;
