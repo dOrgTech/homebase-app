@@ -139,7 +139,7 @@ export const calculateProposalSize = async (
     type: typeJSON as MichelsonV1Expression,
   });
 
-  return pack.packed.length;
+  return pack.packed.length / 2;
 };
 
 export const getTokensToStakeInPropose = (dao: DAOItem, proposalSize: number) =>
