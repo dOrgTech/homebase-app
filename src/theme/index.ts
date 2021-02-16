@@ -68,7 +68,7 @@ export const theme = createMuiTheme({
         opacity: 0.5,
         marginLeft: 15,
         wordBreak: "break-all",
-        lineHeight:"40px",
+        lineHeight: "40px",
         "&$completed": {
           fontWeight: 300,
         },
@@ -76,8 +76,8 @@ export const theme = createMuiTheme({
           fontWeight: 300,
         },
         "& .MuiStepLabel-completed": {
-          fontWeight: 300
-        }
+          fontWeight: 300,
+        },
       },
       active: {
         color: "#fff !important",

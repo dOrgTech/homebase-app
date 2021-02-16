@@ -21,14 +21,8 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <Box
-          height="calc(100% - 105px)"
-          bgcolor="primary.main"
-          position="absolute"
-          width="100%"
-        >
+        <Box bgcolor="primary.main" position="absolute" width="100%">
           <Router>
-            <Navbar />
             <ScrollToTop />
             <Switch>
               <Route path="/creator">
@@ -37,6 +31,7 @@ const App: React.FC = () => {
                 </CreatorProvider>
               </Route>
               <Route path="/explorer">
+                <Navbar />
                 <DAOExplorerRouter />
               </Route>
               <Redirect to="/explorer" />

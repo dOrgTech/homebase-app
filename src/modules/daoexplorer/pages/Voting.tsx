@@ -10,7 +10,9 @@ import React from "react";
 import { useParams } from "react-router";
 import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "../../../services/contracts/baseDAO/hooks/useProposal";
+import { DownVotesDialog } from "../components/DownVotesDialog";
 import { SideBar } from "../components/SideBar";
+import { UpVotesDialog } from "../components/UpVotesDialog";
 import { VoteDialog } from "../components/VoteDialog";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
@@ -32,11 +34,6 @@ const MainContainer = styled(Grid)({
   padding: "40px 112px",
   borderBottom: "2px solid #3D3D3D",
   paddingBottom: "4vh",
-});
-
-const DetailsContainer = styled(Grid)({
-  paddingBottom: 0,
-  padding: "40px 112px",
 });
 
 const CycleContainer = styled(Grid)({
@@ -102,84 +99,32 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-const BoxItem = styled(Grid)({
-  paddingBottom: 24,
-  borderBottom: "2px solid #3D3D3D",
-});
+// const Details = [
+//   {
+//     message: "Reduces DAO’s Treasury by 50ETH"
+//   },
+//   {
+//     message: "Increases 0x89878 wallet by 50ETH"
+//   },
+//   {
+//     message: "Reduces DAO’s Treasury by 50ETH"
+//   }
+// ];
 
-const Detail = styled(Grid)({
-  height: 93,
-  display: "flex",
-  alignItems: "center",
-  paddingBottom: 0,
-  borderBottom: "2px solid #3D3D3D",
-});
-
-const MetaData = styled(Grid)({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginBottom: 20,
-});
-
-const HistoryContent = styled(Grid)({
-  paddingBottom: 24,
-  paddingLeft: 53,
-});
-
-const HistoryItem = styled(Grid)({
-  paddingLeft: 63,
-  marginTop: 20,
-  paddingBottom: 12,
-  display: "flex",
-  height: "auto",
-});
-
-const HistoryBadge = styled(Grid)({
-  borderRadius: 4,
-  textAlign: "center",
-});
-
-const styles = {
-  blue: {
-    background: "#3866F9",
-    color: "white",
-    padding: 2,
-  },
-  yellow: {
-    background: "#DBDE39",
-    color: "#1C1F23",
-    padding: 2,
-  },
-};
-
-const Details = [
-  {
-    message: "Reduces DAO’s Treasury by 50ETH",
-  },
-  {
-    message: "Increases 0x89878 wallet by 50ETH",
-  },
-  {
-    message: "Reduces DAO’s Treasury by 50ETH",
-  },
-];
-
-const History = [
-  {
-    date: "December 19th, 2020. 11:09:21 AM",
-    status: "created",
-  },
-  {
-    date: "December 20th, 2020. 11:09:21 AM",
-    status: "active",
-  },
-  {
-    date: "December 21st, 2020. 11:09:21 AM",
-    status: "passed",
-  },
-];
+// const History = [
+//   {
+//     date: "December 19th, 2020. 11:09:21 AM",
+//     status: "created"
+//   },
+//   {
+//     date: "December 20th, 2020. 11:09:21 AM",
+//     status: "active"
+//   },
+//   {
+//     date: "December 21st, 2020. 11:09:21 AM",
+//     status: "passed"
+//   }
+// ];
 
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
@@ -262,9 +207,10 @@ export const Voting: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item>
-                  <Typography variant="subtitle2" color="secondary">
-                    VIEW ADDRESSES
-                  </Typography>
+                  <UpVotesDialog
+                    totalVotes={totalVotes}
+                    upVotesPercentage={upVotesPercentage}
+                  />
                 </Grid>
               </Grid>
               <Grid container direction="row" alignItems="center">
@@ -303,9 +249,10 @@ export const Voting: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item>
-                  <TextAgainst variant="subtitle2" color="secondary">
-                    VIEW ADDRESSES
-                  </TextAgainst>
+                  <DownVotesDialog
+                    totalVotes={totalVotes}
+                    downVotesPercentage={downVotesPercentage}
+                  />
                 </Grid>
               </Grid>
               <Grid container direction="row" alignItems="center">

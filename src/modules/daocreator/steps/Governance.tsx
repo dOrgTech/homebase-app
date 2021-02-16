@@ -6,6 +6,7 @@ import {
   Slider,
   withStyles,
   withTheme,
+  Box,
 } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
 import React, { useContext, useEffect } from "react";
@@ -15,6 +16,8 @@ import { CreatorContext } from "../state/context";
 import { ActionTypes } from "../state/types";
 import { handleGovernanceFormErrors } from "../utils";
 import { VotingSettings } from "../../../services/contracts/baseDAO/types";
+import { useHistory } from "react-router";
+import { useRouteMatch } from "react-router-dom";
 
 const CustomTypography = styled(Typography)({
   paddingBottom: 10,
@@ -108,10 +111,6 @@ const Value = styled(Typography)({
   padding: "15%",
 });
 
-const LastElement = styled(Grid)({
-  marginBottom: 37,
-});
-
 const styles = {
   voting: {
     marginTop: 6,
@@ -143,6 +142,8 @@ const GovernanceForm = ({
       data: { orgSettings },
     },
   } = useContext(CreatorContext);
+  const match = useRouteMatch();
+  const history = useHistory();
 
   useEffect(() => {
     if (values) {
@@ -156,15 +157,21 @@ const GovernanceForm = ({
         },
         back: {
           text: "BACK",
-          handler: () =>
-            dispatch({
-              type: ActionTypes.UPDATE_GOVERNANCE_STEP,
-              step: governanceStep - 1,
-            }),
+          handler: () => history.push(`dao`),
         },
       });
     }
-  }, [activeStep, dispatch, errors, governanceStep, submitForm, values]);
+  }, [
+    activeStep,
+    dispatch,
+    errors,
+    governanceStep,
+    history,
+    match.path,
+    match.url,
+    submitForm,
+    values,
+  ]);
 
   return (
     <>
@@ -499,8 +506,8 @@ const GovernanceForm = ({
 //@TODO: Remove any from this component
 export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
-  const { activeStep } = state;
   const { votingSettings } = state.data;
+  const history = useHistory();
 
   const saveStepInfo = (
     values: VotingSettings,
@@ -513,11 +520,11 @@ export const Governance: React.FC = () => {
     updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
-    dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
+    history.push(`token`);
   };
 
   return (
-    <>
+    <Box maxWidth={620}>
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12}>
           <Typography variant="h3" color="textSecondary">
@@ -568,6 +575,6 @@ export const Governance: React.FC = () => {
           );
         }}
       </Formik>
-    </>
+    </Box>
   );
 };

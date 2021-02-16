@@ -38,7 +38,7 @@ const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
   alignItems: "baseline",
-  marginTop: 22,
+  margin: "auto 0",
 });
 
 const LogoText = styled(Typography)({
@@ -150,8 +150,11 @@ export const Navbar: React.FC = () => {
                 </Grid>
               </AddressContainer>
             ) : (
-              <ConnectWallet 
-                color="secondary"  variant="outlined" onClick={connect}>
+              <ConnectWallet
+                color="secondary"
+                variant="outlined"
+                onClick={connect}
+              >
                 Connect Wallet
               </ConnectWallet>
             )}
