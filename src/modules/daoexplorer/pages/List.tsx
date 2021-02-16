@@ -68,7 +68,27 @@ const LoaderContainer = styled(Grid)({
 
 export const DAOsList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
-  const { data: daos, error, isLoading } = useDAOs();
+  const {
+    data,
+    error,
+    isLoading,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useDAOs();
+  const daos = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+
+    return data.pages.flat();
+  }, [data]);
+
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   console.log(daos, error, isLoading);
 
@@ -131,11 +151,6 @@ export const DAOsList: React.FC = () => {
         </Grid>
       </GridContainer>
       <GridBackground container direction="row">
-        {isLoading ? (
-          <LoaderContainer container direction="row" justify="center">
-            <CircularProgress color="secondary" />
-          </LoaderContainer>
-        ) : null}
         {currentDAOs.map((dao: any, index: any) => {
           return (
             <DaoContainer
@@ -163,6 +178,11 @@ export const DAOsList: React.FC = () => {
             </DaoContainer>
           );
         })}
+        {isFetchingNextPage || isLoading ? (
+          <LoaderContainer container direction="row" justify="center">
+            <CircularProgress color="secondary" />
+          </LoaderContainer>
+        ) : null}
       </GridBackground>
     </Box>
   );

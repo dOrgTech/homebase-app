@@ -1,5 +1,6 @@
 import { Box, Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import { TokenHoldersRow } from "../../daoexplorer/components/TokenHoldersRow";
 import { CreatorContext } from "../state/context";
 import { ActionTypes, TokenHolder } from "../state/types";
@@ -65,15 +66,15 @@ export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
   const { activeStep } = state;
   const [showMore, setShowMore] = useState(false);
+  const history = useHistory();
+  const match = useRouteMatch();
 
   const goToVoting = () => {
-    dispatch({ type: ActionTypes.UPDATE_STEP, step: 1 });
-    dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
+    history.push(`voting`);
   };
 
   const goToSettings = () => {
-    dispatch({ type: ActionTypes.UPDATE_STEP, step: 2 });
-    dispatch({ type: ActionTypes.UPDATE_GOVERNANCE_STEP, step: 0 });
+    history.push(`token`);
   };
 
   useEffect(() => {
@@ -81,20 +82,19 @@ export const Summary = (): JSX.Element => {
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep + 1 });
+          history.push(`review`);
         },
         text: "LAUNCH",
       },
       back: {
-        handler: () =>
-          dispatch({ type: ActionTypes.UPDATE_STEP, step: activeStep - 1 }),
+        handler: () => history.push(`token`),
         text: "BACK",
       },
     });
-  }, [activeStep, dispatch]);
+  }, [activeStep, dispatch, history, match.path, match.url]);
 
   return (
-    <>
+    <Box maxWidth={650}>
       <Grid
         container
         direction="row"
@@ -365,6 +365,6 @@ export const Summary = (): JSX.Element => {
           </Grid>
         </SecondContainer>
       </Grid>
-    </>
+    </Box>
   );
 };
