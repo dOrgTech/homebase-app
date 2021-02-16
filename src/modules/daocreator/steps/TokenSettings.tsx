@@ -115,13 +115,13 @@ const Total = ({ values }: { values: MemberSettings }) => {
 };
 
 const validate = (values: MemberSettings) => {
-  const handleLedgerValidation = (field: any) => {
-    if (field === "tokenHolders") {
-      return !!values["tokenHolders"].length;
-    }
+  // const handleLedgerValidation = (field: any) => {
+  //   if (field === "tokenHolders") {
+  //     return !!values["tokenHolders"].length;
+  //   }
 
-    return !values[field as keyof MemberSettings];
-  };
+  //   return !values[field as keyof MemberSettings];
+  // };
 
   // handleErrorMessages(values, handleLedgerValidation);
 };

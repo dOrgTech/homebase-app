@@ -150,8 +150,11 @@ export const Navbar: React.FC = () => {
                 </Grid>
               </AddressContainer>
             ) : (
-              <ConnectWallet 
-                color="secondary"  variant="outlined" onClick={connect}>
+              <ConnectWallet
+                color="secondary"
+                variant="outlined"
+                onClick={connect}
+              >
                 Connect Wallet
               </ConnectWallet>
             )}

@@ -1,5 +1,12 @@
-import React, { useMemo } from "react";
-import { Box, Grid, IconButton, styled, Typography } from "@material-ui/core";
+import React, { useMemo, useState } from "react";
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  IconButton,
+  styled,
+  Typography,
+} from "@material-ui/core";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 import HouseIcon from "../../../assets/logos/house.svg";
@@ -17,6 +24,7 @@ import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "../../../services/bakingBad/proposals/types";
 import Timer from "react-compound-timer";
+import { TopHoldersTableRow } from "../components/TopHoldersTableRow";
 
 const SideBar = styled(Grid)({
   width: 102,
@@ -32,6 +40,11 @@ const MainContainer = styled(Grid)({
 const SidebarButton = styled(IconButton)({
   paddingTop: 32,
   width: "100%",
+});
+
+const LoaderContainer = styled(Grid)({
+  paddingTop: 40,
+  paddingBottom: 40,
 });
 
 const PageLayout = styled(Grid)(({ theme }) => ({
@@ -77,6 +90,7 @@ const VotingAddresses = styled(StatsBox)({
 
 const ActiveProposals = styled(StatsBox)({
   paddingLeft: "42px",
+  cursor: "pointer",
 });
 
 const LockedTokensBar = styled(LinearProgress)({
@@ -104,6 +118,18 @@ const UnderlineText = styled(Typography)({
   marginBottom: 28,
 });
 
+const CustomH1 = styled(Typography)({
+  fontSize: 55,
+  lineHeight: "92px",
+  textDecoration: "underline",
+  fontWeight: 400,
+});
+
+const NoProposals = styled(Typography)({
+  marginTop: 20,
+  marginBottom: 20,
+});
+
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
     {children}
@@ -112,6 +138,7 @@ const ProposalTableHeadText: React.FC = ({ children }) => (
 
 export const DAO: React.FC = () => {
   const history = useHistory();
+  const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { data } = useDAO(id);
 
@@ -120,17 +147,20 @@ export const DAO: React.FC = () => {
   const symbol = data && data.unfrozenToken.symbol.toUpperCase();
   const amountLocked = useMemo(() => {
     if (!data) {
+      setIsLoading(true);
       return 0;
     }
 
     return data.ledger.reduce((acc, current) => {
       const frozenBalance = current.balances[1] || 0;
+      setIsLoading(false);
       return acc + frozenBalance;
     }, 0);
   }, [data]);
 
   const addressesWithUnfrozenBalance = useMemo(() => {
     if (!data) {
+      setIsLoading(true);
       return 0;
     }
 
@@ -139,7 +169,7 @@ export const DAO: React.FC = () => {
       if (frozenBalance) {
         return acc + 1;
       }
-
+      setIsLoading(false);
       return acc;
     }, 0);
   }, [data]);
@@ -156,6 +186,21 @@ export const DAO: React.FC = () => {
       .map((proposal) => mapProposalData(proposal, data?.address));
   }, [data?.address, proposalsData]);
 
+  const tokenHolders = [
+    {
+      username: "Username89",
+      votes: "1,232,123.02",
+      weight: "22.33",
+      proposals_voted: 12,
+    },
+    {
+      username: "Username90",
+      votes: "454,555.50",
+      weight: "15,34",
+      proposals_voted: 20,
+    },
+  ];
+
   return (
     <PageLayout container wrap="nowrap">
       <SideBar item>
@@ -166,174 +211,208 @@ export const DAO: React.FC = () => {
           <img src={VotingIcon} />
         </SidebarButton>
       </SideBar>
-      <Grid item xs>
-        <MainContainer container justify="space-between">
-          <DAOInfoTitleAndDesc item>
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                {symbol}
-              </Typography>
-            </Box>
-            <Box paddingBottom="20px">
-              <Typography variant="h1" color="textSecondary">
-                {name}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="body1" color="textSecondary">
-                {description}
-              </Typography>
-            </Box>
-          </DAOInfoTitleAndDesc>
-          <DAOInfoVotingPeriod item>
-            <Box paddingBottom="32px">
-              <Grid container>
-                <Grid item>
-                  <BigIconContainer>
-                    <img src={VotingPeriodIcon} />
-                  </BigIconContainer>
+      {!isLoading ? (
+        <Grid item xs>
+          <MainContainer container justify="space-between">
+            <DAOInfoTitleAndDesc item>
+              <Box>
+                <Typography variant="subtitle2" color="secondary">
+                  {symbol}
+                </Typography>
+              </Box>
+              <Box paddingBottom="10px">
+                <CustomH1 color="textSecondary">{name}</CustomH1>
+              </Box>
+              <Box>
+                <Typography variant="body1" color="textSecondary">
+                  {description}
+                </Typography>
+              </Box>
+            </DAOInfoTitleAndDesc>
+            <DAOInfoVotingPeriod item>
+              <Box paddingBottom="32px">
+                <Grid container>
+                  <Grid item>
+                    <BigIconContainer>
+                      <img src={VotingPeriodIcon} />
+                    </BigIconContainer>
+                  </Grid>
+                  <Grid item>
+                    <Box paddingLeft="35px">
+                      <Box>
+                        <Typography variant="subtitle2" color="secondary">
+                          PERIOD
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="h3" color="textSecondary">
+                          Voting
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
                 </Grid>
+              </Box>
+              <Box paddingBottom="32px">
+                <Grid container>
+                  <Grid item>
+                    <BigIconContainer>
+                      <img src={VoteTimeIcon} />
+                    </BigIconContainer>
+                  </Grid>
+                  <Grid item>
+                    <Box paddingLeft="35px">
+                      <Box>
+                        <Typography variant="subtitle2" color="secondary">
+                          TIME LEFT TO VOTE
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="h3" color="textSecondary">
+                          <Timer initialTime={54555000} startImmediately={true}>
+                            {() => (
+                              <React.Fragment>
+                                <Box>
+                                  <Timer.Days />d <Timer.Hours />h{" "}
+                                  <Timer.Minutes />m
+                                </Box>
+                              </React.Fragment>
+                            )}
+                          </Timer>
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </DAOInfoVotingPeriod>
+          </MainContainer>
+          <StatsContainer container>
+            <TokensLocked
+              item
+              xs={6}
+              container
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <Grid container justify="space-between" alignItems="center">
                 <Grid item>
-                  <Box paddingLeft="35px">
-                    <Box>
-                      <Typography variant="subtitle2" color="secondary">
-                        PERIOD
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h3" color="textSecondary">
-                        Voting
-                      </Typography>
-                    </Box>
+                  <Box>
+                    <Typography variant="subtitle2" color="secondary">
+                      {symbol} Locked
+                    </Typography>
+                  </Box>
+                  <Box padding="12px 0">
+                    <Typography variant="h3" color="textSecondary">
+                      {amountLocked}
+                    </Typography>
                   </Box>
                 </Grid>
-              </Grid>
-            </Box>
-            <Box paddingBottom="32px">
-              <Grid container>
                 <Grid item>
-                  <BigIconContainer>
-                    <img src={VoteTimeIcon} />
-                  </BigIconContainer>
-                </Grid>
-                <Grid item>
-                  <Box paddingLeft="35px">
-                    <Box>
-                      <Typography variant="subtitle2" color="secondary">
-                        TIME LEFT TO VOTE
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h3" color="textSecondary">
-                        <Timer initialTime={54555000} startImmediately={true}>
-                          {() => (
-                            <React.Fragment>
-                              <Box>
-                                <Timer.Days />d <Timer.Hours />h{" "}
-                                <Timer.Minutes />m
-                              </Box>
-                            </React.Fragment>
-                          )}
-                        </Timer>
-                      </Typography>
-                    </Box>
-                  </Box>
+                  <TokenHoldersDialog address={id} />
                 </Grid>
               </Grid>
-            </Box>
-          </DAOInfoVotingPeriod>
-        </MainContainer>
-        <StatsContainer container>
-          <TokensLocked
-            item
-            xs={6}
-            container
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item>
-                <Box>
-                  <Typography variant="subtitle2" color="secondary">
-                    {symbol} Locked
-                  </Typography>
-                </Box>
-                <Box padding="12px 0">
-                  <Typography variant="h3" color="textSecondary">
-                    {amountLocked}
-                  </Typography>
-                </Box>
+              <LockedTokensBar
+                variant="determinate"
+                value={60}
+                color="secondary"
+              />
+            </TokensLocked>
+            <VotingAddresses
+              item
+              container
+              direction="column"
+              alignItems="center"
+              justify="center"
+            >
+              <Box>
+                <Typography variant="subtitle2" color="secondary">
+                  VOTING ADDRESSES
+                </Typography>
+                <Typography variant="h3" color="textSecondary">
+                  {addressesWithUnfrozenBalance}
+                </Typography>
+              </Box>
+            </VotingAddresses>
+            <ActiveProposals
+              item
+              xs
+              container
+              direction="column"
+              justify="center"
+              onClick={() => history.push(`/explorer/proposals/${id}`)}
+            >
+              <Box>
+                <Typography variant="subtitle2" color="secondary">
+                  ACTIVE PROPOSALS
+                </Typography>
+                <Typography variant="h3" color="textSecondary">
+                  {activeProposals.length}
+                </Typography>
+              </Box>
+            </ActiveProposals>
+          </StatsContainer>
+          <TableContainer>
+            <TableHeader container wrap="nowrap">
+              <Grid item xs={5}>
+                <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
               </Grid>
-              <Grid item>
-                <TokenHoldersDialog />
+              <Grid item xs={2}>
+                <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
               </Grid>
-            </Grid>
-            <LockedTokensBar
-              variant="determinate"
-              value={60}
-              color="secondary"
-            />
-          </TokensLocked>
-          <VotingAddresses
-            item
-            container
-            direction="column"
-            alignItems="center"
-            justify="center"
-          >
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                VOTING ADDRESSES
-              </Typography>
-              <Typography variant="h3" color="textSecondary">
-                {addressesWithUnfrozenBalance}
-              </Typography>
-            </Box>
-          </VotingAddresses>
-          <ActiveProposals
-            item
-            xs
-            container
-            direction="column"
-            justify="center"
-          >
-            <Box>
-              <Typography variant="subtitle2" color="secondary">
-                ACTIVE PROPOSALS
-              </Typography>
-              <Typography variant="h3" color="textSecondary">
-                {activeProposals.length}
-              </Typography>
-            </Box>
-          </ActiveProposals>
-        </StatsContainer>
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={5}>
-              <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={5}>
-              <ProposalTableHeadText>STATUS</ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {activeProposals.map((proposal, i) => (
-            <ProposalTableRow key={`proposal-${i}`} {...proposal} />
-          ))}
-        </TableContainer>
-        <Grid container direction="row" justify="center">
-          <UnderlineText
-            variant="subtitle1"
-            color="textSecondary"
-            onClick={() => history.push(`/explorer/proposals/${id}`)}
-          >
-            VIEW ALL PROPOSALS
-          </UnderlineText>
+              <Grid item xs={5}>
+                <ProposalTableHeadText>STATUS</ProposalTableHeadText>
+              </Grid>
+            </TableHeader>
+            {activeProposals.length > 0 &&
+              activeProposals.map((proposal, i) => (
+                <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+              ))}
+
+            {activeProposals.length === 0 ? (
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No active proposals
+              </NoProposals>
+            ) : null}
+          </TableContainer>
+          <Grid container direction="row" justify="center">
+            <UnderlineText
+              variant="subtitle1"
+              color="textSecondary"
+              onClick={() => history.push(`/explorer/proposals/${id}`)}
+            >
+              VIEW ALL PROPOSALS
+            </UnderlineText>
+          </Grid>
+
+          <TableContainer>
+            <TableHeader container wrap="nowrap">
+              <Grid item xs={5}>
+                <ProposalTableHeadText>
+                  TOP TOKEN HOLDERS BY ADDRESS
+                </ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={3}>
+                <ProposalTableHeadText>VOTES</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>WEIGHT</ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={2}>
+                <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
+              </Grid>
+            </TableHeader>
+            {tokenHolders.map((holder, i) => (
+              <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
+            ))}
+          </TableContainer>
         </Grid>
-      </Grid>
+      ) : (
+        <LoaderContainer container direction="row" justify="center">
+          <CircularProgress color="secondary" />
+        </LoaderContainer>
+      )}
     </PageLayout>
   );
 };

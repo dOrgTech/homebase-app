@@ -10,7 +10,7 @@ const Container = styled(Grid)({
 export const TokenHoldersRow: React.FC<TokenHolder & { symbol: string }> = ({
   address,
   balance,
-  symbol
+  symbol,
 }) => {
   return (
     <Container
