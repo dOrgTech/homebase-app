@@ -1,3 +1,4 @@
+import React from "react";
 import {
   AppBar,
   Toolbar,
@@ -7,11 +8,11 @@ import {
   Box,
   Grid,
 } from "@material-ui/core";
-import React from "react";
+import { useHistory, useLocation } from "react-router-dom";
+
 import { toShortAddress } from "../../utils";
 import HomeButton from "../../assets/logos/homebase.svg";
 import { useTezos } from "../../services/beacon/hooks/useTezos";
-import { useHistory, useLocation } from "react-router-dom";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -79,6 +80,7 @@ const LogoItem = styled("img")({
 
 export const Navbar: React.FC = () => {
   const { connect, account } = useTezos();
+
   const location = useLocation();
   const history = useHistory();
 

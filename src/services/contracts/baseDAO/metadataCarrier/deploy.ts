@@ -6,8 +6,7 @@ import {
   Wallet,
 } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
-import { useTezos } from "src/services/beacon/hooks/useTezos";
-import { getTestProvider } from "../../utils";
+
 import { code } from "./code";
 import { setMetadataJSON } from "./metadata";
 import { MetadataCarrierParameters, MetadataParams } from "./types";
@@ -27,18 +26,30 @@ export interface MetadataDeploymentResult {
   deployAddress: string;
 }
 
+interface Tezos {
+  tezos: TezosToolkit;
+  connect: () => Promise<TezosToolkit>;
+}
+
 export const deployMetadataCarrier = async ({
   keyName,
   metadata,
   tezos,
-}: MetadataCarrierParameters & { tezos: TezosToolkit }): Promise<
+  connect,
+}: MetadataCarrierParameters & Tezos): Promise<
   MetadataDeploymentResult | undefined
 > => {
-  const Tezos = await getTestProvider();
   const metadataMap = setMetadataMap(keyName, metadata);
 
   try {
     console.log("Originating Metadata Carrier contract...");
+
+    console.log("Signer ", tezos.signer);
+    console.log("Wallet ", tezos.wallet);
+
+    if (!("_pkh" in tezos.wallet)) {
+      await connect();
+    }
 
     const t = await tezos.wallet.originate({
       code,
@@ -52,9 +63,10 @@ export const deployMetadataCarrier = async ({
     console.log("Metadata Carrier deployment completed", c);
     return { contract, keyName, deployAddress: contract.address };
   } catch (e) {
+    // This should be handled above!
     if (e.name === "UnconfiguredSignerError") {
-      console.log("Please connect your wallet before deploying");
-      return;
+      // If this happens its because the user is not connected to any wallet
+      // Let's connect to a wallet provider and trigger the deployment method again
     }
     console.log("error ", e);
   }

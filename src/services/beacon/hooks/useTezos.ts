@@ -1,42 +1,39 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext } from "react";
+import { TezosToolkit } from "@taquito/taquito";
 import { connectWithBeacon } from "..";
 import { Network, TezosContext } from "../context";
-import { TezosToolkit } from "@taquito/taquito";
 
 type WalletConnectReturn = {
   tezos: TezosToolkit;
   connect: () => Promise<TezosToolkit>;
-  account: string | undefined;
+  account: string;
   network: Network;
 };
 
 export const useTezos = (): WalletConnectReturn => {
-  const [account, setAccount] = useState<string>();
-
   const {
-    state: { tezos, network },
+    state: { tezos, network, account },
     dispatch,
   } = useContext(TezosContext);
 
   return {
     tezos,
     connect: useCallback(async () => {
-      const { wallet } = await connectWithBeacon();
+      const { wallet, network } = await connectWithBeacon();
       tezos.setProvider({ wallet });
-
-      const address = await tezos.wallet.pkh();
-      setAccount(address);
-
+      const account = await tezos.wallet.pkh();
       dispatch({
         type: "UPDATE_TEZOS",
         payload: {
           network,
           tezos,
+          account,
         },
       });
 
       return tezos;
-    }, [dispatch]),
+    }, [dispatch, tezos, network]),
+
     account,
     network,
   };

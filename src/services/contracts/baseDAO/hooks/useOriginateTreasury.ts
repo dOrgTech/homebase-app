@@ -21,7 +21,7 @@ export const useOriginateTreasury = () => {
     current: "",
   });
 
-  const { tezos } = useTezos();
+  const { tezos, connect } = useTezos();
 
   const result = useMutation<
     ContractAbstraction<ContractProvider | Wallet>,
@@ -39,6 +39,7 @@ export const useOriginateTreasury = () => {
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
         tezos,
+        connect,
       });
 
       if (!metadata) {

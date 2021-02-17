@@ -8,6 +8,7 @@ export type Network = "delphinet" | "mainnet" | "edonet";
 interface TezosState {
   network: Network;
   tezos: TezosToolkit;
+  account: string;
 }
 
 interface TezosProvider {
@@ -21,6 +22,7 @@ Tezos.addExtension(new Tzip16Module());
 const INITIAL_STATE: TezosState = {
   tezos: Tezos,
   network: "delphinet",
+  account: "",
 };
 
 export const TezosContext = createContext<TezosProvider>({
@@ -34,6 +36,7 @@ interface UpdateTezos {
   payload: {
     tezos: TezosToolkit;
     network: Network;
+    account: string;
   };
 }
 
@@ -46,6 +49,7 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
         ...state,
         tezos: action.payload.tezos,
         network: action.payload.network,
+        account: action.payload.account,
       };
   }
 };

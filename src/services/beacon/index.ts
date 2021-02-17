@@ -10,6 +10,7 @@ export const rpcNodes: Record<Network, string> = {
 
 export const connectWithBeacon = async (): Promise<{
   wallet: BeaconWallet;
+  network: Network;
 }> => {
   return await new Promise(async (resolve, reject) => {
     const wallet = new BeaconWallet({
@@ -19,7 +20,8 @@ export const connectWithBeacon = async (): Promise<{
         PERMISSION_REQUEST_SUCCESS: {
           handler: (data) => {
             console.log("permission data:", data);
-            resolve({ wallet });
+            const network = data.account.network.type as keyof typeof rpcNodes;
+            resolve({ wallet, network });
           },
         },
         PERMISSION_REQUEST_ERROR: {
