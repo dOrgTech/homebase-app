@@ -47,20 +47,6 @@ function updateNavigationBar(props: NavigationBarProps) {
   };
 }
 
-function updateActiveStep(step: number) {
-  return <const>{
-    type: ActionTypes.UPDATE_STEP,
-    step,
-  };
-}
-
-function updateGovernanceStep(step: number) {
-  return <const>{
-    type: ActionTypes.UPDATE_GOVERNANCE_STEP,
-    step,
-  };
-}
-
 function updateOrgSettings(org: OrgSettings) {
   return <const>{
     type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS,
@@ -89,24 +75,28 @@ function updateDeploymentStatus({ deploying, contract }: DeploymentStatus) {
   };
 }
 
+function clearCache() {
+  return <const>{
+    type: ActionTypes.CLEAR_CACHE,
+  };
+}
+
 export type CreatorAction = ReturnType<
-  | typeof updateActiveStep
-  | typeof updateGovernanceStep
   | typeof updateNavigationBar
   | typeof updateOrgSettings
   | typeof updateVotingSettings
   | typeof updateMemberSettings
   | typeof updateDeploymentStatus
+  | typeof clearCache
 >;
 
 export enum ActionTypes {
   UPDATE_NAVIGATION_BAR = "UPDATE_NAVIGATION_BAR",
-  UPDATE_STEP = "UPDATE_STEP",
-  UPDATE_GOVERNANCE_STEP = "UPDATE_GOVERNANCE_STEP",
   UPDATE_VOTING_SETTINGS = "UPDATE_VOTING_SETTINGS",
   UPDATE_MEMBERS_SETTINGS = "UPDATE_MEMBERS_SETTINGS",
   UPDATE_ORGANIZATION_SETTINGS = "UPDATE_ORGANIZATION_SETTINGS",
   UPDATE_DEPLOYMENT_STATUS = "UPDATE_DEPLOYMENT_STATUS",
+  CLEAR_CACHE = "CLEAR_CACHE",
 }
 export interface TokenHolder {
   address: string;

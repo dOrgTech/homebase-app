@@ -12,6 +12,8 @@ const deploymentStatus = {
   deploying: false,
 };
 
+const LOCAL_STORAGE_KEY = "creatorParams";
+
 export const INITIAL_MIGRATION_STATE: MigrationParams = {
   orgSettings: {
     name: "",
@@ -76,18 +78,6 @@ export const reducer = (
         back: action.back,
       };
       return state;
-    case ActionTypes.UPDATE_STEP:
-      state = {
-        ...state,
-        activeStep: action.step,
-      };
-      return state;
-    case ActionTypes.UPDATE_GOVERNANCE_STEP:
-      state = {
-        ...state,
-        governanceStep: action.step,
-      };
-      return state;
     case ActionTypes.UPDATE_ORGANIZATION_SETTINGS:
       state = {
         ...state,
@@ -115,6 +105,9 @@ export const reducer = (
         },
       };
       return state;
+    case ActionTypes.CLEAR_CACHE:
+      window.localStorage.removeItem(LOCAL_STORAGE_KEY);
+      return INITIAL_STATE;
     default:
       return state;
   }
@@ -122,7 +115,7 @@ export const reducer = (
 
 const CreatorProvider: React.FC = ({ children }) => {
   const [data, updateCache] = useLocalStorage<MigrationParams>(
-    "creatorParams",
+    LOCAL_STORAGE_KEY,
     INITIAL_STATE.data
   );
 

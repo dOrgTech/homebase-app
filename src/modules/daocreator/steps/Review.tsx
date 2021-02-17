@@ -14,6 +14,7 @@ import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/m
 import { MigrationParams } from "../../../services/contracts/baseDAO/types";
 import { useHistory } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
+import { ActionTypes } from "../state/types";
 
 const RocketImg = styledMat("img")({
   marginBottom: 46,
@@ -97,7 +98,7 @@ const Dot3 = styled.span`
 `;
 
 export const Review: React.FC = () => {
-  const { state } = useContext(CreatorContext);
+  const { state, dispatch } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
 
@@ -137,6 +138,14 @@ export const Review: React.FC = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (data && data.address) {
+      dispatch({
+        type: ActionTypes.CLEAR_CACHE,
+      });
+    }
+  }, [data, dispatch]);
 
   return (
     <Box maxWidth={650}>
