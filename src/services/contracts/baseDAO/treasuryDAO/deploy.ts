@@ -2,7 +2,7 @@ import { MichelsonMap } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { getTestProvider } from "../../utils";
-import { code } from "./code";
+import contractCode from "./michelson/contract";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
 import { OriginationOperation } from "@taquito/taquito/dist/types/operations/origination-operation";
 
@@ -58,7 +58,7 @@ export const deployTreasuryDAO = async ({
     const Tezos = await getTestProvider();
 
     const t = await Tezos.contract.originate({
-      code,
+      code: contractCode,
       storage: {
         ledger,
         operators: new MichelsonMap(),

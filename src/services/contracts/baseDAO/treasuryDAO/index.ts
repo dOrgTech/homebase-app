@@ -1,8 +1,6 @@
 import {
-  ContractMethod,
   MichelsonMap,
   TezosToolkit,
-  Wallet,
 } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
