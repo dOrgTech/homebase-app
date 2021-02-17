@@ -4,12 +4,10 @@ import {
   TezosToolkit,
 } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
+
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
-import { getTestProvider } from "../../utils";
 import contractCode from "./michelson/contract";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
-import { OriginationOperation } from "@taquito/taquito/dist/types/operations/origination-operation";
-import { useTezos } from "src/services/beacon/hooks/useTezos";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();

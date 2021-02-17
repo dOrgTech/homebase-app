@@ -1,13 +1,14 @@
+import { useState } from "react";
 import {
   ContractAbstraction,
   ContractProvider,
   Wallet,
 } from "@taquito/taquito";
-import { OriginateTreasuryParams } from "../types";
 import { useMutation, useQueryClient } from "react-query";
+
+import { OriginateTreasuryParams } from "../types";
 import { deployMetadataCarrier } from "../metadataCarrier/deploy";
 import { deployTreasuryDAO } from "../treasuryDAO/deploy";
-import { useEffect, useState } from "react";
 import { addNewContractToIPFS } from "../../../pinata";
 import { useTezos } from "src/services/beacon/hooks/useTezos";
 
