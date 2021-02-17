@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   Button,
   Grid,
@@ -121,11 +121,12 @@ export const Review: React.FC = () => {
   );
 
   const {
-    mutation: { mutate, isLoading, error, data },
+    mutation: { mutate, error, data },
     stateUpdates: { states, current },
   } = useOriginateTreasury();
   const history = useHistory();
 
+  //TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
       if (!data && info && metadataCarrierParams)
@@ -134,6 +135,7 @@ export const Review: React.FC = () => {
           treasuryParams: fromStateToTreasuryStorage(info),
         });
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

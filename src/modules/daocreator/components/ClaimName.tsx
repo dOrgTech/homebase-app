@@ -1,13 +1,4 @@
-import {
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
-  Grid,
-  Paper,
-  styled,
-  Typography,
-} from "@material-ui/core";
+import { Grid, Paper, styled, Typography } from "@material-ui/core";
 import React from "react";
 
 const CustomUrlButton = styled(Paper)({

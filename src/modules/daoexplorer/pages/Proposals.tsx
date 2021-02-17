@@ -101,12 +101,10 @@ const ProposalTableHeadText: React.FC = ({ children }) => (
 
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: dao, error: daoError, isLoading: daoLoading } = useDAO(id);
+  const { data: dao } = useDAO(id);
 
   const name = dao && dao.unfrozenToken.name;
-  const description = dao && dao.description;
   const symbol = dao && dao.unfrozenToken.symbol.toUpperCase();
-  const quorumTreshold = dao && dao.quorumTreshold;
   const amountLocked = useMemo(() => {
     if (!dao) {
       return 0;
@@ -133,9 +131,7 @@ export const Proposals: React.FC = () => {
     }, 0);
   }, [dao]);
 
-  const { data: proposalsData, isLoading, error } = useProposals(
-    dao && dao.address
-  );
+  const { data: proposalsData } = useProposals(dao && dao.address);
 
   const activeProposals = useMemo<ProposalTableRowData[]>(() => {
     if (!proposalsData) {
@@ -144,9 +140,8 @@ export const Proposals: React.FC = () => {
 
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) => 
-        mapProposalData(proposal, dao?.address));
-  }, [proposalsData]);
+      .map((proposal) => mapProposalData(proposal, dao?.address));
+  }, [dao?.address, proposalsData]);
 
   const passedProposals = useMemo<ProposalTableRowData[]>(() => {
     if (!proposalsData) {
@@ -163,7 +158,9 @@ export const Proposals: React.FC = () => {
       return [];
     }
 
-    return proposalsData.map((proposal) => mapProposalData(proposal, dao?.address));
+    return proposalsData.map((proposal) =>
+      mapProposalData(proposal, dao?.address)
+    );
   }, [dao?.address, proposalsData]);
 
   return (

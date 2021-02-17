@@ -11,7 +11,7 @@ import {
   DAOListMetadata,
   MetadataCarrierParameters,
 } from "./metadataCarrier/types";
-import { TreasuryParams, TreasuryParamsWithoutMetadata } from "./treasuryDAO/types";
+import { TreasuryParamsWithoutMetadata } from "./treasuryDAO/types";
 
 export type Contract = ContractAbstraction<ContractProvider> | undefined;
 

@@ -138,7 +138,6 @@ interface Values {
   agoraPostId: number;
 }
 
-const PROPOSAL_SIZE = 1;
 const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0 };
 const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
