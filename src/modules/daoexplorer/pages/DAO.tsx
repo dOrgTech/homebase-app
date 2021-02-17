@@ -159,16 +159,12 @@ export const DAO: React.FC = () => {
   const [finished, setFinished] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(votingPeriod);
-    console.log(currentCycle);
-    console.log("cycle info ", cycleInfo?.current);
     if (votingPeriod && finished && cycleInfo?.current) {
-      console.log("I AM IN");
       setFinished(false);
       setTimeLeft(votingPeriod);
       setCurrentCycle((currentCycle || cycleInfo.current) + 1);
     }
-  }, [finished, votingPeriod, currentCycle, cycleInfo?.current]);
+  }, [finished, votingPeriod, currentCycle, cycleInfo]);
 
   useEffect(() => {
     if (time) {
