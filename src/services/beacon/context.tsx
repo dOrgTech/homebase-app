@@ -1,11 +1,13 @@
 import { TezosToolkit } from "@taquito/taquito";
+import { Tzip16Module } from "@taquito/tzip16";
 import React, { createContext, useReducer } from "react";
+import { rpcNodes } from ".";
 
 export type Network = "delphinet" | "mainnet" | "edonet";
 
 interface TezosState {
   network: Network;
-  tezos: TezosToolkit | undefined;
+  tezos: TezosToolkit;
 }
 
 interface TezosProvider {
@@ -13,9 +15,12 @@ interface TezosProvider {
   dispatch: React.Dispatch<TezosAction>;
 }
 
+const Tezos = new TezosToolkit(rpcNodes.delphinet);
+Tezos.addExtension(new Tzip16Module());
+
 const INITIAL_STATE: TezosState = {
-  tezos: undefined,
-  network: "mainnet",
+  tezos: Tezos,
+  network: "delphinet",
 };
 
 export const TezosContext = createContext<TezosProvider>({

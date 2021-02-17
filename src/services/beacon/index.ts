@@ -4,7 +4,7 @@ import { TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 import { Network } from "./context";
 
-const rpcNodes: Record<Network, string> = {
+export const rpcNodes: Record<Network, string> = {
   edonet: "https://edonet-tezos.giganode.io",
   delphinet: "https://api.tez.ie/rpc/delphinet",
   mainnet: "https://mainnet-tezos.giganode.io",

@@ -4,7 +4,7 @@ import { Network, TezosContext } from "../context";
 import { TezosToolkit } from "@taquito/taquito";
 
 type WalletConnectReturn = {
-  tezos: TezosToolkit | undefined;
+  tezos: TezosToolkit;
   connect: () => Promise<TezosToolkit>;
   account: string | undefined;
   network: Network;
