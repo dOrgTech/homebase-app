@@ -9,7 +9,7 @@ import {
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Header } from "../components/Header";
-import { MockDAOs } from "../../../store/mock/mock";
+import { MockDAOs } from "../../../mock";
 import { MoreHorizOutlined } from "@material-ui/icons";
 
 const Balance = styled(Typography)({
