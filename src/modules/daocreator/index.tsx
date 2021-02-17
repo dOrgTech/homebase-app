@@ -11,16 +11,20 @@ import {
   Button,
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
-
-import { ConnectWallet } from "./components/ConnectWallet";
-import { StepInfo } from "./state/types";
-import { CreatorContext } from "./state/context";
-import { CurrentStep, STEPS, useStepNumber } from "./steps";
-import { NavigationBar } from "./components/NavigationBar";
-import HomeButton from "../../assets/logos/homebase.svg";
 import { useHistory } from "react-router";
-import { toShortAddress } from "../../utils";
-import { useTezos } from "../../services/beacon/hooks/useTezos";
+
+import { ConnectWallet } from "src/modules/daocreator/components/ConnectWallet";
+import { CreatorContext } from "src/modules/daocreator/state/context";
+import {
+  CurrentStep,
+  STEPS,
+  useStepNumber,
+} from "src/modules/daocreator/steps";
+import HomeButton from "src/assets/logos/homebase.svg";
+import { useTezos } from "src/services/beacon/hooks/useTezos";
+import { toShortAddress } from "src/services/contracts/utils";
+import { NavigationBar } from "src/modules/daocreator/components/NavigationBar";
+import { StepInfo } from "src/modules/daocreator/state/types";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,

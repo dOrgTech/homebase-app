@@ -7,12 +7,13 @@ import {
   IconButton,
   Link,
 } from "@material-ui/core";
+import dayjs from "dayjs";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
 import ProgressBar from "react-customizable-progressbar";
-import dayjs from "dayjs";
-import { toShortAddress } from "../../../utils";
-import { ProposalWithStatus } from "../../../services/bakingBad/proposals/types";
+
+import { ProposalWithStatus } from "src/services/bakingBad/proposals/types";
+import { toShortAddress } from "src/services/contracts/utils";
 
 const progressColorMap = {
   success: "#81FEB7",
@@ -117,16 +118,16 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
     >
       <Grid item xs={5}>
         <Box>
-          <Link href={`https://forum.tezosagora.org/t/${number}`}>
-            <Typography variant="body1" color="textSecondary">
-              {toShortAddress(title)}
-            </Typography>
-          </Link>
+          <Typography variant="body1" color="textSecondary">
+            {toShortAddress(title)}
+          </Typography>
         </Box>
         <Box>
-          <Typography variant="body1" color="textSecondary">
-            #{number} • {formattedDate}
-          </Typography>
+          <Link href={`https://forum.tezosagora.org/t/${number}`}>
+            <Typography variant="body1" color="textSecondary">
+              #{number} • {formattedDate}
+            </Typography>
+          </Link>
         </Box>
       </Grid>
       <Grid item xs={2}>
