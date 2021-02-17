@@ -146,6 +146,7 @@ export const DAO: React.FC = () => {
   const name = data && data.unfrozenToken.name;
   const description = data && data.description;
   const symbol = data && data.unfrozenToken.symbol.toUpperCase();
+  const members = data && data.ledger;
 
   const votingPeriod = data && data.votingPeriod;
   const originationTime = data && data.originationTime;
@@ -158,18 +159,19 @@ export const DAO: React.FC = () => {
   const [finished, setFinished] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log(votingPeriod);
+    console.log(currentCycle);
+    console.log("cycle info ", cycleInfo?.current);
     if (votingPeriod && finished && cycleInfo?.current) {
-      console.log(votingPeriod)
+      console.log("I AM IN");
       setFinished(false);
       setTimeLeft(votingPeriod);
-      setCurrentCycle(cycleInfo.current + 1);
-      return;
+      setCurrentCycle((currentCycle || cycleInfo.current) + 1);
     }
-  }, [finished, votingPeriod, cycleInfo?.current]);
+  }, [finished, votingPeriod, currentCycle, cycleInfo?.current]);
 
   useEffect(() => {
     if (time) {
-      console.log(time)
       setTimeLeft(time);
     }
   }, [time]);
@@ -205,6 +207,15 @@ export const DAO: React.FC = () => {
 
   const { data: proposalsData } = useProposals(data ? data.address : "");
 
+  const membersLedger = useMemo(() => {
+    if (!members || !members.length) {
+      return [];
+    }
+    return members.map((member) => {
+      return member.address;
+    });
+  }, [members]);
+
   const activeProposals = useMemo<ProposalTableRowData[]>(() => {
     if (!proposalsData || finished) {
       return [];
@@ -234,7 +245,7 @@ export const DAO: React.FC = () => {
     {
       time: 0,
       callback: () => {
-        setFinished;
+        setFinished(true);
       },
     },
   ];
