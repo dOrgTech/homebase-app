@@ -1,10 +1,15 @@
-import { MichelsonMap } from "@taquito/taquito";
+import {
+  MichelsonMap,
+  OriginationWalletOperation,
+  TezosToolkit,
+} from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import { getTestProvider } from "../../utils";
 import contractCode from "./michelson/contract";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
 import { OriginationOperation } from "@taquito/taquito/dist/types/operations/origination-operation";
+import { useTezos } from "src/services/beacon/hooks/useTezos";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();
@@ -45,7 +50,10 @@ export const deployTreasuryDAO = async ({
     votingPeriod,
   },
   metadataCarrierDeploymentData,
-}: TreasuryParams): Promise<OriginationOperation | void> => {
+  tezos,
+}: TreasuryParams & {
+  tezos: TezosToolkit;
+}): Promise<OriginationWalletOperation | void> => {
   if (!metadataCarrierDeploymentData.deployAddress) {
     throw new Error(
       "Error deploying treasury DAO: There's not address of metadata"
@@ -55,9 +63,7 @@ export const deployTreasuryDAO = async ({
   const metadata = setMetadata(metadataCarrierDeploymentData);
 
   try {
-    const Tezos = await getTestProvider();
-
-    const t = await Tezos.contract.originate({
+    const t = await tezos.wallet.originate({
       code: contractCode,
       storage: {
         ledger,
@@ -84,8 +90,11 @@ export const deployTreasuryDAO = async ({
       },
     });
 
-    return t;
+    return await t.send();
   } catch (e) {
+    if (e.name === "UnconfiguredSignerError") {
+      console.log("Please connect your wallet before deploying");
+    }
     console.log("error ", e);
   }
 };

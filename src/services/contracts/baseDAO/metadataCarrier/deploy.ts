@@ -2,8 +2,11 @@ import {
   ContractAbstraction,
   ContractProvider,
   MichelsonMap,
+  TezosToolkit,
+  Wallet,
 } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
+import { useTezos } from "src/services/beacon/hooks/useTezos";
 import { getTestProvider } from "../../utils";
 import { code } from "./code";
 import { setMetadataJSON } from "./metadata";
@@ -19,7 +22,7 @@ const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
 };
 
 export interface MetadataDeploymentResult {
-  contract: ContractAbstraction<ContractProvider>;
+  contract: ContractAbstraction<ContractProvider | Wallet>;
   keyName: string;
   deployAddress: string;
 }
@@ -27,7 +30,8 @@ export interface MetadataDeploymentResult {
 export const deployMetadataCarrier = async ({
   keyName,
   metadata,
-}: MetadataCarrierParameters): Promise<
+  tezos,
+}: MetadataCarrierParameters & { tezos: TezosToolkit }): Promise<
   MetadataDeploymentResult | undefined
 > => {
   const Tezos = await getTestProvider();
@@ -36,17 +40,22 @@ export const deployMetadataCarrier = async ({
   try {
     console.log("Originating Metadata Carrier contract...");
 
-    const t = await Tezos.contract.originate({
+    const t = await tezos.wallet.originate({
       code,
       storage: {
         metadata: metadataMap,
       },
     });
     console.log("Waiting for confirmation on Metadata Carrier contract...", t);
-    const c = await t.contract();
+    const c = await t.send();
+    const contract = await c.contract();
     console.log("Metadata Carrier deployment completed", c);
-    return { contract: c, keyName, deployAddress: c.address };
+    return { contract, keyName, deployAddress: contract.address };
   } catch (e) {
+    if (e.name === "UnconfiguredSignerError") {
+      console.log("Please connect your wallet before deploying");
+      return;
+    }
     console.log("error ", e);
   }
 };

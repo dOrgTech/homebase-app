@@ -18,29 +18,24 @@ export const useTezos = (): WalletConnectReturn => {
     dispatch,
   } = useContext(TezosContext);
 
-  useEffect(() => {
-    if (tezos) {
-      (async () => {
-        const address = await tezos.wallet.pkh();
-        setAccount(address);
-      })();
-    }
-  }, [tezos]);
-
   return {
-    tezos: tezos,
+    tezos,
     connect: useCallback(async () => {
-      const { tezos: toolkit, network } = await connectWithBeacon();
+      const { wallet } = await connectWithBeacon();
+      tezos.setProvider({ wallet });
+
+      const address = await tezos.wallet.pkh();
+      setAccount(address);
 
       dispatch({
         type: "UPDATE_TEZOS",
         payload: {
           network,
-          tezos: toolkit,
+          tezos,
         },
       });
 
-      return toolkit;
+      return tezos;
     }, [dispatch]),
     account,
     network,

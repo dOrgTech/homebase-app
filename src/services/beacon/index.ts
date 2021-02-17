@@ -1,7 +1,5 @@
 import { NetworkType } from "@airgap/beacon-sdk";
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import { TezosToolkit } from "@taquito/taquito";
-import { Tzip16Module } from "@taquito/tzip16";
 import { Network } from "./context";
 
 export const rpcNodes: Record<Network, string> = {
@@ -11,8 +9,7 @@ export const rpcNodes: Record<Network, string> = {
 };
 
 export const connectWithBeacon = async (): Promise<{
-  tezos: TezosToolkit;
-  network: Network;
+  wallet: BeaconWallet;
 }> => {
   return await new Promise(async (resolve, reject) => {
     const wallet = new BeaconWallet({
@@ -22,14 +19,7 @@ export const connectWithBeacon = async (): Promise<{
         PERMISSION_REQUEST_SUCCESS: {
           handler: (data) => {
             console.log("permission data:", data);
-
-            const network = data.account.network.type as keyof typeof rpcNodes;
-            const rpcUrl = rpcNodes[network];
-            const tezos = new TezosToolkit(rpcUrl);
-            tezos.addExtension(new Tzip16Module());
-            tezos.setWalletProvider(wallet);
-
-            resolve({ tezos, network });
+            resolve({ wallet });
           },
         },
         PERMISSION_REQUEST_ERROR: {
