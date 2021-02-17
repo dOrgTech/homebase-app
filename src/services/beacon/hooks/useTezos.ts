@@ -32,7 +32,7 @@ export const useTezos = (): WalletConnectReturn => {
       });
 
       return tezos;
-    }, [dispatch, tezos, network]),
+    }, [dispatch, tezos]),
 
     account,
     network,
