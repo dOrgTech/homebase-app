@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -17,7 +17,11 @@ import { TextField } from "formik-material-ui";
 import { usePropose } from "../../../services/contracts/baseDAO/hooks/usePropose";
 import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useParams } from "react-router";
-import { useVote } from "../../../services/contracts/baseDAO/hooks/useVote";
+import {
+  calculateProposalSize,
+  getTokensToStakeInPropose,
+} from "../../../services/contracts/baseDAO/treasuryDAO";
+import { useTezos } from "../../../services/beacon/hooks/useTezos";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
   height: 53,
@@ -146,15 +150,11 @@ export const NewProposalDialog: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
+  const [proposalFee, setProposalFee] = useState(0);
   const { mutate } = usePropose();
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
-  const { mutate: vote, data: voteData, error: voteError } = useVote();
-
-  const proposalFee = useMemo(() => {
-    //TODO: redo calculation when PACK ed size gets figured out
-    return dao ? dao.frozenExtraValue : 0;
-  }, [dao]);
+  const { tezos, connect } = useTezos();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -164,14 +164,27 @@ export const NewProposalDialog: React.FC = () => {
     setOpen(false);
   };
 
-  const onSubmit = (values: Values, { setSubmitting }: any) => {
+  const onSubmit = async (values: Values, { setSubmitting }: any) => {
     setSubmitting(true);
     if (dao) {
+      const proposalSize = await calculateProposalSize(
+        dao.address,
+        {
+          transfers: values.transfers,
+          agoraPostId: values.agoraPostId,
+        },
+        tezos || (await connect())
+      );
+
+      const tokensNeeded = getTokensToStakeInPropose(dao, proposalSize);
+
+      setProposalFee(tokensNeeded);
+
       mutate({
         contractAddress: dao.address,
         contractParams: {
           transfers: values.transfers,
-          tokensToFreeze: proposalFee,
+          tokensToFreeze: tokensNeeded,
           agoraPostId: values.agoraPostId,
         },
       });

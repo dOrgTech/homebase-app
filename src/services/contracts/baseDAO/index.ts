@@ -112,18 +112,18 @@ export const doDAOPropose = async ({
 }: ProposeParams) => {
   const contract = await getContract(tezos, contractAddress);
 
-  const result = await contract.methods
-    .propose(
-      tokensToFreeze,
-      agoraPostId,
-      transfers.map(({ amount, recipient }) => ({
-        transfer_type: {
-          amount,
-          recipient,
-        },
-      }))
-    )
-    .send();
+  const contractMethod = contract.methods.propose(
+    tokensToFreeze,
+    agoraPostId,
+    transfers.map(({ amount, recipient }) => ({
+      transfer_type: {
+        amount,
+        recipient,
+      },
+    }))
+  );
+
+  const result = await contractMethod.send();
 
   return result;
 };

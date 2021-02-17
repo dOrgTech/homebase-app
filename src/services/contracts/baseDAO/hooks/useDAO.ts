@@ -13,7 +13,7 @@ export const useDAO = (address: string | undefined) => {
     ["dao", address],
     () => getDAO(address as string, tezos as TezosToolkit, network),
     {
-      enabled: !!tezos && !!address,
+      enabled: !!tezos && !!address && !!queryClient,
       initialData: () => {
         return queryClient
           .getQueryData<DAOItem[]>("daos")

@@ -1,4 +1,4 @@
-export const code = `parameter (or (or (or (or (unit %accept_ownership)
+export default `parameter (or (or (or (or (unit %accept_ownership)
 (pair %burn (address %from_)
             (pair (nat %token_id)
                   (nat %amount))))
