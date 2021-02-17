@@ -1,13 +1,13 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
+import { Parser } from "@taquito/michel-codec";
+import { MichelsonV1Expression } from "@taquito/rpc";
+
 import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
-import { getTestProvider } from "../../utils";
 import code from "./michelson/contract";
 import { MemberTokenAllocation, TreasuryParams } from "./types";
 import { addNewContractToIPFS } from "../../../pinata";
 import { Contract, DAOItem, ProposeParams } from "../types";
-import { Parser } from "@taquito/michel-codec";
-import { MichelsonV1Expression } from "@taquito/rpc";
 import proposeMetadataCode from "./michelson/propose";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
@@ -49,7 +49,8 @@ export const deployTreasuryDAO = async ({
     votingPeriod,
   },
   metadataCarrierDeploymentData,
-}: TreasuryParams): Promise<Contract> => {
+  tezos,
+}: TreasuryParams & { tezos: TezosToolkit }): Promise<Contract> => {
   if (!metadataCarrierDeploymentData.deployAddress) {
     throw new Error(
       "Error deploying treasury DAO: There's not address of metadata"
@@ -59,11 +60,9 @@ export const deployTreasuryDAO = async ({
   const metadata = setMetadata(metadataCarrierDeploymentData);
 
   try {
-    const Tezos = await getTestProvider();
-
     console.log("Originating Treasury DAO contract...");
 
-    const t = await Tezos.contract.originate({
+    const t = await tezos.contract.originate({
       code,
       storage: {
         ledger,

@@ -104,7 +104,7 @@ export const Review: React.FC = () => {
 
   const metadataCarrierParams: MetadataCarrierParameters = useMemo(
     () => ({
-      keyName: info.orgSettings.name,
+      keyName: "metadataKey",
       metadata: {
         frozenToken,
         unfrozenToken,
@@ -116,7 +116,6 @@ export const Review: React.FC = () => {
       frozenToken,
       info.memberSettings.administrator,
       info.orgSettings.description,
-      info.orgSettings.name,
       unfrozenToken,
     ]
   );

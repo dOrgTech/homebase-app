@@ -1,10 +1,16 @@
-import { ContractAbstraction, ContractProvider } from "@taquito/taquito";
-import { OriginateTreasuryParams } from "../types";
+import { useState } from "react";
+import {
+  ContractAbstraction,
+  ContractProvider,
+  Wallet,
+} from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
+
+import { OriginateTreasuryParams } from "../types";
 import { deployMetadataCarrier } from "../metadataCarrier/deploy";
 import { deployTreasuryDAO } from "../treasuryDAO/deploy";
-import { useState } from "react";
 import { addNewContractToIPFS } from "../../../pinata";
+import { useTezos } from "src/services/beacon/hooks/useTezos";
 
 export const useOriginateTreasury = () => {
   const queryClient = useQueryClient();
@@ -16,8 +22,10 @@ export const useOriginateTreasury = () => {
     current: "",
   });
 
+  const { tezos, connect } = useTezos();
+
   const result = useMutation<
-    ContractAbstraction<ContractProvider>,
+    ContractAbstraction<ContractProvider | Wallet>,
     Error,
     OriginateTreasuryParams
   >(
@@ -29,7 +37,11 @@ export const useOriginateTreasury = () => {
         current: "Deploying Metadata Carrier Contract",
       });
 
-      const metadata = await deployMetadataCarrier(metadataParams);
+      const metadata = await deployMetadataCarrier({
+        ...metadataParams,
+        tezos,
+        connect,
+      });
 
       if (!metadata) {
         throw new Error(
@@ -46,9 +58,12 @@ export const useOriginateTreasury = () => {
         current: "Deploying Treasury DAO Contract",
       });
 
+      console.log(metadata);
+
       const treasury = await deployTreasuryDAO({
         ...treasuryParams,
         metadataCarrierDeploymentData: metadata,
+        tezos,
       });
 
       if (!treasury) {

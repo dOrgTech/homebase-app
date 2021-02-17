@@ -5,15 +5,17 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import "./App.css";
-import { Box, ThemeProvider } from "@material-ui/core";
-import { theme } from "./theme";
-import { DAOExplorerRouter } from "./router/explorer";
-import { Navbar } from "./modules/common/Toolbar";
-import { DAOCreate } from "./modules/daocreator";
-import { CreatorProvider } from "./modules/daocreator/state/context";
-import ScrollToTop from "./modules/common/ScrollToTop";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { Box, ThemeProvider } from "@material-ui/core";
+
+import { DAOExplorerRouter } from "src/router/explorer";
+import { Navbar } from "src/modules/common/Toolbar";
+import { DAOCreate } from "src/modules/daocreator";
+import { CreatorProvider } from "src/modules/daocreator/state/context";
+import ScrollToTop from "src/modules/common/ScrollToTop";
+import { theme } from "src/theme";
+
+import "src/App.css";
 
 const queryClient = new QueryClient();
 
