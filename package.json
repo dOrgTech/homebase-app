@@ -22,10 +22,6 @@
     "@taquito/tzip12": "^8.0.0-beta.2",
     "@taquito/tzip16": "^8.0.0-beta.2",
     "@thanos-wallet/dapp": "^1.0.2",
-    "@types/async": "^3.2.5",
-    "@types/styled-components": "^5.1.7",
-    "async": "^3.2.0",
-    "crypto-js": "^4.0.0",
     "dayjs": "^1.10.4",
     "formik": "^2.2.6",
     "formik-material-ui": "^3.0.1",
@@ -36,9 +32,7 @@
     "react-query": "^3.6.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
-    "serve": "^11.3.2",
-    "styled-components": "^5.2.1",
-    "typescript": "^4.1.0-beta"
+    "serve": "^11.3.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.15",
@@ -46,6 +40,7 @@
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.6",
+    "typescript": "^4.1.0-beta",
     "@typescript-eslint/eslint-plugin": "^4.8.2",
     "@typescript-eslint/parser": "^4.8.2",
     "eslint": "^7.14.0",

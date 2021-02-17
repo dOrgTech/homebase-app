@@ -3,101 +3,101 @@ import {
   Button,
   Grid,
   Box,
-  styled as styledMat,
+  styled,
   Typography,
+  makeStyles,
 } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+
 import Rocket from "../../../assets/img/rocket.svg";
 import { CreatorContext } from "../state/context";
 import { useOriginateTreasury } from "../../../services/contracts/baseDAO/hooks/useOriginateTreasury";
 import { fromStateToTreasuryStorage, getTokensInfo } from "../state/utils";
 import { MetadataCarrierParameters } from "../../../services/contracts/baseDAO/metadataCarrier/types";
 import { MigrationParams } from "../../../services/contracts/baseDAO/types";
-import { useHistory } from "react-router-dom";
-import styled, { keyframes } from "styled-components";
 import { ActionTypes } from "../state/types";
 
-const RocketImg = styledMat("img")({
+const RocketImg = styled("img")({
   marginBottom: 46,
 });
 
-const WaitingText = styledMat(Typography)({
+const WaitingText = styled(Typography)({
   marginTop: 9,
+  fontWeight: "bold",
 });
 
-const CustomButton = styledMat(Button)({
+const CustomButton = styled(Button)({
   marginTop: 20,
 });
 
-const animation1 = keyframes`
-  0% {
-  opacity: 1;
-  }
-  65% {
-  opacity: 1;
-  }
-  66% {
-  opacity: 0;
-  }
-  100% {
-  opacity: 0;
-  }
- `;
-
-const animation2 = keyframes`
-  0% {
-   opacity: 0;
-  }
-  21% {
-   opacity: 0;
-  }
-  22% {
-   opacity: 1;
-  }
-  65% {
-   opacity: 1;
-  }
-  66% {
-   opacity: 0;
-  }
-  100% {
-   opacity: 0;
-  }
- `;
-
-const animation3 = keyframes`
-  0% {
-   opacity: 0;
-  }
-  43% {
-   opacity: 0;
-  }
-  44% {
-   opacity: 1;
-  }
-  65% {
-   opacity: 1;
-  }
-  66% {
-   opacity: 0;
-  }
-  100% {
-   opacity: 0;
-  }
- }`;
-
-const Dot1 = styled.span`
-  animation: ${animation1} 2s linear infinite;
-`;
-
-const Dot2 = styled.span`
-  animation: ${animation2} 2s linear infinite;
-`;
-
-const Dot3 = styled.span`
-  animation: ${animation3} 2s linear infinite;
-`;
+const useStyles = makeStyles({
+  firstDot: {
+    animation: "$firstDot 2s linear infinite",
+  },
+  secondDot: {
+    animation: "$secondDot 2s linear infinite",
+  },
+  threeDot: {
+    animation: "$thirdDot 2s linear infinite",
+  },
+  "@keyframes firstDot": {
+    "0%": {
+      opacity: 1,
+    },
+    "65%": {
+      opacity: 1,
+    },
+    "66%": {
+      opacity: 0,
+    },
+    "100%": {
+      opacity: 0,
+    },
+  },
+  "@keyframes secondDot": {
+    "0%": {
+      opacity: 0,
+    },
+    "21%": {
+      opacity: 0,
+    },
+    "22%": {
+      opacity: 1,
+    },
+    "65%": {
+      opacity: 1,
+    },
+    "66%": {
+      opacity: 0,
+    },
+    "100%": {
+      opacity: 0,
+    },
+  },
+  "@keyframes thirdDot": {
+    "0%": {
+      opacity: 0,
+    },
+    "43%": {
+      opacity: 0,
+    },
+    "44%": {
+      opacity: 1,
+    },
+    "65%": {
+      opacity: 1,
+    },
+    "66%": {
+      opacity: 0,
+    },
+    "100%": {
+      opacity: 0,
+    },
+  },
+});
 
 export const Review: React.FC = () => {
+  const classes = useStyles();
   const { state, dispatch } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
@@ -176,22 +176,14 @@ export const Review: React.FC = () => {
             </WaitingText>
           ))}
           {current && !error ? (
-            <WaitingText
-              variant="subtitle1"
-              color="textSecondary"
-              style={{ fontWeight: "bold" }}
-            >
-              {current} <Dot1>.</Dot1>
-              <Dot2>.</Dot2>
-              <Dot3>.</Dot3>
+            <WaitingText variant="subtitle1" color="textSecondary">
+              {current} <span className={classes.firstDot}>.</span>
+              <span className={classes.secondDot}>.</span>
+              <span className={classes.threeDot}>.</span>
             </WaitingText>
           ) : (
             error && (
-              <WaitingText
-                variant="subtitle1"
-                color="textSecondary"
-                style={{ fontWeight: "bold" }}
-              >
+              <WaitingText variant="subtitle1" color="textSecondary">
                 {error}
               </WaitingText>
             )
