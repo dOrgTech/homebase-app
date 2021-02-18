@@ -74,16 +74,17 @@ export const useCreatorRouteValidation = (): string => {
   const needsToFillGovernance = voting.some((value) => !votingSettings[value]);
   const needsToFillMembers = members.some((value) => !memberSettings[value]);
 
-  const isNotPreviousStep = (steps: string[]): boolean => {
+  const isPreviousStep = (steps: string[]): boolean => {
     return steps.some((step) => pathname.includes(step));
   };
 
   if (!step) return "";
 
   if (needsToFillOrgSettings) return match.url + "/dao";
-  if (needsToFillGovernance && !isNotPreviousStep(["dao"]))
+  if (needsToFillGovernance && !isPreviousStep(["dao"]))
     return match.url + "/voting";
-  if (needsToFillMembers && !isNotPreviousStep(["dao", "voting"]))
+  if (needsToFillMembers && !isPreviousStep(["dao", "voting"]))
     return match.url + "/token";
+
   return "";
 };
