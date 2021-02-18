@@ -59,6 +59,7 @@ export type DAOItem = {
   address: string;
   ledger: Ledger;
   cycle: number;
+  originationTime: string;
 } & DAOListMetadata &
   Storage;
 

@@ -9,7 +9,6 @@ import {
 import React from "react";
 import { useHistory } from "react-router-dom";
 import { Header } from "../components/Header";
-import { MockDAOs } from "../../../mock";
 import { MoreHorizOutlined } from "@material-ui/icons";
 
 const Balance = styled(Typography)({
@@ -99,34 +98,29 @@ export const Treasury: React.FC = () => {
             </Balance>
           </GridBorder>
         </Table>
-
-        {MockDAOs.map((dao: any) => {
-          return (
-            <ListItemContainer
-              container
-              direction="row"
-              alignItems="center"
-              key={dao.symbol}
-            >
-              <ListItem item xs={9}>
-                <TokenName>
-                  {" "}
-                  <Typography variant="subtitle1" color="textSecondary">
-                    TOKEN NAME
-                  </Typography>
-                </TokenName>
-              </ListItem>
-              <BalanceItem item xs={1}>
-                <Typography variant="subtitle1" color="textSecondary">
-                  4,330.2
-                </Typography>
-              </BalanceItem>
-              <MoreContainer xs={1} item>
-                <MoreHorizOutlined />
-              </MoreContainer>
-            </ListItemContainer>
-          );
-        })}
+        <ListItemContainer
+          container
+          direction="row"
+          alignItems="center"
+          key={dao.symbol}
+        >
+          <ListItem item xs={9}>
+            <TokenName>
+              {" "}
+              <Typography variant="subtitle1" color="textSecondary">
+                TOKEN NAME
+              </Typography>
+            </TokenName>
+          </ListItem>
+          <BalanceItem item xs={1}>
+            <Typography variant="subtitle1" color="textSecondary">
+              4,330.2
+            </Typography>
+          </BalanceItem>
+          <MoreContainer xs={1} item>
+            <MoreHorizOutlined />
+          </MoreContainer>
+        </ListItemContainer>
       </Box>
     </>
   );

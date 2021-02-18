@@ -45,8 +45,7 @@ export const getDAOInfoFromContract = async (
   const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
   const originationTime = await getOriginationTime(contractAddress, network);
   const cycle = Math.floor(
-    (Number(dayjs().unix()) - Number(dayjs(originationTime).unix())) /
-      storage.votingPeriod
+    (dayjs().unix() - dayjs(originationTime).unix()) / storage.votingPeriod
   );
 
   return {
@@ -55,6 +54,7 @@ export const getDAOInfoFromContract = async (
     ...storage,
     ledger,
     cycle,
+    originationTime,
   };
 };
 
@@ -62,16 +62,15 @@ export const getDAOProposals = async (
   dao: DAOItem,
   network: Network
 ): Promise<ProposalWithStatus[]> => {
-  const { proposalsMapNumber } = dao;
+  const { proposalsMapNumber, originationTime } = dao;
   const proposals = await getProposals(proposalsMapNumber, network);
 
   return proposals.map((proposal) => {
     const { votingPeriod, cycle: daoCycle, quorumTreshold } = dao;
     const { startDate, upVotes, downVotes } = proposal;
 
-    const cycle = Math.floor(
-      (Number(dayjs().unix()) - Number(dayjs(startDate).unix())) / votingPeriod
-    );
+    const exactCycle = dayjs(startDate).unix() - dayjs(originationTime).unix();
+    const cycle = Math.floor(exactCycle / votingPeriod);
 
     //TODO: this business logic will change in the future
 
