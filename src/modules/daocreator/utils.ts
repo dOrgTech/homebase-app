@@ -1,8 +1,12 @@
+import { useContext, useEffect } from "react";
+import { useLocation, useRouteMatch } from "react-router-dom";
 import {
   ErrorValues,
   OrgSettings,
   VotingSettings,
 } from "../../services/contracts/baseDAO/types";
+import { CreatorContext } from "./state/context";
+import { useStepNumber } from "./steps";
 
 export const handleOrgFormErrors = (
   values: OrgSettings
@@ -48,4 +52,31 @@ export const handleGovernanceFormErrors = (values: VotingSettings) => {
   }
 
   return errors;
+};
+
+export const useCreatorRouteValidation = (): string => {
+  const match = useRouteMatch();
+  const step = useStepNumber();
+  const { orgSettings, votingSettings, memberSettings } = useContext(
+    CreatorContext
+  ).state.data;
+
+  type OrgKeys = keyof typeof orgSettings;
+  type VotingKeys = keyof typeof votingSettings;
+  type MemberKeys = keyof typeof memberSettings;
+
+  const org = Object.keys(orgSettings) as OrgKeys[];
+  const voting = Object.keys(votingSettings) as VotingKeys[];
+  const members = Object.keys(memberSettings) as MemberKeys[];
+
+  const needsToFillOrgSettings = org.some((value) => !orgSettings[value]);
+  const needsToFillGovernance = voting.some((value) => !votingSettings[value]);
+  const needsToFillMembers = members.some((value) => !memberSettings[value]);
+
+  if (!step) return "";
+
+  if (needsToFillOrgSettings) return match.url + "/dao";
+  if (needsToFillGovernance) return match.url + "/voting";
+  if (needsToFillMembers) return match.url + "/token";
+  return "";
 };

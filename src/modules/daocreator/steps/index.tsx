@@ -1,4 +1,7 @@
 import React, { useMemo } from "react";
+import { Route, Switch, useLocation } from "react-router";
+import { Redirect, useRouteMatch } from "react-router-dom";
+
 import { SelectTemplate } from "./SelectTemplate";
 import { Summary } from "./Summary";
 import { StepInfo, StepperIndex } from "../state/types";
@@ -6,8 +9,7 @@ import { DaoSettings } from "./DaoSettings";
 import { Governance } from "./Governance";
 import { Review } from "./Review";
 import { TokenSettings } from "./TokenSettings";
-import { Route, Switch, useLocation } from "react-router";
-import { Redirect, useRouteMatch } from "react-router-dom";
+import { ProtectedRoute } from "src/modules/common/ProtectedRoute";
 
 export const STEPS: StepInfo[] = [
   { title: "Select template", index: StepperIndex.SELECT_TEMPLATE },
@@ -29,35 +31,39 @@ export const CurrentStep: React.FC = () => {
   const match = useRouteMatch();
 
   return (
-    <Switch>
-      <Route path={`${match.url}/templates`}>
-        <SelectTemplate />
-      </Route>
-      <Route path={`${match.url}/dao`}>
-        <DaoSettings />
-      </Route>
-      <Route path={`${match.url}/voting`}>
-        <Governance />
-      </Route>
-      <Route path={`${match.url}/token`}>
-        <TokenSettings />
-      </Route>
-      <Route path={`${match.url}/summary`}>
-        <Summary />
-      </Route>
-      <Route path={`${match.url}/review`}>
-        <Review />
-      </Route>
-      <Redirect to={`${match.url}/templates`} />
-    </Switch>
+    <ProtectedRoute>
+      <Switch>
+        <Route path={`${match.url}/templates`}>
+          <SelectTemplate />
+        </Route>
+        <Route path={`${match.url}/dao`}>
+          <DaoSettings />
+        </Route>
+        <Route path={`${match.url}/voting`}>
+          <Governance />
+        </Route>
+        <Route path={`${match.url}/token`}>
+          <TokenSettings />
+        </Route>
+        <Route path={`${match.url}/summary`}>
+          <Summary />
+        </Route>
+        <Route path={`${match.url}/review`}>
+          <Review />
+        </Route>
+        <Redirect to={`${match.url}/templates`} />
+      </Switch>
+    </ProtectedRoute>
   );
 };
+
+type CreatorRouteNames = keyof typeof urlToStepMap;
 
 export const useStepNumber = (): number => {
   const { pathname } = useLocation();
 
   return useMemo(() => {
-    const extracted = pathname.endsWith("/")
+    const extracted: CreatorRouteNames = pathname.endsWith("/")
       ? pathname.split("/").slice(-2)[0]
       : pathname.split("/").slice(-1)[0];
 
