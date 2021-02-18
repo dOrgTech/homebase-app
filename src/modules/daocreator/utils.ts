@@ -56,6 +56,7 @@ export const handleGovernanceFormErrors = (values: VotingSettings) => {
 
 export const useCreatorRouteValidation = (): string => {
   const match = useRouteMatch();
+  const { pathname } = useLocation();
   const step = useStepNumber();
   const { orgSettings, votingSettings, memberSettings } = useContext(
     CreatorContext
@@ -73,10 +74,16 @@ export const useCreatorRouteValidation = (): string => {
   const needsToFillGovernance = voting.some((value) => !votingSettings[value]);
   const needsToFillMembers = members.some((value) => !memberSettings[value]);
 
+  const isNotPreviousStep = (steps: string[]): boolean => {
+    return steps.some((step) => pathname.includes(step));
+  };
+
   if (!step) return "";
 
   if (needsToFillOrgSettings) return match.url + "/dao";
-  if (needsToFillGovernance) return match.url + "/voting";
-  if (needsToFillMembers) return match.url + "/token";
+  if (needsToFillGovernance && !isNotPreviousStep(["dao"]))
+    return match.url + "/voting";
+  if (needsToFillMembers && !isNotPreviousStep(["dao", "voting"]))
+    return match.url + "/token";
   return "";
 };
