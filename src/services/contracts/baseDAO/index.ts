@@ -99,7 +99,7 @@ export const getDAOTokenHolders = async (
   network: Network
 ): Promise<Ledger> => {
   const storage = await getStorage(contractAddress, network);
-  const ledger = await getLedgerAddresses(storage.proposalsMapNumber, network);
+  const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
 
   return ledger;
 };

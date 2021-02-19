@@ -26,6 +26,8 @@ import { useProposals } from "src/services/contracts/baseDAO/hooks/useProposals"
 import { ProposalStatus } from "src/services/bakingBad/proposals/types";
 import { TopHoldersTableRow } from "src/modules/daoexplorer/components/TopHoldersTableRow";
 import { useCycleInfo } from "src/services/contracts/baseDAO/hooks/useCycleInfo";
+import { toShortAddress } from "src/services/contracts/utils";
+import { useTokenHoldersWithVotes } from "src/services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 
 const SideBar = styled(Grid)({
   width: 102,
@@ -142,11 +144,11 @@ export const DAO: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
   const { data } = useDAO(id);
+  const { data: members } = useTokenHoldersWithVotes(id);
 
   const name = data && data.unfrozenToken.name;
   const description = data && data.description;
   const symbol = data && data.unfrozenToken.symbol.toUpperCase();
-  const members = data && data.ledger;
 
   const votingPeriod = data && data.votingPeriod;
   const originationTime = data && data.originationTime;
@@ -203,13 +205,20 @@ export const DAO: React.FC = () => {
 
   const { data: proposalsData } = useProposals(data ? data.address : "");
 
-  const membersLedger = useMemo(() => {
-    if (!members || !members.length) {
+  const formattedMembers = useMemo(() => {
+    if (!members) {
       return [];
     }
-    return members.map((member) => {
-      return member.address;
-    });
+    return members
+      .map((member) => {
+        return {
+          username: toShortAddress(member.address),
+          weight: member.balances[0].toString(),
+          votes: member.votes.toString(),
+          proposals_voted: member.proposalsVoted,
+        };
+      })
+      .sort((a, b) => Number(b.weight) - Number(a.weight));
   }, [members]);
 
   const activeProposals = useMemo<ProposalTableRowData[]>(() => {
@@ -219,23 +228,13 @@ export const DAO: React.FC = () => {
 
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) => mapProposalData(proposal, data?.address));
+      .map((proposal) =>
+        mapProposalData(
+          { ...proposal, quorumTreshold: data?.quorumTreshold || 0 },
+          data?.address
+        )
+      );
   }, [data?.address, proposalsData, finished]);
-
-  const tokenHolders = [
-    {
-      username: "Username89",
-      votes: "1,232,123.02",
-      weight: "22.33",
-      proposals_voted: 12,
-    },
-    {
-      username: "Username90",
-      votes: "454,555.50",
-      weight: "15,34",
-      proposals_voted: 20,
-    },
-  ];
 
   const checkpoints = [
     {
@@ -453,7 +452,7 @@ export const DAO: React.FC = () => {
                 <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
               </Grid>
             </TableHeader>
-            {tokenHolders.map((holder, i) => (
+            {formattedMembers.map((holder, i) => (
               <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
             ))}
           </TableContainer>

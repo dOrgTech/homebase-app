@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Grid, LinearProgress, styled, Typography } from "@material-ui/core";
+import { Grid, styled, Typography } from "@material-ui/core";
+import { useTokenHolders } from "src/services/contracts/baseDAO/hooks/useTokenHolders";
+import { ProgressBar } from "./ProgressBar";
 
 interface TokenHolderDialogData {
   address: string;
@@ -51,30 +53,15 @@ const TableHeader = styled(Grid)({
   padding: "33px 64px",
 });
 
-const LinearBar = styled(LinearProgress)({
+const LinearBar = styled(ProgressBar)({
   marginBottom: "-3px",
   marginTop: 30,
 });
 
-const TokenHolders = [
-  {
-    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-    tokens: 2248,
-  },
-  {
-    address: "fz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6T",
-    tokens: 2248,
-  },
-  {
-    address: "ro1bQgEea45ciBpYdFj4y4P3hNyDM8aMF7P",
-    tokens: 2248,
-  },
-];
-
-export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = () => {
-  // const { data } = useTokenHolders(address);
+export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
+  address,
+}) => {
   const [open, setOpen] = React.useState(false);
-  // console.log(data);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -83,6 +70,29 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = () => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const { data: ledger } = useTokenHolders(address);
+
+  const tokenHolders = useMemo(() => {
+    if (!ledger) {
+      return [];
+    }
+
+    return ledger.map((holder) => ({
+      address: holder.address,
+      tokens: holder.balances[1] || 0,
+    }));
+  }, [ledger]);
+
+  const totalLocked = useMemo(() => {
+    if (!ledger) {
+      return 0;
+    }
+
+    return ledger.reduce((acc, holder) => {
+      return acc + (holder.balances[1] || 0);
+    }, 0);
+  }, [ledger]);
 
   return (
     <div>
@@ -131,7 +141,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = () => {
               </Grid>
             </TableHeader>
 
-            {TokenHolders.map((holder: any, index: any) => {
+            {tokenHolders.slice(0, 5).map((holder, index) => {
               return (
                 <Row container direction="row" alignItems="center" key={index}>
                   <Grid item xs={6}>
@@ -145,7 +155,10 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = () => {
                     <LinearBar
                       color="secondary"
                       variant="determinate"
-                      value={100}
+                      value={
+                        totalLocked ? (holder.tokens / totalLocked) * 100 : 0
+                      }
+                      favor={true}
                     />
                   </Grid>
                   <Grid item xs={6}>

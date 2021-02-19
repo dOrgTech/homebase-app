@@ -25,7 +25,17 @@ export type ProposalsDTO = {
         },
         NamedMapValue,
         NamedMapValue,
-        NamedMapValue
+        {
+          prim: string;
+          type: string;
+          name: string;
+          children?: {
+            prim: string;
+            type: string;
+            name: string;
+            children: [UnnamedMapValue, UnnamedMapValue];
+          }[];
+        }
       ];
     };
     key_hash: string;
@@ -44,7 +54,10 @@ export interface Proposal {
   agoraPostId: string;
   proposer: string;
   proposerFrozenTokens: string;
-  voters: string;
+  voters: {
+    address: string;
+    value: number;
+  }[];
 }
 
 export enum ProposalStatus {

@@ -26,7 +26,6 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
   proposals_voted,
   index,
 }) => {
-  console.log(index);
   return (
     <ProposalTableRowContainer item container alignItems="center">
       <Grid item xs={5}>
@@ -53,7 +52,7 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
       </Grid>
       <Grid item xs={2}>
         <Typography variant="body1" color="textSecondary">
-          {weight}%
+          {weight}
         </Typography>
       </Grid>
       <Grid item xs={2}>
