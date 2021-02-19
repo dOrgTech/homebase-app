@@ -11,7 +11,7 @@ export const getLedgerAddresses = async (
 
   const response = await fetch(url);
 
-  console.log(response)
+  console.log(response);
 
   if (!response.ok) {
     throw new Error("Failed to fetch ledger addresses from BakingBad API");

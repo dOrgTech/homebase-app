@@ -234,7 +234,7 @@ export const DAO: React.FC = () => {
           data?.address
         )
       );
-  }, [data?.address, proposalsData, finished]);
+  }, [proposalsData, finished, data?.quorumTreshold, data?.address]);
 
   const checkpoints = [
     {
