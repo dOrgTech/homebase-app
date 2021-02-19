@@ -19,6 +19,7 @@ import {
 } from "modules/creator/state";
 import { MetadataCarrierParameters } from "services/contracts/baseDAO/metadataCarrier/types";
 import { MigrationParams } from "services/contracts/baseDAO/types";
+import { useCreatorValidation } from "modules/creator/components/ProtectedRoute";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
@@ -104,6 +105,7 @@ export const Review: React.FC = () => {
   const { state, dispatch } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
+  const validDAOData = useCreatorValidation();
 
   const metadataCarrierParams: MetadataCarrierParameters = useMemo(
     () => ({
@@ -132,7 +134,7 @@ export const Review: React.FC = () => {
   //TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
-      if (!data && info && metadataCarrierParams)
+      if (!data && !validDAOData && metadataCarrierParams)
         mutate({
           metadataParams: metadataCarrierParams,
           treasuryParams: fromStateToTreasuryStorage(info),

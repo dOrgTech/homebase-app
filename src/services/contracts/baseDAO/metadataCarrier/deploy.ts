@@ -13,6 +13,7 @@ import {
   MetadataCarrierParameters,
   MetadataParams,
 } from "services/contracts/baseDAO/metadataCarrier/types";
+import { connectIfNotConnected } from "services/contracts/utils";
 
 const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
   const map = new MichelsonMap();
@@ -47,12 +48,7 @@ export const deployMetadataCarrier = async ({
   try {
     console.log("Originating Metadata Carrier contract...");
 
-    console.log("Signer ", tezos.signer);
-    console.log("Wallet ", tezos.wallet);
-
-    if (!("_pkh" in tezos.wallet)) {
-      await connect();
-    }
+    await connectIfNotConnected(tezos, connect);
 
     const t = await tezos.wallet.originate({
       code,
@@ -66,11 +62,6 @@ export const deployMetadataCarrier = async ({
     console.log("Metadata Carrier deployment completed", c);
     return { contract, keyName, deployAddress: contract.address };
   } catch (e) {
-    // This should be handled above!
-    if (e.name === "UnconfiguredSignerError") {
-      // If this happens its because the user is not connected to any wallet
-      // Let's connect to a wallet provider and trigger the deployment method again
-    }
     console.log("error ", e);
   }
 };

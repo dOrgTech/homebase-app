@@ -39,3 +39,8 @@ export const connectWithBeacon = async (): Promise<{
     });
   });
 };
+
+
+export enum ERRORS {
+  
+}
