@@ -1,9 +1,9 @@
 import { useQuery } from "react-query";
-import { useTezos } from "../../../beacon/hooks/useTezos";
-import { getDAOProposals } from "..";
-import { ProposalWithStatus } from "../../../bakingBad/proposals/types";
-import { useDAO } from "./useDAO";
-import { DAOItem } from "../types";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { getDAOProposals } from "services/contracts/baseDAO";
+import { ProposalWithStatus } from "services/bakingBad/proposals/types";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { DAOItem } from "services/contracts/baseDAO/types";
 
 export const useProposals = (contractAddress: string | undefined) => {
   const { network } = useTezos();

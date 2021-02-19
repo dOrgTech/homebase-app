@@ -1,5 +1,5 @@
-import { API_URL } from "..";
-import { Network } from "../../beacon/context";
+import { API_URL } from "services/bakingBad";
+import { Network } from "services/beacon/context";
 
 //TODO make DTO for this one
 export const getOriginationTime = async (

@@ -1,7 +1,7 @@
-import { API_URL } from "..";
-import { Network } from "../../beacon/context";
-import { dtoToProposals } from "./mappers";
-import { Proposal, ProposalsDTO } from "./types";
+import { API_URL } from "services/bakingBad";
+import { Network } from "services/beacon/context";
+import { dtoToProposals } from "services/bakingBad/proposals/mappers";
+import { Proposal, ProposalsDTO } from "services/bakingBad/proposals/types";
 
 export const getProposals = async (
   proposalsMapNumber: number,

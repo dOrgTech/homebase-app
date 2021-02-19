@@ -7,9 +7,12 @@ import {
 } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 
-import { code } from "./code";
-import { setMetadataJSON } from "./metadata";
-import { MetadataCarrierParameters, MetadataParams } from "./types";
+import { code } from "services/contracts/baseDAO/metadataCarrier/code";
+import { setMetadataJSON } from "services/contracts/baseDAO/metadataCarrier/metadata";
+import {
+  MetadataCarrierParameters,
+  MetadataParams,
+} from "services/contracts/baseDAO/metadataCarrier/types";
 
 const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
   const map = new MichelsonMap();

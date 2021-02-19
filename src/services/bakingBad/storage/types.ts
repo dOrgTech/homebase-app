@@ -1,4 +1,8 @@
-import { NamedMapNumberValue, NamedMapValue, UnnamedMapValue } from "../types";
+import {
+  NamedMapNumberValue,
+  NamedMapValue,
+  UnnamedMapValue,
+} from "services/bakingBad/types";
 
 export interface Storage {
   slashDivisionValue: number;

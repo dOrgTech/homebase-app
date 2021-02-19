@@ -1,7 +1,7 @@
-import { API_URL } from "..";
-import { Network } from "../../beacon/context";
-import { dtoToStorage } from "./mapper";
-import { StorageDTO, Storage } from "./types";
+import { API_URL } from "services/bakingBad";
+import { Network } from "services/beacon/context";
+import { dtoToStorage } from "services/bakingBad/storage/mapper";
+import { StorageDTO, Storage } from "services/bakingBad/storage/types";
 
 export const getStorage = async (
   contractAddress: string,

@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useInfiniteQuery, useQuery } from "react-query";
-import { getDAOs } from "..";
-import { useTezos } from "../../../beacon/hooks/useTezos";
-import { getContractsAddresses } from "../../../pinata";
-import { DAOItem } from "../types";
+
+import { getDAOs } from "services/contracts/baseDAO";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { getContractsAddresses } from "services/pinata";
+import { DAOItem } from "services/contracts/baseDAO/types";
 
 const PAGE_SIZE = 6;
 

@@ -1,4 +1,4 @@
-import { Ledger, LedgerMap, LedgerDTO } from "./types";
+import { Ledger, LedgerMap, LedgerDTO } from "services/bakingBad/ledger/types";
 
 export const dtoToLedger = (ledgerDTO: LedgerDTO): Ledger => {
   const ledgerMap = ledgerDTO.reduce((prev, dtoItem) => {

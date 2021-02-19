@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
-import { TezosProvider } from "./services/beacon/context";
+
+import App from "App";
+import { TezosProvider } from "services/beacon/context";
 
 ReactDOM.render(
   <React.StrictMode>

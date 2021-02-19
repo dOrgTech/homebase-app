@@ -1,4 +1,4 @@
-import { UnnamedMapValue, NamedMapValue } from "../types";
+import { UnnamedMapValue, NamedMapValue } from "services/bakingBad/types";
 
 export type ProposalsDTO = {
   data: {

@@ -1,8 +1,8 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
-import { doDAOVote } from "..";
-import { useTezos } from "../../../beacon/hooks/useTezos";
-import { VoteParams } from "../types";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { doDAOVote } from "services/contracts/baseDAO";
+import { VoteParams } from "services/contracts/baseDAO/types";
 
 type UseVoteParams = Omit<VoteParams, "tezos">;
 

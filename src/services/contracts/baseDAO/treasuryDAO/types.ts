@@ -1,5 +1,5 @@
-import { TokenHolder } from "../../../../modules/daocreator/state/types";
-import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
+import { TokenHolder } from "modules/creator/state";
+import { MetadataCarrierDeploymentData } from "services/contracts/baseDAO/metadataCarrier/types";
 
 export interface MemberTokenAllocation {
   address: string;

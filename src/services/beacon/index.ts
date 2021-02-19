@@ -1,6 +1,6 @@
 import { NetworkType } from "@airgap/beacon-sdk";
 import { BeaconWallet } from "@taquito/beacon-wallet";
-import { Network } from "./context";
+import { Network } from "services/beacon/context";
 
 export const rpcNodes: Record<Network, string> = {
   edonet: "https://edonet-tezos.giganode.io",

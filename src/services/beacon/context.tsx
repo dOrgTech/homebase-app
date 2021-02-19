@@ -1,7 +1,7 @@
 import { TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 import React, { createContext, useReducer } from "react";
-import { rpcNodes } from ".";
+import { rpcNodes } from "services/beacon";
 
 export type Network = "delphinet" | "mainnet" | "edonet";
 

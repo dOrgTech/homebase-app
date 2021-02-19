@@ -1,4 +1,4 @@
-import { UnnamedMapValue } from "../types";
+import { UnnamedMapValue } from "services/bakingBad/types";
 
 export interface LedgerDTOItem {
   data: {

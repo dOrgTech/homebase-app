@@ -10,9 +10,9 @@ import {
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 
-import HomeButton from "src/assets/logos/homebase.svg";
-import { useTezos } from "src/services/beacon/hooks/useTezos";
-import { toShortAddress } from "src/services/contracts/utils";
+import HomeButton from "assets/logos/homebase.svg";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { toShortAddress } from "services/contracts/utils";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",

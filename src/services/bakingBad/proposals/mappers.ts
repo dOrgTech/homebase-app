@@ -1,4 +1,4 @@
-import { Proposal, ProposalsDTO } from "./types";
+import { Proposal, ProposalsDTO } from "services/bakingBad/proposals/types";
 
 export const dtoToProposals = (proposalsDTO: ProposalsDTO): Proposal[] => {
   console.log(proposalsDTO);
