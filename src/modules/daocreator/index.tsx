@@ -197,8 +197,8 @@ export const DAOCreate: React.FC = () => {
             </Box>
           </ProgressBar>
           <StyledStepper activeStep={step} orientation="vertical">
-            {STEPS.map(({ title }: StepInfo, index: any) => (
-              <Step key={title} {...(!true && { active: false })}>
+            {STEPS.map(({ title }: StepInfo, index: number) => (
+              <Step key={title}>
                 <StepLabel icon={index + 1}>{title}</StepLabel>
               </Step>
             ))}
@@ -241,15 +241,9 @@ export const DAOCreate: React.FC = () => {
             )}
           </Grid>
           <Grid item style={{ width: "100%" }} xs>
-            {true ? (
-              <StepContentContainer item container justify="center">
-                <CurrentStep />
-              </StepContentContainer>
-            ) : (
-              <StepOneContentContainer item container justify="center">
-                <ConnectWallet />
-              </StepOneContentContainer>
-            )}
+            <StepContentContainer item container justify="center">
+              <CurrentStep />
+            </StepContentContainer>
           </Grid>
         </Grid>
       </StepContentHeigth>
