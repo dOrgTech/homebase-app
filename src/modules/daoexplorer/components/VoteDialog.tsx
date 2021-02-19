@@ -4,9 +4,18 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Grid, styled, Typography, TextField, Theme } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  TextField,
+  Theme,
+  Box,
+} from "@material-ui/core";
 import { useVote } from "../../../services/contracts/baseDAO/hooks/useVote";
 import { useParams } from "react-router-dom";
+import { useProposal } from "src/services/contracts/baseDAO/hooks/useProposal";
+import { ProposalStatus } from "src/services/bakingBad/proposals/types";
 
 const StyledButton = styled(Button)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -84,9 +93,9 @@ export const VoteDialog: React.FC = () => {
     id: string;
   }>();
 
-  const { mutate, isLoading, error, data } = useVote();
+  const proposal = useProposal(daoId, proposalId);
 
-  console.log(isLoading, error, data);
+  const { mutate } = useVote();
 
   const handleClickOpen = (isFor: boolean) => {
     setSupport(isFor);
@@ -109,11 +118,12 @@ export const VoteDialog: React.FC = () => {
   };
 
   return (
-    <div>
+    <Box>
       <StyledButton
         variant="outlined"
         onClick={() => handleClickOpen(true)}
         support={true}
+        disabled={proposal?.status !== ProposalStatus.ACTIVE}
       >
         VOTE FOR
       </StyledButton>
@@ -121,6 +131,7 @@ export const VoteDialog: React.FC = () => {
         variant="outlined"
         onClick={() => handleClickOpen(false)}
         support={false}
+        disabled={proposal?.status !== ProposalStatus.ACTIVE}
       >
         VOTE AGAINST
       </StyledButton>
@@ -194,6 +205,6 @@ export const VoteDialog: React.FC = () => {
           </DialogContentText>
         </DialogContent>
       </CustomDialog>
-    </div>
+    </Box>
   );
 };

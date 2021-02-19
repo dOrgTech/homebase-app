@@ -1,21 +1,17 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import {
-  createStyles,
-  Grid,
-  LinearProgress,
-  styled,
-  Theme,
-  Typography,
-  withStyles,
-} from "@material-ui/core";
+import { Grid, styled, Typography, useTheme } from "@material-ui/core";
+import { useProposal } from "src/services/contracts/baseDAO/hooks/useProposal";
+import { useDAO } from "src/services/contracts/baseDAO/hooks/useDAO";
+import { ProgressBar } from "./ProgressBar";
 
-interface DownVotesDialogData {
-  totalVotes: number;
-  downVotesPercentage: number;
+interface UpVotesDialogData {
+  daoAddress: string;
+  proposalAddress: string;
+  favor: boolean;
 }
 
 const CloseButton = styled(Typography)({
@@ -39,7 +35,6 @@ const CustomDialog = styled(Dialog)({
 const ViewButton = styled(Typography)({
   cursor: "pointer",
   marginTop: -30,
-  color: "#ED254E !important",
 });
 
 const TextHeader = styled(Typography)({
@@ -58,19 +53,11 @@ const Row = styled(Grid)({
   },
 });
 
-const NoTokens = styled(Grid)({
-  padding: "33px 64px",
-  borderTop: "2px solid #3D3D3D",
-  paddingBottom: 0,
-  display: "flex",
-  alignItems: "end",
-});
-
 const TableHeader = styled(Grid)({
   padding: "23px 64px",
 });
 
-const LinearBar = styled(LinearProgress)({
+const LinearBar = styled(ProgressBar)({
   marginBottom: "-3px",
   marginTop: 30,
 });
@@ -83,52 +70,55 @@ const VotesContainer = styled(Grid)({
   marginTop: 66,
 });
 
-const BorderLinearProgress = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      marginTop: 10,
-    },
-    colorPrimary: {
-      backgroundColor: theme.palette.secondary.main,
-    },
-    bar: {
-      backgroundColor: "#ED254E",
-    },
-  })
-)(LinearProgress);
-
-const OpposeText = styled(Typography)({
-  color: "#FF5151 !important",
+const NoTokens = styled(Grid)({
+  padding: "33px 64px",
+  borderTop: "2px solid #3D3D3D",
+  paddingBottom: 0,
+  display: "flex",
+  alignItems: "end",
 });
 
-const TokenHolders = [
-  {
-    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-    tokens: 2,
-  },
-  {
-    address: "fz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6T",
-    tokens: 1,
-  },
-  {
-    address: "ro1bQgEea45ciBpYdFj4y4P3hNyDM8aMF7P",
-    tokens: 3,
-  },
-  {
-    address: "ro1bQgEea45ciBpYdFj4y4P3hNyDM8aMF7P",
-    tokens: 1.5,
-  },
-  {
-    address: "ro1bQgEea45ciBpYdFj4y4P3hNyDM8aMF7P",
-    tokens: 2.5,
-  },
-];
-
-export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
-  totalVotes,
-  downVotesPercentage,
+export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
+  daoAddress,
+  proposalAddress,
+  favor,
 }) => {
   const [open, setOpen] = React.useState(false);
+
+  const { data: dao } = useDAO(daoAddress);
+  const proposal = useProposal(daoAddress, proposalAddress);
+  const theme = useTheme();
+
+  const upVotes = proposal ? proposal.upVotes : 0;
+  const downVotes = proposal ? proposal.downVotes : 0;
+  const totalVotes = upVotes + downVotes;
+  const upVotesPercentage =
+    upVotes && totalVotes ? (upVotes / totalVotes) * 100 : 0;
+  const downVotesPercentage =
+    downVotes && totalVotes ? (downVotes / totalVotes) * 100 : 0;
+
+  const upVotesPercentageQuorum =
+    upVotes && dao && dao.quorumTreshold
+      ? (upVotes / dao.quorumTreshold) * 100
+      : 0;
+  const downVotesPercentageQuorum =
+    downVotes && dao && dao.quorumTreshold
+      ? (downVotes / dao.quorumTreshold) * 100
+      : 0;
+
+  const favorPercentage = favor ? upVotesPercentage : downVotesPercentage;
+  const favorVotes = favor ? upVotes : downVotes;
+  const favorPercentageQuorum = favor
+    ? upVotesPercentageQuorum
+    : downVotesPercentageQuorum;
+
+  const voters = useMemo(() => {
+    if (!proposal) {
+      return [];
+    }
+
+    return proposal.voters;
+  }, [proposal]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -140,7 +130,13 @@ export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
 
   return (
     <div>
-      <ViewButton variant="subtitle1" onClick={handleClickOpen}>
+      <ViewButton
+        variant="subtitle1"
+        style={{
+          color: favor ? theme.palette.secondary.main : "#ED254E",
+        }}
+        onClick={handleClickOpen}
+      >
         VIEW ADDRESSES
       </ViewButton>
       <CustomDialog
@@ -166,28 +162,32 @@ export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
           <DialogContentText id="alert-dialog-description">
             <TableHeader container direction="row" alignItems="center">
               <Grid item xs={12}>
-                <OpposeText variant="subtitle1" color="secondary">
-                  OPPOSE
-                </OpposeText>
+                <Typography
+                  variant="subtitle1"
+                  style={{
+                    color: favor ? theme.palette.secondary.main : "#ED254E",
+                  }}
+                >
+                  {favor ? "FOR" : "OPPOSE"}
+                </Typography>
               </Grid>
               <Grid item xs={12}>
                 <TextHeader variant="h3" color="textSecondary">
-                  {totalVotes}
+                  {favorVotes}
                 </TextHeader>
               </Grid>
               <Grid item xs={12}>
                 <Grid container direction="row" alignItems="center">
                   <Grid item xs={10}>
-                    <BorderLinearProgress
-                      value={
-                        downVotesPercentage === 0 ? 100 : downVotesPercentage
-                      }
+                    <ProgressBar
+                      value={favorPercentageQuorum}
+                      favor={favor}
                       variant="determinate"
                     />
                   </Grid>
                   <Grid item xs={2}>
                     <PercentageText align="right">
-                      {downVotesPercentage}%
+                      {favorPercentageQuorum}%
                     </PercentageText>
                   </Grid>
                 </Grid>
@@ -196,7 +196,7 @@ export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
                 <Grid item container direction="row" alignItems="center">
                   <Grid xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
-                      {TokenHolders.length} Addresses
+                      {voters.length} Addresses
                     </Typography>
                   </Grid>
 
@@ -206,15 +206,15 @@ export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
                       color="textSecondary"
                       align="right"
                     >
-                      % of Votes
+                      Votes
                     </Typography>
                   </Grid>
                 </Grid>
               </VotesContainer>
             </TableHeader>
 
-            {downVotesPercentage > 0 ? (
-              TokenHolders.map((holder: any, index: any) => {
+            {favorPercentage > 0 ? (
+              voters.map((holder, index) => {
                 return (
                   <Row
                     container
@@ -233,7 +233,8 @@ export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
                       <LinearBar
                         color="secondary"
                         variant="determinate"
-                        value={(holder.tokens * 100) / totalVotes}
+                        favor={favor}
+                        value={100}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -242,7 +243,7 @@ export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
                         color="textSecondary"
                         align="right"
                       >
-                        {(holder.tokens * 100) / totalVotes}
+                        {favorVotes}
                       </Typography>
                     </Grid>
                   </Row>
@@ -251,7 +252,9 @@ export const DownVotesDialog: React.FC<DownVotesDialogData> = ({
             ) : (
               <NoTokens container direction="row" alignItems="center">
                 <Grid item xs={12}>
-                  <Typography>No opposed votes</Typography>
+                  <Typography>
+                    No votes {favor ? "in favor" : "against"}
+                  </Typography>
                 </Grid>
               </NoTokens>
             )}

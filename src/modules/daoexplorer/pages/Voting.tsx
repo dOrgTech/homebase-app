@@ -1,19 +1,12 @@
-import {
-  Box,
-  Grid,
-  styled,
-  Typography,
-  withTheme,
-  LinearProgress,
-} from "@material-ui/core";
+import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React from "react";
 import { useParams } from "react-router";
 import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "../../../services/contracts/baseDAO/hooks/useProposal";
-import { DownVotesDialog } from "../components/DownVotesDialog";
 import { SideBar } from "../components/SideBar";
-import { UpVotesDialog } from "../components/UpVotesDialog";
+import { UpVotesDialog } from "../components/VotersDialog";
 import { VoteDialog } from "../components/VoteDialog";
+import { ProgressBar } from "../components/ProgressBar";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -58,27 +51,6 @@ const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
 });
 
-const LockedTokensBar = styled(LinearProgress)({
-  width: "100%",
-  "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D",
-  },
-});
-
-const LockedTokensAgainstBar = styled(LinearProgress)({
-  width: "100%",
-  "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D",
-    color: "#ED254E",
-    "& .MuiLinearProgress-bar": {
-      backgroundColor: "#ED254E !important",
-    },
-  },
-  "& .MuiLinearProgress-bar": {
-    backgroundColor: "#ED254E !important",
-  },
-});
-
 const TextAgainst = styled(Typography)({
   color: "#ED254E !important",
 });
@@ -99,33 +71,6 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-// const Details = [
-//   {
-//     message: "Reduces DAO’s Treasury by 50ETH"
-//   },
-//   {
-//     message: "Increases 0x89878 wallet by 50ETH"
-//   },
-//   {
-//     message: "Reduces DAO’s Treasury by 50ETH"
-//   }
-// ];
-
-// const History = [
-//   {
-//     date: "December 19th, 2020. 11:09:21 AM",
-//     status: "created"
-//   },
-//   {
-//     date: "December 20th, 2020. 11:09:21 AM",
-//     status: "active"
-//   },
-//   {
-//     date: "December 21st, 2020. 11:09:21 AM",
-//     status: "passed"
-//   }
-// ];
-
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
@@ -139,9 +84,8 @@ export const Voting: React.FC = () => {
   const upVotes = proposal ? proposal.upVotes : 0;
   const downVotes = proposal ? proposal.downVotes : 0;
   const daoName = dao ? dao.unfrozenToken.name : "";
-  const totalVotes = upVotes + downVotes;
-  const upVotesPercentage = totalVotes && (upVotes * 100) / totalVotes;
-  const downVotesPercentage = totalVotes && (downVotes * 100) / totalVotes;
+  const upVotesPercentage = dao && (upVotes * 100) / dao.quorumTreshold;
+  const downVotesPercentage = dao && (downVotes * 100) / dao.quorumTreshold;
 
   return (
     <>
@@ -180,9 +124,7 @@ export const Voting: React.FC = () => {
             </Container>
           </MainContainer>
           <CycleContainer container direction="row">
-            <Cycle color="textSecondary">
-              CYCLE: {proposalCycle} POSITION: -
-            </Cycle>
+            <Cycle color="textSecondary">CYCLE: {proposalCycle}</Cycle>
           </CycleContainer>
           <StatsContainer container>
             <TokensLocked
@@ -208,14 +150,16 @@ export const Voting: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <UpVotesDialog
-                    totalVotes={totalVotes}
-                    upVotesPercentage={upVotesPercentage}
+                    daoAddress={daoId}
+                    proposalAddress={proposalId}
+                    favor={true}
                   />
                 </Grid>
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item xs={10}>
-                  <LockedTokensBar
+                  <ProgressBar
+                    favor={true}
                     variant="determinate"
                     value={upVotesPercentage}
                     color="secondary"
@@ -249,17 +193,19 @@ export const Voting: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item>
-                  <DownVotesDialog
-                    totalVotes={totalVotes}
-                    downVotesPercentage={downVotesPercentage}
+                  <UpVotesDialog
+                    daoAddress={daoId}
+                    proposalAddress={proposalId}
+                    favor={false}
                   />
                 </Grid>
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item xs={10}>
-                  <LockedTokensAgainstBar
+                  <ProgressBar
                     variant="determinate"
                     value={downVotesPercentage}
+                    favor={false}
                   />
                 </Grid>
                 <Grid item xs={2}>

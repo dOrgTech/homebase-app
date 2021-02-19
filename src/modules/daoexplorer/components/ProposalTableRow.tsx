@@ -49,21 +49,19 @@ const SupportText = styled(Typography)(
 
 const ProgressText = styled(Typography)(
   ({ textColor }: { textColor: string }) => ({
-    paddingLeft: 20,
     color: textColor,
     display: "flex",
     alignItems: "center",
-    textAlign: "center",
     position: "absolute",
-    top: 0,
     width: "100%",
     height: "100%",
-    margin: "0px 20px",
     fontSize: 16,
     userSelect: "none",
     boxShadow: "none",
     background: "inherit",
     fontFamily: "Roboto Mono",
+    justifyContent: "center",
+    top: 0,
   })
 );
 
@@ -72,17 +70,22 @@ const ArrowButton = styled(IconButton)({
 });
 
 export const mapProposalData = (
-  proposalData: ProposalWithStatus,
+  proposalData: ProposalWithStatus & { quorumTreshold: number },
   daoId?: string
 ): ProposalTableRowData => {
   const votes =
     proposalData.upVotes >= proposalData.downVotes
       ? {
-          value: Number(proposalData.upVotes),
+          value: proposalData.quorumTreshold
+            ? (Number(proposalData.upVotes) / proposalData.quorumTreshold) * 100
+            : 0,
           support: true,
         }
       : {
-          value: Number(proposalData.downVotes),
+          value: proposalData.quorumTreshold
+            ? (Number(proposalData.downVotes) / proposalData.quorumTreshold) *
+              100
+            : 0,
           support: false,
         };
   return {

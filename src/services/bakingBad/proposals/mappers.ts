@@ -10,6 +10,21 @@ export const dtoToProposals = (proposalsDTO: ProposalsDTO): Proposal[] => {
     agoraPostId: dto.data.value.children[3].children[0].value,
     proposer: dto.data.value.children[4].value,
     proposerFrozenTokens: dto.data.value.children[5].value,
-    voters: dto.data.value.children[6].value,
+    voters: dtoToVoters(dto),
+  }));
+};
+
+const dtoToVoters = (
+  proposalsDTO: ProposalsDTO[number]
+): { address: string; value: number }[] => {
+  const votersDTO = proposalsDTO.data.value.children[6].children;
+
+  if (!votersDTO) {
+    return [];
+  }
+
+  return votersDTO.map((voterDTO) => ({
+    address: voterDTO.children[0].value,
+    value: Number(voterDTO.children[1].value),
   }));
 };

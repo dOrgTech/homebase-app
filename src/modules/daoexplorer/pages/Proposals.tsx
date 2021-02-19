@@ -17,6 +17,7 @@ import { SideBar } from "../components/SideBar";
 import { useDAO } from "../../../services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "../../../services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "../../../services/bakingBad/proposals/types";
+import { TokenHoldersDialog } from "../components/TokenHoldersDialog";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -46,6 +47,11 @@ const StatsBox = styled(Grid)({
   "&:last-child": {
     borderRight: "none",
   },
+});
+
+const NoProposals = styled(Typography)({
+  marginTop: 20,
+  marginBottom: 20,
 });
 
 const StatsContainer = styled(Grid)({
@@ -84,20 +90,18 @@ const TableHeader = styled(Grid)({
   paddingBottom: 20,
 });
 
-const ProposalsContainer = styled(Grid)({
-  paddingBottom: 72,
-});
+// const ProposalsContainer = styled(Grid)({
+//   paddingBottom: 72,
+// });
 
-const UnderlineText = styled(Typography)({
-  textDecoration: "underline",
-  cursor: "pointer",
-});
+// const UnderlineText = styled(Typography)({
+//   textDecoration: "underline",
+//   cursor: "pointer",
+// });
 
-const ProposalTableHeadText: React.FC = ({ children }) => (
-  <Typography variant="subtitle1" color="textSecondary">
-    {children}
-  </Typography>
-);
+const ProposalTableHeadText = styled(Typography)({
+  fontWeight: "bold",
+});
 
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -112,6 +116,17 @@ export const Proposals: React.FC = () => {
 
     return dao.ledger.reduce((acc, current) => {
       const frozenBalance = current.balances[1] || 0;
+      return acc + frozenBalance;
+    }, 0);
+  }, [dao]);
+
+  const amountNotLocked = useMemo(() => {
+    if (!dao) {
+      return 0;
+    }
+
+    return dao.ledger.reduce((acc, current) => {
+      const frozenBalance = current.balances[0] || 0;
       return acc + frozenBalance;
     }, 0);
   }, [dao]);
@@ -131,6 +146,12 @@ export const Proposals: React.FC = () => {
     }, 0);
   }, [dao]);
 
+  const totalTokens = amountLocked + amountNotLocked;
+
+  const amountLockedPercentage = totalTokens
+    ? (amountLocked / totalTokens) * 100
+    : 0;
+
   const { data: proposalsData } = useProposals(dao && dao.address);
 
   const activeProposals = useMemo<ProposalTableRowData[]>(() => {
@@ -140,8 +161,13 @@ export const Proposals: React.FC = () => {
 
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) => mapProposalData(proposal, dao?.address));
-  }, [dao?.address, proposalsData]);
+      .map((proposal) =>
+        mapProposalData(
+          { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+          dao?.address
+        )
+      );
+  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
 
   const passedProposals = useMemo<ProposalTableRowData[]>(() => {
     if (!proposalsData) {
@@ -150,8 +176,13 @@ export const Proposals: React.FC = () => {
 
     return proposalsData
       .filter((proposalData) => proposalData.status === ProposalStatus.PASSED)
-      .map((proposal) => mapProposalData(proposal, dao?.address));
-  }, [dao?.address, proposalsData]);
+      .map((proposal) =>
+        mapProposalData(
+          { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+          dao?.address
+        )
+      );
+  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
 
   const allProposals = useMemo(() => {
     if (!proposalsData) {
@@ -159,9 +190,12 @@ export const Proposals: React.FC = () => {
     }
 
     return proposalsData.map((proposal) =>
-      mapProposalData(proposal, dao?.address)
+      mapProposalData(
+        { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+        dao?.address
+      )
     );
-  }, [dao?.address, proposalsData]);
+  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
 
   return (
     <>
@@ -206,14 +240,12 @@ export const Proposals: React.FC = () => {
                   </Box>
                 </Grid>
                 <Grid item>
-                  <Typography variant="subtitle2" color="secondary">
-                    View
-                  </Typography>
+                  {dao && <TokenHoldersDialog address={dao?.address} />}
                 </Grid>
               </Grid>
               <LockedTokensBar
                 variant="determinate"
-                value={60}
+                value={amountLockedPercentage}
                 color="secondary"
               />
             </TokensLocked>
@@ -253,20 +285,41 @@ export const Proposals: React.FC = () => {
           <TableContainer>
             <TableHeader container wrap="nowrap">
               <Grid item xs={5}>
-                <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  ACTIVE PROPOSALS
+                </ProposalTableHeadText>
               </Grid>
               <Grid item xs={2}>
-                <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  CYCLE
+                </ProposalTableHeadText>
               </Grid>
               <Grid item xs={5}>
-                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  STATUS
+                </ProposalTableHeadText>
               </Grid>
             </TableHeader>
             {activeProposals.map((proposal, i) => (
               <ProposalTableRow key={`proposal-${i}`} {...proposal} />
             ))}
+            {activeProposals.length === 0 ? (
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No active proposals
+              </NoProposals>
+            ) : null}
           </TableContainer>
-          <ProposalsContainer
+
+          {/* <ProposalsContainer
             container
             direction="row"
             alignItems="center"
@@ -279,35 +332,71 @@ export const Proposals: React.FC = () => {
             >
               LOAD MORE
             </UnderlineText>
-          </ProposalsContainer>
+          </ProposalsContainer> */}
 
           <TableContainer>
             <TableHeader container wrap="nowrap">
               <Grid item xs={5}>
-                <ProposalTableHeadText>PASSED PROPOSALS</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  PASSED PROPOSALS
+                </ProposalTableHeadText>
               </Grid>
               <Grid item xs={2}>
-                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  {""}
+                </ProposalTableHeadText>
               </Grid>
               <Grid item xs={5}>
-                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  {""}
+                </ProposalTableHeadText>
               </Grid>
             </TableHeader>
             {passedProposals.map((proposal, i) => (
               <ProposalTableRow key={`proposal-${i}`} {...proposal} />
             ))}
+
+            {passedProposals.length === 0 ? (
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No passed proposals
+              </NoProposals>
+            ) : null}
           </TableContainer>
 
           <TableContainer>
             <TableHeader container wrap="nowrap">
               <Grid item xs={5}>
-                <ProposalTableHeadText>ALL PROPOSALS</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  ALL PROPOSALS
+                </ProposalTableHeadText>
               </Grid>
               <Grid item xs={2}>
-                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  {""}
+                </ProposalTableHeadText>
               </Grid>
               <Grid item xs={5}>
-                <ProposalTableHeadText>{""}</ProposalTableHeadText>
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  {""}
+                </ProposalTableHeadText>
               </Grid>
             </TableHeader>
             {allProposals.map((proposal, i) => (
