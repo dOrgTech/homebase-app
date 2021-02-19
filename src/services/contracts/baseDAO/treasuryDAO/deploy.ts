@@ -5,9 +5,12 @@ import {
 } from "@taquito/taquito";
 import { char2Bytes } from "@taquito/tzip16";
 
-import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
-import contractCode from "./michelson/contract";
-import { MemberTokenAllocation, TreasuryParams } from "./types";
+import { MetadataCarrierDeploymentData } from "services/contracts/baseDAO/metadataCarrier/types";
+import contractCode from "services/contracts/baseDAO/treasuryDAO/michelson/contract";
+import {
+  MemberTokenAllocation,
+  TreasuryParams,
+} from "services/contracts/baseDAO/treasuryDAO/types";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();

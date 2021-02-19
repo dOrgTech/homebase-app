@@ -1,8 +1,9 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
-import { doDAOPropose } from "..";
-import { useTezos } from "../../../beacon/hooks/useTezos";
-import { ProposeParams } from "../types";
+
+import { doDAOPropose } from "services/contracts/baseDAO";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { ProposeParams } from "services/contracts/baseDAO/types";
 
 type UseProposeParams = Omit<ProposeParams, "tezos">;
 

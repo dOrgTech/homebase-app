@@ -5,13 +5,13 @@ import {
   TezosToolkit,
 } from "@taquito/taquito";
 
-import { Ledger } from "../../bakingBad/ledger/types";
-import { Storage } from "../../bakingBad/storage/types";
+import { Ledger } from "services/bakingBad/ledger/types";
+import { Storage } from "services/bakingBad/storage/types";
 import {
   DAOListMetadata,
   MetadataCarrierParameters,
-} from "./metadataCarrier/types";
-import { TreasuryParamsWithoutMetadata } from "./treasuryDAO/types";
+} from "services/contracts/baseDAO/metadataCarrier/types";
+import { TreasuryParamsWithoutMetadata } from "services/contracts/baseDAO/treasuryDAO/types";
 
 export type Contract = ContractAbstraction<ContractProvider> | undefined;
 

@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
-import { useTezos } from "../../../beacon/hooks/useTezos";
-import { getDAOTokenHolders } from "..";
-import { Ledger } from "../../../bakingBad/ledger/types";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { Ledger } from "services/bakingBad/ledger/types";
+import { getDAOTokenHolders } from "services/contracts/baseDAO";
 
 export const useTokenHolders = (contractAddress: string) => {
   const { network } = useTezos();

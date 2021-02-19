@@ -1,4 +1,4 @@
-import { StorageDTO, Storage } from "./types";
+import { StorageDTO, Storage } from "services/bakingBad/storage/types";
 
 export const dtoToStorage = (dto: StorageDTO): Storage => {
   return {

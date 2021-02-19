@@ -6,11 +6,11 @@ import {
 } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 
-import { OriginateTreasuryParams } from "../types";
-import { deployMetadataCarrier } from "../metadataCarrier/deploy";
-import { deployTreasuryDAO } from "../treasuryDAO/deploy";
-import { addNewContractToIPFS } from "../../../pinata";
-import { useTezos } from "src/services/beacon/hooks/useTezos";
+import { OriginateTreasuryParams } from "services/contracts/baseDAO/types";
+import { deployMetadataCarrier } from "services/contracts/baseDAO/metadataCarrier/deploy";
+import { deployTreasuryDAO } from "services/contracts/baseDAO/treasuryDAO/deploy";
+import { addNewContractToIPFS } from "services/pinata";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 export const useOriginateTreasury = () => {
   const queryClient = useQueryClient();

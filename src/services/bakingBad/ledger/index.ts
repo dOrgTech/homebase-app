@@ -1,7 +1,7 @@
-import { API_URL } from "..";
-import { Network } from "../../beacon/context";
-import { dtoToLedger } from "./mappers";
-import { Ledger, LedgerDTO } from "./types";
+import { API_URL } from "services/bakingBad";
+import { Network } from "services/beacon/context";
+import { dtoToLedger } from "services/bakingBad/ledger/mappers";
+import { Ledger, LedgerDTO } from "services/bakingBad/ledger/types";
 
 export const getLedgerAddresses = async (
   ledgerMapNumber: number,

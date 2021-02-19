@@ -1,6 +1,7 @@
-import { ProposalWithStatus } from "../../../bakingBad/proposals/types";
-import { useProposals } from "./useProposals";
 import { useEffect, useState } from "react";
+
+import { ProposalWithStatus } from "services/bakingBad/proposals/types";
+import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 
 export const useProposal = (
   daoAddress: string | undefined,

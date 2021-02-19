@@ -1,7 +1,7 @@
 import { useCallback, useContext } from "react";
 import { TezosToolkit } from "@taquito/taquito";
-import { connectWithBeacon } from "..";
-import { Network, TezosContext } from "../context";
+import { connectWithBeacon } from "services/beacon";
+import { Network, TezosContext } from "services/beacon/context";
 
 type WalletConnectReturn = {
   tezos: TezosToolkit;

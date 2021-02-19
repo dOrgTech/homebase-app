@@ -1,5 +1,5 @@
-import { MetadataInfo, PinnedDataFromPinataDTO } from "./types";
-import { getAuthHeader } from "./utils";
+import { MetadataInfo, PinnedDataFromPinataDTO } from "services/pinata/types";
+import { getAuthHeader } from "services/pinata/utils";
 
 const pinContractsMetadata = async (): Promise<string | Error> => {
   const URL = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;

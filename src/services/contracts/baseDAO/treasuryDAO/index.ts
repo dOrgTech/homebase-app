@@ -3,12 +3,19 @@ import { char2Bytes } from "@taquito/tzip16";
 import { Parser } from "@taquito/michel-codec";
 import { MichelsonV1Expression } from "@taquito/rpc";
 
-import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
-import code from "./michelson/contract";
-import { MemberTokenAllocation, TreasuryParams } from "./types";
-import { addNewContractToIPFS } from "../../../pinata";
-import { Contract, DAOItem, ProposeParams } from "../types";
-import proposeMetadataCode from "./michelson/propose";
+import { MetadataCarrierDeploymentData } from "services/contracts/baseDAO/metadataCarrier/types";
+import {
+  MemberTokenAllocation,
+  TreasuryParams,
+} from "services/contracts/baseDAO/treasuryDAO/types";
+import { addNewContractToIPFS } from "services/pinata";
+import {
+  Contract,
+  DAOItem,
+  ProposeParams,
+} from "services/contracts/baseDAO/types";
+import code from "services/contracts/baseDAO/treasuryDAO/michelson/contract";
+import proposeMetadataCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();

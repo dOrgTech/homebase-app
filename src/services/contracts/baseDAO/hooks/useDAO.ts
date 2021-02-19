@@ -1,9 +1,10 @@
 import { TezosToolkit } from "@taquito/taquito";
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { getDAO } from "..";
-import { useTezos } from "../../../beacon/hooks/useTezos";
-import { DAOItem } from "../types";
+
+import { getDAO } from "services/contracts/baseDAO";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { DAOItem } from "services/contracts/baseDAO/types";
 
 export const useDAO = (address: string | undefined) => {
   const { tezos, connect, network } = useTezos();

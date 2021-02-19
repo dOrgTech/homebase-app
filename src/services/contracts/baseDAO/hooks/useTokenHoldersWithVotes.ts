@@ -1,6 +1,6 @@
-import { useProposals } from "./useProposals";
 import { useMemo } from "react";
-import { useTokenHolders } from "./useTokenHolders";
+import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 
 export const useTokenHoldersWithVotes = (contractAddress: string) => {
   const {

@@ -1,18 +1,23 @@
 import { TezosToolkit } from "@taquito/taquito";
 import { tzip16 } from "@taquito/tzip16";
-import { getLedgerAddresses } from "../../bakingBad/ledger";
-import { getStorage } from "../../bakingBad/storage";
-import { Network } from "../../beacon/context";
-import { getDAOListMetadata } from "./metadataCarrier";
-import { DAOItem, ProposeParams, VoteParams } from "./types";
-import { getProposals } from "../../bakingBad/proposals";
+import dayjs from "dayjs";
+
+import { getLedgerAddresses } from "services/bakingBad/ledger";
+import { getStorage } from "services/bakingBad/storage";
+import { Network } from "services/beacon/context";
+import { getDAOListMetadata } from "services/contracts/baseDAO/metadataCarrier";
+import {
+  DAOItem,
+  ProposeParams,
+  VoteParams,
+} from "services/contracts/baseDAO/types";
+import { getProposals } from "services/bakingBad/proposals";
 import {
   ProposalStatus,
   ProposalWithStatus,
-} from "../../bakingBad/proposals/types";
-import { Ledger } from "../../bakingBad/ledger/types";
-import dayjs from "dayjs";
-import { getOriginationTime } from "../../bakingBad/operations";
+} from "services/bakingBad/proposals/types";
+import { Ledger } from "services/bakingBad/ledger/types";
+import { getOriginationTime } from "services/bakingBad/operations";
 
 const getContract = async (tezos: TezosToolkit, contractAddress: string) => {
   return await tezos.wallet.at(contractAddress, tzip16);
