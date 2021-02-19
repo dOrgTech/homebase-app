@@ -1,4 +1,4 @@
-import { TokenHolder } from "modules/creator/state/types";
+import { TokenHolder } from "modules/creator/state";
 import {
   MetadataStorageState,
   Token,

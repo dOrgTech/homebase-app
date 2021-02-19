@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Route, Switch, useLocation } from "react-router";
 import { Redirect, useRouteMatch } from "react-router-dom";
 
-import { StepInfo, StepperIndex } from "modules/creator/state/types";
+import { StepInfo, StepperIndex } from "modules/creator/state";
 import {
   SelectTemplate,
   Summary,

@@ -9,8 +9,7 @@ import {
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { CreatorContext } from "modules/creator/state/context";
-import { ActionTypes } from "modules/creator/state/types";
+import { CreatorContext, ActionTypes } from "modules/creator/state";
 
 const CustomCard = styled(withTheme(Grid))((props) => ({
   minHeight: 248,

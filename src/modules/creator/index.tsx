@@ -13,13 +13,12 @@ import {
 import ProgressBar from "react-customizable-progressbar";
 import { useHistory } from "react-router";
 
-import { CreatorContext } from "modules/creator/state/context";
+import { CreatorContext, StepInfo } from "modules/creator/state";
 import { CurrentStep, STEPS, useStepNumber } from "modules/creator/steps";
 import HomeButton from "assets/logos/homebase.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { NavigationBar } from "modules/creator/components/NavigationBar";
-import { StepInfo } from "modules/creator/state/types";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,

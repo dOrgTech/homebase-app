@@ -11,7 +11,7 @@ import { Box, ThemeProvider } from "@material-ui/core";
 import { DAOExplorerRouter } from "modules/explorer/router";
 import { Navbar } from "modules/common/Toolbar";
 import { DAOCreate } from "modules/creator";
-import { CreatorProvider } from "modules/creator/state/context";
+import { CreatorProvider } from "modules/creator/state";
 import ScrollToTop from "modules/common/ScrollToTop";
 import { theme } from "theme";
 

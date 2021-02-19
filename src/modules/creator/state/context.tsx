@@ -7,7 +7,7 @@ import {
   CreatorState,
   StepperIndex,
   ActionTypes,
-} from "modules/creator/state/types";
+} from "modules/creator/state";
 
 const deploymentStatus = {
   deploying: false,
