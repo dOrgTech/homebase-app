@@ -19,7 +19,7 @@ export const useOriginateTreasury = () => {
     current: string;
   }>({
     states: [],
-    current: "",
+    current: "Waiting for confirmation",
   });
 
   const { tezos, connect } = useTezos();
