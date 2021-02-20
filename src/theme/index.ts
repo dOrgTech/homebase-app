@@ -156,6 +156,18 @@ export const theme = createMuiTheme({
         },
       },
     },
+    MuiButton: {
+      root: {
+        "&$disabled": {
+          color: "#3d3d3d",
+        },
+      },
+      outlined: {
+        "&$disabled": {
+          border: "1px solid #3d3d3d",
+        },
+      },
+    },
     MuiInputBase: {
       input: {
         textAlign: "center",

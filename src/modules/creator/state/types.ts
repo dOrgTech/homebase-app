@@ -101,4 +101,5 @@ export enum ActionTypes {
 export interface TokenHolder {
   address: string;
   balance: number;
+  name?: string;
 }
