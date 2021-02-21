@@ -188,7 +188,7 @@ export const Review: React.FC = () => {
           ) : (
             error && (
               <WaitingText variant="subtitle1" color="textSecondary">
-                {error}
+                {error.message || error}
               </WaitingText>
             )
           )}

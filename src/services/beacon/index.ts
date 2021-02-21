@@ -40,7 +40,6 @@ export const connectWithBeacon = async (): Promise<{
   });
 };
 
-
-export enum ERRORS {
-  
-}
+export const ERRORS = {
+  INSUFFICIENT_FUNDS: "empty_implicit_contract"
+};
