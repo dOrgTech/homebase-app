@@ -8,7 +8,7 @@ export const useProposal = (
   proposalKey: string
 ) => {
   const [proposal, setProposal] = useState<ProposalWithStatus>();
-  const { data } = useProposals(daoAddress);
+  const { data, ...rest } = useProposals(daoAddress);
 
   useEffect(() => {
     if (data && data.length) {
@@ -16,5 +16,5 @@ export const useProposal = (
     }
   }, [data, proposalKey]);
 
-  return proposal;
+  return { data: proposal, ...rest };
 };

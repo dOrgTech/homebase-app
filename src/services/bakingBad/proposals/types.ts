@@ -1,5 +1,27 @@
 import { UnnamedMapValue, NamedMapValue } from "services/bakingBad/types";
 
+type TokenType = "mutez"
+
+export type MutezTransfer = {
+  prim: string;
+  type: string;
+  name: string;
+  children: [
+    {
+      prim: string;
+      type: "mutez";
+      name: string;
+      value: string;
+    },
+    {
+      prim: string;
+      type: string;
+      name: string;
+      value: string;
+    }
+  ];
+}
+
 export type ProposalsDTO = {
   data: {
     key: UnnamedMapValue;
@@ -20,6 +42,13 @@ export type ProposalsDTO = {
               prim: string;
               type: string;
               name: string;
+              children?: [
+                {
+                  prim: string;
+                  type: string;
+                  children?: MutezTransfer[];
+                }
+              ];
             }
           ];
         },
@@ -53,6 +82,11 @@ export interface Proposal {
   startDate: string;
   agoraPostId: string;
   proposer: string;
+  transfers: {
+    beneficiary: string;
+    amount: string;
+    currency: string;
+  }[];
   proposerFrozenTokens: string;
   voters: {
     address: string;
