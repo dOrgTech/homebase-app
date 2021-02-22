@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  styled,
-  Grid,
-  Box,
-  Typography,
-  IconButton,
-  Link,
-} from "@material-ui/core";
+import { styled, Grid, Box, Typography, IconButton } from "@material-ui/core";
 import dayjs from "dayjs";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
@@ -126,11 +119,9 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
           </Typography>
         </Box>
         <Box>
-          <Link href={`https://forum.tezosagora.org/t/${number}`}>
-            <Typography variant="body1" color="textSecondary">
-              #{number} • {formattedDate}
-            </Typography>
-          </Link>
+          <Typography variant="body1" color="textSecondary">
+            #{number} • {formattedDate}
+          </Typography>
         </Box>
       </Grid>
       <Grid item xs={2}>

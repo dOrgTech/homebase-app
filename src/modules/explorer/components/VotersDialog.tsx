@@ -8,11 +8,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  CircularProgress,
 } from "@material-ui/core";
 
 import { ProgressBar } from "modules/explorer/components/ProgressBar";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
+import { toShortAddress } from "services/contracts/utils";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -92,39 +95,38 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   const [open, setOpen] = React.useState(false);
 
   const { data: dao } = useDAO(daoAddress);
-  const proposal = useProposal(daoAddress, proposalAddress);
+  const { data: proposal } = useProposal(daoAddress, proposalAddress);
   const theme = useTheme();
+  const { data: votesData, isLoading } = useVotes(proposalAddress, daoAddress);
 
-  const upVotes = proposal ? proposal.upVotes : 0;
-  const downVotes = proposal ? proposal.downVotes : 0;
-  const totalVotes = upVotes + downVotes;
-  const upVotesPercentage =
-    upVotes && totalVotes ? (upVotes / totalVotes) * 100 : 0;
-  const downVotesPercentage =
-    downVotes && totalVotes ? (downVotes / totalVotes) * 100 : 0;
-
-  const upVotesPercentageQuorum =
-    upVotes && dao && dao.quorumTreshold
-      ? (upVotes / dao.quorumTreshold) * 100
-      : 0;
-  const downVotesPercentageQuorum =
-    downVotes && dao && dao.quorumTreshold
-      ? (downVotes / dao.quorumTreshold) * 100
-      : 0;
-
-  const favorPercentage = favor ? upVotesPercentage : downVotesPercentage;
-  const favorVotes = favor ? upVotes : downVotes;
-  const favorPercentageQuorum = favor
-    ? upVotesPercentageQuorum
-    : downVotesPercentageQuorum;
-
-  const voters = useMemo(() => {
+  const votesInfo = useMemo(() => {
     if (!proposal) {
+      return {
+        votesSum: 0,
+        votesQuorumPercentage: 0,
+        votesSumPercentage: 0,
+        votesAmount: 0,
+      };
+    }
+
+    const votesSum = proposal.upVotes + proposal.downVotes;
+    const votes = favor ? proposal.upVotes : proposal.downVotes;
+
+    return {
+      votesSum,
+      votesQuorumPercentage: dao ? (votes / dao?.quorumTreshold) * 100 : 0,
+      votesSumPercentage: votes / votesSum,
+      votesAmount: votes,
+    };
+  }, [proposal, dao, favor]);
+
+  const votes = useMemo(() => {
+    if (!votesData) {
       return [];
     }
 
-    return proposal.voters;
-  }, [proposal]);
+    return votesData.filter((voteData) => voteData.favor === favor);
+  }, [votesData, favor]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -143,7 +145,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
         }}
         onClick={handleClickOpen}
       >
-        VIEW ADDRESSES
+        VIEW VOTES
       </ViewButton>
       <CustomDialog
         open={open}
@@ -179,21 +181,21 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
               </Grid>
               <Grid item xs={12}>
                 <TextHeader variant="h3" color="textSecondary">
-                  {favorVotes}
+                  {votesInfo.votesAmount}
                 </TextHeader>
               </Grid>
               <Grid item xs={12}>
                 <Grid container direction="row" alignItems="center">
                   <Grid item xs={10}>
                     <ProgressBar
-                      value={favorPercentageQuorum}
+                      value={votesInfo.votesQuorumPercentage}
                       favor={favor}
                       variant="determinate"
                     />
                   </Grid>
                   <Grid item xs={2}>
                     <PercentageText align="right">
-                      {favorPercentageQuorum}%
+                      {votesInfo.votesQuorumPercentage}%
                     </PercentageText>
                   </Grid>
                 </Grid>
@@ -202,7 +204,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                 <Grid item container direction="row" alignItems="center">
                   <Grid xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
-                      {voters.length} Addresses
+                      {votes.length} Votes
                     </Typography>
                   </Grid>
 
@@ -212,15 +214,17 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                       color="textSecondary"
                       align="right"
                     >
-                      Votes
+                      Value
                     </Typography>
                   </Grid>
                 </Grid>
               </VotesContainer>
             </TableHeader>
 
-            {favorPercentage > 0 ? (
-              voters.map((holder, index) => {
+            {isLoading ? (
+              <CircularProgress color="secondary" />
+            ) : votes.length > 0 ? (
+              votes.map((vote, index) => {
                 return (
                   <Row
                     container
@@ -230,17 +234,17 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                   >
                     <Grid item xs={6}>
                       <Typography variant="subtitle1" color="textSecondary">
-                        {holder.address.slice(0, 6)}...
-                        {holder.address.slice(
-                          holder.address.length - 4,
-                          holder.address.length
-                        )}
+                        {toShortAddress(vote.voter)}
                       </Typography>
                       <LinearBar
                         color="secondary"
                         variant="determinate"
                         favor={favor}
-                        value={100}
+                        value={
+                          votesInfo.votesSum
+                            ? (vote.value / votesInfo.votesSum) * 100
+                            : 0
+                        }
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -249,7 +253,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                         color="textSecondary"
                         align="right"
                       >
-                        {favorVotes}
+                        {vote.value}
                       </Typography>
                     </Grid>
                   </Row>

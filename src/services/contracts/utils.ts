@@ -29,3 +29,11 @@ export const toShortAddress = (address: string, limit = 4): string => {
     .concat("...")
     .concat(address.slice(address.length - limit, address.length));
 };
+
+export const mutezToXtz = (mutez: string) => {
+  return Number((Number(mutez) / 10 ** 6).toFixed(6)).toString();
+};
+
+export const xtzToMutez = (xtz: string) => {
+  return (Number(xtz) * 10 ** 6).toString();
+};

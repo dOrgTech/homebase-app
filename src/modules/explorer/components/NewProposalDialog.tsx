@@ -22,6 +22,7 @@ import {
   getTokensToStakeInPropose,
 } from "services/contracts/baseDAO/treasuryDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { xtzToMutez } from "services/contracts/utils";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
   height: 53,
@@ -129,7 +130,7 @@ const CustomTextarea = styled(TextField)({
 
 interface Transfer {
   recipient: string;
-  amount: 0;
+  amount: number;
 }
 
 interface Values {
@@ -165,11 +166,17 @@ export const NewProposalDialog: React.FC = () => {
 
   const onSubmit = async (values: Values, { setSubmitting }: any) => {
     setSubmitting(true);
+
+    const transfers: Transfer[] = values.transfers.map((transfer) => ({
+      ...transfer,
+      amount: Number(xtzToMutez(transfer.amount.toString())),
+    }));
+
     if (dao) {
       const proposalSize = await calculateProposalSize(
         dao.address,
         {
-          transfers: values.transfers,
+          transfers,
           agoraPostId: values.agoraPostId,
         },
         tezos || (await connect())
@@ -182,7 +189,7 @@ export const NewProposalDialog: React.FC = () => {
       mutate({
         contractAddress: dao.address,
         contractParams: {
-          transfers: values.transfers,
+          transfers,
           tokensToFreeze: tokensNeeded,
           agoraPostId: values.agoraPostId,
         },
@@ -320,7 +327,7 @@ export const NewProposalDialog: React.FC = () => {
                                 variant="subtitle1"
                                 color="textSecondary"
                               >
-                                Amount
+                                XTZ Amount
                               </Typography>
                             </Grid>
                             <Grid item xs={6}>
