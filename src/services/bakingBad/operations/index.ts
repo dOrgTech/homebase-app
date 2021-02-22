@@ -19,6 +19,7 @@ export const getOriginationTime = async (
 
   console.log(result);
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return result.operations.find(
     (operation: OperationDTO) => operation.kind === "origination"
   )!.timestamp;

@@ -1,6 +1,6 @@
 import { UnnamedMapValue, NamedMapValue } from "services/bakingBad/types";
 
-type TokenType = "mutez";
+// type TokenType = "mutez";
 
 export type MutezTransfer = {
   prim: string;
