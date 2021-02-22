@@ -62,13 +62,7 @@ type ProposeParameters = {
           prim: "list";
           type: "list";
           name: "transfers";
-          children?: [
-            {
-              prim: string;
-              type: string;
-              children?: MutezTransfer[];
-            }
-          ];
+          children?: MutezTransfer[];
         }
       ];
     }

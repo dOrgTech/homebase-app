@@ -33,15 +33,15 @@ const dtoToVoters = (
 const mapTransfers = (dto: ProposalsDTO[number]): Proposal["transfers"] => {
   const metadataDTO = dto.data.value.children[3].children[1];
 
-  if (!metadataDTO.children || !metadataDTO.children[0].children) {
+  if (!metadataDTO.children) {
     return [];
   }
 
-  const mutezTransfersDTO = metadataDTO.children[0].children;
+  const mutezTransfersDTO = metadataDTO.children;
 
   return mutezTransfersDTO.map((transfer) => ({
-    beneficiary: transfer.children[1].value,
-    amount: transfer.children[0].value,
-    currency: transfer.children[0].type,
+    beneficiary: transfer.children[0].children[1].value,
+    amount: transfer.children[0].children[0].value,
+    currency: transfer.children[0].children[0].type,
   }));
 };

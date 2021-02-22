@@ -1,12 +1,4 @@
-import {
-  Box,
-  CircularProgress,
-  Grid,
-  styled,
-  Typography,
-  withTheme,
-} from "@material-ui/core";
-import Skeleton from "@material-ui/lab/Skeleton";
+import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
 
@@ -16,7 +8,8 @@ import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { ProgressBar } from "modules/explorer/components/ProgressBar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { toShortAddress } from "services/contracts/utils";
+import { mutezToXtz, toShortAddress } from "services/contracts/utils";
+import dayjs from "dayjs";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -89,13 +82,13 @@ const Detail = styled(Grid)({
   borderBottom: "2px solid #3D3D3D",
 });
 
-const MetaData = styled(Grid)({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginBottom: 20,
-});
+// const MetaData = styled(Grid)({
+//   height: 70,
+//   display: "flex",
+//   alignItems: "center",
+//   justifyContent: "center",
+//   marginBottom: 20,
+// });
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
@@ -125,21 +118,6 @@ const BoxItem = styled(Grid)({
   borderBottom: "2px solid #3D3D3D",
 });
 
-const History = [
-  {
-    date: "December 19th, 2020. 11:09:21 AM",
-    status: "created",
-  },
-  {
-    date: "December 20th, 2020. 11:09:21 AM",
-    status: "active",
-  },
-  {
-    date: "December 21st, 2020. 11:09:21 AM",
-    status: "passed",
-  },
-];
-
 const styles = {
   blue: {
     background: "#3866F9",
@@ -159,13 +137,8 @@ export const Voting: React.FC = () => {
     id: string;
   }>();
 
-  const { data: proposal, isLoading: proposalLoading } = useProposal(
-    daoId,
-    proposalId
-  );
-  const { data: dao, isLoading: daoLoading } = useDAO(daoId);
-
-  const loading = proposalLoading || daoLoading;
+  const { data: proposal } = useProposal(daoId, proposalId);
+  const { data: dao } = useDAO(daoId);
 
   const proposalCycle = proposal ? proposal.cycle : "-";
   const upVotes = proposal ? proposal.upVotes : 0;
@@ -174,10 +147,22 @@ export const Voting: React.FC = () => {
   const upVotesPercentage = dao && (upVotes * 100) / dao.quorumTreshold;
   const downVotesPercentage = dao && (downVotes * 100) / dao.quorumTreshold;
 
+  const history = useMemo(() => {
+    if (!proposal) {
+      return [];
+    }
+    return [
+      { date: dayjs(proposal.startDate).format("LLL"), status: "created" },
+      { date: dayjs(proposal.startDate).format("LLL"), status: "active" },
+    ];
+  }, [proposal]);
+
   const transfers = useMemo(() => {
     if (!proposal || !proposal.transfers) {
       return [];
     }
+
+    console.log(proposal.transfers);
 
     return proposal.transfers.map((transfer) => {
       //TODO: can the from be different?
@@ -193,7 +178,7 @@ export const Voting: React.FC = () => {
 
       const value =
         transfer.currency === "mutez"
-          ? Number((Number(transfer.amount) / 6).toFixed(2))
+          ? mutezToXtz(transfer.amount)
           : transfer.amount;
 
       return `Transfer ${value}${currency} from ${from} to ${to}`;
@@ -379,7 +364,7 @@ export const Voting: React.FC = () => {
                     HISTORY
                   </Typography>
                 </HistoryContent>
-                {History.map((item: any, index: any) => {
+                {history.map((item, index) => {
                   return (
                     <HistoryItem container direction="row" key={index}>
                       <HistoryBadge

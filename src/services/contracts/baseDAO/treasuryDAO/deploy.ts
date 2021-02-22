@@ -11,6 +11,7 @@ import {
   MemberTokenAllocation,
   TreasuryParams,
 } from "services/contracts/baseDAO/treasuryDAO/types";
+import { xtzToMutez } from "services/contracts/utils";
 
 const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
   const map = new MichelsonMap();
@@ -80,8 +81,8 @@ export const deployTreasuryDAO = async ({
           frozen_extra_value: frozenExtraValue,
           slash_scale_value: slashScaleValue,
           slash_division_value: slashDivisionValue,
-          min_xtz_amount: minXtzAmount,
-          max_xtz_amount: maxXtzAmount,
+          min_xtz_amount: Number(xtzToMutez(minXtzAmount.toString())),
+          max_xtz_amount: Number(xtzToMutez(maxXtzAmount.toString())),
           max_proposal_size: maxProposalSize,
         },
         proposals: new MichelsonMap(),

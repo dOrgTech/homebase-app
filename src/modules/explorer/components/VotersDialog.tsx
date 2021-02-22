@@ -110,14 +110,13 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
     }
 
     const votesSum = proposal.upVotes + proposal.downVotes;
+    const votes = favor ? proposal.upVotes : proposal.downVotes;
 
     return {
       votesSum,
-      votesQuorumPercentage: dao ? (votesSum / dao?.quorumTreshold) * 100 : 0,
-      votesSumPercentage: favor
-        ? proposal.upVotes / votesSum
-        : proposal.downVotes / votesSum,
-      votesAmount: favor ? proposal.upVotes : proposal.downVotes,
+      votesQuorumPercentage: dao ? (votes / dao?.quorumTreshold) * 100 : 0,
+      votesSumPercentage: votes / votesSum,
+      votesAmount: votes,
     };
   }, [proposal, dao, favor]);
 
@@ -146,7 +145,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
         }}
         onClick={handleClickOpen}
       >
-        VIEW ADDRESSES
+        VIEW VOTES
       </ViewButton>
       <CustomDialog
         open={open}
@@ -205,7 +204,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                 <Grid item container direction="row" alignItems="center">
                   <Grid xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
-                      {votes.length} Addresses
+                      {votes.length} Votes
                     </Typography>
                   </Grid>
 
@@ -215,7 +214,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                       color="textSecondary"
                       align="right"
                     >
-                      Votes
+                      Value
                     </Typography>
                   </Grid>
                 </Grid>
