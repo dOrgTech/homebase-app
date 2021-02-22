@@ -11,6 +11,7 @@ import {
 
 const deploymentStatus = {
   deploying: false,
+  successful: false,
 };
 
 const LOCAL_STORAGE_KEY = "creatorParams";
@@ -69,6 +70,7 @@ export const reducer = (
         deploymentStatus: {
           contract,
           deploying,
+          successful: false,
         },
       };
       return state;
@@ -108,7 +110,14 @@ export const reducer = (
       return state;
     case ActionTypes.CLEAR_CACHE:
       window.localStorage.removeItem(LOCAL_STORAGE_KEY);
-      return INITIAL_STATE;
+      state = {
+        ...INITIAL_STATE,
+        deploymentStatus: {
+          ...INITIAL_STATE.deploymentStatus,
+          successful: true,
+        },
+      };
+      return state;
     default:
       return state;
   }

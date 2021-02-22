@@ -12,10 +12,5 @@ export const ProgressBar = styled(LinearProgress)(
         } !important`,
       },
     },
-    "& .MuiLinearProgress-bar": {
-      backgroundColor: `${
-        favor ? theme.palette.secondary.main : "#ED254E"
-      } !important`,
-    },
   })
 );

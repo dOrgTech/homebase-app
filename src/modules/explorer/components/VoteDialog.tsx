@@ -94,7 +94,7 @@ export const VoteDialog: React.FC = () => {
     id: string;
   }>();
 
-  const proposal = useProposal(daoId, proposalId);
+  const { data: proposal } = useProposal(daoId, proposalId);
 
   const { mutate } = useVote();
 

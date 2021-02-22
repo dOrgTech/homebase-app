@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
+  Button,
   CircularProgress,
   Grid,
   IconButton,
@@ -28,6 +29,7 @@ import { TopHoldersTableRow } from "modules/explorer/components/TopHoldersTableR
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { toShortAddress } from "services/contracts/utils";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
+import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
 const SideBar = styled(Grid)({
   width: 102,
@@ -133,6 +135,11 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
+const FlushButton = styled(Button)({
+  alignSelf: "center",
+  width: 150,
+});
+
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
     {children}
@@ -145,6 +152,7 @@ export const DAO: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data } = useDAO(id);
   const { data: members } = useTokenHoldersWithVotes(id);
+  const { mutate } = useFlush();
 
   const name = data && data.unfrozenToken.name;
   const description = data && data.description;
@@ -204,6 +212,20 @@ export const DAO: React.FC = () => {
   }, [data]);
 
   const { data: proposalsData } = useProposals(data ? data.address : "");
+
+  const onFlush = () => {
+    // @TODO: we need to add an atribute to the proposals
+    // type in order to know if it was flushed or not
+    if (proposalsData && proposalsData.length) {
+      mutate({
+        contractAddress: data ? data.address : "",
+        numerOfProposalsToFlush: proposalsData.length + 1,
+      });
+      return;
+    }
+
+    console.log("no proposal data");
+  };
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -401,6 +423,15 @@ export const DAO: React.FC = () => {
                 </Typography>
               </Box>
             </ActiveProposals>
+            <Grid item xs container direction="column" justify="center">
+              <FlushButton
+                color="secondary"
+                variant="outlined"
+                onClick={onFlush}
+              >
+                Flush
+              </FlushButton>
+            </Grid>
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">

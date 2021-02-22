@@ -18,6 +18,7 @@ export interface NavigationBarProps {
 
 type DeploymentStatus = {
   deploying: boolean;
+  successful: boolean
   contract?: string;
 };
 

@@ -40,10 +40,11 @@ export const useCreatorValidation = (): string => {
 };
 
 export const ProtectedRoute: FC = ({ children }) => {
+  const { successful } = useContext(CreatorContext).state.deploymentStatus;
   const history = useHistory();
   const redirectUrl = useCreatorValidation();
   useEffect(() => {
-    if (redirectUrl) history.replace(redirectUrl);
+    if (redirectUrl && !successful) history.replace(redirectUrl);
   }, [history, redirectUrl]);
 
   return <React.Fragment>{children}</React.Fragment>;

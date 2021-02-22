@@ -96,3 +96,9 @@ export interface VoteParams {
   contractAddress: string;
   support: boolean;
 }
+
+export interface FlushParams {
+  tezos: TezosToolkit;
+  contractAddress: string;
+  numerOfProposalsToFlush: number;
+}
