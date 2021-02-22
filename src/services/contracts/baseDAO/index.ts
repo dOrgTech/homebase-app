@@ -8,6 +8,7 @@ import { Network } from "services/beacon/context";
 import { getDAOListMetadata } from "services/contracts/baseDAO/metadataCarrier";
 import {
   DAOItem,
+  FlushParams,
   ProposeParams,
   VoteParams,
 } from "services/contracts/baseDAO/types";
@@ -160,4 +161,16 @@ export const getDAO = async (
   network: Network
 ): Promise<DAOItem> => {
   return await getDAOInfoFromContract(address, tezos, network);
+};
+
+export const doFlush = async ({
+  contractAddress,
+  tezos,
+  numerOfProposalsToFlush,
+}: FlushParams) => {
+  console.log(numerOfProposalsToFlush);
+  const contract = await getContract(tezos, contractAddress);
+
+  const result = await contract.methods.flush(numerOfProposalsToFlush).send();
+  return result;
 };
