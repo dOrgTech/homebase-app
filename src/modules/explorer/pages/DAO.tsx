@@ -214,6 +214,8 @@ export const DAO: React.FC = () => {
   const { data: proposalsData } = useProposals(data ? data.address : "");
 
   const onFlush = () => {
+    // @TODO: we need to add an atribute to the proposals
+    // type in order to know if it was flushed or not
     if (proposalsData && proposalsData.length) {
       mutate({
         contractAddress: data ? data.address : "",
