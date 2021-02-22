@@ -1,5 +1,5 @@
 import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router";
 
 import { SideBar } from "modules/explorer/components/SideBar";
@@ -8,6 +8,8 @@ import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { ProgressBar } from "modules/explorer/components/ProgressBar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
+import { mutezToXtz, toShortAddress } from "services/contracts/utils";
+import dayjs from "dayjs";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -72,13 +74,70 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
+const Detail = styled(Grid)({
+  height: 93,
+  display: "flex",
+  alignItems: "center",
+  paddingBottom: 0,
+  borderBottom: "2px solid #3D3D3D",
+});
+
+// const MetaData = styled(Grid)({
+//   height: 70,
+//   display: "flex",
+//   alignItems: "center",
+//   justifyContent: "center",
+//   marginBottom: 20,
+// });
+
+const HistoryContent = styled(Grid)({
+  paddingBottom: 24,
+  paddingLeft: 53,
+});
+
+const HistoryItem = styled(Grid)({
+  paddingLeft: 63,
+  marginTop: 20,
+  paddingBottom: 12,
+  display: "flex",
+  height: "auto",
+});
+
+const HistoryBadge = styled(Grid)({
+  borderRadius: 4,
+  textAlign: "center",
+});
+
+const DetailsContainer = styled(Grid)({
+  paddingBottom: 0,
+  padding: "40px 112px",
+});
+
+const BoxItem = styled(Grid)({
+  paddingBottom: 24,
+  borderBottom: "2px solid #3D3D3D",
+});
+
+const styles = {
+  blue: {
+    background: "#3866F9",
+    color: "white",
+    padding: 2,
+  },
+  yellow: {
+    background: "#DBDE39",
+    color: "#1C1F23",
+    padding: 2,
+  },
+};
+
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
   }>();
 
-  const proposal = useProposal(daoId, proposalId);
+  const { data: proposal } = useProposal(daoId, proposalId);
   const { data: dao } = useDAO(daoId);
 
   const proposalCycle = proposal ? proposal.cycle : "-";
@@ -87,6 +146,44 @@ export const Voting: React.FC = () => {
   const daoName = dao ? dao.unfrozenToken.name : "";
   const upVotesPercentage = dao && (upVotes * 100) / dao.quorumTreshold;
   const downVotesPercentage = dao && (downVotes * 100) / dao.quorumTreshold;
+
+  const history = useMemo(() => {
+    if (!proposal) {
+      return [];
+    }
+    return [
+      { date: dayjs(proposal.startDate).format("LLL"), status: "created" },
+      { date: dayjs(proposal.startDate).format("LLL"), status: "active" },
+    ];
+  }, [proposal]);
+
+  const transfers = useMemo(() => {
+    if (!proposal || !proposal.transfers) {
+      return [];
+    }
+
+    console.log(proposal.transfers);
+
+    return proposal.transfers.map((transfer) => {
+      //TODO: can the from be different?
+      const from = "DAO's treasury";
+
+      const to =
+        transfer.beneficiary.toLowerCase() === daoId.toLowerCase()
+          ? "DAO's treasury"
+          : toShortAddress(transfer.beneficiary);
+
+      const currency =
+        transfer.currency === "mutez" ? "XTZ" : transfer.currency;
+
+      const value =
+        transfer.currency === "mutez"
+          ? mutezToXtz(transfer.amount)
+          : transfer.amount;
+
+      return `Transfer ${value}${currency} from ${from} to ${to}`;
+    });
+  }, [proposal, daoId]);
 
   return (
     <>
@@ -217,7 +314,7 @@ export const Voting: React.FC = () => {
               </Grid>
             </TokensLocked>
           </StatsContainer>
-          {/* <DetailsContainer container direction="row">
+          <DetailsContainer container direction="row">
             <Grid item xs={6}>
               <Grid container direction="row">
                 <BoxItem item xs={12}>
@@ -226,7 +323,7 @@ export const Voting: React.FC = () => {
                   </Typography>
                 </BoxItem>
 
-                {Details.map((item: any, index: any) => {
+                {transfers.map((item, index) => {
                   return (
                     <Detail item xs={12} key={index}>
                       <Grid container direction="row">
@@ -241,7 +338,7 @@ export const Voting: React.FC = () => {
                         </Grid>
                         <Grid item xs={10}>
                           <Typography variant="subtitle1" color="textSecondary">
-                            {item.message}
+                            {item}
                           </Typography>
                         </Grid>
                       </Grid>
@@ -249,7 +346,7 @@ export const Voting: React.FC = () => {
                   );
                 })}
 
-                <MetaData item xs={12}>
+                {/* <MetaData item xs={12}>
                   <Typography
                     variant="subtitle1"
                     color="textSecondary"
@@ -257,7 +354,7 @@ export const Voting: React.FC = () => {
                   >
                     Proposal Metadata & #
                   </Typography>
-                </MetaData>
+                </MetaData> */}
               </Grid>
             </Grid>
             <Grid item xs={6}>
@@ -267,7 +364,7 @@ export const Voting: React.FC = () => {
                     HISTORY
                   </Typography>
                 </HistoryContent>
-                {History.map((item: any, index: any) => {
+                {history.map((item, index) => {
                   return (
                     <HistoryItem container direction="row" key={index}>
                       <HistoryBadge
@@ -292,7 +389,7 @@ export const Voting: React.FC = () => {
                 })}
               </Grid>
             </Grid>
-          </DetailsContainer> */}
+          </DetailsContainer>
         </Grid>
       </PageLayout>
     </>

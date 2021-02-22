@@ -1,7 +1,8 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
+import { dtoToVotes } from "./mappers";
+import { OperationDTO, OperationsDTO, Vote } from "./types";
 
-//TODO make DTO for this one
 export const getOriginationTime = async (
   contractAddress: string,
   network: Network
@@ -14,11 +15,30 @@ export const getOriginationTime = async (
     throw new Error("Failed to fetch contract operations from BakingBad API");
   }
 
-  const result: any = await response.json();
+  const result: OperationsDTO = await response.json();
 
   console.log(result);
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return result.operations.find(
-    (operation: any) => operation.kind === "origination"
-  ).timestamp;
+    (operation: OperationDTO) => operation.kind === "origination"
+  )!.timestamp;
+};
+
+export const getProposalVotes = async (
+  contractAddress: string,
+  network: Network,
+  proposalKey: string
+): Promise<Vote[]> => {
+  const url = `${API_URL}/contract/${network}/${contractAddress}/operations`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch contract operations from BakingBad API");
+  }
+
+  const result: OperationsDTO = await response.json();
+
+  return dtoToVotes(result, proposalKey);
 };
