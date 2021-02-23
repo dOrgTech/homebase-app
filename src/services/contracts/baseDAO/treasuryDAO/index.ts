@@ -1,63 +1,57 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
-import { char2Bytes } from "@taquito/tzip16";
 import { Parser } from "@taquito/michel-codec";
 import { MichelsonV1Expression } from "@taquito/rpc";
 
-import { MetadataCarrierDeploymentData } from "services/contracts/baseDAO/metadataCarrier/types";
-import {
-  MemberTokenAllocation,
-  TreasuryParams,
-} from "services/contracts/baseDAO/treasuryDAO/types";
+import { TreasuryParams } from "services/contracts/baseDAO/treasuryDAO/types";
 import { addNewContractToIPFS } from "services/pinata";
 import {
   Contract,
   DAOItem,
+  MigrationParams,
   ProposeParams,
 } from "services/contracts/baseDAO/types";
 import code from "services/contracts/baseDAO/treasuryDAO/michelson/contract";
 import proposeMetadataCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
-
-const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
-  const map = new MichelsonMap();
-
-  allocations.forEach((allocation) => {
-    map.set(
-      { 0: allocation.address, 1: allocation.tokenId },
-      allocation.amount
-    );
-  });
-
-  return map;
-};
-
-const setMetadata = ({
-  deployAddress,
-  keyName,
-}: MetadataCarrierDeploymentData) => {
-  const map = new MichelsonMap();
-
-  map.set("", char2Bytes(`tezos-storage://${deployAddress}/${keyName}`));
-
-  return map;
-};
+import {
+  fromStateToBaseStorage,
+  setMembersAllocation,
+  setMetadata,
+} from "../utils";
 
 export const deployTreasuryDAO = async ({
   storage: {
     membersTokenAllocation,
     adminAddress,
-    frozenScaleValue,
-    frozenExtraValue,
-    slashScaleValue,
-    slashDivisionValue,
-    minXtzAmount,
-    maxXtzAmount,
-    maxProposalSize,
+    extra: {
+      frozenScaleValue,
+      frozenExtraValue,
+      slashScaleValue,
+      slashDivisionValue,
+      minXtzAmount,
+      maxXtzAmount,
+      maxProposalSize,
+    },
     quorumTreshold,
     votingPeriod,
   },
   metadataCarrierDeploymentData,
   tezos,
 }: TreasuryParams & { tezos: TezosToolkit }): Promise<Contract> => {
+  console.log({
+    membersTokenAllocation,
+    adminAddress,
+    extra: {
+      frozenScaleValue,
+      frozenExtraValue,
+      slashScaleValue,
+      slashDivisionValue,
+      minXtzAmount,
+      maxXtzAmount,
+      maxProposalSize,
+    },
+    quorumTreshold,
+    votingPeriod,
+  });
   if (!metadataCarrierDeploymentData.deployAddress) {
     throw new Error(
       "Error deploying treasury DAO: There's not address of metadata"
@@ -66,10 +60,12 @@ export const deployTreasuryDAO = async ({
   const ledger = setMembersAllocation(membersTokenAllocation);
   const metadata = setMetadata(metadataCarrierDeploymentData);
 
+  console.log(ledger, metadata);
+
   try {
     console.log("Originating Treasury DAO contract...");
 
-    const t = await tezos.contract.originate({
+    const t = await tezos.wallet.originate({
       code,
       storage: {
         ledger,
@@ -95,8 +91,9 @@ export const deployTreasuryDAO = async ({
         metadata,
       },
     });
+    const operation = await t.send();
     console.log("Waiting for confirmation on Treasury DAO contract...", t);
-    const c = await t.contract();
+    const c = await operation.contract();
     console.log("Treasury DAO deployment completed", c);
     console.log("Let's store the contract address in IPFS :-D");
     await addNewContractToIPFS(c.address);
@@ -145,3 +142,11 @@ export const calculateProposalSize = async (
 
 export const getTokensToStakeInPropose = (dao: DAOItem, proposalSize: number) =>
   proposalSize * dao.frozenScaleValue + dao.frozenExtraValue;
+
+export const fromStateToTreasuryStorage = (
+  info: MigrationParams
+): TreasuryParams["storage"] => {
+  const storageData = fromStateToBaseStorage(info);
+
+  return storageData;
+};
