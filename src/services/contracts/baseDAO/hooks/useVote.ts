@@ -7,14 +7,13 @@ import { connectIfNotConnected } from "services/contracts/utils";
 
 type UseVoteParams = Omit<VoteParams, "tezos">;
 
-export const useVote = async () => {
+export const useVote = () => {
   const queryClient = useQueryClient();
   const { tezos, connect } = useTezos();
 
-  await connectIfNotConnected(tezos, connect);
-
   return useMutation<TransactionWalletOperation, Error, UseVoteParams>(
     async (params) => {
+      await connectIfNotConnected(tezos, connect);
       return await doDAOVote({
         ...params,
         tezos,

@@ -8,13 +8,12 @@ import { connectIfNotConnected } from "services/contracts/utils";
 
 type UseFlushParams = Omit<FlushParams, "tezos">;
 
-export const useFlush = async () => {
+export const useFlush = () => {
   const { tezos, connect } = useTezos();
-
-  await connectIfNotConnected(tezos, connect);
 
   return useMutation<TransactionWalletOperation, Error, UseFlushParams>(
     async (params) => {
+      await connectIfNotConnected(tezos, connect);
       return await doFlush({
         ...params,
         tezos: tezos || (await connect()),

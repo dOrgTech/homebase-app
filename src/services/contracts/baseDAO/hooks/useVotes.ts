@@ -1,6 +1,7 @@
-import { Vote } from "./../../../bakingBad/operations/types";
-import { getProposalVotes } from "./../../../bakingBad/operations/index";
 import { useQuery } from "react-query";
+
+import { Vote } from "services/bakingBad/operations/types";
+import { getProposalVotes } from "services/bakingBad/operations/index";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 

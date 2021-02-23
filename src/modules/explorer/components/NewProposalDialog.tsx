@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   styled,
@@ -12,6 +12,7 @@ import {
   Dialog,
   Button,
 } from "@material-ui/core";
+import { useSnackbar } from "notistack";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
 import { usePropose } from "services/contracts/baseDAO/hooks/usePropose";
@@ -22,7 +23,7 @@ import {
   getTokensToStakeInPropose,
 } from "services/contracts/baseDAO/treasuryDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { xtzToMutez } from "services/contracts/utils";
+import { connectIfNotConnected, xtzToMutez } from "services/contracts/utils";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
   height: 53,
@@ -151,7 +152,7 @@ export const NewProposalDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const [proposalFee, setProposalFee] = useState(0);
-  const { mutate } = usePropose();
+  const { mutate, data } = usePropose();
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
   const { tezos, connect } = useTezos();
@@ -172,6 +173,8 @@ export const NewProposalDialog: React.FC = () => {
       amount: Number(xtzToMutez(transfer.amount.toString())),
     }));
 
+    await connectIfNotConnected(tezos, connect);
+
     if (dao) {
       const proposalSize = await calculateProposalSize(
         dao.address,
@@ -179,7 +182,7 @@ export const NewProposalDialog: React.FC = () => {
           transfers,
           agoraPostId: values.agoraPostId,
         },
-        tezos || (await connect())
+        tezos
       );
 
       const tokensNeeded = getTokensToStakeInPropose(dao, proposalSize);
