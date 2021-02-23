@@ -49,6 +49,12 @@ export const theme = createMuiTheme({
     body1: {
       fontSize: 16,
     },
+    body2: {
+      fontSize: 16,
+      fontWeight: 300,
+      lineHeight: "413.4%",
+      opacity: 0.8,
+    },
   },
   overrides: {
     MuiSlider: {
@@ -60,6 +66,18 @@ export const theme = createMuiTheme({
       label: {
         color: "#fff",
         opacity: 0.5,
+        marginLeft: 15,
+        wordBreak: "break-all",
+        lineHeight: "40px",
+        "&$completed": {
+          fontWeight: 300,
+        },
+        "&$active": {
+          fontWeight: 300,
+        },
+        "& .MuiStepLabel-completed": {
+          fontWeight: 300,
+        },
       },
       active: {
         color: "#fff !important",
@@ -68,6 +86,7 @@ export const theme = createMuiTheme({
       completed: {
         color: "#fff !important",
         opacity: 0.5,
+        fontWeight: 300,
       },
     },
     MuiStepConnector: {
@@ -93,6 +112,8 @@ export const theme = createMuiTheme({
         color: "#fff !important",
       },
       root: {
+        height: 32,
+        width: 32,
         color: "#1C1F23",
         border: "1px solid #3D3D3D",
         borderRadius: "50%",
@@ -112,13 +133,26 @@ export const theme = createMuiTheme({
     },
     MuiInput: {
       underline: {
-        "&:before": {
-          borderBottom: "none",
-          transition: "none",
-        },
         "&:after": {
           borderBottom: "none",
-          transition: "none",
+        },
+        "&$focused:after": {
+          borderBottom: "none",
+        },
+        "&$error:after": {
+          borderBottom: "none",
+        },
+        "&:before": {
+          borderBottom: "none",
+        },
+        "&:hover:not($disabled):not($focused):not($error):before": {
+          borderBottom: "none",
+        },
+        "&$disabled:before": {
+          borderBottom: "none",
+        },
+        "&:active:not($disabled):not($focused):not($error):before": {
+          borderBottom: "none",
         },
       },
     },
@@ -134,9 +168,27 @@ export const theme = createMuiTheme({
         marginBottom: 16,
       },
     },
+    MuiDialog: {
+      paper: {
+        background: "#1C1F23",
+      },
+      root: {
+        minHeight: 600,
+        height: "auto",
+      },
+      paperWidthSm: {
+        minHeight: 600,
+        height: "auto",
+      },
+    },
     MuiFormControl: {
       root: {
         width: "100%",
+      },
+    },
+    MuiDialogContent: {
+      root: {
+        padding: 0,
       },
     },
     MuiSwitch: {
@@ -150,18 +202,18 @@ export const theme = createMuiTheme({
         left: 8,
         "$checked$checked + &": {
           opacity: 1,
-          backgroundColor: "#1C1F23 !important",
+          backgroundColor: "#1C1F23",
           color: "#81FEB7",
         },
       },
       track: {
         borderRadius: "40px",
         backgroundColor: "inherit",
-        border: "1px solid black",
+        border: "1px solid #fff",
         opacity: 0.5,
         "$checked$checked + &": {
           opacity: 1,
-          backgroundColor: "#1C1F23 !important",
+          backgroundColor: "#1C1F23",
           color: "#81FEB7",
         },
       },
@@ -173,12 +225,12 @@ export const theme = createMuiTheme({
         },
       },
       colorSecondary: {
-        color: "black",
+        color: "#fff",
         "$checked$checked + &": {
-          color: "#81FEB7 !important",
+          color: "#81FEB7",
         },
         "& .Mui-checked": {
-          color: "#81FEB7 !important",
+          color: "#81FEB7",
         },
       },
     },

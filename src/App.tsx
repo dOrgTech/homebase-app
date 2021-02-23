@@ -5,31 +5,42 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import "./App.css";
-import { DAOCreate } from "./pages/daocreator";
-import { Home } from "./pages/Home";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { Box, ThemeProvider } from "@material-ui/core";
-import { theme } from "./theme";
-import { DAOExplorerRouter } from "./router/explorer";
-import { Navbar } from "./components/common/toolbar";
+
+import { DAOExplorerRouter } from "modules/explorer/router";
+import { Navbar } from "modules/common/Toolbar";
+import { DAOCreate } from "modules/creator";
+import { CreatorProvider } from "modules/creator/state";
+import ScrollToTop from "modules/common/ScrollToTop";
+import { theme } from "theme";
+
+import "App.css";
+
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <Box height="100vh" bgcolor="primary.main">
-        <Navbar />
-        <Router>
-          <Switch>
-            <Route path="/creator">
-              <DAOCreate />
-            </Route>
-            <Route path="/explorer">
-              <DAOExplorerRouter />
-            </Route>
-            <Redirect to="/explorer"/>
-          </Switch>
-        </Router>
-      </Box>
+      <QueryClientProvider client={queryClient}>
+        <Box bgcolor="primary.main" position="absolute" width="100%">
+          <Router>
+            <ScrollToTop />
+            <Switch>
+              <Route path="/creator">
+                <CreatorProvider>
+                  <DAOCreate />
+                </CreatorProvider>
+              </Route>
+              <Route path="/explorer">
+                <Navbar />
+                <DAOExplorerRouter />
+              </Route>
+              <Redirect to="/explorer" />
+            </Switch>
+          </Router>
+        </Box>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 };

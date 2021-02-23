@@ -1,17 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
-import App from "./App";
-import store from "./store";
-import { TezosToolkitProvider } from "./store/wallet/context";
+
+import App from "App";
+import { TezosProvider } from "services/beacon/context";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import dayjs from "dayjs";
+
+dayjs.extend(localizedFormat);
 
 ReactDOM.render(
   <React.StrictMode>
-    <TezosToolkitProvider>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </TezosToolkitProvider>
+    <TezosProvider>
+      <App />
+    </TezosProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
