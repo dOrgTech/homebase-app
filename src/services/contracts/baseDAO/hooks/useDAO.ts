@@ -17,7 +17,7 @@ export const useDAO = (address: string | undefined) => {
       enabled: !!tezos && !!address && !!queryClient,
       initialData: () => {
         return queryClient
-          .getQueryData<DAOItem[]>("daos")
+          ?.getQueryData<DAOItem[]>("daos")
           ?.find((d) => d.address === address);
       },
     }

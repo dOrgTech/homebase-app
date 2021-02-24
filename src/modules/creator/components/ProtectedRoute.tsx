@@ -45,7 +45,7 @@ export const ProtectedRoute: FC = ({ children }) => {
   const redirectUrl = useCreatorValidation();
   useEffect(() => {
     if (redirectUrl && !successful) history.replace(redirectUrl);
-  }, [history, redirectUrl]);
+  }, [history, redirectUrl, successful]);
 
   return <React.Fragment>{children}</React.Fragment>;
 };

@@ -10,9 +10,8 @@ import {
 import { useHistory } from "react-router-dom";
 
 import Rocket from "assets/img/rocket.svg";
-import { useOriginateTreasury } from "services/contracts/baseDAO/hooks/useOriginateTreasury";
+import { useOriginate } from "services/contracts/baseDAO/hooks/useOriginate";
 import {
-  fromStateToTreasuryStorage,
   getTokensInfo,
   CreatorContext,
   ActionTypes,
@@ -128,7 +127,7 @@ export const Review: React.FC = () => {
   const {
     mutation: { mutate, error, data },
     stateUpdates: { states, current },
-  } = useOriginateTreasury();
+  } = useOriginate(state.data.template);
   const history = useHistory();
 
   //TODO: Fix infinite calling here
@@ -137,7 +136,7 @@ export const Review: React.FC = () => {
       if (!data && !validDAOData && metadataCarrierParams)
         mutate({
           metadataParams: metadataCarrierParams,
-          treasuryParams: fromStateToTreasuryStorage(info),
+          params: info,
         });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

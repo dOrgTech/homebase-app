@@ -37,12 +37,14 @@ export const useNotification = (handleDetail: (key: string) => void) => {
     const t = transactionObject.opHash;
     const handler = () => handleDetail(t);
 
+    console.log("opening notif...");
     const key = enqueueSnackbar(message, {
       ...options,
       action: <NotificationActions onOpenDetails={handler} />,
     });
+    console.log("opened notif...");
     await transactionObject.confirmation(1);
-    console.log("closing...")
+    console.log("closing...");
     closeSnackbar(key);
   };
 

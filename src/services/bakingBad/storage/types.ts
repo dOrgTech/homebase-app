@@ -18,7 +18,59 @@ export interface Storage {
   ledgerMapNumber: number;
 }
 
-export interface StorageDTO {
+export type StorageDTO = TreasuryStorageDTO | RegistryStorageDTO;
+
+export interface RegistryStorageDTO {
+  prim: string;
+  type: string;
+  children: [
+    NamedMapNumberValue,
+    NamedMapNumberValue,
+    NamedMapValue,
+    NamedMapValue,
+    NamedMapValue,
+    {
+      prim: string;
+      type: string;
+      name: string;
+      children: [UnnamedMapValue];
+    },
+    NamedMapValue,
+    NamedMapValue,
+    {
+      prim: string;
+      type: string;
+      name: string;
+      children: [
+        NamedMapValue,
+        NamedMapValue,
+        NamedMapValue,
+        NamedMapValue,
+        NamedMapValue,
+        NamedMapValue,
+        NamedMapValue,
+        NamedMapValue
+      ];
+    },
+    NamedMapNumberValue,
+    {
+      prim: string;
+      type: string;
+      name: string;
+      children?: NamedMapValue[];
+    },
+    NamedMapValue,
+    NamedMapNumberValue,
+    {
+      prim: string;
+      type: string;
+      name: string;
+      children: NamedMapValue[];
+    }
+  ];
+}
+
+export interface TreasuryStorageDTO {
   prim: string;
   type: string;
   children: [
@@ -54,13 +106,7 @@ export interface StorageDTO {
       prim: string;
       type: string;
       name: string;
-      children: [
-        {
-          prim: string;
-          type: string;
-          children: [UnnamedMapValue, UnnamedMapValue];
-        }
-      ];
+      children?: NamedMapValue[];
     },
     NamedMapValue,
     NamedMapNumberValue
