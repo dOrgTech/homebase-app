@@ -7,12 +7,12 @@ import {
   withTheme,
 } from "@material-ui/core";
 import React from "react";
-import HouseIcon from "assets/logos/house.svg";
-import VotingIcon from "assets/logos/voting.svg";
+import { useParams } from "react-router-dom";
 
 import { Header } from "modules/explorer/components/Header";
-import { TreasuryTableRow } from "../components/TreasuryTableRow";
-import { TreasuryHistoryRow } from "../components/TreasuryHistoryRow";
+import { TreasuryTableRow } from "modules/explorer/components/TreasuryTableRow";
+import { TreasuryHistoryRow } from "modules/explorer/components/TreasuryHistoryRow";
+import { SideBar } from "modules/explorer/components/SideBar";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -27,11 +27,6 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
   minHeight: "calc(100vh - 102px)",
 }));
-
-const SideBar = styled(Grid)({
-  width: 102,
-  borderRight: "2px solid #3D3D3D",
-});
 
 const SidebarButton = styled(IconButton)({
   paddingTop: 32,
@@ -93,6 +88,10 @@ const UnderlineText = styled(Typography)({
 });
 
 export const Treasury: React.FC = () => {
+  const { id } = useParams<{
+    proposalId: string;
+    id: string;
+  }>();
   const tokenBalances = [
     { name: "token name", balance: 4322, address: "" },
     { name: "token name", balance: 4322, address: "" },
@@ -114,14 +113,7 @@ export const Treasury: React.FC = () => {
   ];
   return (
     <PageLayout container wrap="nowrap">
-      <SideBar item>
-        <SidebarButton>
-          <img src={HouseIcon} />
-        </SidebarButton>
-        <SidebarButton>
-          <img src={VotingIcon} />
-        </SidebarButton>
-      </SideBar>
+      <SideBar dao={id} />
 
       <Grid item xs>
         <MainContainer container justify="space-between">

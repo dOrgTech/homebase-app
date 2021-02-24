@@ -12,8 +12,6 @@ import Timer from "react-compound-timer";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { useHistory, useParams } from "react-router-dom";
 
-import HouseIcon from "assets/logos/house.svg";
-import VotingIcon from "assets/logos/voting.svg";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import VoteTimeIcon from "assets/logos/voteTime.svg";
 import {
@@ -30,11 +28,7 @@ import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { toShortAddress } from "services/contracts/utils";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-
-const SideBar = styled(Grid)({
-  width: 102,
-  borderRight: "2px solid #3D3D3D",
-});
+import { SideBar } from "../components/SideBar";
 
 const MainContainer = styled(Grid)({
   minHeight: 325,
@@ -268,14 +262,7 @@ export const DAO: React.FC = () => {
   ];
   return (
     <PageLayout container wrap="nowrap">
-      <SideBar item>
-        <SidebarButton>
-          <img src={HouseIcon} />
-        </SidebarButton>
-        <SidebarButton>
-          <img src={VotingIcon} />
-        </SidebarButton>
-      </SideBar>
+      <SideBar dao={id} />
       {!isLoading ? (
         <Grid item xs>
           <MainContainer container justify="space-between">
