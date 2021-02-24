@@ -1,4 +1,3 @@
-import { useSnackbar } from "notistack";
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 
@@ -6,18 +5,15 @@ import { doDAOPropose } from "services/contracts/baseDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { ProposeParams } from "services/contracts/baseDAO/types";
 import { useNotification } from "modules/common/useNotification";
+import { explorerUrls } from "services/beacon";
 
 type UseProposeParams = Omit<ProposeParams, "tezos">;
 
 export const usePropose = () => {
   const queryClient = useQueryClient();
   const { tezos } = useTezos();
+  const openNotification = useNotification();
 
-  const testOpen = (key: string) => {
-    console.log(key);
-  };
-
-  const openNotification = useNotification(testOpen);
   return useMutation<TransactionWalletOperation, Error, UseProposeParams>(
     async (params) => {
       try {
@@ -26,16 +22,15 @@ export const usePropose = () => {
           tezos,
         });
 
-        const handler = (key: string) => {
-          console.log("redirecting to ", key);
-        };
-
-        openNotification({
-          transactionObject: proposalResult,
+        const { key, closeSnackbar } = openNotification({
+          detailsLink: explorerUrls.edo2net + proposalResult.opHash,
           message: "Your proposal is being created...",
           variant: "info",
-          onOpenDetails: handler,
+          persist: true,
         });
+
+        await proposalResult.confirmation(1);
+        closeSnackbar(key);
 
         return proposalResult;
       } catch (e) {
