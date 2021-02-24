@@ -4,7 +4,7 @@ import {
   UnnamedMapValue,
 } from "services/bakingBad/types";
 
-export interface Storage {
+export interface BaseStorage {
   slashDivisionValue: number;
   slashScaleValue: number;
   frozenScaleValue: number;
@@ -17,6 +17,14 @@ export interface Storage {
   proposalsMapNumber: number;
   ledgerMapNumber: number;
 }
+
+export type TreasuryStorage = BaseStorage;
+
+export interface RegistryStorage extends BaseStorage {
+  registry: any;
+}
+
+export type Storage = RegistryStorage | TreasuryStorage;
 
 export type StorageDTO = TreasuryStorageDTO | RegistryStorageDTO;
 
