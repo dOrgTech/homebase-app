@@ -17,6 +17,7 @@ import {
   setMembersAllocation,
   setMetadata,
 } from "../utils";
+import { xtzToMutez } from "services/contracts/utils";
 
 export const deployTreasuryDAO = async ({
   storage: {
@@ -64,6 +65,7 @@ export const deployTreasuryDAO = async ({
 
   try {
     console.log("Originating Treasury DAO contract...");
+    console.log(votingPeriod);
 
     const t = await tezos.wallet.originate({
       code,
@@ -81,8 +83,8 @@ export const deployTreasuryDAO = async ({
           frozen_extra_value: frozenExtraValue,
           slash_scale_value: slashScaleValue,
           slash_division_value: slashDivisionValue,
-          min_xtz_amount: minXtzAmount,
-          max_xtz_amount: maxXtzAmount,
+          min_xtz_amount: xtzToMutez(minXtzAmount.toString()),
+          max_xtz_amount: xtzToMutez(maxXtzAmount.toString()),
           max_proposal_size: maxProposalSize,
         },
         proposals: new MichelsonMap(),

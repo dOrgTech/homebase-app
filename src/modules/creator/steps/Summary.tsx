@@ -73,6 +73,7 @@ export const Summary = (): JSX.Element => {
   const match = useRouteMatch();
 
   const goToVoting = () => {
+    console.log(state);
     history.push(`voting`);
   };
 

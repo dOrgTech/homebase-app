@@ -4,7 +4,7 @@ import { BigNumber } from "bignumber.js";
 import blockies from "blockies-ts";
 
 export const getTestProvider = async (): Promise<TezosToolkit> => {
-  const Tezos = new TezosToolkit("https://api.tez.ie/rpc/delphinet");
+  const Tezos = new TezosToolkit("https://edonet-tezos.giganode.io");
 
   Tezos.setProvider({
     signer: await InMemorySigner.fromSecretKey(
