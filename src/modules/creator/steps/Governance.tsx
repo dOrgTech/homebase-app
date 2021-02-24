@@ -517,6 +517,7 @@ export const Governance: React.FC = () => {
       votingSettings: values,
     };
     updateCache(newState);
+    console.log(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
     history.push(`token`);
