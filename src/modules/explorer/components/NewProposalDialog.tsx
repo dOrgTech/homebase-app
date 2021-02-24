@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Grid,
   styled,
@@ -164,38 +164,43 @@ export const NewProposalDialog: React.FC = () => {
     setOpen(false);
   };
 
-  const onSubmit = async (values: Values, { setSubmitting }: any) => {
-    setSubmitting(true);
+  const onSubmit = useCallback(
+    async (values: Values, { setSubmitting }: any) => {
+      setSubmitting(true);
 
-    const transfers: Transfer[] = values.transfers.map((transfer) => ({
-      ...transfer,
-      amount: Number(xtzToMutez(transfer.amount.toString())),
-    }));
+      const transfers: Transfer[] = values.transfers.map((transfer) => ({
+        ...transfer,
+        amount: Number(xtzToMutez(transfer.amount.toString())),
+      }));
 
-    if (dao) {
-      const proposalSize = await calculateProposalSize(
-        dao.address,
-        {
-          transfers,
-          agoraPostId: values.agoraPostId,
-        },
-        tezos || (await connect())
-      );
+      if (dao) {
+        const proposalSize = await calculateProposalSize(
+          dao.address,
+          {
+            transfers,
+            agoraPostId: values.agoraPostId,
+          },
+          tezos || (await connect())
+        );
 
-      const tokensNeeded = getTokensToStakeInPropose(dao, proposalSize);
+        const tokensNeeded = getTokensToStakeInPropose(dao, proposalSize);
 
-      setProposalFee(tokensNeeded);
+        setProposalFee(tokensNeeded);
 
-      mutate({
-        contractAddress: dao.address,
-        contractParams: {
-          transfers,
-          tokensToFreeze: tokensNeeded,
-          agoraPostId: values.agoraPostId,
-        },
-      });
-    }
-  };
+        mutate({
+          contractAddress: dao.address,
+          contractParams: {
+            transfers,
+            tokensToFreeze: tokensNeeded,
+            agoraPostId: values.agoraPostId,
+          },
+        });
+
+        setOpen(false);
+      }
+    },
+    [connect, dao, mutate, tezos]
+  );
 
   return (
     <div>
@@ -206,237 +211,256 @@ export const NewProposalDialog: React.FC = () => {
       >
         NEW PROPOSAL
       </StyledButton>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <Title id="alert-dialog-title" color="textSecondary">
-          <Grid container direction="row">
-            <Grid item xs={6}>
-              <Typography variant="subtitle1" color="textSecondary">
-                SEND FUNDS
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <CloseButton
-                color="textSecondary"
-                align="right"
-                onClick={handleClose}
-              >
-                X
-              </CloseButton>
-            </Grid>
-          </Grid>
-        </Title>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <ListItem container direction="row">
+      {dao && (
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <Title id="alert-dialog-title" color="textSecondary">
+            <Grid container direction="row">
               <Grid item xs={6}>
                 <Typography variant="subtitle1" color="textSecondary">
-                  Batch Transfer?
+                  SEND FUNDS
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <SwitchContainer item xs={12} justify="flex-end">
-                  <Switch
-                    checked={isBatch}
-                    onChange={() => {
-                      setIsBatch(!isBatch);
-                      return;
-                    }}
-                    name="checkedA"
-                    inputProps={{ "aria-label": "secondary checkbox" }}
-                  />
-                </SwitchContainer>
+                <CloseButton
+                  color="textSecondary"
+                  align="right"
+                  onClick={handleClose}
+                >
+                  X
+                </CloseButton>
               </Grid>
-            </ListItem>
-
-            <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
-              {({ submitForm, values }) => (
-                <Form autoComplete="off">
-                  <>
-                    <FieldArray
-                      name="transfers"
-                      render={(arrayHelpers) => (
-                        <>
-                          {isBatch ? (
-                            <BatchBar container direction="row">
-                              {values.transfers.map((_, index) => {
-                                return (
-                                  <TransferActive
-                                    item
-                                    key={index}
-                                    onClick={() => setActiveTransfer(index + 1)}
-                                    style={
-                                      Number(index + 1) === activeTransfer
-                                        ? styles.active
-                                        : undefined
-                                    }
-                                  >
-                                    <Typography
-                                      variant="subtitle1"
-                                      color="textSecondary"
-                                    >
-                                      #{index + 1}
-                                    </Typography>
-                                  </TransferActive>
-                                );
-                              })}
-
-                              <AddButton
-                                onClick={() => {
-                                  arrayHelpers.insert(
-                                    values.transfers.length + 1,
-                                    EMPTY_TRANSFER
-                                  );
-                                }}
-                              >
-                                +
-                              </AddButton>
-                            </BatchBar>
-                          ) : null}
-
-                          <ListItem container direction="row">
-                            <Grid item xs={6}>
-                              <Typography
-                                variant="subtitle1"
-                                color="textSecondary"
-                              >
-                                Recipient
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                              <SwitchContainer item xs={12} justify="flex-end">
-                                <Field
-                                  name={`transfers.${
-                                    activeTransfer - 1
-                                  }.recipient`}
-                                  type="string"
-                                  placeholder="Type an Address Here"
-                                  component={CustomTextField}
-                                />
-                              </SwitchContainer>
-                            </Grid>
-                          </ListItem>
-
-                          <ListItem container direction="row">
-                            <Grid item xs={6}>
-                              <Typography
-                                variant="subtitle1"
-                                color="textSecondary"
-                              >
-                                XTZ Amount
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                              <SwitchContainer item xs={12} justify="flex-end">
-                                <Field
-                                  name={`transfers.${
-                                    activeTransfer - 1
-                                  }.amount`}
-                                  type="number"
-                                  placeholder="Type an Amount"
-                                  component={CustomTextField}
-                                />
-                              </SwitchContainer>
-                            </Grid>
-                          </ListItem>
-                        </>
-                      )}
+            </Grid>
+          </Title>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <ListItem container direction="row">
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Batch Transfer?
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <SwitchContainer item xs={12} justify="flex-end">
+                    <Switch
+                      checked={isBatch}
+                      onChange={() => {
+                        setIsBatch(!isBatch);
+                        return;
+                      }}
+                      name="checkedA"
+                      inputProps={{ "aria-label": "secondary checkbox" }}
                     />
-                    <DescriptionContainer container direction="row">
-                      <Grid item xs={12}>
-                        <Grid
-                          container
-                          direction="row"
-                          alignItems="center"
-                          justify="space-between"
-                        >
-                          <Grid item xs={6}>
-                            <Typography
-                              variant="subtitle1"
-                              color="textSecondary"
-                            >
-                              Proposal Description
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography
-                              align="right"
-                              variant="subtitle1"
-                              color="textSecondary"
-                            >
-                              {values.description
-                                ? values.description.trim().split(" ").length
-                                : 0}{" "}
-                              Words
-                            </Typography>
+                  </SwitchContainer>
+                </Grid>
+              </ListItem>
+
+              <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
+                {({ submitForm, values }) => (
+                  <Form autoComplete="off">
+                    <>
+                      <FieldArray
+                        name="transfers"
+                        render={(arrayHelpers) => (
+                          <>
+                            {isBatch ? (
+                              <BatchBar container direction="row">
+                                {values.transfers.map((_, index) => {
+                                  return (
+                                    <TransferActive
+                                      item
+                                      key={index}
+                                      onClick={() =>
+                                        setActiveTransfer(index + 1)
+                                      }
+                                      style={
+                                        Number(index + 1) === activeTransfer
+                                          ? styles.active
+                                          : undefined
+                                      }
+                                    >
+                                      <Typography
+                                        variant="subtitle1"
+                                        color="textSecondary"
+                                      >
+                                        #{index + 1}
+                                      </Typography>
+                                    </TransferActive>
+                                  );
+                                })}
+
+                                <AddButton
+                                  onClick={() => {
+                                    arrayHelpers.insert(
+                                      values.transfers.length + 1,
+                                      EMPTY_TRANSFER
+                                    );
+                                  }}
+                                >
+                                  +
+                                </AddButton>
+                              </BatchBar>
+                            ) : null}
+
+                            <ListItem container direction="row">
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="subtitle1"
+                                  color="textSecondary"
+                                >
+                                  Recipient
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <SwitchContainer
+                                  item
+                                  xs={12}
+                                  justify="flex-end"
+                                >
+                                  <Field
+                                    name={`transfers.${
+                                      activeTransfer - 1
+                                    }.recipient`}
+                                    type="string"
+                                    placeholder="Type an Address Here"
+                                    component={CustomTextField}
+                                  />
+                                </SwitchContainer>
+                              </Grid>
+                            </ListItem>
+
+                            <ListItem container direction="row">
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="subtitle1"
+                                  color="textSecondary"
+                                >
+                                  XTZ Amount
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <SwitchContainer
+                                  item
+                                  xs={12}
+                                  justify="flex-end"
+                                >
+                                  <Field
+                                    name={`transfers.${
+                                      activeTransfer - 1
+                                    }.amount`}
+                                    type="number"
+                                    placeholder="Type an Amount"
+                                    component={CustomTextField}
+                                    InputProps={{
+                                      inputProps: {
+                                        step: 0.01,
+                                        min: dao.minXtzAmount,
+                                        max: dao.maxXtzAmount,
+                                      },
+                                    }}
+                                  />
+                                </SwitchContainer>
+                              </Grid>
+                            </ListItem>
+                          </>
+                        )}
+                      />
+                      <DescriptionContainer container direction="row">
+                        <Grid item xs={12}>
+                          <Grid
+                            container
+                            direction="row"
+                            alignItems="center"
+                            justify="space-between"
+                          >
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="subtitle1"
+                                color="textSecondary"
+                              >
+                                Proposal Description
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography
+                                align="right"
+                                variant="subtitle1"
+                                color="textSecondary"
+                              >
+                                {values.description
+                                  ? values.description.trim().split(" ").length
+                                  : 0}{" "}
+                                Words
+                              </Typography>
+                            </Grid>
                           </Grid>
                         </Grid>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Field
-                          name="description"
-                          type="number"
-                          multiline
-                          rows={6}
-                          placeholder="Type a Description"
-                          component={CustomTextarea}
-                        />
-                      </Grid>
-                    </DescriptionContainer>
-
-                    <ListItem container direction="row">
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          Agora Post ID
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <SwitchContainer item xs={12} justify="flex-end">
+                        <Grid item xs={12}>
                           <Field
-                            name={`agoraPostId`}
+                            name="description"
                             type="number"
-                            placeholder="Type an Agora Post ID"
-                            component={CustomTextField}
+                            multiline
+                            rows={6}
+                            placeholder="Type a Description"
+                            component={CustomTextarea}
                           />
-                        </SwitchContainer>
-                      </Grid>
-                    </ListItem>
+                        </Grid>
+                      </DescriptionContainer>
 
-                    <ListItem container direction="row">
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          Proposal Fee
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography
-                          align="right"
-                          variant="subtitle1"
-                          color="secondary"
-                        >
-                          {proposalFee} {dao ? dao.unfrozenToken.symbol : ""}
-                        </Typography>
-                      </Grid>
-                    </ListItem>
+                      <ListItem container direction="row">
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle1" color="textSecondary">
+                            Agora Post ID
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <SwitchContainer item xs={12} justify="flex-end">
+                            <Field
+                              name={`agoraPostId`}
+                              type="number"
+                              placeholder="Type an Agora Post ID"
+                              component={CustomTextField}
+                            />
+                          </SwitchContainer>
+                        </Grid>
+                      </ListItem>
 
-                    <SendContainer container direction="row" justify="center">
-                      <Button onClick={submitForm}>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          SEND
-                        </Typography>
-                      </Button>
-                    </SendContainer>
-                  </>
-                </Form>
-              )}
-            </Formik>
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
+                      <ListItem container direction="row">
+                        <Grid item xs={6}>
+                          <Typography variant="subtitle1" color="textSecondary">
+                            Proposal Fee
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography
+                            align="right"
+                            variant="subtitle1"
+                            color="secondary"
+                          >
+                            {proposalFee} {dao ? dao.unfrozenToken.symbol : ""}
+                          </Typography>
+                        </Grid>
+                      </ListItem>
+
+                      <SendContainer container direction="row" justify="center">
+                        <Button onClick={submitForm}>
+                          <Typography variant="subtitle1" color="textSecondary">
+                            SEND
+                          </Typography>
+                        </Button>
+                      </SendContainer>
+                    </>
+                  </Form>
+                )}
+              </Formik>
+            </DialogContentText>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

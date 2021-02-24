@@ -13,6 +13,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import HomeButton from "assets/logos/homebase.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
+import { Blockie } from "./Blockie";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -38,8 +39,6 @@ const StatusDot = styled(Box)({
 const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
-  alignItems: "baseline",
-  margin: "auto 0",
 });
 
 const LogoText = styled(Typography)({
@@ -142,6 +141,9 @@ export const Navbar: React.FC = () => {
                 wrap="nowrap"
                 justify="flex-end"
               >
+                <Grid item>
+                  <Blockie address={account} marginRight={"8px"} />
+                </Grid>
                 <Grid item>
                   <Typography variant="subtitle1">
                     {toShortAddress(account)}

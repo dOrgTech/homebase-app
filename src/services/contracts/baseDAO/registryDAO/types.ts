@@ -1,12 +1,16 @@
 import { MetadataCarrierDeploymentData } from "services/contracts/baseDAO/metadataCarrier/types";
 import { BaseStorageParams } from "../types";
 
-export interface TreasuryParams {
-  storage: BaseStorageParams;
+export interface RegistryStorageParams extends BaseStorageParams {
+  totalSupply: any;
+}
+
+export interface RegistryParams {
+  storage: RegistryStorageParams;
   metadataCarrierDeploymentData: MetadataCarrierDeploymentData;
 }
 
-export type TreasuryParamsWithoutMetadata = Omit<
-  TreasuryParams,
+export type RegistryParamsWithoutMetadata = Omit<
+  RegistryParams,
   "metadataCarrierDeploymentData"
 >;
