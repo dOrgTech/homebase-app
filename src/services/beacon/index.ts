@@ -3,7 +3,7 @@ import { BeaconWallet } from "@taquito/beacon-wallet";
 import { Network } from "services/beacon/context";
 
 export const rpcNodes: Record<Network, string> = {
-  edonet: "https://edonet-tezos.giganode.io",
+  edo2net: "https://edonet-tezos.giganode.io",
   delphinet: "https://api.tez.ie/rpc/delphinet",
   mainnet: "https://mainnet-tezos.giganode.io",
 };
@@ -34,7 +34,7 @@ export const connectWithBeacon = async (): Promise<{
 
     await wallet.requestPermissions({
       network: {
-        type: NetworkType.DELPHINET as any,
+        type: NetworkType.EDONET as any,
       },
     });
   });

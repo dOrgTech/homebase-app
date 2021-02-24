@@ -11,11 +11,13 @@ import {
 
 const deploymentStatus = {
   deploying: false,
+  successful: false,
 };
 
 const LOCAL_STORAGE_KEY = "creatorParams";
 
 export const INITIAL_MIGRATION_STATE: MigrationParams = {
+  template: "treasury",
   orgSettings: {
     name: "",
     symbol: "",
@@ -69,6 +71,7 @@ export const reducer = (
         deploymentStatus: {
           contract,
           deploying,
+          successful: false,
         },
       };
       return state;
@@ -108,7 +111,23 @@ export const reducer = (
       return state;
     case ActionTypes.CLEAR_CACHE:
       window.localStorage.removeItem(LOCAL_STORAGE_KEY);
-      return INITIAL_STATE;
+      state = {
+        ...INITIAL_STATE,
+        deploymentStatus: {
+          ...INITIAL_STATE.deploymentStatus,
+          successful: true,
+        },
+      };
+      return state;
+    case ActionTypes.UPDATE_TEMPLATE:
+      state = {
+        ...state,
+        data: {
+          ...state.data,
+          template: action.template,
+        },
+      };
+      return state;
     default:
       return state;
   }

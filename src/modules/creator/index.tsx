@@ -19,6 +19,7 @@ import HomeButton from "assets/logos/homebase.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { NavigationBar } from "modules/creator/components/NavigationBar";
+import { Blockie } from "modules/common/Blockie";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -99,7 +100,6 @@ const LogoItem = styled("img")({
 const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
-  alignItems: "baseline",
   marginTop: 22,
 });
 
@@ -210,6 +210,9 @@ export const DAOCreate: React.FC = () => {
                 wrap="nowrap"
                 justify="flex-end"
               >
+                <Grid item>
+                  <Blockie address={account} marginRight={"8px"} />
+                </Grid>
                 <Grid item>
                   <Typography variant="subtitle1" color="textSecondary">
                     {toShortAddress(account)}

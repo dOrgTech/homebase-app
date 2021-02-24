@@ -1,8 +1,9 @@
+import { DAOTemplate } from "./../../../modules/creator/state/types";
 import {
   BigMapAbstraction,
   ContractAbstraction,
-  ContractProvider,
   TezosToolkit,
+  Wallet,
 } from "@taquito/taquito";
 
 import { Ledger } from "services/bakingBad/ledger/types";
@@ -11,11 +12,11 @@ import {
   DAOListMetadata,
   MetadataCarrierParameters,
 } from "services/contracts/baseDAO/metadataCarrier/types";
-import { TreasuryParamsWithoutMetadata } from "services/contracts/baseDAO/treasuryDAO/types";
 
-export type Contract = ContractAbstraction<ContractProvider> | undefined;
+export type Contract = ContractAbstraction<Wallet> | undefined;
 
 export interface MigrationParams {
+  template: DAOTemplate;
   orgSettings: OrgSettings;
   votingSettings: VotingSettings;
   memberSettings: MemberSettings;
@@ -84,9 +85,9 @@ export interface ProposeParams {
   };
 }
 
-export interface OriginateTreasuryParams {
+export interface OriginateParams {
   metadataParams: MetadataCarrierParameters;
-  treasuryParams: TreasuryParamsWithoutMetadata;
+  params: MigrationParams;
 }
 
 export interface VoteParams {
@@ -95,4 +96,48 @@ export interface VoteParams {
   tezos: TezosToolkit;
   contractAddress: string;
   support: boolean;
+}
+
+export interface FlushParams {
+  tezos: TezosToolkit;
+  contractAddress: string;
+  numerOfProposalsToFlush: number;
+}
+
+export interface MemberTokenAllocation {
+  address: string;
+  tokenId: string;
+  amount: string;
+}
+
+export interface BaseExtraState {
+  frozenScaleValue: number;
+  frozenExtraValue: number;
+  slashScaleValue: number;
+  slashDivisionValue: number;
+  maxXtzAmount: number;
+  minXtzAmount: number;
+  maxProposalSize: number;
+}
+
+export interface BaseStorageParams {
+  membersTokenAllocation: MemberTokenAllocation[];
+  adminAddress: string;
+  quorumTreshold: number;
+  votingPeriod: number;
+  extra: BaseExtraState;
+}
+
+export type Token = {
+  name: string;
+  symbol: string;
+  decimals: number;
+};
+
+export interface MetadataStorageState {
+  keyName: string;
+  metadata: {
+    frozenToken: Token;
+    unfrozenToken: Token;
+  };
 }

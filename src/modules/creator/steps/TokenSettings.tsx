@@ -128,10 +128,7 @@ const TokenSettingsForm = ({
   touched,
   errors,
 }: { values: MemberSettings } & any) => {
-  const {
-    dispatch,
-    state: { activeStep },
-  } = useContext(CreatorContext);
+  const { dispatch } = useContext(CreatorContext);
 
   const history = useHistory();
   const match = useRouteMatch();
@@ -152,16 +149,7 @@ const TokenSettingsForm = ({
         },
       });
     }
-  }, [
-    activeStep,
-    dispatch,
-    errors,
-    history,
-    match.path,
-    match.url,
-    submitForm,
-    values,
-  ]);
+  }, [dispatch, errors, history, match.path, match.url, submitForm, values]);
 
   //@TODO: Refactor token holder and balance inputs to use same logic
   return (

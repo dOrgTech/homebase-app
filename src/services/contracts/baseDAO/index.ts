@@ -1,3 +1,13 @@
+import {
+  deployRegistryDAO,
+  fromStateToRegistryStorage,
+} from "./registryDAO/index";
+import { MetadataDeploymentResult } from "./metadataCarrier/deploy";
+import {
+  deployTreasuryDAO,
+  fromStateToTreasuryStorage,
+} from "services/contracts/baseDAO/treasuryDAO";
+import { DAOTemplate } from "./../../../modules/creator/state/types";
 import { TezosToolkit } from "@taquito/taquito";
 import { tzip16 } from "@taquito/tzip16";
 import dayjs from "dayjs";
@@ -8,6 +18,8 @@ import { Network } from "services/beacon/context";
 import { getDAOListMetadata } from "services/contracts/baseDAO/metadataCarrier";
 import {
   DAOItem,
+  FlushParams,
+  MigrationParams,
   ProposeParams,
   VoteParams,
 } from "services/contracts/baseDAO/types";
@@ -160,4 +172,45 @@ export const getDAO = async (
   network: Network
 ): Promise<DAOItem> => {
   return await getDAOInfoFromContract(address, tezos, network);
+};
+
+export const doFlush = async ({
+  contractAddress,
+  tezos,
+  numerOfProposalsToFlush,
+}: FlushParams) => {
+  console.log(numerOfProposalsToFlush);
+  const contract = await getContract(tezos, contractAddress);
+
+  const result = await contract.methods.flush(numerOfProposalsToFlush).send();
+  return result;
+};
+
+export const deployDAO = async ({
+  template,
+  params,
+  metadata,
+  tezos,
+}: {
+  template: DAOTemplate;
+  params: MigrationParams;
+  metadata: MetadataDeploymentResult;
+  tezos: TezosToolkit;
+}) => {
+  switch (template) {
+    case "treasury":
+      const treasuryParams = fromStateToTreasuryStorage(params);
+      return await deployTreasuryDAO({
+        storage: treasuryParams,
+        metadataCarrierDeploymentData: metadata,
+        tezos,
+      });
+    case "registry":
+      const registryParams = fromStateToRegistryStorage(params);
+      return await deployRegistryDAO({
+        storage: registryParams,
+        metadataCarrierDeploymentData: metadata,
+        tezos,
+      });
+  }
 };

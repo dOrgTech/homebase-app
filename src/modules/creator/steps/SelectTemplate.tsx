@@ -7,9 +7,13 @@ import {
   Typography,
   withTheme,
 } from "@material-ui/core";
-import React, { useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { CreatorContext, ActionTypes } from "modules/creator/state";
+import {
+  CreatorContext,
+  ActionTypes,
+  DAOTemplate,
+} from "modules/creator/state";
 
 const CustomCard = styled(withTheme(Grid))((props) => ({
   minHeight: 248,
@@ -80,6 +84,18 @@ export const SelectTemplate = (): JSX.Element => {
     });
   }, [dispatch, history]);
 
+  const selectTemplate = useCallback(
+    (template: DAOTemplate) => {
+      dispatch({
+        type: ActionTypes.UPDATE_TEMPLATE,
+        template,
+      });
+
+      history.push("dao");
+    },
+    [dispatch, history]
+  );
+
   return (
     <Box>
       <Box>
@@ -108,7 +124,7 @@ export const SelectTemplate = (): JSX.Element => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer onClick={() => history.push(`dao`)}>
+              <FooterContainer onClick={() => selectTemplate("treasury")}>
                 <Typography
                   variant="subtitle1"
                   color="textSecondary"
@@ -137,7 +153,7 @@ export const SelectTemplate = (): JSX.Element => {
                   Non-profits, Companies, Founders
                 </Subtitle>
               </CustomCardContent>
-              <FooterContainer onClick={() => history.push(`dao`)}>
+              <FooterContainer onClick={() => selectTemplate("registry")}>
                 <Typography
                   variant="subtitle1"
                   color="textSecondary"

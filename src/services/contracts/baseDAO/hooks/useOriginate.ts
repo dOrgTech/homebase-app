@@ -1,3 +1,6 @@
+import { deployDAO } from "services/contracts/baseDAO";
+import { OriginateParams } from "../types";
+import { DAOTemplate } from "../../../../modules/creator/state/types";
 import { useState } from "react";
 import {
   ContractAbstraction,
@@ -6,13 +9,11 @@ import {
 } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 
-import { OriginateTreasuryParams } from "services/contracts/baseDAO/types";
 import { deployMetadataCarrier } from "services/contracts/baseDAO/metadataCarrier/deploy";
-import { deployTreasuryDAO } from "services/contracts/baseDAO/treasuryDAO/deploy";
 import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
 
-export const useOriginateTreasury = () => {
+export const useOriginate = (template: DAOTemplate) => {
   const queryClient = useQueryClient();
   const [stateUpdates, setStateUpdates] = useState<{
     states: string[];
@@ -27,9 +28,9 @@ export const useOriginateTreasury = () => {
   const result = useMutation<
     ContractAbstraction<ContractProvider | Wallet>,
     Error,
-    OriginateTreasuryParams
+    OriginateParams
   >(
-    async ({ metadataParams, treasuryParams }) => {
+    async ({ metadataParams, params }) => {
       const states: string[] = [];
 
       setStateUpdates({
@@ -45,7 +46,7 @@ export const useOriginateTreasury = () => {
 
       if (!metadata) {
         throw new Error(
-          `Could not deploy TreasuryDAO because MetadataCarrier contract deployment failed`
+          `Could not deploy ${template}DAO because MetadataCarrier contract deployment failed`
         );
       }
 
@@ -55,38 +56,35 @@ export const useOriginateTreasury = () => {
 
       setStateUpdates({
         states,
-        current: "Deploying Treasury DAO Contract",
+        current: `Deploying ${template} DAO Contract`,
       });
 
-      console.log(metadata);
-
-      const treasury = await deployTreasuryDAO({
-        ...treasuryParams,
-        metadataCarrierDeploymentData: metadata,
+      const contract = await deployDAO({
+        template,
         tezos,
+        metadata,
+        params,
       });
 
-      if (!treasury) {
-        throw new Error(`Error deploying TreasuryDAO`);
+      if (!contract) {
+        throw new Error(`Error deploying ${template}DAO`);
       }
 
       setStateUpdates({
         states,
-        current: "Waiting for confirmation on Treasury DAO contract",
+        current: `Waiting for confirmation on ${template} DAO contract`,
       });
 
-      const treasuryContract = await treasury.contract();
-
       states.push(
-        `Deployed Treasury DAO contract with address "${treasuryContract.address}"`
+        `Deployed ${template} DAO contract with address "${contract.address}"`
       );
 
       setStateUpdates({
         states,
-        current: "Saving Treasury DAO address in IPFS",
+        current: `Saving ${template} DAO address in IPFS`,
       });
 
-      await addNewContractToIPFS(treasuryContract.address);
+      await addNewContractToIPFS(contract.address);
 
       states.push(
         `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`
@@ -97,7 +95,7 @@ export const useOriginateTreasury = () => {
         current: "",
       });
 
-      return treasuryContract;
+      return contract;
     },
     {
       onSuccess: () => {
