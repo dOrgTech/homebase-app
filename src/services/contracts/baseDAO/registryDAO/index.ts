@@ -37,9 +37,9 @@ export const deployRegistryDAO = async ({
   const ledger = setMembersAllocation(membersTokenAllocation);
   const metadata = setMetadata(metadataCarrierDeploymentData);
 
-  const totalSupply2 = new MichelsonMap();
-  totalSupply2.set(0, 1000000);
-  totalSupply2.set(1, 1000000);
+  totalSupply = new MichelsonMap();
+  totalSupply.set(0, 1000000);
+  totalSupply.set(1, 1000000);
 
   try {
     console.log("Originating Registry DAO contract...");
@@ -69,7 +69,7 @@ export const deployRegistryDAO = async ({
         proposal_key_list_sort_by_date: [],
         permits_counter: 0,
         metadata,
-        total_supply: totalSupply2,
+        total_supply: totalSupply,
       },
     });
     const operation = await t.send();

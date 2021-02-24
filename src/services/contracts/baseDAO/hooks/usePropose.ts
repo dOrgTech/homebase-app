@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { doDAOPropose } from "services/contracts/baseDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { ProposeParams } from "services/contracts/baseDAO/types";
-import { useNotification } from "modules/common/useNotification";
+import { useNotification } from "modules/common/hooks/useNotification";
 import { explorerUrls } from "services/beacon";
 
 type UseProposeParams = Omit<ProposeParams, "tezos">;
