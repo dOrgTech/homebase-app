@@ -1,11 +1,14 @@
+import { DAOTemplate } from "./../../../modules/creator/state/types";
 import {
   StorageDTO,
   Storage,
   RegistryStorageDTO,
   TreasuryStorageDTO,
+  TreasuryStorage,
+  RegistryStorage,
 } from "services/bakingBad/storage/types";
 
-const dtoTreasuryToStorage = (dto: TreasuryStorageDTO) => ({
+const dtoTreasuryToStorage = (dto: TreasuryStorageDTO): TreasuryStorage => ({
   ledgerMapNumber: dto.children[0].value,
   votingPeriod: Number(dto.children[6].value),
   quorumTreshold: Number(dto.children[7].value),
@@ -19,10 +22,11 @@ const dtoTreasuryToStorage = (dto: TreasuryStorageDTO) => ({
   proposalsMapNumber: dto.children[9].value,
 });
 
-const dtoRegistryToStorage = (dto: RegistryStorageDTO) => ({
+const dtoRegistryToStorage = (dto: RegistryStorageDTO): RegistryStorage => ({
   ledgerMapNumber: dto.children[0].value,
   votingPeriod: Number(dto.children[6].value),
   quorumTreshold: Number(dto.children[7].value),
+  registry: dto.children[8].children[0].value,
   frozenScaleValue: Number(dto.children[8].children[1].value),
   frozenExtraValue: Number(dto.children[8].children[2].value),
   slashScaleValue: Number(dto.children[8].children[3].value),
@@ -33,10 +37,29 @@ const dtoRegistryToStorage = (dto: RegistryStorageDTO) => ({
   proposalsMapNumber: dto.children[9].value,
 });
 
-export const dtoToStorage = (dto: StorageDTO): Storage => {
+const getDAOTemplateFromStorageDTO = (dto: StorageDTO): DAOTemplate => {
   if (dto.children[8].children[0].name === "registry") {
-    return dtoRegistryToStorage(dto as RegistryStorageDTO);
+    return "registry";
   }
 
-  return dtoTreasuryToStorage(dto as TreasuryStorageDTO);
+  return "treasury";
+};
+
+export const dtoToStorageAndType = (
+  dto: StorageDTO
+): { storage: Storage; template: DAOTemplate } => {
+  const template = getDAOTemplateFromStorageDTO(dto);
+
+  switch (template) {
+    case "treasury":
+      return {
+        storage: dtoTreasuryToStorage(dto as TreasuryStorageDTO),
+        template,
+      };
+    case "registry":
+      return {
+        storage: dtoRegistryToStorage(dto as RegistryStorageDTO),
+        template,
+      };
+  }
 };

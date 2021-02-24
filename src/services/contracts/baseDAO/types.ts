@@ -1,10 +1,6 @@
+import { BaseStorage } from "./../../bakingBad/storage/types";
 import { DAOTemplate } from "./../../../modules/creator/state/types";
-import {
-  BigMapAbstraction,
-  ContractAbstraction,
-  TezosToolkit,
-  Wallet,
-} from "@taquito/taquito";
+import { ContractAbstraction, TezosToolkit, Wallet } from "@taquito/taquito";
 
 import { Ledger } from "services/bakingBad/ledger/types";
 import { Storage } from "services/bakingBad/storage/types";
@@ -56,19 +52,14 @@ export type Settings = OrgSettings | VotingSettings | MemberSettings;
 
 export type ErrorValues<T> = Partial<Record<keyof T, string>>;
 
-export type DAOItem = {
+export type DAOItem<TStorage extends Storage = BaseStorage> = {
   address: string;
   ledger: Ledger;
+  template: DAOTemplate;
   cycle: number;
   originationTime: string;
 } & DAOListMetadata &
-  Storage;
-
-export interface DAOStorageDTO {
-  //TODO
-
-  ledger: BigMapAbstraction;
-}
+  TStorage;
 
 export interface Transfer {
   amount: number;
