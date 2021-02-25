@@ -24,10 +24,10 @@ import {
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { xtzToMutez } from "services/contracts/utils";
 
-const StyledButton = styled(withTheme(Button))((props) => ({
+const StyledButton = styled(Button)(({ theme }) => ({
   height: 53,
-  color: props.theme.palette.text.secondary,
-  borderColor: props.theme.palette.secondary.main,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
   minWidth: 171,
 }));
 
@@ -146,7 +146,7 @@ const INITIAL_FORM_VALUES: Values = {
   agoraPostId: 0,
 };
 
-export const NewProposalDialog: React.FC = () => {
+export const NewTreasuryProposalDialog: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);

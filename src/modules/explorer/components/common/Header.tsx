@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, styled, Typography, withTheme } from "@material-ui/core";
-import { NewProposalDialog } from "./NewProposalDialog";
+import { NewTreasuryProposalDialog } from "modules/explorer/components/Treasury";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -28,7 +28,7 @@ export const Header: React.FC<{
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>
-        <NewProposalDialog />
+        <NewTreasuryProposalDialog />
       </JustifyEndGrid>
     </StyledContainer>
   );

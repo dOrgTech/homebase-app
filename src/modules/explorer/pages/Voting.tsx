@@ -1,15 +1,14 @@
 import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
+import dayjs from "dayjs";
 
-import { SideBar } from "modules/explorer/components/SideBar";
+import { SideBar, ProgressBar } from "modules/explorer/components/common";
 import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
-import { ProgressBar } from "modules/explorer/components/ProgressBar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { mutezToXtz, toShortAddress } from "services/contracts/utils";
-import dayjs from "dayjs";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,

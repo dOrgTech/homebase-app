@@ -8,17 +8,18 @@ import {
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-import { NewProposalDialog } from "modules/explorer/components/NewProposalDialog";
+import { NewTreasuryProposalDialog } from "modules/explorer/components/Treasury";
 import {
   ProposalTableRowData,
   ProposalTableRow,
   mapProposalData,
 } from "modules/explorer/components/ProposalTableRow";
-import { SideBar } from "modules/explorer/components/SideBar";
-import { TokenHoldersDialog } from "modules/explorer/components/TokenHoldersDialog";
+import { SideBar } from "modules/explorer/components/common";
+import { TokenHoldersDialog } from "modules/explorer/components/TokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { NewRegistryProposalDialog } from "../components/Registry";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -214,7 +215,8 @@ export const Proposals: React.FC = () => {
                 </Typography>
               </Grid>
               <JustifyEndGrid item xs={6}>
-                <NewProposalDialog />
+                {/* <NewTreasuryProposalDialog /> */}
+                <NewRegistryProposalDialog />
               </JustifyEndGrid>
             </StyledContainer>
           </MainContainer>

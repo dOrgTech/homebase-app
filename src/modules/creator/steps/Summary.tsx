@@ -1,7 +1,7 @@
 import { Box, Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { TokenHoldersRow } from "modules/explorer/components/TokenHoldersRow";
+import { TokenHoldersRow } from "modules/explorer/components/TokenHolders";
 import {
   ActionTypes,
   TokenHolder,

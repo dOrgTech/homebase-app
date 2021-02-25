@@ -2,13 +2,14 @@ import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { Header } from "modules/explorer/components/Header";
-import { TreasuryTableRow } from "modules/explorer/components/TreasuryTableRow";
-import { TreasuryHistoryRow } from "modules/explorer/components/TreasuryHistoryRow";
-import { SideBar } from "modules/explorer/components/SideBar";
 import { useBalance } from "modules/common/hooks/useBalance";
 import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
 import { TransactionInfo } from "services/tzkt/types";
+import { Header, SideBar } from "modules/explorer/components/common";
+import {
+  TreasuryTableRow,
+  TreasuryHistoryRow,
+} from "modules/explorer/components/Treasury";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
