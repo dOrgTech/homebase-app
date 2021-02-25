@@ -1,13 +1,13 @@
 import React from "react";
 import { styled } from "@material-ui/core";
 
-const Link = styled("a")(({ theme }) => ({
+const Link = styled("a")({
   display: "flex",
   textDecoration: "none",
   "&:active": {
     color: "unset",
   },
-}));
+});
 
 interface ExternalLinkProps {
   link: string;

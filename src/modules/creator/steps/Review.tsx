@@ -25,6 +25,8 @@ import {
 import { MetadataCarrierParameters } from "services/contracts/baseDAO/metadataCarrier/types";
 import { MigrationParams } from "services/contracts/baseDAO/types";
 import { useCreatorValidation } from "modules/creator/components/ProtectedRoute";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { ConnectWalletButton } from "modules/common/Toolbar";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
@@ -180,6 +182,8 @@ export const Review: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [message, setMessage] = useState("");
 
+  const { account, connect } = useTezos();
+
   const metadataCarrierParams: MetadataCarrierParameters = useMemo(
     () => ({
       keyName: "metadataKey",
@@ -211,6 +215,7 @@ export const Review: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   // TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
@@ -234,84 +239,93 @@ export const Review: React.FC = () => {
   return (
     <>
       <Box minWidth={620}>
-        <Grid
-          container
-          direction="column"
-          justify="center"
-          alignItems="flex-start"
-          style={{ height: "fit-content" }}
-        >
-          <Grid item>
-            <RocketImg src={Rocket} alt="rocket" />
-          </Grid>
-          <Grid item>
-            <Typography variant="h4" color="textSecondary">
-              Deploying <strong> {state.data.orgSettings.name} </strong> to the
-              Tezos Network
-            </Typography>
-          </Grid>
-          <FullWidth item xs={12}>
-            {console.log("STATES: ", states)}
-            {console.log("CURRENT: ", current)}
-
-            {states.length > 0 ? (
-              states.map((state, i) => (
-                <WaitingText
-                  variant="subtitle1"
-                  color="textSecondary"
-                  key={`state-${i}`}
-                >
-                  {state}
-                </WaitingText>
-              ))
-            ) : current || (true && !error) ? (
-              <WaitingText variant="subtitle1" color="textSecondary">
-                {current || "text"} <span className={classes.firstDot}>.</span>
-                <span className={classes.secondDot}>.</span>
-                <span className={classes.threeDot}>.</span>
-              </WaitingText>
-            ) : (
-              error && (
-                <WaitingText variant="subtitle1" color="textSecondary">
-                  {error}
-                </WaitingText>
-              )
-            )}
-
-            <Box>
-              {data && data.address ? (
-                <CustomButton
-                  color="secondary"
-                  variant="outlined"
-                  onClick={() => history.push("/explorer/dao/" + data.address)}
-                >
-                  Go to my DAO
-                </CustomButton>
-              ) : null}
-            </Box>
-          </FullWidth>
-        </Grid>
-      </Box>
-
-      <Box maxWidth={900} minWidth={800} width={"inherit"} marginTop={"-15%"}>
-        <FullWidth item container xs={12} direction="row">
-          <StyledStepper
-            activeStep={activeStep}
-            alternativeLabel
-            connector={<ColorlibConnector />}
+        {account ? (
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="flex-start"
+            style={{ height: "fit-content" }}
           >
-            <Step key={0}>
-              <StyledLabel>{""}</StyledLabel>
-            </Step>
-            <Step key={1}>
-              <StyledLabel>{""}</StyledLabel>
-            </Step>
-            <Step key={2}>
-              <StyledLabel>{""}</StyledLabel>
-            </Step>
-          </StyledStepper>
-        </FullWidth>
+            <Grid item>
+              <RocketImg src={Rocket} alt="rocket" />
+            </Grid>
+            <Grid item>
+              <Typography variant="h4" color="textSecondary">
+                Deploying <strong> {state.data.orgSettings.name} </strong> to
+                the Tezos Network
+              </Typography>
+            </Grid>
+            <FullWidth item xs={12}>
+              {console.log("STATES: ", states)}
+              {console.log("CURRENT: ", current)}
+
+              {states.length > 0 ? (
+                states.map((state, i) => (
+                  <WaitingText
+                    variant="subtitle1"
+                    color="textSecondary"
+                    key={`state-${i}`}
+                  >
+                    {state}
+                  </WaitingText>
+                ))
+              ) : current || (true && !error) ? (
+                <WaitingText variant="subtitle1" color="textSecondary">
+                  {current || "text"}{" "}
+                  <span className={classes.firstDot}>.</span>
+                  <span className={classes.secondDot}>.</span>
+                  <span className={classes.threeDot}>.</span>
+                </WaitingText>
+              ) : (
+                error && (
+                  <WaitingText variant="subtitle1" color="textSecondary">
+                    {error}
+                  </WaitingText>
+                )
+              )}
+
+              <Box>
+                {data && data.address ? (
+                  <CustomButton
+                    color="secondary"
+                    variant="outlined"
+                    onClick={() =>
+                      history.push("/explorer/dao/" + data.address)
+                    }
+                  >
+                    Go to my DAO
+                  </CustomButton>
+                ) : null}
+              </Box>
+            </FullWidth>
+          </Grid>
+        ) : (
+          <ConnectWalletButton connect={connect} />
+        )}
       </Box>
+
+      {account ? (
+        <Box maxWidth={900} minWidth={800} width={"inherit"} marginTop={"-15%"}>
+          <FullWidth item container xs={12} direction="row">
+            <StyledStepper
+              activeStep={activeStep}
+              alternativeLabel
+              connector={<ColorlibConnector />}
+            >
+              <Step key={0}>
+                <StyledLabel>{""}</StyledLabel>
+              </Step>
+              <Step key={1}>
+                <StyledLabel>{""}</StyledLabel>
+              </Step>
+              <Step key={2}>
+                <StyledLabel>{""}</StyledLabel>
+              </Step>
+            </StyledStepper>
+          </FullWidth>
+        </Box>
+      ) : null}
     </>
   );
 };

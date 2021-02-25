@@ -13,7 +13,6 @@ import {
   MetadataCarrierParameters,
   MetadataParams,
 } from "services/contracts/baseDAO/metadataCarrier/types";
-import { connectIfNotConnected } from "services/contracts/utils";
 
 const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
   const map = new MichelsonMap();
@@ -32,14 +31,12 @@ export interface MetadataDeploymentResult {
 
 interface Tezos {
   tezos: TezosToolkit;
-  connect: () => Promise<TezosToolkit>;
 }
 
 export const deployMetadataCarrier = async ({
   keyName,
   metadata,
   tezos,
-  connect,
 }: MetadataCarrierParameters & Tezos): Promise<
   MetadataDeploymentResult | undefined
 > => {
@@ -47,9 +44,6 @@ export const deployMetadataCarrier = async ({
 
   try {
     console.log("Originating Metadata Carrier contract...");
-
-    await connectIfNotConnected(tezos, connect);
-
     const t = await tezos.wallet.originate({
       code,
       storage: {

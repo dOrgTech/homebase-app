@@ -14,6 +14,7 @@ import HomeButton from "assets/logos/homebase.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
+import { TezosToolkit } from "@taquito/taquito";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -76,6 +77,16 @@ const custom = {
 const LogoItem = styled("img")({
   cursor: "pointer",
 });
+
+export const ConnectWalletButton = ({
+  connect,
+}: {
+  connect: () => Promise<TezosToolkit>;
+}) => (
+  <ConnectWallet color="secondary" variant="outlined" onClick={connect}>
+    Connect Wallet
+  </ConnectWallet>
+);
 
 export const Navbar: React.FC = () => {
   const { connect, account } = useTezos();
@@ -154,13 +165,7 @@ export const Navbar: React.FC = () => {
                 </Grid>
               </AddressContainer>
             ) : (
-              <ConnectWallet
-                color="secondary"
-                variant="outlined"
-                onClick={connect}
-              >
-                Connect Wallet
-              </ConnectWallet>
+              <ConnectWalletButton connect={connect} />
             )}
           </Grid>
         </Grid>
