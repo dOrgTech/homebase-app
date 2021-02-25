@@ -17,8 +17,6 @@ const pinContractsMetadata = async (): Promise<string | Error> => {
   };
 
   try {
-    console.log("Creating pin...");
-
     const response = await fetch(URL, {
       method: "POST",
       headers: {
@@ -99,9 +97,10 @@ export const addNewContractToIPFS = async (
           ...getAuthHeader(),
         },
       });
-      console.log("Content updated");
       return;
     }
+
+    await pinContractsMetadata();
     await addNewContractToIPFS(contractAddress);
   } catch (e) {
     throw Error(`Error updating pin with new data: ${e.message}`);
