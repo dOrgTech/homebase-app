@@ -37,10 +37,7 @@ const ButtonIcon = ({
   );
 };
 
-export const SideBar: React.FC<SideBarParams> = ({
-  dao,
-  proposal,
-}: SideBarParams) => {
+export const SideBar: React.FC<SideBarParams> = ({ dao }: SideBarParams) => {
   const history = useHistory();
   const { pathname } = useLocation();
 

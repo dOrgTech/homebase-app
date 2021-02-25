@@ -4,7 +4,6 @@ import {
   Button,
   CircularProgress,
   Grid,
-  IconButton,
   styled,
   Typography,
 } from "@material-ui/core";
@@ -34,11 +33,6 @@ const MainContainer = styled(Grid)({
   minHeight: 325,
   padding: "40px 112px",
   borderBottom: "2px solid #3D3D3D",
-});
-
-const SidebarButton = styled(IconButton)({
-  paddingTop: 32,
-  width: "100%",
 });
 
 const LoaderContainer = styled(Grid)({

@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-import { TokenHolder } from "modules/creator/state";
 import { MoreHorizOutlined } from "@material-ui/icons";
 
 const Container = styled(Grid)({

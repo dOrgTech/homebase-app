@@ -1,4 +1,3 @@
-import React from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 
 export const useBalance = () => {

@@ -24,7 +24,7 @@ export const getDAOListMetadata = async (
   } = await views.token_metadata().executeView(0);
 
   console.log("Metadata: ", metadata.metadata);
-  
+
   return {
     authors: metadata.metadata.authors || [],
     name: metadata.metadata.name || "",

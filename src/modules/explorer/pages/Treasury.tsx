@@ -72,12 +72,6 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
-const UnderlineText = styled(Typography)({
-  textDecoration: "underline",
-  cursor: "pointer",
-  marginBottom: 28,
-});
-
 export const SUPPORTED_TOKENS = ["XTZ"];
 
 interface BalanceInfo {
@@ -121,7 +115,7 @@ export const Treasury: React.FC = () => {
 
       setTokenBalances(tokensInformation);
     })();
-  }, [SUPPORTED_TOKENS]);
+  }, [getBalance, id]);
 
   return (
     <PageLayout container wrap="nowrap">
