@@ -37,10 +37,6 @@ export const deployRegistryDAO = async ({
   const ledger = setMembersAllocation(membersTokenAllocation);
   const metadata = setMetadata(metadataCarrierDeploymentData);
 
-  totalSupply = new MichelsonMap();
-  totalSupply.set(0, 1000000);
-  totalSupply.set(1, 1000000);
-
   try {
     console.log("Originating Registry DAO contract...");
 
@@ -87,10 +83,12 @@ export const deployRegistryDAO = async ({
 export const fromStateToRegistryStorage = (
   info: MigrationParams
 ): RegistryParams["storage"] => {
+  const totalSupply = new MichelsonMap();
+  totalSupply.set(0, 1000000);
+  totalSupply.set(1, 1000000);
   const storageData = {
     ...fromStateToBaseStorage(info),
-    //TODO: CHANGE THIS
-    totalSupply: "BLA",
+    totalSupply,
   };
 
   return storageData;

@@ -1,20 +1,13 @@
 import React from "react";
-import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { NewProposalDialog } from "./NewProposalDialog";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
-  height: 184,
-  paddingLeft: "6%",
-  paddingRight: "6%",
-  paddingTop: "4%",
+  height: 104,
   boxSizing: "border-box",
-}));
-
-const StyledButton = styled(withTheme(Button))((props) => ({
-  height: 53,
-  color: props.theme.palette.text.secondary,
-  borderColor: props.theme.palette.secondary.main,
-  minWidth: 171,
+  display: "flex",
+  alignItems: "center",
 }));
 
 const JustifyEndGrid = styled(Grid)({
@@ -23,8 +16,7 @@ const JustifyEndGrid = styled(Grid)({
 
 export const Header: React.FC<{
   name: string;
-  buttonLabel: string;
-}> = ({ name, buttonLabel }) => {
+}> = ({ name }) => {
   return (
     <StyledContainer container direction="row">
       <Grid item xs={6}>
@@ -36,7 +28,7 @@ export const Header: React.FC<{
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>
-        <StyledButton variant="outlined">{buttonLabel}</StyledButton>
+        <NewProposalDialog />
       </JustifyEndGrid>
     </StyledContainer>
   );

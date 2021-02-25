@@ -20,7 +20,7 @@ export const useOriginate = (template: DAOTemplate) => {
     current: string;
   }>({
     states: [],
-    current: "",
+    current: "Waiting for confirmation",
   });
 
   const { tezos, connect } = useTezos();
