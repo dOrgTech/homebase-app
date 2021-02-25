@@ -97,8 +97,8 @@ export const DAOsList: React.FC = () => {
     if (daos) {
       const formattedDAOs = daos.map((dao) => ({
         id: dao.address,
-        name: dao.unfrozenToken.name,
-        symbol: dao.unfrozenToken.symbol,
+        name: dao.metadata.unfrozenToken.name,
+        symbol: dao.metadata.unfrozenToken.symbol,
         voting_addresses: dao.ledger.length,
       }));
 

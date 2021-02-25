@@ -14,7 +14,6 @@ import {
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
-import { usePropose } from "services/contracts/baseDAO/hooks/usePropose";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useParams } from "react-router";
 import {
@@ -23,6 +22,8 @@ import {
 } from "services/contracts/baseDAO/treasuryDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { xtzToMutez } from "services/contracts/utils";
+import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
+import { TreasuryDAO } from "services/contracts/baseDAO/classes";
 
 const StyledButton = styled(withTheme(Button))((props) => ({
   height: 53,
@@ -151,9 +152,10 @@ export const NewProposalDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const [proposalFee, setProposalFee] = useState(0);
-  const { mutate } = usePropose();
+  const { mutate } = useTreasuryPropose();
   const { id } = useParams<{ id: string }>();
-  const { data: dao } = useDAO(id);
+  const { data: daoData } = useDAO(id);
+  const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
 
   const handleClickOpen = () => {
@@ -183,17 +185,21 @@ export const NewProposalDialog: React.FC = () => {
           tezos || (await connect())
         );
 
-        const tokensNeeded = getTokensToStakeInPropose(dao, proposalSize);
+        const tokensNeeded = getTokensToStakeInPropose(
+          {
+            frozenExtraValue: dao.storage.frozenExtraValue,
+            frozenScaleValue: dao.storage.frozenScaleValue,
+          },
+          proposalSize
+        );
 
         setProposalFee(tokensNeeded);
 
         mutate({
-          contractAddress: dao.address,
-          contractParams: {
-            transfers,
-            tokensToFreeze: tokensNeeded,
-            agoraPostId: values.agoraPostId,
-          },
+          dao,
+          transfers,
+          tokensToFreeze: tokensNeeded,
+          agoraPostId: values.agoraPostId,
         });
 
         setOpen(false);
@@ -358,8 +364,8 @@ export const NewProposalDialog: React.FC = () => {
                                     InputProps={{
                                       inputProps: {
                                         step: 0.01,
-                                        min: dao.minXtzAmount,
-                                        max: dao.maxXtzAmount,
+                                        min: dao.storage.minXtzAmount,
+                                        max: dao.storage.maxXtzAmount,
                                       },
                                     }}
                                   />
@@ -441,7 +447,8 @@ export const NewProposalDialog: React.FC = () => {
                             variant="subtitle1"
                             color="secondary"
                           >
-                            {proposalFee} {dao ? dao.unfrozenToken.symbol : ""}
+                            {proposalFee}{" "}
+                            {dao ? dao.metadata.unfrozenToken.symbol : ""}
                           </Typography>
                         </Grid>
                       </ListItem>

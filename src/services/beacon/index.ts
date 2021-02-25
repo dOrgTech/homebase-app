@@ -14,6 +14,14 @@ export const explorerUrls: Record<Network, string> = {
   mainnet: "https://api.tzkt.io/",
 };
 
+const networkNameMap = {
+  edo2net: "edo2net",
+  delphinet: "delphinet",
+  mainnet: "mainnet",
+  custom: "edo2net",
+  edonet: "edo2net",
+} as const;
+
 export const connectWithBeacon = async (): Promise<{
   wallet: BeaconWallet;
   network: Network;
@@ -26,8 +34,11 @@ export const connectWithBeacon = async (): Promise<{
         PERMISSION_REQUEST_SUCCESS: {
           handler: (data) => {
             console.log("permission data:", data);
-            const network = data.account.network.type as keyof typeof rpcNodes;
-            resolve({ wallet, network });
+            const network = data.account.network.type;
+            resolve({
+              wallet,
+              network: networkNameMap[network],
+            });
           },
         },
         PERMISSION_REQUEST_ERROR: {
