@@ -26,7 +26,7 @@ const Cursor = styled(Typography)({
 
 export const TreasuryHistoryRow: React.FC<any> = ({
   name,
-  balance,
+  amount,
   recipient,
   date,
 }) => {
@@ -65,7 +65,7 @@ export const TreasuryHistoryRow: React.FC<any> = ({
       </Grid>
       <Grid item xs={1}>
         <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {balance}
+          {amount}
         </Cursor>
       </Grid>
     </Container>

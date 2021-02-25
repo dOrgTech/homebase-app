@@ -36,7 +36,7 @@ const Cursor = styled(Typography)({
   textTransform: "uppercase",
 });
 
-export const TreasuryTableRow: React.FC<TokenHolder> = ({ name, balance }) => {
+export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
   return (
     <Container
       container

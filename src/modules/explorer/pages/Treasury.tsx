@@ -1,18 +1,14 @@
-import {
-  Box,
-  Grid,
-  IconButton,
-  styled,
-  Typography,
-  withTheme,
-} from "@material-ui/core";
-import React from "react";
+import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { Header } from "modules/explorer/components/Header";
 import { TreasuryTableRow } from "modules/explorer/components/TreasuryTableRow";
 import { TreasuryHistoryRow } from "modules/explorer/components/TreasuryHistoryRow";
 import { SideBar } from "modules/explorer/components/SideBar";
+import { useBalance } from "modules/common/hooks/useBalance";
+import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
+import { TransactionInfo } from "services/tzkt/types";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -27,11 +23,6 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
   minHeight: "calc(100vh - 102px)",
 }));
-
-const SidebarButton = styled(IconButton)({
-  paddingTop: 32,
-  width: "100%",
-});
 
 const MainContainer = styled(Grid)({
   minHeight: 125,
@@ -87,30 +78,51 @@ const UnderlineText = styled(Typography)({
   marginBottom: 28,
 });
 
+export const SUPPORTED_TOKENS = ["XTZ"];
+
+interface BalanceInfo {
+  name: string;
+  balance?: number;
+}
+
 export const Treasury: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
   }>();
-  const tokenBalances = [
-    { name: "token name", balance: 4322, address: "" },
-    { name: "token name", balance: 4322, address: "" },
-  ];
 
-  const history = [
-    {
-      date: "2021-02-18T19:01:28Z",
-      name: "token name",
-      recipient: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-      balance: 1622,
-    },
-    {
-      date: "2021-02-17T19:01:28Z",
-      name: "token name",
-      recipient: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-      balance: 5712,
-    },
-  ];
+  const [tokenBalances, setTokenBalances] = useState<BalanceInfo[]>([]);
+  const [treasuryMovements, setTreasuryMovements] = useState<TransactionInfo[]>(
+    []
+  );
+
+  const getBalance = useBalance();
+  const transactions = useTreasuryInfo(id);
+  console.log(transactions);
+
+  useEffect(() => {
+    if (transactions.status === "success") {
+      setTreasuryMovements(transactions.data);
+    }
+  }, [transactions]);
+
+  useEffect(() => {
+    (async () => {
+      const allBalances = SUPPORTED_TOKENS.map((token) =>
+        getBalance(id, token)
+      );
+      const balances = await Promise.all(allBalances);
+      const tokensInformation = SUPPORTED_TOKENS.map((token, index) => {
+        return {
+          name: token,
+          balance: balances[index],
+        };
+      });
+
+      setTokenBalances(tokensInformation);
+    })();
+  }, [SUPPORTED_TOKENS]);
+
   return (
     <PageLayout container wrap="nowrap">
       <SideBar dao={id} />
@@ -140,24 +152,14 @@ export const Treasury: React.FC = () => {
             </Grid>
           </TableHeader>
 
-          {tokenBalances.length > 0 &&
-            tokenBalances.map((token, i) => (
-              <ListItemContainer key={`token-${i}`}>
-                <TreasuryTableRow {...token} />
-              </ListItemContainer>
-            ))}
-
-          {tokenBalances.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No active proposals
-            </NoProposals>
-          ) : null}
+          {tokenBalances.length
+            ? tokenBalances.map((token, i) => (
+                <ListItemContainer key={`token-${i}`}>
+                  <TreasuryTableRow {...token} />
+                </ListItemContainer>
+              ))
+            : null}
         </TableContainer>
-        <Grid container direction="row" justify="center">
-          <UnderlineText variant="subtitle1" color="textSecondary">
-            LOAD 10 MORE
-          </UnderlineText>
-        </Grid>
 
         <TableContainer>
           <TableHeader container wrap="nowrap">
@@ -187,8 +189,8 @@ export const Treasury: React.FC = () => {
             </Grid>
           </TableHeader>
 
-          {history.length > 0 &&
-            history.map((token, i) => (
+          {treasuryMovements.length &&
+            treasuryMovements.map((token, i) => (
               <ListItemContainer key={`token-${i}`}>
                 <TreasuryHistoryRow {...token} />
               </ListItemContainer>
@@ -200,11 +202,6 @@ export const Treasury: React.FC = () => {
             </NoProposals>
           ) : null}
         </TableContainer>
-        <Grid container direction="row" justify="center">
-          <UnderlineText variant="subtitle1" color="textSecondary">
-            LOAD 10 MORE
-          </UnderlineText>
-        </Grid>
       </Grid>
     </PageLayout>
   );
