@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { useInfiniteQuery, useQuery } from "react-query";
 
-import { getDAOs } from "services/contracts/baseDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { getContractsAddresses } from "services/pinata";
-import { DAOItem } from "services/contracts/baseDAO/types";
+import { BaseDAO } from "../classes";
 
 const PAGE_SIZE = 6;
 
@@ -19,14 +18,14 @@ export const useDAOs = () => {
 
   const daosAddresses = addresses || [];
 
-  const result = useInfiniteQuery<DAOItem[], Error>(
+  const result = useInfiniteQuery<BaseDAO[], Error>(
     ["daos", addresses],
     async ({ pageParam = 0 }) => {
       const addressesToFetch = daosAddresses.slice(
         pageParam,
         pageParam + PAGE_SIZE
       );
-      return await getDAOs(addressesToFetch, tezos, network);
+      return await BaseDAO.getDAOs(addressesToFetch, tezos, network);
     },
     {
       enabled: !!daosAddresses.length && !!tezos,
@@ -44,6 +43,8 @@ export const useDAOs = () => {
       connect();
     }
   }, [connect, tezos]);
+
+  console.log(result.error || addressesError);
 
   return {
     ...result,

@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 const StyledButton = styled(Button)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -95,6 +96,7 @@ export const VoteDialog: React.FC = () => {
   }>();
 
   const { data: proposal } = useProposal(daoId, proposalId);
+  const { data: dao } = useDAO(daoId);
 
   const { mutate } = useVote();
 
@@ -108,14 +110,16 @@ export const VoteDialog: React.FC = () => {
   };
 
   const onSubmit = () => {
-    mutate({
-      proposalKey: proposalId,
-      contractAddress: daoId,
-      amount,
-      support,
-    });
+    if (dao) {
+      mutate({
+        proposalKey: proposalId,
+        dao,
+        amount,
+        support,
+      });
 
-    handleClose();
+      handleClose();
+    }
   };
 
   return (

@@ -1,4 +1,3 @@
-import { deployDAO } from "services/contracts/baseDAO";
 import { OriginateParams } from "../types";
 import { DAOTemplate } from "../../../../modules/creator/state/types";
 import { useState } from "react";
@@ -12,6 +11,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { deployMetadataCarrier } from "services/contracts/baseDAO/metadataCarrier/deploy";
 import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { BaseDAO } from "../classes";
 
 export const useOriginate = (template: DAOTemplate) => {
   const queryClient = useQueryClient();
@@ -59,8 +59,7 @@ export const useOriginate = (template: DAOTemplate) => {
         current: `Deploying ${template} DAO Contract`,
       });
 
-      const contract = await deployDAO({
-        template,
+      const contract = await BaseDAO.baseDeploy(template, {
         tezos,
         metadata,
         params,

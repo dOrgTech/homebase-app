@@ -154,11 +154,11 @@ export const DAO: React.FC = () => {
   const { data: members } = useTokenHoldersWithVotes(id);
   const { mutate } = useFlush();
 
-  const name = data && data.unfrozenToken.name;
-  const description = data && data.description;
-  const symbol = data && data.unfrozenToken.symbol.toUpperCase();
+  const name = data && data.metadata.unfrozenToken.name;
+  const description = data && data.metadata.description;
+  const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
 
-  const votingPeriod = data && data.votingPeriod;
+  const votingPeriod = data && data.storage.votingPeriod;
   const originationTime = data && data.originationTime;
   const cycleInfo = useCycleInfo(originationTime, votingPeriod);
   const time = cycleInfo && cycleInfo.time;
@@ -216,10 +216,10 @@ export const DAO: React.FC = () => {
   const onFlush = () => {
     // @TODO: we need to add an atribute to the proposals
     // type in order to know if it was flushed or not
-    if (proposalsData && proposalsData.length) {
+    if (proposalsData && proposalsData.length && data) {
       mutate({
-        contractAddress: data ? data.address : "",
-        numerOfProposalsToFlush: proposalsData.length + 1,
+        dao: data,
+        numOfProposalsToFlush: proposalsData.length + 1,
       });
       return;
     }
@@ -252,11 +252,11 @@ export const DAO: React.FC = () => {
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
       .map((proposal) =>
         mapProposalData(
-          { ...proposal, quorumTreshold: data?.quorumTreshold || 0 },
+          { ...proposal, quorumTreshold: data?.storage.quorumTreshold || 0 },
           data?.address
         )
       );
-  }, [proposalsData, finished, data?.quorumTreshold, data?.address]);
+  }, [proposalsData, finished, data?.storage.quorumTreshold, data?.address]);
 
   const checkpoints = [
     {

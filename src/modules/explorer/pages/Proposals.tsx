@@ -108,8 +108,8 @@ export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
 
-  const name = dao && dao.unfrozenToken.name;
-  const symbol = dao && dao.unfrozenToken.symbol.toUpperCase();
+  const name = dao && dao.metadata.unfrozenToken.name;
+  const symbol = dao && dao.metadata.unfrozenToken.symbol.toUpperCase();
   const amountLocked = useMemo(() => {
     if (!dao) {
       return 0;
@@ -164,11 +164,11 @@ export const Proposals: React.FC = () => {
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
       .map((proposal) =>
         mapProposalData(
-          { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+          { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
           dao?.address
         )
       );
-  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
+  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
   const passedProposals = useMemo<ProposalTableRowData[]>(() => {
     if (!proposalsData) {
@@ -179,11 +179,11 @@ export const Proposals: React.FC = () => {
       .filter((proposalData) => proposalData.status === ProposalStatus.PASSED)
       .map((proposal) =>
         mapProposalData(
-          { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+          { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
           dao?.address
         )
       );
-  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
+  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
   const allProposals = useMemo(() => {
     if (!proposalsData) {
@@ -192,11 +192,11 @@ export const Proposals: React.FC = () => {
 
     return proposalsData.map((proposal) =>
       mapProposalData(
-        { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+        { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
         dao?.address
       )
     );
-  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
+  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
   return (
     <>

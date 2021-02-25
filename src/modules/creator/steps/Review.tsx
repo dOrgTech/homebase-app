@@ -112,12 +112,14 @@ export const Review: React.FC = () => {
         unfrozenToken,
         description: info.orgSettings.description,
         authors: [info.memberSettings.administrator],
+        template: state.data.template,
       },
     }),
     [
       frozenToken,
       info.memberSettings.administrator,
       info.orgSettings.description,
+      state.data.template,
       unfrozenToken,
     ]
   );

@@ -114,7 +114,9 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
 
     return {
       votesSum,
-      votesQuorumPercentage: dao ? (votes / dao?.quorumTreshold) * 100 : 0,
+      votesQuorumPercentage: dao
+        ? (votes / dao.storage.quorumTreshold) * 100
+        : 0,
       votesSumPercentage: votes / votesSum,
       votesAmount: votes,
     };
