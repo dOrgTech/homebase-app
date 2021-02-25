@@ -65,6 +65,7 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
 
 const ProgressContainer = styled(Grid)({
   borderRight: "2px solid #3D3D3D",
+  display: "grid",
 });
 
 const LogoText = styled(Typography)({

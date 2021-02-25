@@ -189,7 +189,7 @@ export const Voting: React.FC = () => {
   return (
     <>
       <PageLayout container wrap="nowrap">
-        <SideBar />
+        <SideBar dao={daoId} />
         <Grid item xs>
           <MainContainer>
             <Container container direction="row">
