@@ -201,7 +201,7 @@ export const Proposals: React.FC = () => {
   return (
     <>
       <PageLayout container wrap="nowrap">
-        <SideBar />
+        <SideBar dao={id} />
         <Grid item xs>
           <MainContainer>
             <StyledContainer container direction="row">
