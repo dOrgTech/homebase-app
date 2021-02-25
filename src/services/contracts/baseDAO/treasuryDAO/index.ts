@@ -3,7 +3,6 @@ import { Parser } from "@taquito/michel-codec";
 import { MichelsonV1Expression } from "@taquito/rpc";
 
 import { TreasuryParams } from "services/contracts/baseDAO/treasuryDAO/types";
-import { addNewContractToIPFS } from "services/pinata";
 import {
   MigrationParams,
   ProposeParams,
@@ -97,9 +96,6 @@ export const deployTreasuryDAO = async ({
     const operation = await t.send();
     console.log("Waiting for confirmation on Treasury DAO contract...", t);
     const c = await operation.contract();
-    console.log("Treasury DAO deployment completed", c);
-    console.log("Let's store the contract address in IPFS :-D");
-    await addNewContractToIPFS(c.address);
     return c;
   } catch (e) {
     console.log("error ", e);

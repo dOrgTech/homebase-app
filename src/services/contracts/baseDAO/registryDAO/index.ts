@@ -1,5 +1,4 @@
 import { TezosToolkit, MichelsonMap, Wallet } from "@taquito/taquito";
-import { addNewContractToIPFS } from "services/pinata";
 import {
   fromStateToBaseStorage,
   setMembersAllocation,
@@ -24,6 +23,7 @@ export const deployRegistryDAO = async ({
       maxProposalSize,
     },
     quorumTreshold,
+    totalSupply,
     votingPeriod,
   },
   metadataCarrierDeploymentData,
@@ -73,9 +73,6 @@ export const deployRegistryDAO = async ({
     const operation = await t.send();
     console.log("Waiting for confirmation on Registry DAO contract...", t);
     const c = await operation.contract();
-    console.log("Registry DAO deployment completed", c);
-    console.log("Let's store the contract address in IPFS :-D");
-    await addNewContractToIPFS(c.address);
     return c;
   } catch (e) {
     console.log("error ", e);
