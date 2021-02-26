@@ -142,9 +142,10 @@ export const Voting: React.FC = () => {
   const proposalCycle = proposal ? proposal.cycle : "-";
   const upVotes = proposal ? proposal.upVotes : 0;
   const downVotes = proposal ? proposal.downVotes : 0;
-  const daoName = dao ? dao.unfrozenToken.name : "";
-  const upVotesPercentage = dao && (upVotes * 100) / dao.quorumTreshold;
-  const downVotesPercentage = dao && (downVotes * 100) / dao.quorumTreshold;
+  const daoName = dao ? dao.metadata.unfrozenToken.name : "";
+  const upVotesPercentage = dao && (upVotes * 100) / dao.storage.quorumTreshold;
+  const downVotesPercentage =
+    dao && (downVotes * 100) / dao.storage.quorumTreshold;
 
   const history = useMemo(() => {
     if (!proposal) {

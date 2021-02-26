@@ -29,6 +29,7 @@ export const getDAOListMetadata = async (
     authors: metadata.metadata.authors || [],
     name: metadata.metadata.name || "",
     description: metadata.metadata.description || "",
+    template: (metadata.metadata as any).template,
     unfrozenToken: {
       symbol: bytes2Char(fa2Map.get("symbol") as string),
       name: bytes2Char(fa2Map.get("name") as string),

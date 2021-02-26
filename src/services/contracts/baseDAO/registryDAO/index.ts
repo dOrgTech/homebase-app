@@ -1,5 +1,4 @@
-import { TezosToolkit, MichelsonMap } from "@taquito/taquito";
-import { addNewContractToIPFS } from "services/pinata";
+import { TezosToolkit, MichelsonMap, Wallet } from "@taquito/taquito";
 import {
   fromStateToBaseStorage,
   setMembersAllocation,
@@ -7,7 +6,8 @@ import {
 } from "../utils";
 import { RegistryParams } from "./types";
 import code from "services/contracts/baseDAO/registryDAO/michelson/contract";
-import { Contract, MigrationParams } from "services/contracts/baseDAO/types";
+import { MigrationParams } from "services/contracts/baseDAO/types";
+import { ContractAbstraction } from "@taquito/taquito";
 
 export const deployRegistryDAO = async ({
   storage: {
@@ -28,7 +28,9 @@ export const deployRegistryDAO = async ({
   },
   metadataCarrierDeploymentData,
   tezos,
-}: RegistryParams & { tezos: TezosToolkit }): Promise<Contract> => {
+}: RegistryParams & { tezos: TezosToolkit }): Promise<
+  ContractAbstraction<Wallet>
+> => {
   if (!metadataCarrierDeploymentData.deployAddress) {
     throw new Error(
       "Error deploying Registry DAO: There's not address of metadata"
@@ -71,12 +73,10 @@ export const deployRegistryDAO = async ({
     const operation = await t.send();
     console.log("Waiting for confirmation on Registry DAO contract...", t);
     const c = await operation.contract();
-    console.log("Registry DAO deployment completed", c);
-    console.log("Let's store the contract address in IPFS :-D");
-    await addNewContractToIPFS(c.address);
     return c;
   } catch (e) {
     console.log("error ", e);
+    throw new Error("Error deploying Treasury DAO");
   }
 };
 

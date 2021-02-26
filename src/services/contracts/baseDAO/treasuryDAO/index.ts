@@ -1,12 +1,9 @@
-import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
+import { MichelsonMap, TezosToolkit, Wallet } from "@taquito/taquito";
 import { Parser } from "@taquito/michel-codec";
 import { MichelsonV1Expression } from "@taquito/rpc";
 
 import { TreasuryParams } from "services/contracts/baseDAO/treasuryDAO/types";
-import { addNewContractToIPFS } from "services/pinata";
 import {
-  Contract,
-  DAOItem,
   MigrationParams,
   ProposeParams,
 } from "services/contracts/baseDAO/types";
@@ -18,6 +15,7 @@ import {
   setMetadata,
 } from "../utils";
 import { xtzToMutez } from "services/contracts/utils";
+import { ContractAbstraction } from "@taquito/taquito";
 
 export const deployTreasuryDAO = async ({
   storage: {
@@ -37,7 +35,9 @@ export const deployTreasuryDAO = async ({
   },
   metadataCarrierDeploymentData,
   tezos,
-}: TreasuryParams & { tezos: TezosToolkit }): Promise<Contract> => {
+}: TreasuryParams & { tezos: TezosToolkit }): Promise<
+  ContractAbstraction<Wallet>
+> => {
   console.log({
     membersTokenAllocation,
     adminAddress,
@@ -96,12 +96,10 @@ export const deployTreasuryDAO = async ({
     const operation = await t.send();
     console.log("Waiting for confirmation on Treasury DAO contract...", t);
     const c = await operation.contract();
-    console.log("Treasury DAO deployment completed", c);
-    console.log("Let's store the contract address in IPFS :-D");
-    await addNewContractToIPFS(c.address);
     return c;
   } catch (e) {
     console.log("error ", e);
+    throw new Error("Error deploying Treasury DAO");
   }
 };
 
@@ -142,8 +140,13 @@ export const calculateProposalSize = async (
   return pack.packed.length / 2;
 };
 
-export const getTokensToStakeInPropose = (dao: DAOItem, proposalSize: number) =>
-  proposalSize * dao.frozenScaleValue + dao.frozenExtraValue;
+export const getTokensToStakeInPropose = (
+  {
+    frozenScaleValue,
+    frozenExtraValue,
+  }: { frozenScaleValue: number; frozenExtraValue: number },
+  proposalSize: number
+) => proposalSize * frozenScaleValue + frozenExtraValue;
 
 export const fromStateToTreasuryStorage = (
   info: MigrationParams

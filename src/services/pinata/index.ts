@@ -17,8 +17,6 @@ const pinContractsMetadata = async (): Promise<string | Error> => {
   };
 
   try {
-    console.log("Creating pin...");
-
     const response = await fetch(URL, {
       method: "POST",
       headers: {
@@ -79,12 +77,9 @@ export const addNewContractToIPFS = async (
 ): Promise<void | Error> => {
   try {
     const URL = "https://api.pinata.cloud/pinning/hashMetadata";
-
-    console.log("Checking if there's a pin already to map contract addresses");
     const pinnedContractMetadata = await getPinnedMetadata();
 
     if (pinnedContractMetadata) {
-      console.log("We have a pin! Let's add the new contract");
       const addresses = metadataToAddresses(pinnedContractMetadata);
 
       addresses.push(contractAddress);
@@ -102,12 +97,10 @@ export const addNewContractToIPFS = async (
           ...getAuthHeader(),
         },
       });
-      console.log("Content updated");
       return;
     }
-    console.log("There's no pin yet, lets create it :-)");
-    const hash = await pinContractsMetadata();
-    console.log("You pin hash is ", hash);
+
+    await pinContractsMetadata();
     await addNewContractToIPFS(contractAddress);
   } catch (e) {
     throw Error(`Error updating pin with new data: ${e.message}`);

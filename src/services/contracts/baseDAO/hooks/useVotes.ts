@@ -1,26 +1,19 @@
 import { Vote } from "./../../../bakingBad/operations/types";
-import { getProposalVotes } from "./../../../bakingBad/operations/index";
 import { useQuery } from "react-query";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { BaseDAO } from "../classes";
 
 export const useVotes = (
   proposalKey: string | undefined,
   contractAddress: string | undefined
 ) => {
-  const { network } = useTezos();
-  const { data: daoData } = useDAO(contractAddress);
+  const { data: dao } = useDAO(contractAddress);
 
   const result = useQuery<Vote[], Error>(
     ["votes", contractAddress, proposalKey],
-    () =>
-      getProposalVotes(
-        contractAddress as string,
-        network,
-        proposalKey as string
-      ),
+    () => (dao as BaseDAO).votes(proposalKey as string),
     {
-      enabled: !!daoData && !!proposalKey,
+      enabled: !!dao && !!proposalKey,
     }
   );
 

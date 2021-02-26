@@ -1,7 +1,13 @@
 import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 import React from "react";
 import { DAOCreate } from "modules/creator";
-import { DaoSettings, Governance, Review, Summary, TokenSettings } from "modules/creator/steps";
+import {
+  DaoSettings,
+  Governance,
+  Review,
+  Summary,
+  TokenSettings,
+} from "modules/creator/steps";
 
 export const DAOCreatorRouter = (): JSX.Element => {
   const match = useRouteMatch();
