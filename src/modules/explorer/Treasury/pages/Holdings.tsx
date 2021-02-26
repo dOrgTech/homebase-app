@@ -184,12 +184,13 @@ export const Holdings: React.FC = () => {
             </Grid>
           </TableHeader>
 
-          {treasuryMovements.length &&
-            treasuryMovements.map((token, i) => (
-              <ListItemContainer key={`token-${i}`}>
-                <TreasuryHistoryRow {...token} />
-              </ListItemContainer>
-            ))}
+          {treasuryMovements.length
+            ? treasuryMovements.map((token, i) => (
+                <ListItemContainer key={`token-${i}`}>
+                  <TreasuryHistoryRow {...token} />
+                </ListItemContainer>
+              ))
+            : null}
 
           {history.length === 0 ? (
             <NoProposals variant="subtitle1" color="textSecondary">
