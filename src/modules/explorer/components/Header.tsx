@@ -1,6 +1,6 @@
-import React from "react";
-import { Grid, styled, Typography, withTheme } from "@material-ui/core";
-import { NewProposalDialog } from "./NewProposalDialog";
+import React, { useState } from "react";
+import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { NewTreasuryProposalDialog } from "modules/explorer/Treasury";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -14,9 +14,18 @@ const JustifyEndGrid = styled(Grid)({
   textAlign: "end",
 });
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  height: 53,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+}));
+
 export const Header: React.FC<{
   name: string;
 }> = ({ name }) => {
+  const [open, setOpen] = useState(false);
+
   return (
     <StyledContainer container direction="row">
       <Grid item xs={6}>
@@ -28,7 +37,10 @@ export const Header: React.FC<{
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>
-        <NewProposalDialog />
+        <StyledButton variant="outlined" onClick={() => setOpen(true)}>
+          NEW PROPOSAL
+        </StyledButton>
+        <NewTreasuryProposalDialog open={open} setOpen={setOpen} />
       </JustifyEndGrid>
     </StyledContainer>
   );

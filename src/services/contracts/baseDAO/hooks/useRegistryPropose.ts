@@ -1,16 +1,16 @@
+import { RegistryDAO } from "..";
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
-import { Transfer } from "services/contracts/baseDAO/types";
-import { TreasuryDAO } from "..";
+import { RegistryItem } from "../registryDAO/types";
 
 interface Params {
-  dao: TreasuryDAO;
+  dao: RegistryDAO;
   tokensToFreeze: number;
   agoraPostId: number;
-  transfers: Transfer[];
+  items: RegistryItem[];
 }
 
-export const useTreasuryPropose = () => {
+export const useRegistryPropose = () => {
   const queryClient = useQueryClient();
 
   return useMutation<TransactionWalletOperation, Error, Params>(
@@ -19,7 +19,7 @@ export const useTreasuryPropose = () => {
         ...params,
         tokensToFreeze: params.tokensToFreeze,
         agoraPostId: params.agoraPostId,
-        transfers: params.transfers,
+        items: params.items,
       });
     },
     {

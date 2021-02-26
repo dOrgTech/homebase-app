@@ -2,13 +2,14 @@ import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { Header } from "modules/explorer/components/Header";
-import { TreasuryTableRow } from "modules/explorer/components/TreasuryTableRow";
-import { TreasuryHistoryRow } from "modules/explorer/components/TreasuryHistoryRow";
-import { SideBar } from "modules/explorer/components/SideBar";
 import { useBalance } from "modules/common/hooks/useBalance";
 import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
 import { TransactionInfo } from "services/tzkt/types";
+import { Header, SideBar } from "modules/explorer/components";
+import {
+  TreasuryTableRow,
+  TreasuryHistoryRow,
+} from "modules/explorer/Treasury";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -79,7 +80,7 @@ interface BalanceInfo {
   balance?: number;
 }
 
-export const Treasury: React.FC = () => {
+export const Holdings: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
@@ -183,12 +184,13 @@ export const Treasury: React.FC = () => {
             </Grid>
           </TableHeader>
 
-          {treasuryMovements.length &&
-            treasuryMovements.map((token, i) => (
-              <ListItemContainer key={`token-${i}`}>
-                <TreasuryHistoryRow {...token} />
-              </ListItemContainer>
-            ))}
+          {treasuryMovements.length
+            ? treasuryMovements.map((token, i) => (
+                <ListItemContainer key={`token-${i}`}>
+                  <TreasuryHistoryRow {...token} />
+                </ListItemContainer>
+              ))
+            : null}
 
           {history.length === 0 ? (
             <NoProposals variant="subtitle1" color="textSecondary">

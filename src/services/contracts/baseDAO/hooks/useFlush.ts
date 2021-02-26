@@ -1,6 +1,6 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation } from "react-query";
-import { BaseDAO } from "../classes";
+import { BaseDAO } from "..";
 
 export const useFlush = () => {
   return useMutation<

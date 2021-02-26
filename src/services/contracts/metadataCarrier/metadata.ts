@@ -1,5 +1,5 @@
 import { stringToHex } from "services/contracts/utils";
-import { MetadataParams } from "services/contracts/baseDAO/metadataCarrier/types";
+import { MetadataParams } from "services/contracts/metadataCarrier/types";
 
 export const setMetadataJSON = ({
   description,

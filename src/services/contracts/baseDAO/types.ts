@@ -7,7 +7,7 @@ import { Storage } from "services/bakingBad/storage/types";
 import {
   DAOListMetadata,
   MetadataCarrierParameters,
-} from "services/contracts/baseDAO/metadataCarrier/types";
+} from "services/contracts/metadataCarrier/types";
 
 export type Contract = ContractAbstraction<Wallet> | undefined;
 

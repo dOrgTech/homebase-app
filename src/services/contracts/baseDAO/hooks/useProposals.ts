@@ -1,7 +1,7 @@
 import { useQuery } from "react-query";
 import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { BaseDAO } from "../classes";
+import { BaseDAO } from "..";
 
 export const useProposals = (contractAddress: string | undefined) => {
   const { data: dao } = useDAO(contractAddress);

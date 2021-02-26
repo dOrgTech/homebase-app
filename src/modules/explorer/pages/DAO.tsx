@@ -18,16 +18,18 @@ import {
   ProposalTableRow,
   ProposalTableRowData,
 } from "modules/explorer/components/ProposalTableRow";
-import { TokenHoldersDialog } from "modules/explorer/components/TokenHoldersDialog";
+import {
+  TokenHoldersDialog,
+  TopHoldersTableRow,
+} from "modules/explorer/components/TokenHolders";
+import { SideBar } from "modules/explorer/components";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { TopHoldersTableRow } from "modules/explorer/components/TopHoldersTableRow";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { toShortAddress } from "services/contracts/utils";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-import { SideBar } from "../components/SideBar";
 
 const MainContainer = styled(Grid)({
   minHeight: 325,

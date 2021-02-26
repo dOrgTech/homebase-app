@@ -8,10 +8,10 @@ import {
 } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 
-import { deployMetadataCarrier } from "services/contracts/baseDAO/metadataCarrier/deploy";
+import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy";
 import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { BaseDAO } from "../classes";
+import { BaseDAO } from "..";
 
 export const useOriginate = (template: DAOTemplate) => {
   const queryClient = useQueryClient();

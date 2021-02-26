@@ -1,6 +1,6 @@
-import { MichelsonMap } from "@taquito/taquito";
-import { char2Bytes } from "@taquito/tzip16";
-import { MetadataCarrierDeploymentData } from "./metadataCarrier/types";
+import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
+import { char2Bytes, tzip16 } from "@taquito/tzip16";
+import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
 import {
   BaseStorageParams,
   MemberTokenAllocation,
@@ -69,4 +69,11 @@ export const fromStateToBaseStorage = (
   };
 
   return storageData;
+};
+
+export const getContract = async (
+  tezos: TezosToolkit,
+  contractAddress: string
+) => {
+  return await tezos.wallet.at(contractAddress, tzip16);
 };
