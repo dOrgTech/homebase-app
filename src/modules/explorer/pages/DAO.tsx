@@ -22,7 +22,7 @@ import {
   TokenHoldersDialog,
   TopHoldersTableRow,
 } from "modules/explorer/components/TokenHolders";
-import { SideBar } from "modules/explorer/components/common";
+import { SideBar } from "modules/explorer/components";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";

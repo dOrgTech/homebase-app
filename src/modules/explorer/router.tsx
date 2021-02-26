@@ -3,7 +3,7 @@ import React from "react";
 
 import { DAOsList } from "modules/explorer/pages/List";
 import { DAO } from "modules/explorer/pages/DAO";
-import { Treasury } from "modules/explorer/pages/Treasury";
+import { Holdings } from "modules/explorer/Treasury/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
 import { Voting } from "modules/explorer/pages/Voting";
 
@@ -24,7 +24,7 @@ export const DAOExplorerRouter = (): JSX.Element => {
         <Proposals />
       </Route>
       <Route path={`${match.url}/treasury/:id`}>
-        <Treasury />
+        <Holdings />
       </Route>
       <Redirect to={`${match.url}/daos`} />
     </Switch>

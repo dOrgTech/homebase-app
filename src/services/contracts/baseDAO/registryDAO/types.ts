@@ -5,6 +5,11 @@ export interface RegistryStorageParams extends BaseStorageParams {
   totalSupply: any;
 }
 
+export interface RegistryItem {
+  key: string;
+  newValue: string;
+}
+
 export interface RegistryParams {
   storage: RegistryStorageParams;
   metadataCarrierDeploymentData: MetadataCarrierDeploymentData;

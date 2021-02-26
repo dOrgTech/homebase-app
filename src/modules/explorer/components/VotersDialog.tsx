@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components/common";
+import { ProgressBar } from "modules/explorer/components";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";

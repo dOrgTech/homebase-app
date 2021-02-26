@@ -23,6 +23,7 @@ import { DAOListMetadata } from "../metadataCarrier/types";
 import { fromStateToRegistryStorage, deployRegistryDAO } from "../registryDAO";
 import { MigrationParams } from "../types";
 import { BaseConstructorParams, BaseDAO } from ".";
+import { RegistryItem } from "../registryDAO/types";
 
 interface RegistryConstructorParams extends BaseConstructorParams {
   storage: RegistryStorage;
@@ -163,5 +164,34 @@ export class RegistryDAO extends BaseDAO {
         status,
       };
     });
+  };
+
+  public propose = async ({
+    tokensToFreeze,
+    agoraPostId,
+    items,
+  }: {
+    tokensToFreeze: number;
+    agoraPostId: number;
+    items: RegistryItem[];
+  }) => {
+    const contract = await getContract(this.tezos, this.address);
+
+    const diff = items.map(({ key, newValue }) => ({
+      key,
+      new_value: newValue,
+    }));
+
+    console.log(contract.entrypoints.entrypoints);
+
+    const contractMethod = contract.methods.propose(
+      tokensToFreeze,
+      agoraPostId,
+      diff
+    );
+
+    const result = await contractMethod.send();
+
+    return result;
   };
 }

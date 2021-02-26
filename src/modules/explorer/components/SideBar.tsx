@@ -1,10 +1,11 @@
 import { Grid, styled, IconButton } from "@material-ui/core";
-import React from "react";
+import React, { useMemo } from "react";
 
 import { ReactComponent as HouseIcon } from "assets/logos/house.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { useHistory, useLocation } from "react-router-dom";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 const Bar = styled(Grid)({
   width: 102,
@@ -37,29 +38,45 @@ const ButtonIcon = ({
   );
 };
 
-export const SideBar: React.FC<SideBarParams> = ({ dao }: SideBarParams) => {
+export const SideBar: React.FC<SideBarParams> = ({
+  dao: daoId,
+}: SideBarParams) => {
   const history = useHistory();
   const { pathname } = useLocation();
+  const { data: dao } = useDAO(daoId);
 
-  const SIDE_BAR_ICONS = [
-    {
-      Icon: HouseIcon,
-      handler: () => history.push("/explorer/dao/" + dao),
-      name: "dao",
-    },
-    {
-      Icon: VotingIcon,
-      handler: () => history.push("/explorer/proposals/" + dao),
-      name: "proposals",
-    },
-    {
-      Icon: TreasuryIcon,
-      handler: () => history.push("/explorer/treasury/" + dao),
-      name: "treasury",
-    },
-  ];
+  const SIDE_BAR_ICONS = useMemo(() => {
+    if (!dao) {
+      return [];
+    }
 
-  // const goToProposal = () => {};
+    const commonButons = [
+      {
+        Icon: HouseIcon,
+        handler: () => history.push("/explorer/dao/" + daoId),
+        name: "dao",
+      },
+      {
+        Icon: VotingIcon,
+        handler: () => history.push("/explorer/proposals/" + daoId),
+        name: "proposals",
+      },
+    ];
+
+    switch (dao.metadata.template) {
+      case "treasury":
+        return [
+          ...commonButons,
+          {
+            Icon: TreasuryIcon,
+            handler: () => history.push("/explorer/treasury/" + daoId),
+            name: "treasury",
+          },
+        ];
+      case "registry":
+        return [...commonButons];
+    }
+  }, [dao, daoId, history]);
 
   return (
     <Bar item>

@@ -5,21 +5,20 @@ import {
   Typography,
   LinearProgress,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-
-import { NewTreasuryProposalDialog } from "modules/explorer/components/Treasury";
 import {
   ProposalTableRowData,
   ProposalTableRow,
   mapProposalData,
 } from "modules/explorer/components/ProposalTableRow";
-import { SideBar } from "modules/explorer/components/common";
+import { SideBar } from "modules/explorer/components";
 import { TokenHoldersDialog } from "modules/explorer/components/TokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { NewRegistryProposalDialog } from "../components/Registry";
+import { NewRegistryProposalDialog } from "../Registry";
+import { Button } from "@material-ui/core";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -105,9 +104,17 @@ const ProposalTableHeadText = styled(Typography)({
   fontWeight: "bold",
 });
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  height: 53,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+}));
+
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
+  const [open, setOpen] = useState(false);
 
   const name = dao && dao.metadata.unfrozenToken.name;
   const symbol = dao && dao.metadata.unfrozenToken.symbol.toUpperCase();
@@ -215,8 +222,14 @@ export const Proposals: React.FC = () => {
                 </Typography>
               </Grid>
               <JustifyEndGrid item xs={6}>
-                {/* <NewTreasuryProposalDialog /> */}
-                <NewRegistryProposalDialog />
+                <StyledButton
+                  variant="outlined"
+                  onClick={() => setOpen(true)}
+                  disabled={!dao}
+                >
+                  NEW PROPOSAL
+                </StyledButton>
+                <NewRegistryProposalDialog open={open} setOpen={setOpen} />
               </JustifyEndGrid>
             </StyledContainer>
           </MainContainer>

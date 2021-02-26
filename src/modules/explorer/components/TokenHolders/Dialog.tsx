@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components/common";
+import { ProgressBar } from "modules/explorer/components";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 
 interface TokenHolderDialogData {

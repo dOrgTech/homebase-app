@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import dayjs from "dayjs";
 
-import { SideBar, ProgressBar } from "modules/explorer/components/common";
+import { SideBar, ProgressBar } from "modules/explorer/components";
 import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";

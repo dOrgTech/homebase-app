@@ -5,11 +5,11 @@ import { useParams } from "react-router-dom";
 import { useBalance } from "modules/common/hooks/useBalance";
 import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
 import { TransactionInfo } from "services/tzkt/types";
-import { Header, SideBar } from "modules/explorer/components/common";
+import { Header, SideBar } from "modules/explorer/components";
 import {
   TreasuryTableRow,
   TreasuryHistoryRow,
-} from "modules/explorer/components/Treasury";
+} from "modules/explorer/Treasury";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -80,7 +80,7 @@ interface BalanceInfo {
   balance?: number;
 }
 
-export const Treasury: React.FC = () => {
+export const Holdings: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;

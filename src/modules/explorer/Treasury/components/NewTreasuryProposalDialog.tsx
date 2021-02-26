@@ -4,7 +4,6 @@ import {
   styled,
   Switch,
   Typography,
-  withTheme,
   Paper,
   DialogTitle,
   DialogContent,
@@ -24,13 +23,6 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { xtzToMutez } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { TreasuryDAO } from "services/contracts/baseDAO/classes";
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  height: 53,
-  color: theme.palette.text.secondary,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-}));
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -147,8 +139,10 @@ const INITIAL_FORM_VALUES: Values = {
   agoraPostId: 0,
 };
 
-export const NewTreasuryProposalDialog: React.FC = () => {
-  const [open, setOpen] = React.useState(false);
+export const NewTreasuryProposalDialog: React.FC<{
+  open: boolean;
+  setOpen: (value: boolean) => void;
+}> = ({ open, setOpen }) => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const [proposalFee, setProposalFee] = useState(0);
@@ -157,10 +151,6 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const { data: daoData } = useDAO(id);
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -205,18 +195,11 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         setOpen(false);
       }
     },
-    [connect, dao, mutate, tezos]
+    [connect, dao, mutate, setOpen, tezos]
   );
 
   return (
-    <div>
-      <StyledButton
-        variant="outlined"
-        onClick={handleClickOpen}
-        disabled={!dao}
-      >
-        NEW PROPOSAL
-      </StyledButton>
+    <>
       {dao && (
         <Dialog
           open={open}
@@ -468,6 +451,6 @@ export const NewTreasuryProposalDialog: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
-    </div>
+    </>
   );
 };
