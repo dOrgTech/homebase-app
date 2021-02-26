@@ -5,7 +5,7 @@ import {
   Wallet,
 } from "@taquito/taquito";
 import { bytes2Char, Tzip16ContractAbstraction } from "@taquito/tzip16";
-import { DAOListMetadata } from "services/contracts/baseDAO/metadataCarrier/types";
+import { DAOListMetadata } from "services/contracts/metadataCarrier/types";
 
 export const getDAOListMetadata = async (
   contract: ContractAbstraction<Wallet> & {

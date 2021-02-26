@@ -1,4 +1,4 @@
-import { RegistryDAO } from "./../classes";
+import { RegistryDAO } from "..";
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 import { RegistryItem } from "../registryDAO/types";

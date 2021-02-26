@@ -1,7 +1,7 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 import { Transfer } from "services/contracts/baseDAO/types";
-import { TreasuryDAO } from "../classes";
+import { TreasuryDAO } from "..";
 
 interface Params {
   dao: TreasuryDAO;

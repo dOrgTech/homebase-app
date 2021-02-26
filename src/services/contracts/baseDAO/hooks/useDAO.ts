@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useQuery, useQueryClient } from "react-query";
 
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { BaseDAO } from "../classes";
+import { BaseDAO } from "..";
 
 export const useDAO = (address: string | undefined) => {
   const { tezos, connect, network } = useTezos();

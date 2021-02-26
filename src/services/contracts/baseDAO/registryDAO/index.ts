@@ -1,95 +1,196 @@
-import { TezosToolkit, MichelsonMap, Wallet } from "@taquito/taquito";
 import {
-  fromStateToBaseStorage,
-  setMembersAllocation,
-  setMetadata,
-} from "../utils";
-import { RegistryParams } from "./types";
-import code from "services/contracts/baseDAO/registryDAO/michelson/contract";
-import { MigrationParams } from "services/contracts/baseDAO/types";
-import { ContractAbstraction } from "@taquito/taquito";
+  TezosToolkit,
+  ContractAbstraction,
+  Wallet,
+  ContractProvider,
+} from "@taquito/taquito";
+import { Tzip16ContractAbstraction } from "@taquito/tzip16";
+import dayjs from "dayjs";
+import { getLedgerAddresses } from "services/bakingBad/ledger";
+import { getOriginationTime } from "services/bakingBad/operations";
+import { getProposals } from "services/bakingBad/proposals";
+import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { getStorage } from "services/bakingBad/storage";
+import {
+  RegistryStorage,
+  RegistryStorageDTO,
+} from "services/bakingBad/storage/types";
+import { Network } from "services/beacon/context";
+import { getContract } from "..";
+import { getDAOListMetadata } from "../../metadataCarrier";
+import { MetadataDeploymentResult } from "../../metadataCarrier/deploy";
+import { DAOListMetadata } from "../../metadataCarrier/types";
+import { fromStateToRegistryStorage, deployRegistryDAO } from "./service";
+import { MigrationParams } from "../types";
+import { BaseConstructorParams, BaseDAO } from "..";
+import { RegistryItem } from "./types";
 
-export const deployRegistryDAO = async ({
-  storage: {
-    membersTokenAllocation,
-    adminAddress,
-    extra: {
-      frozenScaleValue,
-      frozenExtraValue,
-      slashScaleValue,
-      slashDivisionValue,
-      minXtzAmount,
-      maxXtzAmount,
-      maxProposalSize,
-    },
-    quorumTreshold,
-    totalSupply,
-    votingPeriod,
-  },
-  metadataCarrierDeploymentData,
-  tezos,
-}: RegistryParams & { tezos: TezosToolkit }): Promise<
-  ContractAbstraction<Wallet>
-> => {
-  if (!metadataCarrierDeploymentData.deployAddress) {
-    throw new Error(
-      "Error deploying Registry DAO: There's not address of metadata"
-    );
+interface RegistryConstructorParams extends BaseConstructorParams {
+  storage: RegistryStorage;
+}
+
+export interface RegistryDeployParams {
+  params: MigrationParams;
+  metadata: MetadataDeploymentResult;
+  tezos: TezosToolkit;
+}
+
+export class RegistryDAO extends BaseDAO {
+  protected constructor(params: RegistryConstructorParams) {
+    super(params);
+
+    this.storage = params.storage;
   }
-  const ledger = setMembersAllocation(membersTokenAllocation);
-  const metadata = setMetadata(metadataCarrierDeploymentData);
 
-  try {
-    console.log("Originating Registry DAO contract...");
+  private static storageMapper = (dto: RegistryStorageDTO): RegistryStorage => {
+    try {
+      const result = {
+        ledgerMapNumber: dto.children[0].value,
+        votingPeriod: Number(dto.children[6].value),
+        quorumTreshold: Number(dto.children[7].value),
+        registry: dto.children[8].children[0].value,
+        frozenScaleValue: Number(dto.children[8].children[1].value),
+        frozenExtraValue: Number(dto.children[8].children[2].value),
+        slashScaleValue: Number(dto.children[8].children[3].value),
+        slashDivisionValue: Number(dto.children[8].children[4].value),
+        minXtzAmount: dto.children[8].children[4].value,
+        maxXtzAmount: dto.children[8].children[5].value,
+        maxProposalSize: Number(dto.children[8].children[5].value),
+        proposalsMapNumber: dto.children[9].value,
+      };
 
-    const t = await tezos.wallet.originate({
-      code,
-      storage: {
-        ledger,
-        operators: new MichelsonMap(),
-        token_address: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-        admin: adminAddress,
-        pending_owner: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-        migration_status: { notInMigration: "Unit" },
-        voting_period: votingPeriod,
-        quorum_threshold: quorumTreshold,
-        extra: {
-          frozen_scale_value: frozenScaleValue,
-          frozen_extra_value: frozenExtraValue,
-          slash_scale_value: slashScaleValue,
-          slash_division_value: slashDivisionValue,
-          min_xtz_amount: minXtzAmount,
-          max_xtz_amount: maxXtzAmount,
-          max_proposal_size: maxProposalSize,
-          registry: new MichelsonMap(),
-        },
-        proposals: new MichelsonMap(),
-        proposal_key_list_sort_by_date: [],
-        permits_counter: 0,
-        metadata,
-        total_supply: totalSupply,
-      },
-    });
-    const operation = await t.send();
-    console.log("Waiting for confirmation on Registry DAO contract...", t);
-    const c = await operation.contract();
-    return c;
-  } catch (e) {
-    console.log("error ", e);
-    throw new Error("Error deploying Treasury DAO");
-  }
-};
-
-export const fromStateToRegistryStorage = (
-  info: MigrationParams
-): RegistryParams["storage"] => {
-  const totalSupply = new MichelsonMap();
-  totalSupply.set(0, 1000000);
-  totalSupply.set(1, 1000000);
-  const storageData = {
-    ...fromStateToBaseStorage(info),
-    totalSupply,
+      return result;
+    } catch (e) {
+      throw new Error(
+        `Storage mapping failed in RegistryDAO. Probably was wrongly instantiated? Error: ${e}`
+      );
+    }
   };
 
-  return storageData;
-};
+  public static deploy = async ({
+    params,
+    metadata,
+    tezos,
+  }: {
+    params: MigrationParams;
+    metadata: MetadataDeploymentResult;
+    tezos: TezosToolkit;
+  }) => {
+    const registryParams = fromStateToRegistryStorage(params);
+
+    return await deployRegistryDAO({
+      storage: registryParams,
+      metadataCarrierDeploymentData: metadata,
+      tezos,
+    });
+  };
+
+  public static create = async (
+    contractAddress: string,
+    network: Network,
+    tezos: TezosToolkit,
+    prefetched?: {
+      contract?: ContractAbstraction<Wallet> & {
+        tzip16(
+          this: ContractAbstraction<Wallet | ContractProvider>
+        ): Tzip16ContractAbstraction;
+      };
+      metadata?: DAOListMetadata;
+    }
+  ) => {
+    const contract =
+      (prefetched && prefetched.contract) ||
+      (await getContract(tezos, contractAddress));
+    const storageDTO = (await getStorage(
+      contractAddress,
+      network
+    )) as RegistryStorageDTO;
+    const storage = RegistryDAO.storageMapper(storageDTO);
+    const metadataToUse =
+      (prefetched && prefetched.metadata) ||
+      (await getDAOListMetadata(contract));
+    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
+    const originationTime = await getOriginationTime(contractAddress, network);
+    const cycle = Math.floor(
+      (dayjs().unix() - dayjs(originationTime).unix()) / storage.votingPeriod
+    );
+
+    return new RegistryDAO({
+      address: contractAddress,
+      ledger,
+      template: "registry",
+      cycle,
+      originationTime,
+      storage,
+      metadata: metadataToUse,
+      tezos,
+      network,
+    });
+  };
+
+  public fetchStorage = async (): Promise<RegistryStorage> => {
+    const storageDTO = await getStorage(this.address, this.network);
+    return RegistryDAO.storageMapper(storageDTO as RegistryStorageDTO);
+  };
+
+  public proposals = async () => {
+    const { proposalsMapNumber } = this.storage;
+    const proposals = await getProposals(proposalsMapNumber, this.network);
+
+    return proposals.map((proposal) => {
+      const { startDate, upVotes, downVotes } = proposal;
+
+      const exactCycle =
+        dayjs(startDate).unix() - dayjs(this.originationTime).unix();
+      const cycle = Math.floor(exactCycle / this.storage.votingPeriod);
+
+      //TODO: this business logic will change in the future
+
+      let status: ProposalStatus;
+
+      if (cycle === this.cycle) {
+        status = ProposalStatus.ACTIVE;
+      } else if (Number(upVotes) >= this.storage.quorumTreshold) {
+        status = ProposalStatus.PASSED;
+      } else if (Number(downVotes) >= this.storage.quorumTreshold) {
+        status = ProposalStatus.REJECTED;
+      } else {
+        status = ProposalStatus.DROPPED;
+      }
+
+      return {
+        ...proposal,
+        cycle,
+        status,
+      };
+    });
+  };
+
+  public propose = async ({
+    tokensToFreeze,
+    agoraPostId,
+    items,
+  }: {
+    tokensToFreeze: number;
+    agoraPostId: number;
+    items: RegistryItem[];
+  }) => {
+    const contract = await getContract(this.tezos, this.address);
+
+    const diff = items.map(({ key, newValue }) => ({
+      key,
+      new_value: newValue,
+    }));
+
+    console.log(contract.entrypoints.entrypoints);
+
+    const contractMethod = contract.methods.propose(tokensToFreeze, {
+      agora_post_id: agoraPostId,
+      diff,
+    });
+
+    const result = await contractMethod.send();
+
+    return result;
+  };
+}

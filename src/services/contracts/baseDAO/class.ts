@@ -1,11 +1,11 @@
-import { ProposalWithStatus } from "./../../../bakingBad/proposals/types";
+import { ProposalWithStatus } from "../../bakingBad/proposals/types";
 import { TezosToolkit, ContractAbstraction, Wallet } from "@taquito/taquito";
 import { DAOTemplate } from "modules/creator/state";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
 import { BaseStorage } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { getContract } from "..";
+import { getContract } from ".";
 import { getDAOListMetadata } from "../metadataCarrier";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import {

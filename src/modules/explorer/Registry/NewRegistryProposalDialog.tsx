@@ -13,7 +13,7 @@ import { char2Bytes } from "@taquito/tzip16";
 import { Formik, Form, Field } from "formik";
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { RegistryDAO } from "services/contracts/baseDAO/classes";
+import { RegistryDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 

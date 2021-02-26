@@ -1,123 +1,172 @@
-import { MichelsonMap, TezosToolkit, Wallet } from "@taquito/taquito";
-import { Parser } from "@taquito/michel-codec";
-import { MichelsonV1Expression } from "@taquito/rpc";
-
-import { TreasuryParams } from "services/contracts/baseDAO/treasuryDAO/types";
 import {
-  MigrationParams,
-  ProposeParams,
-} from "services/contracts/baseDAO/types";
-import code from "services/contracts/baseDAO/treasuryDAO/michelson/contract";
-import proposeMetadataCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
+  TezosToolkit,
+  ContractAbstraction,
+  Wallet,
+  ContractProvider,
+} from "@taquito/taquito";
+import { Tzip16ContractAbstraction } from "@taquito/tzip16";
+import dayjs from "dayjs";
+import { getLedgerAddresses } from "services/bakingBad/ledger";
+import { getOriginationTime } from "services/bakingBad/operations";
+import { getProposals } from "services/bakingBad/proposals";
+import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { getStorage } from "services/bakingBad/storage";
 import {
-  fromStateToBaseStorage,
-  setMembersAllocation,
-  setMetadata,
-} from "../utils";
-import { xtzToMutez } from "services/contracts/utils";
-import { ContractAbstraction } from "@taquito/taquito";
+  TreasuryStorageDTO,
+  TreasuryStorage,
+} from "services/bakingBad/storage/types";
+import { Network } from "services/beacon/context";
+import { getContract } from "..";
+import { getDAOListMetadata } from "../../metadataCarrier";
+import { MetadataDeploymentResult } from "../../metadataCarrier/deploy";
+import { DAOListMetadata } from "../../metadataCarrier/types";
+import { fromStateToTreasuryStorage, deployTreasuryDAO } from "./service";
+import { MigrationParams, Transfer } from "../types";
+import { BaseDAO } from "..";
 
-export const deployTreasuryDAO = async ({
-  storage: {
-    membersTokenAllocation,
-    adminAddress,
-    extra: {
-      frozenScaleValue,
-      frozenExtraValue,
-      slashScaleValue,
-      slashDivisionValue,
-      minXtzAmount,
-      maxXtzAmount,
-      maxProposalSize,
-    },
-    quorumTreshold,
-    votingPeriod,
-  },
-  metadataCarrierDeploymentData,
-  tezos,
-}: TreasuryParams & { tezos: TezosToolkit }): Promise<
-  ContractAbstraction<Wallet>
-> => {
-  console.log({
-    membersTokenAllocation,
-    adminAddress,
-    extra: {
-      frozenScaleValue,
-      frozenExtraValue,
-      slashScaleValue,
-      slashDivisionValue,
-      minXtzAmount,
-      maxXtzAmount,
-      maxProposalSize,
-    },
-    quorumTreshold,
-    votingPeriod,
-  });
-  if (!metadataCarrierDeploymentData.deployAddress) {
-    throw new Error(
-      "Error deploying treasury DAO: There's not address of metadata"
-    );
-  }
-  const ledger = setMembersAllocation(membersTokenAllocation);
-  const metadata = setMetadata(metadataCarrierDeploymentData);
+export interface TreasuryDeployParams {
+  params: MigrationParams;
+  metadata: MetadataDeploymentResult;
+  tezos: TezosToolkit;
+}
 
-  console.log(ledger, metadata);
+export class TreasuryDAO extends BaseDAO {
+  private static storageMapper = (dto: TreasuryStorageDTO): TreasuryStorage => {
+    try {
+      const result = {
+        ledgerMapNumber: dto.children[0].value,
+        votingPeriod: Number(dto.children[6].value),
+        quorumTreshold: Number(dto.children[7].value),
+        frozenScaleValue: Number(dto.children[8].children[0].value),
+        frozenExtraValue: Number(dto.children[8].children[1].value),
+        slashScaleValue: Number(dto.children[8].children[2].value),
+        slashDivisionValue: Number(dto.children[8].children[3].value),
+        minXtzAmount: dto.children[8].children[4].value,
+        maxXtzAmount: dto.children[8].children[5].value,
+        maxProposalSize: Number(dto.children[8].children[6].value),
+        proposalsMapNumber: dto.children[9].value,
+      };
 
-  try {
-    console.log("Originating Treasury DAO contract...");
-    console.log(votingPeriod);
+      return result;
+    } catch (e) {
+      throw new Error(
+        `Storage mapping failed in RegistryDAO. Probably was wrongly instantiated? Error: ${e}`
+      );
+    }
+  };
 
-    const t = await tezos.wallet.originate({
-      code,
-      storage: {
-        ledger,
-        operators: new MichelsonMap(),
-        token_address: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-        admin: adminAddress,
-        pending_owner: "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6",
-        migration_status: { notInMigration: "Unit" },
-        voting_period: votingPeriod,
-        quorum_threshold: quorumTreshold,
-        extra: {
-          frozen_scale_value: frozenScaleValue,
-          frozen_extra_value: frozenExtraValue,
-          slash_scale_value: slashScaleValue,
-          slash_division_value: slashDivisionValue,
-          min_xtz_amount: xtzToMutez(minXtzAmount.toString()),
-          max_xtz_amount: xtzToMutez(maxXtzAmount.toString()),
-          max_proposal_size: maxProposalSize,
-        },
-        proposals: new MichelsonMap(),
-        proposal_key_list_sort_by_date: [],
-        permits_counter: 0,
-        metadata,
-      },
+  public static deploy = async ({
+    params,
+    metadata,
+    tezos,
+  }: {
+    params: MigrationParams;
+    metadata: MetadataDeploymentResult;
+    tezos: TezosToolkit;
+  }) => {
+    const treasuryParams = fromStateToTreasuryStorage(params);
+
+    return await deployTreasuryDAO({
+      storage: treasuryParams,
+      metadataCarrierDeploymentData: metadata,
+      tezos,
     });
-    const operation = await t.send();
-    console.log("Waiting for confirmation on Treasury DAO contract...", t);
-    const c = await operation.contract();
-    return c;
-  } catch (e) {
-    console.log("error ", e);
-    throw new Error("Error deploying Treasury DAO");
-  }
-};
+  };
 
-export const calculateProposalSize = async (
-  contractAddress: string,
-  {
-    transfers,
+  public static create = async (
+    contractAddress: string,
+    network: Network,
+    tezos: TezosToolkit,
+    prefetched?: {
+      contract?: ContractAbstraction<Wallet> & {
+        tzip16(
+          this: ContractAbstraction<Wallet | ContractProvider>
+        ): Tzip16ContractAbstraction;
+      };
+      metadata?: DAOListMetadata;
+    }
+  ) => {
+    const contract =
+      (prefetched && prefetched.contract) ||
+      (await getContract(tezos, contractAddress));
+    const storageDTO = (await getStorage(
+      contractAddress,
+      network
+    )) as TreasuryStorageDTO;
+    const storage = TreasuryDAO.storageMapper(storageDTO);
+    const metadataToUse =
+      (prefetched && prefetched.metadata) ||
+      (await getDAOListMetadata(contract));
+    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
+    const originationTime = await getOriginationTime(contractAddress, network);
+    const cycle = Math.floor(
+      (dayjs().unix() - dayjs(originationTime).unix()) / storage.votingPeriod
+    );
+
+    return new TreasuryDAO({
+      address: contractAddress,
+      ledger,
+      template: "treasury",
+      cycle,
+      originationTime,
+      storage,
+      metadata: metadataToUse,
+      tezos,
+      network,
+    });
+  };
+
+  public fetchStorage = async (): Promise<TreasuryStorage> => {
+    const storageDTO = await getStorage(this.address, this.network);
+    return TreasuryDAO.storageMapper(storageDTO as TreasuryStorageDTO);
+  };
+
+  public proposals = async () => {
+    const { proposalsMapNumber } = this.storage;
+    const proposals = await getProposals(proposalsMapNumber, this.network);
+
+    return proposals.map((proposal) => {
+      const { startDate, upVotes, downVotes } = proposal;
+
+      const exactCycle =
+        dayjs(startDate).unix() - dayjs(this.originationTime).unix();
+      const cycle = Math.floor(exactCycle / this.storage.votingPeriod);
+
+      //TODO: this business logic will change in the future
+
+      let status: ProposalStatus;
+
+      if (cycle === this.cycle) {
+        status = ProposalStatus.ACTIVE;
+      } else if (Number(upVotes) >= this.storage.quorumTreshold) {
+        status = ProposalStatus.PASSED;
+      } else if (Number(downVotes) >= this.storage.quorumTreshold) {
+        status = ProposalStatus.REJECTED;
+      } else {
+        status = ProposalStatus.DROPPED;
+      }
+
+      return {
+        ...proposal,
+        cycle,
+        status,
+      };
+    });
+  };
+
+  public propose = async ({
+    tokensToFreeze,
     agoraPostId,
-  }: Omit<ProposeParams["contractParams"], "tokensToFreeze">,
-  tezos: TezosToolkit
-): Promise<number> => {
-  const contract = await tezos.wallet.at(contractAddress);
+    transfers,
+  }: {
+    tokensToFreeze: number;
+    agoraPostId: number;
+    transfers: Transfer[];
+  }) => {
+    const contract = await getContract(this.tezos, this.address);
 
-  const p = new Parser();
-
-  const { parameter } = contract.methods
-    .propose(
-      0,
+    const contractMethod = contract.methods.propose(
+      tokensToFreeze,
       agoraPostId,
       transfers.map(({ amount, recipient }) => ({
         transfer_type: {
@@ -125,33 +174,10 @@ export const calculateProposalSize = async (
           recipient,
         },
       }))
-    )
-    .toTransferParams();
-  const dataJSON = (parameter?.value as any).args[1];
+    );
 
-  const typeJSON = p.parseMichelineExpression(proposeMetadataCode);
-  delete (typeJSON as any).annots;
+    const result = await contractMethod.send();
 
-  const pack = await tezos.rpc.packData({
-    data: dataJSON as MichelsonV1Expression,
-    type: typeJSON as MichelsonV1Expression,
-  });
-
-  return pack.packed.length / 2;
-};
-
-export const getTokensToStakeInPropose = (
-  {
-    frozenScaleValue,
-    frozenExtraValue,
-  }: { frozenScaleValue: number; frozenExtraValue: number },
-  proposalSize: number
-) => proposalSize * frozenScaleValue + frozenExtraValue;
-
-export const fromStateToTreasuryStorage = (
-  info: MigrationParams
-): TreasuryParams["storage"] => {
-  const storageData = fromStateToBaseStorage(info);
-
-  return storageData;
-};
+    return result;
+  };
+}

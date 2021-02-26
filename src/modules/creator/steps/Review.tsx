@@ -22,7 +22,7 @@ import {
   CreatorContext,
   ActionTypes,
 } from "modules/creator/state";
-import { MetadataCarrierParameters } from "services/contracts/baseDAO/metadataCarrier/types";
+import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
 import { MigrationParams } from "services/contracts/baseDAO/types";
 
 const RocketImg = styled("img")({

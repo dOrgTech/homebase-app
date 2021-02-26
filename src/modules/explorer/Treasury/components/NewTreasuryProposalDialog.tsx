@@ -18,11 +18,11 @@ import { useParams } from "react-router";
 import {
   calculateProposalSize,
   getTokensToStakeInPropose,
-} from "services/contracts/baseDAO/treasuryDAO";
+} from "services/contracts/baseDAO/treasuryDAO/service";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { xtzToMutez } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
-import { TreasuryDAO } from "services/contracts/baseDAO/classes";
+import { TreasuryDAO } from "services/contracts/baseDAO";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,

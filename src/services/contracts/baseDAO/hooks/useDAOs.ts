@@ -3,7 +3,7 @@ import { useInfiniteQuery, useQuery } from "react-query";
 
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { getContractsAddresses } from "services/pinata";
-import { BaseDAO } from "../classes";
+import { BaseDAO } from "..";
 
 const PAGE_SIZE = 6;
 

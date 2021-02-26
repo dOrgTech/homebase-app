@@ -1,6 +1,6 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
-import { BaseDAO } from "../classes";
+import { BaseDAO } from "..";
 
 interface Params {
   dao: BaseDAO;
