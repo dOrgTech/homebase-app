@@ -244,7 +244,7 @@ const TokenSettingsForm = ({
                           type="button"
                           onClick={() =>
                             arrayHelpers.insert(values.tokenHolders.length, {
-                              token_holder: "",
+                              address: "",
                               balance: 0,
                             })
                           }

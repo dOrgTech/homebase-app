@@ -149,8 +149,6 @@ const CreatorProvider: React.FC = ({ children }) => {
     data,
   };
 
-  console.log(INITIAL_STATE, data)
-
   const [state, dispatch] = useReducer(reducer, stateWithCache);
   const contextValue = useMemo(() => {
     return { state, dispatch };
