@@ -6,6 +6,8 @@ import {
   TextareaAutosize,
   withTheme,
   Box,
+  useMediaQuery,
+  useTheme,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { useHistory, withRouter } from "react-router";
@@ -61,7 +63,8 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField);
 
 const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
-  height: "153px !important",
+  minHeight: 152,
+  boxSizing: "border-box",
   width: "100%",
   border: "1px solid #3D3D3D",
   marginTop: 14,
@@ -82,9 +85,11 @@ const ErrorText = styled(Typography)({
   color: "red",
 });
 
-//@TODO: Remove any from this component
 const DaoSettingsForm = withRouter(
   ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
     const {
       dispatch,
       state: { governanceStep },
@@ -121,8 +126,8 @@ const DaoSettingsForm = withRouter(
 
     return (
       <>
-        <SecondContainer container item direction="row" spacing={2}>
-          <Grid item xs={9}>
+        <SecondContainer container item direction="row" spacing={2} wrap="wrap">
+          <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Token name{" "}
@@ -140,7 +145,7 @@ const DaoSettingsForm = withRouter(
             ) : null}
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={isMobile ? 12 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Token symbol{" "}

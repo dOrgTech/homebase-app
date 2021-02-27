@@ -37,7 +37,12 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     quorumTreshold: 0,
   },
   memberSettings: {
-    tokenHolders: [],
+    tokenHolders: [
+      {
+        address: "",
+        balance: 0,
+      },
+    ],
     administrator: "",
   },
 };
@@ -143,6 +148,8 @@ const CreatorProvider: React.FC = ({ children }) => {
     ...INITIAL_STATE,
     data,
   };
+
+  console.log(INITIAL_STATE, data)
 
   const [state, dispatch] = useReducer(reducer, stateWithCache);
   const contextValue = useMemo(() => {

@@ -67,7 +67,6 @@ export const theme = createMuiTheme({
         color: "#fff",
         opacity: 0.5,
         marginLeft: 15,
-        wordBreak: "break-all",
         lineHeight: "40px",
         "&$completed": {
           fontWeight: 300,

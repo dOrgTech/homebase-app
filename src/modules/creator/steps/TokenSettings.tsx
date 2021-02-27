@@ -34,7 +34,7 @@ const CustomInputContainer = styled(Grid)({
   },
 });
 
-const CustomBalanceContainer = styled(Grid)({
+const CustomBalanceContainer = styled(Grid)(({ theme }) => ({
   border: "1px solid #3D3D3D",
   height: 62,
   marginTop: 14,
@@ -45,7 +45,11 @@ const CustomBalanceContainer = styled(Grid)({
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: "2px solid #81FEB7",
   },
-});
+
+  [theme.breakpoints.down("sm")]: {
+    padding: "18px 8px",
+  },
+}));
 
 const ErrorText = styled(Typography)({
   fontSize: 10,
@@ -91,6 +95,19 @@ const AddButon = styled("button")({
   outline: "none",
   marginTop: 8,
   textAlign: "end",
+  width: "100%",
+  cursor: "pointer",
+  textDecoration: "underline",
+  color: "#fff",
+});
+
+const RemoveButton = styled("button")({
+  background: "inherit",
+  border: "none",
+  height: "100%",
+  outline: "none",
+  marginTop: 8,
+  textAlign: "center",
   width: "100%",
   cursor: "pointer",
   textDecoration: "underline",
@@ -155,19 +172,33 @@ const TokenSettingsForm = ({
   return (
     <>
       <TokenHoldersGrid container direction="row">
-        <Grid item xs={9}>
-          <Typography variant="subtitle1" color="textSecondary">
-            Token holders
-          </Typography>
+        <Grid item xs={12}>
+          <Grid container>
+            <Grid item xs={8}>
+              <Typography variant="subtitle1" color="textSecondary">
+                Token holders
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography variant="subtitle1" color="textSecondary">
+                {" "}
+                Balance{" "}
+              </Typography>
+            </Grid>
+          </Grid>
 
           <FieldArray
             name="tokenHolders"
-            render={() => (
-              <>
-                {values.tokenHolders && values.tokenHolders.length > 0 ? (
-                  values.tokenHolders.map((_: string, index: number) => (
-                    <div key={index}>
-                      <CustomInputContainer>
+            render={(arrayHelpers) => {
+              const someEmpty = values.tokenHolders.some(
+                (t: { address: string; balance: number }) =>
+                  t.address === "" || !(t.balance > 0)
+              );
+              return (
+                <>
+                  {values.tokenHolders.map((_: string, index: number) => (
+                    <Grid key={index} container alignItems="center">
+                      <CustomInputContainer item xs={8}>
                         <Field
                           type="text"
                           component={CustomFormikTextField}
@@ -175,55 +206,44 @@ const TokenSettingsForm = ({
                           name={`tokenHolders.${index}.address`}
                         />
                       </CustomInputContainer>
-                    </div>
-                  ))
-                ) : (
-                  <CustomInputContainer>
-                    <Field
-                      type="text"
-                      component={CustomFormikTextField}
-                      placeholder="0xf8s8d...."
-                      name={`tokenHolders.0.address`}
-                    />
-                    {/* {errors.tokenHolder &&
-                  errors.tokenHolder[index] &&
-                  touched.tokenHolder[index] ? (
-                    <ErrorText>{errors.tokenHolder[index]}</ErrorText>
-                  ) : null} */}
-                  </CustomInputContainer>
-                )}
-              </>
-            )}
-          />
-        </Grid>
-
-        <Grid item xs={3}>
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
-            Balance{" "}
-          </Typography>
-
-          <FieldArray
-            name="tokenHolders"
-            render={(arrayHelpers) => (
-              <>
-                {values.tokenHolders && values.tokenHolders.length > 0 ? (
-                  values.tokenHolders.map((_: string, index: number) => (
-                    <div key={index}>
-                      <CustomBalanceContainer>
-                        <Field
-                          type="number"
-                          component={CustomFormikTextField}
-                          placeholder="0.00"
-                          name={`tokenHolders.${index}.balance`}
-                        />
+                      <CustomBalanceContainer
+                        container
+                        item
+                        xs={3}
+                        alignItems="center"
+                      >
+                        <Grid item>
+                          <Field
+                            type="number"
+                            component={CustomFormikTextField}
+                            placeholder="0.00"
+                            name={`tokenHolders.${index}.balance`}
+                          />
+                        </Grid>
                       </CustomBalanceContainer>
-                      {index + 1 === values.tokenHolders.length ? (
+                      {values.tokenHolders.length > 1 && (
+                        <Grid item xs={1}>
+                          <RemoveButton
+                            className="button"
+                            type="button"
+                            onClick={() => arrayHelpers.remove(index)}
+                          >
+                            {" "}
+                            x
+                          </RemoveButton>
+                        </Grid>
+                      )}
+                    </Grid>
+                  ))}
+                  {!someEmpty ? (
+                    <Grid container>
+                      <Grid item xs={8} />
+                      <Grid item xs={3}>
                         <AddButon
                           className="button"
                           type="button"
                           onClick={() =>
-                            arrayHelpers.insert(index + 1, {
+                            arrayHelpers.insert(values.tokenHolders.length, {
                               token_holder: "",
                               balance: 0,
                             })
@@ -232,48 +252,24 @@ const TokenSettingsForm = ({
                           {" "}
                           Add new row
                         </AddButon>
-                      ) : null}
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    <CustomBalanceContainer>
-                      <Field
-                        type="number"
-                        component={CustomFormikTextField}
-                        placeholder="0.00"
-                        name={`tokenHolders.0.balance`}
-                      />
-                    </CustomBalanceContainer>
-                    <AddButon
-                      className="button"
-                      type="button"
-                      onClick={() =>
-                        arrayHelpers.insert(1, {
-                          token_holder: "",
-                          balance: 0,
-                        })
-                      }
-                    >
-                      {" "}
-                      Add new row
-                    </AddButon>
-                  </>
-                )}
-              </>
-            )}
+                      </Grid>
+                    </Grid>
+                  ) : null}
+                </>
+              );
+            }}
           />
         </Grid>
       </TokenHoldersGrid>
 
       <Grid container direction="row">
-        <Grid item xs={9}>
+        <Grid item xs={8}>
           <CustomTotalContainer variant="subtitle1" color="textSecondary">
             {" "}
             Total{" "}
           </CustomTotalContainer>
         </Grid>
-        <Grid item xs={3}>
+        <Grid item xs={4}>
           <CustomValueContainer color="textSecondary">
             <Total values={values} />
           </CustomValueContainer>
@@ -292,7 +288,7 @@ const TokenSettingsForm = ({
             <Field
               name="administrator"
               type="text"
-              placeholder="0xf8s8d...."
+              placeholder="tz1PXn...."
               component={CustomFormikTextField}
             ></Field>
           </CustomInputContainer>
