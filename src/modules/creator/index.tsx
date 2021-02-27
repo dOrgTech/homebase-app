@@ -182,7 +182,7 @@ export const DAOCreate: React.FC = () => {
               progress={progress}
               radius={62}
               strokeWidth={4}
-              strokeColor={"#81FEB7"}
+              strokeColor={theme.palette.secondary.main}
               trackStrokeWidth={2}
               trackStrokeColor={"#3d3d3d"}
             >

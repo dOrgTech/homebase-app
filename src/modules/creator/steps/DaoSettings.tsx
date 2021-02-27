@@ -29,7 +29,7 @@ const SecondContainer = styled(Grid)({
   marginTop: 25,
 });
 
-const CustomInputContainer = styled(Grid)({
+const CustomInputContainer = styled(Grid)(({ theme }) => ({
   border: "1px solid #3D3D3D",
   height: 62,
   marginTop: 14,

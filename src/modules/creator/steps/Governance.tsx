@@ -63,14 +63,14 @@ const GridItemCenter = styled(Grid)({
   textAlign: "center",
 });
 
-const ItemContainer = styled(Grid)({
+const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
   padding: 12,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: "2px solid #81FEB7",
   },
-});
+}));
 
 const StyledSlider = withStyles({
   root: {
