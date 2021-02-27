@@ -9,11 +9,11 @@ export interface TokenHoldersRowData {
   index: number;
 }
 
-const ProposalTableRowContainer = styled(Grid)({
+const ProposalTableRowContainer = styled(Grid)(({ theme }) => ({
   height: 155,
-  borderBottom: "2px solid #3D3D3D",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   cursor: "pointer",
-});
+}));
 
 const Username = styled(Typography)({
   marginLeft: 15,

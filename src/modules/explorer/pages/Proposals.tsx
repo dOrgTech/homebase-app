@@ -36,40 +36,40 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   minHeight: "calc(100vh - 102px)",
 }));
 
-const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 0,
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
-const StatsBox = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const StatsBox = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   width: "unset",
   "&:last-child": {
     borderRight: "none",
   },
-});
+}));
 
 const NoProposals = styled(Typography)({
   marginTop: 20,
   marginBottom: 20,
 });
 
-const StatsContainer = styled(Grid)({
+const StatsContainer = styled(Grid)(({ theme }) => ({
   height: 175,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
 });
 
-const LockedTokensBar = styled(LinearProgress)({
+const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   width: "100%",
   "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D",
+    background: `${theme.palette.primary.light}`,
   },
-});
+}));
 
 const VotingAddresses = styled(StatsBox)({
   minWidth: 250,
@@ -86,10 +86,10 @@ const TableContainer = styled(Box)({
   boxSizing: "border-box",
 });
 
-const TableHeader = styled(Grid)({
-  borderBottom: "2px solid #3D3D3D",
+const TableHeader = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
-});
+}));
 
 // const ProposalsContainer = styled(Grid)({
 //   paddingBottom: 72,

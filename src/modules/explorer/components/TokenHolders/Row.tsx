@@ -2,10 +2,10 @@ import React from "react";
 import { Grid, styled, Typography } from "@material-ui/core";
 import { TokenHolder } from "modules/creator/state";
 
-const Container = styled(Grid)({
-  borderBottom: "1px solid #3D3D3D",
+const Container = styled(Grid)(({ theme }) => ({
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   padding: 2,
-});
+}));
 
 export const TokenHoldersRow: React.FC<TokenHolder & { symbol: string }> = ({
   address,

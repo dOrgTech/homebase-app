@@ -6,6 +6,8 @@ import {
   TextareaAutosize,
   withTheme,
   Box,
+  useMediaQuery,
+  useTheme,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { useHistory, withRouter } from "react-router";
@@ -17,27 +19,27 @@ import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleOrgFormErrors } from "modules/creator/utils";
 import { OrgSettings } from "services/contracts/baseDAO/types";
 
-const CustomTypography = styled(Typography)({
+const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 21,
-  borderBottom: "1px solid #3D3D3D",
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   marginTop: 10,
-});
+}));
 
 const SecondContainer = styled(Grid)({
   marginTop: 25,
 });
 
-const CustomInputContainer = styled(Grid)({
-  border: "1px solid #3D3D3D",
+const CustomInputContainer = styled(Grid)(({ theme }) => ({
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
   marginTop: 14,
   padding: "18px 21px",
   boxSizing: "border-box",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
   },
-});
+}));
 
 const CustomFormikTextField = withStyles({
   root: {
@@ -61,9 +63,10 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField);
 
 const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
-  height: "153px !important",
+  minHeight: 152,
+  boxSizing: "border-box",
   width: "100%",
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${props.theme.palette.primary.light}`,
   marginTop: 14,
   fontWeight: 300,
   padding: "21px 20px",
@@ -73,7 +76,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   color: props.theme.palette.text.secondary,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
 }));
 
@@ -82,9 +85,11 @@ const ErrorText = styled(Typography)({
   color: "red",
 });
 
-//@TODO: Remove any from this component
 const DaoSettingsForm = withRouter(
   ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
     const {
       dispatch,
       state: { governanceStep },
@@ -121,8 +126,8 @@ const DaoSettingsForm = withRouter(
 
     return (
       <>
-        <SecondContainer container item direction="row" spacing={2}>
-          <Grid item xs={9}>
+        <SecondContainer container item direction="row" spacing={2} wrap="wrap">
+          <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Token name{" "}
@@ -140,7 +145,7 @@ const DaoSettingsForm = withRouter(
             ) : null}
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={isMobile ? 12 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Token symbol{" "}

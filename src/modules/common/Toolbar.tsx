@@ -7,6 +7,8 @@ import {
   Typography,
   Box,
   Grid,
+  Theme,
+  useTheme,
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 
@@ -54,7 +56,7 @@ const ConnectWallet = styled(Button)({
   marginRight: 14,
 });
 
-const custom = {
+const custom = (theme: Theme) => ({
   logo: {
     height: "100%",
     alignItems: "baseline",
@@ -62,16 +64,16 @@ const custom = {
     marginTop: 22,
   },
   appBorder: {
-    borderBottom: "2px solid #3D3D3D",
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
   appHeight: {
     height: "inherit",
   },
   appLogoHeight: {
     height: "inherit",
-    borderRight: "2px solid #3D3D3D",
+    borderRight: `2px solid ${theme.palette.primary.light}`,
   },
-};
+});
 
 const LogoItem = styled("img")({
   cursor: "pointer",
@@ -82,31 +84,38 @@ export const Navbar: React.FC = () => {
 
   const location = useLocation();
   const history = useHistory();
+  const theme = useTheme();
 
   return (
     <StyledAppBar
       position="sticky"
       color="primary"
-      style={location.pathname === "/creator" ? undefined : custom.appBorder}
+      style={
+        location.pathname === "/creator" ? undefined : custom(theme).appBorder
+      }
     >
       <StyledToolbar>
         <Grid
           container
           direction="row"
           alignItems="center"
-          style={custom.appHeight}
+          style={custom(theme).appHeight}
         >
           <Grid
             item
             xs={3}
             style={
               location.pathname === "/creator"
-                ? custom.appLogoHeight
+                ? custom(theme).appLogoHeight
                 : undefined
             }
           >
             <Box
-              style={location.pathname === "/creator" ? custom.logo : undefined}
+              style={
+                location.pathname === "/creator"
+                  ? custom(theme).logo
+                  : undefined
+              }
               onClick={() => history.push("/explorer")}
             >
               <Grid
@@ -132,7 +141,7 @@ export const Navbar: React.FC = () => {
             xs={9}
             container
             justify="flex-end"
-            style={custom.appHeight}
+            style={custom(theme).appHeight}
           >
             {account ? (
               <AddressContainer

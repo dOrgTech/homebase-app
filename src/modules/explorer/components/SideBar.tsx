@@ -7,10 +7,10 @@ import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { useHistory, useLocation } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
-const Bar = styled(Grid)({
+const Bar = styled(Grid)(({ theme }) => ({
   width: 102,
-  borderRight: "2px solid #3D3D3D",
-});
+  borderRight: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const SidebarButton = styled(IconButton)({
   paddingTop: 32,

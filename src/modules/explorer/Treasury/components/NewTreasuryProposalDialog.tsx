@@ -29,33 +29,33 @@ const CloseButton = styled(Typography)({
   cursor: "pointer",
 });
 
-const Title = styled(DialogTitle)({
-  borderBottom: "2px solid #3D3D3D",
+const Title = styled(DialogTitle)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   height: 30,
   paddingTop: 28,
   minWidth: 500,
-});
+}));
 
-const ListItem = styled(Grid)({
+const ListItem = styled(Grid)(({ theme }) => ({
   height: 70,
   display: "flex",
   alignItems: "center",
-  borderBottom: "2px solid #3D3D3D",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: "0px 24px",
-});
+}));
 
 const SendContainer = styled(Grid)({
   height: 55,
 });
 
-const BatchBar = styled(Grid)({
+const BatchBar = styled(Grid)(({ theme }) => ({
   height: 55,
   display: "flex",
   alignItems: "center",
-  borderBottom: "2px solid #3D3D3D",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: "0px 24px",
   cursor: "pointer",
-});
+}));
 
 const SwitchContainer = styled(Grid)({
   textAlign: "end",
@@ -92,13 +92,13 @@ const styles = {
   },
 };
 
-const DescriptionContainer = styled(Grid)({
+const DescriptionContainer = styled(Grid)(({ theme }) => ({
   minHeight: 250,
   paddingLeft: 24,
   paddingRight: 24,
   paddingTop: 24,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",

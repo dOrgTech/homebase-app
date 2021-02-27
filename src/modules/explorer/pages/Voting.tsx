@@ -25,37 +25,37 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   minHeight: "calc(100vh - 102px)",
 }));
 
-const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: "4vh",
-});
+}));
 
-const CycleContainer = styled(Grid)({
+const CycleContainer = styled(Grid)(({ theme }) => ({
   padding: "20px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
-const StatsBox = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const StatsBox = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   width: "unset",
   "&:last-child": {
     borderRight: "none",
   },
-});
+}));
 
-const StatsContainer = styled(Grid)({
+const StatsContainer = styled(Grid)(({ theme }) => ({
   height: 175,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
 });
 
-const TextAgainst = styled(Typography)({
-  color: "#ED254E !important",
-});
+const TextAgainst = styled(Typography)(({ theme }) => ({
+  color: `${theme.palette.error.main} !important`,
+}));
 
 const Container = styled(Grid)({
   paddingTop: "4%",
@@ -73,13 +73,13 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-const Detail = styled(Grid)({
+const Detail = styled(Grid)(({ theme }) => ({
   height: 93,
   display: "flex",
   alignItems: "center",
   paddingBottom: 0,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 // const MetaData = styled(Grid)({
 //   height: 70,
@@ -112,10 +112,10 @@ const DetailsContainer = styled(Grid)({
   padding: "40px 112px",
 });
 
-const BoxItem = styled(Grid)({
+const BoxItem = styled(Grid)(({ theme }) => ({
   paddingBottom: 24,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const styles = {
   blue: {

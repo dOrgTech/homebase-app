@@ -2,11 +2,11 @@ import React from "react";
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
 import dayjs from "dayjs";
 
-const Container = styled(Grid)({
-  borderBottom: "2px solid #3D3D3D",
+const Container = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: 2,
   height: 83,
-});
+}));
 
 const TokenName = styled(withTheme(Paper))((props) => ({
   border: "2px solid rgba(255, 255, 255, 0.2)",

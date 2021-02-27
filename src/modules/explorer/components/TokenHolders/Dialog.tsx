@@ -42,17 +42,17 @@ const TextHeader = styled(Typography)({
   fontWeight: "bold",
 });
 
-const Row = styled(Grid)({
+const Row = styled(Grid)(({ theme }) => ({
   padding: "33px 64px",
-  borderTop: "2px solid #3D3D3D",
+  borderTop: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 0,
   display: "flex",
   alignItems: "end",
   "&:last-child": {
     marginBottom: 30,
-    borderBottom: "2px solid #3D3D3D",
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
-});
+}));
 
 const TableHeader = styled(Grid)({
   padding: "33px 64px",

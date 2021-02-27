@@ -1,4 +1,11 @@
-import { styled, Grid, Typography, Paper } from "@material-ui/core";
+import {
+  styled,
+  Grid,
+  Typography,
+  Paper,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import React from "react";
 
 import { NavigationBarProps } from "modules/creator/state";
@@ -35,18 +42,21 @@ const NextButton = styled(Paper)({
   paddingRight: "3%",
 });
 
-const FooterContainer = styled(Grid)({
+const FooterContainer = styled(Grid)(({ isMobile }: { isMobile: boolean }) => ({
   flexGrow: 0,
-  maxWidth: "calc(75% + 2px)",
+  maxWidth: isMobile ? "none" : "calc(75% + 2px)",
   minHeight: 75,
   borderTop: "2px solid rgb(61, 61, 61)",
   borderLeft: "2px solid rgb(61, 61, 61)",
   padding: 0,
   margin: 0,
   height: "100%",
-});
+}));
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
   return (
     <Footer
       container
@@ -54,7 +64,13 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
       justify="space-between"
       alignItems="center"
     >
-      <FooterContainer item xs={12} container alignItems="center">
+      <FooterContainer
+        item
+        xs={12}
+        container
+        alignItems="center"
+        isMobile={isMobile}
+      >
         <Grid item xs={6}>
           {back && (
             <BackButton onClick={back.handler}>

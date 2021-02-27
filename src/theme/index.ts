@@ -3,14 +3,18 @@ export const theme = createMuiTheme({
   palette: {
     primary: {
       main: "#1C1F23",
-      light: "#fff",
+      light: "#3D3D3D",
     },
     secondary: {
-      main: "#81FEB7",
+      main: "#4BCF93",
+      light: "#81FEB7",
     },
     text: {
       primary: "#000000",
       secondary: "#fff",
+    },
+    error: {
+      main: "#ED254E",
     },
   },
   typography: {
@@ -67,7 +71,6 @@ export const theme = createMuiTheme({
         color: "#fff",
         opacity: 0.5,
         marginLeft: 15,
-        wordBreak: "break-all",
         lineHeight: "40px",
         "&$completed": {
           fontWeight: 300,

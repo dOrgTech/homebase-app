@@ -16,7 +16,7 @@ const ListItemContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
 }));
 
@@ -25,11 +25,11 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   minHeight: "calc(100vh - 102px)",
 }));
 
-const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 125,
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const TableContainer = styled(Box)({
   width: "100%",
@@ -43,10 +43,10 @@ const TableHeader = styled(Grid)({
   paddingLeft: 112,
 });
 
-const BorderBottom = styled(Grid)({
-  borderBottom: "2px solid #3d3d3d",
+const BorderBottom = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
-});
+}));
 
 const RightText = styled(Typography)({
   opacity: 0.8,

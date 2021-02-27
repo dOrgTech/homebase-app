@@ -9,6 +9,9 @@ import {
   Typography,
   styled,
   Button,
+  useMediaQuery,
+  useTheme,
+  Theme,
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
 import { useHistory } from "react-router";
@@ -33,7 +36,7 @@ const StepContentContainer = styled(Grid)({
   paddingTop: 50,
   boxSizing: "border-box",
   overflowY: "auto",
-  paddingRight: "8vw",
+  padding: "4vw",
 });
 
 const StyledStepper = styled(Stepper)({
@@ -63,10 +66,10 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   fontFamily: "Roboto Mono",
 }));
 
-const ProgressContainer = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const ProgressContainer = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   display: "grid",
-});
+}));
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
@@ -74,7 +77,7 @@ const LogoText = styled(Typography)({
   cursor: "pointer",
 });
 
-const custom = {
+const custom = (theme: Theme) => ({
   logo: {
     height: "100%",
     alignItems: "baseline",
@@ -82,16 +85,16 @@ const custom = {
     marginTop: 22,
   },
   appBorder: {
-    borderBottom: "2px solid #3D3D3D",
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
   appHeight: {
     height: "inherit",
   },
   appLogoHeight: {
     height: "inherit",
-    borderRight: "2px solid #3D3D3D",
+    borderRight: `2px solid ${theme.palette.primary.light}`,
   },
-};
+});
 
 const LogoItem = styled("img")({
   cursor: "pointer",
@@ -126,76 +129,84 @@ export const DAOCreate: React.FC = () => {
   const progress = useMemo(() => step * 25, [step]);
   const history = useHistory();
   const { connect, account } = useTezos();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <PageContainer container direction="row">
-      <ProgressContainer
-        item
-        xs={3}
-        container
-        justify="center"
-        alignItems="center"
-        direction="column"
-      >
-        <Grid
+      {!isMobile && (
+        <ProgressContainer
           item
-          container
-          direction="column"
-          alignItems="center"
           xs={3}
-          style={{ maxWidth: "unset" }}
+          container
+          justify="center"
+          alignItems="center"
+          direction="column"
         >
-          <Grid item>
-            <Box
-              style={location.pathname === "/creator" ? custom.logo : undefined}
-              onClick={() => history.push("/explorer")}
-              margin="auto"
-              marginTop="22px"
-            >
-              <Grid
-                container
-                alignItems="center"
-                wrap="nowrap"
-                justify="center"
-              >
-                <Grid item>
-                  <LogoItem src={HomeButton} />
-                </Grid>
-                <Grid item>
-                  <Box paddingLeft="10px">
-                    <LogoText color="textSecondary">Homebase</LogoText>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </Grid>
-        </Grid>
-        <Grid item container direction="column" alignItems="center" xs>
-          <ProgressBar
-            progress={progress}
-            radius={62}
-            strokeWidth={4}
-            strokeColor={"#81FEB7"}
-            trackStrokeWidth={2}
-            trackStrokeColor={"#3d3d3d"}
+          <Grid
+            item
+            container
+            direction="column"
+            alignItems="center"
+            xs={3}
+            style={{ maxWidth: "unset" }}
           >
-            <Box className="indicator">
-              <IndicatorValue>
-                {progress === 0.5 ? 0 : step * 25}%
-              </IndicatorValue>
-            </Box>
-          </ProgressBar>
-          <StyledStepper activeStep={step} orientation="vertical">
-            {STEPS.map(({ title }: StepInfo, index: number) => (
-              <Step key={title}>
-                <StepLabel icon={index + 1}>{title}</StepLabel>
-              </Step>
-            ))}
-          </StyledStepper>
-        </Grid>
-      </ProgressContainer>
+            <Grid item>
+              <Box
+                style={
+                  location.pathname === "/creator"
+                    ? custom(theme).logo
+                    : undefined
+                }
+                onClick={() => history.push("/explorer")}
+                margin="auto"
+                marginTop="22px"
+              >
+                <Grid
+                  container
+                  alignItems="center"
+                  wrap="nowrap"
+                  justify="center"
+                >
+                  <Grid item>
+                    <LogoItem src={HomeButton} />
+                  </Grid>
+                  <Grid item>
+                    <Box paddingLeft="10px">
+                      <LogoText color="textSecondary">Homebase</LogoText>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Grid>
+          </Grid>
+          <Grid item container direction="column" alignItems="center" xs>
+            <ProgressBar
+              progress={progress}
+              radius={62}
+              strokeWidth={4}
+              strokeColor={theme.palette.secondary.main}
+              trackStrokeWidth={2}
+              trackStrokeColor={theme.palette.primary.light}
+            >
+              <Box className="indicator">
+                <IndicatorValue>
+                  {progress === 0.5 ? 0 : step * 25}%
+                </IndicatorValue>
+              </Box>
+            </ProgressBar>
+            <StyledStepper activeStep={step} orientation="vertical">
+              {STEPS.map(({ title }: StepInfo, index: number) => (
+                <Step key={title}>
+                  <StepLabel icon={index + 1}>{title}</StepLabel>
+                </Step>
+              ))}
+            </StyledStepper>
+          </Grid>
+        </ProgressContainer>
+      )}
 
-      <StepContentHeigth item xs={9} container justify="center">
+      <StepContentHeigth item xs={12} md={9} container justify="center">
         <Grid
           container
           direction="column"
