@@ -31,11 +31,11 @@ import { toShortAddress } from "services/contracts/utils";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
-const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -65,15 +65,15 @@ const BigIconContainer = styled(Box)({
   },
 });
 
-const StatsContainer = styled(Grid)({
+const StatsContainer = styled(Grid)(({ theme }) => ({
   height: 175,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
-const StatsBox = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const StatsBox = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   width: "unset",
-});
+}));
 
 const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
@@ -88,12 +88,12 @@ const ActiveProposals = styled(StatsBox)({
   cursor: "pointer",
 });
 
-const LockedTokensBar = styled(LinearProgress)({
+const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   width: "100%",
   "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D",
+    background: theme.palette.primary.light,
   },
-});
+}));
 
 const TableContainer = styled(Box)({
   width: "100%",
@@ -102,10 +102,10 @@ const TableContainer = styled(Box)({
   paddingBottom: "24px",
 });
 
-const TableHeader = styled(Grid)({
-  borderBottom: "2px solid #3D3D3D",
+const TableHeader = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
-});
+}));
 
 const UnderlineText = styled(Typography)({
   textDecoration: "underline",

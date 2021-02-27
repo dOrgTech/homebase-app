@@ -11,31 +11,31 @@ import {
 } from "modules/creator/state";
 import { MemberSettings } from "services/contracts/baseDAO/types";
 
-const CustomTypography = styled(Typography)({
+const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
-  borderBottom: "1px solid #3D3D3D",
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   marginTop: 10,
   marginBottom: 39,
-});
+}));
 
 const SecondContainer = styled(Grid)({
   marginTop: 25,
 });
 
-const CustomInputContainer = styled(Grid)({
-  border: "1px solid #3D3D3D",
+const CustomInputContainer = styled(Grid)(({ theme }) => ({
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
   marginTop: 14,
   padding: "18px 21px",
   boxSizing: "border-box",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
   },
-});
+}));
 
 const CustomBalanceContainer = styled(Grid)(({ theme }) => ({
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
   marginTop: 14,
   borderLeft: "none",
@@ -43,7 +43,7 @@ const CustomBalanceContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
   },
 
   [theme.breakpoints.down("sm")]: {

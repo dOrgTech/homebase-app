@@ -19,27 +19,27 @@ import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleOrgFormErrors } from "modules/creator/utils";
 import { OrgSettings } from "services/contracts/baseDAO/types";
 
-const CustomTypography = styled(Typography)({
+const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 21,
-  borderBottom: "1px solid #3D3D3D",
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   marginTop: 10,
-});
+}));
 
 const SecondContainer = styled(Grid)({
   marginTop: 25,
 });
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
   marginTop: 14,
   padding: "18px 21px",
   boxSizing: "border-box",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
   },
-});
+}));
 
 const CustomFormikTextField = withStyles({
   root: {
@@ -66,7 +66,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   minHeight: 152,
   boxSizing: "border-box",
   width: "100%",
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${props.theme.palette.primary.light}`,
   marginTop: 14,
   fontWeight: 300,
   padding: "21px 20px",
@@ -76,7 +76,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   color: props.theme.palette.text.secondary,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
 }));
 

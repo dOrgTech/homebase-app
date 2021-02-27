@@ -22,7 +22,7 @@ const StyledInput = withStyles((theme: Theme) => ({
       marginTop: "0px !important",
       maxWidth: 536,
       "& input": {
-        color: theme.palette.primary.light,
+        color: theme.palette.text.secondary,
         textAlign: "start",
         "&:placeholder": {
           opacity: 0.8,

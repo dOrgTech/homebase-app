@@ -1,7 +1,6 @@
 import {
   Box,
   Grid,
-  makeStyles,
   Step,
   StepConnector,
   StepLabel,
@@ -22,7 +21,7 @@ const WaitingText = styled(Typography)({
   maxWidth: 650,
 });
 
-const StyledStepper = styled(Stepper)({
+const StyledStepper = styled(Stepper)(({ theme }) => ({
   width: "100%",
   paddingLeft: 0,
   paddingRight: 0,
@@ -32,11 +31,11 @@ const StyledStepper = styled(Stepper)({
     right: "calc(50% + 19px)",
     top: 16,
     "& .MuiStepConnector-lineHorizontal": {
-      borderColor: "#3D3D3D",
+      borderColor: theme.palette.primary.light,
       borderTopWidth: 3,
     },
   },
-});
+}));
 
 const StyledLabel = styled(StepLabel)(
   ({
@@ -52,7 +51,11 @@ const StyledLabel = styled(StepLabel)(
       borderWidth: 3,
     },
     "& .MuiStepIcon-active": {
-      borderColor: hasError ? "#DE3939" : focused ? "#fff" : "#3D3D3D",
+      borderColor: hasError
+        ? theme.palette.error.main
+        : focused
+        ? "#fff"
+        : theme.palette.primary.light,
       fill: "none",
     },
     "& .MuiStepIcon-text": {
@@ -82,7 +85,7 @@ const ColorlibConnector = withStyles((theme: Theme) => ({
   line: {
     height: 3,
     border: 0,
-    backgroundColor: "#3d3d3d",
+    backgroundColor: theme.palette.primary.light,
     borderRadius: 1,
   },
 }))(StepConnector);
@@ -107,9 +110,13 @@ export const DeploymentLoader: React.FC<Props> = ({
 
   useEffect(() => {
     if (activeStep) {
-      setFocusedState(activeStep);
+      if (isFinished) {
+        setFocusedState(states.length - 1);
+      } else {
+        setFocusedState(activeStep);
+      }
     }
-  }, [activeStep]);
+  }, [activeStep, isFinished, states.length]);
 
   return (
     <Box width={"100%"} marginTop={"-15%"}>

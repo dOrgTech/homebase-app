@@ -17,12 +17,12 @@ import { RegistryDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 
-const Title = styled(DialogTitle)({
-  borderBottom: "2px solid #3D3D3D",
+const Title = styled(DialogTitle)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   height: 30,
   paddingTop: 28,
   minWidth: 500,
-});
+}));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -41,13 +41,13 @@ const SendContainer = styled(Grid)({
   height: 55,
 });
 
-const ListItem = styled(Grid)({
+const ListItem = styled(Grid)(({ theme }) => ({
   height: 70,
   display: "flex",
   alignItems: "center",
-  borderBottom: "2px solid #3D3D3D",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: "0px 24px",
-});
+}));
 
 const TokenAddress = styled(Typography)(() => ({
   fontSize: 16,

@@ -22,7 +22,7 @@ const CustomCard = styled(withTheme(Grid))((props) => ({
   boxShadow: "none",
   maxWidth: 380,
   background: props.theme.palette.primary.main,
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${props.theme.palette.primary.light}`,
   boxSizing: "border-box",
   marginBottom: 16,
   borderRadius: "0px",
@@ -48,11 +48,11 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
   display: "flex",
   justifyContent: "center",
   padding: "0 25px",
-  borderTop: "1px solid #3D3D3D",
+  borderTop: `1px solid ${props.theme.palette.primary.light}`,
   cursor: "pointer",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
 }));
 

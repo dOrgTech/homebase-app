@@ -18,12 +18,12 @@ import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleGovernanceFormErrors } from "modules/creator/utils";
 import { VotingSettings } from "services/contracts/baseDAO/types";
 
-const CustomTypography = styled(Typography)({
+const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
-  borderBottom: "1px solid #3D3D3D",
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   marginTop: 10,
   marginBottom: 33,
-});
+}));
 
 const ErrorText = styled(Typography)({
   display: "block",
@@ -40,24 +40,24 @@ const SpacingContainer = styled(Grid)({
 });
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
   marginTop: 14,
   "&:nth-child(2)": {
     borderLeft: "none",
     borderRight: "none",
     [theme.breakpoints.down("sm")]: {
-      borderLeft: "1px solid #3D3D3D",
-      borderRight: "1px solid #3D3D3D",
+      borderLeft: `1px solid ${theme.palette.primary.light}`,
+      borderRight: `1px solid ${theme.palette.primary.light}`,
     },
   },
 }));
 
-const AdditionContainer = styled(Grid)({
+const AdditionContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
-});
+}));
 
 const GridItemCenter = styled(Grid)({
   textAlign: "center",
@@ -68,7 +68,7 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
   padding: 12,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
   },
 }));
 
@@ -97,7 +97,7 @@ const StyledSlider = withStyles({
 const CustomSliderValue = styled(withTheme(Paper))((props) => ({
   boxShadow: "none",
   height: 62,
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${props.theme.palette.primary.light}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",

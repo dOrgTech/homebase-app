@@ -11,6 +11,7 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  Theme,
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
 import { useHistory } from "react-router";
@@ -65,10 +66,10 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   fontFamily: "Roboto Mono",
 }));
 
-const ProgressContainer = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const ProgressContainer = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   display: "grid",
-});
+}));
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
@@ -76,7 +77,7 @@ const LogoText = styled(Typography)({
   cursor: "pointer",
 });
 
-const custom = {
+const custom = (theme: Theme) => ({
   logo: {
     height: "100%",
     alignItems: "baseline",
@@ -84,16 +85,16 @@ const custom = {
     marginTop: 22,
   },
   appBorder: {
-    borderBottom: "2px solid #3D3D3D",
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
   appHeight: {
     height: "inherit",
   },
   appLogoHeight: {
     height: "inherit",
-    borderRight: "2px solid #3D3D3D",
+    borderRight: `2px solid ${theme.palette.primary.light}`,
   },
-};
+});
 
 const LogoItem = styled("img")({
   cursor: "pointer",
@@ -153,7 +154,9 @@ export const DAOCreate: React.FC = () => {
             <Grid item>
               <Box
                 style={
-                  location.pathname === "/creator" ? custom.logo : undefined
+                  location.pathname === "/creator"
+                    ? custom(theme).logo
+                    : undefined
                 }
                 onClick={() => history.push("/explorer")}
                 margin="auto"
@@ -184,7 +187,7 @@ export const DAOCreate: React.FC = () => {
               strokeWidth={4}
               strokeColor={theme.palette.secondary.main}
               trackStrokeWidth={2}
-              trackStrokeColor={"#3d3d3d"}
+              trackStrokeColor={theme.palette.primary.light}
             >
               <Box className="indicator">
                 <IndicatorValue>

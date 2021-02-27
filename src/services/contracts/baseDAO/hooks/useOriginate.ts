@@ -1,6 +1,6 @@
 import { OriginateParams } from "../types";
 import { DAOTemplate } from "../../../../modules/creator/state/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ContractAbstraction,
   ContractProvider,
