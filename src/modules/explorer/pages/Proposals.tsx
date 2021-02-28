@@ -19,6 +19,7 @@ import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { NewRegistryProposalDialog } from "../Registry";
 import { Button } from "@material-ui/core";
+import { NewTreasuryProposalDialog } from "../Treasury";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
@@ -87,15 +88,6 @@ const TableHeader = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
 }));
-
-// const ProposalsContainer = styled(Grid)({
-//   paddingBottom: 72,
-// });
-
-// const UnderlineText = styled(Typography)({
-//   textDecoration: "underline",
-//   cursor: "pointer",
-// });
 
 const ProposalTableHeadText = styled(Typography)({
   fontWeight: "bold",
@@ -204,6 +196,19 @@ export const Proposals: React.FC = () => {
     );
   }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
+  const ProposalDialog = useCallback(
+    (props: { setOpen: (open: boolean) => void; open: boolean }) => {
+      switch (dao?.metadata.template) {
+        case "treasury":
+          return <NewTreasuryProposalDialog {...props} />;
+        case "registry":
+          return <NewRegistryProposalDialog {...props} />;
+      }
+
+      return <div />;
+    },
+    [dao?.metadata.template]
+  );
   const onFlush = useCallback(() => {
     // @TODO: we need to add an atribute to the proposals
     // type in order to know if it was flushed or not
