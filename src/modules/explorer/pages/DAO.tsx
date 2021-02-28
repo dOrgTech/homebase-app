@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
-  Button,
   CircularProgress,
   Grid,
   styled,
@@ -27,9 +26,7 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
-import { toShortAddress } from "services/contracts/utils";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
-import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
@@ -125,11 +122,6 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
-const FlushButton = styled(Button)({
-  alignSelf: "center",
-  width: 150,
-});
-
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
     {children}
@@ -142,7 +134,6 @@ export const DAO: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data } = useDAO(id);
   const { data: members } = useTokenHoldersWithVotes(id);
-  const { mutate } = useFlush();
 
   const name = data && data.metadata.unfrozenToken.name;
   const description = data && data.metadata.description;
@@ -203,20 +194,6 @@ export const DAO: React.FC = () => {
 
   const { data: proposalsData } = useProposals(data ? data.address : "");
 
-  const onFlush = () => {
-    // @TODO: we need to add an atribute to the proposals
-    // type in order to know if it was flushed or not
-    if (proposalsData && proposalsData.length && data) {
-      mutate({
-        dao: data,
-        numOfProposalsToFlush: proposalsData.length + 1,
-      });
-      return;
-    }
-
-    console.log("no proposal data");
-  };
-
   const formattedMembers = useMemo(() => {
     if (!members) {
       return [];
@@ -224,7 +201,7 @@ export const DAO: React.FC = () => {
     return members
       .map((member) => {
         return {
-          username: toShortAddress(member.address),
+          username: member.address,
           weight: member.balances[0].toString(),
           votes: member.votes.toString(),
           proposals_voted: member.proposalsVoted,
@@ -406,15 +383,6 @@ export const DAO: React.FC = () => {
                 </Typography>
               </Box>
             </ActiveProposals>
-            <Grid item xs container direction="column" justify="center">
-              <FlushButton
-                color="secondary"
-                variant="outlined"
-                onClick={onFlush}
-              >
-                Flush
-              </FlushButton>
-            </Grid>
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">

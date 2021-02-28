@@ -11,6 +11,8 @@ import {
 
 import { ProgressBar } from "modules/explorer/components";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
+import { ViewButton } from "../ViewButton";
+import { theme } from "theme";
 
 interface TokenHolderDialogData {
   address: string;
@@ -33,8 +35,7 @@ const CustomDialog = styled(Dialog)({
   },
 });
 
-const ViewButton = styled(Typography)({
-  cursor: "pointer",
+const StyledViewButton = styled(ViewButton)({
   marginTop: -30,
 });
 
@@ -101,13 +102,13 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
 
   return (
     <div>
-      <ViewButton
-        variant="subtitle1"
-        color="secondary"
+      <StyledViewButton
+        customColor={theme.palette.secondary.main}
         onClick={handleClickOpen}
+        variant="outlined"
       >
         VIEW
-      </ViewButton>
+      </StyledViewButton>
       <CustomDialog
         open={open}
         onClose={handleClose}

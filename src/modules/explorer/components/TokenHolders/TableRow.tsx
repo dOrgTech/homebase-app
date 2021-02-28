@@ -1,5 +1,7 @@
 import React from "react";
-import { styled, Grid, Typography, Avatar } from "@material-ui/core";
+import { styled, Grid, Typography } from "@material-ui/core";
+import { Blockie } from "modules/common/Blockie";
+import { toShortAddress } from "services/contracts/utils";
 
 export interface TokenHoldersRowData {
   username: string;
@@ -37,9 +39,9 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
           </Grid>
           <Grid item xs={9}>
             <Grid container direction="row" alignItems="center">
-              <Avatar>{""}</Avatar>
+              <Blockie address={username} size={40} />
               <Username variant="body1" color="textSecondary">
-                {username}
+                {toShortAddress(username)}
               </Username>
             </Grid>
           </Grid>
