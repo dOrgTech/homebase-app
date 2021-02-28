@@ -22,7 +22,8 @@ import {
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { xtzToMutez } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
-import { TreasuryDAO } from "services/contracts/baseDAO";
+import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
+import { fromMigrationParamsFile, validateTransactionsJSON } from "../utils";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -44,17 +45,29 @@ const ListItem = styled(Grid)(({ theme }) => ({
   padding: "0px 24px",
 }));
 
+const UploadButtonContainer = styled(Grid)(({ theme }) => ({
+  height: 70,
+  display: "flex",
+  alignItems: "center",
+  padding: "0px 24px",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
+
+const FileInput = styled("input")({
+  display: "none",
+});
+
 const SendContainer = styled(Grid)({
   height: 55,
 });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
-  height: 55,
-  display: "flex",
+  height: 60,
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: "0px 24px",
   cursor: "pointer",
+  overflowX: "auto",
 }));
 
 const SwitchContainer = styled(Grid)({
@@ -63,7 +76,7 @@ const SwitchContainer = styled(Grid)({
 
 const TransferActive = styled(Grid)({
   height: 53,
-  width: 51,
+  minWidth: 51,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -71,8 +84,8 @@ const TransferActive = styled(Grid)({
 
 const AddButton = styled(Paper)({
   marginLeft: 12,
-  height: 31,
-  width: 31,
+  minHeight: 31,
+  minWidth: 31,
   textAlign: "center",
   padding: 0,
   background: "#383939",
@@ -92,12 +105,21 @@ const styles = {
   },
 };
 
-const DescriptionContainer = styled(Grid)(({ theme }) => ({
+const DescriptionContainer = styled(Grid)({
   minHeight: 250,
   paddingLeft: 24,
   paddingRight: 24,
   paddingTop: 24,
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
+});
+
+const UploadFileLabel = styled("label")(({ theme }) => ({
+  height: 53,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+  cursor: "pointer",
+  margin: "auto",
+  display: "block",
 }));
 
 const CustomTextField = styled(TextField)({
@@ -120,11 +142,6 @@ const CustomTextarea = styled(TextField)({
     },
   },
 });
-
-interface Transfer {
-  recipient: string;
-  amount: number;
-}
 
 interface Values {
   transfers: Transfer[];
@@ -249,203 +266,254 @@ export const NewTreasuryProposalDialog: React.FC<{
               </ListItem>
 
               <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
-                {({ submitForm, values }) => (
-                  <Form autoComplete="off">
-                    <>
-                      <FieldArray
-                        name="transfers"
-                        render={(arrayHelpers) => (
-                          <>
-                            {isBatch ? (
-                              <BatchBar container direction="row">
-                                {values.transfers.map((_, index) => {
-                                  return (
-                                    <TransferActive
-                                      item
-                                      key={index}
-                                      onClick={() =>
-                                        setActiveTransfer(index + 1)
-                                      }
-                                      style={
-                                        Number(index + 1) === activeTransfer
-                                          ? styles.active
-                                          : undefined
-                                      }
-                                    >
-                                      <Typography
-                                        variant="subtitle1"
-                                        color="textSecondary"
+                {({ submitForm, values }) => {
+                  const importTransactions = async (
+                    event: React.ChangeEvent<HTMLInputElement>
+                  ) => {
+                    if (event.currentTarget.files) {
+                      const file = event.currentTarget.files[0];
+                      const transactionsParsed = await fromMigrationParamsFile(
+                        file
+                      );
+                      const errors = validateTransactionsJSON(
+                        transactionsParsed
+                      );
+                      if (errors.length) {
+                        // Show notification with error
+                        return;
+                      }
+                      setIsBatch(true);
+                      values.transfers = transactionsParsed;
+                    }
+                  };
+
+                  return (
+                    <Form autoComplete="off">
+                      <>
+                        <FieldArray
+                          name="transfers"
+                          render={(arrayHelpers) => (
+                            <>
+                              {isBatch ? (
+                                <BatchBar
+                                  container
+                                  direction="row"
+                                  wrap="nowrap"
+                                >
+                                  {values.transfers.map((_, index) => {
+                                    return (
+                                      <TransferActive
+                                        item
+                                        key={index}
+                                        onClick={() =>
+                                          setActiveTransfer(index + 1)
+                                        }
+                                        style={
+                                          Number(index + 1) === activeTransfer
+                                            ? styles.active
+                                            : undefined
+                                        }
                                       >
-                                        #{index + 1}
-                                      </Typography>
-                                    </TransferActive>
-                                  );
-                                })}
-
-                                <AddButton
-                                  onClick={() => {
-                                    arrayHelpers.insert(
-                                      values.transfers.length + 1,
-                                      EMPTY_TRANSFER
+                                        <Typography
+                                          variant="subtitle1"
+                                          color="textSecondary"
+                                        >
+                                          #{index + 1}
+                                        </Typography>
+                                      </TransferActive>
                                     );
-                                  }}
-                                >
-                                  +
-                                </AddButton>
-                              </BatchBar>
-                            ) : null}
+                                  })}
 
-                            <ListItem container direction="row">
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="subtitle1"
-                                  color="textSecondary"
-                                >
-                                  Recipient
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <SwitchContainer
-                                  item
-                                  xs={12}
-                                  justify="flex-end"
-                                >
-                                  <Field
-                                    name={`transfers.${
-                                      activeTransfer - 1
-                                    }.recipient`}
-                                    type="string"
-                                    placeholder="Type an Address Here"
-                                    component={CustomTextField}
-                                  />
-                                </SwitchContainer>
-                              </Grid>
-                            </ListItem>
-
-                            <ListItem container direction="row">
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="subtitle1"
-                                  color="textSecondary"
-                                >
-                                  XTZ Amount
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <SwitchContainer
-                                  item
-                                  xs={12}
-                                  justify="flex-end"
-                                >
-                                  <Field
-                                    name={`transfers.${
-                                      activeTransfer - 1
-                                    }.amount`}
-                                    type="number"
-                                    placeholder="Type an Amount"
-                                    component={CustomTextField}
-                                    InputProps={{
-                                      inputProps: {
-                                        step: 0.01,
-                                        min: dao.storage.minXtzAmount,
-                                        max: dao.storage.maxXtzAmount,
-                                      },
+                                  <AddButton
+                                    onClick={() => {
+                                      arrayHelpers.insert(
+                                        values.transfers.length + 1,
+                                        EMPTY_TRANSFER
+                                      );
                                     }}
-                                  />
-                                </SwitchContainer>
+                                  >
+                                    +
+                                  </AddButton>
+                                </BatchBar>
+                              ) : null}
+
+                              <ListItem container direction="row">
+                                <Grid item xs={6}>
+                                  <Typography
+                                    variant="subtitle1"
+                                    color="textSecondary"
+                                  >
+                                    Recipient
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <SwitchContainer
+                                    item
+                                    xs={12}
+                                    justify="flex-end"
+                                  >
+                                    <Field
+                                      name={`transfers.${
+                                        activeTransfer - 1
+                                      }.recipient`}
+                                      type="string"
+                                      placeholder="Type an Address Here"
+                                      component={CustomTextField}
+                                    />
+                                  </SwitchContainer>
+                                </Grid>
+                              </ListItem>
+
+                              <ListItem container direction="row">
+                                <Grid item xs={6}>
+                                  <Typography
+                                    variant="subtitle1"
+                                    color="textSecondary"
+                                  >
+                                    XTZ Amount
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <SwitchContainer
+                                    item
+                                    xs={12}
+                                    justify="flex-end"
+                                  >
+                                    <Field
+                                      name={`transfers.${
+                                        activeTransfer - 1
+                                      }.amount`}
+                                      type="number"
+                                      placeholder="Type an Amount"
+                                      component={CustomTextField}
+                                      InputProps={{
+                                        inputProps: {
+                                          step: 0.01,
+                                          min: dao.storage.minXtzAmount,
+                                          max: dao.storage.maxXtzAmount,
+                                        },
+                                      }}
+                                    />
+                                  </SwitchContainer>
+                                </Grid>
+                              </ListItem>
+                            </>
+                          )}
+                        />
+                        <DescriptionContainer container direction="row">
+                          <Grid item xs={12}>
+                            <Grid
+                              container
+                              direction="row"
+                              alignItems="center"
+                              justify="space-between"
+                            >
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="subtitle1"
+                                  color="textSecondary"
+                                >
+                                  Proposal Description
+                                </Typography>
                               </Grid>
-                            </ListItem>
-                          </>
-                        )}
-                      />
-                      <DescriptionContainer container direction="row">
-                        <Grid item xs={12}>
-                          <Grid
-                            container
-                            direction="row"
-                            alignItems="center"
-                            justify="space-between"
-                          >
-                            <Grid item xs={6}>
-                              <Typography
-                                variant="subtitle1"
-                                color="textSecondary"
-                              >
-                                Proposal Description
-                              </Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                              <Typography
-                                align="right"
-                                variant="subtitle1"
-                                color="textSecondary"
-                              >
-                                {values.description
-                                  ? values.description.trim().split(" ").length
-                                  : 0}{" "}
-                                Words
-                              </Typography>
+                              <Grid item xs={6}>
+                                <Typography
+                                  align="right"
+                                  variant="subtitle1"
+                                  color="textSecondary"
+                                >
+                                  {values.description
+                                    ? values.description.trim().split(" ")
+                                        .length
+                                    : 0}{" "}
+                                  Words
+                                </Typography>
+                              </Grid>
                             </Grid>
                           </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Field
-                            name="description"
-                            type="number"
-                            multiline
-                            rows={6}
-                            placeholder="Type a Description"
-                            component={CustomTextarea}
-                          />
-                        </Grid>
-                      </DescriptionContainer>
-
-                      <ListItem container direction="row">
-                        <Grid item xs={6}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            Agora Post ID
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <SwitchContainer item xs={12} justify="flex-end">
+                          <Grid item xs={12}>
                             <Field
-                              name={`agoraPostId`}
+                              name="description"
                               type="number"
-                              placeholder="Type an Agora Post ID"
-                              component={CustomTextField}
+                              multiline
+                              rows={6}
+                              placeholder="Type a Description"
+                              component={CustomTextarea}
                             />
-                          </SwitchContainer>
-                        </Grid>
-                      </ListItem>
+                          </Grid>
+                        </DescriptionContainer>
 
-                      <ListItem container direction="row">
-                        <Grid item xs={6}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            Proposal Fee
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography
-                            align="right"
-                            variant="subtitle1"
-                            color="secondary"
-                          >
-                            {proposalFee}{" "}
-                            {dao ? dao.metadata.unfrozenToken.symbol : ""}
-                          </Typography>
-                        </Grid>
-                      </ListItem>
+                        <UploadButtonContainer container direction="row">
+                          <UploadFileLabel>
+                            -OR- UPLOAD JSON FILE
+                            <FileInput
+                              type="file"
+                              accept=".json"
+                              onChange={importTransactions}
+                            />
+                          </UploadFileLabel>
+                        </UploadButtonContainer>
 
-                      <SendContainer container direction="row" justify="center">
-                        <Button onClick={submitForm}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            SEND
-                          </Typography>
-                        </Button>
-                      </SendContainer>
-                    </>
-                  </Form>
-                )}
+                        <ListItem container direction="row">
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="subtitle1"
+                              color="textSecondary"
+                            >
+                              Agora Post ID
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <SwitchContainer item xs={12} justify="flex-end">
+                              <Field
+                                name={`agoraPostId`}
+                                type="number"
+                                placeholder="Type an Agora Post ID"
+                                component={CustomTextField}
+                              />
+                            </SwitchContainer>
+                          </Grid>
+                        </ListItem>
+
+                        <ListItem container direction="row">
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="subtitle1"
+                              color="textSecondary"
+                            >
+                              Proposal Fee
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography
+                              align="right"
+                              variant="subtitle1"
+                              color="secondary"
+                            >
+                              {proposalFee}{" "}
+                              {dao ? dao.metadata.unfrozenToken.symbol : ""}
+                            </Typography>
+                          </Grid>
+                        </ListItem>
+
+                        <SendContainer
+                          container
+                          direction="row"
+                          justify="center"
+                        >
+                          <Button onClick={submitForm}>
+                            <Typography
+                              variant="subtitle1"
+                              color="textSecondary"
+                            >
+                              SEND
+                            </Typography>
+                          </Button>
+                        </SendContainer>
+                      </>
+                    </Form>
+                  );
+                }}
               </Formik>
             </DialogContentText>
           </DialogContent>

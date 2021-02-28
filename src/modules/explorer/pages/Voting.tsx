@@ -9,6 +9,9 @@ import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { mutezToXtz, toShortAddress } from "services/contracts/utils";
+import { StatusBadge } from "../components/StatusBadge";
+import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { UserBadge } from "../components/UserBadge";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -81,14 +84,6 @@ const Detail = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
-// const MetaData = styled(Grid)({
-//   height: 70,
-//   display: "flex",
-//   alignItems: "center",
-//   justifyContent: "center",
-//   marginBottom: 20,
-// });
-
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
   paddingLeft: 53,
@@ -102,11 +97,6 @@ const HistoryItem = styled(Grid)({
   height: "auto",
 });
 
-const HistoryBadge = styled(Grid)({
-  borderRadius: 4,
-  textAlign: "center",
-});
-
 const DetailsContainer = styled(Grid)({
   paddingBottom: 0,
   padding: "40px 112px",
@@ -116,19 +106,6 @@ const BoxItem = styled(Grid)(({ theme }) => ({
   paddingBottom: 24,
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
-
-const styles = {
-  blue: {
-    background: "#3866F9",
-    color: "white",
-    padding: 2,
-  },
-  yellow: {
-    background: "#DBDE39",
-    color: "#1C1F23",
-    padding: 2,
-  },
-};
 
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
@@ -151,18 +128,48 @@ export const Voting: React.FC = () => {
     if (!proposal) {
       return [];
     }
-    return [
-      { date: dayjs(proposal.startDate).format("LLL"), status: "created" },
-      { date: dayjs(proposal.startDate).format("LLL"), status: "active" },
+    const baseStatuses: {
+      date: string;
+      status: ProposalStatus | "created";
+    }[] = [
+      {
+        date: dayjs(proposal.startDate).format("LLL"),
+        status: "created",
+      },
+      {
+        date: dayjs(proposal.startDate).format("LLL"),
+        status: ProposalStatus.ACTIVE,
+      },
     ];
+
+    switch (proposal.status) {
+      case ProposalStatus.DROPPED:
+        baseStatuses.push({
+          date: "",
+          status: ProposalStatus.DROPPED,
+        });
+        break;
+      case ProposalStatus.REJECTED:
+        baseStatuses.push({
+          date: "",
+          status: ProposalStatus.REJECTED,
+        });
+        break;
+      case ProposalStatus.PASSED:
+        baseStatuses.push({
+          date: "",
+          status: ProposalStatus.PASSED,
+        });
+        break;
+    }
+
+    return baseStatuses;
   }, [proposal]);
 
   const transfers = useMemo(() => {
     if (!proposal || !proposal.transfers) {
       return [];
     }
-
-    console.log(proposal.transfers);
 
     return proposal.transfers.map((transfer) => {
       //TODO: can the from be different?
@@ -206,6 +213,16 @@ export const Voting: React.FC = () => {
                     <Subtitle color="textSecondary">
                       Proposal Description
                     </Subtitle>
+                    {proposal && (
+                      <StatusBadge
+                        style={{ marginTop: 12 }}
+                        lg={2}
+                        md={6}
+                        sm={6}
+                        status={proposal.status}
+                        xs={2}
+                      />
+                    )}
                   </Grid>
                   <JustifyEndGrid item xs={6}>
                     <ButtonsContainer
@@ -345,20 +362,20 @@ export const Voting: React.FC = () => {
                     </Detail>
                   );
                 })}
-
-                {/* <MetaData item xs={12}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="center"
-                  >
-                    Proposal Metadata & #
-                  </Typography>
-                </MetaData> */}
               </Grid>
             </Grid>
             <Grid item xs={6}>
               <Grid container direction="row">
+                <HistoryContent item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    CREATED BY
+                  </Typography>
+                </HistoryContent>
+                {proposal && (
+                  <HistoryContent item xs={12}>
+                    <UserBadge address={proposal.proposer} />
+                  </HistoryContent>
+                )}
                 <HistoryContent item xs={12}>
                   <Typography variant="subtitle1" color="textSecondary">
                     HISTORY
@@ -367,17 +384,13 @@ export const Voting: React.FC = () => {
                 {history.map((item, index) => {
                   return (
                     <HistoryItem container direction="row" key={index}>
-                      <HistoryBadge
+                      <StatusBadge
                         item
                         lg={2}
                         md={6}
                         sm={6}
-                        style={
-                          item.status === "active" ? styles.yellow : styles.blue
-                        }
-                      >
-                        <Typography> {item.status.toUpperCase()} </Typography>
-                      </HistoryBadge>
+                        status={item.status}
+                      />
                       <Grid item lg={1} md={1} sm={1}></Grid>
                       <Grid item lg={9} md={12} sm={12}>
                         <Typography color="textSecondary">

@@ -5,7 +5,7 @@ import {
   Typography,
   LinearProgress,
 } from "@material-ui/core";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   ProposalTableRowData,
@@ -19,6 +19,8 @@ import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { NewRegistryProposalDialog } from "../Registry";
 import { Button } from "@material-ui/core";
+import { NewTreasuryProposalDialog } from "../Treasury";
+import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -26,10 +28,6 @@ const StyledContainer = styled(Grid)(({ theme }) => ({
   paddingTop: "4%",
   boxSizing: "border-box",
 }));
-
-const JustifyEndGrid = styled(Grid)({
-  textAlign: "end",
-});
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -91,15 +89,6 @@ const TableHeader = styled(Grid)(({ theme }) => ({
   paddingBottom: 20,
 }));
 
-// const ProposalsContainer = styled(Grid)({
-//   paddingBottom: 72,
-// });
-
-// const UnderlineText = styled(Typography)({
-//   textDecoration: "underline",
-//   cursor: "pointer",
-// });
-
 const ProposalTableHeadText = styled(Typography)({
   fontWeight: "bold",
 });
@@ -115,7 +104,8 @@ export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
   const [open, setOpen] = useState(false);
-
+  const { data } = useDAO(id);
+  const { mutate } = useFlush();
   const name = dao && dao.metadata.unfrozenToken.name;
   const symbol = dao && dao.metadata.unfrozenToken.symbol.toUpperCase();
   const amountLocked = useMemo(() => {
@@ -206,6 +196,33 @@ export const Proposals: React.FC = () => {
     );
   }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
+  const ProposalDialog = useCallback(
+    (props: { setOpen: (open: boolean) => void; open: boolean }) => {
+      switch (dao?.metadata.template) {
+        case "treasury":
+          return <NewTreasuryProposalDialog {...props} />;
+        case "registry":
+          return <NewRegistryProposalDialog {...props} />;
+      }
+
+      return <div />;
+    },
+    [dao?.metadata.template]
+  );
+  const onFlush = useCallback(() => {
+    // @TODO: we need to add an atribute to the proposals
+    // type in order to know if it was flushed or not
+    if (proposalsData && proposalsData.length && data) {
+      mutate({
+        dao: data,
+        numOfProposalsToFlush: proposalsData.length + 1,
+      });
+      return;
+    }
+
+    console.log("no proposal data");
+  }, [data, mutate, proposalsData]);
+
   return (
     <>
       <PageLayout container wrap="nowrap">
@@ -221,16 +238,27 @@ export const Proposals: React.FC = () => {
                   Proposals
                 </Typography>
               </Grid>
-              <JustifyEndGrid item xs={6}>
-                <StyledButton
-                  variant="outlined"
-                  onClick={() => setOpen(true)}
-                  disabled={!dao}
-                >
-                  NEW PROPOSAL
-                </StyledButton>
-                <NewRegistryProposalDialog open={open} setOpen={setOpen} />
-              </JustifyEndGrid>
+              <Grid item container xs={6} justify="flex-end" spacing={2}>
+                <Grid item>
+                  <StyledButton
+                    variant="outlined"
+                    onClick={() => setOpen(true)}
+                    disabled={!dao}
+                  >
+                    NEW PROPOSAL
+                  </StyledButton>
+                  <ProposalDialog open={open} setOpen={setOpen} />
+                </Grid>
+                <Grid item>
+                  <StyledButton
+                    variant="outlined"
+                    onClick={onFlush}
+                    disabled={!dao}
+                  >
+                    FLUSH
+                  </StyledButton>
+                </Grid>
+              </Grid>
             </StyledContainer>
           </MainContainer>
           <StatsContainer container>
