@@ -16,6 +16,7 @@ import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
 import { toShortAddress } from "services/contracts/utils";
+import { ViewButton } from "./ViewButton";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -41,8 +42,7 @@ const CustomDialog = styled(Dialog)({
   },
 });
 
-const ViewButton = styled(Typography)({
-  cursor: "pointer",
+const StyledViewButton = styled(ViewButton)({
   marginTop: -30,
 });
 
@@ -140,17 +140,15 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
 
   return (
     <div>
-      <ViewButton
-        variant="subtitle1"
-        style={{
-          color: favor
-            ? theme.palette.secondary.main
-            : theme.palette.error.main,
-        }}
+      <StyledViewButton
+        variant="outlined"
+        customColor={
+          favor ? theme.palette.secondary.main : theme.palette.error.main
+        }
         onClick={handleClickOpen}
       >
         VIEW VOTES
-      </ViewButton>
+      </StyledViewButton>
       <CustomDialog
         open={open}
         onClose={handleClose}

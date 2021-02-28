@@ -20,6 +20,7 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { NewRegistryProposalDialog } from "../Registry";
 import { Button } from "@material-ui/core";
 import { NewTreasuryProposalDialog } from "../Treasury";
+import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -27,10 +28,6 @@ const StyledContainer = styled(Grid)(({ theme }) => ({
   paddingTop: "4%",
   boxSizing: "border-box",
 }));
-
-const JustifyEndGrid = styled(Grid)({
-  textAlign: "end",
-});
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -107,7 +104,8 @@ export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
   const [open, setOpen] = useState(false);
-
+  const { data } = useDAO(id);
+  const { mutate } = useFlush();
   const name = dao && dao.metadata.unfrozenToken.name;
   const symbol = dao && dao.metadata.unfrozenToken.symbol.toUpperCase();
   const amountLocked = useMemo(() => {
@@ -211,6 +209,19 @@ export const Proposals: React.FC = () => {
     },
     [dao?.metadata.template]
   );
+  const onFlush = useCallback(() => {
+    // @TODO: we need to add an atribute to the proposals
+    // type in order to know if it was flushed or not
+    if (proposalsData && proposalsData.length && data) {
+      mutate({
+        dao: data,
+        numOfProposalsToFlush: proposalsData.length + 1,
+      });
+      return;
+    }
+
+    console.log("no proposal data");
+  }, [data, mutate, proposalsData]);
 
   return (
     <>
@@ -227,16 +238,27 @@ export const Proposals: React.FC = () => {
                   Proposals
                 </Typography>
               </Grid>
-              <JustifyEndGrid item xs={6}>
-                <StyledButton
-                  variant="outlined"
-                  onClick={() => setOpen(true)}
-                  disabled={!dao}
-                >
-                  NEW PROPOSAL
-                </StyledButton>
-                <ProposalDialog open={open} setOpen={setOpen} />
-              </JustifyEndGrid>
+              <Grid item container xs={6} justify="flex-end" spacing={2}>
+                <Grid item>
+                  <StyledButton
+                    variant="outlined"
+                    onClick={() => setOpen(true)}
+                    disabled={!dao}
+                  >
+                    NEW PROPOSAL
+                  </StyledButton>
+                  <NewRegistryProposalDialog open={open} setOpen={setOpen} />
+                </Grid>
+                <Grid item>
+                  <StyledButton
+                    variant="outlined"
+                    onClick={onFlush}
+                    disabled={!dao}
+                  >
+                    FLUSH
+                  </StyledButton>
+                </Grid>
+              </Grid>
             </StyledContainer>
           </MainContainer>
           <StatsContainer container>
