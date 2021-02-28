@@ -66,6 +66,11 @@ export interface Transfer {
   recipient: string;
 }
 
+export interface Registry {
+  key: string;
+  value: string;
+}
+
 export interface ProposeParams {
   contractAddress: string;
   tezos: TezosToolkit;

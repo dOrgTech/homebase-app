@@ -206,6 +206,11 @@ export const theme = createMuiTheme({
         padding: 0,
       },
     },
+    MuiSelect: {
+      selectMenu: {
+        textAlign: "right",
+      },
+    },
     MuiSwitch: {
       root: {
         width: 75,

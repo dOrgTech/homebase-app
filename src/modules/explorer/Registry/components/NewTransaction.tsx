@@ -50,11 +50,26 @@ const CustomContent = styled(DialogContentText)({
   marginBottom: "0px !important",
 });
 
-export const NewTransaction: React.FC<any> = ({ setShowDialog }) => {
+export const NewTransaction: React.FC<any> = ({
+  setShowDialog,
+  setIsUpdate,
+  setShowUpdateDialog,
+}) => {
   const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
     setOpen(false);
+    setShowDialog(false);
+  };
+
+  const handleOption = (state: boolean) => {
+    if (state) {
+      setIsUpdate(true);
+    } else {
+      setIsUpdate(false);
+    }
+    setOpen(false);
+    setShowUpdateDialog(true);
     setShowDialog(false);
   };
 
@@ -86,10 +101,18 @@ export const NewTransaction: React.FC<any> = ({ setShowDialog }) => {
         </Title>
         <DialogContent>
           <CustomContent id="alert-dialog-new-transaction">
-            <Option variant="subtitle1" color="textSecondary">
+            <Option
+              variant="subtitle1"
+              color="textSecondary"
+              onClick={() => handleOption(false)}
+            >
               Add to Registry{" "}
             </Option>
-            <Option variant="subtitle1" color="textSecondary">
+            <Option
+              variant="subtitle1"
+              color="textSecondary"
+              onClick={() => handleOption(true)}
+            >
               Update Registry
             </Option>
           </CustomContent>

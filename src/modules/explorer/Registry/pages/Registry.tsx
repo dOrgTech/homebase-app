@@ -7,6 +7,7 @@ import { RegistryHeader } from "../components/RegistryHeader";
 import { RegistryTableRow } from "../components/TableRow";
 import { RegistryHistoryRow } from "../components/HistoryRow";
 import { NewTransaction } from "../components/NewTransaction";
+import { UpdateRegistryDialog } from "../components/UpdateRegistryDialog";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -77,6 +78,8 @@ export const Registry: React.FC = () => {
   }>();
 
   const [showDialog, setShowDialog] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
 
   const data = [
     { name: "Registry item", operationId: "092323221122" },
@@ -188,7 +191,19 @@ export const Registry: React.FC = () => {
           ) : null}
         </TableContainer>
       </Grid>
-      {showDialog ? <NewTransaction setShowDialog={setShowDialog} /> : null}
+      {showDialog ? (
+        <NewTransaction
+          setShowDialog={setShowDialog}
+          setIsUpdate={setIsUpdate}
+          setShowUpdateDialog={setShowUpdateDialog}
+        />
+      ) : null}
+      {showUpdateDialog ? (
+        <UpdateRegistryDialog
+          isUpdate={isUpdate}
+          setShowUpdateDialog={setShowUpdateDialog}
+        />
+      ) : null}
     </PageLayout>
   );
 };
