@@ -62,12 +62,12 @@ const SendContainer = styled(Grid)({
 });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
-  height: 55,
-  display: "flex",
+  height: 60,
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: "0px 24px",
   cursor: "pointer",
+  overflowX: "auto",
 }));
 
 const SwitchContainer = styled(Grid)({
@@ -76,7 +76,7 @@ const SwitchContainer = styled(Grid)({
 
 const TransferActive = styled(Grid)({
   height: 53,
-  width: 51,
+  minWidth: 51,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -84,8 +84,8 @@ const TransferActive = styled(Grid)({
 
 const AddButton = styled(Paper)({
   marginLeft: 12,
-  height: 31,
-  width: 31,
+  minHeight: 31,
+  minWidth: 31,
   textAlign: "center",
   padding: 0,
   background: "#383939",
@@ -295,7 +295,11 @@ export const NewTreasuryProposalDialog: React.FC<{
                           render={(arrayHelpers) => (
                             <>
                               {isBatch ? (
-                                <BatchBar container direction="row">
+                                <BatchBar
+                                  container
+                                  direction="row"
+                                  wrap="nowrap"
+                                >
                                   {values.transfers.map((_, index) => {
                                     return (
                                       <TransferActive

@@ -41,7 +41,6 @@ const TransactionsSchema = {
 v.addSchema(TransactionsSchema);
 export const validateTransactionsJSON = (importedJSON: any) => {
   const validation = v.validate(importedJSON, TransactionsSchema);
-  console.log(validation);
   if (validation.errors.length) {
     return validation.errors;
   }
