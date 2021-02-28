@@ -1,9 +1,10 @@
 import { stringToHex } from "services/contracts/utils";
-import { MetadataParams } from "services/contracts/baseDAO/metadataCarrier/types";
+import { MetadataParams } from "services/contracts/metadataCarrier/types";
 
 export const setMetadataJSON = ({
   description,
   authors,
+  template,
   frozenToken: { name: fName, symbol: fSymbol, decimals: fDecimals },
   unfrozenToken: { name: uName, symbol: uSymbol, decimals: uDecimals },
 }: MetadataParams): Record<string, any> => ({
@@ -11,6 +12,7 @@ export const setMetadataJSON = ({
   name: uName,
   description,
   authors,
+  template,
   interfaces: ["TZIP-12", "TZIP-17"],
   views: [
     {

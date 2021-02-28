@@ -18,14 +18,15 @@ import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleGovernanceFormErrors } from "modules/creator/utils";
 import { VotingSettings } from "services/contracts/baseDAO/types";
 
-const CustomTypography = styled(Typography)({
+const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
-  borderBottom: "1px solid #3D3D3D",
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   marginTop: 10,
   marginBottom: 33,
-});
+}));
 
 const ErrorText = styled(Typography)({
+  display: "block",
   fontSize: 14,
   color: "red",
 });
@@ -38,39 +39,38 @@ const SpacingContainer = styled(Grid)({
   marginTop: 25,
 });
 
-const CustomInputContainer = styled(Grid)({
-  border: "1px solid #3D3D3D",
+const CustomInputContainer = styled(Grid)(({ theme }) => ({
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
   marginTop: 14,
-  "&:first-child": {
-    borderRight: "none",
-  },
-  "&:last-child": {
+  "&:nth-child(2)": {
     borderLeft: "none",
+    borderRight: "none",
+    [theme.breakpoints.down("sm")]: {
+      borderLeft: `1px solid ${theme.palette.primary.light}`,
+      borderRight: `1px solid ${theme.palette.primary.light}`,
+    },
   },
-});
+}));
 
-const AdditionContainer = styled(Grid)({
-  border: "1px solid #3D3D3D",
+const AdditionContainer = styled(Grid)(({ theme }) => ({
+  marginTop: 14,
+  border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
-});
+}));
 
 const GridItemCenter = styled(Grid)({
   textAlign: "center",
 });
 
-const ItemContainer = styled(Grid)({
+const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
   padding: 12,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
   },
-});
-
-const Title = styled(Typography)({
-  marginLeft: 10,
-});
+}));
 
 const StyledSlider = withStyles({
   root: {
@@ -97,7 +97,7 @@ const StyledSlider = withStyles({
 const CustomSliderValue = styled(withTheme(Paper))((props) => ({
   boxShadow: "none",
   height: 62,
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${props.theme.palette.primary.light}`,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -184,8 +184,8 @@ const GovernanceForm = ({
         </Typography>
       </SecondContainer>
 
-      <Grid container direction="row">
-        <CustomInputContainer item xs={4}>
+      <Grid container direction="row" wrap="wrap">
+        <CustomInputContainer item xs={12} sm={4}>
           <ItemContainer
             container
             direction="row"
@@ -208,7 +208,7 @@ const GovernanceForm = ({
             <ErrorText>{errors.votingDays}</ErrorText>
           ) : null}
         </CustomInputContainer>
-        <CustomInputContainer item xs={4}>
+        <CustomInputContainer item xs={12} sm={4}>
           <ItemContainer
             container
             direction="row"
@@ -231,7 +231,7 @@ const GovernanceForm = ({
             <ErrorText>{errors.votingHours}</ErrorText>
           ) : null}
         </CustomInputContainer>
-        <CustomInputContainer item xs={4}>
+        <CustomInputContainer item xs={12} sm={4}>
           <ItemContainer
             container
             direction="row"
@@ -250,12 +250,12 @@ const GovernanceForm = ({
               <Typography color="textSecondary">minutes</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.votingMinutes && touched.votingMinutes ? (
-            <ErrorText>{errors.votingMinutes}</ErrorText>
-          ) : null}
         </CustomInputContainer>
       </Grid>
 
+      {errors.votingMinutes && touched.votingMinutes ? (
+        <ErrorText>{errors.votingMinutes}</ErrorText>
+      ) : null}
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -266,13 +266,8 @@ const GovernanceForm = ({
         </Typography>
       </SecondContainer>
 
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
-        <AdditionContainer item xs={3}>
+      <Grid container direction="row" alignItems="center">
+        <AdditionContainer item xs={11} sm={4}>
           <ItemContainer
             container
             direction="row"
@@ -304,7 +299,7 @@ const GovernanceForm = ({
             </Typography>
           </Grid>
         </Grid>
-        <AdditionContainer item xs={2}>
+        <AdditionContainer item xs={5} sm={3}>
           <ItemContainer
             container
             direction="row"
@@ -324,11 +319,18 @@ const GovernanceForm = ({
             <ErrorText>{errors.proposeStakePercentage}</ErrorText>
           ) : null}
         </AdditionContainer>
-        <Grid item xs={5}>
-          <Grid item container>
-            <Title variant="subtitle1" color="textSecondary">
-              * Proposal size
-            </Title>
+        <Grid item xs={1}>
+          <Grid item container justify="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              *
+            </Typography>
+          </Grid>
+        </Grid>
+        <Grid item xs={6} sm={3}>
+          <Grid item container justify="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              Proposal size
+            </Typography>
           </Grid>
         </Grid>
       </Grid>
@@ -342,8 +344,14 @@ const GovernanceForm = ({
           Returned Stake After Proposal Rejection
         </Typography>
 
-        <Grid container direction="row" alignItems="center" spacing={1}>
-          <GridNoPadding item xs={8}>
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          spacing={1}
+          style={{ marginTop: 14 }}
+        >
+          <GridNoPadding item xs={8} sm={9}>
             <Field name="frozenScaleValue">
               {() => (
                 <StyledSlider
@@ -355,11 +363,10 @@ const GovernanceForm = ({
               )}
             </Field>
           </GridNoPadding>
-          <GridNoPadding item xs={4}>
+          <GridNoPadding item xs={4} sm={3}>
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
-                {getIn(values, "frozenScaleValue")}% of Frozen{" "}
-                {orgSettings.symbol}
+                {getIn(values, "frozenScaleValue")}%
               </Value>
             </CustomSliderValue>
           </GridNoPadding>
@@ -378,7 +385,7 @@ const GovernanceForm = ({
         alignItems="center"
         style={{ marginTop: 14 }}
       >
-        <AdditionContainer item xs={4}>
+        <AdditionContainer item xs={12} sm={4}>
           <ItemContainer
             container
             direction="row"
@@ -401,7 +408,7 @@ const GovernanceForm = ({
             <ErrorText>{errors.minXtzAmount}</ErrorText>
           ) : null}
         </AdditionContainer>
-        <AdditionContainer item xs={4}>
+        <AdditionContainer item xs={12} sm={4}>
           <ItemContainer
             container
             direction="row"
@@ -438,7 +445,7 @@ const GovernanceForm = ({
         alignItems="center"
         style={{ marginTop: 14 }}
       >
-        <AdditionContainer item xs={4}>
+        <AdditionContainer item xs={12} sm={4}>
           <ItemContainer
             container
             direction="row"
@@ -472,7 +479,7 @@ const GovernanceForm = ({
       </SpacingContainer>
 
       <LastInput container direction="row" alignItems="center">
-        <AdditionContainer item xs={4}>
+        <AdditionContainer item xs={12} sm={4}>
           <ItemContainer
             container
             direction="row"

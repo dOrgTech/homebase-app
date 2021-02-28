@@ -5,6 +5,8 @@ import {
   Paper,
   styled,
   Typography,
+  useMediaQuery,
+  useTheme,
   withTheme,
 } from "@material-ui/core";
 import React, { useCallback, useContext, useEffect } from "react";
@@ -18,10 +20,11 @@ import {
 const CustomCard = styled(withTheme(Grid))((props) => ({
   minHeight: 248,
   boxShadow: "none",
-  width: 380,
+  maxWidth: 380,
   background: props.theme.palette.primary.main,
-  border: "1px solid #3D3D3D",
+  border: `1px solid ${props.theme.palette.primary.light}`,
   boxSizing: "border-box",
+  marginBottom: 16,
   borderRadius: "0px",
   "&:first-child": {
     marginLeft: "0px",
@@ -44,12 +47,12 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
   alignItems: "center",
   display: "flex",
   justifyContent: "center",
-  paddingRight: 29,
-  borderTop: "1px solid #3D3D3D",
+  padding: "0 25px",
+  borderTop: `1px solid ${props.theme.palette.primary.light}`,
   cursor: "pointer",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
 }));
 
@@ -58,6 +61,7 @@ const CustomCardContent = styled(CardContent)({
   "&:last-child": {
     paddingBottom: "0px",
   },
+  textAlign: "left",
   minHeight: 168,
 });
 
@@ -73,6 +77,8 @@ const Subtitle = styled(Typography)({
 export const SelectTemplate = (): JSX.Element => {
   const { dispatch } = useContext(CreatorContext);
   const history = useHistory();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     dispatch({
@@ -98,23 +104,22 @@ export const SelectTemplate = (): JSX.Element => {
 
   return (
     <Box>
-      <Box>
+      <Box textAlign={isMobile ? "center" : "left"}>
         <Typography variant="h3" color="textSecondary">
           Select template
         </Typography>
         <Phrase variant="subtitle1" color="textSecondary">
           Create an organization by picking a template below.
         </Phrase>
-
         <Grid container direction="row" justify="center" wrap="wrap">
           <Grid item>
             <CustomCard>
               <CustomCardContent>
                 <Grid container direction="row" alignItems="center">
-                  <Grid item xs={12} sm={12} md={6} lg={4}>
+                  <Grid item xs={5}>
                     <Circle />
                   </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={8}>
+                  <Grid item xs={7}>
                     <Typography variant="subtitle1" color="textSecondary">
                       Treasury
                     </Typography>
@@ -140,10 +145,10 @@ export const SelectTemplate = (): JSX.Element => {
             <CustomCard>
               <CustomCardContent>
                 <Grid container direction="row" alignItems="center">
-                  <Grid item xs={12} sm={12} md={6} lg={4}>
+                  <Grid item xs={5}>
                     <Circle />
                   </Grid>
-                  <Grid item xs={12} sm={12} md={6} lg={8}>
+                  <Grid item xs={7}>
                     <Typography variant="subtitle1" color="textSecondary">
                       Registry
                     </Typography>

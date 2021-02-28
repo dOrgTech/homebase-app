@@ -1,5 +1,12 @@
 import React from "react";
-import { styled, Grid, Box, Typography, IconButton } from "@material-ui/core";
+import {
+  styled,
+  Grid,
+  Box,
+  Typography,
+  IconButton,
+  useTheme,
+} from "@material-ui/core";
 import dayjs from "dayjs";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
@@ -8,17 +15,11 @@ import ProgressBar from "react-customizable-progressbar";
 import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
 
-const progressColorMap = {
-  success: "#81FEB7",
-  warning: "#DBDE39",
-  danger: "#DE3939",
-};
-
-const ProposalTableRowContainer = styled(Grid)({
+const ProposalTableRowContainer = styled(Grid)(({ theme }) => ({
   height: 155,
-  borderBottom: "2px solid #3D3D3D",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   cursor: "pointer",
-});
+}));
 
 export interface ProposalTableRowData {
   title: string;
@@ -58,9 +59,9 @@ const ProgressText = styled(Typography)(
   })
 );
 
-const ArrowButton = styled(IconButton)({
-  color: "#3D3D3D",
-});
+const ArrowButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.primary.light,
+}));
 
 export const mapProposalData = (
   proposalData: ProposalWithStatus & { quorumTreshold: number },
@@ -102,7 +103,10 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
   id,
 }) => {
   const history = useHistory();
-  const color = support ? "success" : "danger";
+  const theme = useTheme();
+  const color = support
+    ? theme.palette.secondary.main
+    : theme.palette.error.main;
   const formattedDate = dayjs(date).format("MM/DD/YYYY");
 
   return (
@@ -137,19 +141,17 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
                 progress={value}
                 radius={32}
                 strokeWidth={4}
-                strokeColor={progressColorMap[color]}
+                strokeColor={color}
                 trackStrokeWidth={2}
-                trackStrokeColor={"#3d3d3d"}
+                trackStrokeColor={theme.palette.primary.light}
               >
                 <div className="indicator">
-                  <ProgressText textColor={progressColorMap[color]}>
-                    {value}%
-                  </ProgressText>
+                  <ProgressText textColor={color}>{value}%</ProgressText>
                 </div>
               </ProgressBar>
             </Grid>
             <Grid item>
-              <SupportText textColor={progressColorMap[color]}>
+              <SupportText textColor={color}>
                 {color === "danger" ? "OPPOSE" : "SUPPORT"}
               </SupportText>
             </Grid>

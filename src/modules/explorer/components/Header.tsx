@@ -1,30 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { NewTreasuryProposalDialog } from "modules/explorer/Treasury";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
-  height: 184,
-  paddingLeft: "6%",
-  paddingRight: "6%",
-  paddingTop: "4%",
+  height: 104,
   boxSizing: "border-box",
-}));
-
-const StyledButton = styled(withTheme(Button))((props) => ({
-  height: 53,
-  color: props.theme.palette.text.secondary,
-  borderColor: props.theme.palette.secondary.main,
-  minWidth: 171,
+  display: "flex",
+  alignItems: "center",
 }));
 
 const JustifyEndGrid = styled(Grid)({
   textAlign: "end",
 });
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  height: 53,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+}));
+
 export const Header: React.FC<{
   name: string;
-  buttonLabel: string;
-}> = ({ name, buttonLabel }) => {
+}> = ({ name }) => {
+  const [open, setOpen] = useState(false);
+
   return (
     <StyledContainer container direction="row">
       <Grid item xs={6}>
@@ -36,7 +37,10 @@ export const Header: React.FC<{
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>
-        <StyledButton variant="outlined">{buttonLabel}</StyledButton>
+        <StyledButton variant="outlined" onClick={() => setOpen(true)}>
+          NEW PROPOSAL
+        </StyledButton>
+        <NewTreasuryProposalDialog open={open} setOpen={setOpen} />
       </JustifyEndGrid>
     </StyledContainer>
   );

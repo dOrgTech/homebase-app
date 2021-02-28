@@ -1,12 +1,11 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
-import { dtoToStorage } from "services/bakingBad/storage/mapper";
-import { StorageDTO, Storage } from "services/bakingBad/storage/types";
+import { StorageDTO } from "services/bakingBad/storage/types";
 
 export const getStorage = async (
   contractAddress: string,
   network: Network
-): Promise<Storage> => {
+): Promise<StorageDTO> => {
   const url = `${API_URL}/contract/${network}/${contractAddress}/storage`;
 
   const response = await fetch(url);
@@ -17,5 +16,5 @@ export const getStorage = async (
 
   const result: StorageDTO = await response.json();
 
-  return dtoToStorage(result);
+  return result;
 };

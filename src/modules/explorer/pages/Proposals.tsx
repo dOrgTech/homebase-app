@@ -5,20 +5,21 @@ import {
   Typography,
   LinearProgress,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-
-import { NewProposalDialog } from "modules/explorer/components/NewProposalDialog";
 import {
   ProposalTableRowData,
   ProposalTableRow,
   mapProposalData,
 } from "modules/explorer/components/ProposalTableRow";
-import { SideBar } from "modules/explorer/components/SideBar";
-import { TokenHoldersDialog } from "modules/explorer/components/TokenHoldersDialog";
+import { SideBar } from "modules/explorer/components";
+import { TokenHoldersDialog } from "modules/explorer/components/TokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { NewRegistryProposalDialog } from "../Registry";
+import { Button } from "@material-ui/core";
+import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -27,49 +28,45 @@ const StyledContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
 }));
 
-const JustifyEndGrid = styled(Grid)({
-  textAlign: "end",
-});
-
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
   minHeight: "calc(100vh - 102px)",
 }));
 
-const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 0,
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
-const StatsBox = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const StatsBox = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   width: "unset",
   "&:last-child": {
     borderRight: "none",
   },
-});
+}));
 
 const NoProposals = styled(Typography)({
   marginTop: 20,
   marginBottom: 20,
 });
 
-const StatsContainer = styled(Grid)({
+const StatsContainer = styled(Grid)(({ theme }) => ({
   height: 175,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
 });
 
-const LockedTokensBar = styled(LinearProgress)({
+const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   width: "100%",
   "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D",
+    background: `${theme.palette.primary.light}`,
   },
-});
+}));
 
 const VotingAddresses = styled(StatsBox)({
   minWidth: 250,
@@ -86,10 +83,10 @@ const TableContainer = styled(Box)({
   boxSizing: "border-box",
 });
 
-const TableHeader = styled(Grid)({
-  borderBottom: "2px solid #3D3D3D",
+const TableHeader = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
-});
+}));
 
 // const ProposalsContainer = styled(Grid)({
 //   paddingBottom: 72,
@@ -104,12 +101,21 @@ const ProposalTableHeadText = styled(Typography)({
   fontWeight: "bold",
 });
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  height: 53,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+}));
+
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
-
-  const name = dao && dao.unfrozenToken.name;
-  const symbol = dao && dao.unfrozenToken.symbol.toUpperCase();
+  const [open, setOpen] = useState(false);
+  const { data } = useDAO(id);
+  const { mutate } = useFlush();
+  const name = dao && dao.metadata.unfrozenToken.name;
+  const symbol = dao && dao.metadata.unfrozenToken.symbol.toUpperCase();
   const amountLocked = useMemo(() => {
     if (!dao) {
       return 0;
@@ -164,11 +170,11 @@ export const Proposals: React.FC = () => {
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
       .map((proposal) =>
         mapProposalData(
-          { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+          { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
           dao?.address
         )
       );
-  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
+  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
   const passedProposals = useMemo<ProposalTableRowData[]>(() => {
     if (!proposalsData) {
@@ -179,11 +185,11 @@ export const Proposals: React.FC = () => {
       .filter((proposalData) => proposalData.status === ProposalStatus.PASSED)
       .map((proposal) =>
         mapProposalData(
-          { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+          { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
           dao?.address
         )
       );
-  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
+  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
   const allProposals = useMemo(() => {
     if (!proposalsData) {
@@ -192,16 +198,30 @@ export const Proposals: React.FC = () => {
 
     return proposalsData.map((proposal) =>
       mapProposalData(
-        { ...proposal, quorumTreshold: dao?.quorumTreshold || 0 },
+        { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
         dao?.address
       )
     );
-  }, [dao?.address, dao?.quorumTreshold, proposalsData]);
+  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
+
+  const onFlush = useCallback(() => {
+    // @TODO: we need to add an atribute to the proposals
+    // type in order to know if it was flushed or not
+    if (proposalsData && proposalsData.length && data) {
+      mutate({
+        dao: data,
+        numOfProposalsToFlush: proposalsData.length + 1,
+      });
+      return;
+    }
+
+    console.log("no proposal data");
+  }, [data, mutate, proposalsData]);
 
   return (
     <>
       <PageLayout container wrap="nowrap">
-        <SideBar />
+        <SideBar dao={id} />
         <Grid item xs>
           <MainContainer>
             <StyledContainer container direction="row">
@@ -213,9 +233,27 @@ export const Proposals: React.FC = () => {
                   Proposals
                 </Typography>
               </Grid>
-              <JustifyEndGrid item xs={6}>
-                <NewProposalDialog />
-              </JustifyEndGrid>
+              <Grid item container xs={6} justify="flex-end" spacing={2}>
+                <Grid item>
+                  <StyledButton
+                    variant="outlined"
+                    onClick={() => setOpen(true)}
+                    disabled={!dao}
+                  >
+                    NEW PROPOSAL
+                  </StyledButton>
+                  <NewRegistryProposalDialog open={open} setOpen={setOpen} />
+                </Grid>
+                <Grid item>
+                  <StyledButton
+                    variant="outlined"
+                    onClick={onFlush}
+                    disabled={!dao}
+                  >
+                    FLUSH
+                  </StyledButton>
+                </Grid>
+              </Grid>
             </StyledContainer>
           </MainContainer>
           <StatsContainer container>

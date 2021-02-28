@@ -9,8 +9,10 @@ import {
   DialogTitle,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components/ProgressBar";
+import { ProgressBar } from "modules/explorer/components";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
+import { ViewButton } from "../ViewButton";
+import { theme } from "theme";
 
 interface TokenHolderDialogData {
   address: string;
@@ -33,8 +35,7 @@ const CustomDialog = styled(Dialog)({
   },
 });
 
-const ViewButton = styled(Typography)({
-  cursor: "pointer",
+const StyledViewButton = styled(ViewButton)({
   marginTop: -30,
 });
 
@@ -42,17 +43,17 @@ const TextHeader = styled(Typography)({
   fontWeight: "bold",
 });
 
-const Row = styled(Grid)({
+const Row = styled(Grid)(({ theme }) => ({
   padding: "33px 64px",
-  borderTop: "2px solid #3D3D3D",
+  borderTop: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 0,
   display: "flex",
   alignItems: "end",
   "&:last-child": {
     marginBottom: 30,
-    borderBottom: "2px solid #3D3D3D",
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
-});
+}));
 
 const TableHeader = styled(Grid)({
   padding: "33px 64px",
@@ -101,13 +102,13 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
 
   return (
     <div>
-      <ViewButton
-        variant="subtitle1"
-        color="secondary"
+      <StyledViewButton
+        customColor={theme.palette.secondary.main}
         onClick={handleClickOpen}
+        variant="outlined"
       >
         VIEW
-      </ViewButton>
+      </StyledViewButton>
       <CustomDialog
         open={open}
         onClose={handleClose}

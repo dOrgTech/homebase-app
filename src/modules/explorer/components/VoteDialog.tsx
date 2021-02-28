@@ -17,12 +17,15 @@ import { useParams } from "react-router-dom";
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 const StyledButton = styled(Button)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
     height: 53,
     color: theme.palette.text.secondary,
-    borderColor: support ? theme.palette.secondary.main : "#ED254E",
+    borderColor: support
+      ? theme.palette.secondary.main
+      : theme.palette.error.main,
     minWidth: 171,
     marginLeft: 22,
     borderRadius: 4,
@@ -61,11 +64,11 @@ const ProposalInfoExtra = styled(Grid)({
   minHeight: 50,
 });
 
-const FeeContainer = styled(Grid)({
-  borderTop: "2px solid #3D3D3D",
+const FeeContainer = styled(Grid)(({ theme }) => ({
+  borderTop: `2px solid ${theme.palette.primary.light}`,
   padding: "30px 66px",
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const SubmitContainer = styled(Grid)({
   height: 80,
@@ -95,6 +98,7 @@ export const VoteDialog: React.FC = () => {
   }>();
 
   const { data: proposal } = useProposal(daoId, proposalId);
+  const { data: dao } = useDAO(daoId);
 
   const { mutate } = useVote();
 
@@ -108,14 +112,16 @@ export const VoteDialog: React.FC = () => {
   };
 
   const onSubmit = () => {
-    mutate({
-      proposalKey: proposalId,
-      contractAddress: daoId,
-      amount,
-      support,
-    });
+    if (dao) {
+      mutate({
+        proposalKey: proposalId,
+        dao,
+        amount,
+        support,
+      });
 
-    handleClose();
+      handleClose();
+    }
   };
 
   return (

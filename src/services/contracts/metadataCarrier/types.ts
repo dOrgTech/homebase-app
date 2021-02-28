@@ -1,3 +1,4 @@
+import { DAOTemplate } from "../../../modules/creator/state/types";
 export interface FA2TokenMetadata {
   name: string;
   symbol: string;
@@ -11,6 +12,7 @@ export interface FA2MetadataParams {
 
 export interface DAOMetadataParams {
   description: string;
+  template: DAOTemplate;
   authors: string[];
 }
 
@@ -42,6 +44,7 @@ export interface DAOMetadataDTO {
 export interface DAOListMetadata {
   authors: string[];
   name: string;
+  template: DAOTemplate;
   description: string;
   unfrozenToken: {
     symbol: string;

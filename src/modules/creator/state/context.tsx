@@ -37,7 +37,12 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     quorumTreshold: 0,
   },
   memberSettings: {
-    tokenHolders: [],
+    tokenHolders: [
+      {
+        address: "",
+        balance: 0,
+      },
+    ],
     administrator: "",
   },
 };

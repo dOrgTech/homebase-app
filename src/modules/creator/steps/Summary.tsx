@@ -1,7 +1,7 @@
 import { Box, Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { TokenHoldersRow } from "modules/explorer/components/TokenHoldersRow";
+import { TokenHoldersRow } from "modules/explorer/components/TokenHolders";
 import {
   ActionTypes,
   TokenHolder,
@@ -29,27 +29,27 @@ const ContainerSpacingButton = styled(Typography)({
   cursor: "pointer",
 });
 
-const ContainerButton = styled(Typography)({
+const ContainerButton = styled(Typography)(({ theme }) => ({
   paddingBottom: 8,
   marginTop: 24,
-  borderBottom: "1px solid #3D3D3D",
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   cursor: "pointer",
-});
+}));
 
-const AdminContainer = styled(Grid)({
-  border: "1px solid #3D3D3D",
+const AdminContainer = styled(Grid)(({ theme }) => ({
+  border: `1px solid ${theme.palette.primary.light}`,
   marginTop: 16,
   padding: "16px 18px",
-});
+}));
 
 const AdminAddress = styled(Typography)({
   wordBreak: "break-all",
 });
 
-const UnderlinedGrid = styled(Grid)({
-  borderBottom: "1px solid #3D3D3D",
+const UnderlinedGrid = styled(Grid)(({ theme }) => ({
+  borderBottom: `1px solid ${theme.palette.primary.light}`,
   padding: 2,
-});
+}));
 
 const TokenHoldersContainer = styled(Box)({
   marginTop: 5,

@@ -11,11 +11,12 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components/ProgressBar";
+import { ProgressBar } from "modules/explorer/components";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
 import { toShortAddress } from "services/contracts/utils";
+import { ViewButton } from "./ViewButton";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -41,8 +42,7 @@ const CustomDialog = styled(Dialog)({
   },
 });
 
-const ViewButton = styled(Typography)({
-  cursor: "pointer",
+const StyledViewButton = styled(ViewButton)({
   marginTop: -30,
 });
 
@@ -50,17 +50,17 @@ const TextHeader = styled(Typography)({
   marginTop: 10,
 });
 
-const Row = styled(Grid)({
+const Row = styled(Grid)(({ theme }) => ({
   padding: "33px 64px",
-  borderTop: "2px solid #3D3D3D",
+  borderTop: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 0,
   display: "flex",
   alignItems: "end",
   "&:last-child": {
     marginBottom: 30,
-    borderBottom: "2px solid #3D3D3D",
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
-});
+}));
 
 const TableHeader = styled(Grid)({
   padding: "23px 64px",
@@ -79,13 +79,13 @@ const VotesContainer = styled(Grid)({
   marginTop: 66,
 });
 
-const NoTokens = styled(Grid)({
+const NoTokens = styled(Grid)(({ theme }) => ({
   padding: "33px 64px",
-  borderTop: "2px solid #3D3D3D",
+  borderTop: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 0,
   display: "flex",
   alignItems: "end",
-});
+}));
 
 export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   daoAddress,
@@ -114,7 +114,9 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
 
     return {
       votesSum,
-      votesQuorumPercentage: dao ? (votes / dao?.quorumTreshold) * 100 : 0,
+      votesQuorumPercentage: dao
+        ? (votes / dao.storage.quorumTreshold) * 100
+        : 0,
       votesSumPercentage: votes / votesSum,
       votesAmount: votes,
     };
@@ -138,15 +140,15 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
 
   return (
     <div>
-      <ViewButton
-        variant="subtitle1"
-        style={{
-          color: favor ? theme.palette.secondary.main : "#ED254E",
-        }}
+      <StyledViewButton
+        variant="outlined"
+        customColor={
+          favor ? theme.palette.secondary.main : theme.palette.error.main
+        }
         onClick={handleClickOpen}
       >
         VIEW VOTES
-      </ViewButton>
+      </StyledViewButton>
       <CustomDialog
         open={open}
         onClose={handleClose}
@@ -173,7 +175,9 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                 <Typography
                   variant="subtitle1"
                   style={{
-                    color: favor ? theme.palette.secondary.main : "#ED254E",
+                    color: favor
+                      ? theme.palette.secondary.main
+                      : theme.palette.error.main,
                   }}
                 >
                   {favor ? "FOR" : "OPPOSE"}

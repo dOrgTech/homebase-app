@@ -1,14 +1,17 @@
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useQuery } from "react-query";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { Ledger } from "services/bakingBad/ledger/types";
-import { getDAOTokenHolders } from "services/contracts/baseDAO";
+import { BaseDAO } from "..";
 
 export const useTokenHolders = (contractAddress: string) => {
-  const { network } = useTezos();
+  const { data: dao } = useDAO(contractAddress);
 
   const result = useQuery<Ledger, Error>(
     ["ledger", contractAddress],
-    async () => await getDAOTokenHolders(contractAddress, network)
+    () => (dao as BaseDAO).tokenHolders(),
+    {
+      enabled: !!dao,
+    }
   );
 
   return result;

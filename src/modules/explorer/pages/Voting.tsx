@@ -1,15 +1,17 @@
 import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
+import dayjs from "dayjs";
 
-import { SideBar } from "modules/explorer/components/SideBar";
+import { SideBar, ProgressBar } from "modules/explorer/components";
 import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
-import { ProgressBar } from "modules/explorer/components/ProgressBar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { mutezToXtz, toShortAddress } from "services/contracts/utils";
-import dayjs from "dayjs";
+import { StatusBadge } from "../components/StatusBadge";
+import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { UserBadge } from "../components/UserBadge";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -26,37 +28,37 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   minHeight: "calc(100vh - 102px)",
 }));
 
-const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: "4vh",
-});
+}));
 
-const CycleContainer = styled(Grid)({
+const CycleContainer = styled(Grid)(({ theme }) => ({
   padding: "20px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
-const StatsBox = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const StatsBox = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   width: "unset",
   "&:last-child": {
     borderRight: "none",
   },
-});
+}));
 
-const StatsContainer = styled(Grid)({
+const StatsContainer = styled(Grid)(({ theme }) => ({
   height: 175,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
 });
 
-const TextAgainst = styled(Typography)({
-  color: "#ED254E !important",
-});
+const TextAgainst = styled(Typography)(({ theme }) => ({
+  color: `${theme.palette.error.main} !important`,
+}));
 
 const Container = styled(Grid)({
   paddingTop: "4%",
@@ -74,21 +76,13 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-const Detail = styled(Grid)({
+const Detail = styled(Grid)(({ theme }) => ({
   height: 93,
   display: "flex",
   alignItems: "center",
   paddingBottom: 0,
-  borderBottom: "2px solid #3D3D3D",
-});
-
-// const MetaData = styled(Grid)({
-//   height: 70,
-//   display: "flex",
-//   alignItems: "center",
-//   justifyContent: "center",
-//   marginBottom: 20,
-// });
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
@@ -103,33 +97,15 @@ const HistoryItem = styled(Grid)({
   height: "auto",
 });
 
-const HistoryBadge = styled(Grid)({
-  borderRadius: 4,
-  textAlign: "center",
-});
-
 const DetailsContainer = styled(Grid)({
   paddingBottom: 0,
   padding: "40px 112px",
 });
 
-const BoxItem = styled(Grid)({
+const BoxItem = styled(Grid)(({ theme }) => ({
   paddingBottom: 24,
-  borderBottom: "2px solid #3D3D3D",
-});
-
-const styles = {
-  blue: {
-    background: "#3866F9",
-    color: "white",
-    padding: 2,
-  },
-  yellow: {
-    background: "#DBDE39",
-    color: "#1C1F23",
-    padding: 2,
-  },
-};
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
@@ -143,26 +119,57 @@ export const Voting: React.FC = () => {
   const proposalCycle = proposal ? proposal.cycle : "-";
   const upVotes = proposal ? proposal.upVotes : 0;
   const downVotes = proposal ? proposal.downVotes : 0;
-  const daoName = dao ? dao.unfrozenToken.name : "";
-  const upVotesPercentage = dao && (upVotes * 100) / dao.quorumTreshold;
-  const downVotesPercentage = dao && (downVotes * 100) / dao.quorumTreshold;
+  const daoName = dao ? dao.metadata.unfrozenToken.name : "";
+  const upVotesPercentage = dao && (upVotes * 100) / dao.storage.quorumTreshold;
+  const downVotesPercentage =
+    dao && (downVotes * 100) / dao.storage.quorumTreshold;
 
   const history = useMemo(() => {
     if (!proposal) {
       return [];
     }
-    return [
-      { date: dayjs(proposal.startDate).format("LLL"), status: "created" },
-      { date: dayjs(proposal.startDate).format("LLL"), status: "active" },
+    const baseStatuses: {
+      date: string;
+      status: ProposalStatus | "created";
+    }[] = [
+      {
+        date: dayjs(proposal.startDate).format("LLL"),
+        status: "created",
+      },
+      {
+        date: dayjs(proposal.startDate).format("LLL"),
+        status: ProposalStatus.ACTIVE,
+      },
     ];
+
+    switch (proposal.status) {
+      case ProposalStatus.DROPPED:
+        baseStatuses.push({
+          date: "",
+          status: ProposalStatus.DROPPED,
+        });
+        break;
+      case ProposalStatus.REJECTED:
+        baseStatuses.push({
+          date: "",
+          status: ProposalStatus.REJECTED,
+        });
+        break;
+      case ProposalStatus.PASSED:
+        baseStatuses.push({
+          date: "",
+          status: ProposalStatus.PASSED,
+        });
+        break;
+    }
+
+    return baseStatuses;
   }, [proposal]);
 
   const transfers = useMemo(() => {
     if (!proposal || !proposal.transfers) {
       return [];
     }
-
-    console.log(proposal.transfers);
 
     return proposal.transfers.map((transfer) => {
       //TODO: can the from be different?
@@ -188,7 +195,7 @@ export const Voting: React.FC = () => {
   return (
     <>
       <PageLayout container wrap="nowrap">
-        <SideBar />
+        <SideBar dao={daoId} />
         <Grid item xs>
           <MainContainer>
             <Container container direction="row">
@@ -206,6 +213,16 @@ export const Voting: React.FC = () => {
                     <Subtitle color="textSecondary">
                       Proposal Description
                     </Subtitle>
+                    {proposal && (
+                      <StatusBadge
+                        style={{ marginTop: 12 }}
+                        lg={2}
+                        md={6}
+                        sm={6}
+                        status={proposal.status}
+                        xs={2}
+                      />
+                    )}
                   </Grid>
                   <JustifyEndGrid item xs={6}>
                     <ButtonsContainer
@@ -345,20 +362,20 @@ export const Voting: React.FC = () => {
                     </Detail>
                   );
                 })}
-
-                {/* <MetaData item xs={12}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="center"
-                  >
-                    Proposal Metadata & #
-                  </Typography>
-                </MetaData> */}
               </Grid>
             </Grid>
             <Grid item xs={6}>
               <Grid container direction="row">
+                <HistoryContent item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    CREATED BY
+                  </Typography>
+                </HistoryContent>
+                {proposal && (
+                  <HistoryContent item xs={12}>
+                    <UserBadge address={proposal.proposer} />
+                  </HistoryContent>
+                )}
                 <HistoryContent item xs={12}>
                   <Typography variant="subtitle1" color="textSecondary">
                     HISTORY
@@ -367,17 +384,13 @@ export const Voting: React.FC = () => {
                 {history.map((item, index) => {
                   return (
                     <HistoryItem container direction="row" key={index}>
-                      <HistoryBadge
+                      <StatusBadge
                         item
                         lg={2}
                         md={6}
                         sm={6}
-                        style={
-                          item.status === "active" ? styles.yellow : styles.blue
-                        }
-                      >
-                        <Typography> {item.status.toUpperCase()} </Typography>
-                      </HistoryBadge>
+                        status={item.status}
+                      />
                       <Grid item lg={1} md={1} sm={1}></Grid>
                       <Grid item lg={9} md={12} sm={12}>
                         <Typography color="textSecondary">

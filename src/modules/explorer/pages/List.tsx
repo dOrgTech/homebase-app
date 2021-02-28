@@ -33,7 +33,7 @@ const TotalDao = styled(Typography)({
 
 const DaoContainer = styled(withTheme(Grid))((props) => ({
   height: 179,
-  border: "2px solid #3D3D3D",
+  border: `2px solid ${props.theme.palette.primary.light}`,
   boxSizing: "border-box",
   background: props.theme.palette.primary.main,
   boxShadow: "none",
@@ -52,15 +52,15 @@ const DaoContainer = styled(withTheme(Grid))((props) => ({
   },
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: "2px solid #81FEB7",
+    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
     cursor: "pointer",
   },
 }));
 
-const GridBackground = styled(Grid)({
+const GridBackground = styled(Grid)(({ theme }) => ({
   background: "inherit",
-  borderTop: "2px solid #3D3D3D",
-});
+  borderTop: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -97,8 +97,8 @@ export const DAOsList: React.FC = () => {
     if (daos) {
       const formattedDAOs = daos.map((dao) => ({
         id: dao.address,
-        name: dao.unfrozenToken.name,
-        symbol: dao.unfrozenToken.symbol,
+        name: dao.metadata.unfrozenToken.name,
+        symbol: dao.metadata.unfrozenToken.symbol,
         voting_addresses: dao.ledger.length,
       }));
 

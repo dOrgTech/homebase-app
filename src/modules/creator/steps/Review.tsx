@@ -1,12 +1,5 @@
 import React, { useContext, useEffect, useMemo } from "react";
-import {
-  Button,
-  Grid,
-  Box,
-  styled,
-  Typography,
-  makeStyles,
-} from "@material-ui/core";
+import { Button, Grid, Box, styled, Typography } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 
 import Rocket from "assets/img/rocket.svg";
@@ -16,90 +9,19 @@ import {
   CreatorContext,
   ActionTypes,
 } from "modules/creator/state";
-import { MetadataCarrierParameters } from "services/contracts/baseDAO/metadataCarrier/types";
+import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
 import { MigrationParams } from "services/contracts/baseDAO/types";
+import { DeploymentLoader } from "../components/DeploymentLoader";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
-});
-
-const WaitingText = styled(Typography)({
-  marginTop: 9,
-  fontWeight: "bold",
 });
 
 const CustomButton = styled(Button)({
   marginTop: 20,
 });
 
-const useStyles = makeStyles({
-  firstDot: {
-    animation: "$firstDot 2s linear infinite",
-  },
-  secondDot: {
-    animation: "$secondDot 2s linear infinite",
-  },
-  threeDot: {
-    animation: "$thirdDot 2s linear infinite",
-  },
-  "@keyframes firstDot": {
-    "0%": {
-      opacity: 1,
-    },
-    "65%": {
-      opacity: 1,
-    },
-    "66%": {
-      opacity: 0,
-    },
-    "100%": {
-      opacity: 0,
-    },
-  },
-  "@keyframes secondDot": {
-    "0%": {
-      opacity: 0,
-    },
-    "21%": {
-      opacity: 0,
-    },
-    "22%": {
-      opacity: 1,
-    },
-    "65%": {
-      opacity: 1,
-    },
-    "66%": {
-      opacity: 0,
-    },
-    "100%": {
-      opacity: 0,
-    },
-  },
-  "@keyframes thirdDot": {
-    "0%": {
-      opacity: 0,
-    },
-    "43%": {
-      opacity: 0,
-    },
-    "44%": {
-      opacity: 1,
-    },
-    "65%": {
-      opacity: 1,
-    },
-    "66%": {
-      opacity: 0,
-    },
-    "100%": {
-      opacity: 0,
-    },
-  },
-});
-
 export const Review: React.FC = () => {
-  const classes = useStyles();
   const { state, dispatch } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
@@ -112,23 +34,26 @@ export const Review: React.FC = () => {
         unfrozenToken,
         description: info.orgSettings.description,
         authors: [info.memberSettings.administrator],
+        template: state.data.template,
       },
     }),
     [
       frozenToken,
       info.memberSettings.administrator,
       info.orgSettings.description,
+      state.data.template,
       unfrozenToken,
     ]
   );
 
   const {
-    mutation: { mutate, error, data },
-    stateUpdates: { states, current },
+    mutation: { mutate, data, error },
+    states,
+    activeState,
   } = useOriginate(state.data.template);
   const history = useHistory();
 
-  //TODO: Fix infinite calling here
+  // TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
       if (!data && info && metadataCarrierParams)
@@ -149,60 +74,44 @@ export const Review: React.FC = () => {
   }, [data, dispatch]);
 
   return (
-    <Box maxWidth={650}>
-      <Grid
-        container
-        direction="column"
-        justify="center"
-        alignItems="flex-start"
-        style={{ height: "fit-content" }}
-      >
-        <Grid item>
-          <RocketImg src={Rocket} alt="rocket" />
+    <>
+      <Box width="100%">
+        <Grid
+          container
+          direction="column"
+          justify="center"
+          alignItems="flex-start"
+          style={{ height: "fit-content" }}
+        >
+          <Grid item>
+            <RocketImg src={Rocket} alt="rocket" />
+          </Grid>
+          <Grid item>
+            <Typography variant="h4" color="textSecondary">
+              Deploying <strong> {state.data.orgSettings.name} </strong> to the
+              Tezos Network
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Box>
+              {data && data.address ? (
+                <CustomButton
+                  color="secondary"
+                  variant="outlined"
+                  onClick={() => history.push("/explorer/dao/" + data.address)}
+                >
+                  Go to my DAO
+                </CustomButton>
+              ) : null}
+            </Box>
+          </Grid>
         </Grid>
-        <Grid item>
-          <Typography variant="h4" color="textSecondary">
-            Deploying <strong> {state.data.orgSettings.name} </strong> to the
-            Tezos Network
-          </Typography>
-        </Grid>
-        <Grid item>
-          {states.map((state, i) => (
-            <WaitingText
-              variant="subtitle1"
-              color="textSecondary"
-              key={`state-${i}`}
-            >
-              {state}
-            </WaitingText>
-          ))}
-          {current && !error ? (
-            <WaitingText variant="subtitle1" color="textSecondary">
-              {current} <span className={classes.firstDot}>.</span>
-              <span className={classes.secondDot}>.</span>
-              <span className={classes.threeDot}>.</span>
-            </WaitingText>
-          ) : (
-            error && (
-              <WaitingText variant="subtitle1" color="textSecondary">
-                {error}
-              </WaitingText>
-            )
-          )}
-
-          <Box>
-            {data && data.address ? (
-              <CustomButton
-                color="secondary"
-                variant="outlined"
-                onClick={() => history.push("/explorer/dao/" + data.address)}
-              >
-                Go to my DAO
-              </CustomButton>
-            ) : null}
-          </Box>
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+      <DeploymentLoader
+        states={states}
+        activeStep={activeState}
+        error={error}
+      />
+    </>
   );
 };

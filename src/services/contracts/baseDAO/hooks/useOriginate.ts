@@ -1,4 +1,3 @@
-import { deployDAO } from "services/contracts/baseDAO";
 import { OriginateParams } from "../types";
 import { DAOTemplate } from "../../../../modules/creator/state/types";
 import { useState } from "react";
@@ -9,20 +8,31 @@ import {
 } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 
-import { deployMetadataCarrier } from "services/contracts/baseDAO/metadataCarrier/deploy";
+import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy";
 import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { BaseDAO } from "..";
+
+const INITIAL_STATES = [
+  {
+    activeText: "",
+    completedText: "",
+  },
+  {
+    activeText: "",
+    completedText: "",
+  },
+  {
+    activeText: "",
+    completedText: "",
+  },
+];
 
 export const useOriginate = (template: DAOTemplate) => {
   const queryClient = useQueryClient();
-  const [stateUpdates, setStateUpdates] = useState<{
-    states: string[];
-    current: string;
-  }>({
-    states: [],
-    current: "",
-  });
+  const [states, setStates] = useState(INITIAL_STATES);
 
+  const [activeState, setActiveState] = useState<number>();
   const { tezos, connect } = useTezos();
 
   const result = useMutation<
@@ -31,12 +41,15 @@ export const useOriginate = (template: DAOTemplate) => {
     OriginateParams
   >(
     async ({ metadataParams, params }) => {
-      const states: string[] = [];
+      const updatedStates = INITIAL_STATES;
 
-      setStateUpdates({
-        states,
-        current: "Deploying Metadata Carrier Contract",
-      });
+      updatedStates[0] = {
+        activeText: "Deploying Metadata Carrier Contract",
+        completedText: "",
+      };
+
+      setActiveState(0);
+      setStates(updatedStates);
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
@@ -50,17 +63,20 @@ export const useOriginate = (template: DAOTemplate) => {
         );
       }
 
-      states.push(
-        `Deployed Metadata Carrier with address "${metadata.deployAddress}" and key "${metadata.keyName}"`
-      );
+      updatedStates[0] = {
+        ...updatedStates[0],
+        completedText: `Deployed Metadata Carrier with address "${metadata.deployAddress}" and key "${metadata.keyName}"`,
+      };
 
-      setStateUpdates({
-        states,
-        current: `Deploying ${template} DAO Contract`,
-      });
+      updatedStates[1] = {
+        activeText: `Deploying ${template} DAO Contract`,
+        completedText: "",
+      };
 
-      const contract = await deployDAO({
-        template,
+      setActiveState(1);
+      setStates(updatedStates);
+
+      const contract = await BaseDAO.baseDeploy(template, {
         tezos,
         metadata,
         params,
@@ -70,30 +86,28 @@ export const useOriginate = (template: DAOTemplate) => {
         throw new Error(`Error deploying ${template}DAO`);
       }
 
-      setStateUpdates({
-        states,
-        current: `Waiting for confirmation on ${template} DAO contract`,
-      });
+      updatedStates[1] = {
+        ...updatedStates[1],
+        completedText: `Deployed ${template} DAO contract with address "${contract.address}"`,
+      };
 
-      states.push(
-        `Deployed ${template} DAO contract with address "${contract.address}"`
-      );
+      updatedStates[2] = {
+        activeText: `Saving ${template} DAO address in IPFS`,
+        completedText: "",
+      };
 
-      setStateUpdates({
-        states,
-        current: `Saving ${template} DAO address in IPFS`,
-      });
+      setActiveState(2);
+      setStates(updatedStates);
 
       await addNewContractToIPFS(contract.address);
 
-      states.push(
-        `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`
-      );
+      updatedStates[2] = {
+        ...updatedStates[2],
+        completedText: `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`,
+      };
 
-      setStateUpdates({
-        states,
-        current: "",
-      });
+      setActiveState(3);
+      setStates(updatedStates);
 
       return contract;
     },
@@ -104,5 +118,5 @@ export const useOriginate = (template: DAOTemplate) => {
     }
   );
 
-  return { mutation: result, stateUpdates };
+  return { mutation: result, states, activeState };
 };

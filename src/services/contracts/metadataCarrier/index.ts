@@ -5,7 +5,7 @@ import {
   Wallet,
 } from "@taquito/taquito";
 import { bytes2Char, Tzip16ContractAbstraction } from "@taquito/tzip16";
-import { DAOListMetadata } from "services/contracts/baseDAO/metadataCarrier/types";
+import { DAOListMetadata } from "services/contracts/metadataCarrier/types";
 
 export const getDAOListMetadata = async (
   contract: ContractAbstraction<Wallet> & {
@@ -23,10 +23,13 @@ export const getDAOListMetadata = async (
     1: MichelsonMap<string, string>;
   } = await views.token_metadata().executeView(0);
 
+  console.log("Metadata: ", metadata.metadata);
+
   return {
     authors: metadata.metadata.authors || [],
     name: metadata.metadata.name || "",
     description: metadata.metadata.description || "",
+    template: (metadata.metadata as any).template,
     unfrozenToken: {
       symbol: bytes2Char(fa2Map.get("symbol") as string),
       name: bytes2Char(fa2Map.get("name") as string),

@@ -1,27 +1,93 @@
 import { Grid, styled, IconButton } from "@material-ui/core";
-import React from "react";
-import HouseIcon from "assets/logos/house.svg";
-import VotingIcon from "assets/logos/voting.svg";
+import React, { useMemo } from "react";
 
-const Bar = styled(Grid)({
+import { ReactComponent as HouseIcon } from "assets/logos/house.svg";
+import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
+import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
+import { useHistory, useLocation } from "react-router-dom";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+
+const Bar = styled(Grid)(({ theme }) => ({
   width: 102,
-  borderRight: "2px solid #3D3D3D",
-});
+  borderRight: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const SidebarButton = styled(IconButton)({
   paddingTop: 32,
   width: "100%",
 });
 
-export const SideBar: React.FC = () => {
+interface SideBarParams {
+  dao: string;
+  proposal?: string;
+}
+
+const ButtonIcon = ({
+  Icon,
+  isSelected,
+  handler,
+}: {
+  Icon: React.FC<{ stroke?: string }>;
+  isSelected: boolean;
+  handler: () => void;
+}): JSX.Element => {
+  return (
+    <SidebarButton onClick={handler}>
+      <Icon stroke={isSelected ? "#4BCF93" : "white"} />
+    </SidebarButton>
+  );
+};
+
+export const SideBar: React.FC<SideBarParams> = ({
+  dao: daoId,
+}: SideBarParams) => {
+  const history = useHistory();
+  const { pathname } = useLocation();
+  const { data: dao } = useDAO(daoId);
+
+  const SIDE_BAR_ICONS = useMemo(() => {
+    if (!dao) {
+      return [];
+    }
+
+    const commonButons = [
+      {
+        Icon: HouseIcon,
+        handler: () => history.push("/explorer/dao/" + daoId),
+        name: "dao",
+      },
+      {
+        Icon: VotingIcon,
+        handler: () => history.push("/explorer/proposals/" + daoId),
+        name: "proposals",
+      },
+    ];
+
+    switch (dao.metadata.template) {
+      case "treasury":
+        return [
+          ...commonButons,
+          {
+            Icon: TreasuryIcon,
+            handler: () => history.push("/explorer/treasury/" + daoId),
+            name: "treasury",
+          },
+        ];
+      case "registry":
+        return [...commonButons];
+    }
+  }, [dao, daoId, history]);
+
   return (
     <Bar item>
-      <SidebarButton>
-        <img src={HouseIcon} />
-      </SidebarButton>
-      <SidebarButton>
-        <img src={VotingIcon} />
-      </SidebarButton>
+      {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => (
+        <ButtonIcon
+          key={name}
+          Icon={Icon}
+          handler={handler}
+          isSelected={pathname.includes(name)}
+        />
+      ))}
     </Bar>
   );
 };

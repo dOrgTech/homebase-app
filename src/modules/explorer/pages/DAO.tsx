@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
-  Button,
   CircularProgress,
   Grid,
-  IconButton,
   styled,
   Typography,
 } from "@material-ui/core";
@@ -12,8 +10,6 @@ import Timer from "react-compound-timer";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { useHistory, useParams } from "react-router-dom";
 
-import HouseIcon from "assets/logos/house.svg";
-import VotingIcon from "assets/logos/voting.svg";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import VoteTimeIcon from "assets/logos/voteTime.svg";
 import {
@@ -21,31 +17,22 @@ import {
   ProposalTableRow,
   ProposalTableRowData,
 } from "modules/explorer/components/ProposalTableRow";
-import { TokenHoldersDialog } from "modules/explorer/components/TokenHoldersDialog";
+import {
+  TokenHoldersDialog,
+  TopHoldersTableRow,
+} from "modules/explorer/components/TokenHolders";
+import { SideBar } from "modules/explorer/components";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { TopHoldersTableRow } from "modules/explorer/components/TopHoldersTableRow";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
-import { toShortAddress } from "services/contracts/utils";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
-import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 
-const SideBar = styled(Grid)({
-  width: 102,
-  borderRight: "2px solid #3D3D3D",
-});
-
-const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
   padding: "40px 112px",
-  borderBottom: "2px solid #3D3D3D",
-});
-
-const SidebarButton = styled(IconButton)({
-  paddingTop: 32,
-  width: "100%",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -75,15 +62,15 @@ const BigIconContainer = styled(Box)({
   },
 });
 
-const StatsContainer = styled(Grid)({
+const StatsContainer = styled(Grid)(({ theme }) => ({
   height: 175,
-  borderBottom: "2px solid #3D3D3D",
-});
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
-const StatsBox = styled(Grid)({
-  borderRight: "2px solid #3D3D3D",
+const StatsBox = styled(Grid)(({ theme }) => ({
+  borderRight: `2px solid ${theme.palette.primary.light}`,
   width: "unset",
-});
+}));
 
 const TokensLocked = styled(StatsBox)({
   padding: "0 50px 0 112px",
@@ -98,12 +85,12 @@ const ActiveProposals = styled(StatsBox)({
   cursor: "pointer",
 });
 
-const LockedTokensBar = styled(LinearProgress)({
+const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   width: "100%",
   "&.MuiLinearProgress-colorSecondary": {
-    background: "#3D3D3D",
+    background: theme.palette.primary.light,
   },
-});
+}));
 
 const TableContainer = styled(Box)({
   width: "100%",
@@ -112,10 +99,10 @@ const TableContainer = styled(Box)({
   paddingBottom: "24px",
 });
 
-const TableHeader = styled(Grid)({
-  borderBottom: "2px solid #3D3D3D",
+const TableHeader = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
-});
+}));
 
 const UnderlineText = styled(Typography)({
   textDecoration: "underline",
@@ -135,11 +122,6 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
-const FlushButton = styled(Button)({
-  alignSelf: "center",
-  width: 150,
-});
-
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
     {children}
@@ -152,13 +134,12 @@ export const DAO: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data } = useDAO(id);
   const { data: members } = useTokenHoldersWithVotes(id);
-  const { mutate } = useFlush();
 
-  const name = data && data.unfrozenToken.name;
-  const description = data && data.description;
-  const symbol = data && data.unfrozenToken.symbol.toUpperCase();
+  const name = data && data.metadata.unfrozenToken.name;
+  const description = data && data.metadata.description;
+  const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
 
-  const votingPeriod = data && data.votingPeriod;
+  const votingPeriod = data && data.storage.votingPeriod;
   const originationTime = data && data.originationTime;
   const cycleInfo = useCycleInfo(originationTime, votingPeriod);
   const time = cycleInfo && cycleInfo.time;
@@ -213,20 +194,6 @@ export const DAO: React.FC = () => {
 
   const { data: proposalsData } = useProposals(data ? data.address : "");
 
-  const onFlush = () => {
-    // @TODO: we need to add an atribute to the proposals
-    // type in order to know if it was flushed or not
-    if (proposalsData && proposalsData.length) {
-      mutate({
-        contractAddress: data ? data.address : "",
-        numerOfProposalsToFlush: proposalsData.length + 1,
-      });
-      return;
-    }
-
-    console.log("no proposal data");
-  };
-
   const formattedMembers = useMemo(() => {
     if (!members) {
       return [];
@@ -234,7 +201,7 @@ export const DAO: React.FC = () => {
     return members
       .map((member) => {
         return {
-          username: toShortAddress(member.address),
+          username: member.address,
           weight: member.balances[0].toString(),
           votes: member.votes.toString(),
           proposals_voted: member.proposalsVoted,
@@ -252,11 +219,11 @@ export const DAO: React.FC = () => {
       .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
       .map((proposal) =>
         mapProposalData(
-          { ...proposal, quorumTreshold: data?.quorumTreshold || 0 },
+          { ...proposal, quorumTreshold: data?.storage.quorumTreshold || 0 },
           data?.address
         )
       );
-  }, [proposalsData, finished, data?.quorumTreshold, data?.address]);
+  }, [proposalsData, finished, data?.storage.quorumTreshold, data?.address]);
 
   const checkpoints = [
     {
@@ -268,14 +235,7 @@ export const DAO: React.FC = () => {
   ];
   return (
     <PageLayout container wrap="nowrap">
-      <SideBar item>
-        <SidebarButton>
-          <img src={HouseIcon} />
-        </SidebarButton>
-        <SidebarButton>
-          <img src={VotingIcon} />
-        </SidebarButton>
-      </SideBar>
+      <SideBar dao={id} />
       {!isLoading ? (
         <Grid item xs>
           <MainContainer container justify="space-between">
@@ -423,15 +383,6 @@ export const DAO: React.FC = () => {
                 </Typography>
               </Box>
             </ActiveProposals>
-            <Grid item xs container direction="column" justify="center">
-              <FlushButton
-                color="secondary"
-                variant="outlined"
-                onClick={onFlush}
-              >
-                Flush
-              </FlushButton>
-            </Grid>
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">
