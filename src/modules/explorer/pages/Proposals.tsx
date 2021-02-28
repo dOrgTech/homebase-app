@@ -5,7 +5,7 @@ import {
   Typography,
   LinearProgress,
 } from "@material-ui/core";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   ProposalTableRowData,
@@ -19,6 +19,7 @@ import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { NewRegistryProposalDialog } from "../Registry";
 import { Button } from "@material-ui/core";
+import { NewTreasuryProposalDialog } from "../Treasury";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -90,15 +91,6 @@ const TableHeader = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
 }));
-
-// const ProposalsContainer = styled(Grid)({
-//   paddingBottom: 72,
-// });
-
-// const UnderlineText = styled(Typography)({
-//   textDecoration: "underline",
-//   cursor: "pointer",
-// });
 
 const ProposalTableHeadText = styled(Typography)({
   fontWeight: "bold",
@@ -206,6 +198,20 @@ export const Proposals: React.FC = () => {
     );
   }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
+  const ProposalDialog = useCallback(
+    (props: { setOpen: (open: boolean) => void; open: boolean }) => {
+      switch (dao?.metadata.template) {
+        case "treasury":
+          return <NewTreasuryProposalDialog {...props} />;
+        case "registry":
+          return <NewRegistryProposalDialog {...props} />;
+      }
+
+      return <div />;
+    },
+    [dao?.metadata.template]
+  );
+
   return (
     <>
       <PageLayout container wrap="nowrap">
@@ -229,7 +235,7 @@ export const Proposals: React.FC = () => {
                 >
                   NEW PROPOSAL
                 </StyledButton>
-                <NewRegistryProposalDialog open={open} setOpen={setOpen} />
+                <ProposalDialog open={open} setOpen={setOpen} />
               </JustifyEndGrid>
             </StyledContainer>
           </MainContainer>
