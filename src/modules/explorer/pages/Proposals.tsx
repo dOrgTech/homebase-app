@@ -247,7 +247,7 @@ export const Proposals: React.FC = () => {
                   >
                     NEW PROPOSAL
                   </StyledButton>
-                  <NewRegistryProposalDialog open={open} setOpen={setOpen} />
+                  <ProposalDialog open={open} setOpen={setOpen} />
                 </Grid>
                 <Grid item>
                   <StyledButton
