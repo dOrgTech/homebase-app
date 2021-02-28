@@ -1,4 +1,7 @@
+import { Validator } from "jsonschema";
 import { Transfer } from "services/contracts/baseDAO";
+
+const v = new Validator();
 
 export const fromMigrationParamsFile = async (
   file: File
@@ -21,4 +24,27 @@ export const fromMigrationParamsFile = async (
     const decoder = new TextDecoder();
     return JSON.parse(decoder.decode(json as ArrayBuffer));
   }
+};
+
+const TransactionsSchema = {
+  id: "/Transaction",
+  type: "array",
+  items: {
+    additionalProperties: false,
+    properties: {
+      amount: { type: "number" },
+      recipient: { type: "string" },
+    },
+  },
+};
+
+v.addSchema(TransactionsSchema);
+export const validateTransactionsJSON = (importedJSON: any) => {
+  const validation = v.validate(importedJSON, TransactionsSchema);
+  console.log(validation);
+  if (validation.errors.length) {
+    return validation.errors;
+  }
+
+  return [];
 };

@@ -23,7 +23,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { xtzToMutez } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
-import { fromMigrationParamsFile } from "../utils";
+import { fromMigrationParamsFile, validateTransactionsJSON } from "../utils";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -275,6 +275,13 @@ export const NewTreasuryProposalDialog: React.FC<{
                       const transactionsParsed = await fromMigrationParamsFile(
                         file
                       );
+                      const errors = validateTransactionsJSON(
+                        transactionsParsed
+                      );
+                      if (errors.length) {
+                        // Show notification with error
+                        return;
+                      }
                       setIsBatch(true);
                       values.transfers = transactionsParsed;
                     }
