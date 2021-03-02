@@ -37,7 +37,7 @@ export interface ProposalTableRowData {
 
 const SupportText = styled(Typography)(
   ({ textColor }: { textColor: string }) => ({
-    paddingLeft: 20,
+    paddingLeft: 2,
     color: textColor,
   })
 );
@@ -123,7 +123,7 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
       alignItems="center"
       onClick={onClick}
     >
-      <Grid item xs={5}>
+      <Grid item xs={4}>
         <Box>
           <Typography variant="body1" color="textSecondary">
             {toShortAddress(title)}
@@ -136,11 +136,11 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
         </Box>
       </Grid>
       <Grid item xs={2}>
-        <Typography variant="body1" color="textSecondary">
+        <Typography variant="body1" color="textSecondary" align="center">
           {cycle || "-"}
         </Typography>
       </Grid>
-      <Grid item xs={5} container justify="space-between" alignItems="center">
+      <Grid item xs={3} container justify="space-between" alignItems="center">
         <Grid item>
           <Grid container alignItems="center">
             <Grid item>
@@ -161,6 +161,27 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
               <SupportText textColor={color}>
                 {color === "danger" ? "OPPOSE" : "SUPPORT"}
               </SupportText>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={3} container justify="space-between" alignItems="center">
+        <Grid item>
+          <Grid container alignItems="center">
+            <Grid item>
+              <ProgressBar
+                progress={value}
+                radius={32}
+                strokeWidth={4}
+                strokeColor="#3866F9"
+                trackStrokeWidth={2}
+                trackStrokeColor={theme.palette.primary.light}
+              >
+                <div className="indicator">
+                  <ProgressText textColor="#3866F9">{value}%</ProgressText>
+                </div>
+              </ProgressBar>
             </Grid>
           </Grid>
         </Grid>

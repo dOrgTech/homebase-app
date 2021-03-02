@@ -122,6 +122,10 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
+const ProposalTableHeadItem = styled(Typography)({
+  fontWeight: "bold",
+});
+
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
     {children}
@@ -386,21 +390,25 @@ export const DAO: React.FC = () => {
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
+              <Grid item xs={4}>
                 <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
               </Grid>
               <Grid item xs={2}>
-                <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
+                <ProposalTableHeadItem color="textSecondary" align="center">
+                  CYCLE
+                </ProposalTableHeadItem>
               </Grid>
-              <Grid item xs={5}>
-                <ProposalTableHeadText>STATUS</ProposalTableHeadText>
+              <Grid item xs={3}>
+                {/* <ProposalTableHeadText>STATUS</ProposalTableHeadText> */}
+              </Grid>
+              <Grid item xs={3}>
+                <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
               </Grid>
             </TableHeader>
             {activeProposals.length > 0 &&
               activeProposals.map((proposal, i) => (
                 <ProposalTableRow key={`proposal-${i}`} {...proposal} />
               ))}
-
             {activeProposals.length === 0 ? (
               <NoProposals variant="subtitle1" color="textSecondary">
                 No active proposals

@@ -337,7 +337,7 @@ export const Proposals: React.FC = () => {
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
+              <Grid item xs={4}>
                 <ProposalTableHeadText
                   variant="subtitle1"
                   color="textSecondary"
@@ -349,16 +349,24 @@ export const Proposals: React.FC = () => {
                 <ProposalTableHeadText
                   variant="subtitle1"
                   color="textSecondary"
+                  align="center"
                 >
                   CYCLE
                 </ProposalTableHeadText>
               </Grid>
-              <Grid item xs={5}>
-                <ProposalTableHeadText
+              <Grid item xs={3}></Grid>
+              <Grid item xs={3}>
+                {/* <ProposalTableHeadText
                   variant="subtitle1"
                   color="textSecondary"
                 >
                   STATUS
+                </ProposalTableHeadText> */}
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  THRESHOLD %
                 </ProposalTableHeadText>
               </Grid>
             </TableHeader>
