@@ -2,7 +2,6 @@ import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { useBalance } from "modules/common/hooks/useBalance";
 import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
 import { TransactionInfo } from "services/tzkt/types";
 import { Header, SideBar } from "modules/explorer/components";
@@ -10,6 +9,7 @@ import {
   TreasuryTableRow,
   TreasuryHistoryRow,
 } from "modules/explorer/Treasury";
+import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -73,50 +73,24 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
-export const SUPPORTED_TOKENS = ["XTZ"];
-
-interface BalanceInfo {
-  name: string;
-  balance?: number;
-}
-
 export const Holdings: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
   }>();
 
-  const [tokenBalances, setTokenBalances] = useState<BalanceInfo[]>([]);
+  const { data: tokenBalances } = useTokenBalances(id);
   const [treasuryMovements, setTreasuryMovements] = useState<TransactionInfo[]>(
     []
   );
 
-  const getBalance = useBalance();
   const transactions = useTreasuryInfo(id);
-  console.log(transactions);
 
   useEffect(() => {
     if (transactions.status === "success") {
       setTreasuryMovements(transactions.data);
     }
   }, [transactions]);
-
-  useEffect(() => {
-    (async () => {
-      const allBalances = SUPPORTED_TOKENS.map((token) =>
-        getBalance(id, token)
-      );
-      const balances = await Promise.all(allBalances);
-      const tokensInformation = SUPPORTED_TOKENS.map((token, index) => {
-        return {
-          name: token,
-          balance: balances[index],
-        };
-      });
-
-      setTokenBalances(tokensInformation);
-    })();
-  }, [getBalance, id]);
 
   return (
     <PageLayout container wrap="nowrap">
@@ -137,17 +111,16 @@ export const Holdings: React.FC = () => {
                     TOKEN BALANCES
                   </ProposalTableHeadText>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={6}>
                   <ProposalTableHeadText align={"right"}>
                     BALANCE
                   </ProposalTableHeadText>
                 </Grid>
-                <Grid item xs={1}></Grid>
               </BorderBottom>
             </Grid>
           </TableHeader>
 
-          {tokenBalances.length
+          {tokenBalances && tokenBalances.length
             ? tokenBalances.map((token, i) => (
                 <ListItemContainer key={`token-${i}`}>
                   <TreasuryTableRow {...token} />

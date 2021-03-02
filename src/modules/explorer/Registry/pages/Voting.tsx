@@ -8,10 +8,12 @@ import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { mutezToXtz, toShortAddress } from "services/contracts/utils";
-import { StatusBadge } from "../components/StatusBadge";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { UserBadge } from "../components/UserBadge";
+import { StatusBadge } from "../../components/StatusBadge";
+import {
+  ProposalStatus,
+  RegistryProposalWithStatus,
+} from "services/bakingBad/proposals/types";
+import { UserBadge } from "../../components/UserBadge";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -113,7 +115,8 @@ export const Voting: React.FC = () => {
     id: string;
   }>();
 
-  const { data: proposal } = useProposal(daoId, proposalId);
+  const { data: proposalData } = useProposal(daoId, proposalId);
+  const proposal = proposalData as RegistryProposalWithStatus | undefined;
   const { data: dao } = useDAO(daoId);
 
   const proposalCycle = proposal ? proposal.cycle : "-";
@@ -166,31 +169,13 @@ export const Voting: React.FC = () => {
     return baseStatuses;
   }, [proposal]);
 
-  const transfers = useMemo(() => {
-    if (!proposal || !proposal.transfers) {
+  const list = useMemo(() => {
+    if (!proposal) {
       return [];
     }
 
-    return proposal.transfers.map((transfer) => {
-      //TODO: can the from be different?
-      const from = "DAO's treasury";
-
-      const to =
-        transfer.beneficiary.toLowerCase() === daoId.toLowerCase()
-          ? "DAO's treasury"
-          : toShortAddress(transfer.beneficiary);
-
-      const currency =
-        transfer.currency === "mutez" ? "XTZ" : transfer.currency;
-
-      const value =
-        transfer.currency === "mutez"
-          ? mutezToXtz(transfer.amount)
-          : transfer.amount;
-
-      return `Transfer ${value}${currency} from ${from} to ${to}`;
-    });
-  }, [proposal, daoId]);
+    return proposal.list;
+  }, [proposal]);
 
   return (
     <>
@@ -340,7 +325,7 @@ export const Voting: React.FC = () => {
                   </Typography>
                 </BoxItem>
 
-                {transfers.map((item, index) => {
+                {list.map(({ key, value }, index) => {
                   return (
                     <Detail item xs={12} key={index}>
                       <Grid container direction="row">
@@ -355,7 +340,7 @@ export const Voting: React.FC = () => {
                         </Grid>
                         <Grid item xs={10}>
                           <Typography variant="subtitle1" color="textSecondary">
-                            {item}
+                            {key} - {value}
                           </Typography>
                         </Grid>
                       </Grid>

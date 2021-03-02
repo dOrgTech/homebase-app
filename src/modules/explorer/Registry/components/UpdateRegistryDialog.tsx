@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import {
   Grid,
   styled,
@@ -15,6 +15,8 @@ import {
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField, Select } from "formik-material-ui";
 import { Registry } from "services/contracts/baseDAO";
+import { ActionTypes } from "modules/explorer/ModalsContext";
+import { ModalsContext } from "modules/explorer/ModalsContext";
 
 const FullWidthSelect = styled(Select)({
   width: "100%",
@@ -144,11 +146,6 @@ const CustomTextarea = styled(TextField)({
   },
 });
 
-interface UpdateRegistryDialogData {
-  isUpdate: boolean;
-  setShowUpdateDialog: any;
-}
-
 interface Values {
   transfers: Registry[];
   description: string;
@@ -160,19 +157,28 @@ const INITIAL_FORM_VALUES: Values = {
   description: "",
 };
 
-export const UpdateRegistryDialog: React.FC<UpdateRegistryDialogData> = ({
-  isUpdate,
-  setShowUpdateDialog,
-}) => {
+export const UpdateRegistryDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
-  const [proposalFee, setProposalFee] = useState(0);
-  const [open, setOpen] = React.useState(true);
+  const [proposalFee] = useState(0);
+  const {
+    state: {
+      registryProposal: {
+        open,
+        params: { isUpdate },
+      },
+    },
+    dispatch,
+  } = useContext(ModalsContext);
 
-  const handleClose = () => {
-    setOpen(false);
-    setShowUpdateDialog(false);
-  };
+  const handleClose = useCallback(() => {
+    dispatch({
+      type: ActionTypes.CLOSE,
+      payload: {
+        modal: "registryProposal",
+      },
+    });
+  }, [dispatch]);
 
   const onSubmit = (values: Values, { setSubmitting }: any) => {
     setSubmitting(true);

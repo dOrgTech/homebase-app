@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
-import { NewRegistryProposalDialog } from "./NewRegistryProposalDialog";
+import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
+import { useParams } from "react-router";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -24,7 +25,8 @@ const StyledButton = styled(Button)(({ theme }) => ({
 export const RegistryHeader: React.FC<{
   name: string;
 }> = ({ name }) => {
-  const [open, setOpen] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const { dispatch } = useContext(ModalsContext);
 
   return (
     <StyledContainer container direction="row">
@@ -37,10 +39,20 @@ export const RegistryHeader: React.FC<{
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>
-        <StyledButton variant="outlined" onClick={() => setOpen(true)}>
+        <StyledButton
+          variant="outlined"
+          onClick={() =>
+            dispatch({
+              type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
+              payload: {
+                isUpdate: false,
+                daoAddress: id,
+              },
+            })
+          }
+        >
           NEW ITEM
         </StyledButton>
-        <NewRegistryProposalDialog open={open} setOpen={setOpen} />
       </JustifyEndGrid>
     </StyledContainer>
   );

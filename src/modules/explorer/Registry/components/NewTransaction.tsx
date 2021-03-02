@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Grid,
   styled,
@@ -8,6 +8,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@material-ui/core";
+import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -50,27 +51,22 @@ const CustomContent = styled(DialogContentText)({
   marginBottom: "0px !important",
 });
 
-export const NewTransaction: React.FC<any> = ({
-  setShowDialog,
-  setIsUpdate,
-  setShowUpdateDialog,
-}) => {
-  const [open, setOpen] = React.useState(true);
+export const NewTransaction: React.FC = () => {
+  const {
+    dispatch,
+    state: {
+      registryTransaction: { open },
+      daoId,
+    },
+  } = useContext(ModalsContext);
 
   const handleClose = () => {
-    setOpen(false);
-    setShowDialog(false);
-  };
-
-  const handleOption = (state: boolean) => {
-    if (state) {
-      setIsUpdate(true);
-    } else {
-      setIsUpdate(false);
-    }
-    setOpen(false);
-    setShowUpdateDialog(true);
-    setShowDialog(false);
+    dispatch({
+      type: ActionTypes.CLOSE,
+      payload: {
+        modal: "registryTransaction",
+      },
+    });
   };
 
   return (
@@ -104,14 +100,30 @@ export const NewTransaction: React.FC<any> = ({
             <Option
               variant="subtitle1"
               color="textSecondary"
-              onClick={() => handleOption(false)}
+              onClick={() =>
+                dispatch({
+                  type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
+                  payload: {
+                    isUpdate: false,
+                    daoAddress: daoId,
+                  },
+                })
+              }
             >
               Add to Registry{" "}
             </Option>
             <Option
               variant="subtitle1"
               color="textSecondary"
-              onClick={() => handleOption(true)}
+              onClick={() =>
+                dispatch({
+                  type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
+                  payload: {
+                    isUpdate: true,
+                    daoAddress: daoId,
+                  },
+                })
+              }
             >
               Update Registry
             </Option>

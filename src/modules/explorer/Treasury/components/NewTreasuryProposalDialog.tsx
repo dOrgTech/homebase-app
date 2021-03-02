@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import {
   Grid,
   styled,
@@ -14,7 +14,6 @@ import {
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useParams } from "react-router";
 import {
   calculateProposalSize,
   getTokensToStakeInPropose,
@@ -24,6 +23,7 @@ import { xtzToMutez } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
 import { fromMigrationParamsFile, validateTransactionsJSON } from "../utils";
+import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -114,7 +114,7 @@ const DescriptionContainer = styled(Grid)({
 
 const UploadFileLabel = styled("label")(({ theme }) => ({
   height: 53,
-  color: theme.palette.text.secondary,
+  color: theme.palette.secondary.main,
   borderColor: theme.palette.secondary.main,
   minWidth: 171,
   cursor: "pointer",
@@ -156,22 +156,30 @@ const INITIAL_FORM_VALUES: Values = {
   agoraPostId: 0,
 };
 
-export const NewTreasuryProposalDialog: React.FC<{
-  open: boolean;
-  setOpen: (value: boolean) => void;
-}> = ({ open, setOpen }) => {
+export const NewTreasuryProposalDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const [proposalFee, setProposalFee] = useState(0);
   const { mutate } = useTreasuryPropose();
-  const { id } = useParams<{ id: string }>();
-  const { data: daoData } = useDAO(id);
+  const {
+    state: {
+      treasuryProposal: { open },
+      daoId,
+    },
+    dispatch,
+  } = useContext(ModalsContext);
+  const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const handleClose = useCallback(() => {
+    dispatch({
+      type: ActionTypes.CLOSE,
+      payload: {
+        modal: "treasuryProposal",
+      },
+    });
+  }, [dispatch]);
 
   const onSubmit = useCallback(
     async (values: Values, { setSubmitting }: any) => {
@@ -209,10 +217,10 @@ export const NewTreasuryProposalDialog: React.FC<{
           agoraPostId: values.agoraPostId,
         });
 
-        setOpen(false);
+        handleClose();
       }
     },
-    [connect, dao, mutate, setOpen, tezos]
+    [connect, dao, handleClose, mutate, tezos]
   );
 
   return (
@@ -275,9 +283,11 @@ export const NewTreasuryProposalDialog: React.FC<{
                       const transactionsParsed = await fromMigrationParamsFile(
                         file
                       );
+                      console.log(transactionsParsed);
                       const errors = validateTransactionsJSON(
                         transactionsParsed
                       );
+                      console.log(errors);
                       if (errors.length) {
                         // Show notification with error
                         return;

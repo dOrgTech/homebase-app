@@ -1,13 +1,11 @@
 import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
-import React, { useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
 import { SideBar } from "modules/explorer/components";
 import { RegistryHeader } from "../components/RegistryHeader";
 import { RegistryTableRow } from "../components/TableRow";
 import { RegistryHistoryRow } from "../components/HistoryRow";
-import { NewTransaction } from "../components/NewTransaction";
-import { UpdateRegistryDialog } from "../components/UpdateRegistryDialog";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -71,49 +69,46 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
+const data = [
+  { name: "Registry item", operationId: "092323221122" },
+  { name: "Registry item", operationId: "092323221122" },
+  { name: "Registry item", operationId: "092323221122" },
+  { name: "Registry item", operationId: "092323221122" },
+];
+
+const history = [
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+];
+
 export const Registry: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
   }>();
 
-  const [showDialog, setShowDialog] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
-  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-
-  const data = [
-    { name: "Registry item", operationId: "092323221122" },
-    { name: "Registry item", operationId: "092323221122" },
-    { name: "Registry item", operationId: "092323221122" },
-    { name: "Registry item", operationId: "092323221122" },
-  ];
-
-  const history = [
-    {
-      name: "Registry item",
-      description: "First line of proposal",
-      date: "02/20/2021",
-      address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-    },
-    {
-      name: "Registry item",
-      description: "First line of proposal",
-      date: "02/20/2021",
-      address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-    },
-    {
-      name: "Registry item",
-      description: "First line of proposal",
-      date: "02/20/2021",
-      address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-    },
-    {
-      name: "Registry item",
-      description: "First line of proposal",
-      date: "02/20/2021",
-      address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-    },
-  ];
   return (
     <PageLayout container wrap="nowrap">
       <SideBar dao={id} />
@@ -147,7 +142,7 @@ export const Registry: React.FC = () => {
           {data.length
             ? data.map((item, i) => (
                 <ListItemContainer key={`item-${i}`}>
-                  <RegistryTableRow {...item} setShowDialog={setShowDialog} />
+                  <RegistryTableRow {...item} />
                 </ListItemContainer>
               ))
             : null}
@@ -191,19 +186,6 @@ export const Registry: React.FC = () => {
           ) : null}
         </TableContainer>
       </Grid>
-      {showDialog ? (
-        <NewTransaction
-          setShowDialog={setShowDialog}
-          setIsUpdate={setIsUpdate}
-          setShowUpdateDialog={setShowUpdateDialog}
-        />
-      ) : null}
-      {showUpdateDialog ? (
-        <UpdateRegistryDialog
-          isUpdate={isUpdate}
-          setShowUpdateDialog={setShowUpdateDialog}
-        />
-      ) : null}
     </PageLayout>
   );
 };

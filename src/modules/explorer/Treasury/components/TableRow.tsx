@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-import { MoreHorizOutlined } from "@material-ui/icons";
 
 const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
@@ -19,17 +18,6 @@ const TokenName = styled(withTheme(Paper))((props) => ({
   color: props.theme.palette.text.secondary,
   padding: 6,
 }));
-
-const CustomIcon = styled(MoreHorizOutlined)({
-  background: "#3866F9",
-  borderRadius: 4,
-  paddingLeft: 4,
-  paddingRight: 4,
-  color: "#fff",
-  maxHeight: 22,
-  cursor: "pointer",
-  fill: "#fff",
-});
 
 const Cursor = styled(Typography)({
   cursor: "default",
@@ -52,15 +40,10 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
           </Cursor>
         </TokenName>
       </Grid>
-      <Grid item xs={5}>
+      <Grid item xs={6}>
         <Cursor variant="subtitle1" color="textSecondary" align="right">
           {balance}
         </Cursor>
-      </Grid>
-      <Grid xs={1} item>
-        <Grid container direction="row" justify="center" alignItems="center">
-          <CustomIcon />
-        </Grid>
       </Grid>
     </Container>
   );

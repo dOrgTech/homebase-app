@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
 import { MoreHorizOutlined } from "@material-ui/icons";
+import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 
 const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
@@ -38,35 +39,14 @@ const Cursor = styled(Typography)({
   textTransform: "uppercase",
 });
 
-const ActionButton = styled(Paper)((props) => ({
-  width: 114,
-  background: props.theme.palette.primary.main,
-  border: "2px solid #81FEB7",
-  borderRadius: 4,
-  padding: 2,
-  cursor: "pointer",
-  textAlign: "center",
-  "&:first-child": {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  "&:last-child": {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    borderTop: 0,
-  },
-}));
-
-const ActionButtonText = styled(Typography)({
-  fontWeight: "bold",
-});
-
-export const RegistryTableRow: React.FC<any> = ({
-  name,
-  operationId,
-  setShowDialog,
-}) => {
-  const [showOptions, setShowOptions] = useState(false);
+export const RegistryTableRow: React.FC<{
+  name: string;
+  operationId: string;
+}> = ({ name, operationId }) => {
+  const {
+    dispatch,
+    state: { daoId },
+  } = useContext(ModalsContext);
 
   return (
     <Container
@@ -74,9 +54,6 @@ export const RegistryTableRow: React.FC<any> = ({
       direction="row"
       alignItems="center"
       justify="space-between"
-      onMouseLeave={() => {
-        setShowOptions(false);
-      }}
     >
       <Grid item xs={7}>
         <TokenName>
@@ -94,42 +71,20 @@ export const RegistryTableRow: React.FC<any> = ({
         </Grid>
       </Grid>
       <Grid xs={2} item>
-        {!showOptions ? (
-          <Grid
-            container
-            direction="row"
-            justify="flex-end"
-            alignItems="center"
-          >
-            <CustomIcon onClick={() => setShowOptions(true)} />
-          </Grid>
-        ) : (
-          <Grid
-            container
-            direction="column"
-            justify="flex-end"
-            alignItems="flex-end"
-          >
-            <ActionButton>
-              <ActionButtonText
-                variant="body1"
-                color="textSecondary"
-                onClick={() => setShowDialog(true)}
-              >
-                ADD
-              </ActionButtonText>
-            </ActionButton>
-            <ActionButton>
-              <ActionButtonText
-                variant="body1"
-                color="textSecondary"
-                onClick={() => setShowDialog(true)}
-              >
-                REMOVE
-              </ActionButtonText>
-            </ActionButton>
-          </Grid>
-        )}
+        <Grid container direction="row" justify="flex-end" alignItems="center">
+          <CustomIcon
+            onClick={() =>
+              dispatch({
+                type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
+                payload: {
+                  isUpdate: true,
+                  keyToUpdate: name,
+                  daoAddress: daoId,
+                },
+              })
+            }
+          />
+        </Grid>
       </Grid>
     </Container>
   );

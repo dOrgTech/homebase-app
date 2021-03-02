@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
-import { NewTreasuryProposalDialog } from "modules/explorer/Treasury";
+import { ActionTypes, ModalsContext } from "../ModalsContext";
+import { useParams } from "react-router";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -24,7 +25,8 @@ const StyledButton = styled(Button)(({ theme }) => ({
 export const Header: React.FC<{
   name: string;
 }> = ({ name }) => {
-  const [open, setOpen] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const { dispatch } = useContext(ModalsContext);
 
   return (
     <StyledContainer container direction="row">
@@ -37,10 +39,19 @@ export const Header: React.FC<{
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>
-        <StyledButton variant="outlined" onClick={() => setOpen(true)}>
+        <StyledButton
+          variant="outlined"
+          onClick={() => {
+            dispatch({
+              type: ActionTypes.OPEN_TREASURY_PROPOSAL,
+              payload: {
+                daoAddress: id,
+              },
+            });
+          }}
+        >
           NEW PROPOSAL
         </StyledButton>
-        <NewTreasuryProposalDialog open={open} setOpen={setOpen} />
       </JustifyEndGrid>
     </StyledContainer>
   );
