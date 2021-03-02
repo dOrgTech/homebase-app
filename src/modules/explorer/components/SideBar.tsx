@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import { ReactComponent as HouseIcon } from "assets/logos/house.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
+import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
 import { useHistory, useLocation } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
@@ -74,7 +75,14 @@ export const SideBar: React.FC<SideBarParams> = ({
           },
         ];
       case "registry":
-        return [...commonButons];
+        return [
+          ...commonButons,
+          {
+            Icon: RegistryIcon,
+            handler: () => history.push("/explorer/registry/" + daoId),
+            name: "registry",
+          },
+        ];
     }
   }, [dao, daoId, history]);
 

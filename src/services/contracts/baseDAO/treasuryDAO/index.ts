@@ -8,8 +8,12 @@ import { Tzip16ContractAbstraction } from "@taquito/tzip16";
 import dayjs from "dayjs";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
-import { getProposals } from "services/bakingBad/proposals";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { getProposalsDTO } from "services/bakingBad/proposals";
+import {
+  ProposalStatus,
+  TreasuryProposalsDTO,
+  TreasuryProposalWithStatus,
+} from "services/bakingBad/proposals/types";
 import { getStorage } from "services/bakingBad/storage";
 import {
   TreasuryStorageDTO,
@@ -23,6 +27,7 @@ import { DAOListMetadata } from "../../metadataCarrier/types";
 import { fromStateToTreasuryStorage, deployTreasuryDAO } from "./service";
 import { MigrationParams, Transfer } from "../types";
 import { BaseDAO } from "..";
+import { dtoToTreasuryProposals } from "services/bakingBad/proposals/mappers";
 
 export interface TreasuryDeployParams {
   params: MigrationParams;
@@ -121,9 +126,16 @@ export class TreasuryDAO extends BaseDAO {
     return TreasuryDAO.storageMapper(storageDTO as TreasuryStorageDTO);
   };
 
-  public proposals = async () => {
+  public proposals = async (): Promise<TreasuryProposalWithStatus[]> => {
     const { proposalsMapNumber } = this.storage;
-    const proposals = await getProposals(proposalsMapNumber, this.network);
+    const proposalsDTO = await getProposalsDTO(
+      proposalsMapNumber,
+      this.network
+    );
+
+    const proposals = dtoToTreasuryProposals(
+      proposalsDTO as TreasuryProposalsDTO
+    );
 
     return proposals.map((proposal) => {
       const { startDate, upVotes, downVotes } = proposal;

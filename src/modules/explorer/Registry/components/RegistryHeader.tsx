@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
-import { ActionTypes, ModalsContext } from "../ModalsContext";
+import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { useParams } from "react-router";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
@@ -22,7 +22,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
   minWidth: 171,
 }));
 
-export const Header: React.FC<{
+export const RegistryHeader: React.FC<{
   name: string;
 }> = ({ name }) => {
   const { id } = useParams<{ id: string }>();
@@ -35,22 +35,23 @@ export const Header: React.FC<{
           {name}
         </Typography>
         <Typography variant="h5" color="textSecondary">
-          Treasury
+          Registry
         </Typography>
       </Grid>
       <JustifyEndGrid item xs={6}>
         <StyledButton
           variant="outlined"
-          onClick={() => {
+          onClick={() =>
             dispatch({
-              type: ActionTypes.OPEN_TREASURY_PROPOSAL,
+              type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
               payload: {
+                isUpdate: false,
                 daoAddress: id,
               },
-            });
-          }}
+            })
+          }
         >
-          NEW PROPOSAL
+          NEW ITEM
         </StyledButton>
       </JustifyEndGrid>
     </StyledContainer>

@@ -5,7 +5,8 @@ import { DAOsList } from "modules/explorer/pages/List";
 import { DAO } from "modules/explorer/pages/DAO";
 import { Holdings } from "modules/explorer/Treasury/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
-import { Voting } from "modules/explorer/pages/Voting";
+import { Voting as TreasuryVoting } from "modules/explorer/Treasury/pages/Voting";
+import { Registry } from "./Registry/pages/Registry";
 
 export const DAOExplorerRouter = (): JSX.Element => {
   const match = useRouteMatch();
@@ -14,8 +15,8 @@ export const DAOExplorerRouter = (): JSX.Element => {
       <Route path={`${match.url}/daos`}>
         <DAOsList />
       </Route>
-      <Route path={`${match.url}/dao/:id/proposal/:proposalId`}>
-        <Voting />
+      <Route path={`${match.url}/dao/:id/proposal/treasury/:proposalId`}>
+        <TreasuryVoting />
       </Route>
       <Route path={`${match.url}/dao/:id`}>
         <DAO />
@@ -25,6 +26,9 @@ export const DAOExplorerRouter = (): JSX.Element => {
       </Route>
       <Route path={`${match.url}/treasury/:id`}>
         <Holdings />
+      </Route>
+      <Route path={`${match.url}/registry/:id`}>
+        <Registry />
       </Route>
       <Redirect to={`${match.url}/daos`} />
     </Switch>

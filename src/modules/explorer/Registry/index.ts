@@ -1,1 +1,1 @@
-export * from "./NewRegistryProposalDialog";
+export * from "./components/NewRegistryProposalDialog";

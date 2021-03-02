@@ -1,15 +1,11 @@
 import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 
-import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
-import { TransactionInfo } from "services/tzkt/types";
-import { Header, SideBar } from "modules/explorer/components";
-import {
-  TreasuryTableRow,
-  TreasuryHistoryRow,
-} from "modules/explorer/Treasury";
-import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
+import { SideBar } from "modules/explorer/components";
+import { RegistryHeader } from "../components/RegistryHeader";
+import { RegistryTableRow } from "../components/TableRow";
+import { RegistryHistoryRow } from "../components/HistoryRow";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -73,57 +69,80 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
-export const Holdings: React.FC = () => {
+const data = [
+  { name: "Registry item", operationId: "092323221122" },
+  { name: "Registry item", operationId: "092323221122" },
+  { name: "Registry item", operationId: "092323221122" },
+  { name: "Registry item", operationId: "092323221122" },
+];
+
+const history = [
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+  {
+    name: "Registry item",
+    description: "First line of proposal",
+    date: "02/20/2021",
+    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
+  },
+];
+
+export const Registry: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
   }>();
 
-  const { data: tokenBalances } = useTokenBalances(id);
-  const [treasuryMovements, setTreasuryMovements] = useState<TransactionInfo[]>(
-    []
-  );
-
-  const transactions = useTreasuryInfo(id);
-
-  useEffect(() => {
-    if (transactions.status === "success") {
-      setTreasuryMovements(transactions.data);
-    }
-  }, [transactions]);
-
   return (
     <PageLayout container wrap="nowrap">
       <SideBar dao={id} />
-
       <Grid item xs>
         <MainContainer container justify="space-between">
           <Grid item xs={12}>
-            <Header name={"MY GREAT TOKEN"} />
+            <RegistryHeader name={"MY GREAT TOKEN"} />
           </Grid>
         </MainContainer>
         <TableContainer>
           <TableHeader container wrap="nowrap">
             <Grid item xs={12}>
               <BorderBottom item container wrap="nowrap">
-                <Grid item xs={6}>
+                <Grid item xs={7}>
                   <ProposalTableHeadText align={"left"}>
-                    TOKEN BALANCES
+                    REGISTRY ITEMS
                   </ProposalTableHeadText>
                 </Grid>
-                <Grid item xs={6}>
-                  <ProposalTableHeadText align={"right"}>
-                    BALANCE
-                  </ProposalTableHeadText>
+                <Grid item xs={3}>
+                  <Grid item container direction="row" justify="center">
+                    <ProposalTableHeadText align={"left"}>
+                      OPERATION ID
+                    </ProposalTableHeadText>
+                  </Grid>
                 </Grid>
+                <Grid item xs={2}></Grid>
               </BorderBottom>
             </Grid>
           </TableHeader>
 
-          {tokenBalances && tokenBalances.length
-            ? tokenBalances.map((token, i) => (
-                <ListItemContainer key={`token-${i}`}>
-                  <TreasuryTableRow {...token} />
+          {data.length
+            ? data.map((item, i) => (
+                <ListItemContainer key={`item-${i}`}>
+                  <RegistryTableRow {...item} />
                 </ListItemContainer>
               ))
             : null}
@@ -135,32 +154,27 @@ export const Holdings: React.FC = () => {
               <BorderBottom item container wrap="nowrap">
                 <Grid item xs={6}>
                   <ProposalTableHeadText align={"left"}>
-                    TOKEN TRANSFER HISTORY
+                    UPDATE HISTORY
                   </ProposalTableHeadText>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                   <ProposalTableHeadText align={"right"}>
                     DATE
                   </ProposalTableHeadText>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                   <ProposalTableHeadText align={"right"}>
-                    RECIPIENT
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"right"}>
-                    AMOUNT
+                    PROPOSAL
                   </ProposalTableHeadText>
                 </Grid>
               </BorderBottom>
             </Grid>
           </TableHeader>
 
-          {treasuryMovements.length
-            ? treasuryMovements.map((token, i) => (
-                <ListItemContainer key={`token-${i}`}>
-                  <TreasuryHistoryRow {...token} />
+          {history.length
+            ? history.map((item, i) => (
+                <ListItemContainer key={`item-${i}`}>
+                  <RegistryHistoryRow {...item} />
                 </ListItemContainer>
               ))
             : null}
