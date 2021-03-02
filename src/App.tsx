@@ -16,6 +16,7 @@ import ScrollToTop from "modules/common/ScrollToTop";
 import { theme } from "theme";
 
 import "App.css";
+import { ModalsProvider } from "modules/explorer/ModalsContext";
 
 const queryClient = new QueryClient();
 
@@ -33,8 +34,10 @@ const App: React.FC = () => {
                 </CreatorProvider>
               </Route>
               <Route path="/explorer">
-                <Navbar />
-                <DAOExplorerRouter />
+                <ModalsProvider>
+                  <Navbar />
+                  <DAOExplorerRouter />
+                </ModalsProvider>
               </Route>
               <Redirect to="/explorer" />
             </Switch>

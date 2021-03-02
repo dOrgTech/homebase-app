@@ -1,12 +1,11 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
-import { dtoToProposals } from "services/bakingBad/proposals/mappers";
-import { Proposal, ProposalsDTO } from "services/bakingBad/proposals/types";
+import { ProposalsDTO } from "services/bakingBad/proposals/types";
 
-export const getProposals = async (
+export const getProposalsDTO = async (
   proposalsMapNumber: number,
   network: Network
-): Promise<Proposal[]> => {
+): Promise<ProposalsDTO> => {
   const url = `${API_URL}/bigmap/${network}/${proposalsMapNumber}/keys`;
 
   const response = await fetch(url);
@@ -16,5 +15,5 @@ export const getProposals = async (
 
   const result: ProposalsDTO = await response.json();
 
-  return dtoToProposals(result);
+  return result;
 };

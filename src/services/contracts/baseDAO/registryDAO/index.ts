@@ -1,3 +1,5 @@
+import { RegistryProposalWithStatus } from "./../../../bakingBad/proposals/types";
+import { dtoToRegistryProposals } from "./../../../bakingBad/proposals/mappers";
 import {
   TezosToolkit,
   ContractAbstraction,
@@ -8,8 +10,11 @@ import { Tzip16ContractAbstraction } from "@taquito/tzip16";
 import dayjs from "dayjs";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
-import { getProposals } from "services/bakingBad/proposals";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { getProposalsDTO } from "services/bakingBad/proposals";
+import {
+  ProposalStatus,
+  RegistryProposalsDTO,
+} from "services/bakingBad/proposals/types";
 import { getStorage } from "services/bakingBad/storage";
 import {
   RegistryStorage,
@@ -133,9 +138,14 @@ export class RegistryDAO extends BaseDAO {
     return RegistryDAO.storageMapper(storageDTO as RegistryStorageDTO);
   };
 
-  public proposals = async () => {
+  public proposals = async (): Promise<RegistryProposalWithStatus[]> => {
     const { proposalsMapNumber } = this.storage;
-    const proposals = await getProposals(proposalsMapNumber, this.network);
+    const proposalsDTO = (await getProposalsDTO(
+      proposalsMapNumber,
+      this.network
+    )) as RegistryProposalsDTO;
+
+    const proposals = dtoToRegistryProposals(proposalsDTO);
 
     return proposals.map((proposal) => {
       const { startDate, upVotes, downVotes } = proposal;
@@ -184,10 +194,12 @@ export class RegistryDAO extends BaseDAO {
 
     console.log(contract.entrypoints.entrypoints);
 
-    const contractMethod = contract.methods.propose(tokensToFreeze, {
-      agora_post_id: agoraPostId,
-      diff,
-    });
+    const contractMethod = contract.methods.propose(
+      tokensToFreeze,
+      "proposal_type",
+      agoraPostId,
+      diff
+    );
 
     const result = await contractMethod.send();
 

@@ -5,7 +5,7 @@ import {
   Typography,
   LinearProgress,
 } from "@material-ui/core";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
   ProposalTableRowData,
@@ -17,9 +17,9 @@ import { TokenHoldersDialog } from "modules/explorer/components/TokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { NewRegistryProposalDialog } from "../Registry";
 import { Button } from "@material-ui/core";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
+import { ActionTypes, ModalsContext } from "../ModalsContext";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -88,15 +88,6 @@ const TableHeader = styled(Grid)(({ theme }) => ({
   paddingBottom: 20,
 }));
 
-// const ProposalsContainer = styled(Grid)({
-//   paddingBottom: 72,
-// });
-
-// const UnderlineText = styled(Typography)({
-//   textDecoration: "underline",
-//   cursor: "pointer",
-// });
-
 const ProposalTableHeadText = styled(Typography)({
   fontWeight: "bold",
 });
@@ -111,7 +102,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
-  const [open, setOpen] = useState(false);
   const { data } = useDAO(id);
   const { mutate } = useFlush();
   const name = dao && dao.metadata.unfrozenToken.name;
@@ -204,6 +194,31 @@ export const Proposals: React.FC = () => {
     );
   }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
 
+  const { dispatch } = useContext(ModalsContext);
+
+  const onNewProposal = useCallback(() => {
+    if (dao) {
+      switch (dao.template) {
+        case "registry":
+          dispatch({
+            type: ActionTypes.OPEN_REGISTRY_TRANSACTION,
+            payload: {
+              daoAddress: dao.address,
+            },
+          });
+          break;
+        case "treasury":
+          dispatch({
+            type: ActionTypes.OPEN_TREASURY_PROPOSAL,
+            payload: {
+              daoAddress: dao.address,
+            },
+          });
+          break;
+      }
+    }
+  }, [dao, dispatch]);
+
   const onFlush = useCallback(() => {
     // @TODO: we need to add an atribute to the proposals
     // type in order to know if it was flushed or not
@@ -237,12 +252,11 @@ export const Proposals: React.FC = () => {
                 <Grid item>
                   <StyledButton
                     variant="outlined"
-                    onClick={() => setOpen(true)}
+                    onClick={onNewProposal}
                     disabled={!dao}
                   >
                     NEW PROPOSAL
                   </StyledButton>
-                  <NewRegistryProposalDialog open={open} setOpen={setOpen} />
                 </Grid>
                 <Grid item>
                   <StyledButton

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   styled,
   Grid,
@@ -14,6 +14,7 @@ import ProgressBar from "react-customizable-progressbar";
 
 import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 const ProposalTableRowContainer = styled(Grid)(({ theme }) => ({
   height: 155,
@@ -108,13 +109,19 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
     ? theme.palette.secondary.main
     : theme.palette.error.main;
   const formattedDate = dayjs(date).format("MM/DD/YYYY");
+  const { data: dao } = useDAO(daoId);
+  const onClick = useCallback(() => {
+    if (dao) {
+      history.push(`/explorer/dao/${daoId}/proposal/${dao.template}/${id}`);
+    }
+  }, [dao, daoId, history, id]);
 
   return (
     <ProposalTableRowContainer
       item
       container
       alignItems="center"
-      onClick={() => history.push(`/explorer/dao/${daoId}/proposal/${id}`)}
+      onClick={onClick}
     >
       <Grid item xs={5}>
         <Box>
