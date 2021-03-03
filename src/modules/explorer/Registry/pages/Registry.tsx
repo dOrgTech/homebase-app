@@ -1,11 +1,20 @@
 import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 import { SideBar } from "modules/explorer/components";
 import { RegistryHeader } from "../components/RegistryHeader";
 import { RegistryTableRow } from "../components/TableRow";
 import { RegistryHistoryRow } from "../components/HistoryRow";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { RegistryDAO } from "services/contracts/baseDAO";
+import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
+import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import dayjs from "dayjs";
+import {
+  ProposalStatus,
+  RegistryProposalWithStatus,
+} from "services/bakingBad/proposals/types";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -69,45 +78,51 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
-const data = [
-  { name: "Registry item", operationId: "092323221122" },
-  { name: "Registry item", operationId: "092323221122" },
-  { name: "Registry item", operationId: "092323221122" },
-  { name: "Registry item", operationId: "092323221122" },
-];
-
-const history = [
-  {
-    name: "Registry item",
-    description: "First line of proposal",
-    date: "02/20/2021",
-    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-  },
-  {
-    name: "Registry item",
-    description: "First line of proposal",
-    date: "02/20/2021",
-    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-  },
-  {
-    name: "Registry item",
-    description: "First line of proposal",
-    date: "02/20/2021",
-    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-  },
-  {
-    name: "Registry item",
-    description: "First line of proposal",
-    date: "02/20/2021",
-    address: "tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB",
-  },
-];
-
 export const Registry: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
   }>();
+
+  const { data: daoData } = useDAO(id);
+  const dao = daoData as RegistryDAO | undefined;
+  const { data: registryData } = useRegistryList(dao?.address);
+  const { data: proposalsData } = useProposals(dao?.address);
+  const registryProposalsData = proposalsData as
+    | RegistryProposalWithStatus[]
+    | undefined;
+
+  const proposals = useMemo(() => {
+    if (!registryProposalsData) {
+      return [];
+    }
+
+    return registryProposalsData
+      .filter((proposal) => proposal.status === ProposalStatus.PASSED)
+      .sort(
+        (a, b) =>
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+      )
+      .map((proposal) => ({
+        date: dayjs(proposal.startDate).format("L"),
+        description: "Proposal description",
+        address: proposal.id,
+        name: proposal.list.map((item, i) =>
+          i === 0 ? item.key : `, ${item.key}`
+        ),
+      }));
+  }, [registryProposalsData]);
+
+  const registryList = useMemo(() => {
+    if (!registryData) {
+      return [];
+    }
+
+    return registryData.map((d) => ({
+      ...d,
+      name: d.key,
+    }));
+  }, [registryData]);
 
   return (
     <PageLayout container wrap="nowrap">
@@ -122,30 +137,38 @@ export const Registry: React.FC = () => {
           <TableHeader container wrap="nowrap">
             <Grid item xs={12}>
               <BorderBottom item container wrap="nowrap">
-                <Grid item xs={7}>
+                <Grid item xs={3}>
                   <ProposalTableHeadText align={"left"}>
                     REGISTRY ITEMS
                   </ProposalTableHeadText>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={4}>
                   <Grid item container direction="row" justify="center">
                     <ProposalTableHeadText align={"left"}>
-                      OPERATION ID
+                      VALUE
                     </ProposalTableHeadText>
                   </Grid>
+                </Grid>
+                <Grid item xs={3}>
+                  <ProposalTableHeadText align={"left"}>
+                    LAST UPDATED
+                  </ProposalTableHeadText>
                 </Grid>
                 <Grid item xs={2}></Grid>
               </BorderBottom>
             </Grid>
           </TableHeader>
 
-          {data.length
-            ? data.map((item, i) => (
-                <ListItemContainer key={`item-${i}`}>
-                  <RegistryTableRow {...item} />
-                </ListItemContainer>
-              ))
-            : null}
+          {registryList.map((item, i) => (
+            <ListItemContainer key={`item-${i}`}>
+              <RegistryTableRow {...item} />
+            </ListItemContainer>
+          ))}
+          {registryList.length === 0 ? (
+            <NoProposals variant="subtitle1" color="textSecondary">
+              No registry items
+            </NoProposals>
+          ) : null}
         </TableContainer>
 
         <TableContainer>
@@ -171,15 +194,13 @@ export const Registry: React.FC = () => {
             </Grid>
           </TableHeader>
 
-          {history.length
-            ? history.map((item, i) => (
-                <ListItemContainer key={`item-${i}`}>
-                  <RegistryHistoryRow {...item} />
-                </ListItemContainer>
-              ))
-            : null}
+          {proposals.map((item, i) => (
+            <ListItemContainer key={`item-${i}`}>
+              <RegistryHistoryRow {...item} />
+            </ListItemContainer>
+          ))}
 
-          {history.length === 0 ? (
+          {proposals.length === 0 ? (
             <NoProposals variant="subtitle1" color="textSecondary">
               No active proposals
             </NoProposals>

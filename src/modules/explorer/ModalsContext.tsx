@@ -1,4 +1,5 @@
 import React, { createContext, Dispatch, useReducer } from "react";
+import { RegistryItemDialog } from "./Registry/components/ItemDialog";
 import { NewTransaction } from "./Registry/components/NewTransaction";
 import { UpdateRegistryDialog } from "./Registry/components/UpdateRegistryDialog";
 import { NewTreasuryProposalDialog } from "./Treasury";
@@ -7,6 +8,7 @@ export enum ActionTypes {
   OPEN_REGISTRY_TRANSACTION = "OPEN_REGISTRY_TRANSACTION",
   OPEN_REGISTRY_PROPOSAL = "OPEN_REGISTRY_PROPOSAL",
   OPEN_TREASURY_PROPOSAL = "OPEN_TREASURY_PROPOSAL",
+  OPEN_REGISTRY_ITEM = "OPEN_REGISTRY_ITEM",
   OPEN_VOTE = "OPEN_VOTE",
   CLOSE = "CLOSE",
 }
@@ -23,7 +25,10 @@ type RegistryProposalAction = {
   payload: {
     isUpdate: boolean;
     daoAddress: string;
-    keyToUpdate?: string;
+    itemToUpdate?: {
+      key: string;
+      value: string;
+    };
   };
 };
 
@@ -31,6 +36,14 @@ type TreasuryProposalAction = {
   type: ActionTypes.OPEN_TREASURY_PROPOSAL;
   payload: {
     daoAddress: string;
+  };
+};
+
+type RegistryItemAction = {
+  type: ActionTypes.OPEN_REGISTRY_ITEM;
+  payload: {
+    key: string;
+    value: string;
   };
 };
 
@@ -54,7 +67,8 @@ type ModalsContextAction =
   | RegistryProposalAction
   | TreasuryProposalAction
   | VoteAction
-  | CloseAction;
+  | CloseAction
+  | RegistryItemAction;
 
 interface ModalContextState {
   registryTransaction: {
@@ -64,7 +78,17 @@ interface ModalContextState {
     open: boolean;
     params: {
       isUpdate: boolean;
-      keyToUpdate?: string;
+      itemToUpdate?: {
+        key: string;
+        value: string;
+      };
+    };
+  };
+  registryItem: {
+    open: boolean;
+    params: {
+      key: string;
+      value: string;
     };
   };
   treasuryProposal: {
@@ -89,6 +113,13 @@ const INITIAL_STATE: ModalContextState = {
     open: false,
     params: {
       isUpdate: false,
+    },
+  },
+  registryItem: {
+    open: false,
+    params: {
+      key: "",
+      value: "",
     },
   },
   treasuryProposal: {
@@ -124,7 +155,7 @@ const reducer = (
           open: true,
           params: {
             isUpdate: action.payload.isUpdate,
-            keyToUpdate: action.payload.keyToUpdate,
+            itemToUpdate: action.payload.itemToUpdate,
           },
         },
       };
@@ -133,6 +164,17 @@ const reducer = (
         ...state,
         daoId: action.payload.daoAddress,
         treasuryProposal: { open: true },
+      };
+    case ActionTypes.OPEN_REGISTRY_ITEM:
+      return {
+        ...state,
+        registryItem: {
+          open: true,
+          params: {
+            key: action.payload.key,
+            value: action.payload.value,
+          },
+        },
       };
     case ActionTypes.OPEN_VOTE:
       return {
@@ -156,6 +198,7 @@ export const ModalsProvider: React.FC = ({ children }) => {
       <NewTreasuryProposalDialog />
       <UpdateRegistryDialog />
       <NewTransaction />
+      <RegistryItemDialog />
     </ModalsContext.Provider>
   );
 };
