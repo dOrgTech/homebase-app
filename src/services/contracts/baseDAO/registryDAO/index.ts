@@ -1,3 +1,4 @@
+import { getRegistry } from "./../../../bakingBad/registry/index";
 import { RegistryProposalWithStatus } from "./../../../bakingBad/proposals/types";
 import { dtoToRegistryProposals } from "./../../../bakingBad/proposals/mappers";
 import {
@@ -53,7 +54,7 @@ export class RegistryDAO extends BaseDAO {
         ledgerMapNumber: dto.children[0].value,
         votingPeriod: Number(dto.children[6].value),
         quorumTreshold: Number(dto.children[7].value),
-        registry: dto.children[8].children[0].value,
+        registryMapNumber: Number(dto.children[8].children[0].value),
         frozenScaleValue: Number(dto.children[8].children[1].value),
         frozenExtraValue: Number(dto.children[8].children[2].value),
         slashScaleValue: Number(dto.children[8].children[3].value),
@@ -204,5 +205,13 @@ export class RegistryDAO extends BaseDAO {
     const result = await contractMethod.send();
 
     return result;
+  };
+
+  public getRegistry = async () => {
+    const { registryMapNumber } = await this.fetchStorage();
+
+    const registry = await getRegistry(registryMapNumber, this.network);
+
+    return registry;
   };
 }

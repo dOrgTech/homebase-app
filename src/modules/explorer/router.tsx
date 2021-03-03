@@ -6,6 +6,7 @@ import { DAO } from "modules/explorer/pages/DAO";
 import { Holdings } from "modules/explorer/Treasury/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
 import { Voting as TreasuryVoting } from "modules/explorer/Treasury/pages/Voting";
+import { Voting as RegistryVoting } from "modules/explorer/Registry/pages/Voting";
 import { Registry } from "./Registry/pages/Registry";
 
 export const DAOExplorerRouter = (): JSX.Element => {
@@ -17,6 +18,9 @@ export const DAOExplorerRouter = (): JSX.Element => {
       </Route>
       <Route path={`${match.url}/dao/:id/proposal/treasury/:proposalId`}>
         <TreasuryVoting />
+      </Route>
+      <Route path={`${match.url}/dao/:id/proposal/registry/:proposalId`}>
+        <RegistryVoting />
       </Route>
       <Route path={`${match.url}/dao/:id`}>
         <DAO />

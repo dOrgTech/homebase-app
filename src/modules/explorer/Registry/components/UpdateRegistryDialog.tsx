@@ -14,9 +14,13 @@ import {
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField, Select } from "formik-material-ui";
-import { Registry } from "services/contracts/baseDAO";
+import { Registry, RegistryDAO } from "services/contracts/baseDAO";
 import { ActionTypes } from "modules/explorer/ModalsContext";
 import { ModalsContext } from "modules/explorer/ModalsContext";
+import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { char2Bytes } from "@taquito/tzip16";
+import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
 
 const FullWidthSelect = styled(Select)({
   width: "100%",
@@ -42,17 +46,17 @@ const ListItem = styled(Grid)(({ theme }) => ({
   padding: "0px 24px",
 }));
 
-const UploadButtonContainer = styled(Grid)(({ theme }) => ({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  padding: "0px 24px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
+// const UploadButtonContainer = styled(Grid)(({ theme }) => ({
+//   height: 70,
+//   display: "flex",
+//   alignItems: "center",
+//   padding: "0px 24px",
+//   borderBottom: `2px solid ${theme.palette.primary.light}`,
+// }));
 
-const FileInput = styled("input")({
-  display: "none",
-});
+// const FileInput = styled("input")({
+//   display: "none",
+// });
 
 const SendContainer = styled(Grid)({
   height: 55,
@@ -115,15 +119,15 @@ const DescriptionContainer = styled(Grid)({
   paddingTop: 24,
 });
 
-const UploadFileLabel = styled("label")(({ theme }) => ({
-  height: 53,
-  color: theme.palette.secondary.main,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-  cursor: "pointer",
-  margin: "auto",
-  display: "block",
-}));
+// const UploadFileLabel = styled("label")(({ theme }) => ({
+//   height: 53,
+//   color: theme.palette.secondary.main,
+//   borderColor: theme.palette.secondary.main,
+//   minWidth: 171,
+//   cursor: "pointer",
+//   margin: "auto",
+//   display: "block",
+// }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -147,29 +151,34 @@ const CustomTextarea = styled(TextField)({
 });
 
 interface Values {
-  transfers: Registry[];
+  list: Registry[];
   description: string;
 }
 
-const EMPTY_TRANSFER: Registry = { key: "", value: "" };
+const EMPTY_LIST_ITEM: Registry = { key: "", value: "" };
 const INITIAL_FORM_VALUES: Values = {
-  transfers: [EMPTY_TRANSFER],
+  list: [EMPTY_LIST_ITEM],
   description: "",
 };
 
 export const UpdateRegistryDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
-  const [activeTransfer, setActiveTransfer] = React.useState(1);
+  const [activeItem, setActiveItem] = React.useState(1);
   const [proposalFee] = useState(0);
   const {
     state: {
       registryProposal: {
         open,
-        params: { isUpdate },
+        params: { isUpdate, itemToUpdate },
       },
+      daoId,
     },
     dispatch,
   } = useContext(ModalsContext);
+  const { data: daoData } = useDAO(daoId);
+  const dao = daoData as RegistryDAO | undefined;
+  const { mutate } = useRegistryPropose();
+  const { data: registryItems } = useRegistryList(daoId);
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -180,9 +189,24 @@ export const UpdateRegistryDialog: React.FC = () => {
     });
   }, [dispatch]);
 
-  const onSubmit = (values: Values, { setSubmitting }: any) => {
-    setSubmitting(true);
-  };
+  const onSubmit = useCallback(
+    (values: Values) => {
+      if (dao) {
+        mutate({
+          dao,
+          tokensToFreeze: 2,
+          agoraPostId: 0,
+          items: values.list.map(({ key, value }) => ({
+            key: char2Bytes(key),
+            newValue: char2Bytes(value),
+          })),
+        });
+      }
+    },
+    [dao, mutate]
+  );
+
+  console.log(registryItems);
 
   return (
     <>
@@ -233,27 +257,36 @@ export const UpdateRegistryDialog: React.FC = () => {
               </Grid>
             </ListItem>
 
-            <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
-              {({ submitForm, values }) => {
+            <Formik
+              initialValues={{
+                ...INITIAL_FORM_VALUES,
+                list: [
+                  {
+                    key: itemToUpdate?.key || "",
+                    value: itemToUpdate?.value || "",
+                  },
+                ],
+              }}
+              onSubmit={onSubmit}
+            >
+              {({ submitForm, values, setFieldValue }) => {
                 return (
                   <Form autoComplete="off">
                     <>
                       <FieldArray
-                        name="transfers"
+                        name="list"
                         render={(arrayHelpers) => (
                           <>
                             {isBatch ? (
                               <BatchBar container direction="row" wrap="nowrap">
-                                {values.transfers.map((_, index) => {
+                                {values.list.map((_, index) => {
                                   return (
                                     <TransferActive
                                       item
                                       key={index}
-                                      onClick={() =>
-                                        setActiveTransfer(index + 1)
-                                      }
+                                      onClick={() => setActiveItem(index + 1)}
                                       style={
-                                        Number(index + 1) === activeTransfer
+                                        Number(index + 1) === activeItem
                                           ? styles.active
                                           : undefined
                                       }
@@ -271,8 +304,8 @@ export const UpdateRegistryDialog: React.FC = () => {
                                 <AddButton
                                   onClick={() => {
                                     arrayHelpers.insert(
-                                      values.transfers.length + 1,
-                                      EMPTY_TRANSFER
+                                      values.list.length + 1,
+                                      EMPTY_LIST_ITEM
                                     );
                                   }}
                                 >
@@ -298,30 +331,48 @@ export const UpdateRegistryDialog: React.FC = () => {
                                 >
                                   {!isUpdate ? (
                                     <Field
-                                      name={`transfers.${
-                                        activeTransfer - 1
-                                      }.key`}
+                                      name={`list.${activeItem - 1}.key`}
                                       type="string"
                                       placeholder="Type a Key"
                                       component={CustomTextField}
                                     />
                                   ) : (
                                     <>
-                                      <Field
-                                        name={`transfers.${
-                                          activeTransfer - 1
-                                        }.key`}
-                                        type="select"
-                                        placeholder="Type a Key"
-                                        component={FullWidthSelect}
-                                      >
-                                        <MenuItem value={"default"} disabled>
-                                          Type a Key
-                                        </MenuItem>
-                                        <MenuItem value={10}>
-                                          Value example
-                                        </MenuItem>
-                                      </Field>
+                                      {registryItems && (
+                                        <Field
+                                          name={`list.${activeItem - 1}.key`}
+                                          type="select"
+                                          placeholder="Type a Key"
+                                          defaultValue={""}
+                                          onChange={(e: any) => {
+                                            setFieldValue(
+                                              `list.${activeItem - 1}.key`,
+                                              e.target.value
+                                            );
+                                            setFieldValue(
+                                              `list.${activeItem - 1}.value`,
+                                              registryItems.find(
+                                                (item) =>
+                                                  item.key === e.target.value
+                                              )?.value
+                                            );
+                                          }}
+                                          component={FullWidthSelect}
+                                        >
+                                          <MenuItem value={"default"} disabled>
+                                            Select a Key
+                                          </MenuItem>
+                                          {registryItems &&
+                                            registryItems.map(({ key }, i) => (
+                                              <MenuItem
+                                                key={`option-${i}`}
+                                                value={key}
+                                              >
+                                                {key}
+                                              </MenuItem>
+                                            ))}
+                                        </Field>
+                                      )}
                                     </>
                                   )}
                                 </SwitchContainer>
@@ -348,7 +399,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                               </Grid>
                               <Grid item xs={12}>
                                 <Field
-                                  name={`transfers.${activeTransfer - 1}.value`}
+                                  name={`list.${activeItem - 1}.value`}
                                   type="number"
                                   multiline
                                   rows={6}
@@ -402,12 +453,12 @@ export const UpdateRegistryDialog: React.FC = () => {
                         </Grid>
                       </DescriptionContainer>
 
-                      <UploadButtonContainer container direction="row">
+                      {/* <UploadButtonContainer container direction="row">
                         <UploadFileLabel>
                           -OR- UPLOAD JSON FILE
                           <FileInput type="file" accept=".json" />
                         </UploadFileLabel>
-                      </UploadButtonContainer>
+                      </UploadButtonContainer> */}
 
                       <ListItem container direction="row">
                         <Grid item xs={6}>
@@ -427,7 +478,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                       </ListItem>
 
                       <SendContainer container direction="row" justify="center">
-                        <Button onClick={submitForm}>
+                        <Button onClick={submitForm} disabled={!dao}>
                           <Typography variant="subtitle1" color="textSecondary">
                             SEND
                           </Typography>
