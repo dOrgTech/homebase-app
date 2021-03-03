@@ -11,11 +11,14 @@ import {
 } from "@material-ui/core";
 import { char2Bytes } from "@taquito/tzip16";
 import { Formik, Form, Field } from "formik";
+import { useNotification } from "modules/common/hooks/useNotification";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import React, { useCallback, useContext } from "react";
+import { useTezos } from "services/beacon/hooks/useTezos";
 import { RegistryDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
+import { connectIfNotConnected } from "services/contracts/utils";
 
 const Title = styled(DialogTitle)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
@@ -73,8 +76,10 @@ export const NewRegistryProposalDialog: React.FC = () => {
   const {
     state: { daoId },
   } = useContext(ModalsContext);
+  const openNotification = useNotification();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
+  const { tezos, connect } = useTezos();
   const { mutate, data, error } = useRegistryPropose();
   const {
     state: {
@@ -82,8 +87,6 @@ export const NewRegistryProposalDialog: React.FC = () => {
     },
     dispatch,
   } = useContext(ModalsContext);
-
-  console.log(data, error);
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -94,10 +97,18 @@ export const NewRegistryProposalDialog: React.FC = () => {
     });
   }, [dispatch]);
 
-  const onSubmit = useCallback(() => {
-    console.log(dao);
+  const onSubmit = useCallback(async () => {
+    await connectIfNotConnected(tezos, connect);
+
     if (dao) {
-      mutate({
+      const {
+        key: proposalNotification,
+        closeSnackbar: closeProposalNotification,
+      } = openNotification({
+        message: "Proposal is being created...",
+      });
+
+      await mutate({
         dao,
         tokensToFreeze: 2,
         agoraPostId: 0,
@@ -108,8 +119,10 @@ export const NewRegistryProposalDialog: React.FC = () => {
           },
         ],
       });
+
+      closeProposalNotification(proposalNotification);
     }
-  }, [dao, mutate]);
+  }, [dao, mutate, tezos]);
 
   return (
     <>
