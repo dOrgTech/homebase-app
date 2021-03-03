@@ -176,6 +176,17 @@ export const DAO: React.FC = () => {
     }, 0);
   }, [data]);
 
+  const amountNotLocked = useMemo(() => {
+    if (!data) {
+      return 0;
+    }
+
+    return data.ledger.reduce((acc, current) => {
+      const frozenBalance = current.balances[0] || 0;
+      return acc + frozenBalance;
+    }, 0);
+  }, [data]);
+
   const addressesWithUnfrozenBalance = useMemo(() => {
     if (!data) {
       setIsLoading(true);
@@ -224,6 +235,12 @@ export const DAO: React.FC = () => {
         )
       );
   }, [proposalsData, finished, data?.storage.quorumTreshold, data?.address]);
+
+  const totalTokens = amountLocked + amountNotLocked;
+
+  const amountLockedPercentage = totalTokens
+    ? (amountLocked / totalTokens) * 100
+    : 0;
 
   const checkpoints = [
     {
@@ -346,7 +363,7 @@ export const DAO: React.FC = () => {
               </Grid>
               <LockedTokensBar
                 variant="determinate"
-                value={60}
+                value={amountLockedPercentage}
                 color="secondary"
               />
             </TokensLocked>

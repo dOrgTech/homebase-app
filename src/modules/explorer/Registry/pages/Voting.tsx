@@ -340,7 +340,11 @@ export const Voting: React.FC = () => {
                         </Grid>
                         <Grid item xs={10}>
                           <Typography variant="subtitle1" color="textSecondary">
-                            {key} - {value}
+                            Set {'"'}
+                            {key}
+                            {'"'} to {'"'}
+                            {value}
+                            {'"'}
                           </Typography>
                         </Grid>
                       </Grid>
