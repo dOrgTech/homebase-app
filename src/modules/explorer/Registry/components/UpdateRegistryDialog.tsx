@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-  Button,
   MenuItem,
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
@@ -21,6 +20,7 @@ import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistry
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { char2Bytes } from "@taquito/tzip16";
 import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
+import { ViewButton } from "modules/explorer/components/ViewButton";
 
 const FullWidthSelect = styled(Select)({
   width: "100%",
@@ -117,6 +117,12 @@ const DescriptionContainer = styled(Grid)({
   paddingLeft: 24,
   paddingRight: 24,
   paddingTop: 24,
+});
+
+const SendButton = styled(ViewButton)({
+  width: "100%",
+  border: "none",
+  borderTop: "1px solid #4BCF93",
 });
 
 // const UploadFileLabel = styled("label")(({ theme }) => ({
@@ -478,11 +484,9 @@ export const UpdateRegistryDialog: React.FC = () => {
                       </ListItem>
 
                       <SendContainer container direction="row" justify="center">
-                        <Button onClick={submitForm} disabled={!dao}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            SEND
-                          </Typography>
-                        </Button>
+                        <SendButton onClick={submitForm} disabled={!dao}>
+                          SEND
+                        </SendButton>
                       </SendContainer>
                     </>
                   </Form>

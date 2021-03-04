@@ -211,6 +211,11 @@ export const theme = createMuiTheme({
         textAlign: "right",
       },
     },
+    MuiDialogContentText: {
+      root: {
+        marginBottom: 0,
+      },
+    },
     MuiSwitch: {
       root: {
         width: 75,

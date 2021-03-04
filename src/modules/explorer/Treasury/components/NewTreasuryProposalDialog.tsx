@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-  Button,
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
@@ -24,6 +23,8 @@ import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasury
 import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
 import { fromMigrationParamsFile, validateTransactionsJSON } from "../utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
+import { theme } from "theme";
+import { ViewButton } from "modules/explorer/components/ViewButton";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -141,6 +142,12 @@ const CustomTextarea = styled(TextField)({
       textAlign: "initial",
     },
   },
+});
+
+const SendButton = styled(ViewButton)({
+  width: "100%",
+  border: "none",
+  borderTop: "1px solid #4BCF93",
 });
 
 interface Values {
@@ -511,14 +518,19 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           direction="row"
                           justify="center"
                         >
-                          <Button onClick={submitForm}>
-                            <Typography
+                          <SendButton
+                            customColor={theme.palette.secondary.main}
+                            variant="outlined"
+                            onClick={submitForm}
+                          >
+                            {/* <Typography
                               variant="subtitle1"
                               color="textSecondary"
                             >
                               SEND
-                            </Typography>
-                          </Button>
+                            </Typography> */}
+                            SEND
+                          </SendButton>
                         </SendContainer>
                       </>
                     </Form>

@@ -10,8 +10,8 @@ import Timer from "react-compound-timer";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { useHistory, useParams } from "react-router-dom";
 
-import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
-import VoteTimeIcon from "assets/logos/voteTime.svg";
+import VotingPeriodIcon from "assets/logos/timer.svg";
+import VoteTimeIcon from "assets/logos/progress.svg";
 import {
   mapProposalData,
   ProposalTableRow,
@@ -138,6 +138,7 @@ export const DAO: React.FC = () => {
   const name = data && data.metadata.unfrozenToken.name;
   const description = data && data.metadata.description;
   const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
+  const template = data && data.template;
 
   const votingPeriod = data && data.storage.votingPeriod;
   const originationTime = data && data.originationTime;
@@ -260,6 +261,8 @@ export const DAO: React.FC = () => {
               <Box>
                 <Typography variant="subtitle2" color="secondary">
                   {symbol}
+                  {"" > ""}
+                  {template === "registry" ? "REGISTRY" : "TREASURY"}
                 </Typography>
               </Box>
               <Box paddingBottom="10px">
