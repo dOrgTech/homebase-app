@@ -11,6 +11,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
+import { TezosToolkit } from "@taquito/taquito";
 
 import HomeButton from "assets/logos/homebase.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -78,6 +79,16 @@ const custom = (theme: Theme) => ({
 const LogoItem = styled("img")({
   cursor: "pointer",
 });
+
+export const ConnectWalletButton = ({
+  connect,
+}: {
+  connect: () => Promise<TezosToolkit>;
+}) => (
+  <ConnectWallet color="secondary" variant="outlined" onClick={connect}>
+    Connect Wallet
+  </ConnectWallet>
+);
 
 export const Navbar: React.FC = () => {
   const { connect, account } = useTezos();
@@ -163,13 +174,7 @@ export const Navbar: React.FC = () => {
                 </Grid>
               </AddressContainer>
             ) : (
-              <ConnectWallet
-                color="secondary"
-                variant="outlined"
-                onClick={connect}
-              >
-                Connect Wallet
-              </ConnectWallet>
+              <ConnectWalletButton connect={connect} />
             )}
           </Grid>
         </Grid>
