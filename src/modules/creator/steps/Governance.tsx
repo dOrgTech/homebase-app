@@ -627,7 +627,6 @@ export const Governance: React.FC = () => {
           errors,
           touched,
         }) => {
-          console.log(errors);
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm

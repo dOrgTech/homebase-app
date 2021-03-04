@@ -2,6 +2,7 @@ import React, { FC, useContext, useEffect } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { CreatorContext } from "modules/creator/state";
 import { useStepNumber } from "modules/creator/steps";
+import { handleGovernanceFormErrors } from "modules/creator/utils";
 
 export const useCreatorRouteValidation = (): string => {
   const match = useRouteMatch();
@@ -12,15 +13,17 @@ export const useCreatorRouteValidation = (): string => {
   ).state.data;
 
   type OrgKeys = keyof typeof orgSettings;
-  type VotingKeys = keyof typeof votingSettings;
   type MemberKeys = keyof typeof memberSettings;
 
   const org = Object.keys(orgSettings) as OrgKeys[];
-  const voting = Object.keys(votingSettings) as VotingKeys[];
+
   const members = Object.keys(memberSettings) as MemberKeys[];
 
   const needsToFillOrgSettings = org.some((value) => !orgSettings[value]);
-  const needsToFillGovernance = voting.some((value) => !votingSettings[value]);
+  const needsToFillGovernance = Object.keys(
+    handleGovernanceFormErrors(votingSettings)
+  ).length;
+
   const needsToFillMembers = members.some((value) => !memberSettings[value]);
 
   const isPreviousStep = (steps: string[]): boolean => {

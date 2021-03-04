@@ -21,6 +21,9 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { char2Bytes } from "@taquito/tzip16";
 import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
 import { ViewButton } from "modules/explorer/components/ViewButton";
+import { useNotification } from "modules/common/hooks/useNotification";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { connectIfNotConnected } from "services/contracts/utils";
 
 const FullWidthSelect = styled(Select)({
   width: "100%",
@@ -183,8 +186,10 @@ export const UpdateRegistryDialog: React.FC = () => {
   } = useContext(ModalsContext);
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
-  const { mutate } = useRegistryPropose();
+  const { mutate, isLoading } = useRegistryPropose();
   const { data: registryItems } = useRegistryList(daoId);
+  const openNotification = useNotification();
+  const { tezos, connect } = useTezos();
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -196,7 +201,9 @@ export const UpdateRegistryDialog: React.FC = () => {
   }, [dispatch]);
 
   const onSubmit = useCallback(
-    (values: Values) => {
+    async (values: Values) => {
+      await connectIfNotConnected(tezos, connect);
+
       if (dao) {
         mutate({
           dao,

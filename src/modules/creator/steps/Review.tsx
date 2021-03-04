@@ -12,6 +12,9 @@ import {
 import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
 import { MigrationParams } from "services/contracts/baseDAO/types";
 import { DeploymentLoader } from "../components/DeploymentLoader";
+import { useCreatorRouteValidation } from "modules/creator/components/ProtectedRoute";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { ConnectWalletButton } from "modules/common/Toolbar";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
@@ -22,6 +25,8 @@ const CustomButton = styled(Button)({
 });
 
 export const Review: React.FC = () => {
+  const { account, connect } = useTezos();
+  const validDAOData = useCreatorRouteValidation();
   const { state, dispatch } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
   const { frozenToken, unfrozenToken } = getTokensInfo(info);
@@ -56,7 +61,7 @@ export const Review: React.FC = () => {
   // TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
-      if (!data && info && metadataCarrierParams)
+      if (!validDAOData && info && metadataCarrierParams)
         mutate({
           metadataParams: metadataCarrierParams,
           params: info,
@@ -76,36 +81,42 @@ export const Review: React.FC = () => {
   return (
     <>
       <Box width="100%">
-        <Grid
-          container
-          direction="column"
-          justify="center"
-          alignItems="flex-start"
-          style={{ height: "fit-content" }}
-        >
-          <Grid item>
-            <RocketImg src={Rocket} alt="rocket" />
+        {account ? (
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="flex-start"
+            style={{ height: "fit-content" }}
+          >
+            <Grid item>
+              <RocketImg src={Rocket} alt="rocket" />
+            </Grid>
+            <Grid item>
+              <Typography variant="h4" color="textSecondary">
+                Deploying <strong> {state.data.orgSettings.name} </strong> to
+                the Tezos Network
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Box>
+                {data && data.address ? (
+                  <CustomButton
+                    color="secondary"
+                    variant="outlined"
+                    onClick={() =>
+                      history.push("/explorer/dao/" + data.address)
+                    }
+                  >
+                    Go to my DAO
+                  </CustomButton>
+                ) : null}
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item>
-            <Typography variant="h4" color="textSecondary">
-              Deploying <strong> {state.data.orgSettings.name} </strong> to the
-              Tezos Network
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Box>
-              {data && data.address ? (
-                <CustomButton
-                  color="secondary"
-                  variant="outlined"
-                  onClick={() => history.push("/explorer/dao/" + data.address)}
-                >
-                  Go to my DAO
-                </CustomButton>
-              ) : null}
-            </Box>
-          </Grid>
-        </Grid>
+        ) : (
+          <ConnectWalletButton connect={connect} />
+        )}
       </Box>
       <DeploymentLoader
         states={states}

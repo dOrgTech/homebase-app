@@ -12,16 +12,21 @@ import {
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
+import { useSnackbar } from "notistack";
+
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import {
   calculateProposalSize,
   getTokensToStakeInPropose,
 } from "services/contracts/baseDAO/treasuryDAO/service";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { xtzToMutez } from "services/contracts/utils";
+import { xtzToMutez, connectIfNotConnected } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
-import { fromMigrationParamsFile, validateTransactionsJSON } from "../utils";
+import {
+  fromMigrationParamsFile,
+  validateTransactionsJSON,
+} from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
@@ -167,7 +172,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const [proposalFee, setProposalFee] = useState(0);
-  const { mutate } = useTreasuryPropose();
+  const { mutate, data } = useTreasuryPropose();
   const {
     state: {
       treasuryProposal: { open },
@@ -197,6 +202,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         amount: Number(xtzToMutez(transfer.amount.toString())),
       }));
 
+      await connectIfNotConnected(tezos, connect);
+
       if (dao) {
         const proposalSize = await calculateProposalSize(
           dao.address,
@@ -204,7 +211,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
             transfers,
             agoraPostId: values.agoraPostId,
           },
-          tezos || (await connect())
+          tezos
         );
 
         const tokensNeeded = getTokensToStakeInPropose(
