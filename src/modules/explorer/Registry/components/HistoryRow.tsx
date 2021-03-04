@@ -54,7 +54,7 @@ export const RegistryHistoryRow: React.FC<any> = ({
           <TokenName>
             {" "}
             <Cursor variant="subtitle1" color="textSecondary">
-              {name}
+              {name.length > 15 ? `${name.slice(0, 15)}...` : name}
             </Cursor>
           </TokenName>
           <DescriptionText

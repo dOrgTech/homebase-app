@@ -21,7 +21,7 @@ export interface BaseStorage {
 export type TreasuryStorage = BaseStorage;
 
 export interface RegistryStorage extends BaseStorage {
-  registry: any;
+  registryMapNumber: number;
 }
 
 export type Storage = RegistryStorage | TreasuryStorage;
