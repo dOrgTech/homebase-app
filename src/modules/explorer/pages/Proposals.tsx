@@ -20,6 +20,8 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { Button } from "@material-ui/core";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { ActionTypes, ModalsContext } from "../ModalsContext";
+import { connectIfNotConnected } from "services/contracts/utils";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -104,6 +106,8 @@ export const Proposals: React.FC = () => {
   const { data: dao } = useDAO(id);
   const { data } = useDAO(id);
   const { mutate } = useFlush();
+
+  const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
   const symbol = dao && dao.metadata.unfrozenToken.symbol.toUpperCase();
   const amountLocked = useMemo(() => {
@@ -219,7 +223,8 @@ export const Proposals: React.FC = () => {
     }
   }, [dao, dispatch]);
 
-  const onFlush = useCallback(() => {
+  const onFlush = useCallback(async () => {
+    await connectIfNotConnected(tezos, connect);
     // @TODO: we need to add an atribute to the proposals
     // type in order to know if it was flushed or not
     if (proposalsData && proposalsData.length && data) {
@@ -231,7 +236,7 @@ export const Proposals: React.FC = () => {
     }
 
     console.log("no proposal data");
-  }, [data, mutate, proposalsData]);
+  }, [data, mutate, proposalsData, tezos]);
 
   return (
     <>
