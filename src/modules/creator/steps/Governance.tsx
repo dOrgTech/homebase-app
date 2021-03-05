@@ -7,6 +7,7 @@ import {
   withStyles,
   withTheme,
   Box,
+  Tooltip,
 } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
 import React, { useContext, useEffect } from "react";
@@ -17,6 +18,7 @@ import { useRouteMatch } from "react-router-dom";
 import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleGovernanceFormErrors } from "modules/creator/utils";
 import { VotingSettings } from "services/contracts/baseDAO/types";
+import { InfoOutlined } from "@material-ui/icons";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -72,6 +74,10 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
+const ValueText = styled(Typography)({
+  fontSize: 14,
+});
+
 const StyledSlider = withStyles({
   root: {
     textAlign: "center",
@@ -116,6 +122,12 @@ const styles = {
   },
 };
 
+const StakeContainer = styled(Grid)({
+  display: "flex",
+  alignItems: "center",
+  textAlign: "center",
+});
+
 const LastInput = styled(Grid)({
   marginTop: 14,
   paddingBottom: 37,
@@ -123,6 +135,10 @@ const LastInput = styled(Grid)({
 
 const GridNoPadding = styled(Grid)({
   padding: "0px !important",
+});
+
+const InfoIconInput = styled(InfoOutlined)({
+  cursor: "default",
 });
 
 //@TODO: Remove any from this component
@@ -138,7 +154,7 @@ const GovernanceForm = ({
     state: {
       governanceStep,
       activeStep,
-      data: { orgSettings },
+      data: { orgSettings, template },
     },
   } = useContext(CreatorContext);
   const match = useRouteMatch();
@@ -198,6 +214,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
@@ -221,6 +238,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
@@ -244,6 +262,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
@@ -279,13 +298,23 @@ const GovernanceForm = ({
                 name="proposeStakeRequired"
                 type="number"
                 placeholder="00"
+                inputProps={{ min: 0 }}
                 component={TextField}
               ></Field>
             </GridItemCenter>
-            <GridItemCenter item xs={6}>
+            <GridItemCenter
+              item
+              xs={6}
+              container
+              direction="row"
+              justify="space-around"
+            >
               <Typography color="textSecondary">
                 {orgSettings.symbol}
               </Typography>
+              <Tooltip title="Votings hours info">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposeStakeRequired && touched.proposeStakeRequired ? (
@@ -306,14 +335,18 @@ const GovernanceForm = ({
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item>
+            <StakeContainer item>
               <Field
                 name="proposeStakePercentage"
                 type="number"
                 placeholder="00"
+                inputProps={{ min: 0 }}
                 component={TextField}
               ></Field>
-            </GridItemCenter>
+              <Tooltip title="Votings hours info">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </StakeContainer>
           </ItemContainer>
           {errors.proposeStakePercentage && touched.proposeStakePercentage ? (
             <ErrorText>{errors.proposeStakePercentage}</ErrorText>
@@ -373,69 +406,89 @@ const GovernanceForm = ({
         </Grid>
       </SecondContainer>
 
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Transfer Amounts
-        </Typography>
-      </SpacingContainer>
-
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
+      {template === "treasury" && (
+        <>
+          <SpacingContainer direction="row" container alignItems="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              Transfer Amounts
+            </Typography>
+          </SpacingContainer>
+          <Grid
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            style={{ marginTop: 14 }}
           >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="minXtzAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">Min. XTZ</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.minXtzAmount && touched.minXtzAmount ? (
-            <ErrorText>{errors.minXtzAmount}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="maxXtzAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">Max. XTZ </Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.maxXtzAmount && touched.maxXtzAmount ? (
-            <ErrorText>{errors.maxXtzAmount}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-      </Grid>
-
+            <AdditionContainer item xs={12} sm={4}>
+              <ItemContainer
+                container
+                direction="row"
+                alignItems="center"
+                justify="center"
+              >
+                <GridItemCenter item xs={5}>
+                  <Field
+                    name="minXtzAmount"
+                    type="number"
+                    placeholder="00"
+                    component={TextField}
+                  ></Field>
+                </GridItemCenter>
+                <GridItemCenter
+                  item
+                  xs={7}
+                  container
+                  direction="row"
+                  justify="space-around"
+                >
+                  <ValueText color="textSecondary">Min. XTZ</ValueText>
+                  <Tooltip title="Votings hours info">
+                    <InfoIconInput color="secondary" />
+                  </Tooltip>
+                </GridItemCenter>
+              </ItemContainer>
+              {errors.minXtzAmount && touched.minXtzAmount ? (
+                <ErrorText>{errors.minXtzAmount}</ErrorText>
+              ) : null}
+            </AdditionContainer>
+            <AdditionContainer item xs={12} sm={4}>
+              <ItemContainer
+                container
+                direction="row"
+                alignItems="center"
+                justify="center"
+              >
+                <GridItemCenter item xs={5}>
+                  <Field
+                    name="maxXtzAmount"
+                    type="number"
+                    placeholder="00"
+                    component={TextField}
+                  ></Field>
+                </GridItemCenter>
+                <GridItemCenter
+                  item
+                  xs={7}
+                  container
+                  direction="row"
+                  justify="space-around"
+                >
+                  <ValueText color="textSecondary">Max. XTZ </ValueText>
+                  <Tooltip title="Votings hours info">
+                    <InfoIconInput color="secondary" />
+                  </Tooltip>
+                </GridItemCenter>
+              </ItemContainer>
+              {errors.maxXtzAmount && touched.maxXtzAmount ? (
+                <ErrorText>{errors.maxXtzAmount}</ErrorText>
+              ) : null}
+            </AdditionContainer>
+          </Grid>
+        </>
+      )}
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
-          Quorum Treshold
+          Quorum Threshold
         </Typography>
       </SpacingContainer>
 
@@ -457,13 +510,23 @@ const GovernanceForm = ({
                 name="quorumTreshold"
                 type="number"
                 placeholder="00"
+                inputProps={{ min: 0 }}
                 component={TextField}
               ></Field>
             </GridItemCenter>
-            <GridItemCenter item xs={6}>
+            <GridItemCenter
+              item
+              xs={6}
+              container
+              direction="row"
+              justify="space-around"
+            >
               <Typography color="textSecondary">
                 {orgSettings.symbol}
               </Typography>
+              <Tooltip title="Votings hours info">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
             </GridItemCenter>
           </ItemContainer>
           {errors.quorumTreshold && touched.quorumTreshold ? (
@@ -492,12 +555,22 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
-            <GridItemCenter item xs={6}>
+            <GridItemCenter
+              item
+              xs={6}
+              container
+              direction="row"
+              justify="space-around"
+            >
               <Typography color="textSecondary">
                 {orgSettings.symbol}
               </Typography>
+              <Tooltip title="Votings hours info">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
             </GridItemCenter>
           </ItemContainer>
           {errors.maxProposalSize && touched.maxProposalSize ? (
@@ -524,7 +597,6 @@ export const Governance: React.FC = () => {
       votingSettings: values,
     };
     updateCache(newState);
-    console.log(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
     history.push(`token`);
@@ -551,7 +623,7 @@ export const Governance: React.FC = () => {
       <Formik
         enableReinitialize
         validate={(values: VotingSettings) =>
-          handleGovernanceFormErrors(values)
+          handleGovernanceFormErrors(values, state.data.template)
         }
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
@@ -564,12 +636,11 @@ export const Governance: React.FC = () => {
           errors,
           touched,
         }) => {
-          console.log(errors);
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm
                 validate={(values: VotingSettings) =>
-                  handleGovernanceFormErrors(values)
+                  handleGovernanceFormErrors(values, state.data.template)
                 }
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

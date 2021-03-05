@@ -74,6 +74,10 @@ const SubmitContainer = styled(Grid)({
   height: 80,
   display: "flex",
   cursor: "pointer",
+  borderTop: "1px solid #4BCF93",
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+  },
 });
 
 const SupportText = styled(Typography)(
@@ -205,7 +209,7 @@ export const VoteDialog: React.FC = () => {
               justify="center"
               onClick={onSubmit}
             >
-              <Typography color="textSecondary" variant="subtitle1">
+              <Typography color="secondary" variant="subtitle1">
                 SUBMIT VOTE
               </Typography>
             </SubmitContainer>

@@ -1,4 +1,12 @@
-import { Grid, styled, Typography, withStyles, Box } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  withStyles,
+  Box,
+  InputAdornment,
+  Tooltip,
+} from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
@@ -9,7 +17,12 @@ import {
   ActionTypes,
   TokenHolder,
 } from "modules/creator/state";
-import { MemberSettings } from "services/contracts/baseDAO/types";
+import { ErrorValues, MemberSettings } from "services/contracts/baseDAO/types";
+import {
+  InfoOutlined,
+  AddCircleOutline,
+  RemoveCircleOutline,
+} from "@material-ui/icons";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -52,9 +65,13 @@ const CustomBalanceContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const ErrorText = styled(Typography)({
-  fontSize: 10,
+  fontSize: 13,
   color: "red",
   marginTop: 10,
+});
+
+const AddIcon = styled(AddCircleOutline)({
+  marginLeft: 8,
 });
 
 const CustomFormikTextField = withStyles({
@@ -83,10 +100,18 @@ const CustomTotalContainer = styled(Typography)({
   boxSizing: "border-box",
 });
 
+const InfoIconInput = styled(InfoOutlined)({
+  cursor: "default",
+});
+
 const CustomValueContainer = styled(Typography)({
   padding: "11px 21px",
   boxSizing: "border-box",
   fontWeight: 700,
+});
+
+const AddText = styled(Typography)({
+  fontSize: 14,
 });
 
 const AddButon = styled("button")({
@@ -97,8 +122,10 @@ const AddButon = styled("button")({
   textAlign: "end",
   width: "100%",
   cursor: "pointer",
-  textDecoration: "underline",
-  color: "#fff",
+  color: "#4BCF93",
+  display: "flex",
+  justifyContent: "flex-end",
+  paddingRight: 17.5,
 });
 
 const RemoveButton = styled("button")({
@@ -127,17 +154,17 @@ const Total = ({ values }: { values: MemberSettings }) => {
   return <div>{isNaN(totalTokens) ? "0" : totalTokens}</div>;
 };
 
-const validate = () =>
-  // values: MemberSettings
-  {
-    // const handleLedgerValidation = (field: any) => {
-    //   if (field === "tokenHolders") {
-    //     return !!values["tokenHolders"].length;
-    //   }
-    //   return !values[field as keyof MemberSettings];
-    // };
-    // handleErrorMessages(values, handleLedgerValidation);
-  };
+const validate = (values: MemberSettings) => {
+  const errors: ErrorValues<MemberSettings> = {};
+
+  values.tokenHolders.map((item: TokenHolder) => {
+    if (!item.address || !String(item.balance)) {
+      errors.tokenHolders = "Please field all the values";
+    }
+  });
+
+  return errors;
+};
 
 const TokenSettingsForm = ({
   values,
@@ -229,16 +256,22 @@ const TokenSettingsForm = ({
                             onClick={() => arrayHelpers.remove(index)}
                           >
                             {" "}
-                            x
+                            <RemoveCircleOutline
+                              color="secondary"
+                              fontSize="small"
+                            />
                           </RemoveButton>
                         </Grid>
                       )}
                     </Grid>
                   ))}
+                  {errors.tokenHolders ? (
+                    <ErrorText>{errors.tokenHolders}</ErrorText>
+                  ) : null}
                   {!someEmpty ? (
                     <Grid container>
-                      <Grid item xs={8} />
-                      <Grid item xs={3}>
+                      <Grid item xs={9} />
+                      <Grid item xs={3} container direction="row">
                         <AddButon
                           className="button"
                           type="button"
@@ -250,7 +283,8 @@ const TokenSettingsForm = ({
                           }
                         >
                           {" "}
-                          Add new row
+                          <AddText color="secondary">Add </AddText>{" "}
+                          <AddIcon color="secondary" fontSize="small" />
                         </AddButon>
                       </Grid>
                     </Grid>
@@ -290,6 +324,15 @@ const TokenSettingsForm = ({
               type="text"
               placeholder="tz1PXn...."
               component={CustomFormikTextField}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    <Tooltip title="DAO Name info">
+                      <InfoIconInput color="secondary" />
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
             ></Field>
           </CustomInputContainer>
           {errors.administrator && touched.administrator ? (
@@ -341,7 +384,7 @@ export const TokenSettings = (): JSX.Element => {
       </Grid>
       <Formik
         enableReinitialize={true}
-        validate={validate}
+        validate={(values: MemberSettings) => validate(values)}
         onSubmit={saveStepInfo}
         initialValues={memberSettings}
       >
@@ -356,7 +399,7 @@ export const TokenSettings = (): JSX.Element => {
           return (
             <Form style={{ width: "100%" }}>
               <TokenSettingsForm
-                validate={validate}
+                validate={(values: MemberSettings) => validate(values)}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}

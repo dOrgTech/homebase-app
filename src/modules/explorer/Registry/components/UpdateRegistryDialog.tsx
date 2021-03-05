@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-  Button,
   MenuItem,
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
@@ -21,6 +20,20 @@ import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistry
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { char2Bytes } from "@taquito/tzip16";
 import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
+import { ViewButton } from "modules/explorer/components/ViewButton";
+// import { useNotification } from "modules/common/hooks/useNotification";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { connectIfNotConnected } from "services/contracts/utils";
+import { calculateProposalSize } from "services/contracts/baseDAO/registryDAO/service";
+import { getTokensToStakeInPropose } from "services/contracts/baseDAO/treasuryDAO/service";
+import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
+import { useNotification } from "modules/common/hooks/useNotification";
+
+const SendButton = styled(ViewButton)({
+  width: "100%",
+  border: "none",
+  borderTop: "1px solid #4BCF93",
+});
 
 const FullWidthSelect = styled(Select)({
   width: "100%",
@@ -46,17 +59,17 @@ const ListItem = styled(Grid)(({ theme }) => ({
   padding: "0px 24px",
 }));
 
-// const UploadButtonContainer = styled(Grid)(({ theme }) => ({
-//   height: 70,
-//   display: "flex",
-//   alignItems: "center",
-//   padding: "0px 24px",
-//   borderBottom: `2px solid ${theme.palette.primary.light}`,
-// }));
+const UploadButtonContainer = styled(Grid)(({ theme }) => ({
+  height: 70,
+  display: "flex",
+  alignItems: "center",
+  padding: "0px 24px",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+}));
 
-// const FileInput = styled("input")({
-//   display: "none",
-// });
+const FileInput = styled("input")({
+  display: "none",
+});
 
 const SendContainer = styled(Grid)({
   height: 55,
@@ -119,15 +132,15 @@ const DescriptionContainer = styled(Grid)({
   paddingTop: 24,
 });
 
-// const UploadFileLabel = styled("label")(({ theme }) => ({
-//   height: 53,
-//   color: theme.palette.secondary.main,
-//   borderColor: theme.palette.secondary.main,
-//   minWidth: 171,
-//   cursor: "pointer",
-//   margin: "auto",
-//   display: "block",
-// }));
+const UploadFileLabel = styled("label")(({ theme }) => ({
+  height: 53,
+  color: theme.palette.secondary.main,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+  cursor: "pointer",
+  margin: "auto",
+  display: "block",
+}));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -175,10 +188,12 @@ export const UpdateRegistryDialog: React.FC = () => {
     },
     dispatch,
   } = useContext(ModalsContext);
+  const openNotification = useNotification();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
   const { mutate } = useRegistryPropose();
   const { data: registryItems } = useRegistryList(daoId);
+  const { tezos, connect } = useTezos();
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -190,23 +205,44 @@ export const UpdateRegistryDialog: React.FC = () => {
   }, [dispatch]);
 
   const onSubmit = useCallback(
-    (values: Values) => {
+    async (values: Values) => {
+      await connectIfNotConnected(tezos, connect);
+
       if (dao) {
-        mutate({
-          dao,
-          tokensToFreeze: 2,
+        const proposalSize = await calculateProposalSize(dao.address, tezos, {
           agoraPostId: 0,
           items: values.list.map(({ key, value }) => ({
             key: char2Bytes(key),
             newValue: char2Bytes(value),
           })),
         });
+
+        const tokensNeeded = getTokensToStakeInPropose(
+          {
+            frozenExtraValue: dao.storage.frozenExtraValue,
+            frozenScaleValue: dao.storage.frozenScaleValue,
+          },
+          proposalSize
+        );
+
+        mutate({
+          dao,
+          tokensToFreeze: tokensNeeded,
+          agoraPostId: 0,
+          items: values.list.map(({ key, value }) => ({
+            key: char2Bytes(key),
+            newValue: char2Bytes(value),
+          })),
+        });
+
+        dispatch({
+          type: ActionTypes.CLOSE,
+          payload: { modal: "registryProposal" },
+        });
       }
     },
-    [dao, mutate]
+    [connect, dao, dispatch, mutate, tezos]
   );
-
-  console.log(registryItems);
 
   return (
     <>
@@ -270,6 +306,40 @@ export const UpdateRegistryDialog: React.FC = () => {
               onSubmit={onSubmit}
             >
               {({ submitForm, values, setFieldValue }) => {
+                const importList = async (
+                  event: React.ChangeEvent<HTMLInputElement>
+                ) => {
+                  if (event.currentTarget.files) {
+                    try {
+                      const file = event.currentTarget.files[0];
+                      const registryListParsed = await fromRegistryListFile(
+                        file
+                      );
+                      console.log(registryListParsed);
+                      const errors = validateRegistryListJSON(
+                        registryListParsed
+                      );
+                      console.log(errors);
+                      if (errors.length) {
+                        openNotification({
+                          message: "Error while parsing JSON",
+                          persist: true,
+                          variant: "error",
+                        });
+                        return;
+                      }
+                      setIsBatch(true);
+                      values.list = registryListParsed;
+                    } catch (e) {
+                      openNotification({
+                        message: "Error while parsing JSON",
+                        persist: true,
+                        variant: "error",
+                      });
+                    }
+                  }
+                };
+
                 return (
                   <Form autoComplete="off">
                     <>
@@ -453,12 +523,16 @@ export const UpdateRegistryDialog: React.FC = () => {
                         </Grid>
                       </DescriptionContainer>
 
-                      {/* <UploadButtonContainer container direction="row">
+                      <UploadButtonContainer container direction="row">
                         <UploadFileLabel>
                           -OR- UPLOAD JSON FILE
-                          <FileInput type="file" accept=".json" />
+                          <FileInput
+                            type="file"
+                            accept=".json"
+                            onChange={importList}
+                          />
                         </UploadFileLabel>
-                      </UploadButtonContainer> */}
+                      </UploadButtonContainer>
 
                       <ListItem container direction="row">
                         <Grid item xs={6}>
@@ -478,11 +552,9 @@ export const UpdateRegistryDialog: React.FC = () => {
                       </ListItem>
 
                       <SendContainer container direction="row" justify="center">
-                        <Button onClick={submitForm} disabled={!dao}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            SEND
-                          </Typography>
-                        </Button>
+                        <SendButton onClick={submitForm} disabled={!dao}>
+                          SEND
+                        </SendButton>
                       </SendContainer>
                     </>
                   </Form>

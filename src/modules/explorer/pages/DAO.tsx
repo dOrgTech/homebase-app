@@ -1,32 +1,35 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
+  Button,
   CircularProgress,
   Grid,
   styled,
   Typography,
+  useTheme,
+  Tooltip,
 } from "@material-ui/core";
 import Timer from "react-compound-timer";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { useHistory, useParams } from "react-router-dom";
 
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
-import VoteTimeIcon from "assets/logos/voteTime.svg";
-import {
-  mapProposalData,
-  ProposalTableRow,
-  ProposalTableRowData,
-} from "modules/explorer/components/ProposalTableRow";
+import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
 import {
   TokenHoldersDialog,
   TopHoldersTableRow,
 } from "modules/explorer/components/TokenHolders";
+import ProgressBar from "react-customizable-progressbar";
 import { SideBar } from "modules/explorer/components";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
+import { connectIfNotConnected } from "services/contracts/utils";
+import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
+import { Info } from "@material-ui/icons";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
@@ -122,11 +125,34 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
+const ProposalTableHeadItem = styled(Typography)({
+  fontWeight: "bold",
+});
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  height: 53,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+}));
+
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
     {children}
   </Typography>
 );
+
+const InfoIconInput = styled(Info)({
+  cursor: "default",
+  top: 0,
+  fontSize: 20,
+  marginLeft: 6,
+});
+
+const FlushContainer = styled(Grid)({
+  display: "flex",
+  paddingTop: 15,
+});
 
 export const DAO: React.FC = () => {
   const history = useHistory();
@@ -134,10 +160,13 @@ export const DAO: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data } = useDAO(id);
   const { data: members } = useTokenHoldersWithVotes(id);
+  const { mutate } = useFlush();
+  const { tezos, connect } = useTezos();
 
   const name = data && data.metadata.unfrozenToken.name;
   const description = data && data.metadata.description;
   const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
+  const template = data && data.template;
 
   const votingPeriod = data && data.storage.votingPeriod;
   const originationTime = data && data.originationTime;
@@ -148,6 +177,7 @@ export const DAO: React.FC = () => {
   );
   const [timeLeft, setTimeLeft] = useState<number>(time || 0);
   const [finished, setFinished] = useState<boolean>(false);
+  const theme = useTheme();
 
   useEffect(() => {
     if (votingPeriod && finished && cycleInfo?.current) {
@@ -221,20 +251,15 @@ export const DAO: React.FC = () => {
       .sort((a, b) => Number(b.weight) - Number(a.weight));
   }, [members]);
 
-  const activeProposals = useMemo<ProposalTableRowData[]>(() => {
+  const activeProposals = useMemo(() => {
     if (!proposalsData || finished) {
       return [];
     }
 
-    return proposalsData
-      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) =>
-        mapProposalData(
-          { ...proposal, quorumTreshold: data?.storage.quorumTreshold || 0 },
-          data?.address
-        )
-      );
-  }, [proposalsData, finished, data?.storage.quorumTreshold, data?.address]);
+    return proposalsData.filter(
+      (proposalData) => proposalData.status === ProposalStatus.ACTIVE
+    );
+  }, [proposalsData, finished]);
 
   const totalTokens = amountLocked + amountNotLocked;
 
@@ -250,6 +275,22 @@ export const DAO: React.FC = () => {
       },
     },
   ];
+
+  const onFlush = useCallback(async () => {
+    await connectIfNotConnected(tezos, connect);
+    // @TODO: we need to add an atribute to the proposals
+    // type in order to know if it was flushed or not
+    if (proposalsData && proposalsData.length && data) {
+      mutate({
+        dao: data,
+        numOfProposalsToFlush: proposalsData.length + 1,
+      });
+      return;
+    }
+
+    console.log("no proposal data");
+  }, [connect, data, mutate, proposalsData, tezos]);
+
   return (
     <PageLayout container wrap="nowrap">
       <SideBar dao={id} />
@@ -260,16 +301,35 @@ export const DAO: React.FC = () => {
               <Box>
                 <Typography variant="subtitle2" color="secondary">
                   {symbol}
+                  {` > `}
+                  {template === "registry" ? "REGISTRY" : "TREASURY"}
                 </Typography>
               </Box>
-              <Box paddingBottom="10px">
-                <CustomH1 color="textSecondary">{name}</CustomH1>
-              </Box>
-              <Box>
-                <Typography variant="body1" color="textSecondary">
-                  {description}
-                </Typography>
-              </Box>
+              <Grid container style={{ height: "100%" }}>
+                <Grid item>
+                  <Box paddingBottom="10px">
+                    <CustomH1 color="textSecondary">{name}</CustomH1>
+                  </Box>
+                  <Box>
+                    <Typography variant="body1" color="textSecondary">
+                      {description}
+                    </Typography>
+                  </Box>
+
+                  <FlushContainer item>
+                    <StyledButton
+                      variant="outlined"
+                      onClick={onFlush}
+                      disabled={!data}
+                    >
+                      FLUSH
+                    </StyledButton>
+                    <Tooltip title="Execute all passed proposals and drop all expired or rejected">
+                      <InfoIconInput color="secondary" />
+                    </Tooltip>
+                  </FlushContainer>
+                </Grid>
+              </Grid>
             </DAOInfoTitleAndDesc>
             <DAOInfoVotingPeriod item>
               <Box paddingBottom="32px">
@@ -298,8 +358,23 @@ export const DAO: React.FC = () => {
               <Box paddingBottom="32px">
                 <Grid container>
                   <Grid item>
-                    <BigIconContainer>
-                      <img src={VoteTimeIcon} />
+                    <BigIconContainer
+                      width={80}
+                      height={80}
+                      marginTop={"-21px"}
+                    >
+                      <ProgressBar
+                        progress={
+                          data
+                            ? (timeLeft / data.storage.votingPeriod) * 100
+                            : 100
+                        }
+                        radius={35}
+                        strokeWidth={7}
+                        strokeColor={theme.palette.secondary.main}
+                        trackStrokeWidth={4}
+                        trackStrokeColor={theme.palette.primary.light}
+                      />
                     </BigIconContainer>
                   </Grid>
                   <Grid item>
@@ -403,21 +478,30 @@ export const DAO: React.FC = () => {
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
+              <Grid item xs={4}>
                 <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
               </Grid>
               <Grid item xs={2}>
-                <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
+                <ProposalTableHeadItem color="textSecondary" align="center">
+                  CYCLE
+                </ProposalTableHeadItem>
               </Grid>
-              <Grid item xs={5}>
-                <ProposalTableHeadText>STATUS</ProposalTableHeadText>
+              <Grid item xs={3}>
+                {/* <ProposalTableHeadText>STATUS</ProposalTableHeadText> */}
+              </Grid>
+              <Grid item xs={3}>
+                <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
               </Grid>
             </TableHeader>
             {activeProposals.length > 0 &&
               activeProposals.map((proposal, i) => (
-                <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+                <ProposalTableRow
+                  key={`proposal-${i}`}
+                  {...proposal}
+                  daoId={data?.address}
+                  quorumTreshold={data?.storage.quorumTreshold || 0}
+                />
               ))}
-
             {activeProposals.length === 0 ? (
               <NoProposals variant="subtitle1" color="textSecondary">
                 No active proposals
@@ -427,7 +511,7 @@ export const DAO: React.FC = () => {
           <Grid container direction="row" justify="center">
             <UnderlineText
               variant="subtitle1"
-              color="textSecondary"
+              color="secondary"
               onClick={() => history.push(`/explorer/proposals/${id}`)}
             >
               VIEW ALL PROPOSALS

@@ -1,18 +1,14 @@
-import { InMemorySigner } from "@taquito/signer";
 import { TezosToolkit } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import blockies from "blockies-ts";
 
-export const getTestProvider = async (): Promise<TezosToolkit> => {
-  const Tezos = new TezosToolkit("https://edonet-tezos.giganode.io");
-
-  Tezos.setProvider({
-    signer: await InMemorySigner.fromSecretKey(
-      "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
-    ),
-  });
-
-  return Tezos;
+export const connectIfNotConnected = async (
+  tezos: TezosToolkit,
+  connect: () => Promise<TezosToolkit>
+): Promise<void> => {
+  if (!("_pkh" in tezos.wallet)) {
+    await connect();
+  }
 };
 
 export const stringToHex = (value: string): string => {

@@ -76,6 +76,7 @@ const ProposalTableHeadText: React.FC<{ align: any }> = ({ children, align }) =>
 const NoProposals = styled(Typography)({
   marginTop: 20,
   marginBottom: 20,
+  paddingLeft: 112,
 });
 
 export const Registry: React.FC = () => {
@@ -165,9 +166,11 @@ export const Registry: React.FC = () => {
             </ListItemContainer>
           ))}
           {registryList.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No registry items
-            </NoProposals>
+            <ListItemContainer>
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No registry items
+              </NoProposals>
+            </ListItemContainer>
           ) : null}
         </TableContainer>
 
@@ -201,9 +204,11 @@ export const Registry: React.FC = () => {
           ))}
 
           {proposals.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No active proposals
-            </NoProposals>
+            <ListItemContainer>
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No entries
+              </NoProposals>
+            </ListItemContainer>
           ) : null}
         </TableContainer>
       </Grid>

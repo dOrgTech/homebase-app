@@ -9,21 +9,28 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-  Button,
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
+// import { useSnackbar } from "notistack";
+
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import {
   calculateProposalSize,
   getTokensToStakeInPropose,
 } from "services/contracts/baseDAO/treasuryDAO/service";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { xtzToMutez } from "services/contracts/utils";
+import { xtzToMutez, connectIfNotConnected } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
-import { fromMigrationParamsFile, validateTransactionsJSON } from "../utils";
+import {
+  fromMigrationParamsFile,
+  validateTransactionsJSON,
+} from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
+import { theme } from "theme";
+import { ViewButton } from "modules/explorer/components/ViewButton";
+import { useNotification } from "modules/common/hooks/useNotification";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -143,6 +150,12 @@ const CustomTextarea = styled(TextField)({
   },
 });
 
+const SendButton = styled(ViewButton)({
+  width: "100%",
+  border: "none",
+  borderTop: "1px solid #4BCF93",
+});
+
 interface Values {
   transfers: Transfer[];
   description: string;
@@ -171,6 +184,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
+  const openNotification = useNotification();
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -190,6 +204,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         amount: Number(xtzToMutez(transfer.amount.toString())),
       }));
 
+      await connectIfNotConnected(tezos, connect);
+
       if (dao) {
         const proposalSize = await calculateProposalSize(
           dao.address,
@@ -197,7 +213,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
             transfers,
             agoraPostId: values.agoraPostId,
           },
-          tezos || (await connect())
+          tezos
         );
 
         const tokensNeeded = getTokensToStakeInPropose(
@@ -279,21 +295,35 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                     event: React.ChangeEvent<HTMLInputElement>
                   ) => {
                     if (event.currentTarget.files) {
-                      const file = event.currentTarget.files[0];
-                      const transactionsParsed = await fromMigrationParamsFile(
-                        file
-                      );
-                      console.log(transactionsParsed);
-                      const errors = validateTransactionsJSON(
-                        transactionsParsed
-                      );
-                      console.log(errors);
-                      if (errors.length) {
-                        // Show notification with error
-                        return;
+                      try {
+                        const file = event.currentTarget.files[0];
+                        const transactionsParsed = await fromMigrationParamsFile(
+                          file
+                        );
+                        console.log(transactionsParsed);
+                        const errors = validateTransactionsJSON(
+                          transactionsParsed
+                        );
+                        console.log(errors);
+
+                        if (errors.length) {
+                          openNotification({
+                            message: "Error while parsing JSON",
+                            persist: true,
+                            variant: "error",
+                          });
+                          return;
+                        }
+
+                        setIsBatch(true);
+                        values.transfers = transactionsParsed;
+                      } catch (e) {
+                        openNotification({
+                          message: "Error while parsing JSON",
+                          persist: true,
+                          variant: "error",
+                        });
                       }
-                      setIsBatch(true);
-                      values.transfers = transactionsParsed;
                     }
                   };
 
@@ -511,14 +541,19 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           direction="row"
                           justify="center"
                         >
-                          <Button onClick={submitForm}>
-                            <Typography
+                          <SendButton
+                            customColor={theme.palette.secondary.main}
+                            variant="outlined"
+                            onClick={submitForm}
+                          >
+                            {/* <Typography
                               variant="subtitle1"
                               color="textSecondary"
                             >
                               SEND
-                            </Typography>
-                          </Button>
+                            </Typography> */}
+                            SEND
+                          </SendButton>
                         </SendContainer>
                       </>
                     </Form>
