@@ -259,50 +259,59 @@ export const Summary = (): JSX.Element => {
             </UnderlinedGrid>
           </Grid>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Transfer maximum XTZ amount
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
-                  {state.data.votingSettings.maxXtzAmount} XTZ
-                </Typography>
-              </Grid>
-            </UnderlinedGrid>
-          </Grid>
+          {state.data.template === "treasury" && (
+            <Grid item xs={12}>
+              <UnderlinedGrid
+                item
+                container
+                direction="row"
+                alignItems="center"
+              >
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="textSecondary">
+                    Transfer maximum XTZ amount
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {state.data.votingSettings.maxXtzAmount} XTZ
+                  </Typography>
+                </Grid>
+              </UnderlinedGrid>
+            </Grid>
+          )}
 
           {showMore ? (
             <>
-              <Grid item xs={12}>
-                <UnderlinedGrid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                >
-                  <Grid item xs={6}>
-                    <Typography variant="body2" color="textSecondary">
-                      Transfer minimum XTZ amount
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="subtitle1"
-                      color="textSecondary"
-                      align="right"
-                    >
-                      {state.data.votingSettings.minXtzAmount} XTZ
-                    </Typography>
-                  </Grid>
-                </UnderlinedGrid>
-              </Grid>
+              {state.data.template === "treasury" && (
+                <Grid item xs={12}>
+                  <UnderlinedGrid
+                    item
+                    container
+                    direction="row"
+                    alignItems="center"
+                  >
+                    <Grid item xs={6}>
+                      <Typography variant="body2" color="textSecondary">
+                        Transfer minimum XTZ amount
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="subtitle1"
+                        color="textSecondary"
+                        align="right"
+                      >
+                        {state.data.votingSettings.minXtzAmount} XTZ
+                      </Typography>
+                    </Grid>
+                  </UnderlinedGrid>
+                </Grid>
+              )}
 
               <Grid item xs={12}>
                 <UnderlinedGrid

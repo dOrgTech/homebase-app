@@ -53,6 +53,7 @@ export const useVote = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries("votes");
+        queryClient.invalidateQueries("proposals");
       },
     }
   );

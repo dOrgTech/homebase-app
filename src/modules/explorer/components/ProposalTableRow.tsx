@@ -104,7 +104,7 @@ export const ProposalTableRow: React.FC<
       </Grid>
       <Grid item xs={2}>
         <Typography variant="body1" color="textSecondary" align="center">
-          {cycle || "-"}
+          {Number.isInteger(cycle) ? cycle : "-"}
         </Typography>
       </Grid>
       <Grid item xs={3} container justify="space-between" alignItems="center">

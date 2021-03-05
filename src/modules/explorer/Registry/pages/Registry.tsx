@@ -166,9 +166,11 @@ export const Registry: React.FC = () => {
             </ListItemContainer>
           ))}
           {registryList.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No registry items
-            </NoProposals>
+            <ListItemContainer>
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No registry items
+              </NoProposals>
+            </ListItemContainer>
           ) : null}
         </TableContainer>
 
@@ -202,9 +204,11 @@ export const Registry: React.FC = () => {
           ))}
 
           {proposals.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No active proposals
-            </NoProposals>
+            <ListItemContainer>
+              <NoProposals variant="subtitle1" color="textSecondary">
+                No entries
+              </NoProposals>
+            </ListItemContainer>
           ) : null}
         </TableContainer>
       </Grid>

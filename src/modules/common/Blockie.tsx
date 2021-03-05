@@ -8,6 +8,7 @@ const StyledBox = styled(Box)(
     height: size || 23,
     borderRadius: "3px",
     background: `url(${address})`,
+    backgroundSize: "contain",
   })
 );
 
@@ -16,5 +17,11 @@ export const Blockie = ({
   size,
   ...props
 }: BoxProps & { address: string; size?: number }) => {
-  return <StyledBox address={getBlockie(address)} size={size} {...props} />;
+  return (
+    <StyledBox
+      address={getBlockie(address.toLowerCase())}
+      size={size}
+      {...props}
+    />
+  );
 };
