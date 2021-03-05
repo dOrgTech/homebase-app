@@ -7,6 +7,7 @@ import {
   styled,
   Typography,
   useTheme,
+  Tooltip,
 } from "@material-ui/core";
 import Timer from "react-compound-timer";
 import LinearProgress from "@material-ui/core/LinearProgress";
@@ -27,6 +28,7 @@ import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
+import { Info } from "@material-ui/icons";
 import { useTezos } from "services/beacon/hooks/useTezos";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
@@ -139,6 +141,18 @@ const ProposalTableHeadText: React.FC = ({ children }) => (
     {children}
   </Typography>
 );
+
+const InfoIconInput = styled(Info)({
+  cursor: "default",
+  top: 0,
+  fontSize: 20,
+  marginLeft: 6,
+});
+
+const FlushContainer = styled(Grid)({
+  display: "flex",
+  paddingTop: 15,
+});
 
 export const DAO: React.FC = () => {
   const history = useHistory();
@@ -301,15 +315,19 @@ export const DAO: React.FC = () => {
                       {description}
                     </Typography>
                   </Box>
-                </Grid>
-                <Grid item>
-                  <StyledButton
-                    variant="outlined"
-                    onClick={onFlush}
-                    disabled={!data}
-                  >
-                    FLUSH
-                  </StyledButton>
+
+                  <FlushContainer item>
+                    <StyledButton
+                      variant="outlined"
+                      onClick={onFlush}
+                      disabled={!data}
+                    >
+                      FLUSH
+                    </StyledButton>
+                    <Tooltip title="Execute all passed proposals and drop all expired or rejected">
+                      <InfoIconInput color="secondary" />
+                    </Tooltip>
+                  </FlushContainer>
                 </Grid>
               </Grid>
             </DAOInfoTitleAndDesc>
