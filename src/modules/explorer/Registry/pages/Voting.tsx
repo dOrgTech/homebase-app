@@ -1,4 +1,11 @@
-import { Box, Grid, styled, Typography, useTheme, withTheme } from "@material-ui/core";
+import {
+  Box,
+  Grid,
+  styled,
+  Typography,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import dayjs from "dayjs";
@@ -15,7 +22,7 @@ import {
 } from "services/bakingBad/proposals/types";
 import { UserBadge } from "../../components/UserBadge";
 import ProgressBar from "react-customizable-progressbar";
-
+import { useVotesStats } from "modules/explorer/hooks/useVotesStats";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -129,7 +136,6 @@ const ProgressText = styled(Typography)(
   })
 );
 
-
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
@@ -142,12 +148,17 @@ export const Voting: React.FC = () => {
   const { data: dao } = useDAO(daoId);
 
   const proposalCycle = proposal ? proposal.cycle : "-";
-  const upVotes = proposal ? proposal.upVotes : 0;
-  const downVotes = proposal ? proposal.downVotes : 0;
   const daoName = dao ? dao.metadata.unfrozenToken.name : "";
-  const upVotesPercentage = dao && (upVotes * 100) / dao.storage.quorumTreshold;
-  const downVotesPercentage =
-    dao && (downVotes * 100) / dao.storage.quorumTreshold;
+
+  const {
+    upVotesSumPercentage,
+    downVotesSumPercentage,
+    votesQuorumPercentage,
+  } = useVotesStats({
+    quorumTreshold: dao?.storage.quorumTreshold || 0,
+    upVotes: proposal?.upVotes || 0,
+    downVotes: proposal?.downVotes || 0,
+  });
 
   const history = useMemo(() => {
     if (!proposal) {
@@ -266,7 +277,7 @@ export const Voting: React.FC = () => {
                   </Box>
                   <Box padding="12px 0">
                     <Typography variant="h3" color="textSecondary">
-                      {upVotes}
+                      {proposal?.upVotes || 0}
                     </Typography>
                   </Box>
                 </Grid>
@@ -283,13 +294,13 @@ export const Voting: React.FC = () => {
                   <CustomBar
                     favor={true}
                     variant="determinate"
-                    value={upVotesPercentage}
+                    value={upVotesSumPercentage}
                     color="secondary"
                   />
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    {upVotesPercentage}%
+                    {Number(upVotesSumPercentage.toFixed(1))}%
                   </Typography>
                 </Grid>
               </Grid>
@@ -310,7 +321,7 @@ export const Voting: React.FC = () => {
                   </Box>
                   <Box padding="12px 0">
                     <Typography variant="h3" color="textSecondary">
-                      {downVotes}
+                      {proposal?.downVotes || 0}
                     </Typography>
                   </Box>
                 </Grid>
@@ -326,13 +337,13 @@ export const Voting: React.FC = () => {
                 <Grid item xs={10}>
                   <CustomBar
                     variant="determinate"
-                    value={downVotesPercentage}
+                    value={downVotesSumPercentage}
                     favor={false}
                   />
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    {downVotesPercentage}%
+                    {Number(downVotesSumPercentage.toFixed(1))}%
                   </Typography>
                 </Grid>
               </Grid>
@@ -377,26 +388,28 @@ export const Voting: React.FC = () => {
             </Grid>
             <Grid item xs={6}>
               <Grid container direction="row">
-                  <HistoryContent item xs={12}>
-                    <Typography variant="subtitle1" color="textSecondary">
-                      QUORUM THRESHOLD %
-                    </Typography>
-                  </HistoryContent>
-                  <HistoryContent item xs={12}>
-                    <ProgressBar
-                      progress={90}
-                      radius={50}
-                      strokeWidth={7}
-                      strokeColor="#3866F9"
-                      trackStrokeWidth={4}
-                      trackStrokeColor={theme.palette.primary.light}
-                    >
-                      <div className="indicator">
-                        <ProgressText textColor="#3866F9">{90}%</ProgressText>
-                      </div>
-                    </ProgressBar>
-                  </HistoryContent>
-                </Grid>
+                <HistoryContent item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    QUORUM THRESHOLD %
+                  </Typography>
+                </HistoryContent>
+                <HistoryContent item xs={12}>
+                  <ProgressBar
+                    progress={votesQuorumPercentage}
+                    radius={50}
+                    strokeWidth={7}
+                    strokeColor="#3866F9"
+                    trackStrokeWidth={4}
+                    trackStrokeColor={theme.palette.primary.light}
+                  >
+                    <div className="indicator">
+                      <ProgressText textColor="#3866F9">
+                        {Number(votesQuorumPercentage.toFixed(1))}%
+                      </ProgressText>
+                    </div>
+                  </ProgressBar>
+                </HistoryContent>
+              </Grid>
               <Grid container direction="row">
                 <HistoryContent item xs={12}>
                   <Typography variant="subtitle1" color="textSecondary">

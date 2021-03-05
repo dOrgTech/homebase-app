@@ -12,11 +12,7 @@ import { useHistory, useParams } from "react-router-dom";
 
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import VoteTimeIcon from "assets/logos/voteTime.svg";
-import {
-  mapProposalData,
-  ProposalTableRow,
-  ProposalTableRowData,
-} from "modules/explorer/components/ProposalTableRow";
+import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
 import {
   TokenHoldersDialog,
   TopHoldersTableRow,
@@ -225,20 +221,15 @@ export const DAO: React.FC = () => {
       .sort((a, b) => Number(b.weight) - Number(a.weight));
   }, [members]);
 
-  const activeProposals = useMemo<ProposalTableRowData[]>(() => {
+  const activeProposals = useMemo(() => {
     if (!proposalsData || finished) {
       return [];
     }
 
-    return proposalsData
-      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) =>
-        mapProposalData(
-          { ...proposal, quorumTreshold: data?.storage.quorumTreshold || 0 },
-          data?.address
-        )
-      );
-  }, [proposalsData, finished, data?.storage.quorumTreshold, data?.address]);
+    return proposalsData.filter(
+      (proposalData) => proposalData.status === ProposalStatus.ACTIVE
+    );
+  }, [proposalsData, finished]);
 
   const totalTokens = amountLocked + amountNotLocked;
 
@@ -424,7 +415,12 @@ export const DAO: React.FC = () => {
             </TableHeader>
             {activeProposals.length > 0 &&
               activeProposals.map((proposal, i) => (
-                <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+                <ProposalTableRow
+                  key={`proposal-${i}`}
+                  {...proposal}
+                  daoId={data?.address}
+                  quorumTreshold={data?.storage.quorumTreshold || 0}
+                />
               ))}
             {activeProposals.length === 0 ? (
               <NoProposals variant="subtitle1" color="textSecondary">

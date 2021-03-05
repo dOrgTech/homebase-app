@@ -17,6 +17,7 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
 import { toShortAddress } from "services/contracts/utils";
 import { ViewButton } from "./ViewButton";
+import { useVotesStats } from "../hooks/useVotesStats";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -99,28 +100,13 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   const theme = useTheme();
   const { data: votesData, isLoading } = useVotes(proposalAddress, daoAddress);
 
-  const votesInfo = useMemo(() => {
-    if (!proposal) {
-      return {
-        votesSum: 0,
-        votesQuorumPercentage: 0,
-        votesSumPercentage: 0,
-        votesAmount: 0,
-      };
+  const { votesSum, votesQuorumPercentage, votes: votesAmount } = useVotesStats(
+    {
+      quorumTreshold: dao?.storage.quorumTreshold || 0,
+      upVotes: proposal?.upVotes || 0,
+      downVotes: proposal?.downVotes || 0,
     }
-
-    const votesSum = proposal.upVotes + proposal.downVotes;
-    const votes = favor ? proposal.upVotes : proposal.downVotes;
-
-    return {
-      votesSum,
-      votesQuorumPercentage: dao
-        ? (votes / dao.storage.quorumTreshold) * 100
-        : 0,
-      votesSumPercentage: votes / votesSum,
-      votesAmount: votes,
-    };
-  }, [proposal, dao, favor]);
+  );
 
   const votes = useMemo(() => {
     if (!votesData) {
@@ -185,21 +171,21 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
               </Grid>
               <Grid item xs={12}>
                 <TextHeader variant="h3" color="textSecondary">
-                  {votesInfo.votesAmount}
+                  {votesAmount}
                 </TextHeader>
               </Grid>
               <Grid item xs={12}>
                 <Grid container direction="row" alignItems="center">
                   <Grid item xs={10}>
                     <ProgressBar
-                      value={votesInfo.votesQuorumPercentage}
+                      value={votesQuorumPercentage}
                       favor={favor}
                       variant="determinate"
                     />
                   </Grid>
                   <Grid item xs={2}>
                     <PercentageText align="right">
-                      {votesInfo.votesQuorumPercentage}%
+                      {Number(votesQuorumPercentage.toFixed(1))}%
                     </PercentageText>
                   </Grid>
                 </Grid>
@@ -244,11 +230,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                         color="secondary"
                         variant="determinate"
                         favor={favor}
-                        value={
-                          votesInfo.votesSum
-                            ? (vote.value / votesInfo.votesSum) * 100
-                            : 0
-                        }
+                        value={votesSum ? (vote.value / votesSum) * 100 : 0}
                       />
                     </Grid>
                     <Grid item xs={6}>
