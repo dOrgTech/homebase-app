@@ -4,6 +4,7 @@ import {
   styled,
   Typography,
   LinearProgress,
+  Tooltip,
 } from "@material-ui/core";
 import React, { useCallback, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
@@ -18,6 +19,7 @@ import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { ActionTypes, ModalsContext } from "../ModalsContext";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { Info } from "@material-ui/icons";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -96,6 +98,17 @@ const StyledButton = styled(Button)(({ theme }) => ({
   borderColor: theme.palette.secondary.main,
   minWidth: 171,
 }));
+
+const InfoIconInput = styled(Info)({
+  cursor: "default",
+  top: 0,
+  fontSize: 20,
+  marginLeft: 6,
+});
+
+const FlushContainer = styled(Grid)({
+  display: "flex",
+});
 
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -236,7 +249,7 @@ export const Proposals: React.FC = () => {
                     NEW PROPOSAL
                   </StyledButton>
                 </Grid>
-                <Grid item>
+                <FlushContainer item>
                   <StyledButton
                     variant="outlined"
                     onClick={onFlush}
@@ -244,7 +257,10 @@ export const Proposals: React.FC = () => {
                   >
                     FLUSH
                   </StyledButton>
-                </Grid>
+                  <Tooltip title="Execute all passed proposals and drop all expired or rejected">
+                    <InfoIconInput color="secondary" />
+                  </Tooltip>
+                </FlushContainer>
               </Grid>
             </StyledContainer>
           </MainContainer>
