@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
-import { useSnackbar } from "notistack";
+// import { useSnackbar } from "notistack";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import {
@@ -172,7 +172,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const [proposalFee, setProposalFee] = useState(0);
-  const { mutate, data } = useTreasuryPropose();
+  const { mutate } = useTreasuryPropose();
   const {
     state: {
       treasuryProposal: { open },

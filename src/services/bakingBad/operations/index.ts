@@ -1,7 +1,7 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
 import { dtoToVotes } from "./mappers";
-import { OperationDTO, OperationsDTO, Vote } from "./types";
+import { OperationsDTO, Vote } from "./types";
 
 export const getOriginationTime = async (
   contractAddress: string,
