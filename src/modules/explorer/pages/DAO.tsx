@@ -138,6 +138,7 @@ export const DAO: React.FC = () => {
   const name = data && data.metadata.unfrozenToken.name;
   const description = data && data.metadata.description;
   const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
+  const template = data && data.template;
 
   const votingPeriod = data && data.storage.votingPeriod;
   const originationTime = data && data.originationTime;
@@ -255,6 +256,8 @@ export const DAO: React.FC = () => {
               <Box>
                 <Typography variant="subtitle2" color="secondary">
                   {symbol}
+                  {"" > ""}
+                  {template === "registry" ? "REGISTRY" : "TREASURY"}
                 </Typography>
               </Box>
               <Box paddingBottom="10px">

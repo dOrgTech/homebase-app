@@ -313,7 +313,7 @@ export const Summary = (): JSX.Element => {
                 >
                   <Grid item xs={6}>
                     <Typography variant="body2" color="textSecondary">
-                      Quorum treshold
+                      Quorum threshold
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>

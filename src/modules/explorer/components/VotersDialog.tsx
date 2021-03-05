@@ -227,6 +227,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                         {toShortAddress(vote.voter)}
                       </Typography>
                       <LinearBar
+                        against={true}
                         color="secondary"
                         variant="determinate"
                         favor={favor}

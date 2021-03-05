@@ -9,11 +9,10 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-  Button,
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
-import { useSnackbar } from "notistack";
+// import { useSnackbar } from "notistack";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import {
@@ -29,6 +28,8 @@ import {
   validateTransactionsJSON,
 } from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
+import { theme } from "theme";
+import { ViewButton } from "modules/explorer/components/ViewButton";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -148,6 +149,12 @@ const CustomTextarea = styled(TextField)({
   },
 });
 
+const SendButton = styled(ViewButton)({
+  width: "100%",
+  border: "none",
+  borderTop: "1px solid #4BCF93",
+});
+
 interface Values {
   transfers: Transfer[];
   description: string;
@@ -165,7 +172,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const [proposalFee, setProposalFee] = useState(0);
-  const { mutate, data } = useTreasuryPropose();
+  const { mutate } = useTreasuryPropose();
   const {
     state: {
       treasuryProposal: { open },
@@ -518,14 +525,19 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           direction="row"
                           justify="center"
                         >
-                          <Button onClick={submitForm}>
-                            <Typography
+                          <SendButton
+                            customColor={theme.palette.secondary.main}
+                            variant="outlined"
+                            onClick={submitForm}
+                          >
+                            {/* <Typography
                               variant="subtitle1"
                               color="textSecondary"
                             >
                               SEND
-                            </Typography>
-                          </Button>
+                            </Typography> */}
+                            SEND
+                          </SendButton>
                         </SendContainer>
                       </>
                     </Form>

@@ -1,4 +1,12 @@
-import { Grid, styled, Typography, withStyles, Box } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  withStyles,
+  Box,
+  InputAdornment,
+  Tooltip,
+} from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
@@ -10,6 +18,11 @@ import {
   TokenHolder,
 } from "modules/creator/state";
 import { MemberSettings } from "services/contracts/baseDAO/types";
+import {
+  InfoOutlined,
+  AddCircleOutline,
+  RemoveCircleOutline,
+} from "@material-ui/icons";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -57,6 +70,10 @@ const ErrorText = styled(Typography)({
   marginTop: 10,
 });
 
+const AddIcon = styled(AddCircleOutline)({
+  marginLeft: 8,
+});
+
 const CustomFormikTextField = withStyles({
   root: {
     "& .MuiInput-root": {
@@ -83,10 +100,18 @@ const CustomTotalContainer = styled(Typography)({
   boxSizing: "border-box",
 });
 
+const InfoIconInput = styled(InfoOutlined)({
+  cursor: "default",
+});
+
 const CustomValueContainer = styled(Typography)({
   padding: "11px 21px",
   boxSizing: "border-box",
   fontWeight: 700,
+});
+
+const AddText = styled(Typography)({
+  fontSize: 14,
 });
 
 const AddButon = styled("button")({
@@ -97,8 +122,10 @@ const AddButon = styled("button")({
   textAlign: "end",
   width: "100%",
   cursor: "pointer",
-  textDecoration: "underline",
-  color: "#fff",
+  color: "#4BCF93",
+  display: "flex",
+  justifyContent: "flex-end",
+  paddingRight: 17.5,
 });
 
 const RemoveButton = styled("button")({
@@ -229,7 +256,10 @@ const TokenSettingsForm = ({
                             onClick={() => arrayHelpers.remove(index)}
                           >
                             {" "}
-                            x
+                            <RemoveCircleOutline
+                              color="secondary"
+                              fontSize="small"
+                            />
                           </RemoveButton>
                         </Grid>
                       )}
@@ -237,8 +267,8 @@ const TokenSettingsForm = ({
                   ))}
                   {!someEmpty ? (
                     <Grid container>
-                      <Grid item xs={8} />
-                      <Grid item xs={3}>
+                      <Grid item xs={9} />
+                      <Grid item xs={3} container direction="row">
                         <AddButon
                           className="button"
                           type="button"
@@ -250,7 +280,8 @@ const TokenSettingsForm = ({
                           }
                         >
                           {" "}
-                          Add new row
+                          <AddText color="secondary">Add </AddText>{" "}
+                          <AddIcon color="secondary" fontSize="small" />
                         </AddButon>
                       </Grid>
                     </Grid>
@@ -290,6 +321,15 @@ const TokenSettingsForm = ({
               type="text"
               placeholder="tz1PXn...."
               component={CustomFormikTextField}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    <Tooltip title="DAO Name info">
+                      <InfoIconInput color="secondary" />
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
             ></Field>
           </CustomInputContainer>
           {errors.administrator && touched.administrator ? (

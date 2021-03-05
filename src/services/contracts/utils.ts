@@ -1,4 +1,3 @@
-import { InMemorySigner } from "@taquito/signer";
 import { TezosToolkit } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import blockies from "blockies-ts";
@@ -7,8 +6,6 @@ export const connectIfNotConnected = async (
   tezos: TezosToolkit,
   connect: () => Promise<TezosToolkit>
 ): Promise<void> => {
-  const Tezos = new TezosToolkit("https://edonet-tezos.giganode.io");
-
   if (!("_pkh" in tezos.wallet)) {
     await connect();
   }

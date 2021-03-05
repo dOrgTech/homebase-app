@@ -17,6 +17,9 @@ import {
   DAOTemplate,
 } from "modules/creator/state";
 
+import TreasuryIcon from "../../../assets/img/treasury.svg";
+import RegistryIcon from "../../../assets/img/registry.svg";
+
 const CustomCard = styled(withTheme(Grid))((props) => ({
   minHeight: 248,
   boxShadow: "none",
@@ -30,14 +33,6 @@ const CustomCard = styled(withTheme(Grid))((props) => ({
     marginLeft: "0px",
   },
 }));
-
-const Circle = styled(Paper)({
-  background: "#eeeeee",
-  height: 70,
-  width: 70,
-  borderRadius: "50%",
-  boxShadow: "none",
-});
 
 const FooterContainer = styled(withTheme(Paper))((props) => ({
   boxShadow: "none",
@@ -56,6 +51,12 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
   },
 }));
 
+const Description = styled(Typography)({
+  maxWidth: 225,
+  textAlign: "center",
+  marginBottom: 32,
+});
+
 const CustomCardContent = styled(CardContent)({
   padding: "27px 37px 0px 37px",
   "&:last-child": {
@@ -63,6 +64,7 @@ const CustomCardContent = styled(CardContent)({
   },
   textAlign: "left",
   minHeight: 168,
+  minWidth: 280,
 });
 
 const Phrase = styled(Typography)({
@@ -71,7 +73,8 @@ const Phrase = styled(Typography)({
 });
 
 const Subtitle = styled(Typography)({
-  marginTop: 26,
+  marginTop: 16,
+  marginBottom: 8,
 });
 
 export const SelectTemplate = (): JSX.Element => {
@@ -115,19 +118,35 @@ export const SelectTemplate = (): JSX.Element => {
           <Grid item>
             <CustomCard>
               <CustomCardContent>
-                <Grid container direction="row" alignItems="center">
-                  <Grid item xs={5}>
-                    <Circle />
+                <Grid
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify="center"
+                >
+                  <Grid item xs={12} container direction="row" justify="center">
+                    <img src={TreasuryIcon} />
                   </Grid>
-                  <Grid item xs={7}>
-                    <Typography variant="subtitle1" color="textSecondary">
+                  <Grid item xs={12} container direction="row" justify="center">
+                    <Subtitle variant="subtitle1" color="textSecondary">
                       Treasury
-                    </Typography>
+                    </Subtitle>
                   </Grid>
                 </Grid>
-                <Subtitle variant="subtitle1" color="textSecondary">
-                  Non-profits, Companies, Founders
-                </Subtitle>
+                <Grid
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify="center"
+                >
+                  <Description
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="center"
+                  >
+                    Non-profits, Companies, Founders
+                  </Description>
+                </Grid>
               </CustomCardContent>
               <FooterContainer onClick={() => selectTemplate("treasury")}>
                 <Typography
@@ -144,19 +163,31 @@ export const SelectTemplate = (): JSX.Element => {
           <Grid item>
             <CustomCard>
               <CustomCardContent>
-                <Grid container direction="row" alignItems="center">
-                  <Grid item xs={5}>
-                    <Circle />
+                <Grid
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify="center"
+                >
+                  <Grid item xs={12} container direction="row" justify="center">
+                    <img src={RegistryIcon} />
                   </Grid>
-                  <Grid item xs={7}>
-                    <Typography variant="subtitle1" color="textSecondary">
+                  <Grid item xs={12} container direction="row" justify="center">
+                    <Subtitle variant="subtitle1" color="textSecondary">
                       Registry
-                    </Typography>
+                    </Subtitle>
                   </Grid>
                 </Grid>
-                <Subtitle variant="subtitle1" color="textSecondary">
-                  Non-profits, Companies, Founders
-                </Subtitle>
+                <Grid
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify="center"
+                >
+                  <Description variant="subtitle1" color="textSecondary">
+                    Non-profits, Companies, Founders
+                  </Description>
+                </Grid>
               </CustomCardContent>
               <FooterContainer onClick={() => selectTemplate("registry")}>
                 <Typography

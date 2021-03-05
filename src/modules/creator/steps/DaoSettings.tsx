@@ -8,6 +8,8 @@ import {
   Box,
   useMediaQuery,
   useTheme,
+  InputAdornment,
+  Tooltip,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { useHistory, withRouter } from "react-router";
@@ -18,6 +20,7 @@ import { TextField as FormikTextField } from "formik-material-ui";
 import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleOrgFormErrors } from "modules/creator/utils";
 import { OrgSettings } from "services/contracts/baseDAO/types";
+import { InfoOutlined } from "@material-ui/icons";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 21,
@@ -40,6 +43,21 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
     borderLeft: `2px solid ${theme.palette.secondary.light}`,
   },
 }));
+
+const InfoIcon = styled(InfoOutlined)({
+  position: "absolute",
+  right: 25,
+  top: "50%",
+});
+
+const InfoIconInput = styled(InfoOutlined)({
+  cursor: "default",
+});
+
+const TextareaContainer = styled(Grid)({
+  display: "flex",
+  position: "relative",
+});
 
 const CustomFormikTextField = withStyles({
   root: {
@@ -74,6 +92,8 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   fontSize: 16,
   background: props.theme.palette.primary.main,
   color: props.theme.palette.text.secondary,
+  paddingRight: 40,
+  wordBreak: "break-word",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
@@ -130,7 +150,7 @@ const DaoSettingsForm = withRouter(
           <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
-              Token name{" "}
+              DAO name{" "}
             </Typography>
             <CustomInputContainer>
               <Field
@@ -138,6 +158,15 @@ const DaoSettingsForm = withRouter(
                 type="text"
                 placeholder="My Group’s Token"
                 component={CustomFormikTextField}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip title="DAO Name info">
+                        <InfoIconInput color="secondary" />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
               ></Field>
             </CustomInputContainer>
             {errors.name && touched.name ? (
@@ -156,6 +185,15 @@ const DaoSettingsForm = withRouter(
                 type="text"
                 placeholder="MYTOK"
                 component={CustomFormikTextField}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip title="Token symbol info">
+                        <InfoIconInput color="secondary" />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
               ></Field>
             </CustomInputContainer>
             {errors.symbol && touched.symbol ? (
@@ -169,7 +207,7 @@ const DaoSettingsForm = withRouter(
               Description
             </Typography>
           </Grid>
-          <Grid item xs={12}>
+          <TextareaContainer item xs={12}>
             <Field name="description">
               {() => (
                 <CustomTextarea
@@ -183,7 +221,10 @@ const DaoSettingsForm = withRouter(
                 />
               )}
             </Field>
-          </Grid>
+            <Tooltip title="Description info">
+              <InfoIcon color="secondary" />
+            </Tooltip>
+          </TextareaContainer>
           {errors.description && touched.description ? (
             <ErrorText>{errors.description}</ErrorText>
           ) : null}
