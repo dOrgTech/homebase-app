@@ -6,7 +6,7 @@ import {
   Redirect,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { Box, ThemeProvider } from "@material-ui/core";
+import { Box, makeStyles, ThemeProvider } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
 
 import { DAOExplorerRouter } from "modules/explorer/router";
@@ -21,7 +21,14 @@ import { ModalsProvider } from "modules/explorer/ModalsContext";
 
 const queryClient = new QueryClient();
 
+
+// const styles = makeStyles({
+//   success: { backgroundColor: '#4BCF93'},
+//   error: { backgroundColor: 'blue' },
+// });
+
 const App: React.FC = () => {
+  // const classes = styles();
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider>

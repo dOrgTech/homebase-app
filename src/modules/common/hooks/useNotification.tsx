@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Button, Typography } from "@material-ui/core";
 import { OptionsObject, useSnackbar } from "notistack";
-
+import { Close } from "@material-ui/icons"
 import { ExternalLink } from "modules/common/ExternalLink";
 
 const NotificationActions = ({
@@ -33,6 +33,7 @@ export const useNotification = () => {
   const open = ({ message, detailsLink, ...options }: NotificationParams) => {
     const key = enqueueSnackbar(message, {
       ...options,
+      persist: true,
       action: (
         <NotificationActions
           detailsLink={detailsLink}

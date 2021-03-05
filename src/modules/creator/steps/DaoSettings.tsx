@@ -155,6 +155,7 @@ const DaoSettingsForm = withRouter(
             <CustomInputContainer>
               <Field
                 name="name"
+                inputProps={{ maxLength: 18 }}
                 type="text"
                 placeholder="My Group’s Token"
                 component={CustomFormikTextField}
@@ -183,6 +184,10 @@ const DaoSettingsForm = withRouter(
               <Field
                 name="symbol"
                 type="text"
+                inputProps={{
+                  style: { textTransform: "uppercase" },
+                  maxLength: 6,
+                }}
                 placeholder="MYTOK"
                 component={CustomFormikTextField}
                 InputProps={{

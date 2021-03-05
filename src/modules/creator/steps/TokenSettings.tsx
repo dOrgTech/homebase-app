@@ -17,7 +17,7 @@ import {
   ActionTypes,
   TokenHolder,
 } from "modules/creator/state";
-import { MemberSettings } from "services/contracts/baseDAO/types";
+import { ErrorValues, MemberSettings } from "services/contracts/baseDAO/types";
 import {
   InfoOutlined,
   AddCircleOutline,
@@ -65,7 +65,7 @@ const CustomBalanceContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const ErrorText = styled(Typography)({
-  fontSize: 10,
+  fontSize: 13,
   color: "red",
   marginTop: 10,
 });
@@ -154,17 +154,17 @@ const Total = ({ values }: { values: MemberSettings }) => {
   return <div>{isNaN(totalTokens) ? "0" : totalTokens}</div>;
 };
 
-const validate = () =>
-  // values: MemberSettings
-  {
-    // const handleLedgerValidation = (field: any) => {
-    //   if (field === "tokenHolders") {
-    //     return !!values["tokenHolders"].length;
-    //   }
-    //   return !values[field as keyof MemberSettings];
-    // };
-    // handleErrorMessages(values, handleLedgerValidation);
-  };
+const validate = (values: MemberSettings) => {
+  const errors: ErrorValues<MemberSettings> = {};
+
+  values.tokenHolders.map((item: TokenHolder) => {
+    if (!item.address || !String(item.balance)) {
+      errors.tokenHolders = "Please field all the values";
+    }
+  });
+
+  return errors;
+};
 
 const TokenSettingsForm = ({
   values,
@@ -265,6 +265,9 @@ const TokenSettingsForm = ({
                       )}
                     </Grid>
                   ))}
+                  {errors.tokenHolders ? (
+                    <ErrorText>{errors.tokenHolders}</ErrorText>
+                  ) : null}
                   {!someEmpty ? (
                     <Grid container>
                       <Grid item xs={9} />
@@ -381,7 +384,7 @@ export const TokenSettings = (): JSX.Element => {
       </Grid>
       <Formik
         enableReinitialize={true}
-        validate={validate}
+        validate={(values: MemberSettings) => validate(values)}
         onSubmit={saveStepInfo}
         initialValues={memberSettings}
       >
@@ -396,7 +399,7 @@ export const TokenSettings = (): JSX.Element => {
           return (
             <Form style={{ width: "100%" }}>
               <TokenSettingsForm
-                validate={validate}
+                validate={(values: MemberSettings) => validate(values)}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}
