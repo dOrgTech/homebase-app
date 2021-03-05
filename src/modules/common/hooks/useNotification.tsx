@@ -1,8 +1,17 @@
 import React, { Fragment } from "react";
-import { Button, Typography } from "@material-ui/core";
+import { Button, styled } from "@material-ui/core";
 import { OptionsObject, useSnackbar } from "notistack";
-import { Close } from "@material-ui/icons"
+import { Close, OpenInNew } from "@material-ui/icons";
 import { ExternalLink } from "modules/common/ExternalLink";
+
+const CloseIcon = styled(Close)({
+  color: "#fff",
+});
+
+const ExpandIcon = styled(OpenInNew)({
+  color: "#fff",
+  fontSize: 25,
+});
 
 const NotificationActions = ({
   detailsLink,
@@ -14,11 +23,11 @@ const NotificationActions = ({
   <Fragment>
     {detailsLink ? (
       <ExternalLink link={detailsLink}>
-        <Typography>View Details</Typography>
+        <ExpandIcon />
       </ExternalLink>
     ) : null}
     <Button onClick={onClose}>
-      <Typography>Dismiss</Typography>
+      <CloseIcon />
     </Button>
   </Fragment>
 );

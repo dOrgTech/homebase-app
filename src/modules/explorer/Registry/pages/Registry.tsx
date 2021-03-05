@@ -76,6 +76,7 @@ const ProposalTableHeadText: React.FC<{ align: any }> = ({ children, align }) =>
 const NoProposals = styled(Typography)({
   marginTop: 20,
   marginBottom: 20,
+  paddingLeft: 112,
 });
 
 export const Registry: React.FC = () => {
