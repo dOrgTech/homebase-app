@@ -30,6 +30,7 @@ import {
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
+import { useNotification } from "modules/common/hooks/useNotification";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -183,6 +184,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
+  const openNotification = useNotification();
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -293,21 +295,35 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                     event: React.ChangeEvent<HTMLInputElement>
                   ) => {
                     if (event.currentTarget.files) {
-                      const file = event.currentTarget.files[0];
-                      const transactionsParsed = await fromMigrationParamsFile(
-                        file
-                      );
-                      console.log(transactionsParsed);
-                      const errors = validateTransactionsJSON(
-                        transactionsParsed
-                      );
-                      console.log(errors);
-                      if (errors.length) {
-                        // Show notification with error
-                        return;
+                      try {
+                        const file = event.currentTarget.files[0];
+                        const transactionsParsed = await fromMigrationParamsFile(
+                          file
+                        );
+                        console.log(transactionsParsed);
+                        const errors = validateTransactionsJSON(
+                          transactionsParsed
+                        );
+                        console.log(errors);
+
+                        if (errors.length) {
+                          openNotification({
+                            message: "Error while parsing JSON",
+                            persist: true,
+                            variant: "error",
+                          });
+                          return;
+                        }
+
+                        setIsBatch(true);
+                        values.transfers = transactionsParsed;
+                      } catch (e) {
+                        openNotification({
+                          message: "Error while parsing JSON",
+                          persist: true,
+                          variant: "error",
+                        });
                       }
-                      setIsBatch(true);
-                      values.transfers = transactionsParsed;
                     }
                   };
 

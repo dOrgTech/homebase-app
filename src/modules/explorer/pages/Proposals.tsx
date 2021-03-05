@@ -242,7 +242,7 @@ export const Proposals: React.FC = () => {
                     onClick={onFlush}
                     disabled={!dao}
                   >
-                    RELEASE
+                    FLUSH
                   </StyledButton>
                 </Grid>
               </Grid>

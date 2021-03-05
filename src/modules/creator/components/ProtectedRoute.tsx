@@ -8,7 +8,7 @@ export const useCreatorRouteValidation = (): string => {
   const match = useRouteMatch();
   const { pathname } = useLocation();
   const step = useStepNumber();
-  const { orgSettings, votingSettings, memberSettings } = useContext(
+  const { orgSettings, votingSettings, memberSettings, template } = useContext(
     CreatorContext
   ).state.data;
 
@@ -21,7 +21,7 @@ export const useCreatorRouteValidation = (): string => {
 
   const needsToFillOrgSettings = org.some((value) => !orgSettings[value]);
   const needsToFillGovernance = Object.keys(
-    handleGovernanceFormErrors(votingSettings)
+    handleGovernanceFormErrors(votingSettings, template) || {}
   ).length;
 
   const needsToFillMembers = members.some((value) => !memberSettings[value]);

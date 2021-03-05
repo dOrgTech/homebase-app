@@ -154,7 +154,7 @@ const GovernanceForm = ({
     state: {
       governanceStep,
       activeStep,
-      data: { orgSettings },
+      data: { orgSettings, template },
     },
   } = useContext(CreatorContext);
   const match = useRouteMatch();
@@ -401,84 +401,86 @@ const GovernanceForm = ({
         </Grid>
       </SecondContainer>
 
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Transfer Amounts
-        </Typography>
-      </SpacingContainer>
-
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
+      {template === "treasury" && (
+        <>
+          <SpacingContainer direction="row" container alignItems="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              Transfer Amounts
+            </Typography>
+          </SpacingContainer>
+          <Grid
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            style={{ marginTop: 14 }}
           >
-            <GridItemCenter item xs={5}>
-              <Field
-                name="minXtzAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <ValueText color="textSecondary">Min. XTZ</ValueText>
-              <Tooltip title="Votings hours info">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.minXtzAmount && touched.minXtzAmount ? (
-            <ErrorText>{errors.minXtzAmount}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={5}>
-              <Field
-                name="maxXtzAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <ValueText color="textSecondary">Max. XTZ </ValueText>
-              <Tooltip title="Votings hours info">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.maxXtzAmount && touched.maxXtzAmount ? (
-            <ErrorText>{errors.maxXtzAmount}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-      </Grid>
-
+            <AdditionContainer item xs={12} sm={4}>
+              <ItemContainer
+                container
+                direction="row"
+                alignItems="center"
+                justify="center"
+              >
+                <GridItemCenter item xs={5}>
+                  <Field
+                    name="minXtzAmount"
+                    type="number"
+                    placeholder="00"
+                    component={TextField}
+                  ></Field>
+                </GridItemCenter>
+                <GridItemCenter
+                  item
+                  xs={7}
+                  container
+                  direction="row"
+                  justify="space-around"
+                >
+                  <ValueText color="textSecondary">Min. XTZ</ValueText>
+                  <Tooltip title="Votings hours info">
+                    <InfoIconInput color="secondary" />
+                  </Tooltip>
+                </GridItemCenter>
+              </ItemContainer>
+              {errors.minXtzAmount && touched.minXtzAmount ? (
+                <ErrorText>{errors.minXtzAmount}</ErrorText>
+              ) : null}
+            </AdditionContainer>
+            <AdditionContainer item xs={12} sm={4}>
+              <ItemContainer
+                container
+                direction="row"
+                alignItems="center"
+                justify="center"
+              >
+                <GridItemCenter item xs={5}>
+                  <Field
+                    name="maxXtzAmount"
+                    type="number"
+                    placeholder="00"
+                    component={TextField}
+                  ></Field>
+                </GridItemCenter>
+                <GridItemCenter
+                  item
+                  xs={7}
+                  container
+                  direction="row"
+                  justify="space-around"
+                >
+                  <ValueText color="textSecondary">Max. XTZ </ValueText>
+                  <Tooltip title="Votings hours info">
+                    <InfoIconInput color="secondary" />
+                  </Tooltip>
+                </GridItemCenter>
+              </ItemContainer>
+              {errors.maxXtzAmount && touched.maxXtzAmount ? (
+                <ErrorText>{errors.maxXtzAmount}</ErrorText>
+              ) : null}
+            </AdditionContainer>
+          </Grid>
+        </>
+      )}
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
           Quorum Threshold
@@ -614,7 +616,7 @@ export const Governance: React.FC = () => {
       <Formik
         enableReinitialize
         validate={(values: VotingSettings) =>
-          handleGovernanceFormErrors(values)
+          handleGovernanceFormErrors(values, state.data.template)
         }
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
@@ -631,7 +633,7 @@ export const Governance: React.FC = () => {
             <Form style={{ width: "100%" }}>
               <GovernanceForm
                 validate={(values: VotingSettings) =>
-                  handleGovernanceFormErrors(values)
+                  handleGovernanceFormErrors(values, state.data.template)
                 }
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}

@@ -27,6 +27,7 @@ import { connectIfNotConnected } from "services/contracts/utils";
 import { calculateProposalSize } from "services/contracts/baseDAO/registryDAO/service";
 import { getTokensToStakeInPropose } from "services/contracts/baseDAO/treasuryDAO/service";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
+import { useNotification } from "modules/common/hooks/useNotification";
 
 const SendButton = styled(ViewButton)({
   width: "100%",
@@ -187,11 +188,11 @@ export const UpdateRegistryDialog: React.FC = () => {
     },
     dispatch,
   } = useContext(ModalsContext);
+  const openNotification = useNotification();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
   const { mutate } = useRegistryPropose();
   const { data: registryItems } = useRegistryList(daoId);
-  // const openNotification = useNotification();
   const { tezos, connect } = useTezos();
 
   const handleClose = useCallback(() => {
@@ -233,9 +234,14 @@ export const UpdateRegistryDialog: React.FC = () => {
             newValue: char2Bytes(value),
           })),
         });
+
+        dispatch({
+          type: ActionTypes.CLOSE,
+          payload: { modal: "registryProposal" },
+        });
       }
     },
-    [connect, dao, mutate, tezos]
+    [connect, dao, dispatch, mutate, tezos]
   );
 
   return (
@@ -304,17 +310,33 @@ export const UpdateRegistryDialog: React.FC = () => {
                   event: React.ChangeEvent<HTMLInputElement>
                 ) => {
                   if (event.currentTarget.files) {
-                    const file = event.currentTarget.files[0];
-                    const registryListParsed = await fromRegistryListFile(file);
-                    console.log(registryListParsed);
-                    const errors = validateRegistryListJSON(registryListParsed);
-                    console.log(errors);
-                    if (errors.length) {
-                      // Show notification with error
-                      return;
+                    try {
+                      const file = event.currentTarget.files[0];
+                      const registryListParsed = await fromRegistryListFile(
+                        file
+                      );
+                      console.log(registryListParsed);
+                      const errors = validateRegistryListJSON(
+                        registryListParsed
+                      );
+                      console.log(errors);
+                      if (errors.length) {
+                        openNotification({
+                          message: "Error while parsing JSON",
+                          persist: true,
+                          variant: "error",
+                        });
+                        return;
+                      }
+                      setIsBatch(true);
+                      values.list = registryListParsed;
+                    } catch (e) {
+                      openNotification({
+                        message: "Error while parsing JSON",
+                        persist: true,
+                        variant: "error",
+                      });
                     }
-                    setIsBatch(true);
-                    values.list = registryListParsed;
                   }
                 };
 

@@ -1,3 +1,4 @@
+import { DAOTemplate } from "./state/types";
 import {
   ErrorValues,
   OrgSettings,
@@ -15,7 +16,10 @@ export const handleOrgFormErrors = (
   return errors;
 };
 
-export const handleGovernanceFormErrors = (values: VotingSettings) => {
+export const handleGovernanceFormErrors = (
+  values: VotingSettings,
+  template: DAOTemplate
+) => {
   const errors: ErrorValues<VotingSettings> = {};
   const {
     votingDays,
@@ -39,13 +43,15 @@ export const handleGovernanceFormErrors = (values: VotingSettings) => {
     errors.maxProposalSize = "Must be greater than 0";
   }
 
-  if (!minXtzAmount || minXtzAmount <= 0) {
-    errors.minXtzAmount = "Must be greater than 0";
-  }
+  if (template === "treasury") {
+    if (!minXtzAmount || minXtzAmount <= 0) {
+      errors.minXtzAmount = "Must be greater than 0";
+    }
 
-  if (!maxXtzAmount || maxXtzAmount <= 0) {
-    errors.maxXtzAmount = "Must be greater than 0";
-  }
+    if (!maxXtzAmount || maxXtzAmount <= 0) {
+      errors.maxXtzAmount = "Must be greater than 0";
+    }
 
-  return errors;
+    return errors;
+  }
 };
