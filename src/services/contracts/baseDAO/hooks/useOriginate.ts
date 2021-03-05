@@ -12,7 +12,6 @@ import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy
 import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
-import { useNotification } from "modules/common/hooks/useNotification";
 
 const INITIAL_STATES = [
   {
@@ -32,7 +31,6 @@ const INITIAL_STATES = [
 export const useOriginate = (template: DAOTemplate) => {
   const queryClient = useQueryClient();
   const [states, setStates] = useState(INITIAL_STATES);
-  const openNotification = useNotification();
 
   const [activeState, setActiveState] = useState<number>();
   const { tezos, connect } = useTezos();
@@ -57,10 +55,6 @@ export const useOriginate = (template: DAOTemplate) => {
         ...metadataParams,
         tezos,
         connect,
-      });
-
-      openNotification({
-        message: "Metadata Carrier contract has been deployed",
       });
 
       if (!metadata) {
@@ -89,17 +83,8 @@ export const useOriginate = (template: DAOTemplate) => {
       });
 
       if (!contract) {
-        openNotification({
-          message: "Deployment of " + template + " DAO has failed",
-          variant: "error",
-        });
         throw new Error(`Error deploying ${template}DAO`);
       }
-
-      openNotification({
-        message: template + " contract has been deployed ",
-        variant: "success",
-      });
 
       updatedStates[1] = {
         ...updatedStates[1],

@@ -23,6 +23,7 @@ export const useRegistryPropose = () => {
       } = openNotification({
         message: "Proposal is being created...",
         persist: true,
+        variant: "info",
       });
       try {
         const data = await params.dao.propose({
