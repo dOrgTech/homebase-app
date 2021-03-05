@@ -1,11 +1,4 @@
-import {
-  Box,
-  Grid,
-  styled,
-  Typography,
-  useTheme,
-  withTheme,
-} from "@material-ui/core";
+import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
