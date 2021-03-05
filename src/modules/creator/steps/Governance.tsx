@@ -214,6 +214,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
@@ -237,6 +238,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
@@ -260,6 +262,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
@@ -295,6 +298,7 @@ const GovernanceForm = ({
                 name="proposeStakeRequired"
                 type="number"
                 placeholder="00"
+                inputProps={{ min: 0 }}
                 component={TextField}
               ></Field>
             </GridItemCenter>
@@ -336,6 +340,7 @@ const GovernanceForm = ({
                 name="proposeStakePercentage"
                 type="number"
                 placeholder="00"
+                inputProps={{ min: 0 }}
                 component={TextField}
               ></Field>
               <Tooltip title="Votings hours info">
@@ -505,6 +510,7 @@ const GovernanceForm = ({
                 name="quorumTreshold"
                 type="number"
                 placeholder="00"
+                inputProps={{ min: 0 }}
                 component={TextField}
               ></Field>
             </GridItemCenter>
@@ -549,6 +555,7 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0 }}
               ></Field>
             </GridItemCenter>
             <GridItemCenter

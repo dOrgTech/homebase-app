@@ -30,11 +30,29 @@ export const handleGovernanceFormErrors = (
     maxProposalSize,
     minXtzAmount,
     maxXtzAmount,
+    quorumTreshold,
   } = values;
 
   if (!votingDays && !votingHours && !votingMinutes) {
     errors.votingMinutes = "The voting time must be greater than 0 minutes";
   }
+
+  if (votingDays <= 0 && votingHours <= 0 && votingMinutes <= 0) {
+    errors.votingMinutes = "The voting time must be greater than 0 minutes";
+  }
+
+  if (votingDays < 0) {
+    errors.votingMinutes = "Negative values not allowed";
+  }
+
+  if (votingHours < 0) {
+    errors.votingMinutes = "Negative values not allowed";
+  }
+
+  if (votingMinutes < 0) {
+    errors.votingMinutes = "Negative values not allowed";
+  }
+
   if (!proposeStakePercentage && !proposeStakeRequired) {
     errors.proposeStakePercentage = "The sum must be greater than 0";
   }
@@ -54,4 +72,10 @@ export const handleGovernanceFormErrors = (
 
     return errors;
   }
+
+  if (!quorumTreshold || quorumTreshold <= 0) {
+    errors.quorumTreshold = "Must be greater than 0";
+  }
+
+  return errors;
 };
