@@ -10,13 +10,9 @@ import Timer from "react-compound-timer";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { useHistory, useParams } from "react-router-dom";
 
-import VotingPeriodIcon from "assets/logos/timer.svg";
-import VoteTimeIcon from "assets/logos/progress.svg";
-import {
-  mapProposalData,
-  ProposalTableRow,
-  ProposalTableRowData,
-} from "modules/explorer/components/ProposalTableRow";
+import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
+import VoteTimeIcon from "assets/logos/voteTime.svg";
+import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
 import {
   TokenHoldersDialog,
   TopHoldersTableRow,
@@ -122,6 +118,10 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
+const ProposalTableHeadItem = styled(Typography)({
+  fontWeight: "bold",
+});
+
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <Typography variant="subtitle1" color="textSecondary">
     {children}
@@ -222,20 +222,15 @@ export const DAO: React.FC = () => {
       .sort((a, b) => Number(b.weight) - Number(a.weight));
   }, [members]);
 
-  const activeProposals = useMemo<ProposalTableRowData[]>(() => {
+  const activeProposals = useMemo(() => {
     if (!proposalsData || finished) {
       return [];
     }
 
-    return proposalsData
-      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) =>
-        mapProposalData(
-          { ...proposal, quorumTreshold: data?.storage.quorumTreshold || 0 },
-          data?.address
-        )
-      );
-  }, [proposalsData, finished, data?.storage.quorumTreshold, data?.address]);
+    return proposalsData.filter(
+      (proposalData) => proposalData.status === ProposalStatus.ACTIVE
+    );
+  }, [proposalsData, finished]);
 
   const totalTokens = amountLocked + amountNotLocked;
 
@@ -406,21 +401,30 @@ export const DAO: React.FC = () => {
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
+              <Grid item xs={4}>
                 <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
               </Grid>
               <Grid item xs={2}>
-                <ProposalTableHeadText>CYCLE</ProposalTableHeadText>
+                <ProposalTableHeadItem color="textSecondary" align="center">
+                  CYCLE
+                </ProposalTableHeadItem>
               </Grid>
-              <Grid item xs={5}>
-                <ProposalTableHeadText>STATUS</ProposalTableHeadText>
+              <Grid item xs={3}>
+                {/* <ProposalTableHeadText>STATUS</ProposalTableHeadText> */}
+              </Grid>
+              <Grid item xs={3}>
+                <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
               </Grid>
             </TableHeader>
             {activeProposals.length > 0 &&
               activeProposals.map((proposal, i) => (
-                <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+                <ProposalTableRow
+                  key={`proposal-${i}`}
+                  {...proposal}
+                  daoId={data?.address}
+                  quorumTreshold={data?.storage.quorumTreshold || 0}
+                />
               ))}
-
             {activeProposals.length === 0 ? (
               <NoProposals variant="subtitle1" color="textSecondary">
                 No active proposals

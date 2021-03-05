@@ -7,11 +7,7 @@ import {
 } from "@material-ui/core";
 import React, { useCallback, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import {
-  ProposalTableRowData,
-  ProposalTableRow,
-  mapProposalData,
-} from "modules/explorer/components/ProposalTableRow";
+import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
 import { SideBar } from "modules/explorer/components";
 import { TokenHoldersDialog } from "modules/explorer/components/TokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
@@ -155,48 +151,25 @@ export const Proposals: React.FC = () => {
 
   const { data: proposalsData } = useProposals(dao && dao.address);
 
-  const activeProposals = useMemo<ProposalTableRowData[]>(() => {
+  const activeProposals = useMemo(() => {
     if (!proposalsData) {
       return [];
     }
 
-    return proposalsData
-      .filter((proposalData) => proposalData.status === ProposalStatus.ACTIVE)
-      .map((proposal) =>
-        mapProposalData(
-          { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
-          dao?.address
-        )
-      );
-  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
-
-  const passedProposals = useMemo<ProposalTableRowData[]>(() => {
-    if (!proposalsData) {
-      return [];
-    }
-
-    return proposalsData
-      .filter((proposalData) => proposalData.status === ProposalStatus.PASSED)
-      .map((proposal) =>
-        mapProposalData(
-          { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
-          dao?.address
-        )
-      );
-  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
-
-  const allProposals = useMemo(() => {
-    if (!proposalsData) {
-      return [];
-    }
-
-    return proposalsData.map((proposal) =>
-      mapProposalData(
-        { ...proposal, quorumTreshold: dao?.storage.quorumTreshold || 0 },
-        dao?.address
-      )
+    return proposalsData.filter(
+      (proposalData) => proposalData.status === ProposalStatus.ACTIVE
     );
-  }, [dao?.address, dao?.storage.quorumTreshold, proposalsData]);
+  }, [proposalsData]);
+
+  const passedProposals = useMemo(() => {
+    if (!proposalsData) {
+      return [];
+    }
+
+    return proposalsData.filter(
+      (proposalData) => proposalData.status === ProposalStatus.PASSED
+    );
+  }, [proposalsData]);
 
   const { dispatch } = useContext(ModalsContext);
 
@@ -236,7 +209,7 @@ export const Proposals: React.FC = () => {
     }
 
     console.log("no proposal data");
-  }, [data, mutate, proposalsData, tezos]);
+  }, [connect, data, mutate, proposalsData, tezos]);
 
   return (
     <>
@@ -342,7 +315,7 @@ export const Proposals: React.FC = () => {
           </StatsContainer>
           <TableContainer>
             <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
+              <Grid item xs={4}>
                 <ProposalTableHeadText
                   variant="subtitle1"
                   color="textSecondary"
@@ -354,21 +327,34 @@ export const Proposals: React.FC = () => {
                 <ProposalTableHeadText
                   variant="subtitle1"
                   color="textSecondary"
+                  align="center"
                 >
                   CYCLE
                 </ProposalTableHeadText>
               </Grid>
-              <Grid item xs={5}>
-                <ProposalTableHeadText
+              <Grid item xs={3}></Grid>
+              <Grid item xs={3}>
+                {/* <ProposalTableHeadText
                   variant="subtitle1"
                   color="textSecondary"
                 >
                   STATUS
+                </ProposalTableHeadText> */}
+                <ProposalTableHeadText
+                  variant="subtitle1"
+                  color="textSecondary"
+                >
+                  THRESHOLD %
                 </ProposalTableHeadText>
               </Grid>
             </TableHeader>
             {activeProposals.map((proposal, i) => (
-              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+              <ProposalTableRow
+                key={`proposal-${i}`}
+                {...proposal}
+                daoId={dao?.address}
+                quorumTreshold={dao?.storage.quorumTreshold || 0}
+              />
             ))}
             {activeProposals.length === 0 ? (
               <NoProposals variant="subtitle1" color="textSecondary">
@@ -420,7 +406,12 @@ export const Proposals: React.FC = () => {
               </Grid>
             </TableHeader>
             {passedProposals.map((proposal, i) => (
-              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
+              <ProposalTableRow
+                key={`proposal-${i}`}
+                {...proposal}
+                daoId={dao?.address}
+                quorumTreshold={dao?.storage.quorumTreshold || 0}
+              />
             ))}
 
             {passedProposals.length === 0 ? (
@@ -457,9 +448,15 @@ export const Proposals: React.FC = () => {
                 </ProposalTableHeadText>
               </Grid>
             </TableHeader>
-            {allProposals.map((proposal, i) => (
-              <ProposalTableRow key={`proposal-${i}`} {...proposal} />
-            ))}
+            {proposalsData &&
+              proposalsData.map((proposal, i) => (
+                <ProposalTableRow
+                  key={`proposal-${i}`}
+                  {...proposal}
+                  daoId={dao?.address}
+                  quorumTreshold={dao?.storage.quorumTreshold || 0}
+                />
+              ))}
           </TableContainer>
         </Grid>
       </PageLayout>
