@@ -4,7 +4,9 @@ export const ProgressBar = styled(LinearProgress)(
   ({ theme, favor }: { theme: Theme; favor: boolean }) => ({
     marginTop: 10,
     "&.MuiLinearProgress-colorSecondary, &.MuiLinearProgress-colorPrimary": {
-      background: theme.palette.primary.light,
+      background: !favor
+        ? theme.palette.secondary.main
+        : theme.palette.error.main,
       color: favor ? theme.palette.secondary.main : theme.palette.error.main,
       "& .MuiLinearProgress-bar": {
         backgroundColor: `${

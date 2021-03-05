@@ -1,9 +1,16 @@
-import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import {
+  Box,
+  Grid,
+  styled,
+  Typography,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import dayjs from "dayjs";
 
-import { SideBar, ProgressBar } from "modules/explorer/components";
+import { SideBar, ProgressBar as CustomBar } from "modules/explorer/components";
 import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
@@ -15,6 +22,7 @@ import {
   TreasuryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
 import { UserBadge } from "../../components/UserBadge";
+import ProgressBar from "react-customizable-progressbar";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -110,12 +118,30 @@ const BoxItem = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
+const ProgressText = styled(Typography)(
+  ({ textColor }: { textColor: string }) => ({
+    color: textColor,
+    display: "flex",
+    alignItems: "center",
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    fontSize: 16,
+    userSelect: "none",
+    boxShadow: "none",
+    background: "inherit",
+    fontFamily: "Roboto Mono",
+    justifyContent: "center",
+    top: 0,
+  })
+);
+
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
   }>();
-
+  const theme = useTheme();
   const { data: proposalData } = useProposal(daoId, proposalId);
   const proposal = proposalData as TreasuryProposalWithStatus | undefined;
   const { data: dao } = useDAO(daoId);
@@ -277,7 +303,7 @@ export const Voting: React.FC = () => {
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item xs={10}>
-                  <ProgressBar
+                  <CustomBar
                     favor={true}
                     variant="determinate"
                     value={upVotesPercentage}
@@ -321,7 +347,7 @@ export const Voting: React.FC = () => {
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item xs={10}>
-                  <ProgressBar
+                  <CustomBar
                     variant="determinate"
                     value={downVotesPercentage}
                     favor={false}
@@ -369,6 +395,27 @@ export const Voting: React.FC = () => {
               </Grid>
             </Grid>
             <Grid item xs={6}>
+              <Grid container direction="row">
+                <HistoryContent item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    QUORUM THRESHOLD %
+                  </Typography>
+                </HistoryContent>
+                <HistoryContent item xs={12}>
+                  <ProgressBar
+                    progress={90}
+                    radius={50}
+                    strokeWidth={7}
+                    strokeColor="#3866F9"
+                    trackStrokeWidth={4}
+                    trackStrokeColor={theme.palette.primary.light}
+                  >
+                    <div className="indicator">
+                      <ProgressText textColor="#3866F9">{90}%</ProgressText>
+                    </div>
+                  </ProgressBar>
+                </HistoryContent>
+              </Grid>
               <Grid container direction="row">
                 <HistoryContent item xs={12}>
                   <Typography variant="subtitle1" color="textSecondary">

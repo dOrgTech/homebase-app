@@ -15,6 +15,7 @@ import ProgressBar from "react-customizable-progressbar";
 import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useVotesStats } from "../hooks/useVotesStats";
 
 const ProposalTableRowContainer = styled(Grid)(({ theme }) => ({
   height: 155,
@@ -23,21 +24,17 @@ const ProposalTableRowContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export interface ProposalTableRowData {
-  title: string;
-  number: number;
-  date: string;
   cycle: number;
-  votes: {
-    value: number;
-    support: boolean;
-  };
+  upVotes: number;
+  downVotes: number;
+  quorumTreshold: number;
   daoId?: string;
   id: string;
 }
 
 const SupportText = styled(Typography)(
   ({ textColor }: { textColor: string }) => ({
-    paddingLeft: 20,
+    paddingLeft: 2,
     color: textColor,
   })
 );
@@ -64,57 +61,27 @@ const ArrowButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.primary.light,
 }));
 
-export const mapProposalData = (
-  proposalData: ProposalWithStatus & { quorumTreshold: number },
-  daoId?: string
-): ProposalTableRowData => {
-  const votes =
-    proposalData.upVotes >= proposalData.downVotes
-      ? {
-          value: proposalData.quorumTreshold
-            ? (Number(proposalData.upVotes) / proposalData.quorumTreshold) * 100
-            : 0,
-          support: true,
-        }
-      : {
-          value: proposalData.quorumTreshold
-            ? (Number(proposalData.downVotes) / proposalData.quorumTreshold) *
-              100
-            : 0,
-          support: false,
-        };
-  return {
-    title: proposalData.id,
-    number: Number(proposalData.agoraPostId),
-    date: proposalData.startDate,
-    votes,
-    cycle: proposalData.cycle,
-    daoId,
-    id: proposalData.id,
-  };
-};
-
-export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
-  title,
-  number,
-  date,
-  votes: { value, support },
-  cycle,
-  daoId,
-  id,
-}) => {
+export const ProposalTableRow: React.FC<
+  ProposalWithStatus & { quorumTreshold: number; daoId: string | undefined }
+> = ({ quorumTreshold, cycle, upVotes, downVotes, daoId, id, startDate }) => {
   const history = useHistory();
   const theme = useTheme();
-  const color = support
-    ? theme.palette.secondary.main
-    : theme.palette.error.main;
-  const formattedDate = dayjs(date).format("MM/DD/YYYY");
+  const formattedDate = dayjs(startDate).format("MM/DD/YYYY");
   const { data: dao } = useDAO(daoId);
   const onClick = useCallback(() => {
     if (dao) {
       history.push(`/explorer/dao/${daoId}/proposal/${dao.template}/${id}`);
     }
   }, [dao, daoId, history, id]);
+
+  const { support, votesQuorumPercentage, votesSumPercentage } = useVotesStats({
+    upVotes,
+    downVotes,
+    quorumTreshold,
+  });
+  const color = support
+    ? theme.palette.secondary.main
+    : theme.palette.error.main;
 
   return (
     <ProposalTableRowContainer
@@ -123,29 +90,29 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
       alignItems="center"
       onClick={onClick}
     >
-      <Grid item xs={5}>
+      <Grid item xs={4}>
         <Box>
           <Typography variant="body1" color="textSecondary">
-            {toShortAddress(title)}
+            Proposal Title
           </Typography>
         </Box>
         <Box>
           <Typography variant="body1" color="textSecondary">
-            #{number} • {formattedDate}
+            {toShortAddress(id)} • {formattedDate}
           </Typography>
         </Box>
       </Grid>
       <Grid item xs={2}>
-        <Typography variant="body1" color="textSecondary">
+        <Typography variant="body1" color="textSecondary" align="center">
           {cycle || "-"}
         </Typography>
       </Grid>
-      <Grid item xs={5} container justify="space-between" alignItems="center">
+      <Grid item xs={3} container justify="space-between" alignItems="center">
         <Grid item>
           <Grid container alignItems="center">
             <Grid item>
               <ProgressBar
-                progress={value}
+                progress={votesSumPercentage}
                 radius={32}
                 strokeWidth={4}
                 strokeColor={color}
@@ -153,14 +120,39 @@ export const ProposalTableRow: React.FC<ProposalTableRowData> = ({
                 trackStrokeColor={theme.palette.primary.light}
               >
                 <div className="indicator">
-                  <ProgressText textColor={color}>{value}%</ProgressText>
+                  <ProgressText textColor={color}>
+                    {Number(votesSumPercentage.toFixed(1))}%
+                  </ProgressText>
                 </div>
               </ProgressBar>
             </Grid>
             <Grid item>
               <SupportText textColor={color}>
-                {color === "danger" ? "OPPOSE" : "SUPPORT"}
+                {support ? "SUPPORT" : "OPPOSE"}
               </SupportText>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid item xs={3} container justify="space-between" alignItems="center">
+        <Grid item>
+          <Grid container alignItems="center">
+            <Grid item>
+              <ProgressBar
+                progress={votesQuorumPercentage}
+                radius={32}
+                strokeWidth={4}
+                strokeColor="#3866F9"
+                trackStrokeWidth={2}
+                trackStrokeColor={theme.palette.primary.light}
+              >
+                <div className="indicator">
+                  <ProgressText textColor="#3866F9">
+                    {Number(votesQuorumPercentage.toFixed(1))}%
+                  </ProgressText>
+                </div>
+              </ProgressBar>
             </Grid>
           </Grid>
         </Grid>
