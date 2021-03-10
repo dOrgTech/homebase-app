@@ -1,6 +1,7 @@
 {
   "name": "@dorgtech/homebase-dapp",
   "version": "0.0.1",
+  "license": "MIT",
   "scripts": {
     "start": "serve -s build",
     "dev": "react-scripts start",
