@@ -40,12 +40,7 @@ const DescriptionText = styled(Typography)({
   whiteSpace: "nowrap",
 });
 
-export const RegistryHistoryRow: React.FC<any> = ({
-  name,
-  address,
-  date,
-  id,
-}) => {
+export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
   const localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
   return (
