@@ -64,6 +64,7 @@ export const deployRegistryDAO = async ({
           min_xtz_amount: minXtzAmount,
           max_xtz_amount: maxXtzAmount,
           max_proposal_size: maxProposalSize,
+          proposal_receivers: [],
           registry: new MichelsonMap(),
         },
         proposals: new MichelsonMap(),

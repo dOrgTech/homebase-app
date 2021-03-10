@@ -93,6 +93,8 @@ export const Registry: React.FC = () => {
     | RegistryProposalWithStatus[]
     | undefined;
 
+  console.log(dao);
+
   const proposals = useMemo(() => {
     if (!registryProposalsData) {
       return [];
@@ -144,7 +146,7 @@ export const Registry: React.FC = () => {
                   </ProposalTableHeadText>
                 </Grid>
                 <Grid item xs={4}>
-                  <Grid item container direction="row" justify="center">
+                  <Grid item container direction="row">
                     <ProposalTableHeadText align={"left"}>
                       VALUE
                     </ProposalTableHeadText>
@@ -178,18 +180,23 @@ export const Registry: React.FC = () => {
           <TableHeader container wrap="nowrap">
             <Grid item xs={12}>
               <BorderBottom item container wrap="nowrap">
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <ProposalTableHeadText align={"left"}>
                     UPDATE HISTORY
                   </ProposalTableHeadText>
                 </Grid>
                 <Grid item xs={3}>
-                  <ProposalTableHeadText align={"right"}>
-                    DATE
+                  <ProposalTableHeadText align={"left"}>
+                    PROPOSAL TITLE
                   </ProposalTableHeadText>
                 </Grid>
                 <Grid item xs={3}>
-                  <ProposalTableHeadText align={"right"}>
+                  <ProposalTableHeadText align={"left"}>
+                    DATE
+                  </ProposalTableHeadText>
+                </Grid>
+                <Grid item xs={2}>
+                  <ProposalTableHeadText align={"left"}>
                     PROPOSAL
                   </ProposalTableHeadText>
                 </Grid>

@@ -46,15 +46,19 @@ export default `parameter (or (or (or (or (unit %accept_ownership)
                                                            (list %diff (pair 
                                                                              (bytes %key)
                                                                              (option %new_value bytes))))
-                                      (pair %proposal_type 
-                                                           (pair 
-                                                                 (option %frozen_scale_value nat)
-                                                                 (option %frozen_extra_value nat))
-                                                           (pair 
-                                                                 (option %slash_scale_value nat)
-                                                                 (pair 
-                                                                       (option %slash_division_value nat)
-                                                                       (option %max_proposal_size nat))))))
+                                      (or 
+                                          (pair %proposal_type 
+                                                               (pair 
+                                                                     (option %frozen_scale_value nat)
+                                                                     (option %frozen_extra_value nat))
+                                                               (pair 
+                                                                     (option %slash_scale_value nat)
+                                                                     (pair 
+                                                                           (option %slash_division_value nat)
+                                                                           (option %max_proposal_size nat))))
+                                          (or %receivers_type 
+                                                              (list %receivers address)
+                                                              (list %receivers address)))))
 (nat %set_quorum_threshold)))
 (or (or (nat %set_voting_period)
 (pair %transfer_contract_tokens 
@@ -98,9 +102,11 @@ storage (pair (pair (pair (big_map %ledger (pair address
                                                         (bytes %affected_proposal_key)
                                                         (timestamp %last_updated))))
                          (pair 
-                               (nat %frozen_scale_value)
-                               (nat %frozen_extra_value)))
-                   (pair (nat %slash_scale_value)
+                               (set %proposal_receivers address)
+                               (nat %frozen_scale_value)))
+                   (pair (pair 
+                               (nat %frozen_extra_value)
+                               (nat %slash_scale_value))
                          (pair 
                                (nat %slash_division_value)
                                (nat %max_proposal_size))))
@@ -116,15 +122,19 @@ storage (pair (pair (pair (big_map %ledger (pair address
                                                                                (list %diff (pair 
                                                                                                  (bytes %key)
                                                                                                  (option %new_value bytes))))
-                                                          (pair %proposal_type 
-                                                                               (pair 
-                                                                                     (option %frozen_scale_value nat)
-                                                                                     (option %frozen_extra_value nat))
-                                                                               (pair 
-                                                                                     (option %slash_scale_value nat)
-                                                                                     (pair 
-                                                                                           (option %slash_division_value nat)
-                                                                                           (option %max_proposal_size nat)))))
+                                                          (or 
+                                                              (pair %proposal_type 
+                                                                                   (pair 
+                                                                                         (option %frozen_scale_value nat)
+                                                                                         (option %frozen_extra_value nat))
+                                                                                   (pair 
+                                                                                         (option %slash_scale_value nat)
+                                                                                         (pair 
+                                                                                               (option %slash_division_value nat)
+                                                                                               (option %max_proposal_size nat))))
+                                                              (or %receivers_type 
+                                                                                  (list %receivers address)
+                                                                                  (list %receivers address))))
                                             (address %proposer))
                                       (pair 
                                             (nat %proposer_frozen_token)
@@ -140,7 +150,7 @@ storage (pair (pair (pair (big_map %ledger (pair address
       (map %total_supply nat
                          nat)))));
 code { DIP { PUSH
-(lambda (pair (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair nat nat)) (pair nat (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))) (pair address (pair nat nat))) (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair nat nat)) (pair nat (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))))
+(lambda (pair (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair (set address) nat)) (pair (pair nat nat) (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (or (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat)))) (or (list address) (list address)))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))) (pair address (pair nat nat))) (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair (set address) nat)) (pair (pair nat nat) (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (or (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat)))) (or (list address) (list address)))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))))
 { DUP;
 CAR;
 DIP { CDR;
@@ -261,7 +271,7 @@ IF_NONE { SWAP;
  PAIR;
  PAIR } };
 PUSH
-(lambda (pair (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair nat nat)) (pair nat (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))) (pair address (pair nat nat))) (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair nat nat)) (pair nat (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))))
+(lambda (pair (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair (set address) nat)) (pair (pair nat nat) (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (or (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat)))) (or (list address) (list address)))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))) (pair address (pair nat nat))) (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair (big_map bytes (pair (option bytes) (pair bytes timestamp))) (pair (set address) nat)) (pair (pair nat nat) (pair nat nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (or (pair nat (list (pair bytes (option bytes)))) (or (pair (pair (option nat) (option nat)) (pair (option nat) (pair (option nat) (option nat)))) (or (list address) (list address)))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))))
 { DUP;
 CAR;
 DIP { CDR;
@@ -1404,22 +1414,125 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                             SWAP;
                                                             PAIR;
                                                             SWAP };
-                                                     DROP;
-                                                     NIL operation }
-                                                   { SWAP;
-                                                     DROP;
-                                                     DIP { DUP };
-                                                     SWAP;
-                                                     CDR;
-                                                     CAR;
-                                                     CDR;
-                                                     CAR;
-                                                     DIP { DUP };
-                                                     SWAP;
-                                                     CAR;
-                                                     CAR;
-                                                     IF_NONE {  }
-                                                             { DIP { DUP;
+                                                     DROP }
+                                                   { IF_LEFT { SWAP;
+                                                               DROP;
+                                                               DIP { DUP };
+                                                               SWAP;
+                                                               CDR;
+                                                               CAR;
+                                                               CDR;
+                                                               CAR;
+                                                               DIP { DUP };
+                                                               SWAP;
+                                                               CAR;
+                                                               CAR;
+                                                               IF_NONE {  }
+                                                                       { DIP { DUP;
+                                                                               DIP { CDR };
+                                                                               CAR;
+                                                                               DUP;
+                                                                               DIP { CAR };
+                                                                               CDR;
+                                                                               DUP;
+                                                                               DIP { CAR };
+                                                                               CDR };
+                                                                         SWAP;
+                                                                         DROP;
+                                                                         SWAP;
+                                                                         PAIR;
+                                                                         SWAP;
+                                                                         PAIR;
+                                                                         PAIR };
+                                                               DIP { DUP };
+                                                               SWAP;
+                                                               CAR;
+                                                               CDR;
+                                                               IF_NONE {  }
+                                                                       { DIP { DUP;
+                                                                               DIP { CAR };
+                                                                               CDR;
+                                                                               DUP;
+                                                                               DIP { CDR };
+                                                                               CAR;
+                                                                               DUP;
+                                                                               DIP { CDR };
+                                                                               CAR };
+                                                                         SWAP;
+                                                                         DROP;
+                                                                         PAIR;
+                                                                         PAIR;
+                                                                         SWAP;
+                                                                         PAIR };
+                                                               DIP { DUP };
+                                                               SWAP;
+                                                               CDR;
+                                                               CAR;
+                                                               IF_NONE {  }
+                                                                       { DIP { DUP;
+                                                                               DIP { CAR };
+                                                                               CDR;
+                                                                               DUP;
+                                                                               DIP { CDR };
+                                                                               CAR;
+                                                                               DUP;
+                                                                               DIP { CAR };
+                                                                               CDR };
+                                                                         SWAP;
+                                                                         DROP;
+                                                                         SWAP;
+                                                                         PAIR;
+                                                                         PAIR;
+                                                                         SWAP;
+                                                                         PAIR };
+                                                               DIP { DUP };
+                                                               SWAP;
+                                                               CDR;
+                                                               CDR;
+                                                               CAR;
+                                                               IF_NONE {  }
+                                                                       { DIP { DUP;
+                                                                               DIP { CAR };
+                                                                               CDR;
+                                                                               DUP;
+                                                                               DIP { CAR };
+                                                                               CDR;
+                                                                               DUP;
+                                                                               DIP { CDR };
+                                                                               CAR };
+                                                                         SWAP;
+                                                                         DROP;
+                                                                         PAIR;
+                                                                         SWAP;
+                                                                         PAIR;
+                                                                         SWAP;
+                                                                         PAIR };
+                                                               SWAP;
+                                                               CDR;
+                                                               CDR;
+                                                               CDR;
+                                                               IF_NONE {  }
+                                                                       { DIP { DUP;
+                                                                               DIP { CAR };
+                                                                               CDR;
+                                                                               DUP;
+                                                                               DIP { CAR };
+                                                                               CDR;
+                                                                               DUP;
+                                                                               DIP { CAR };
+                                                                               CDR };
+                                                                         SWAP;
+                                                                         DROP;
+                                                                         SWAP;
+                                                                         PAIR;
+                                                                         SWAP;
+                                                                         PAIR;
+                                                                         SWAP;
+                                                                         PAIR };
+                                                               DIP { DUP;
+                                                                     DIP { CAR };
+                                                                     CDR;
+                                                                     DUP;
                                                                      DIP { CDR };
                                                                      CAR;
                                                                      DUP;
@@ -1433,53 +1546,47 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                                PAIR;
                                                                SWAP;
                                                                PAIR;
-                                                               PAIR };
-                                                     DIP { DUP };
-                                                     SWAP;
-                                                     CAR;
-                                                     CDR;
-                                                     IF_NONE {  }
-                                                             { DIP { DUP;
+                                                               PAIR;
+                                                               SWAP;
+                                                               PAIR }
+                                                             { DIP { DROP;
+                                                                     DUP;
+                                                                     CDR;
+                                                                     CAR;
+                                                                     CDR;
+                                                                     CAR;
+                                                                     DUP;
+                                                                     CAR;
+                                                                     CDR;
+                                                                     CAR };
+                                                               IF_LEFT { PUSH bool True }
+                                                                       { PUSH bool False };
+                                                               SWAP;
+                                                               ITER { DIP { DUP };
+                                                                      SWAP;
+                                                                      DIP { UPDATE } };
+                                                               DROP;
+                                                               DIP { DUP;
                                                                      DIP { CDR };
                                                                      CAR;
                                                                      DUP;
                                                                      DIP { CAR };
                                                                      CDR;
                                                                      DUP;
-                                                                     DIP { CAR };
-                                                                     CDR };
-                                                               SWAP;
-                                                               DROP;
-                                                               SWAP;
-                                                               PAIR;
-                                                               SWAP;
-                                                               PAIR;
-                                                               PAIR };
-                                                     DIP { DUP };
-                                                     SWAP;
-                                                     CDR;
-                                                     CAR;
-                                                     IF_NONE {  }
-                                                             { DIP { DUP;
-                                                                     DIP { CAR };
-                                                                     CDR;
-                                                                     DUP;
                                                                      DIP { CDR };
                                                                      CAR };
                                                                SWAP;
                                                                DROP;
                                                                PAIR;
                                                                SWAP;
-                                                               PAIR };
-                                                     DIP { DUP };
-                                                     SWAP;
-                                                     CDR;
-                                                     CDR;
-                                                     CAR;
-                                                     IF_NONE {  }
-                                                             { DIP { DUP;
+                                                               PAIR;
+                                                               PAIR;
+                                                               DIP { DUP;
                                                                      DIP { CAR };
                                                                      CDR;
+                                                                     DUP;
+                                                                     DIP { CDR };
+                                                                     CAR;
                                                                      DUP;
                                                                      DIP { CAR };
                                                                      CDR;
@@ -1491,51 +1598,10 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                                PAIR;
                                                                SWAP;
                                                                PAIR;
-                                                               SWAP;
-                                                               PAIR };
-                                                     SWAP;
-                                                     CDR;
-                                                     CDR;
-                                                     CDR;
-                                                     IF_NONE {  }
-                                                             { DIP { DUP;
-                                                                     DIP { CAR };
-                                                                     CDR;
-                                                                     DUP;
-                                                                     DIP { CAR };
-                                                                     CDR;
-                                                                     DUP;
-                                                                     DIP { CAR };
-                                                                     CDR };
-                                                               SWAP;
-                                                               DROP;
-                                                               SWAP;
                                                                PAIR;
                                                                SWAP;
-                                                               PAIR;
-                                                               SWAP;
-                                                               PAIR };
-                                                     DIP { DUP;
-                                                           DIP { CAR };
-                                                           CDR;
-                                                           DUP;
-                                                           DIP { CDR };
-                                                           CAR;
-                                                           DUP;
-                                                           DIP { CAR };
-                                                           CDR;
-                                                           DUP;
-                                                           DIP { CDR };
-                                                           CAR };
-                                                     SWAP;
-                                                     DROP;
-                                                     PAIR;
-                                                     SWAP;
-                                                     PAIR;
-                                                     PAIR;
-                                                     SWAP;
-                                                     PAIR;
-                                                     NIL operation };
+                                                               PAIR } };
+                                           NIL operation;
                                            DIG 4;
                                            ITER { CONS };
                                            SWAP;
@@ -1587,6 +1653,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                            DUP;
                                            CDR;
                                            CAR;
+                                           CDR;
                                            DIP { SWAP };
                                            MUL;
                                            SWAP;
@@ -1918,13 +1985,13 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                           DUP;
                           CAR;
                           CDR;
-                          CAR;
+                          CDR;
                           DIP { SWAP };
                           MUL;
                           SWAP;
+                          CDR;
                           CAR;
-                          CDR;
-                          CDR;
+                          CAR;
                           ADD;
                           SWAP;
                           CAR;
