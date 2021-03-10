@@ -1,5 +1,12 @@
 import React from "react";
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
+import {
+  Grid,
+  Link,
+  Paper,
+  styled,
+  Typography,
+  withTheme,
+} from "@material-ui/core";
 import dayjs from "dayjs";
 
 const Container = styled(Grid)(({ theme }) => ({
@@ -27,8 +34,7 @@ const Cursor = styled(Typography)({
 });
 
 const DescriptionText = styled(Typography)({
-  maxWidth: 252,
-  marginLeft: 44,
+  width: "100%",
   textOverflow: "ellipsis",
   overflow: "hidden",
   whiteSpace: "nowrap",
@@ -36,54 +42,67 @@ const DescriptionText = styled(Typography)({
 
 export const RegistryHistoryRow: React.FC<any> = ({
   name,
-  description,
   address,
   date,
+  id,
 }) => {
   const localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
   return (
-    <Container
-      container
-      direction="row"
-      alignItems="center"
-      justify="space-between"
-    >
-      <Grid item xs={6}>
-        <Grid container direction="row" alignItems="center">
+    <Link href="https://better-call.dev/" target="_blank">
+      <Container
+        container
+        direction="row"
+        alignItems="center"
+        justify="space-between"
+      >
+        <Grid item xs={4}>
           <TokenName>
             {" "}
             <Cursor variant="subtitle1" color="textSecondary">
               {name.length > 15 ? `${name.slice(0, 15)}...` : name}
             </Cursor>
           </TokenName>
+        </Grid>
+        <Grid item xs={3}>
           <DescriptionText
             variant="subtitle1"
             color="textSecondary"
             align="left"
           >
-            {description}
+            Proposal title
           </DescriptionText>
         </Grid>
-      </Grid>
-      <Grid xs={3} item>
-        <Grid container direction="row" justify="flex-end" alignItems="center">
-          {" "}
-          <Cursor variant="subtitle1" color="textSecondary">
-            {dayjs(date).format("ll")}
-          </Cursor>
+        <Grid xs={3} item>
+          <Grid
+            container
+            direction="row"
+            justify="flex-end"
+            alignItems="center"
+          >
+            {" "}
+            <DescriptionText
+              variant="subtitle1"
+              color="textSecondary"
+              align="left"
+            >
+              <Cursor variant="subtitle1" color="textSecondary">
+                {dayjs(date).format("ll")}
+              </Cursor>
+            </DescriptionText>
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid item xs={3}>
-        <Grid container direction="row" justify="flex-end">
-          <TokenName>
-            <Cursor variant="subtitle1" color="textSecondary">
-              {address.slice(0, 6)}...
-              {address.slice(address.length - 4, address.length)}
-            </Cursor>
-          </TokenName>
+        <Grid item xs={2}>
+          <Grid container direction="row">
+            <TokenName>
+              <Cursor variant="subtitle1" color="textSecondary">
+                {address.slice(0, 6)}...
+                {address.slice(address.length - 4, address.length)}
+              </Cursor>
+            </TokenName>
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </Link>
   );
 };

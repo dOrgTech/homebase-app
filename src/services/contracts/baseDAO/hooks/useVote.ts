@@ -41,6 +41,7 @@ export const useVote = () => {
         });
         return data;
       } catch (e) {
+        console.log(e);
         closeVoteNotification(voteNotification);
         openNotification({
           message: "And error has happened with vote transaction!",

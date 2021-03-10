@@ -298,7 +298,7 @@ const GovernanceForm = ({
                 name="proposeStakeRequired"
                 type="number"
                 placeholder="00"
-                inputProps={{ min: 0 }}
+                inputProps={{ min: 0, defaultValue: 0 }}
                 component={TextField}
               ></Field>
             </GridItemCenter>
@@ -340,7 +340,7 @@ const GovernanceForm = ({
                 name="proposeStakePercentage"
                 type="number"
                 placeholder="00"
-                inputProps={{ min: 0 }}
+                inputProps={{ min: 0, defaultValue: 0 }}
                 component={TextField}
               ></Field>
               <Tooltip title="Votings hours info">
@@ -390,7 +390,7 @@ const GovernanceForm = ({
                 <StyledSlider
                   value={getIn(values, "frozenScaleValue")}
                   onChange={(value: any, newValue: any) =>
-                    setFieldValue("frozenScaleValue", newValue)
+                    setFieldValue("frozenScaleValue", newValue || 0)
                   }
                 />
               )}

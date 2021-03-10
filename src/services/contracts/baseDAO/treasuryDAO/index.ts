@@ -20,7 +20,7 @@ import {
   TreasuryStorage,
 } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { getContract } from "..";
+import { BaseConstructorParams, getContract } from "..";
 import { getDAOListMetadata } from "../../metadataCarrier";
 import { MetadataDeploymentResult } from "../../metadataCarrier/deploy";
 import { DAOListMetadata } from "../../metadataCarrier/types";
@@ -35,7 +35,13 @@ export interface TreasuryDeployParams {
   tezos: TezosToolkit;
 }
 
+interface TreasuryConstructorParams extends BaseConstructorParams {
+  storage: TreasuryStorage;
+}
+
 export class TreasuryDAO extends BaseDAO {
+  public storage;
+
   private static storageMapper = (dto: TreasuryStorageDTO): TreasuryStorage => {
     try {
       const result = {
@@ -120,6 +126,12 @@ export class TreasuryDAO extends BaseDAO {
       network,
     });
   };
+
+  protected constructor(params: TreasuryConstructorParams) {
+    super(params);
+
+    this.storage = params.storage;
+  }
 
   public fetchStorage = async (): Promise<TreasuryStorage> => {
     const storageDTO = await getStorage(this.address, this.network);

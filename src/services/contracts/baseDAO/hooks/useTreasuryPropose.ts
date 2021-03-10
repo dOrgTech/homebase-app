@@ -44,9 +44,10 @@ export const useTreasuryPropose = () => {
         });
         return data;
       } catch (e) {
+        console.log(e);
         closeProposalNotification(proposalNotification);
         openNotification({
-          message: "And error has happened with vote transaction!",
+          message: "An error has happened with propose transaction!",
           variant: "error",
           autoHideDuration: 10000,
         });

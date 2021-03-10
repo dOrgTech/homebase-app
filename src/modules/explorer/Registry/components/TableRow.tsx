@@ -41,6 +41,12 @@ const Cursor = styled(Typography)({
   textTransform: "uppercase",
 });
 
+const ValueContainer = styled(Grid)({
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+});
+
 export const RegistryTableRow: React.FC<{
   name: string;
   value: string;
@@ -76,14 +82,14 @@ export const RegistryTableRow: React.FC<{
         </TokenName>
       </Grid>
       <Grid item xs={4}>
-        <Grid container direction="row" justify="center">
+        <ValueContainer container direction="row">
           <Cursor variant="subtitle1" color="textSecondary">
             {value}
           </Cursor>
-        </Grid>
+        </ValueContainer>
       </Grid>
       <Grid item xs={3}>
-        <Grid container direction="row" justify="center">
+        <Grid container direction="row">
           <Cursor variant="subtitle1" color="textSecondary">
             {dayjs(lastUpdated).format("LLL")}
           </Cursor>

@@ -10,18 +10,20 @@ export interface BaseStorage {
   frozenScaleValue: number;
   frozenExtraValue: number;
   maxProposalSize: number;
-  maxXtzAmount: string;
-  minXtzAmount: string;
   votingPeriod: number;
   quorumTreshold: number;
   proposalsMapNumber: number;
   ledgerMapNumber: number;
 }
 
-export type TreasuryStorage = BaseStorage;
+export interface TreasuryStorage extends BaseStorage {
+  maxXtzAmount: string;
+  minXtzAmount: string;
+}
 
 export interface RegistryStorage extends BaseStorage {
   registryMapNumber: number;
+  proposalReceivers: any;
 }
 
 export type Storage = RegistryStorage | TreasuryStorage;
@@ -50,6 +52,7 @@ export interface RegistryStorageDTO {
       type: string;
       name: string;
       children: [
+        NamedMapValue,
         NamedMapValue,
         NamedMapValue,
         NamedMapValue,
