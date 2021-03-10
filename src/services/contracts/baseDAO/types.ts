@@ -122,6 +122,7 @@ export interface BaseStorageParams {
   quorumTreshold: number;
   votingPeriod: number;
   extra: BaseExtraState;
+  totalSupply: any;
 }
 
 export type Token = {
