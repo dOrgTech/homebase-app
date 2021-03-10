@@ -8,8 +8,8 @@ The following dependencies are required to run homebase-app:
 
 | Dependency | Version|
 |-|-|
-| [Node][node] | `v12.18.4` or above |
-| [Yarn][yarn] | `v1.22.*` or above |
+| Node | `v12.18.4` or above |
+| Yarn | `v1.22.*` or above |
 
 # Third Party Services
 
