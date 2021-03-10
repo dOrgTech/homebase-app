@@ -1,6 +1,26 @@
 # Tezos Homebase
+[![](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 
 Homebase is a platform designed to let users create and manage DAOs on the Tezos blockchain.
+
+# Prequisites
+The following dependencies are required to run homebase-app:
+
+| Dependency | Version|
+|-|-|
+| [Node][node] | `v12.18.4` or above |
+| [Yarn][yarn] | `v1.22.*` or above |
+
+# Third Party Services
+
+The following third party services are being used by Homebase:
+
+* [TZKT API](https://api.tzkt.io/)
+* [Better Call Dev API](https://better-call.dev/docs)
+* [Pinata IPFS](https://pinata.cloud/)
+* [Airgap's Beacon SDK](https://github.com/airgap-it/beacon-sdk)
+
+# Using Homebase
 
 ## Creating a DAO
 
@@ -132,9 +152,10 @@ At a contract level, there is no such distinction, but in the UI it exists to le
 ]
 ```
 
-# Contribute
+# Contributing
+## Running the project
 
-How to run the project:
+To run the project:
 
 - Make sure you have node installed
 - Clone this repository
