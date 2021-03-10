@@ -47,6 +47,10 @@ export const fromStateToBaseStorage = (
     })
   );
 
+  const totalSupply = new MichelsonMap();
+  totalSupply.set(0, 10000000);
+  totalSupply.set(1, 10000000);
+
   const storageData = {
     membersTokenAllocation,
     adminAddress: info.memberSettings.administrator || "",
@@ -66,6 +70,7 @@ export const fromStateToBaseStorage = (
       (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
       (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
       (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
+    totalSupply,
   };
 
   return storageData;

@@ -32,6 +32,7 @@ export const deployTreasuryDAO = async ({
     },
     quorumTreshold,
     votingPeriod,
+    totalSupply,
   },
   metadataCarrierDeploymentData,
   tezos,
@@ -51,6 +52,7 @@ export const deployTreasuryDAO = async ({
       maxProposalSize,
     },
     quorumTreshold,
+    totalSupply,
     votingPeriod,
   });
   if (!metadataCarrierDeploymentData.deployAddress) {
@@ -91,6 +93,7 @@ export const deployTreasuryDAO = async ({
         proposal_key_list_sort_by_date: [],
         permits_counter: 0,
         metadata,
+        total_supply: totalSupply,
       },
     });
     const operation = await t.send();

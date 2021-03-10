@@ -121,13 +121,7 @@ export const calculateProposalSize = async (
 export const fromStateToRegistryStorage = (
   info: MigrationParams
 ): RegistryParams["storage"] => {
-  const totalSupply = new MichelsonMap();
-  totalSupply.set(0, 1000000);
-  totalSupply.set(1, 1000000);
-  const storageData = {
-    ...fromStateToBaseStorage(info),
-    totalSupply,
-  };
+  const storageData = fromStateToBaseStorage(info);
 
   return storageData;
 };
