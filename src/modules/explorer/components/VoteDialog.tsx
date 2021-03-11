@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -18,6 +18,8 @@ import { useVote } from "services/contracts/baseDAO/hooks/useVote";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { connectIfNotConnected } from "services/contracts/utils";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 const StyledButton = styled(Button)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -103,6 +105,7 @@ export const VoteDialog: React.FC = () => {
 
   const { data: proposal } = useProposal(daoId, proposalId);
   const { data: dao } = useDAO(daoId);
+  const { tezos, connect } = useTezos();
 
   const { mutate } = useVote();
 
@@ -115,8 +118,10 @@ export const VoteDialog: React.FC = () => {
     setOpen(false);
   };
 
-  const onSubmit = () => {
+  const onSubmit = useCallback(async () => {
     if (dao) {
+      await connectIfNotConnected(tezos, connect);
+
       mutate({
         proposalKey: proposalId,
         dao,
@@ -126,7 +131,7 @@ export const VoteDialog: React.FC = () => {
 
       handleClose();
     }
-  };
+  }, [amount, connect, dao, mutate, proposalId, support, tezos]);
 
   return (
     <Box>
