@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext } from "react";
 import {
   Grid,
   styled,
@@ -15,10 +15,6 @@ import { TextField } from "formik-material-ui";
 // import { useSnackbar } from "notistack";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import {
-  calculateProposalSize,
-  getTokensToStakeInPropose,
-} from "services/contracts/baseDAO/treasuryDAO/service";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { xtzToMutez, connectIfNotConnected } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
@@ -172,7 +168,6 @@ const INITIAL_FORM_VALUES: Values = {
 export const NewTreasuryProposalDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
-  const [proposalFee, setProposalFee] = useState(0);
   const { mutate } = useTreasuryPropose();
   const {
     state: {
@@ -204,32 +199,15 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         amount: Number(xtzToMutez(transfer.amount.toString())),
       }));
 
+      console.log(transfers);
+
       await connectIfNotConnected(tezos, connect);
 
       if (dao) {
-        const proposalSize = await calculateProposalSize(
-          dao.address,
-          {
-            transfers,
-            agoraPostId: values.agoraPostId,
-          },
-          tezos
-        );
-
-        const tokensNeeded = getTokensToStakeInPropose(
-          {
-            frozenExtraValue: dao.storage.frozenExtraValue,
-            frozenScaleValue: dao.storage.frozenScaleValue,
-          },
-          proposalSize
-        );
-
-        setProposalFee(tokensNeeded);
-
         mutate({
           dao,
           transfers,
-          tokensToFreeze: tokensNeeded,
+          tokensToFreeze: dao.storage.frozenExtraValue,
           agoraPostId: values.agoraPostId,
         });
 
@@ -530,7 +508,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                               variant="subtitle1"
                               color="secondary"
                             >
-                              {proposalFee}{" "}
+                              {dao.storage.frozenExtraValue}{" "}
                               {dao ? dao.metadata.unfrozenToken.symbol : ""}
                             </Typography>
                           </Grid>

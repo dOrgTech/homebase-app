@@ -44,10 +44,10 @@ export default `parameter (or (or (or (or (unit %accept_ownership)
                (pair %proposal_metadata 
                                         (nat %agora_post_id)
                                         (list %transfers (or 
-                                                             (pair 
+                                                             (pair %transfer_type
                                                                    (mutez %amount)
                                                                    (address %recipient))
-                                                             (pair 
+                                                             (pair %transfer_type
                                                                    (address %contract_address)
                                                                    (list %transfer_list (pair 
                                                                                               (address %from_)
