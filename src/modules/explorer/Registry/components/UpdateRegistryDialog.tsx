@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext } from "react";
 import {
   Grid,
   styled,
@@ -24,8 +24,6 @@ import { ViewButton } from "modules/explorer/components/ViewButton";
 // import { useNotification } from "modules/common/hooks/useNotification";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { connectIfNotConnected } from "services/contracts/utils";
-import { calculateProposalSize } from "services/contracts/baseDAO/registryDAO/service";
-import { getTokensToStakeInPropose } from "services/contracts/baseDAO/treasuryDAO/service";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
 import { useNotification } from "modules/common/hooks/useNotification";
 
@@ -177,7 +175,6 @@ const INITIAL_FORM_VALUES: Values = {
 export const UpdateRegistryDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(1);
-  const [proposalFee] = useState(0);
   const {
     state: {
       registryProposal: {
@@ -209,25 +206,9 @@ export const UpdateRegistryDialog: React.FC = () => {
       await connectIfNotConnected(tezos, connect);
 
       if (dao) {
-        const proposalSize = await calculateProposalSize(dao.address, tezos, {
-          agoraPostId: 0,
-          items: values.list.map(({ key, value }) => ({
-            key: char2Bytes(key),
-            newValue: char2Bytes(value),
-          })),
-        });
-
-        const tokensNeeded = getTokensToStakeInPropose(
-          {
-            frozenExtraValue: dao.storage.frozenExtraValue,
-            frozenScaleValue: dao.storage.frozenScaleValue,
-          },
-          proposalSize
-        );
-
         mutate({
           dao,
-          tokensToFreeze: tokensNeeded,
+          tokensToFreeze: dao.storage.frozenExtraValue,
           agoraPostId: 0,
           items: values.list.map(({ key, value }) => ({
             key: char2Bytes(key),
@@ -546,7 +527,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                             variant="subtitle1"
                             color="secondary"
                           >
-                            {proposalFee}{" "}
+                            {dao?.storage.frozenExtraValue || 0}{" "}
                           </Typography>
                         </Grid>
                       </ListItem>

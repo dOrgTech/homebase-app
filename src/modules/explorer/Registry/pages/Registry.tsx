@@ -93,8 +93,6 @@ export const Registry: React.FC = () => {
     | RegistryProposalWithStatus[]
     | undefined;
 
-  console.log(dao);
-
   const proposals = useMemo(() => {
     if (!registryProposalsData) {
       return [];

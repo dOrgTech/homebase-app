@@ -122,12 +122,6 @@ const styles = {
   },
 };
 
-const StakeContainer = styled(Grid)({
-  display: "flex",
-  alignItems: "center",
-  textAlign: "center",
-});
-
 const LastInput = styled(Grid)({
   marginTop: 14,
   paddingBottom: 37,
@@ -312,7 +306,9 @@ const GovernanceForm = ({
               <Typography color="textSecondary">
                 {orgSettings.symbol}
               </Typography>
-              <Tooltip title="Votings hours info">
+              <Tooltip
+                title={`Amount of ${orgSettings.symbol} required to make a proposal`}
+              >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -321,51 +317,6 @@ const GovernanceForm = ({
             <ErrorText>{errors.proposeStakeRequired}</ErrorText>
           ) : null}
         </AdditionContainer>
-        <Grid item xs={1}>
-          <Grid item container justify="center">
-            <Typography variant="subtitle1" color="textSecondary">
-              +
-            </Typography>
-          </Grid>
-        </Grid>
-        <AdditionContainer item xs={5} sm={3}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <StakeContainer item>
-              <Field
-                name="proposeStakePercentage"
-                type="number"
-                placeholder="00"
-                inputProps={{ min: 0, defaultValue: 0 }}
-                component={TextField}
-              ></Field>
-              <Tooltip title="Votings hours info">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </StakeContainer>
-          </ItemContainer>
-          {errors.proposeStakePercentage && touched.proposeStakePercentage ? (
-            <ErrorText>{errors.proposeStakePercentage}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-        <Grid item xs={1}>
-          <Grid item container justify="center">
-            <Typography variant="subtitle1" color="textSecondary">
-              *
-            </Typography>
-          </Grid>
-        </Grid>
-        <Grid item xs={6} sm={3}>
-          <Grid item container justify="center">
-            <Typography variant="subtitle1" color="textSecondary">
-              Proposal size
-            </Typography>
-          </Grid>
-        </Grid>
       </Grid>
 
       <SecondContainer container direction="row">
@@ -442,7 +393,7 @@ const GovernanceForm = ({
                   justify="space-around"
                 >
                   <ValueText color="textSecondary">Min. XTZ</ValueText>
-                  <Tooltip title="Votings hours info">
+                  <Tooltip title="Minimum amount of XTZ that can be transferred">
                     <InfoIconInput color="secondary" />
                   </Tooltip>
                 </GridItemCenter>
@@ -474,7 +425,7 @@ const GovernanceForm = ({
                   justify="space-around"
                 >
                   <ValueText color="textSecondary">Max. XTZ </ValueText>
-                  <Tooltip title="Votings hours info">
+                  <Tooltip title="Maximum amount of XTZ that can be transferred">
                     <InfoIconInput color="secondary" />
                   </Tooltip>
                 </GridItemCenter>
@@ -524,7 +475,9 @@ const GovernanceForm = ({
               <Typography color="textSecondary">
                 {orgSettings.symbol}
               </Typography>
-              <Tooltip title="Votings hours info">
+              <Tooltip
+                title={`Amount of ${orgSettings.symbol} required to be locked through voting for a proposal to be passed/rejected`}
+              >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -568,7 +521,7 @@ const GovernanceForm = ({
               <Typography color="textSecondary">
                 {orgSettings.symbol}
               </Typography>
-              <Tooltip title="Votings hours info">
+              <Tooltip title="Maximum proposal size">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
