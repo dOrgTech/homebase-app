@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components";
+import { ProgressBar, ProgressBarMulti } from "modules/explorer/components";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
@@ -177,7 +177,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
               <Grid item xs={12}>
                 <Grid container direction="row" alignItems="center">
                   <Grid item xs={10}>
-                    <ProgressBar
+                    <ProgressBarMulti
                       value={votesQuorumPercentage}
                       favor={favor}
                       variant="determinate"
@@ -227,7 +227,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                         {toShortAddress(vote.voter)}
                       </Typography>
                       <LinearBar
-                        against={true}
+                        // against={true}
                         color="secondary"
                         variant="determinate"
                         favor={favor}

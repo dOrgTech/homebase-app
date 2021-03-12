@@ -22,6 +22,7 @@ export const useVote = () => {
       } = openNotification({
         message: "Vote is being created...",
         persist: true,
+        variant: "info",
       });
       try {
         const data = await (params.dao as BaseDAO).vote({

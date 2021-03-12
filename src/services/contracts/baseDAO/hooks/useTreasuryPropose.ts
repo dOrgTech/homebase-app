@@ -23,6 +23,7 @@ export const useTreasuryPropose = () => {
       } = openNotification({
         message: "Treasury proposal is being created...",
         persist: true,
+        variant: "info",
       });
 
       try {

@@ -1,24 +1,30 @@
 import { styled, LinearProgress, Theme } from "@material-ui/core";
 
 export const ProgressBar = styled(LinearProgress)(
-  ({
-    theme,
-    favor,
-    against,
-  }: {
-    theme: Theme;
-    favor: boolean;
-    against?: boolean;
-  }) => ({
+  ({ theme, favor }: { theme: Theme; favor: boolean }) => ({
     marginTop: 10,
     "&.MuiLinearProgress-colorSecondary, &.MuiLinearProgress-colorPrimary": {
-      background:
-        !favor && !against
-          ? theme.palette.secondary.main
-          : (!favor && against) || (favor && against)
-          ? "#3D3D3D"
-          : theme.palette.error.main,
+      background: favor
+        ? theme.palette.secondary.main
+        : theme.palette.error.main,
       color: favor ? theme.palette.secondary.main : theme.palette.error.main,
+      "& .MuiLinearProgress-bar": {
+        backgroundColor: `${
+          favor ? theme.palette.secondary.main : theme.palette.error.main
+        } !important`,
+      },
+    },
+  })
+);
+
+export const ProgressBarMulti = styled(LinearProgress)(
+  ({ theme, favor }: { theme: Theme; favor: boolean }) => ({
+    marginTop: 10,
+    "&.MuiLinearProgress-colorSecondary, &.MuiLinearProgress-colorPrimary": {
+      background: !favor
+        ? theme.palette.secondary.main
+        : theme.palette.error.main,
+      color: favor ? theme.palette.error.main : theme.palette.secondary.main,
       "& .MuiLinearProgress-bar": {
         backgroundColor: `${
           favor ? theme.palette.secondary.main : theme.palette.error.main

@@ -10,7 +10,10 @@ import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import dayjs from "dayjs";
 
-import { SideBar, ProgressBar as CustomBar } from "modules/explorer/components";
+import {
+  SideBar,
+  ProgressBarMulti as CustomBar,
+} from "modules/explorer/components";
 import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
