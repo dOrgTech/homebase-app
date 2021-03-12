@@ -8,7 +8,6 @@ import {
   Stepper,
   Typography,
   styled,
-  Button,
   useMediaQuery,
   useTheme,
   Theme,
@@ -19,10 +18,8 @@ import { useHistory } from "react-router";
 import { CreatorContext, StepInfo } from "modules/creator/state";
 import { CurrentStep, STEPS, useStepNumber } from "modules/creator/steps";
 import HomeButton from "assets/logos/homebase.svg";
-import { useTezos } from "services/beacon/hooks/useTezos";
-import { toShortAddress } from "services/contracts/utils";
 import { NavigationBar } from "modules/creator/components/NavigationBar";
-import { Blockie } from "modules/common/Blockie";
+import { Navbar } from "modules/common/Toolbar";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -100,27 +97,6 @@ const LogoItem = styled("img")({
   cursor: "pointer",
 });
 
-const AddressContainer = styled(Grid)({
-  width: "min-content",
-  paddingRight: 24,
-  marginTop: 22,
-});
-
-const StatusDot = styled(Box)({
-  borderRadius: "100%",
-  width: 8,
-  height: 8,
-  background: "#4BCF93",
-  marginLeft: 8,
-});
-
-const ConnectButton = styled(Button)({
-  maxHeight: 50,
-  alignSelf: "baseline",
-  marginTop: 22,
-  marginRight: 14,
-});
-
 export const DAOCreate: React.FC = () => {
   const creator = useContext(CreatorContext);
 
@@ -128,7 +104,6 @@ export const DAOCreate: React.FC = () => {
   const step = useStepNumber();
   const progress = useMemo(() => step * 25, [step]);
   const history = useHistory();
-  const { connect, account } = useTezos();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -213,36 +188,7 @@ export const DAOCreate: React.FC = () => {
           alignItems="center"
           style={{ width: "100%" }}
         >
-          <Grid item style={{ marginLeft: "auto" }}>
-            {account ? (
-              <AddressContainer
-                container
-                alignItems="center"
-                wrap="nowrap"
-                justify="flex-end"
-              >
-                <Grid item>
-                  <Blockie address={account} marginRight={"8px"} />
-                </Grid>
-                <Grid item>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    {toShortAddress(account)}
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <StatusDot />
-                </Grid>
-              </AddressContainer>
-            ) : (
-              <ConnectButton
-                color="secondary"
-                variant="outlined"
-                onClick={connect}
-              >
-                Connect Wallet
-              </ConnectButton>
-            )}
-          </Grid>
+          <Navbar mode="creator" />
           <Grid item style={{ width: "100%" }} xs>
             <StepContentContainer item container justify="center">
               <CurrentStep />

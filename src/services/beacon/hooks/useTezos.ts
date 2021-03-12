@@ -6,6 +6,7 @@ import { Network, TezosContext } from "services/beacon/context";
 type WalletConnectReturn = {
   tezos: TezosToolkit;
   connect: () => Promise<TezosToolkit>;
+  reset: () => void;
   account: string;
   network: Network;
 };
@@ -33,7 +34,16 @@ export const useTezos = (): WalletConnectReturn => {
 
       return tezos;
     }, [dispatch, tezos]),
-
+    reset: useCallback(() => {
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("beacon:")) {
+          localStorage.removeItem(key);
+        }
+      });
+      dispatch({
+        type: "RESET_TEZOS",
+      });
+    }, [dispatch]),
     account,
     network,
   };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -9,6 +9,7 @@ import {
   Grid,
   Theme,
   useTheme,
+  Popover,
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -17,6 +18,7 @@ import HomeButton from "assets/logos/homebase.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
+import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -42,6 +44,7 @@ const StatusDot = styled(Box)({
 const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
+  cursor: "pointer",
 });
 
 const LogoText = styled(Typography)({
@@ -57,7 +60,39 @@ const ConnectWallet = styled(Button)({
   marginRight: 14,
 });
 
-const custom = (theme: Theme) => ({
+const AddressMenu = styled(Box)(() => ({
+  width: 264,
+  borderRadius: 4,
+  backgroundColor: "#282B31",
+}));
+
+const AddressMenuItem = styled(Grid)(({ theme }) => ({
+  cursor: "pointer",
+  boxSizing: "border-box",
+  color: theme.palette.text.secondary,
+  padding: "20px 34px",
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
+    cursor: "pointer",
+  },
+}));
+
+const AddressMenuIcon = styled(Grid)({
+  paddingRight: "12px",
+  marginBottom: "-4px",
+});
+
+const AddressBarWrapper = styled(Grid)(() => ({
+  padding: "15px",
+  marginRight: 10,
+  borderRadius: 4,
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.03)",
+  },
+}));
+
+const custom = (theme: Theme, mode: "creator" | "explorer") => ({
   logo: {
     height: "100%",
     alignItems: "baseline",
@@ -65,7 +100,10 @@ const custom = (theme: Theme) => ({
     marginTop: 22,
   },
   appBorder: {
-    borderBottom: `2px solid ${theme.palette.primary.light}`,
+    borderBottom:
+      mode === "explorer"
+        ? `2px solid ${theme.palette.primary.light}`
+        : "unset",
   },
   appHeight: {
     height: "inherit",
@@ -80,6 +118,12 @@ const LogoItem = styled("img")({
   cursor: "pointer",
 });
 
+const StyledPopover = styled(Popover)({
+  ".MuiPaper-root": {
+    borderRadius: 4,
+  },
+});
+
 export const ConnectWalletButton = ({
   connect,
 }: {
@@ -90,8 +134,29 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
-export const Navbar: React.FC = () => {
-  const { connect, account } = useTezos();
+export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
+  mode,
+}) => {
+  const { connect, account, reset } = useTezos();
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+  const [popperOpen, setPopperOpen] = useState(false);
+
+  const handleClick = (event: React.MouseEvent<any>) => {
+    setAnchorEl(event.currentTarget);
+    setPopperOpen(!popperOpen);
+  };
+
+  const handleLogout = () => {
+    reset();
+    setPopperOpen(false);
+  };
+
+  const handleCopy = (address: string) => {
+    navigator.clipboard.writeText(address);
+    setPopperOpen(false);
+  };
 
   const location = useLocation();
   const history = useHistory();
@@ -102,7 +167,9 @@ export const Navbar: React.FC = () => {
       position="sticky"
       color="primary"
       style={
-        location.pathname === "/creator" ? undefined : custom(theme).appBorder
+        location.pathname === "/creator"
+          ? undefined
+          : custom(theme, mode).appBorder
       }
     >
       <StyledToolbar>
@@ -110,69 +177,125 @@ export const Navbar: React.FC = () => {
           container
           direction="row"
           alignItems="center"
-          style={custom(theme).appHeight}
+          style={custom(theme, mode).appHeight}
         >
-          <Grid
-            item
-            xs={3}
-            style={
-              location.pathname === "/creator"
-                ? custom(theme).appLogoHeight
-                : undefined
-            }
-          >
-            <Box
+          {mode === "explorer" ? (
+            <Grid
+              item
+              xs={3}
               style={
                 location.pathname === "/creator"
-                  ? custom(theme).logo
+                  ? custom(theme, mode).appLogoHeight
                   : undefined
               }
-              onClick={() => history.push("/explorer")}
             >
-              <Grid
-                container
-                alignItems="center"
-                wrap="nowrap"
-                justify="center"
+              <Box
+                style={
+                  location.pathname === "/creator"
+                    ? custom(theme, mode).logo
+                    : undefined
+                }
+                onClick={() => history.push("/explorer")}
               >
-                <Grid item>
-                  <LogoItem src={HomeButton} />
+                <Grid
+                  container
+                  alignItems="center"
+                  wrap="nowrap"
+                  justify="center"
+                >
+                  <Grid item>
+                    <LogoItem src={HomeButton} />
+                  </Grid>
+                  <Grid item>
+                    <Box paddingLeft="10px">
+                      <LogoText color="textSecondary">Homebase</LogoText>
+                    </Box>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Box paddingLeft="10px">
-                    <LogoText color="textSecondary">Homebase</LogoText>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </Grid>
+              </Box>
+            </Grid>
+          ) : null}
 
           <Grid
             item
-            xs={9}
+            xs={mode === "creator" ? 12 : 9}
             container
             justify="flex-end"
-            style={custom(theme).appHeight}
+            style={custom(theme, mode).appHeight}
           >
             {account ? (
-              <AddressContainer
-                container
-                alignItems="center"
-                wrap="nowrap"
-                justify="flex-end"
-              >
-                <Grid item>
-                  <Blockie address={account} marginRight={"8px"} />
+              <>
+                <Grid container alignItems="center" justify="flex-end">
+                  <AddressBarWrapper item>
+                    <AddressContainer
+                      container
+                      alignItems="center"
+                      wrap="nowrap"
+                      justify="flex-end"
+                      onClick={handleClick}
+                    >
+                      <Grid item>
+                        <Blockie address={account} marginRight={"8px"} />
+                      </Grid>
+                      <Grid item>
+                        <Typography variant="subtitle1">
+                          {toShortAddress(account)}
+                        </Typography>
+                      </Grid>
+                      <Grid item>
+                        <StatusDot />
+                      </Grid>
+                    </AddressContainer>
+                  </AddressBarWrapper>
                 </Grid>
-                <Grid item>
-                  <Typography variant="subtitle1">
-                    {toShortAddress(account)}
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <StatusDot />
-                </Grid>
-              </AddressContainer>
+
+                <StyledPopover
+                  id={"wallet-Popper"}
+                  open={popperOpen}
+                  anchorEl={anchorEl}
+                  style={{ zIndex: 1500, borderRadius: 4 }}
+                  onClose={() => {
+                    setPopperOpen(false);
+                  }}
+                  PaperProps={{
+                    style: { borderRadius: 4, backgroundColor: "transparent" },
+                  }}
+                >
+                  <AddressMenu>
+                    <AddressMenuItem
+                      container
+                      alignItems="center"
+                      onClick={() => handleCopy(account)}
+                    >
+                      <AddressMenuIcon item>
+                        <FileCopyOutlined color="inherit" fontSize="inherit" />
+                      </AddressMenuIcon>
+                      <Grid item>
+                        <Typography variant="subtitle2" color="textSecondary">
+                          {toShortAddress(account)}
+                        </Typography>
+                      </Grid>
+                    </AddressMenuItem>
+                    <AddressMenuItem
+                      style={{
+                        borderTop: "2px solid rgba(255, 255, 255, 0.2)",
+                      }}
+                      container
+                      alignItems="center"
+                      onClick={handleLogout}
+                    >
+                      <AddressMenuIcon item>
+                        <ExitToAppOutlined color="inherit" fontSize="inherit" />
+                      </AddressMenuIcon>
+                      <Grid item>
+                        <Typography variant="subtitle2" color="textSecondary">
+                          Log out
+                        </Typography>
+                      </Grid>
+                    </AddressMenuItem>
+                  </AddressMenu>
+                </StyledPopover>
+              </>
             ) : (
               <ConnectWalletButton connect={connect} />
             )}
