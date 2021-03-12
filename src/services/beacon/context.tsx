@@ -40,7 +40,11 @@ interface UpdateTezos {
   };
 }
 
-export type TezosAction = UpdateTezos;
+interface ResetTezos {
+  type: "RESET_TEZOS";
+}
+
+export type TezosAction = UpdateTezos | ResetTezos;
 
 export const reducer = (state: TezosState, action: TezosAction): TezosState => {
   switch (action.type) {
@@ -51,6 +55,8 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
         network: action.payload.network,
         account: action.payload.account,
       };
+    case "RESET_TEZOS":
+      return INITIAL_STATE;
   }
 };
 
