@@ -30,6 +30,7 @@ import { connectIfNotConnected } from "services/contracts/utils";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { Info } from "@material-ui/icons";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { CopyAddress } from "modules/common/CopyAddress";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
@@ -315,6 +316,8 @@ export const DAO: React.FC = () => {
                       {description}
                     </Typography>
                   </Box>
+
+                  {data && <CopyAddress address={data.address} />}
 
                   <FlushContainer item>
                     <StyledButton
