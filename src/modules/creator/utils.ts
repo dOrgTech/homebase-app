@@ -57,6 +57,10 @@ export const handleGovernanceFormErrors = (
     errors.proposeStakePercentage = "The sum must be greater than 0";
   }
 
+  if (proposeStakeRequired < 0) {
+    errors.proposeStakeRequired = "Negative values not allowed";
+  }
+
   if (!maxProposalSize || maxProposalSize <= 0) {
     errors.maxProposalSize = "Must be greater than 0";
   }
@@ -77,5 +81,6 @@ export const handleGovernanceFormErrors = (
     errors.quorumTreshold = "Must be greater than 0";
   }
 
+  console.log(errors);
   return errors;
 };

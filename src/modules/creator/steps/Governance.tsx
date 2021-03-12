@@ -135,6 +135,10 @@ const InfoIconInput = styled(InfoOutlined)({
   cursor: "default",
 });
 
+const StakeContainer = styled(Grid)({
+  display: "block",
+});
+
 //@TODO: Remove any from this component
 const GovernanceForm = ({
   submitForm,
@@ -279,7 +283,7 @@ const GovernanceForm = ({
         </Typography>
       </SecondContainer>
 
-      <Grid container direction="row" alignItems="center">
+      <StakeContainer container direction="row" alignItems="center">
         <AdditionContainer item xs={11} sm={4}>
           <ItemContainer
             container
@@ -313,11 +317,11 @@ const GovernanceForm = ({
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposeStakeRequired && touched.proposeStakeRequired ? (
-            <ErrorText>{errors.proposeStakeRequired}</ErrorText>
-          ) : null}
         </AdditionContainer>
-      </Grid>
+        {errors.proposeStakeRequired ? (
+          <ErrorText>{errors.proposeStakeRequired}</ErrorText>
+        ) : null}
+      </StakeContainer>
 
       <SecondContainer container direction="row">
         <Typography
