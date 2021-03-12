@@ -7,9 +7,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  LinearProgress,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
@@ -59,9 +59,12 @@ const TableHeader = styled(Grid)({
   padding: "33px 64px",
 });
 
-const LinearBar = styled(ProgressBar)({
+const LinearBar = styled(LinearProgress)({
   marginBottom: "-3px",
   marginTop: 30,
+  "& .MuiLinearProgress-colorSecondary": {
+    backgroundColor: "#3d3d3d",
+  },
 });
 
 export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
@@ -164,7 +167,6 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       value={
                         totalLocked ? (holder.tokens / totalLocked) * 100 : 0
                       }
-                      favor={true}
                     />
                   </Grid>
                   <Grid item xs={6}>
