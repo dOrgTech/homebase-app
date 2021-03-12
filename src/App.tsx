@@ -71,7 +71,7 @@ const App: React.FC = () => {
                 </Route>
                 <Route path="/explorer">
                   <ModalsProvider>
-                    <Navbar />
+                    <Navbar mode="explorer" />
                     <DAOExplorerRouter />
                   </ModalsProvider>
                 </Route>
