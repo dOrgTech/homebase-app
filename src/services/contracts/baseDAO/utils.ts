@@ -47,9 +47,16 @@ export const fromStateToBaseStorage = (
     })
   );
 
+  const totalUnfrozenSupply = info.memberSettings.tokenHolders.reduce(
+    (prev, holder) => {
+      return prev + (holder.balance || 0);
+    },
+    0
+  );
+
   const totalSupply = new MichelsonMap();
-  totalSupply.set(0, 10000000);
-  totalSupply.set(1, 10000000);
+  totalSupply.set(0, totalUnfrozenSupply);
+  totalSupply.set(1, 0);
 
   const storageData = {
     membersTokenAllocation,

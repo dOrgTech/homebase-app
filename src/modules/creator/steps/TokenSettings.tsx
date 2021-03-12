@@ -6,6 +6,7 @@ import {
   Box,
   InputAdornment,
   Tooltip,
+  TextField,
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
@@ -95,6 +96,27 @@ const CustomFormikTextField = withStyles({
   },
 })(FormikTextField);
 
+const CustomTextField = withStyles({
+  root: {
+    "& .MuiInput-root": {
+      fontWeight: 300,
+      textAlign: "initial",
+    },
+    "& .MuiInputBase-input": {
+      textAlign: "initial",
+    },
+    "& .MuiInput-underline:before": {
+      borderBottom: "none !important",
+    },
+    "& .MuiInput-underline:hover:before": {
+      borderBottom: "none !important",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottom: "none !important",
+    },
+  },
+})(TextField);
+
 const CustomTotalContainer = styled(Typography)({
   padding: "11px 21px",
   boxSizing: "border-box",
@@ -159,7 +181,7 @@ const validate = (values: MemberSettings) => {
 
   values.tokenHolders.map((item: TokenHolder) => {
     if (!item.address || !String(item.balance)) {
-      errors.tokenHolders = "Please field all the values";
+      errors.tokenHolders = "Please fill all the inputs";
     }
   });
 
@@ -201,15 +223,21 @@ const TokenSettingsForm = ({
       <TokenHoldersGrid container direction="row">
         <Grid item xs={12}>
           <Grid container>
-            <Grid item xs={8}>
+            <Grid item xs={6}>
               <Typography variant="subtitle1" color="textSecondary">
                 Token holders
               </Typography>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <Typography variant="subtitle1" color="textSecondary">
                 {" "}
                 Balance{" "}
+              </Typography>
+            </Grid>
+            <Grid item xs={2}>
+              <Typography variant="subtitle1" color="textSecondary">
+                {" "}
+                Total supply %{" "}
               </Typography>
             </Grid>
           </Grid>
@@ -221,50 +249,86 @@ const TokenSettingsForm = ({
                 (t: { address: string; balance: number }) =>
                   t.address === "" || !(t.balance > 0)
               );
+
+              const totalSupply = values.tokenHolders.reduce(
+                (prev: number, t: { address: string; balance: number }) =>
+                  prev + (t.balance || 0),
+                0
+              );
+
               return (
                 <>
-                  {values.tokenHolders.map((_: string, index: number) => (
-                    <Grid key={index} container alignItems="center">
-                      <CustomInputContainer item xs={8}>
-                        <Field
-                          type="text"
-                          component={CustomFormikTextField}
-                          placeholder="tz1PXn...."
-                          name={`tokenHolders.${index}.address`}
-                        />
-                      </CustomInputContainer>
-                      <CustomBalanceContainer
-                        container
-                        item
-                        xs={3}
-                        alignItems="center"
-                      >
-                        <Grid item>
+                  {values.tokenHolders.map(
+                    (
+                      t: { address: string; balance: number },
+                      index: number
+                    ) => (
+                      <Grid key={index} container alignItems="center">
+                        <CustomInputContainer item xs={6}>
                           <Field
-                            type="number"
+                            type="text"
                             component={CustomFormikTextField}
-                            placeholder="0.00"
-                            name={`tokenHolders.${index}.balance`}
+                            placeholder="tz1PXn...."
+                            name={`tokenHolders.${index}.address`}
                           />
-                        </Grid>
-                      </CustomBalanceContainer>
-                      {values.tokenHolders.length > 1 && (
-                        <Grid item xs={1}>
-                          <RemoveButton
-                            className="button"
-                            type="button"
-                            onClick={() => arrayHelpers.remove(index)}
-                          >
-                            {" "}
-                            <RemoveCircleOutline
-                              color="secondary"
-                              fontSize="small"
+                        </CustomInputContainer>
+                        <CustomBalanceContainer
+                          container
+                          item
+                          xs={3}
+                          alignItems="center"
+                        >
+                          <Grid item>
+                            <Field
+                              type="number"
+                              component={CustomFormikTextField}
+                              placeholder="0.00"
+                              name={`tokenHolders.${index}.balance`}
                             />
-                          </RemoveButton>
-                        </Grid>
-                      )}
-                    </Grid>
-                  ))}
+                          </Grid>
+                        </CustomBalanceContainer>
+                        <CustomBalanceContainer
+                          container
+                          item
+                          xs={2}
+                          alignItems="center"
+                        >
+                          <Grid item>
+                            <CustomTextField
+                              InputProps={{
+                                placeholder: "0%",
+                                value: totalSupply
+                                  ? Number(
+                                      (
+                                        (values.tokenHolders[index].balance /
+                                          totalSupply) *
+                                        100
+                                      ).toFixed(2)
+                                    ) + "%"
+                                  : "0%",
+                                readOnly: true,
+                              }}
+                            />
+                          </Grid>
+                        </CustomBalanceContainer>
+                        {values.tokenHolders.length > 1 && (
+                          <Grid item xs={1}>
+                            <RemoveButton
+                              className="button"
+                              type="button"
+                              onClick={() => arrayHelpers.remove(index)}
+                            >
+                              {" "}
+                              <RemoveCircleOutline
+                                color="secondary"
+                                fontSize="small"
+                              />
+                            </RemoveButton>
+                          </Grid>
+                        )}
+                      </Grid>
+                    )
+                  )}
                   {errors.tokenHolders ? (
                     <ErrorText>{errors.tokenHolders}</ErrorText>
                   ) : null}
