@@ -29,7 +29,7 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 const StepContentContainer = styled(Grid)({
   alignItems: "center",
   height: "100%",
-  maxHeight: "calc(100vh - 75px - 58px)",
+  maxHeight: "calc(100vh - 75px - 80px)",
   paddingTop: 50,
   boxSizing: "border-box",
   overflowY: "auto",

@@ -231,9 +231,8 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.proposeStakePercentage} * Proposal
-                  size + {state.data.votingSettings.proposeStakeRequired} (
-                  {state.data.orgSettings.symbol})
+                  {state.data.votingSettings.proposeStakeRequired}
+                  {state.data.orgSettings.symbol}
                 </Typography>
               </Grid>
             </UnderlinedGrid>

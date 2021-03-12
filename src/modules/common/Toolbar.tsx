@@ -20,18 +20,23 @@ import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 
-const StyledAppBar = styled(AppBar)({
-  boxShadow: "none",
-});
+const StyledAppBar = styled(AppBar)(
+  ({ mode }: { mode: "creator" | "explorer" }) => ({
+    boxShadow: "none",
+    height: mode === "creator" ? 80 : "unset",
+  })
+);
 
-const StyledToolbar = styled(Toolbar)({
-  display: "flex",
-  justifyContent: "space-between",
-  flexWrap: "wrap",
-  height: 100,
-  paddingLeft: 0,
-  paddingRight: 0,
-});
+const StyledToolbar = styled(Toolbar)(
+  ({ mode }: { mode: "creator" | "explorer" }) => ({
+    display: "flex",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    height: mode === "creator" ? 65 : 100,
+    paddingLeft: 0,
+    paddingRight: 0,
+  })
+);
 
 const StatusDot = styled(Box)({
   borderRadius: "100%",
@@ -166,13 +171,14 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     <StyledAppBar
       position="sticky"
       color="primary"
+      mode={mode}
       style={
         location.pathname === "/creator"
           ? undefined
           : custom(theme, mode).appBorder
       }
     >
-      <StyledToolbar>
+      <StyledToolbar mode={mode}>
         <Grid
           container
           direction="row"
