@@ -11,7 +11,7 @@ import {
 } from "modules/explorer/Treasury";
 import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { FileCopyOutlined } from "@material-ui/icons";
+import { CopyAddress } from "modules/common/CopyAddress";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   paddingLeft: 112,
@@ -21,10 +21,6 @@ const ListItemContainer = styled(withTheme(Grid))((props) => ({
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
 }));
-
-const CopyIcon = styled(FileCopyOutlined)({
-  cursor: "pointer",
-});
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -107,26 +103,7 @@ export const Holdings: React.FC = () => {
         <MainContainer container justify="space-between">
           <Grid item xs={12}>
             <Header name={"MY GREAT TOKEN"} />
-            {dao && (
-              <Grid container alignItems="center">
-                <Grid item>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    {dao.address}
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Box
-                    padding="5px 0 0 10px"
-                    marginTop="auto"
-                    onClick={() => {
-                      navigator.clipboard.writeText(dao.address);
-                    }}
-                  >
-                    <CopyIcon color="secondary" fontSize="small" />
-                  </Box>
-                </Grid>
-              </Grid>
-            )}
+            {dao && <CopyAddress address={dao.address} />}
           </Grid>
         </MainContainer>
         <TableContainer>
