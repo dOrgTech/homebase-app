@@ -10,6 +10,7 @@ import {
   Theme,
   useTheme,
   Popover,
+  useMediaQuery,
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -20,21 +21,18 @@ import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 
-const StyledAppBar = styled(AppBar)(
-  ({ mode }: { mode: "creator" | "explorer" }) => ({
-    boxShadow: "none",
-    height: mode === "creator" ? 80 : "unset",
-  })
-);
+const StyledAppBar = styled(AppBar)({
+  boxShadow: "none",
+});
 
 const StyledToolbar = styled(Toolbar)(
   ({ mode }: { mode: "creator" | "explorer" }) => ({
     display: "flex",
+    padding: "22px 37px",
+    boxSizing: "border-box",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    height: mode === "creator" ? 65 : 100,
-    paddingLeft: 0,
-    paddingRight: 0,
+    minHeight: mode === "creator" ? 80 : 100,
   })
 );
 
@@ -61,8 +59,6 @@ const LogoText = styled(Typography)({
 const ConnectWallet = styled(Button)({
   maxHeight: 50,
   alignSelf: "baseline",
-  marginTop: 22,
-  marginRight: 14,
 });
 
 const AddressMenu = styled(Box)(() => ({
@@ -110,11 +106,7 @@ const custom = (theme: Theme, mode: "creator" | "explorer") => ({
         ? `2px solid ${theme.palette.primary.light}`
         : "unset",
   },
-  appHeight: {
-    height: "inherit",
-  },
   appLogoHeight: {
-    height: "inherit",
     borderRight: `2px solid ${theme.palette.primary.light}`,
   },
 });
@@ -147,6 +139,8 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     null
   );
   const [popperOpen, setPopperOpen] = useState(false);
+  const theme = useTheme();
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -165,13 +159,11 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
 
   const location = useLocation();
   const history = useHistory();
-  const theme = useTheme();
 
   return (
     <StyledAppBar
       position="sticky"
       color="primary"
-      mode={mode}
       style={
         location.pathname === "/creator"
           ? undefined
@@ -179,16 +171,12 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       }
     >
       <StyledToolbar mode={mode}>
-        <Grid
-          container
-          direction="row"
-          alignItems="center"
-          style={custom(theme, mode).appHeight}
-        >
+        <Grid container direction="row" alignItems="center" wrap="wrap">
           {mode === "explorer" ? (
             <Grid
               item
-              xs={3}
+              xs={12}
+              sm={3}
               style={
                 location.pathname === "/creator"
                   ? custom(theme, mode).appLogoHeight
@@ -203,12 +191,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                 }
                 onClick={() => history.push("/explorer")}
               >
-                <Grid
-                  container
-                  alignItems="center"
-                  wrap="nowrap"
-                  justify="center"
-                >
+                <Grid container alignItems="center" wrap="nowrap">
                   <Grid item>
                     <LogoItem src={HomeButton} />
                   </Grid>
@@ -226,8 +209,14 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
             item
             xs={mode === "creator" ? 12 : 9}
             container
-            justify="flex-end"
-            style={custom(theme, mode).appHeight}
+            justify={
+              isMobileExtraSmall && mode === "explorer"
+                ? "flex-start"
+                : "flex-end"
+            }
+            style={{
+              marginTop: isMobileExtraSmall && mode === "explorer" ? 25 : 0,
+            }}
           >
             {account ? (
               <>

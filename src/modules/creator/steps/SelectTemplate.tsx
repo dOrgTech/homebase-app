@@ -57,7 +57,7 @@ const Description = styled(Typography)({
   marginBottom: 32,
 });
 
-const CustomCardContent = styled(CardContent)({
+const CustomCardContent = styled(CardContent)(({ theme }) => ({
   padding: "27px 37px 0px 37px",
   "&:last-child": {
     paddingBottom: "0px",
@@ -65,7 +65,10 @@ const CustomCardContent = styled(CardContent)({
   textAlign: "left",
   minHeight: 168,
   minWidth: 280,
-});
+  [theme.breakpoints.down("xs")]: {
+    minWidth: "unset",
+  },
+}));
 
 const Phrase = styled(Typography)({
   marginTop: 12,

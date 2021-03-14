@@ -5,6 +5,8 @@ import {
   Grid,
   styled,
   Typography,
+  useMediaQuery,
+  useTheme,
   withTheme,
 } from "@material-ui/core";
 import React, { useEffect, useMemo, useState } from "react";
@@ -14,41 +16,31 @@ import { SearchInput } from "modules/explorer/components/SearchInput";
 import { useDAOs } from "services/contracts/baseDAO/hooks/useDAOs";
 
 const GridContainer = styled(Grid)({
-  paddingRight: "6%",
-  paddingLeft: "6%",
-  paddingTop: "4%",
-  marginBottom: 60,
   background: "inherit",
-});
-
-const StyledButton = styled(Button)({
-  height: 69,
+  padding: 37,
 });
 
 const TotalDao = styled(Typography)({
-  marginRight: 37,
+  padding: "0 37px",
   lineHeight: "124.3%",
   letterSpacing: "-0.01em",
 });
 
 const DaoContainer = styled(withTheme(Grid))((props) => ({
-  height: 179,
+  minHeight: 179,
   border: `2px solid ${props.theme.palette.primary.light}`,
   boxSizing: "border-box",
   background: props.theme.palette.primary.main,
   boxShadow: "none",
   borderRadius: 0,
-  paddingTop: 42,
+  padding: "50px 37px",
   borderTop: "none",
   "&:nth-child(odd)": {
     borderLeft: "none",
-    paddingLeft: "6%",
   },
   "&:nth-child(even)": {
     borderRight: "none",
     borderLeft: "none",
-    paddingLeft: "3%",
-    paddingRight: "6%",
   },
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
@@ -67,6 +59,23 @@ const LoaderContainer = styled(Grid)({
   paddingBottom: 40,
 });
 
+const StyledButton = styled(Button)(({ theme }) => ({
+  minHeight: 53,
+  color: theme.palette.text.secondary,
+  borderColor: theme.palette.secondary.main,
+  minWidth: 171,
+}));
+
+const DaoTotalContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    order: 2,
+  },
+}));
+
+const CreateDaoContainer = styled(Grid)({
+  margin: "20px 0",
+});
+
 export const DAOsList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const {
@@ -77,6 +86,11 @@ export const DAOsList: React.FC = () => {
     isFetchingNextPage,
     fetchNextPage,
   } = useDAOs();
+
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+
   const daos = useMemo(() => {
     if (!data) {
       return [];
@@ -90,8 +104,6 @@ export const DAOsList: React.FC = () => {
       fetchNextPage();
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  console.log(daos, error, isLoading);
 
   const currentDAOs = useMemo(() => {
     if (daos) {
@@ -126,29 +138,40 @@ export const DAOsList: React.FC = () => {
 
   return (
     <Box bgcolor="primary.main" width="100%" height="100%">
-      <GridContainer container direction="row" alignItems="center">
-        <Grid item xs={6}>
+      <GridContainer
+        container
+        direction="row"
+        alignItems="center"
+        justify="center"
+      >
+        <Grid item xs={12} md={6}>
           <SearchInput search={filterDAOs} />
         </Grid>
         <Grid
           container
           item
           direction="row"
-          justify="flex-end"
+          justify={isMobileSmall ? "flex-start" : "flex-end"}
           alignItems="center"
           alignContent="center"
-          xs={6}
+          xs={12}
+          md={6}
         >
-          <TotalDao color="textSecondary" variant="subtitle1">
-            {currentDAOs.length} DAOs
-          </TotalDao>
-          <StyledButton
-            color="secondary"
-            variant="outlined"
-            onClick={() => history.push("/creator")}
-          >
-            Create DAO
-          </StyledButton>
+          <DaoTotalContainer item>
+            <TotalDao color="textSecondary" variant="subtitle1" align="right">
+              {currentDAOs.length} DAOs
+            </TotalDao>
+          </DaoTotalContainer>
+          <CreateDaoContainer item>
+            <StyledButton
+              color="secondary"
+              variant="outlined"
+              onClick={() => history.push("/creator")}
+              fullWidth={isMobileExtraSmall}
+            >
+              Create DAO
+            </StyledButton>
+          </CreateDaoContainer>
         </Grid>
       </GridContainer>
       <GridBackground container direction="row">
@@ -165,12 +188,12 @@ export const DAOsList: React.FC = () => {
                 {dao.symbol}
               </Typography>
               <Grid container direction="row" alignItems="center">
-                <Grid item xs={12} sm={12} lg={6}>
+                <Grid item xs={12} lg={6}>
                   <Typography variant="h5" color="textSecondary">
                     {dao.name}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={12} lg={6}>
+                <Grid item xs={12} lg={6}>
                   <Typography variant="subtitle1" color="textSecondary">
                     {dao.voting_addresses} VOTING ADDRESSES
                   </Typography>
