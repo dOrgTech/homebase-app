@@ -48,6 +48,38 @@ const ButtonIcon = ({
   );
 };
 
+const StyledBottomBar = styled(Grid)(({ theme }) => ({
+  position: "fixed",
+  bottom: 0,
+  backgroundColor: theme.palette.primary.main,
+  borderTop: `2px solid ${theme.palette.primary.light}`,
+}));
+
+const BottomNavBar: React.FC = ({ children }) => {
+  return (
+    <StyledBottomBar container direction={"row"} justify={"space-evenly"}>
+      {children}
+    </StyledBottomBar>
+  );
+};
+
+const SideNavBar: React.FC = ({ children }) => {
+  const theme = useTheme();
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+
+  return (
+    <Bar item>
+      <Grid
+        container
+        direction={isMobileExtraSmall ? "row" : "column"}
+        justify={isMobileExtraSmall ? "space-evenly" : "flex-start"}
+      >
+        {children}
+      </Grid>
+    </Bar>
+  );
+};
+
 export const SideBar: React.FC = () => {
   const history = useHistory();
   const { pathname } = useLocation();
@@ -95,23 +127,29 @@ export const SideBar: React.FC = () => {
     }
   }, [dao, daoId, history]);
 
-  return (
-    <Bar item>
-      <Grid
-        container
-        direction={isMobileExtraSmall ? "row" : "column"}
-        justify={isMobileExtraSmall ? "space-evenly" : "flex-start"}
-      >
-        {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => (
-          <Grid item key={name}>
-            <ButtonIcon
-              Icon={Icon}
-              handler={handler}
-              isSelected={pathname.includes(name)}
-            />
-          </Grid>
-        ))}
-      </Grid>
-    </Bar>
+  return !isMobileExtraSmall ? (
+    <SideNavBar>
+      {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => (
+        <Grid item key={name}>
+          <ButtonIcon
+            Icon={Icon}
+            handler={handler}
+            isSelected={pathname.includes(name)}
+          />
+        </Grid>
+      ))}
+    </SideNavBar>
+  ) : (
+    <BottomNavBar>
+      {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => (
+        <Grid item key={name}>
+          <ButtonIcon
+            Icon={Icon}
+            handler={handler}
+            isSelected={pathname.includes(name)}
+          />
+        </Grid>
+      ))}
+    </BottomNavBar>
   );
 };

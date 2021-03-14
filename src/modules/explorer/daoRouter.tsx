@@ -12,7 +12,8 @@ import { SideBar } from "./components";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
-  minHeight: "calc(100vh - 102px)",
+  minHeight: "calc(100vh - 102px - 53px)",
+  marginBottom: 53,
 }));
 
 export const DAORouter = (): JSX.Element => {
