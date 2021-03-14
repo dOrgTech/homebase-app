@@ -1,6 +1,7 @@
 import {
   Box,
   Grid,
+  makeStyles,
   styled,
   Typography,
   useTheme,
@@ -15,7 +16,7 @@ import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { mutezToXtz, toShortAddress } from "services/contracts/utils";
+import { mutezToXtz } from "services/contracts/utils";
 import { StatusBadge } from "../../components/StatusBadge";
 import {
   ProposalStatus,
@@ -23,6 +24,7 @@ import {
 } from "services/bakingBad/proposals/types";
 import { UserBadge } from "../../components/UserBadge";
 import ProgressBar from "react-customizable-progressbar";
+import { ExternalLink } from "modules/common/ExternalLink";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -136,6 +138,13 @@ const ProgressText = styled(Typography)(
   })
 );
 
+const linkStyle = makeStyles({
+  root: {
+    color: "#fff",
+    textDecoration: "underline",
+  },
+});
+
 export const Voting: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
@@ -145,6 +154,7 @@ export const Voting: React.FC = () => {
   const { data: proposalData } = useProposal(daoId, proposalId);
   const proposal = proposalData as TreasuryProposalWithStatus | undefined;
   const { data: dao } = useDAO(daoId);
+  const link = linkStyle();
 
   const proposalCycle = proposal ? proposal.cycle : "-";
   const upVotes = proposal ? proposal.upVotes : 0;
@@ -208,7 +218,7 @@ export const Voting: React.FC = () => {
       const to =
         transfer.beneficiary.toLowerCase() === daoId.toLowerCase()
           ? "DAO's treasury"
-          : toShortAddress(transfer.beneficiary);
+          : transfer.beneficiary;
 
       const currency =
         transfer.currency === "mutez" ? "XTZ" : transfer.currency;
@@ -218,9 +228,24 @@ export const Voting: React.FC = () => {
           ? mutezToXtz(transfer.amount)
           : transfer.amount;
 
-      return `Transfer ${value}${currency} from ${from} to ${to}`;
+      // return `Transfer ${value}${currency} from ${from} to ${to}`;
+      return (
+        <>
+          <Typography>
+            Transfer {value}
+            {currency} from {from} to{" "}
+            <ExternalLink
+              className={link.root}
+              link={"https://edo2net.tzkt.io/" + to}
+            >
+              {" "}
+              {to}{" "}
+            </ExternalLink>
+          </Typography>
+        </>
+      );
     });
-  }, [proposal, daoId]);
+  }, [proposal, daoId, link.root]);
 
   return (
     <>
