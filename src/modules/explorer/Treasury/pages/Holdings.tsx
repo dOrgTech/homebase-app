@@ -96,9 +96,7 @@ export const Holdings: React.FC = () => {
   }, [transactions]);
 
   return (
-    <PageLayout container wrap="nowrap">
-      <SideBar dao={id} />
-
+      <>
       <Grid item xs>
         <MainContainer container justify="space-between">
           <Grid item xs={12}>
@@ -176,6 +174,6 @@ export const Holdings: React.FC = () => {
           ) : null}
         </TableContainer>
       </Grid>
-    </PageLayout>
+    </>
   );
 };

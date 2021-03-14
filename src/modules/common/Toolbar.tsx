@@ -52,7 +52,7 @@ const AddressContainer = styled(Grid)({
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
-  fontSize: "18px",
+  fontSize: "24px",
   cursor: "pointer",
 });
 
@@ -84,13 +84,16 @@ const AddressMenuIcon = styled(Grid)({
   marginBottom: "-4px",
 });
 
-const AddressBarWrapper = styled(Grid)(() => ({
+const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   padding: "15px",
   marginRight: 10,
   borderRadius: 4,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
   },
+  [theme.breakpoints.down("xs")]: {
+    marginLeft: -15,
+  }
 }));
 
 const custom = (theme: Theme, mode: "creator" | "explorer") => ({
@@ -207,7 +210,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
 
           <Grid
             item
-            xs={mode === "creator" ? 12 : 9}
+            xs={mode === "creator" ? 12 : isMobileExtraSmall ? 12 : 9}
             container
             justify={
               isMobileExtraSmall && mode === "explorer"
@@ -220,7 +223,11 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
           >
             {account ? (
               <>
-                <Grid container alignItems="center" justify="flex-end">
+                <Grid
+                  container
+                  alignItems="center"
+                  justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
+                >
                   <AddressBarWrapper item>
                     <AddressContainer
                       container

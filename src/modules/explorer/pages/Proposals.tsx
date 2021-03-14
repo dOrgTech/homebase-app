@@ -9,7 +9,6 @@ import {
 import React, { useCallback, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
-import { SideBar } from "modules/explorer/components";
 import { TokenHoldersDialog } from "modules/explorer/components/TokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
@@ -26,11 +25,6 @@ const StyledContainer = styled(Grid)(({ theme }) => ({
   height: 184,
   paddingTop: "4%",
   boxSizing: "border-box",
-}));
-
-const PageLayout = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  minHeight: "calc(100vh - 102px)",
 }));
 
 const MainContainer = styled(Grid)(({ theme }) => ({
@@ -226,160 +220,152 @@ export const Proposals: React.FC = () => {
 
   return (
     <>
-      <PageLayout container wrap="nowrap">
-        <SideBar dao={id} />
-        <Grid item xs>
-          <MainContainer>
-            <StyledContainer container direction="row">
-              <Grid item xs={6}>
-                <Typography variant="subtitle1" color="secondary">
-                  {name}
-                </Typography>
-                <Typography variant="h5" color="textSecondary">
-                  Proposals
-                </Typography>
-              </Grid>
-              <Grid item container xs={6} justify="flex-end" spacing={2}>
-                <Grid item>
-                  <StyledButton
-                    variant="outlined"
-                    onClick={onNewProposal}
-                    disabled={!dao}
-                  >
-                    NEW PROPOSAL
-                  </StyledButton>
-                </Grid>
-                <FlushContainer item>
-                  <StyledButton
-                    variant="outlined"
-                    onClick={onFlush}
-                    disabled={!dao}
-                  >
-                    FLUSH
-                  </StyledButton>
-                  <Tooltip title="Execute all passed proposals and drop all expired or rejected">
-                    <InfoIconInput color="secondary" />
-                  </Tooltip>
-                </FlushContainer>
-              </Grid>
-            </StyledContainer>
-          </MainContainer>
-          <StatsContainer container>
-            <TokensLocked
-              item
-              xs={6}
-              container
-              direction="column"
-              alignItems="center"
-              justify="center"
-            >
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Box>
-                    <Typography variant="subtitle2" color="secondary">
-                      {symbol} Locked
-                    </Typography>
-                  </Box>
-                  <Box padding="12px 0">
-                    <Typography variant="h3" color="textSecondary">
-                      {amountLocked}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item>
-                  {dao && <TokenHoldersDialog address={dao?.address} />}
-                </Grid>
-              </Grid>
-              <LockedTokensBar
-                variant="determinate"
-                value={amountLockedPercentage}
-                color="secondary"
-              />
-            </TokensLocked>
-            <VotingAddresses
-              item
-              container
-              direction="column"
-              alignItems="center"
-              justify="center"
-            >
-              <Box>
-                <Typography variant="subtitle2" color="secondary">
-                  Voting Addresses
-                </Typography>
-                <Typography variant="h3" color="textSecondary">
-                  {addressesWithUnfrozenBalance}
-                </Typography>
-              </Box>
-            </VotingAddresses>
-            <ActiveProposals
-              item
-              xs
-              container
-              direction="column"
-              justify="center"
-            >
-              <Box>
-                <Typography variant="subtitle2" color="secondary">
-                  Active Proposals
-                </Typography>
-                <Typography variant="h3" color="textSecondary">
-                  {activeProposals?.length}
-                </Typography>
-              </Box>
-            </ActiveProposals>
-          </StatsContainer>
-          <TableContainer>
-            <TableHeader container wrap="nowrap">
-              <Grid item xs={4}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
+      <Grid item xs>
+        <MainContainer>
+          <StyledContainer container direction="row">
+            <Grid item xs={6}>
+              <Typography variant="subtitle1" color="secondary">
+                {name}
+              </Typography>
+              <Typography variant="h5" color="textSecondary">
+                Proposals
+              </Typography>
+            </Grid>
+            <Grid item container xs={6} justify="flex-end" spacing={2}>
+              <Grid item>
+                <StyledButton
+                  variant="outlined"
+                  onClick={onNewProposal}
+                  disabled={!dao}
                 >
-                  ACTIVE PROPOSALS
-                </ProposalTableHeadText>
+                  NEW PROPOSAL
+                </StyledButton>
               </Grid>
-              <Grid item xs={2}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="center"
+              <FlushContainer item>
+                <StyledButton
+                  variant="outlined"
+                  onClick={onFlush}
+                  disabled={!dao}
                 >
-                  CYCLE
-                </ProposalTableHeadText>
+                  FLUSH
+                </StyledButton>
+                <Tooltip title="Execute all passed proposals and drop all expired or rejected">
+                  <InfoIconInput color="secondary" />
+                </Tooltip>
+              </FlushContainer>
+            </Grid>
+          </StyledContainer>
+        </MainContainer>
+        <StatsContainer container>
+          <TokensLocked
+            item
+            xs={6}
+            container
+            direction="column"
+            alignItems="center"
+            justify="center"
+          >
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Box>
+                  <Typography variant="subtitle2" color="secondary">
+                    {symbol} Locked
+                  </Typography>
+                </Box>
+                <Box padding="12px 0">
+                  <Typography variant="h3" color="textSecondary">
+                    {amountLocked}
+                  </Typography>
+                </Box>
               </Grid>
-              <Grid item xs={3}></Grid>
-              <Grid item xs={3}>
-                {/* <ProposalTableHeadText
+              <Grid item>
+                {dao && <TokenHoldersDialog address={dao?.address} />}
+              </Grid>
+            </Grid>
+            <LockedTokensBar
+              variant="determinate"
+              value={amountLockedPercentage}
+              color="secondary"
+            />
+          </TokensLocked>
+          <VotingAddresses
+            item
+            container
+            direction="column"
+            alignItems="center"
+            justify="center"
+          >
+            <Box>
+              <Typography variant="subtitle2" color="secondary">
+                Voting Addresses
+              </Typography>
+              <Typography variant="h3" color="textSecondary">
+                {addressesWithUnfrozenBalance}
+              </Typography>
+            </Box>
+          </VotingAddresses>
+          <ActiveProposals
+            item
+            xs
+            container
+            direction="column"
+            justify="center"
+          >
+            <Box>
+              <Typography variant="subtitle2" color="secondary">
+                Active Proposals
+              </Typography>
+              <Typography variant="h3" color="textSecondary">
+                {activeProposals?.length}
+              </Typography>
+            </Box>
+          </ActiveProposals>
+        </StatsContainer>
+        <TableContainer>
+          <TableHeader container wrap="nowrap">
+            <Grid item xs={4}>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                ACTIVE PROPOSALS
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText
+                variant="subtitle1"
+                color="textSecondary"
+                align="center"
+              >
+                CYCLE
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={3}></Grid>
+            <Grid item xs={3}>
+              {/* <ProposalTableHeadText
                   variant="subtitle1"
                   color="textSecondary"
                 >
                   STATUS
                 </ProposalTableHeadText> */}
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  THRESHOLD %
-                </ProposalTableHeadText>
-              </Grid>
-            </TableHeader>
-            {activeProposals.map((proposal, i) => (
-              <ProposalTableRow
-                key={`proposal-${i}`}
-                {...proposal}
-                daoId={dao?.address}
-                quorumTreshold={dao?.storage.quorumTreshold || 0}
-              />
-            ))}
-            {activeProposals.length === 0 ? (
-              <NoProposals variant="subtitle1" color="textSecondary">
-                No active proposals
-              </NoProposals>
-            ) : null}
-          </TableContainer>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                THRESHOLD %
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
+          {activeProposals.map((proposal, i) => (
+            <ProposalTableRow
+              key={`proposal-${i}`}
+              {...proposal}
+              daoId={dao?.address}
+              quorumTreshold={dao?.storage.quorumTreshold || 0}
+            />
+          ))}
+          {activeProposals.length === 0 ? (
+            <NoProposals variant="subtitle1" color="textSecondary">
+              No active proposals
+            </NoProposals>
+          ) : null}
+        </TableContainer>
 
-          {/* <ProposalsContainer
+        {/* <ProposalsContainer
             container
             direction="row"
             alignItems="center"
@@ -394,34 +380,60 @@ export const Proposals: React.FC = () => {
             </UnderlineText>
           </ProposalsContainer> */}
 
-          <TableContainer>
-            <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  PASSED PROPOSALS
-                </ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={2}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  {""}
-                </ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={5}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  {""}
-                </ProposalTableHeadText>
-              </Grid>
-            </TableHeader>
-            {passedProposals.map((proposal, i) => (
+        <TableContainer>
+          <TableHeader container wrap="nowrap">
+            <Grid item xs={5}>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                PASSED PROPOSALS
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                {""}
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={5}>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                {""}
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
+          {passedProposals.map((proposal, i) => (
+            <ProposalTableRow
+              key={`proposal-${i}`}
+              {...proposal}
+              daoId={dao?.address}
+              quorumTreshold={dao?.storage.quorumTreshold || 0}
+            />
+          ))}
+
+          {passedProposals.length === 0 ? (
+            <NoProposals variant="subtitle1" color="textSecondary">
+              No passed proposals
+            </NoProposals>
+          ) : null}
+        </TableContainer>
+
+        <TableContainer>
+          <TableHeader container wrap="nowrap">
+            <Grid item xs={5}>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                ALL PROPOSALS
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                {""}
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={5}>
+              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
+                {""}
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
+          {proposalsData &&
+            proposalsData.map((proposal, i) => (
               <ProposalTableRow
                 key={`proposal-${i}`}
                 {...proposal}
@@ -429,53 +441,8 @@ export const Proposals: React.FC = () => {
                 quorumTreshold={dao?.storage.quorumTreshold || 0}
               />
             ))}
-
-            {passedProposals.length === 0 ? (
-              <NoProposals variant="subtitle1" color="textSecondary">
-                No passed proposals
-              </NoProposals>
-            ) : null}
-          </TableContainer>
-
-          <TableContainer>
-            <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  ALL PROPOSALS
-                </ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={2}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  {""}
-                </ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={5}>
-                <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  {""}
-                </ProposalTableHeadText>
-              </Grid>
-            </TableHeader>
-            {proposalsData &&
-              proposalsData.map((proposal, i) => (
-                <ProposalTableRow
-                  key={`proposal-${i}`}
-                  {...proposal}
-                  daoId={dao?.address}
-                  quorumTreshold={dao?.storage.quorumTreshold || 0}
-                />
-              ))}
-          </TableContainer>
-        </Grid>
-      </PageLayout>
+        </TableContainer>
+      </Grid>
     </>
   );
 };

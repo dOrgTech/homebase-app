@@ -212,244 +212,239 @@ export const Voting: React.FC = () => {
 
   return (
     <>
-      <PageLayout container wrap="nowrap">
-        <SideBar dao={daoId} />
-        <Grid item xs>
-          <MainContainer>
-            <Container container direction="row">
-              <Grid item xs={12}>
-                <Typography variant="subtitle1" color="secondary">
-                  {daoName} &gt; PROPOSALS
+      <Grid item xs>
+        <MainContainer>
+          <Container container direction="row">
+            <Grid item xs={12}>
+              <Typography variant="subtitle1" color="secondary">
+                {daoName} &gt; PROPOSALS
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <StyledContainer container direction="row">
+                <Grid item xs={6}>
+                  <Subtitle variant="h3" color="textSecondary">
+                    Proposal Title
+                  </Subtitle>
+                  <Subtitle color="textSecondary">
+                    Proposal Description
+                  </Subtitle>
+                  {proposal && (
+                    <StatusBadge
+                      style={{ marginTop: 12 }}
+                      lg={2}
+                      md={6}
+                      sm={6}
+                      status={proposal.status}
+                      xs={2}
+                    />
+                  )}
+                </Grid>
+                <JustifyEndGrid item xs={6}>
+                  <ButtonsContainer
+                    container
+                    direction="row"
+                    alignItems="center"
+                    justify="flex-end"
+                  >
+                    <VoteDialog />
+                  </ButtonsContainer>
+                </JustifyEndGrid>
+              </StyledContainer>
+            </Grid>
+          </Container>
+        </MainContainer>
+        <CycleContainer container direction="row">
+          <Cycle color="textSecondary">CYCLE: {proposalCycle}</Cycle>
+        </CycleContainer>
+        <StatsContainer container>
+          <TokensLocked
+            item
+            xs={6}
+            container
+            direction="column"
+            alignItems="center"
+            justify="center"
+          >
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Box>
+                  <Typography variant="subtitle2" color="secondary">
+                    FOR
+                  </Typography>
+                </Box>
+                <Box padding="12px 0">
+                  <Typography variant="h3" color="textSecondary">
+                    {proposal?.upVotes || 0}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item>
+                <UpVotesDialog
+                  daoAddress={daoId}
+                  proposalAddress={proposalId}
+                  favor={true}
+                />
+              </Grid>
+            </Grid>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={10}>
+                <CustomBar
+                  favor={true}
+                  variant="determinate"
+                  value={upVotesSumPercentage}
+                  color="secondary"
+                />
+              </Grid>
+              <Grid item xs={2}>
+                <Typography color="textSecondary" align="right">
+                  {Number(upVotesSumPercentage.toFixed(1))}%
                 </Typography>
               </Grid>
-              <Grid item xs={12}>
-                <StyledContainer container direction="row">
-                  <Grid item xs={6}>
-                    <Subtitle variant="h3" color="textSecondary">
-                      Proposal Title
-                    </Subtitle>
-                    <Subtitle color="textSecondary">
-                      Proposal Description
-                    </Subtitle>
-                    {proposal && (
-                      <StatusBadge
-                        style={{ marginTop: 12 }}
-                        lg={2}
-                        md={6}
-                        sm={6}
-                        status={proposal.status}
-                        xs={2}
-                      />
-                    )}
-                  </Grid>
-                  <JustifyEndGrid item xs={6}>
-                    <ButtonsContainer
-                      container
-                      direction="row"
-                      alignItems="center"
-                      justify="flex-end"
-                    >
-                      <VoteDialog />
-                    </ButtonsContainer>
-                  </JustifyEndGrid>
-                </StyledContainer>
-              </Grid>
-            </Container>
-          </MainContainer>
-          <CycleContainer container direction="row">
-            <Cycle color="textSecondary">CYCLE: {proposalCycle}</Cycle>
-          </CycleContainer>
-          <StatsContainer container>
-            <TokensLocked
-              item
-              xs={6}
-              container
-              direction="column"
-              alignItems="center"
-              justify="center"
-            >
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Box>
-                    <Typography variant="subtitle2" color="secondary">
-                      FOR
-                    </Typography>
-                  </Box>
-                  <Box padding="12px 0">
-                    <Typography variant="h3" color="textSecondary">
-                      {proposal?.upVotes || 0}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item>
-                  <UpVotesDialog
-                    daoAddress={daoId}
-                    proposalAddress={proposalId}
-                    favor={true}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container direction="row" alignItems="center">
-                <Grid item xs={10}>
-                  <CustomBar
-                    favor={true}
-                    variant="determinate"
-                    value={upVotesSumPercentage}
-                    color="secondary"
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography color="textSecondary" align="right">
-                    {Number(upVotesSumPercentage.toFixed(1))}%
-                  </Typography>
-                </Grid>
-              </Grid>
-            </TokensLocked>
+            </Grid>
+          </TokensLocked>
 
-            <TokensLocked
-              item
-              xs={6}
-              container
-              direction="column"
-              alignItems="center"
-              justify="center"
-            >
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Box>
-                    <TextAgainst variant="subtitle2">OPPOSE</TextAgainst>
-                  </Box>
-                  <Box padding="12px 0">
-                    <Typography variant="h3" color="textSecondary">
-                      {proposal?.downVotes || 0}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item>
-                  <UpVotesDialog
-                    daoAddress={daoId}
-                    proposalAddress={proposalId}
-                    favor={false}
-                  />
-                </Grid>
-              </Grid>
-              <Grid container direction="row" alignItems="center">
-                <Grid item xs={10}>
-                  <CustomBar
-                    variant="determinate"
-                    value={downVotesSumPercentage}
-                    favor={false}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <Typography color="textSecondary" align="right">
-                    {Number(downVotesSumPercentage.toFixed(1))}%
+          <TokensLocked
+            item
+            xs={6}
+            container
+            direction="column"
+            alignItems="center"
+            justify="center"
+          >
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item>
+                <Box>
+                  <TextAgainst variant="subtitle2">OPPOSE</TextAgainst>
+                </Box>
+                <Box padding="12px 0">
+                  <Typography variant="h3" color="textSecondary">
+                    {proposal?.downVotes || 0}
                   </Typography>
-                </Grid>
+                </Box>
               </Grid>
-            </TokensLocked>
-          </StatsContainer>
-          <DetailsContainer container direction="row">
-            <Grid item xs={6}>
-              <Grid container direction="row">
-                <BoxItem item xs={12}>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    DETAILS
-                  </Typography>
-                </BoxItem>
-
-                {list.map(({ key, value }, index) => {
-                  return (
-                    <Detail item xs={12} key={index}>
-                      <Grid container direction="row">
-                        <Grid item xs={2}>
-                          <Typography
-                            variant="subtitle1"
-                            color="textSecondary"
-                            align="center"
-                          >
-                            {index + 1}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={10}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            Set {'"'}
-                            {key}
-                            {'"'} to {'"'}
-                            {value}
-                            {'"'}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </Detail>
-                  );
-                })}
+              <Grid item>
+                <UpVotesDialog
+                  daoAddress={daoId}
+                  proposalAddress={proposalId}
+                  favor={false}
+                />
               </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Grid container direction="row">
-                <HistoryContent item xs={12}>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    QUORUM THRESHOLD %
-                  </Typography>
-                </HistoryContent>
-                <HistoryContent item xs={12}>
-                  <ProgressBar
-                    progress={votesQuorumPercentage}
-                    radius={50}
-                    strokeWidth={7}
-                    strokeColor="#3866F9"
-                    trackStrokeWidth={4}
-                    trackStrokeColor={theme.palette.primary.light}
-                  >
-                    <div className="indicator">
-                      <ProgressText textColor="#3866F9">
-                        {Number(votesQuorumPercentage.toFixed(1))}%
-                      </ProgressText>
-                    </div>
-                  </ProgressBar>
-                </HistoryContent>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={10}>
+                <CustomBar
+                  variant="determinate"
+                  value={downVotesSumPercentage}
+                  favor={false}
+                />
               </Grid>
-              <Grid container direction="row">
-                <HistoryContent item xs={12}>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    CREATED BY
-                  </Typography>
-                </HistoryContent>
-                {proposal && (
-                  <HistoryContent item xs={12}>
-                    <UserBadge address={proposal.proposer} />
-                  </HistoryContent>
-                )}
-                <HistoryContent item xs={12}>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    HISTORY
-                  </Typography>
-                </HistoryContent>
-                {history.map((item, index) => {
-                  return (
-                    <HistoryItem container direction="row" key={index}>
-                      <StatusBadge
-                        item
-                        lg={2}
-                        md={6}
-                        sm={6}
-                        status={item.status}
-                      />
-                      <Grid item lg={1} md={1} sm={1}></Grid>
-                      <Grid item lg={9} md={12} sm={12}>
-                        <Typography color="textSecondary">
-                          {item.date}
+              <Grid item xs={2}>
+                <Typography color="textSecondary" align="right">
+                  {Number(downVotesSumPercentage.toFixed(1))}%
+                </Typography>
+              </Grid>
+            </Grid>
+          </TokensLocked>
+        </StatsContainer>
+        <DetailsContainer container direction="row">
+          <Grid item xs={6}>
+            <Grid container direction="row">
+              <BoxItem item xs={12}>
+                <Typography variant="subtitle1" color="textSecondary">
+                  DETAILS
+                </Typography>
+              </BoxItem>
+
+              {list.map(({ key, value }, index) => {
+                return (
+                  <Detail item xs={12} key={index}>
+                    <Grid container direction="row">
+                      <Grid item xs={2}>
+                        <Typography
+                          variant="subtitle1"
+                          color="textSecondary"
+                          align="center"
+                        >
+                          {index + 1}
                         </Typography>
                       </Grid>
-                    </HistoryItem>
-                  );
-                })}
-              </Grid>
+                      <Grid item xs={10}>
+                        <Typography variant="subtitle1" color="textSecondary">
+                          Set {'"'}
+                          {key}
+                          {'"'} to {'"'}
+                          {value}
+                          {'"'}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Detail>
+                );
+              })}
             </Grid>
-          </DetailsContainer>
-        </Grid>
-      </PageLayout>
+          </Grid>
+          <Grid item xs={6}>
+            <Grid container direction="row">
+              <HistoryContent item xs={12}>
+                <Typography variant="subtitle1" color="textSecondary">
+                  QUORUM THRESHOLD %
+                </Typography>
+              </HistoryContent>
+              <HistoryContent item xs={12}>
+                <ProgressBar
+                  progress={votesQuorumPercentage}
+                  radius={50}
+                  strokeWidth={7}
+                  strokeColor="#3866F9"
+                  trackStrokeWidth={4}
+                  trackStrokeColor={theme.palette.primary.light}
+                >
+                  <div className="indicator">
+                    <ProgressText textColor="#3866F9">
+                      {Number(votesQuorumPercentage.toFixed(1))}%
+                    </ProgressText>
+                  </div>
+                </ProgressBar>
+              </HistoryContent>
+            </Grid>
+            <Grid container direction="row">
+              <HistoryContent item xs={12}>
+                <Typography variant="subtitle1" color="textSecondary">
+                  CREATED BY
+                </Typography>
+              </HistoryContent>
+              {proposal && (
+                <HistoryContent item xs={12}>
+                  <UserBadge address={proposal.proposer} />
+                </HistoryContent>
+              )}
+              <HistoryContent item xs={12}>
+                <Typography variant="subtitle1" color="textSecondary">
+                  HISTORY
+                </Typography>
+              </HistoryContent>
+              {history.map((item, index) => {
+                return (
+                  <HistoryItem container direction="row" key={index}>
+                    <StatusBadge
+                      item
+                      lg={2}
+                      md={6}
+                      sm={6}
+                      status={item.status}
+                    />
+                    <Grid item lg={1} md={1} sm={1}></Grid>
+                    <Grid item lg={9} md={12} sm={12}>
+                      <Typography color="textSecondary">{item.date}</Typography>
+                    </Grid>
+                  </HistoryItem>
+                );
+              })}
+            </Grid>
+          </Grid>
+        </DetailsContainer>
+      </Grid>
     </>
   );
 };

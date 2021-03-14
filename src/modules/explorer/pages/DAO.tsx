@@ -8,6 +8,7 @@ import {
   Typography,
   useTheme,
   Tooltip,
+  useMediaQuery,
 } from "@material-ui/core";
 import Timer from "react-compound-timer";
 import LinearProgress from "@material-ui/core/LinearProgress";
@@ -20,7 +21,6 @@ import {
   TopHoldersTableRow,
 } from "modules/explorer/components/TokenHolders";
 import ProgressBar from "react-customizable-progressbar";
-import { SideBar } from "modules/explorer/components";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
@@ -34,7 +34,7 @@ import { CopyAddress } from "modules/common/CopyAddress";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
-  padding: "40px 112px",
+  padding: "40px 8%",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
@@ -43,19 +43,17 @@ const LoaderContainer = styled(Grid)({
   paddingBottom: 40,
 });
 
-const PageLayout = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  minHeight: "calc(100vh - 102px)",
-}));
-
 const DAOInfoTitleAndDesc = styled(Grid)({
   maxWidth: 600,
   marginBottom: 40,
 });
 
-const DAOInfoVotingPeriod = styled(Grid)({
+const DAOInfoVotingPeriod = styled(Grid)(({ theme }) => ({
   minWidth: 320,
-});
+  [theme.breakpoints.down("sm")]: {
+    minWidth: "unset",
+  },
+}));
 
 const BigIconContainer = styled(Box)({
   width: 112,
@@ -67,27 +65,41 @@ const BigIconContainer = styled(Box)({
 });
 
 const StatsContainer = styled(Grid)(({ theme }) => ({
-  height: 175,
+  minHeight: 175,
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
 const StatsBox = styled(Grid)(({ theme }) => ({
   borderRight: `2px solid ${theme.palette.primary.light}`,
   width: "unset",
+  [theme.breakpoints.down("sm")]: {
+    padding: "50px 8%",
+    borderRight: `none`,
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
+  },
 }));
 
 const TokensLocked = styled(StatsBox)({
-  padding: "0 50px 0 112px",
+  padding: "50px 8%",
 });
 
-const VotingAddresses = styled(StatsBox)({
+const VotingAddresses = styled(StatsBox)(({ theme }) => ({
   minWidth: 250,
-});
 
-const ActiveProposals = styled(StatsBox)({
-  paddingLeft: "42px",
+  [theme.breakpoints.down("sm")]: {
+    minWidth: "unset",
+  },
+  [theme.breakpoints.up("sm")]: {
+    padding: "50px 0 50px 42px",
+  },
+}));
+
+const ActiveProposals = styled(StatsBox)(({ theme }) => ({
   cursor: "pointer",
-});
+  [theme.breakpoints.up("sm")]: {
+    padding: "50px 0 50px 42px",
+  },
+}));
 
 const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   width: "100%",
@@ -98,9 +110,14 @@ const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
 
 const TableContainer = styled(Box)({
   width: "100%",
-  padding: "72px 112px",
+
+  padding: "72px 8%",
   boxSizing: "border-box",
   paddingBottom: "24px",
+  overflowX: "auto",
+  "& > div": {
+    minWidth: 600,
+  },
 });
 
 const TableHeader = styled(Grid)(({ theme }) => ({
@@ -108,18 +125,26 @@ const TableHeader = styled(Grid)(({ theme }) => ({
   paddingBottom: 20,
 }));
 
-const UnderlineText = styled(Typography)({
+const UnderlineText = styled(Typography)(({ theme }) => ({
   textDecoration: "underline",
   cursor: "pointer",
   marginBottom: 28,
-});
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 28,
+  }
+}));
 
-const CustomH1 = styled(Typography)({
+const CustomH1 = styled(Typography)(({ theme }) => ({
   fontSize: 55,
   lineHeight: "92px",
   textDecoration: "underline",
   fontWeight: 400,
-});
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 38,
+    lineHeight: "68px",
+    paddingRight: "5vw",
+  },
+}));
 
 const NoProposals = styled(Typography)({
   marginTop: 20,
@@ -179,6 +204,7 @@ export const DAO: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(time || 0);
   const [finished, setFinished] = useState<boolean>(false);
   const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     if (votingPeriod && finished && cycleInfo?.current) {
@@ -293,8 +319,7 @@ export const DAO: React.FC = () => {
   }, [connect, data, mutate, proposalsData, tezos]);
 
   return (
-    <PageLayout container wrap="nowrap">
-      <SideBar dao={id} />
+    <>
       {!isLoading ? (
         <Grid item xs>
           <MainContainer container justify="space-between">
@@ -337,13 +362,16 @@ export const DAO: React.FC = () => {
             <DAOInfoVotingPeriod item>
               <Box paddingBottom="32px">
                 <Grid container>
+                  {!isMobileSmall && (
+                    <Grid item>
+                      <BigIconContainer>
+                        <img src={VotingPeriodIcon} />
+                      </BigIconContainer>
+                    </Grid>
+                  )}
+
                   <Grid item>
-                    <BigIconContainer>
-                      <img src={VotingPeriodIcon} />
-                    </BigIconContainer>
-                  </Grid>
-                  <Grid item>
-                    <Box paddingLeft="35px">
+                    <Box paddingLeft={!isMobileSmall ? "35px" : 0}>
                       <Box>
                         <Typography variant="subtitle2" color="secondary">
                           CURRENT CYCLE
@@ -360,28 +388,30 @@ export const DAO: React.FC = () => {
               </Box>
               <Box paddingBottom="32px">
                 <Grid container>
+                  {!isMobileSmall && (
+                    <Grid item>
+                      <BigIconContainer
+                        width={80}
+                        height={80}
+                        marginTop={"-21px"}
+                      >
+                        <ProgressBar
+                          progress={
+                            data
+                              ? (timeLeft / data.storage.votingPeriod) * 100
+                              : 100
+                          }
+                          radius={35}
+                          strokeWidth={7}
+                          strokeColor={theme.palette.secondary.main}
+                          trackStrokeWidth={4}
+                          trackStrokeColor={theme.palette.primary.light}
+                        />
+                      </BigIconContainer>
+                    </Grid>
+                  )}
                   <Grid item>
-                    <BigIconContainer
-                      width={80}
-                      height={80}
-                      marginTop={"-21px"}
-                    >
-                      <ProgressBar
-                        progress={
-                          data
-                            ? (timeLeft / data.storage.votingPeriod) * 100
-                            : 100
-                        }
-                        radius={35}
-                        strokeWidth={7}
-                        strokeColor={theme.palette.secondary.main}
-                        trackStrokeWidth={4}
-                        trackStrokeColor={theme.palette.primary.light}
-                      />
-                    </BigIconContainer>
-                  </Grid>
-                  <Grid item>
-                    <Box paddingLeft="35px">
+                    <Box paddingLeft={!isMobileSmall ? "35px" : 0}>
                       <Box>
                         <Typography variant="subtitle2" color="secondary">
                           TIME LEFT TO VOTE
@@ -416,7 +446,8 @@ export const DAO: React.FC = () => {
           <StatsContainer container>
             <TokensLocked
               item
-              xs={6}
+              xs={12}
+              md={6}
               container
               direction="column"
               alignItems="center"
@@ -450,9 +481,11 @@ export const DAO: React.FC = () => {
               container
               direction="column"
               alignItems="center"
-              justify="center"
+              justify={isMobileSmall ? "flex-start" : "center"}
+              xs={12}
+              md={2}
             >
-              <Box>
+              <Box width="100%">
                 <Typography variant="subtitle2" color="secondary">
                   VOTING ADDRESSES
                 </Typography>
@@ -548,6 +581,6 @@ export const DAO: React.FC = () => {
           <CircularProgress color="secondary" />
         </LoaderContainer>
       )}
-    </PageLayout>
+    </>
   );
 };
