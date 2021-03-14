@@ -23,6 +23,7 @@ import {
 import { UserBadge } from "../../components/UserBadge";
 import ProgressBar from "react-customizable-progressbar";
 import { useVotesStats } from "modules/explorer/hooks/useVotesStats";
+import { formatNumber } from "modules/explorer/utils/FormatNumber";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -300,7 +301,7 @@ export const Voting: React.FC = () => {
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    {Number(upVotesSumPercentage.toFixed(1))}%
+                    {formatNumber(Number(upVotesSumPercentage))}%
                   </Typography>
                 </Grid>
               </Grid>
@@ -343,7 +344,7 @@ export const Voting: React.FC = () => {
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    {Number(downVotesSumPercentage.toFixed(1))}%
+                    {formatNumber(Number(downVotesSumPercentage))}%
                   </Typography>
                 </Grid>
               </Grid>
@@ -404,7 +405,7 @@ export const Voting: React.FC = () => {
                   >
                     <div className="indicator">
                       <ProgressText textColor="#3866F9">
-                        {Number(votesQuorumPercentage.toFixed(1))}%
+                        {formatNumber(Number(votesQuorumPercentage))}%
                       </ProgressText>
                     </div>
                   </ProgressBar>

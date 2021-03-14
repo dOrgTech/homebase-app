@@ -23,6 +23,7 @@ import {
 } from "services/bakingBad/proposals/types";
 import { UserBadge } from "../../components/UserBadge";
 import ProgressBar from "react-customizable-progressbar";
+import { formatNumber } from "modules/explorer/utils/FormatNumber";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -312,7 +313,7 @@ export const Voting: React.FC = () => {
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    {upVotesPercentage}%
+                    {formatNumber(Number(upVotesPercentage))}%
                   </Typography>
                 </Grid>
               </Grid>
@@ -355,7 +356,7 @@ export const Voting: React.FC = () => {
                 </Grid>
                 <Grid item xs={2}>
                   <Typography color="textSecondary" align="right">
-                    {downVotesPercentage}%
+                    {formatNumber(Number(downVotesPercentage))}%
                   </Typography>
                 </Grid>
               </Grid>
@@ -411,7 +412,9 @@ export const Voting: React.FC = () => {
                     trackStrokeColor={theme.palette.primary.light}
                   >
                     <div className="indicator">
-                      <ProgressText textColor="#3866F9">{90}%</ProgressText>
+                      <ProgressText textColor="#3866F9">
+                        {formatNumber(90)}%
+                      </ProgressText>
                     </div>
                   </ProgressBar>
                 </HistoryContent>
