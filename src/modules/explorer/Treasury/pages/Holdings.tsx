@@ -89,6 +89,8 @@ export const Holdings: React.FC = () => {
 
   const transactions = useTreasuryInfo(id);
 
+  console.warn(transactions);
+
   useEffect(() => {
     if (transactions.status === "success") {
       setTreasuryMovements(transactions.data);
@@ -160,6 +162,7 @@ export const Holdings: React.FC = () => {
               </BorderBottom>
             </Grid>
           </TableHeader>
+          {/* {console.warn(treasuryMovements)} */}
 
           {treasuryMovements.length
             ? treasuryMovements.map((token, i) => (

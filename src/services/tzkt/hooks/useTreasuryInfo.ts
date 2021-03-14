@@ -10,6 +10,6 @@ export const useTreasuryInfo = (contractAddress: string) => {
     ["treasuryInformation", contractAddress],
     async () => await getDAOTransactions(contractAddress, network)
   );
-
+  console.log(result);
   return result;
 };
