@@ -16,6 +16,7 @@ import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
+import { formatNumber } from "../utils/FormatNumber";
 
 const ProposalTableRowContainer = styled(Grid)(({ theme }) => ({
   height: 155,
@@ -47,7 +48,7 @@ const ProgressText = styled(Typography)(
     position: "absolute",
     width: "100%",
     height: "100%",
-    fontSize: 16,
+    fontSize: 14,
     userSelect: "none",
     boxShadow: "none",
     background: "inherit",
@@ -121,7 +122,7 @@ export const ProposalTableRow: React.FC<
               >
                 <div className="indicator">
                   <ProgressText textColor={color}>
-                    {Number(votesSumPercentage.toFixed(1))}%
+                    {formatNumber(Number(votesSumPercentage))}%
                   </ProgressText>
                 </div>
               </ProgressBar>
@@ -149,7 +150,7 @@ export const ProposalTableRow: React.FC<
               >
                 <div className="indicator">
                   <ProgressText textColor="#3866F9">
-                    {Number(votesQuorumPercentage.toFixed(1))}%
+                    {formatNumber(Number(votesQuorumPercentage))}%
                   </ProgressText>
                 </div>
               </ProgressBar>
