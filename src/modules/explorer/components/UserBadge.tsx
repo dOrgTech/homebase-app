@@ -1,4 +1,4 @@
-import { Grid, styled, Typography } from "@material-ui/core";
+import { Grid, Link, styled, Typography } from "@material-ui/core";
 import { Blockie } from "modules/common/Blockie";
 import React from "react";
 import { toShortAddress } from "services/contracts/utils";
@@ -12,21 +12,38 @@ const Container = styled(Grid)(({ theme }) => ({
   borderRadius: 4,
 }));
 
-export const UserBadge: React.FC<{ address: string }> = ({ address }) => {
+export const UserBadge: React.FC<{ address: string; full?: boolean }> = ({
+  address,
+  full,
+}) => {
   return (
     <Container justify="center" alignItems="center" direction="row" container>
       <Grid item>
         <Blockie address={address} size={23} />
       </Grid>
-      <Grid item>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          style={{ paddingLeft: 8 }}
-        >
-          {toShortAddress(address)}
-        </Typography>
-      </Grid>
+      {!full ? (
+        <Grid item>
+          <Typography
+            variant="body1"
+            color="textSecondary"
+            style={{ paddingLeft: 8 }}
+          >
+            {toShortAddress(address)}
+          </Typography>
+        </Grid>
+      ) : (
+        <Grid item>
+          <Link href={"https://edo2net.tzkt.io/" + address} target="_blank">
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              style={{ paddingLeft: 8 }}
+            >
+              {address}
+            </Typography>
+          </Link>
+        </Grid>
+      )}
     </Container>
   );
 };

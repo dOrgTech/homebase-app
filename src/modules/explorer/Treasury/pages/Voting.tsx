@@ -449,7 +449,7 @@ export const Voting: React.FC = () => {
                 </HistoryContent>
                 {proposal && (
                   <HistoryContent item xs={12}>
-                    <UserBadge address={proposal.proposer} />
+                    <UserBadge address={proposal.proposer} full={true} />
                   </HistoryContent>
                 )}
                 <HistoryContent item xs={12}>
