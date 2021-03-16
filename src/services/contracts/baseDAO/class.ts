@@ -110,15 +110,24 @@ export abstract class BaseDAO {
       return [];
     }
 
-    return await Promise.all(
+    const results = await Promise.all(
       addresses.map(async (address) => {
-        return await BaseDAO.getDAO({
-          address,
-          tezos,
-          network,
-        });
+        try {
+          const dao = await BaseDAO.getDAO({
+            address,
+            tezos,
+            network,
+          });
+
+          return dao;
+        } catch (e) {
+          console.log(e);
+          return false;
+        }
       })
     );
+
+    return results.filter((result) => typeof result !== "boolean") as BaseDAO[];
   };
 
   protected constructor(params: BaseConstructorParams) {
