@@ -1,10 +1,10 @@
-name: JS-CI
+name: continuous-integration
 
 on: [push, pull_request]
 
 jobs:
   CI:
-    name: JS-CI
+    name: continuous-integration
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -37,7 +37,7 @@ jobs:
         run: yarn run lint:ci
 
       - name: Build
-        run: yarn build
+        run: yarn run build
 
       # TO-DO: Uncomment when tests are ready to be run on CI
       # - name: Test
