@@ -14,7 +14,7 @@ export const getStorage = async (
     throw new Error("Failed to fetch contract storage from BakingBad API");
   }
 
-  const result: StorageDTO = await response.json();
+  const result: StorageDTO = (await response.json())[0];
 
   return result;
 };

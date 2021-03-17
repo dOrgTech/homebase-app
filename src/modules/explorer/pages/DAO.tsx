@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Box,
   Button,
@@ -11,15 +11,11 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import Timer from "react-compound-timer";
-import LinearProgress from "@material-ui/core/LinearProgress";
 import { useHistory, useParams } from "react-router-dom";
 
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
-import {
-  TokenHoldersDialog,
-  TopHoldersTableRow,
-} from "modules/explorer/components/TokenHolders";
+import { TopHoldersTableRow } from "modules/explorer/components/TokenHolders";
 import ProgressBar from "react-customizable-progressbar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
@@ -31,6 +27,8 @@ import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { Info } from "@material-ui/icons";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { CopyAddress } from "modules/common/CopyAddress";
+import { ResponsiveTableContainer } from "../components/ResponsiveTable";
+import { DAOStatsRow } from "../components/DAOStatsRow";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
@@ -64,62 +62,6 @@ const BigIconContainer = styled(Box)({
   },
 });
 
-const StatsContainer = styled(Grid)(({ theme }) => ({
-  minHeight: 175,
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
-
-const StatsBox = styled(Grid)(({ theme }) => ({
-  borderRight: `2px solid ${theme.palette.primary.light}`,
-  width: "unset",
-  [theme.breakpoints.down("sm")]: {
-    padding: "50px 8%",
-    borderRight: `none`,
-    borderBottom: `2px solid ${theme.palette.primary.light}`,
-  },
-}));
-
-const TokensLocked = styled(StatsBox)({
-  padding: "50px 8%",
-});
-
-const VotingAddresses = styled(StatsBox)(({ theme }) => ({
-  minWidth: 250,
-
-  [theme.breakpoints.down("sm")]: {
-    minWidth: "unset",
-  },
-  [theme.breakpoints.up("sm")]: {
-    padding: "50px 0 50px 42px",
-  },
-}));
-
-const ActiveProposals = styled(StatsBox)(({ theme }) => ({
-  cursor: "pointer",
-  [theme.breakpoints.up("sm")]: {
-    padding: "50px 0 50px 42px",
-  },
-}));
-
-const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
-  width: "100%",
-  "&.MuiLinearProgress-colorSecondary": {
-    background: theme.palette.primary.light,
-  },
-}));
-
-const TableContainer = styled(Box)({
-  width: "100%",
-
-  padding: "72px 8%",
-  boxSizing: "border-box",
-  paddingBottom: "24px",
-  overflowX: "auto",
-  "& > div": {
-    minWidth: 600,
-  },
-});
-
 const TableHeader = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 20,
@@ -131,7 +73,7 @@ const UnderlineText = styled(Typography)(({ theme }) => ({
   marginBottom: 28,
   [theme.breakpoints.down("sm")]: {
     marginTop: 28,
-  }
+  },
 }));
 
 const CustomH1 = styled(Typography)(({ theme }) => ({
@@ -182,9 +124,8 @@ const FlushContainer = styled(Grid)({
 
 export const DAO: React.FC = () => {
   const history = useHistory();
-  const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams<{ id: string }>();
-  const { data } = useDAO(id);
+  const { data, isLoading: isDaoLoading } = useDAO(id);
   const { data: members } = useTokenHoldersWithVotes(id);
   const { mutate } = useFlush();
   const { tezos, connect } = useTezos();
@@ -198,69 +139,17 @@ export const DAO: React.FC = () => {
   const originationTime = data && data.originationTime;
   const cycleInfo = useCycleInfo(originationTime, votingPeriod);
   const time = cycleInfo && cycleInfo.time;
-  const [currentCycle, setCurrentCycle] = useState(
-    cycleInfo && cycleInfo.current
-  );
-  const [timeLeft, setTimeLeft] = useState<number>(time || 0);
-  const [finished, setFinished] = useState<boolean>(false);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
-  useEffect(() => {
-    if (votingPeriod && finished && cycleInfo?.current) {
-      setFinished(false);
-      setTimeLeft(votingPeriod);
-      setCurrentCycle((currentCycle || cycleInfo.current) + 1);
-    }
-  }, [finished, votingPeriod, currentCycle, cycleInfo]);
-
-  useEffect(() => {
-    if (time) {
-      setTimeLeft(time);
-    }
-  }, [time]);
-
-  const amountLocked = useMemo(() => {
-    if (!data) {
-      setIsLoading(true);
-      return 0;
-    }
-
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[1] || 0;
-      setIsLoading(false);
-      return acc + frozenBalance;
-    }, 0);
-  }, [data]);
-
-  const amountNotLocked = useMemo(() => {
-    if (!data) {
-      return 0;
-    }
-
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[0] || 0;
-      return acc + frozenBalance;
-    }, 0);
-  }, [data]);
-
-  const addressesWithUnfrozenBalance = useMemo(() => {
-    if (!data) {
-      setIsLoading(true);
-      return 0;
-    }
-
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[0];
-      if (frozenBalance) {
-        return acc + 1;
-      }
-      setIsLoading(false);
-      return acc;
-    }, 0);
-  }, [data]);
-
-  const { data: proposalsData } = useProposals(data ? data.address : "");
+  const { data: proposals, isLoading: isProposalsLoading } = useProposals(
+    data ? data.address : ""
+  );
+  const {
+    data: activeProposals,
+    isLoading: isActiveProposalsLoading,
+  } = useProposals(data ? data.address : "", ProposalStatus.ACTIVE);
+  const isLoading =
+    isDaoLoading || isProposalsLoading || isActiveProposalsLoading;
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -278,45 +167,18 @@ export const DAO: React.FC = () => {
       .sort((a, b) => Number(b.weight) - Number(a.weight));
   }, [members]);
 
-  const activeProposals = useMemo(() => {
-    if (!proposalsData || finished) {
-      return [];
-    }
-
-    return proposalsData.filter(
-      (proposalData) => proposalData.status === ProposalStatus.ACTIVE
-    );
-  }, [proposalsData, finished]);
-
-  const totalTokens = amountLocked + amountNotLocked;
-
-  const amountLockedPercentage = totalTokens
-    ? (amountLocked / totalTokens) * 100
-    : 0;
-
-  const checkpoints = [
-    {
-      time: 0,
-      callback: () => {
-        setFinished(true);
-      },
-    },
-  ];
-
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
     // @TODO: we need to add an atribute to the proposals
     // type in order to know if it was flushed or not
-    if (proposalsData && proposalsData.length && data) {
+    if (proposals && proposals.length && data) {
       mutate({
         dao: data,
-        numOfProposalsToFlush: proposalsData.length + 1,
+        numOfProposalsToFlush: proposals.length + 1,
       });
       return;
     }
-
-    console.log("no proposal data");
-  }, [connect, data, mutate, proposalsData, tezos]);
+  }, [connect, data, mutate, proposals, tezos]);
 
   return (
     <>
@@ -379,7 +241,7 @@ export const DAO: React.FC = () => {
                       </Box>
                       <Box>
                         <Typography variant="h3" color="textSecondary">
-                          {currentCycle || cycleInfo?.current}
+                          {cycleInfo?.current}
                         </Typography>
                       </Box>
                     </Box>
@@ -398,7 +260,7 @@ export const DAO: React.FC = () => {
                         <ProgressBar
                           progress={
                             data
-                              ? (timeLeft / data.storage.votingPeriod) * 100
+                              ? ((time || 0) / data.storage.votingPeriod) * 100
                               : 100
                           }
                           radius={35}
@@ -419,20 +281,25 @@ export const DAO: React.FC = () => {
                       </Box>
                       <Box>
                         <Typography variant="h3" color="textSecondary">
-                          {!finished && time && timeLeft ? (
+                          {time ? (
                             <Timer
-                              initialTime={timeLeft * 1000}
+                              initialTime={time * 1000}
                               direction="backward"
-                              checkpoints={checkpoints}
                             >
-                              {() => (
-                                <React.Fragment>
-                                  <Box>
-                                    <Timer.Days />d <Timer.Hours />h{" "}
-                                    <Timer.Minutes />m <Timer.Seconds />s
-                                  </Box>
-                                </React.Fragment>
-                              )}
+                              {({ reset }: { reset: () => void }) => {
+                                if (time * 1000 < 1) {
+                                  reset();
+                                }
+
+                                return (
+                                  <React.Fragment>
+                                    <Box>
+                                      <Timer.Days />d <Timer.Hours />h{" "}
+                                      <Timer.Minutes />m <Timer.Seconds />s
+                                    </Box>
+                                  </React.Fragment>
+                                );
+                              }}
                             </Timer>
                           ) : null}
                         </Typography>
@@ -443,76 +310,8 @@ export const DAO: React.FC = () => {
               </Box>
             </DAOInfoVotingPeriod>
           </MainContainer>
-          <StatsContainer container>
-            <TokensLocked
-              item
-              xs={12}
-              md={6}
-              container
-              direction="column"
-              alignItems="center"
-              justify="center"
-            >
-              <Grid container justify="space-between" alignItems="center">
-                <Grid item>
-                  <Box>
-                    <Typography variant="subtitle2" color="secondary">
-                      {symbol} Locked
-                    </Typography>
-                  </Box>
-                  <Box padding="12px 0">
-                    <Typography variant="h3" color="textSecondary">
-                      {amountLocked}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item>
-                  <TokenHoldersDialog address={id} />
-                </Grid>
-              </Grid>
-              <LockedTokensBar
-                variant="determinate"
-                value={amountLockedPercentage}
-                color="secondary"
-              />
-            </TokensLocked>
-            <VotingAddresses
-              item
-              container
-              direction="column"
-              alignItems="center"
-              justify={isMobileSmall ? "flex-start" : "center"}
-              xs={12}
-              md={2}
-            >
-              <Box width="100%">
-                <Typography variant="subtitle2" color="secondary">
-                  VOTING ADDRESSES
-                </Typography>
-                <Typography variant="h3" color="textSecondary">
-                  {addressesWithUnfrozenBalance}
-                </Typography>
-              </Box>
-            </VotingAddresses>
-            <ActiveProposals
-              item
-              xs
-              container
-              direction="column"
-              justify="center"
-              onClick={() => history.push(`/explorer/proposals/${id}`)}
-            >
-              <Box>
-                <Typography variant="subtitle2" color="secondary">
-                  ACTIVE PROPOSALS
-                </Typography>
-                <Typography variant="h3" color="textSecondary">
-                  {activeProposals.length}
-                </Typography>
-              </Box>
-            </ActiveProposals>
-          </StatsContainer>
-          <TableContainer>
+          <DAOStatsRow />
+          <ResponsiveTableContainer>
             <TableHeader container wrap="nowrap">
               <Grid item xs={4}>
                 <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
@@ -543,7 +342,7 @@ export const DAO: React.FC = () => {
                 No active proposals
               </NoProposals>
             ) : null}
-          </TableContainer>
+          </ResponsiveTableContainer>
           <Grid container direction="row" justify="center">
             <UnderlineText
               variant="subtitle1"
@@ -554,7 +353,7 @@ export const DAO: React.FC = () => {
             </UnderlineText>
           </Grid>
 
-          <TableContainer>
+          <ResponsiveTableContainer>
             <TableHeader container wrap="nowrap">
               <Grid item xs={5}>
                 <ProposalTableHeadText>
@@ -574,7 +373,7 @@ export const DAO: React.FC = () => {
             {formattedMembers.map((holder, i) => (
               <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
             ))}
-          </TableContainer>
+          </ResponsiveTableContainer>
         </Grid>
       ) : (
         <LoaderContainer container direction="row" justify="center">

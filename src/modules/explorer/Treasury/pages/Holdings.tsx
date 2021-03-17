@@ -1,10 +1,10 @@
-import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
 import { TransactionInfo } from "services/tzkt/types";
-import { Header, SideBar } from "modules/explorer/components";
+import { Header } from "modules/explorer/components";
 import {
   TreasuryTableRow,
   TreasuryHistoryRow,
@@ -12,9 +12,9 @@ import {
 import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { CopyAddress } from "modules/common/CopyAddress";
+import { ResponsiveTableContainer } from "modules/explorer/components/ResponsiveTable";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
-  paddingLeft: 112,
   background: props.theme.palette.primary.main,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
@@ -22,27 +22,9 @@ const ListItemContainer = styled(withTheme(Grid))((props) => ({
   },
 }));
 
-const PageLayout = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  minHeight: "calc(100vh - 102px)",
-}));
-
-const MainContainer = styled(Grid)(({ theme }) => ({
+const MainContainer = styled(Grid)({
   minHeight: 125,
-  padding: "40px 112px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
-
-const TableContainer = styled(Box)({
-  width: "100%",
-  padding: "72px 112px",
-  boxSizing: "border-box",
-  paddingBottom: "24px",
-  paddingLeft: 0,
-});
-
-const TableHeader = styled(Grid)({
-  paddingLeft: 112,
+  padding: "40px 8% 0 8%",
 });
 
 const BorderBottom = styled(Grid)(({ theme }) => ({
@@ -96,7 +78,7 @@ export const Holdings: React.FC = () => {
   }, [transactions]);
 
   return (
-      <>
+    <>
       <Grid item xs>
         <MainContainer container justify="space-between">
           <Grid item xs={12}>
@@ -104,8 +86,8 @@ export const Holdings: React.FC = () => {
             {dao && <CopyAddress address={dao.address} />}
           </Grid>
         </MainContainer>
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
+        <ResponsiveTableContainer>
+          <Grid container wrap="nowrap">
             <Grid item xs={12}>
               <BorderBottom item container wrap="nowrap">
                 <Grid item xs={6}>
@@ -120,7 +102,7 @@ export const Holdings: React.FC = () => {
                 </Grid>
               </BorderBottom>
             </Grid>
-          </TableHeader>
+          </Grid>
 
           {tokenBalances && tokenBalances.length
             ? tokenBalances.map((token, i) => (
@@ -129,10 +111,10 @@ export const Holdings: React.FC = () => {
                 </ListItemContainer>
               ))
             : null}
-        </TableContainer>
+        </ResponsiveTableContainer>
 
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
+        <ResponsiveTableContainer>
+          <Grid container wrap="nowrap">
             <Grid item xs={12}>
               <BorderBottom item container wrap="nowrap">
                 <Grid item xs={6}>
@@ -157,7 +139,7 @@ export const Holdings: React.FC = () => {
                 </Grid>
               </BorderBottom>
             </Grid>
-          </TableHeader>
+          </Grid>
 
           {treasuryMovements.length
             ? treasuryMovements.map((token, i) => (
@@ -172,7 +154,7 @@ export const Holdings: React.FC = () => {
               No active proposals
             </NoProposals>
           ) : null}
-        </TableContainer>
+        </ResponsiveTableContainer>
       </Grid>
     </>
   );

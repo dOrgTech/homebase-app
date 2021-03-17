@@ -1,19 +1,23 @@
-import { Route, Switch, useRouteMatch } from "react-router-dom";
+import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 import React from "react";
 
 import { DAO } from "modules/explorer/pages/DAO";
 import { Holdings } from "modules/explorer/Treasury/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
-import { Voting as TreasuryVoting } from "modules/explorer/Treasury/pages/Voting";
-import { Voting as RegistryVoting } from "modules/explorer/Registry/pages/Voting";
+import { ProposalsPageBase } from "modules/explorer/components/ProposalsPageBase";
 import { Registry } from "./Registry/pages/Registry";
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { SideBar } from "./components";
+import { ProposalDetails as TreausuryProposalDetails } from "./Treasury/components/ProposalDetails";
+import { ProposalDetails as RegistryProposalDetails } from "./Registry/components/ProposalDetails";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
-  minHeight: "calc(100vh - 102px - 53px)",
-  marginBottom: 53,
+  minHeight: "calc(100vh - 102px)",
+  [theme.breakpoints.down("xs")]: {
+    minHeight: "calc(100vh - 102px)",
+    marginBottom: 53,
+  },
 }));
 
 export const DAORouter = (): JSX.Element => {
@@ -30,11 +34,11 @@ export const DAORouter = (): JSX.Element => {
       <Switch>
         <Route path={`${match.url}/:id/proposal/treasury/:proposalId`}>
           <SideBar />
-          <TreasuryVoting />
+          <ProposalsPageBase ProposalDetails={<TreausuryProposalDetails />} />
         </Route>
         <Route path={`${match.url}/:id/proposal/registry/:proposalId`}>
           <SideBar />
-          <RegistryVoting />
+          <ProposalsPageBase ProposalDetails={<RegistryProposalDetails />} />
         </Route>
         <Route path={`${match.url}/:id/proposals`}>
           <SideBar />
@@ -48,10 +52,11 @@ export const DAORouter = (): JSX.Element => {
           <SideBar />
           <Registry />
         </Route>
-        <Route path={`${match.url}/:id`}>
+        <Route path={`${match.url}/:id/overview`}>
           <SideBar />
           <DAO />
         </Route>
+        <Redirect from={`${match.url}/:id`} to={`${match.url}/:id/overview`} />
       </Switch>
     </PageLayout>
   );

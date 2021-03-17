@@ -53,6 +53,7 @@ const StyledBottomBar = styled(Grid)(({ theme }) => ({
   bottom: 0,
   backgroundColor: theme.palette.primary.main,
   borderTop: `2px solid ${theme.palette.primary.light}`,
+  zIndex: 10000,
 }));
 
 const BottomNavBar: React.FC = ({ children }) => {
@@ -96,7 +97,7 @@ export const SideBar: React.FC = () => {
       {
         Icon: HouseIcon,
         handler: () => history.push("/explorer/dao/" + daoId),
-        name: "dao",
+        name: "overview",
       },
       {
         Icon: VotingIcon,
