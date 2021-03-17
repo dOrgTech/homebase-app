@@ -8,6 +8,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint:ci": "eslint --color 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:check": "eslint --quiet 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
   },
