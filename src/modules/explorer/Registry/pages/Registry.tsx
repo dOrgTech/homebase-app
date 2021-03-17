@@ -2,7 +2,6 @@ import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-import { SideBar } from "modules/explorer/components";
 import { RegistryHeader } from "../components/RegistryHeader";
 import { RegistryTableRow } from "../components/TableRow";
 import { RegistryHistoryRow } from "../components/HistoryRow";
@@ -23,11 +22,6 @@ const ListItemContainer = styled(withTheme(Grid))((props) => ({
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
-}));
-
-const PageLayout = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  minHeight: "calc(100vh - 102px)",
 }));
 
 const MainContainer = styled(Grid)(({ theme }) => ({
@@ -126,8 +120,7 @@ export const Registry: React.FC = () => {
   }, [registryData]);
 
   return (
-    <PageLayout container wrap="nowrap">
-      <SideBar dao={id} />
+    <>
       <Grid item xs>
         <MainContainer container justify="space-between">
           <Grid item xs={12}>
@@ -217,6 +210,6 @@ export const Registry: React.FC = () => {
           ) : null}
         </TableContainer>
       </Grid>
-    </PageLayout>
+    </>
   );
 };

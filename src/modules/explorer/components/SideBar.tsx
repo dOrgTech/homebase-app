@@ -1,27 +1,36 @@
-import { Grid, styled, IconButton } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  IconButton,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import React, { useMemo } from "react";
 
 import { ReactComponent as HouseIcon } from "assets/logos/house.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 const Bar = styled(Grid)(({ theme }) => ({
-  width: 102,
+  minWidth: 102,
   borderRight: `2px solid ${theme.palette.primary.light}`,
+  [theme.breakpoints.down("xs")]: {
+    width: "100%",
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
+    borderRight: `unset`,
+  },
 }));
 
-const SidebarButton = styled(IconButton)({
+const SidebarButton = styled(IconButton)(({ theme }) => ({
   paddingTop: 32,
   width: "100%",
-});
-
-interface SideBarParams {
-  dao: string;
-  proposal?: string;
-}
+  [theme.breakpoints.down("xs")]: {
+    paddingTop: 12,
+  },
+}));
 
 const ButtonIcon = ({
   Icon,
@@ -39,13 +48,46 @@ const ButtonIcon = ({
   );
 };
 
-export const SideBar: React.FC<SideBarParams> = ({
-  dao: daoId,
-}: SideBarParams) => {
+const StyledBottomBar = styled(Grid)(({ theme }) => ({
+  position: "fixed",
+  bottom: 0,
+  backgroundColor: theme.palette.primary.main,
+  borderTop: `2px solid ${theme.palette.primary.light}`,
+  zIndex: 10000,
+}));
+
+const BottomNavBar: React.FC = ({ children }) => {
+  return (
+    <StyledBottomBar container direction={"row"} justify={"space-evenly"}>
+      {children}
+    </StyledBottomBar>
+  );
+};
+
+const SideNavBar: React.FC = ({ children }) => {
+  const theme = useTheme();
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+
+  return (
+    <Bar item>
+      <Grid
+        container
+        direction={isMobileExtraSmall ? "row" : "column"}
+        justify={isMobileExtraSmall ? "space-evenly" : "flex-start"}
+      >
+        {children}
+      </Grid>
+    </Bar>
+  );
+};
+
+export const SideBar: React.FC = () => {
   const history = useHistory();
   const { pathname } = useLocation();
+  const { id: daoId } = useParams<{ id: string }>();
   const { data: dao } = useDAO(daoId);
-
+  const theme = useTheme();
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const SIDE_BAR_ICONS = useMemo(() => {
     if (!dao) {
       return [];
@@ -55,11 +97,11 @@ export const SideBar: React.FC<SideBarParams> = ({
       {
         Icon: HouseIcon,
         handler: () => history.push("/explorer/dao/" + daoId),
-        name: "dao",
+        name: "overview",
       },
       {
         Icon: VotingIcon,
-        handler: () => history.push("/explorer/proposals/" + daoId),
+        handler: () => history.push(`/explorer/dao/${daoId}/proposals`),
         name: "proposals",
       },
     ];
@@ -70,7 +112,7 @@ export const SideBar: React.FC<SideBarParams> = ({
           ...commonButons,
           {
             Icon: TreasuryIcon,
-            handler: () => history.push("/explorer/treasury/" + daoId),
+            handler: () => history.push(`/explorer/dao/${daoId}/treasury`),
             name: "treasury",
           },
         ];
@@ -79,23 +121,36 @@ export const SideBar: React.FC<SideBarParams> = ({
           ...commonButons,
           {
             Icon: RegistryIcon,
-            handler: () => history.push("/explorer/registry/" + daoId),
+            handler: () => history.push(`/explorer/dao/${daoId}/registry`),
             name: "registry",
           },
         ];
     }
   }, [dao, daoId, history]);
 
-  return (
-    <Bar item>
+  return !isMobileExtraSmall ? (
+    <SideNavBar>
       {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => (
-        <ButtonIcon
-          key={name}
-          Icon={Icon}
-          handler={handler}
-          isSelected={pathname.includes(name)}
-        />
+        <Grid item key={name}>
+          <ButtonIcon
+            Icon={Icon}
+            handler={handler}
+            isSelected={pathname.includes(name)}
+          />
+        </Grid>
       ))}
-    </Bar>
+    </SideNavBar>
+  ) : (
+    <BottomNavBar>
+      {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => (
+        <Grid item key={name}>
+          <ButtonIcon
+            Icon={Icon}
+            handler={handler}
+            isSelected={pathname.includes(name)}
+          />
+        </Grid>
+      ))}
+    </BottomNavBar>
   );
 };

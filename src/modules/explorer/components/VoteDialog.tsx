@@ -4,14 +4,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import {
-  Grid,
-  styled,
-  Typography,
-  TextField,
-  Theme,
-  Box,
-} from "@material-ui/core";
+import { Grid, styled, Typography, TextField, Theme } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
@@ -32,6 +25,9 @@ const StyledButton = styled(Button)(
     marginLeft: 22,
     borderRadius: 4,
     marginTop: 5,
+    [theme.breakpoints.down("xs")]: {
+      marginLeft: 0,
+    },
   })
 );
 
@@ -134,7 +130,7 @@ export const VoteDialog: React.FC = () => {
   }, [amount, connect, dao, mutate, proposalId, support, tezos]);
 
   return (
-    <Box>
+    <>
       <StyledButton
         variant="outlined"
         onClick={() => handleClickOpen(true)}
@@ -221,6 +217,6 @@ export const VoteDialog: React.FC = () => {
           </DialogContentText>
         </DialogContent>
       </CustomDialog>
-    </Box>
+    </>
   );
 };

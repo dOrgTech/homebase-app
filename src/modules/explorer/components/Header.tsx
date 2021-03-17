@@ -1,19 +1,23 @@
 import React, { useContext } from "react";
-import { Button, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
 import { ActionTypes, ModalsContext } from "../ModalsContext";
 import { useParams } from "react-router";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
-  height: 104,
+  minHeight: 104,
   boxSizing: "border-box",
   display: "flex",
   alignItems: "center",
 }));
-
-const JustifyEndGrid = styled(Grid)({
-  textAlign: "end",
-});
 
 const StyledButton = styled(Button)(({ theme }) => ({
   height: 53,
@@ -27,10 +31,12 @@ export const Header: React.FC<{
 }> = ({ name }) => {
   const { id } = useParams<{ id: string }>();
   const { dispatch } = useContext(ModalsContext);
+  const theme = useTheme();
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   return (
     <StyledContainer container direction="row">
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={6}>
         <Typography variant="subtitle1" color="secondary">
           {name}
         </Typography>
@@ -38,21 +44,29 @@ export const Header: React.FC<{
           Treasury
         </Typography>
       </Grid>
-      <JustifyEndGrid item xs={6}>
-        <StyledButton
-          variant="outlined"
-          onClick={() => {
-            dispatch({
-              type: ActionTypes.OPEN_TREASURY_PROPOSAL,
-              payload: {
-                daoAddress: id,
-              },
-            });
-          }}
-        >
-          NEW PROPOSAL
-        </StyledButton>
-      </JustifyEndGrid>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+        container
+        justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
+      >
+        <Grid item>
+          <StyledButton
+            variant="outlined"
+            onClick={() => {
+              dispatch({
+                type: ActionTypes.OPEN_TREASURY_PROPOSAL,
+                payload: {
+                  daoAddress: id,
+                },
+              });
+            }}
+          >
+            NEW PROPOSAL
+          </StyledButton>
+        </Grid>
+      </Grid>
     </StyledContainer>
   );
 };
