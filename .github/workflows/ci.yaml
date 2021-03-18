@@ -39,6 +39,6 @@ jobs:
       - name: Build
         run: yarn run build
 
-      # TO-DO: Uncomment when tests are ready to be run on CI
+      # TO-DO: Uncomment when tests are ready to be run on CI (such as those in issues #129-#131)
       # - name: Test
       #  run: yarn test:ci
