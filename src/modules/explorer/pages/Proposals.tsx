@@ -8,18 +8,18 @@ import {
 } from "@material-ui/core";
 import React, { useCallback, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { Button } from "@material-ui/core";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { ActionTypes, ModalsContext } from "../ModalsContext";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { Info } from "@material-ui/icons";
-import { ResponsiveTableContainer } from "../components/ResponsiveTable";
 import { DAOStatsRow } from "../components/DAOStatsRow";
+import { ActiveProposalsTable } from "../components/ActiveProposalsTable";
+import { PassedProposalsTable } from "../components/PassedProposalsTable";
+import { AllProposalsTable } from "../components/AllProposalsTable";
 
 const StyledContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -32,20 +32,6 @@ const MainContainer = styled(Grid)(({ theme }) => ({
   padding: "40px 8%",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
-
-const NoProposals = styled(Typography)({
-  marginTop: 20,
-  marginBottom: 20,
-});
-
-const TableHeader = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
-}));
-
-const ProposalTableHeadText = styled(Typography)({
-  fontWeight: "bold",
-});
 
 const StyledButton = styled(Button)(({ theme }) => ({
   height: 53,
@@ -84,14 +70,6 @@ export const Proposals: React.FC = () => {
   const name = dao && dao.metadata.unfrozenToken.name;
 
   const { data: proposalsData } = useProposals(dao && dao.address);
-  const { data: activeProposals } = useProposals(
-    dao && dao.address,
-    ProposalStatus.ACTIVE
-  );
-  const { data: passedProposals } = useProposals(
-    dao && dao.address,
-    ProposalStatus.PASSED
-  );
 
   const { dispatch } = useContext(ModalsContext);
 
@@ -179,50 +157,9 @@ export const Proposals: React.FC = () => {
           </StyledContainer>
         </MainContainer>
         <DAOStatsRow />
-        <ResponsiveTableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={4}>
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                ACTIVE PROPOSALS
-              </ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText
-                variant="subtitle1"
-                color="textSecondary"
-                align="center"
-              >
-                CYCLE
-              </ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={3}></Grid>
-            <Grid item xs={3}>
-              {/* <ProposalTableHeadText
-                  variant="subtitle1"
-                  color="textSecondary"
-                >
-                  STATUS
-                </ProposalTableHeadText> */}
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                THRESHOLD %
-              </ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {activeProposals.map((proposal, i) => (
-            <ProposalTableRow
-              key={`proposal-${i}`}
-              {...proposal}
-              daoId={dao?.address}
-              quorumTreshold={dao?.storage.quorumTreshold || 0}
-            />
-          ))}
-          {activeProposals.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No active proposals
-            </NoProposals>
-          ) : null}
-        </ResponsiveTableContainer>
-
+        <>
+          <ActiveProposalsTable />
+        </>
         {/* <ProposalsContainer
             container
             direction="row"
@@ -238,74 +175,8 @@ export const Proposals: React.FC = () => {
             </UnderlineText>
           </ProposalsContainer> */}
 
-        <ResponsiveTableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={5}>
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                PASSED PROPOSALS
-              </ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                {""}
-              </ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={5}>
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                {""}
-              </ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {passedProposals.map((proposal, i) => (
-            <ProposalTableRow
-              key={`proposal-${i}`}
-              {...proposal}
-              daoId={dao?.address}
-              quorumTreshold={dao?.storage.quorumTreshold || 0}
-            />
-          ))}
-
-          {passedProposals.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No passed proposals
-            </NoProposals>
-          ) : null}
-        </ResponsiveTableContainer>
-
-        <ResponsiveTableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={5}>
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                ALL PROPOSALS
-              </ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={2}>
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                {""}
-              </ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={5}>
-              <ProposalTableHeadText variant="subtitle1" color="textSecondary">
-                {""}
-              </ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
-          {proposalsData &&
-            proposalsData.map((proposal, i) => (
-              <ProposalTableRow
-                key={`proposal-${i}`}
-                {...proposal}
-                daoId={dao?.address}
-                quorumTreshold={dao?.storage.quorumTreshold || 0}
-              />
-            ))}
-
-          {proposalsData && proposalsData.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No proposals
-            </NoProposals>
-          ) : null}
-        </ResponsiveTableContainer>
+        <PassedProposalsTable />
+        <AllProposalsTable />
       </Grid>
     </>
   );

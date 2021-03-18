@@ -1,7 +1,6 @@
 import React from "react";
-import { CircularProgress, Grid, styled, Typography } from "@material-ui/core";
+import { Grid, styled, Typography } from "@material-ui/core";
 import { useParams } from "react-router-dom";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalTableRow } from "./ProposalTableRow";
@@ -27,24 +26,16 @@ const NoProposals = styled(Typography)({
   marginBottom: 20,
 });
 
-const LoaderContainer = styled(Grid)({
-  paddingTop: 40,
-  paddingBottom: 40,
-});
-
-export const ActiveProposalsTable: React.FC = () => {
+export const AllProposalsTable: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { data } = useDAO(id);
-  const {
-    data: activeProposals,
-    isLoading: isActiveProposalsLoading,
-  } = useProposals(data ? data.address : "", ProposalStatus.ACTIVE);
+  const { data: dao } = useDAO(id);
+  const { data: proposalsData } = useProposals(dao && dao.address);
 
   return (
     <ResponsiveTableContainer>
       <TableHeader container direction="row">
         <Grid item xs={4}>
-          <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
+          <ProposalTableHeadText>ALL PROPOSALS</ProposalTableHeadText>
         </Grid>
         <Grid item xs={2}>
           <ProposalTableHeadItem color="textSecondary" align="center">
@@ -56,26 +47,21 @@ export const ActiveProposalsTable: React.FC = () => {
           <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
         </Grid>
       </TableHeader>
-      {!isActiveProposalsLoading ? (
-        activeProposals.length > 0 ? (
-          activeProposals.map((proposal, i) => (
-            <ProposalTableRow
-              key={`proposal-${i}`}
-              {...proposal}
-              daoId={data?.address}
-              quorumTreshold={data?.storage.quorumTreshold || 0}
-            />
-          ))
-        ) : activeProposals.length === 0 ? (
-          <NoProposals variant="subtitle1" color="textSecondary">
-            No active proposals
-          </NoProposals>
-        ) : null
-      ) : (
-        <LoaderContainer container direction="row" justify="center">
-          <CircularProgress color="secondary" />
-        </LoaderContainer>
-      )}
+      {proposalsData &&
+        proposalsData.map((proposal, i) => (
+          <ProposalTableRow
+            key={`proposal-${i}`}
+            {...proposal}
+            daoId={dao?.address}
+            quorumTreshold={dao?.storage.quorumTreshold || 0}
+          />
+        ))}
+
+      {proposalsData && proposalsData.length === 0 ? (
+        <NoProposals variant="subtitle1" color="textSecondary">
+          No proposals
+        </NoProposals>
+      ) : null}
     </ResponsiveTableContainer>
   );
 };

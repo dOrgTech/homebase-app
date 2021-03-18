@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import {
   Box,
   Button,
@@ -14,21 +14,18 @@ import Timer from "react-compound-timer";
 import { useHistory, useParams } from "react-router-dom";
 
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
-import { TopHoldersTableRow } from "modules/explorer/components/TokenHolders";
 import ProgressBar from "react-customizable-progressbar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
-import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { Info } from "@material-ui/icons";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { CopyAddress } from "modules/common/CopyAddress";
-import { ResponsiveTableContainer } from "../components/ResponsiveTable";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { ActiveProposalsTable } from "../components/ActiveProposalsTable";
+import { TopHoldersTable } from "../components/TopHoldersTable";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
@@ -62,11 +59,6 @@ const BigIconContainer = styled(Box)({
   },
 });
 
-const TableHeader = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
-}));
-
 const UnderlineText = styled(Typography)(({ theme }) => ({
   textDecoration: "underline",
   cursor: "pointer",
@@ -95,12 +87,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
   minWidth: 171,
 }));
 
-const ProposalTableHeadText: React.FC = ({ children }) => (
-  <Typography variant="subtitle1" color="textSecondary">
-    {children}
-  </Typography>
-);
-
 const InfoIconInput = styled(Info)({
   cursor: "default",
   top: 0,
@@ -117,7 +103,6 @@ export const DAO: React.FC = () => {
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading: isDaoLoading } = useDAO(id);
-  const { data: members } = useTokenHoldersWithVotes(id);
   const { mutate } = useFlush();
   const { tezos, connect } = useTezos();
 
@@ -139,24 +124,7 @@ export const DAO: React.FC = () => {
   //   data: activeProposals,
   //   isLoading: isActiveProposalsLoading,
   // } = useProposals(data ? data.address : "", ProposalStatus.ACTIVE);
-  const isLoading =
-    isDaoLoading || isProposalsLoading;
-
-  const formattedMembers = useMemo(() => {
-    if (!members) {
-      return [];
-    }
-    return members
-      .map((member) => {
-        return {
-          username: member.address,
-          weight: member.balances[0].toString(),
-          votes: member.votes.toString(),
-          proposals_voted: member.proposalsVoted,
-        };
-      })
-      .sort((a, b) => Number(b.weight) - Number(a.weight));
-  }, [members]);
+  const isLoading = isDaoLoading || isProposalsLoading;
 
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
@@ -304,35 +272,6 @@ export const DAO: React.FC = () => {
           <DAOStatsRow />
           <>
             <ActiveProposalsTable />
-            {/* <TableHeader container wrap="nowrap">
-              <Grid item xs={4}>
-                <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={2}>
-                <ProposalTableHeadItem color="textSecondary" align="center">
-                  CYCLE
-                </ProposalTableHeadItem>
-              </Grid>
-              <Grid item xs={3}>
-              </Grid>
-              <Grid item xs={3}>
-                <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
-              </Grid>
-            </TableHeader> */}
-            {/* {activeProposals.length > 0 &&
-              activeProposals.map((proposal, i) => (
-                <ProposalTableRow
-                  key={`proposal-${i}`}
-                  {...proposal}
-                  daoId={data?.address}
-                  quorumTreshold={data?.storage.quorumTreshold || 0}
-                />
-              ))}
-            {activeProposals.length === 0 ? (
-              <NoProposals variant="subtitle1" color="textSecondary">
-                No active proposals
-              </NoProposals>
-            ) : null} */}
           </>
           <Grid container direction="row" justify="center">
             <UnderlineText
@@ -343,28 +282,7 @@ export const DAO: React.FC = () => {
               VIEW ALL PROPOSALS
             </UnderlineText>
           </Grid>
-
-          <ResponsiveTableContainer>
-            <TableHeader container wrap="nowrap">
-              <Grid item xs={5}>
-                <ProposalTableHeadText>
-                  TOP TOKEN HOLDERS BY ADDRESS
-                </ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={3}>
-                <ProposalTableHeadText>VOTES</ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={2}>
-                <ProposalTableHeadText>WEIGHT</ProposalTableHeadText>
-              </Grid>
-              <Grid item xs={2}>
-                <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
-              </Grid>
-            </TableHeader>
-            {formattedMembers.map((holder, i) => (
-              <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
-            ))}
-          </ResponsiveTableContainer>
+          <TopHoldersTable />
         </Grid>
       ) : (
         <LoaderContainer container direction="row" justify="center">

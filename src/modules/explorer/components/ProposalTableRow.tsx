@@ -6,6 +6,7 @@ import {
   Typography,
   IconButton,
   useTheme,
+  useMediaQuery,
 } from "@material-ui/core";
 import dayjs from "dayjs";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
@@ -57,6 +58,20 @@ const ProgressText = styled(Typography)(
   })
 );
 
+const QuorumContainer = styled(Grid)({
+  display: "flex",
+  flexFlow: "nowrap",
+});
+
+const styles = {
+  root: {
+    marginLeft: -20,
+  },
+  text: {
+    marginLeft: -14,
+  },
+};
+
 const ArrowButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.primary.light,
 }));
@@ -66,6 +81,8 @@ export const ProposalTableRow: React.FC<
 > = ({ quorumTreshold, cycle, upVotes, downVotes, daoId, id, startDate }) => {
   const history = useHistory();
   const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+
   const formattedDate = dayjs(startDate).format("MM/DD/YYYY");
   const { data: dao } = useDAO(daoId);
   const onClick = useCallback(() => {
@@ -109,8 +126,8 @@ export const ProposalTableRow: React.FC<
       </Grid>
       <Grid item xs={3} container justify="space-between" alignItems="center">
         <Grid item>
-          <Grid container alignItems="center">
-            <Grid item>
+          <QuorumContainer container alignItems="center">
+            <Grid item style={isMobileSmall ? styles.root : undefined}>
               <ProgressBar
                 progress={votesSumPercentage}
                 radius={32}
@@ -127,15 +144,24 @@ export const ProposalTableRow: React.FC<
               </ProgressBar>
             </Grid>
             <Grid item>
-              <SupportText textColor={color}>
+              <SupportText
+                textColor={color}
+                style={isMobileSmall ? styles.text : undefined}
+              >
                 {support ? "SUPPORT" : "OPPOSE"}
               </SupportText>
             </Grid>
-          </Grid>
+          </QuorumContainer>
         </Grid>
       </Grid>
 
-      <Grid item xs={3} container justify="space-between" alignItems="center">
+      <QuorumContainer
+        item
+        xs={3}
+        container
+        justify="space-between"
+        alignItems="center"
+      >
         <Grid item>
           <Grid container alignItems="center">
             <Grid item>
@@ -161,7 +187,7 @@ export const ProposalTableRow: React.FC<
             <ArrowForwardIcon fontSize={"large"} color="inherit" />
           </ArrowButton>
         </Grid>
-      </Grid>
+      </QuorumContainer>
     </ProposalTableRowContainer>
   );
 };
