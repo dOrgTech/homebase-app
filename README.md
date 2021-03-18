@@ -15,11 +15,35 @@ The following dependencies are required to run homebase-app:
 
 The following third party services are being used by Homebase:
 
-* [TZKT API](https://api.tzkt.io/)
-* [Better Call Dev API](https://better-call.dev/docs)
-* [Pinata IPFS](https://pinata.cloud/)
-* [Airgap's Beacon SDK](https://github.com/airgap-it/beacon-sdk)
+## [Better Call Dev API](https://better-call.dev/docs)
+### Base URL: https://api.better-call.dev/v1
 
+| Endpoint | URL | METHOD |
+|-|-|-|
+| BigMap Keys | /bigmap/{network}/{number}/keys | GET |
+| Contract | /contract/{network}/{address} | GET |
+| Contract Operations | /contract/{network}/{address}/operations?size=10000&entrypoints=vote | GET |
+| Contract Storage | /contract/{network}/{address}/storage | GET |
+
+## [Pinata IPFS](https://pinata.cloud/)
+### Base URL: https://api.pinata.cloud
+
+| Endpoint | URL | METHOD |
+|-|-|-|
+| Pin to IPFS | /pinning/pinJSONToIPFS | POST |
+| Pin List | /data/pinList?status=pinned | GET |
+| Hash Metadata | /pinning/hashMetadata | PUT |
+
+## [TZKT API](https://api.tzkt.io/)
+### Base URL: https://api.tzkt.io/
+
+| Endpoint | URL | METHOD |
+|-|-|-|
+| Operations | /v1/accounts/${address}/operations | GET |
+
+
+## [Airgap's Beacon SDK](https://github.com/airgap-it/beacon-sdk)
+### Version: 2.2.1
 # Using Homebase
 
 ## Creating a DAO
@@ -41,7 +65,9 @@ You will be taken to the DAO Creator, from which you will be asked to choose on 
 **Proposals and Voting**:
 
   * **`Voting period duration`**
-  * **`Required stake to propose`**: required amount of DAO tokens to stake at the time of proposing. Currently follows the formula: `b + a * proposalSize`
+  * **`Required stake to propose`**: required amount of DAO tokens to stake at the time of proposing. Currently follows the formula: `b + proposalSize`. Where:
+    - Proposal size is autocalculated based on the amount of transfers/registry updates (will get outdated soon on the contracts side)
+    - B is a constant amount of tokens
   * **`Returned stake after proposal rejection`**
   * **`Transfer amounts`** **(Treasury only)**: maximum and minimum amounts that can be transferred in a treasury proposal transfer. Currently only supports `XTZ`
   * **`Quorum threshold`**: currently a natural number representing the total amount of votes required for a proposal to pass. Each token staked in a vote operation represents a vote. Therefore, with a quorum treshold of 500, a vote that stakes 500 tokens would make the proposal pass.
@@ -158,6 +184,8 @@ At a contract level, there is no such distinction, but in the UI it exists to le
 To run the project:
 
 - Make sure you have node installed
-- Clone this repository
-- Go to the project and run: `yarn && yarn dev`
+- `git clone git@github.com:dOrgTech/homebase-app.git`
+- `cd homebase-app`
+- `yarn`
 - Create a `.env` file in the root and ask one of the maintainers for the Pinata API Key
+- `yarn dev`
