@@ -80,7 +80,6 @@ export const DAOsList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const {
     data,
-    error,
     isLoading,
     hasNextPage,
     isFetchingNextPage,
