@@ -187,5 +187,13 @@ To run the project:
 - `git clone git@github.com:dOrgTech/homebase-app.git`
 - `cd homebase-app`
 - `yarn`
-- Create a `.env` file in the root and ask one of the maintainers for the Pinata API Key
+- Create a `.env` file in the root, based on the `.env.example` provided in the code and ask one of the maintainers for the Pinata API Key
 - `yarn dev`
+
+# Glossary
+
+* **Flush**: execute all passed proposals from periods previous to the last one. If the proposal is rejected or did not meet the quorum treshold, then the flush operation removes it from the proposals list.
+
+* **Administrator**: address with permissions to mint, burn and transfer tokens in the DAO without a proposal. It is configured by the DAO creator and can be another contract (like a multisig)
+
+* **Proposal size**: metric that describes the size, in packed bytes, of a proposal's metadata. Therefore, the bigger the proposal arguments are (more transfers or more registry updates), the bigger the proposal size is.
