@@ -14,7 +14,6 @@ import Timer from "react-compound-timer";
 import { useHistory, useParams } from "react-router-dom";
 
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
-import { ProposalTableRow } from "modules/explorer/components/ProposalTableRow";
 import { TopHoldersTableRow } from "modules/explorer/components/TokenHolders";
 import ProgressBar from "react-customizable-progressbar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
@@ -29,6 +28,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { ResponsiveTableContainer } from "../components/ResponsiveTable";
 import { DAOStatsRow } from "../components/DAOStatsRow";
+import { ActiveProposalsTable } from "../components/ActiveProposalsTable";
 
 const MainContainer = styled(Grid)(({ theme }) => ({
   minHeight: 325,
@@ -88,15 +88,6 @@ const CustomH1 = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const NoProposals = styled(Typography)({
-  marginTop: 20,
-  marginBottom: 20,
-});
-
-const ProposalTableHeadItem = styled(Typography)({
-  fontWeight: "bold",
-});
-
 const StyledButton = styled(Button)(({ theme }) => ({
   height: 53,
   color: theme.palette.text.secondary,
@@ -144,12 +135,12 @@ export const DAO: React.FC = () => {
   const { data: proposals, isLoading: isProposalsLoading } = useProposals(
     data ? data.address : ""
   );
-  const {
-    data: activeProposals,
-    isLoading: isActiveProposalsLoading,
-  } = useProposals(data ? data.address : "", ProposalStatus.ACTIVE);
+  // const {
+  //   data: activeProposals,
+  //   isLoading: isActiveProposalsLoading,
+  // } = useProposals(data ? data.address : "", ProposalStatus.ACTIVE);
   const isLoading =
-    isDaoLoading || isProposalsLoading || isActiveProposalsLoading;
+    isDaoLoading || isProposalsLoading;
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -311,8 +302,9 @@ export const DAO: React.FC = () => {
             </DAOInfoVotingPeriod>
           </MainContainer>
           <DAOStatsRow />
-          <ResponsiveTableContainer>
-            <TableHeader container wrap="nowrap">
+          <>
+            <ActiveProposalsTable />
+            {/* <TableHeader container wrap="nowrap">
               <Grid item xs={4}>
                 <ProposalTableHeadText>ACTIVE PROPOSALS</ProposalTableHeadText>
               </Grid>
@@ -322,13 +314,12 @@ export const DAO: React.FC = () => {
                 </ProposalTableHeadItem>
               </Grid>
               <Grid item xs={3}>
-                {/* <ProposalTableHeadText>STATUS</ProposalTableHeadText> */}
               </Grid>
               <Grid item xs={3}>
                 <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
               </Grid>
-            </TableHeader>
-            {activeProposals.length > 0 &&
+            </TableHeader> */}
+            {/* {activeProposals.length > 0 &&
               activeProposals.map((proposal, i) => (
                 <ProposalTableRow
                   key={`proposal-${i}`}
@@ -341,8 +332,8 @@ export const DAO: React.FC = () => {
               <NoProposals variant="subtitle1" color="textSecondary">
                 No active proposals
               </NoProposals>
-            ) : null}
-          </ResponsiveTableContainer>
+            ) : null} */}
+          </>
           <Grid container direction="row" justify="center">
             <UnderlineText
               variant="subtitle1"
