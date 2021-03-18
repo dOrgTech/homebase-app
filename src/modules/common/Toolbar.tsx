@@ -93,7 +93,7 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   },
   [theme.breakpoints.down("xs")]: {
     marginLeft: -15,
-  }
+  },
 }));
 
 const custom = (theme: Theme, mode: "creator" | "explorer") => ({
