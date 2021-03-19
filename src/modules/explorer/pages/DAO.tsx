@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import {
   Box,
-  Button,
   CircularProgress,
   Grid,
   styled,
@@ -26,12 +25,8 @@ import { CopyAddress } from "modules/common/CopyAddress";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { ActiveProposalsTable } from "../components/ActiveProposalsTable";
 import { TopHoldersTable } from "../components/TopHoldersTable";
-
-const MainContainer = styled(Grid)(({ theme }) => ({
-  minHeight: 325,
-  padding: "40px 8%",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
+import { RectangleContainer } from "../components/styled/RectangleHeader";
+import { PrimaryButton } from "../components/styled/PrimaryButton";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -78,13 +73,6 @@ const CustomH1 = styled(Typography)(({ theme }) => ({
     lineHeight: "68px",
     paddingRight: "5vw",
   },
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  height: 53,
-  color: theme.palette.text.secondary,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
 }));
 
 const InfoIconInput = styled(Info)({
@@ -143,7 +131,7 @@ export const DAO: React.FC = () => {
     <>
       {!isLoading ? (
         <Grid item xs>
-          <MainContainer container justify="space-between">
+          <RectangleContainer container justify="space-between">
             <DAOInfoTitleAndDesc item>
               <Box>
                 <Typography variant="subtitle2" color="secondary">
@@ -166,13 +154,13 @@ export const DAO: React.FC = () => {
                   {data && <CopyAddress address={data.address} />}
 
                   <FlushContainer item>
-                    <StyledButton
+                    <PrimaryButton
                       variant="outlined"
                       onClick={onFlush}
                       disabled={!data}
                     >
                       FLUSH
-                    </StyledButton>
+                    </PrimaryButton>
                     <Tooltip title="Execute all passed proposals and drop all expired or rejected">
                       <InfoIconInput color="secondary" />
                     </Tooltip>
@@ -268,7 +256,7 @@ export const DAO: React.FC = () => {
                 </Grid>
               </Box>
             </DAOInfoVotingPeriod>
-          </MainContainer>
+          </RectangleContainer>
           <DAOStatsRow />
           <>
             <ActiveProposalsTable />

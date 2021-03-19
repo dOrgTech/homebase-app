@@ -1,4 +1,4 @@
-import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
@@ -14,37 +14,15 @@ import {
   ProposalStatus,
   RegistryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
+import { ResponsiveTableContainer } from "modules/explorer/components/ResponsiveTable";
+import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 
-const ListItemContainer = styled(withTheme(Grid))((props) => ({
-  paddingLeft: 112,
+const ListItemContainer = styled(Grid)((props) => ({
   background: props.theme.palette.primary.main,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
-}));
-
-const MainContainer = styled(Grid)(({ theme }) => ({
-  minHeight: 125,
-  padding: "40px 112px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
-
-const TableContainer = styled(Box)({
-  width: "100%",
-  padding: "72px 112px",
-  boxSizing: "border-box",
-  paddingBottom: "24px",
-  paddingLeft: 0,
-});
-
-const TableHeader = styled(Grid)({
-  paddingLeft: 112,
-});
-
-const BorderBottom = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
 }));
 
 const RightText = styled(Typography)({
@@ -122,35 +100,27 @@ export const Registry: React.FC = () => {
   return (
     <>
       <Grid item xs>
-        <MainContainer container justify="space-between">
-          <Grid item xs={12}>
-            <RegistryHeader name={"MY GREAT TOKEN"} />
-          </Grid>
-        </MainContainer>
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    REGISTRY ITEMS
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={4}>
-                  <Grid item container direction="row">
-                    <ProposalTableHeadText align={"left"}>
-                      VALUE
-                    </ProposalTableHeadText>
-                  </Grid>
-                </Grid>
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    LAST UPDATED
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}></Grid>
-              </BorderBottom>
+        <RegistryHeader />
+        <ResponsiveTableContainer>
+          <TableHeader item container wrap="nowrap">
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>
+                REGISTRY ITEMS
+              </ProposalTableHeadText>
             </Grid>
+            <Grid item xs={4}>
+              <Grid item container direction="row">
+                <ProposalTableHeadText align={"left"}>
+                  VALUE
+                </ProposalTableHeadText>
+              </Grid>
+            </Grid>
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>
+                LAST UPDATED
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}></Grid>
           </TableHeader>
 
           {registryList.map((item, i) => (
@@ -165,33 +135,27 @@ export const Registry: React.FC = () => {
               </NoProposals>
             </ListItemContainer>
           ) : null}
-        </TableContainer>
+        </ResponsiveTableContainer>
 
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={4}>
-                  <ProposalTableHeadText align={"left"}>
-                    UPDATE HISTORY
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    PROPOSAL TITLE
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    DATE
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"left"}>
-                    PROPOSAL
-                  </ProposalTableHeadText>
-                </Grid>
-              </BorderBottom>
+        <ResponsiveTableContainer>
+          <TableHeader item container wrap="nowrap">
+            <Grid item xs={4}>
+              <ProposalTableHeadText align={"left"}>
+                UPDATE HISTORY
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>
+                PROPOSAL TITLE
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>DATE</ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText align={"left"}>
+                PROPOSAL
+              </ProposalTableHeadText>
             </Grid>
           </TableHeader>
 
@@ -208,7 +172,7 @@ export const Registry: React.FC = () => {
               </NoProposals>
             </ListItemContainer>
           ) : null}
-        </TableContainer>
+        </ResponsiveTableContainer>
       </Grid>
     </>
   );

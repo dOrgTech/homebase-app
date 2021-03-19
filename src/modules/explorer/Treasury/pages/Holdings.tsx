@@ -4,15 +4,14 @@ import { useParams } from "react-router-dom";
 
 import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
 import { TransactionInfo } from "services/tzkt/types";
-import { Header } from "modules/explorer/components";
+import { HoldingsHeader } from "modules/explorer/components";
 import {
   TreasuryTableRow,
   TreasuryHistoryRow,
 } from "modules/explorer/Treasury";
 import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { CopyAddress } from "modules/common/CopyAddress";
 import { ResponsiveTableContainer } from "modules/explorer/components/ResponsiveTable";
+import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 
 const ListItemContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -20,16 +19,6 @@ const ListItemContainer = styled(withTheme(Grid))((props) => ({
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
-}));
-
-const MainContainer = styled(Grid)({
-  minHeight: 125,
-  padding: "40px 8% 0 8%",
-});
-
-const BorderBottom = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
 }));
 
 const RightText = styled(Typography)({
@@ -62,7 +51,6 @@ export const Holdings: React.FC = () => {
     proposalId: string;
     id: string;
   }>();
-  const { data: dao } = useDAO(id);
 
   const { data: tokenBalances } = useTokenBalances(id);
   const [treasuryMovements, setTreasuryMovements] = useState<TransactionInfo[]>(
@@ -80,30 +68,20 @@ export const Holdings: React.FC = () => {
   return (
     <>
       <Grid item xs>
-        <MainContainer container justify="space-between">
-          <Grid item xs={12}>
-            <Header name={"MY GREAT TOKEN"} />
-            {dao && <CopyAddress address={dao.address} />}
-          </Grid>
-        </MainContainer>
+        <HoldingsHeader />
         <ResponsiveTableContainer>
-          <Grid container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={6}>
-                  <ProposalTableHeadText align={"left"}>
-                    TOKEN BALANCES
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={6}>
-                  <ProposalTableHeadText align={"right"}>
-                    BALANCE
-                  </ProposalTableHeadText>
-                </Grid>
-              </BorderBottom>
+          <TableHeader item container wrap="nowrap">
+            <Grid item xs={6}>
+              <ProposalTableHeadText align={"left"}>
+                TOKEN BALANCES
+              </ProposalTableHeadText>
             </Grid>
-          </Grid>
-
+            <Grid item xs={6}>
+              <ProposalTableHeadText align={"right"}>
+                BALANCE
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
           {tokenBalances && tokenBalances.length
             ? tokenBalances.map((token, i) => (
                 <ListItemContainer key={`token-${i}`}>
@@ -114,32 +92,28 @@ export const Holdings: React.FC = () => {
         </ResponsiveTableContainer>
 
         <ResponsiveTableContainer>
-          <Grid container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={6}>
-                  <ProposalTableHeadText align={"left"}>
-                    TOKEN TRANSFER HISTORY
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"right"}>
-                    DATE
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"right"}>
-                    RECIPIENT
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"right"}>
-                    AMOUNT
-                  </ProposalTableHeadText>
-                </Grid>
-              </BorderBottom>
+          <TableHeader item container wrap="nowrap">
+            <Grid item xs={6}>
+              <ProposalTableHeadText align={"left"}>
+                TOKEN TRANSFER HISTORY
+              </ProposalTableHeadText>
             </Grid>
-          </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText align={"right"}>
+                DATE
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText align={"right"}>
+                RECIPIENT
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText align={"right"}>
+                AMOUNT
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
 
           {treasuryMovements.length
             ? treasuryMovements.map((token, i) => (

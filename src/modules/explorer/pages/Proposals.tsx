@@ -10,7 +10,6 @@ import React, { useCallback, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { Button } from "@material-ui/core";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { ActionTypes, ModalsContext } from "../ModalsContext";
 import { connectIfNotConnected } from "services/contracts/utils";
@@ -20,25 +19,8 @@ import { DAOStatsRow } from "../components/DAOStatsRow";
 import { ActiveProposalsTable } from "../components/ActiveProposalsTable";
 import { PassedProposalsTable } from "../components/PassedProposalsTable";
 import { AllProposalsTable } from "../components/AllProposalsTable";
-
-const StyledContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  minHeight: 125,
-  padding: "4% 0",
-  boxSizing: "border-box",
-}));
-
-const MainContainer = styled(Grid)(({ theme }) => ({
-  padding: "40px 8%",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  height: 53,
-  color: theme.palette.text.secondary,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-}));
+import { RectangleContainer } from "../components/styled/RectangleHeader";
+import { PrimaryButton } from "../components/styled/PrimaryButton";
 
 const InfoIconInput = styled(Info)({
   cursor: "default",
@@ -114,48 +96,46 @@ export const Proposals: React.FC = () => {
   return (
     <>
       <Grid item xs>
-        <MainContainer>
-          <StyledContainer container direction="row">
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1" color="secondary">
-                {name}
-              </Typography>
-              <Typography variant="h5" color="textSecondary">
-                Proposals
-              </Typography>
+        <RectangleContainer container direction="row">
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle1" color="secondary">
+              {name}
+            </Typography>
+            <Typography variant="h5" color="textSecondary">
+              Proposals
+            </Typography>
+          </Grid>
+          <ButtonsContainer
+            item
+            container
+            xs={12}
+            sm={6}
+            justify={isMobileMedium ? "flex-start" : "flex-end"}
+            spacing={2}
+          >
+            <Grid item>
+              <PrimaryButton
+                variant="outlined"
+                onClick={onNewProposal}
+                disabled={!dao}
+              >
+                NEW PROPOSAL
+              </PrimaryButton>
             </Grid>
-            <ButtonsContainer
-              item
-              container
-              xs={12}
-              sm={6}
-              justify={isMobileMedium ? "flex-start" : "flex-end"}
-              spacing={2}
-            >
-              <Grid item>
-                <StyledButton
-                  variant="outlined"
-                  onClick={onNewProposal}
-                  disabled={!dao}
-                >
-                  NEW PROPOSAL
-                </StyledButton>
-              </Grid>
-              <FlushContainer item>
-                <StyledButton
-                  variant="outlined"
-                  onClick={onFlush}
-                  disabled={!dao}
-                >
-                  FLUSH
-                </StyledButton>
-                <Tooltip title="Execute all passed proposals and drop all expired or rejected">
-                  <InfoIconInput color="secondary" />
-                </Tooltip>
-              </FlushContainer>
-            </ButtonsContainer>
-          </StyledContainer>
-        </MainContainer>
+            <FlushContainer item>
+              <PrimaryButton
+                variant="outlined"
+                onClick={onFlush}
+                disabled={!dao}
+              >
+                FLUSH
+              </PrimaryButton>
+              <Tooltip title="Execute all passed proposals and drop all expired or rejected">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </FlushContainer>
+          </ButtonsContainer>
+        </RectangleContainer>
         <DAOStatsRow />
         <>
           <ActiveProposalsTable />

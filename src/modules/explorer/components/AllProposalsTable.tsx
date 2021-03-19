@@ -5,11 +5,7 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { ProposalTableRow } from "./ProposalTableRow";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
-
-const TableHeader = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
-}));
+import { TableHeader } from "./styled/TableHeader";
 
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <ProposalTableHeadItem variant="subtitle1" color="textSecondary">

@@ -3,12 +3,8 @@ import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
+import { TableHeader } from "./styled/TableHeader";
 import { TopHoldersTableRow } from "./TokenHolders";
-
-const TableHeader = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
-}));
 
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <ProposalTableHeadItem variant="subtitle1" color="textSecondary">
