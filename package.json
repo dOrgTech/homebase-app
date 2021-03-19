@@ -76,9 +76,6 @@
       "last 1 safari version"
     ]
   },
-  "hooks": {
-    "pre-push": "lint-staged && yarn lint:check"
-  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
       "yarn lint:fix"
