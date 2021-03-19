@@ -18,6 +18,9 @@ import { TokenHoldersDialog } from "./TokenHolders";
 const StatsContainer = styled(Grid)(({ theme }) => ({
   minHeight: 175,
   borderBottom: `2px solid ${theme.palette.primary.light}`,
+  [theme.breakpoints.down("sm")]: {
+    borderBottom: "unset",
+  },
 }));
 
 const TokensLocked = styled(StatsBox)({
@@ -29,6 +32,9 @@ const VotingAddresses = styled(StatsBox)(({ theme }) => ({
 
   [theme.breakpoints.down("sm")]: {
     minWidth: "unset",
+    textAlign: "center",
+    borderRight: `2px solid ${theme.palette.primary.light}`,
+    padding: "25px 5px",
   },
   [theme.breakpoints.up("sm")]: {
     padding: "50px 0 50px 42px",
@@ -37,6 +43,10 @@ const VotingAddresses = styled(StatsBox)(({ theme }) => ({
 
 const ActiveProposals = styled(StatsBox)(({ theme }) => ({
   cursor: "pointer",
+  [theme.breakpoints.down("sm")]: {
+    textAlign: "center",
+    padding: "25px 5px",
+  },
   [theme.breakpoints.up("sm")]: {
     padding: "50px 0 50px 42px",
   },
@@ -141,7 +151,7 @@ export const DAOStatsRow: React.FC = () => {
         direction="column"
         alignItems="center"
         justify={isMobileSmall ? "flex-start" : "center"}
-        xs={12}
+        xs={6}
         md={2}
       >
         <Box width="100%">

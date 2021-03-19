@@ -5,4 +5,9 @@ export const PrimaryButton = styled(Button)(({ theme }) => ({
   color: theme.palette.text.secondary,
   borderColor: theme.palette.secondary.main,
   minWidth: 171,
+  [theme.breakpoints.down("sm")]: {
+    minWidth: "unset",
+    borderWidth: 3,
+    borderRadius: 6,
+  },
 }));

@@ -16,11 +16,11 @@ import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { Info } from "@material-ui/icons";
 import { DAOStatsRow } from "../components/DAOStatsRow";
-import { ActiveProposalsTable } from "../components/ActiveProposalsTable";
-import { PassedProposalsTable } from "../components/PassedProposalsTable";
-import { AllProposalsTable } from "../components/AllProposalsTable";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
+import { ProposalsTable } from "../components/ProposalsTable";
+import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { ViewButton } from "../components/ViewButton";
 
 const InfoIconInput = styled(Info)({
   cursor: "default",
@@ -47,6 +47,7 @@ export const Proposals: React.FC = () => {
   const { mutate } = useFlush();
   const theme = useTheme();
   const isMobileMedium = useMediaQuery(theme.breakpoints.down("md"));
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
@@ -98,19 +99,50 @@ export const Proposals: React.FC = () => {
       <Grid item xs>
         <RectangleContainer container direction="row">
           <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle1" color="secondary">
+            <Typography
+              variant="subtitle1"
+              color="secondary"
+              align={isMobileSmall ? "center" : "left"}
+            >
               {name}
             </Typography>
-            <Typography variant="h5" color="textSecondary">
-              Proposals
-            </Typography>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justify={isMobileSmall ? "center" : "flex-start"}
+            >
+              <Grid item>
+                <Typography
+                  variant="h5"
+                  color="textSecondary"
+                  align={isMobileSmall ? "center" : "left"}
+                >
+                  Proposals
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Grid item>
+                  <ViewButton
+                    variant="outlined"
+                    onClick={onFlush}
+                    disabled={!dao}
+                  >
+                    FLUSH
+                  </ViewButton>
+                  <Tooltip title="Execute all passed proposals and drop all expired or rejected">
+                    <InfoIconInput color="secondary" />
+                  </Tooltip>
+                </Grid>
+              </Grid>
+            </Grid>
           </Grid>
           <ButtonsContainer
             item
             container
             xs={12}
             sm={6}
-            justify={isMobileMedium ? "flex-start" : "flex-end"}
+            justify={isMobileSmall ? "center" : "flex-end"}
             spacing={2}
           >
             <Grid item>
@@ -122,24 +154,13 @@ export const Proposals: React.FC = () => {
                 NEW PROPOSAL
               </PrimaryButton>
             </Grid>
-            <FlushContainer item>
-              <PrimaryButton
-                variant="outlined"
-                onClick={onFlush}
-                disabled={!dao}
-              >
-                FLUSH
-              </PrimaryButton>
-              <Tooltip title="Execute all passed proposals and drop all expired or rejected">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </FlushContainer>
           </ButtonsContainer>
         </RectangleContainer>
         <DAOStatsRow />
-        <>
-          <ActiveProposalsTable />
-        </>
+        <ProposalsTable
+          headerText="Active Proposals"
+          status={ProposalStatus.ACTIVE}
+        />
         {/* <ProposalsContainer
             container
             direction="row"
@@ -155,8 +176,11 @@ export const Proposals: React.FC = () => {
             </UnderlineText>
           </ProposalsContainer> */}
 
-        <PassedProposalsTable />
-        <AllProposalsTable />
+        <ProposalsTable
+          headerText="Passed Proposals"
+          status={ProposalStatus.PASSED}
+        />
+        <ProposalsTable headerText="All Proposals" />
       </Grid>
     </>
   );

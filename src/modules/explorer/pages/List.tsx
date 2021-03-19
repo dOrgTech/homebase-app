@@ -151,7 +151,7 @@ export const DAOsList: React.FC = () => {
           container
           item
           direction="row"
-          justify={isMobileSmall ? "flex-start" : "flex-end"}
+          justify={isMobileSmall ? "center" : "flex-end"}
           alignItems="center"
           alignContent="center"
           xs={12}
@@ -184,17 +184,29 @@ export const DAOsList: React.FC = () => {
               key={index}
               onClick={() => history.push(`/explorer/dao/${dao.id}`)}
             >
-              <Typography variant="subtitle1" color="secondary">
+              <Typography
+                variant="subtitle1"
+                color="secondary"
+                align={isMobileExtraSmall ? "center" : "left"}
+              >
                 {dao.symbol}
               </Typography>
               <Grid container direction="row" alignItems="center">
                 <Grid item xs={12} lg={6}>
-                  <Typography variant="h5" color="textSecondary">
+                  <Typography
+                    variant="h5"
+                    color="textSecondary"
+                    align={isMobileExtraSmall ? "center" : "left"}
+                  >
                     {dao.name}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                  <Typography variant="subtitle1" color="textSecondary">
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align={isMobileExtraSmall ? "center" : "left"}
+                  >
                     {dao.voting_addresses} VOTING ADDRESSES
                   </Typography>
                 </Grid>

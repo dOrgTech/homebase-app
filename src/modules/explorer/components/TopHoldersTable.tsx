@@ -1,4 +1,10 @@
-import { Grid, styled, Typography } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
@@ -16,9 +22,17 @@ const ProposalTableHeadItem = styled(Typography)({
   fontWeight: "bold",
 });
 
+const Header = styled(TableHeader)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    padding: "20px 0 20px 25px",
+  },
+}));
+
 export const TopHoldersTable: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: members } = useTokenHoldersWithVotes(id);
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -38,22 +52,27 @@ export const TopHoldersTable: React.FC = () => {
 
   return (
     <ResponsiveTableContainer>
-      <TableHeader container wrap="nowrap">
-        <Grid item xs={5}>
+      <Header container wrap="nowrap">
+        <Grid item xs={12} md={5}>
           <ProposalTableHeadText>
             TOP TOKEN HOLDERS BY ADDRESS
           </ProposalTableHeadText>
         </Grid>
-        <Grid item xs={3}>
-          <ProposalTableHeadText>VOTES</ProposalTableHeadText>
-        </Grid>
-        <Grid item xs={2}>
-          <ProposalTableHeadText>WEIGHT</ProposalTableHeadText>
-        </Grid>
-        <Grid item xs={2}>
-          <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
-        </Grid>
-      </TableHeader>
+        {!isMobileSmall && (
+          <>
+            <Grid item xs={3}>
+              <ProposalTableHeadText>VOTES</ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText>WEIGHT</ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
+            </Grid>
+          </>
+        )}
+      </Header>
+
       {formattedMembers.map((holder, i) => (
         <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
       ))}
