@@ -76,7 +76,7 @@
       "last 1 safari version"
     ]
   },
-  "husky": {
+  "husky-run": {
     "hooks": {
       "pre-push": "lint-staged && yarn lint:check"
     }
