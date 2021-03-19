@@ -28,6 +28,7 @@ import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { ProposalsTable } from "../components/ProposalsTable";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
+import { MobileHeader } from "../components/styled/MobileHeader";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -55,12 +56,6 @@ const BigIconContainer = styled(Box)({
     margin: "auto",
   },
 });
-
-const MobileHeader = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  minHeight: 48,
-  padding: "0 20px",
-}));
 
 const UnderlineText = styled(Typography)(({ theme }) => ({
   textDecoration: "underline",
@@ -104,7 +99,6 @@ export const DAO: React.FC = () => {
   const name = data && data.metadata.unfrozenToken.name;
   const description = data && data.metadata.description;
   const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
-  const template = data && data.template;
 
   const votingPeriod = data && data.storage.votingPeriod;
   const originationTime = data && data.originationTime;

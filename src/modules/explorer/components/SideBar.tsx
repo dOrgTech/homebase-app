@@ -54,6 +54,7 @@ const StyledBottomBar = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   borderTop: `2px solid ${theme.palette.primary.light}`,
   zIndex: 10000,
+  width: "100%",
 }));
 
 const BottomNavBar: React.FC = ({ children }) => {

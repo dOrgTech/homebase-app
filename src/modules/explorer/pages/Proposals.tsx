@@ -29,10 +29,6 @@ const InfoIconInput = styled(Info)({
   marginLeft: 6,
 });
 
-const FlushContainer = styled(Grid)({
-  display: "flex",
-});
-
 const ButtonsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   [theme.breakpoints.down("xs")]: {
@@ -46,7 +42,6 @@ export const Proposals: React.FC = () => {
   const { data } = useDAO(id);
   const { mutate } = useFlush();
   const theme = useTheme();
-  const isMobileMedium = useMediaQuery(theme.breakpoints.down("md"));
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   const { tezos, connect } = useTezos();

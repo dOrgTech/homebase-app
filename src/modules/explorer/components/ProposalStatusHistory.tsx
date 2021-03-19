@@ -1,4 +1,10 @@
-import { Grid, styled, Typography, useTheme } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
 import React, { useMemo } from "react";
 import { StatusBadge } from "./StatusBadge";
@@ -10,16 +16,17 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
-  paddingLeft: 53,
 });
 
-const HistoryItem = styled(Grid)({
-  paddingLeft: 63,
+const HistoryItem = styled(Grid)(({ theme }) => ({
   marginTop: 20,
   paddingBottom: 12,
   display: "flex",
   height: "auto",
-});
+  [theme.breakpoints.down("sm")]: {
+    width: "unset",
+  },
+}));
 
 const ProgressText = styled(Typography)(
   ({ textColor }: { textColor: string }) => ({
@@ -39,6 +46,13 @@ const ProgressText = styled(Typography)(
   })
 );
 
+const HistoryContainer = styled(Grid)(({ theme }) => ({
+  paddingLeft: 53,
+  [theme.breakpoints.down("sm")]: {
+    padding: "0 20px",
+  },
+}));
+
 export const ProposalStatusHistory: React.FC = () => {
   const theme = useTheme();
 
@@ -46,6 +60,8 @@ export const ProposalStatusHistory: React.FC = () => {
     proposalId: string;
     id: string;
   }>();
+
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { data: proposal } = useProposal(daoId, proposalId);
 
@@ -92,8 +108,12 @@ export const ProposalStatusHistory: React.FC = () => {
   }, [proposal]);
 
   return (
-    <Grid item xs={12} sm={6}>
-      <Grid container direction="row">
+    <HistoryContainer item xs={12} md>
+      <Grid
+        container
+        direction={isMobileSmall ? "column" : "row"}
+        alignItems="center"
+      >
         <HistoryContent item xs={12}>
           <Typography variant="subtitle1" color="textSecondary">
             QUORUM THRESHOLD %
@@ -114,7 +134,11 @@ export const ProposalStatusHistory: React.FC = () => {
           </ProgressBar>
         </HistoryContent>
       </Grid>
-      <Grid container direction="row">
+      <Grid
+        container
+        direction={isMobileSmall ? "column" : "row"}
+        alignItems="center"
+      >
         <HistoryContent item xs={12}>
           <Typography variant="subtitle1" color="textSecondary">
             CREATED BY
@@ -136,16 +160,18 @@ export const ProposalStatusHistory: React.FC = () => {
               container
               direction="row"
               key={index}
-              justify="space-between"
+              alignItems="baseline"
+              wrap="nowrap"
+              xs={12}
             >
-              <StatusBadge item lg={2} md={6} sm={6} status={item.status} />
-              <Grid item lg={9} md={12} sm={12}>
+              <StatusBadge item xs={3} status={item.status} />
+              <Grid item xs={9}>
                 <Typography color="textSecondary">{item.date}</Typography>
               </Grid>
             </HistoryItem>
           );
         })}
       </Grid>
-    </Grid>
+    </HistoryContainer>
   );
 };

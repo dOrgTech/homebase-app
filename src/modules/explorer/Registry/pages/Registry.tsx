@@ -1,4 +1,4 @@
-import { Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, styled, Typography } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 

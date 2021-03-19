@@ -31,14 +31,9 @@ const JustifyEndGrid = styled(Grid)({
 });
 
 const MainContainer = styled(Grid)(({ theme }) => ({
-  padding: "40px 8%",
+  padding: "44px 8%",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: "4vh",
-}));
-
-const CycleContainer = styled(Grid)(({ theme }) => ({
-  padding: "20px 8%",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
 const StatsContainer = styled(Grid)(({ theme }) => ({
@@ -73,16 +68,34 @@ const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-const DetailsContainer = styled(Grid)({
+const DetailsContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 0,
   padding: "40px 8%",
+  [theme.breakpoints.down("sm")]: {
+    padding: "40px 0",
+  },
+}));
+
+const TitleText = styled(Typography)({
+  fontWeight: "bold",
 });
 
-interface Props {
-  ProposalDetails: React.ReactNode;
-}
+const DescriptionText = styled(Typography)({
+  paddingTop: 28,
+  paddingBottom: 10,
+});
 
-export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
+const RectangleHeader = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  padding: "20px 8%",
+}));
+
+const DetailsHeader = styled(RectangleHeader)(({ theme }) => ({
+  borderTop: `2px solid ${theme.palette.primary.light}`,
+  margin: "20px 0 35px 0",
+}));
+
+export const ProposalDetails: React.FC = ({ children }) => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
@@ -117,9 +130,6 @@ export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
                   <Subtitle variant="h3" color="textSecondary">
                     Proposal Title
                   </Subtitle>
-                  <Subtitle color="textSecondary">
-                    Proposal Description
-                  </Subtitle>
                   {proposal && (
                     <StatusBadge
                       style={{ marginTop: 12 }}
@@ -145,9 +155,9 @@ export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
             </Grid>
           </Container>
         </MainContainer>
-        <CycleContainer container direction="row">
+        <RectangleHeader container direction="row">
           <Cycle color="textSecondary">CYCLE: {proposalCycle}</Cycle>
-        </CycleContainer>
+        </RectangleHeader>
         <StatsContainer container>
           <TokensLocked
             item
@@ -241,7 +251,34 @@ export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
           </TokensLocked>
         </StatsContainer>
         <DetailsContainer container direction="row">
-          {ProposalDetails}
+          <Grid item xs={12} md={7} style={{ paddingBottom: 40 }}>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={12}>
+                <TitleText
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align={isMobileSmall ? "center" : "left"}
+                >
+                  Proposal
+                </TitleText>
+                <DescriptionText
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align={isMobileSmall ? "center" : "left"}
+                >
+                  Proposal Description
+                </DescriptionText>
+              </Grid>
+              {children}
+            </Grid>
+          </Grid>
+          {isMobileSmall && (
+            <DetailsHeader xs={12} alignItems="center" container>
+              <TitleText variant="subtitle1" color="textSecondary">
+                DETAILS
+              </TitleText>
+            </DetailsHeader>
+          )}
           <ProposalStatusHistory />
         </DetailsContainer>
       </Grid>
