@@ -14,16 +14,9 @@ import {
   ProposalStatus,
   RegistryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
-import { ResponsiveTableContainer } from "modules/explorer/components/ResponsiveTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
-
-const ListItemContainer = styled(Grid)((props) => ({
-  background: props.theme.palette.primary.main,
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
-  },
-}));
+import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
+import { GenericTableContainer } from "modules/explorer/components/GenericTableContainer";
 
 const RightText = styled(Typography)({
   opacity: 0.8,
@@ -101,8 +94,8 @@ export const Registry: React.FC = () => {
     <>
       <Grid item xs>
         <RegistryHeader />
-        <ResponsiveTableContainer>
-          <TableHeader item container wrap="nowrap">
+        <ResponsiveGenericTable>
+          <TableHeader item container wrap="nowrap" id="demo">
             <Grid item xs={3}>
               <ProposalTableHeadText align={"left"}>
                 REGISTRY ITEMS
@@ -124,21 +117,19 @@ export const Registry: React.FC = () => {
           </TableHeader>
 
           {registryList.map((item, i) => (
-            <ListItemContainer key={`item-${i}`}>
+            <GenericTableContainer key={`item-${i}`}>
               <RegistryTableRow {...item} />
-            </ListItemContainer>
+            </GenericTableContainer>
           ))}
           {registryList.length === 0 ? (
-            <ListItemContainer>
-              <NoProposals variant="subtitle1" color="textSecondary">
-                No registry items
-              </NoProposals>
-            </ListItemContainer>
+            <NoProposals variant="subtitle1" color="textSecondary">
+              No registry items
+            </NoProposals>
           ) : null}
-        </ResponsiveTableContainer>
+        </ResponsiveGenericTable>
 
-        <ResponsiveTableContainer>
-          <TableHeader item container wrap="nowrap">
+        <ResponsiveGenericTable>
+          <TableHeader item container wrap="nowrap" id="demo">
             <Grid item xs={4}>
               <ProposalTableHeadText align={"left"}>
                 UPDATE HISTORY
@@ -160,19 +151,17 @@ export const Registry: React.FC = () => {
           </TableHeader>
 
           {proposals.map((item, i) => (
-            <ListItemContainer key={`item-${i}`}>
+            <GenericTableContainer key={`item-${i}`}>
               <RegistryHistoryRow {...item} />
-            </ListItemContainer>
+            </GenericTableContainer>
           ))}
 
           {proposals.length === 0 ? (
-            <ListItemContainer>
-              <NoProposals variant="subtitle1" color="textSecondary">
-                No entries
-              </NoProposals>
-            </ListItemContainer>
+            <NoProposals variant="subtitle1" color="textSecondary">
+              No entries
+            </NoProposals>
           ) : null}
-        </ResponsiveTableContainer>
+        </ResponsiveGenericTable>
       </Grid>
     </>
   );

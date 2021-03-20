@@ -132,7 +132,14 @@ export const ProposalTableRow: React.FC<
         md={6}
         justify="center"
       >
-        <Grid item container alignItems="center" xs md={8} justify="flex-end">
+        <Grid
+          item
+          container
+          alignItems="center"
+          xs
+          md={8}
+          justify={isMobileSmall ? "flex-end" : "center"}
+        >
           <Grid item>
             <ProgressBar
               progress={votesSumPercentage}

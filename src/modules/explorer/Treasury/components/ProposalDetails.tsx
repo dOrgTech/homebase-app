@@ -8,9 +8,9 @@ import { mutezToXtz, toShortAddress } from "services/contracts/utils";
 import { ProposalDetails } from "modules/explorer/components/ProposalDetails";
 import { TransferBadge } from "./TransferBadge";
 
-const Container = styled(Grid)(({ theme }) => ({
+const Container = styled(Grid)({
   paddingTop: 21,
-}));
+});
 
 export const TreasuryProposalDetails = () => {
   const { proposalId, id: daoId } = useParams<{

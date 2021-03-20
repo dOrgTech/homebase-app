@@ -1,4 +1,10 @@
-import { Grid, styled, Typography, withTheme } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -10,16 +16,9 @@ import {
   TreasuryHistoryRow,
 } from "modules/explorer/Treasury";
 import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
-import { ResponsiveTableContainer } from "modules/explorer/components/ResponsiveTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
-
-const ListItemContainer = styled(withTheme(Grid))((props) => ({
-  background: props.theme.palette.primary.main,
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
-  },
-}));
+import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
+import { GenericTableContainer } from "modules/explorer/components/GenericTableContainer";
 
 const RightText = styled(Typography)({
   opacity: 0.8,
@@ -56,6 +55,8 @@ export const Holdings: React.FC = () => {
   const [treasuryMovements, setTreasuryMovements] = useState<TransactionInfo[]>(
     []
   );
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const transactions = useTreasuryInfo(id);
 
@@ -69,8 +70,8 @@ export const Holdings: React.FC = () => {
     <>
       <Grid item xs>
         <HoldingsHeader />
-        <ResponsiveTableContainer>
-          <TableHeader item container wrap="nowrap">
+        <ResponsiveGenericTable>
+          <TableHeader item container wrap="nowrap" id="demo">
             <Grid item xs={6}>
               <ProposalTableHeadText align={"left"}>
                 TOKEN BALANCES
@@ -84,42 +85,42 @@ export const Holdings: React.FC = () => {
           </TableHeader>
           {tokenBalances && tokenBalances.length
             ? tokenBalances.map((token, i) => (
-                <ListItemContainer key={`token-${i}`}>
+                <GenericTableContainer key={`token-${i}`}>
                   <TreasuryTableRow {...token} />
-                </ListItemContainer>
+                </GenericTableContainer>
               ))
             : null}
-        </ResponsiveTableContainer>
+        </ResponsiveGenericTable>
 
-        <ResponsiveTableContainer>
-          <TableHeader item container wrap="nowrap">
-            <Grid item xs={6}>
+        <ResponsiveGenericTable>
+          <TableHeader item container wrap="nowrap" id="demo">
+            <Grid item xs={isMobileSmall ? 12 : 6}>
               <ProposalTableHeadText align={"left"}>
                 TOKEN TRANSFER HISTORY
               </ProposalTableHeadText>
             </Grid>
             <Grid item xs={2}>
               <ProposalTableHeadText align={"right"}>
-                DATE
+                {!isMobileSmall ? "DATE" : null}
               </ProposalTableHeadText>
             </Grid>
             <Grid item xs={2}>
               <ProposalTableHeadText align={"right"}>
-                RECIPIENT
+                {!isMobileSmall ? "RECIPIENT" : null}
               </ProposalTableHeadText>
             </Grid>
             <Grid item xs={2}>
               <ProposalTableHeadText align={"right"}>
-                AMOUNT
+                {!isMobileSmall ? "AMOUNT" : null}
               </ProposalTableHeadText>
             </Grid>
           </TableHeader>
 
           {treasuryMovements.length
             ? treasuryMovements.map((token, i) => (
-                <ListItemContainer key={`token-${i}`}>
+                <GenericTableContainer key={`token-${i}`}>
                   <TreasuryHistoryRow {...token} />
-                </ListItemContainer>
+                </GenericTableContainer>
               ))
             : null}
 
@@ -128,7 +129,7 @@ export const Holdings: React.FC = () => {
               No active proposals
             </NoProposals>
           ) : null}
-        </ResponsiveTableContainer>
+        </ResponsiveGenericTable>
       </Grid>
     </>
   );

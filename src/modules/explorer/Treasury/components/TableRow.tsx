@@ -5,6 +5,9 @@ const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: 2,
   height: 83,
+  [theme.breakpoints.down("sm")]: {
+    marginBottom: 12,
+  },
 }));
 
 const TokenName = styled(withTheme(Paper))((props) => ({
