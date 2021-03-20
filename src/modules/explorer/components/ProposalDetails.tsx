@@ -1,6 +1,6 @@
 import {
-  Box,
   Grid,
+  Paper,
   styled,
   Typography,
   useMediaQuery,
@@ -11,14 +11,13 @@ import React from "react";
 import { useParams } from "react-router";
 
 import { ProgressBar as CustomBar } from "modules/explorer/components";
-import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
-import { StatsBox } from "modules/explorer/components/StatsBox";
 import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
+import { ViewButton } from "./ViewButton";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -41,16 +40,9 @@ const StatsContainer = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
-const TokensLocked = styled(StatsBox)(({ theme }) => ({
-  padding: "0 50px 0 8%",
-  [theme.breakpoints.down("sm")]: {
-    padding: "50px 8%",
-  },
-}));
-
-const TextAgainst = styled(Typography)(({ theme }) => ({
-  color: `${theme.palette.error.main} !important`,
-}));
+const TokensLocked = styled(Grid)({
+  padding: "35px 8%",
+});
 
 const Container = styled(Grid)({
   paddingTop: "4%",
@@ -94,6 +86,25 @@ const DetailsHeader = styled(RectangleHeader)(({ theme }) => ({
   borderTop: `2px solid ${theme.palette.primary.light}`,
   margin: "20px 0 35px 0",
 }));
+
+const GreenDot = styled(Paper)(({ theme }) => ({
+  width: 9,
+  height: 9,
+  marginRight: 9,
+  background: theme.palette.secondary.main,
+}));
+
+const RedDot = styled(Paper)(({ theme }) => ({
+  width: 9,
+  height: 9,
+  marginRight: 9,
+  background: theme.palette.error.main,
+}));
+
+const StatusTitle = styled(Typography)({
+  fontWeight: "bold",
+  marginRight: 12,
+});
 
 export const ProposalDetails: React.FC = ({ children }) => {
   const { proposalId, id: daoId } = useParams<{
@@ -159,7 +170,60 @@ export const ProposalDetails: React.FC = ({ children }) => {
           <Cycle color="textSecondary">CYCLE: {proposalCycle}</Cycle>
         </RectangleHeader>
         <StatsContainer container>
-          <TokensLocked
+          <TokensLocked container direction="row" alignItems="center">
+            <Grid item xs={12}>
+              <Typography color="secondary">VOTES</Typography>
+            </Grid>
+            <Grid item xs={12} container direction="row" alignItems="center">
+              <Grid item xs={8} container direction="row" alignItems="center">
+                <Grid
+                  item
+                  xs={isMobileSmall ? 12 : 4}
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <GreenDot />
+                  <StatusTitle color="textSecondary">SUPPORT: </StatusTitle>
+                  <Typography color="textSecondary">
+                    {upVotes} ({upVotesPercentage}%){" "}
+                  </Typography>
+                </Grid>
+
+                <Grid
+                  xs={isMobileSmall ? 12 : 4}
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <RedDot />
+                  <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
+                  <Typography color="textSecondary">
+                    {downVotes} ({downVotesPercentage}%){" "}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              <Grid
+                xs={4}
+                container
+                direction="row"
+                alignItems="center"
+                justify="flex-end"
+              >
+                <ViewButton variant="outlined">VIEW</ViewButton>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <CustomBar
+                favor={true}
+                variant="determinate"
+                value={upVotesPercentage}
+                color="secondary"
+              />
+            </Grid>
+          </TokensLocked>
+          {/* <TokensLocked
             item
             xs={12}
             sm={6}
@@ -204,9 +268,9 @@ export const ProposalDetails: React.FC = ({ children }) => {
                 </Typography>
               </Grid>
             </Grid>
-          </TokensLocked>
+          </TokensLocked> */}
 
-          <TokensLocked
+          {/* <TokensLocked
             item
             xs={12}
             sm={6}
@@ -248,7 +312,7 @@ export const ProposalDetails: React.FC = ({ children }) => {
                 </Typography>
               </Grid>
             </Grid>
-          </TokensLocked>
+          </TokensLocked> */}
         </StatsContainer>
         <DetailsContainer container direction="row">
           <Grid item xs={12} md={7} style={{ paddingBottom: 40 }}>
