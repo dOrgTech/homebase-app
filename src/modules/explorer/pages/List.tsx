@@ -14,6 +14,7 @@ import { useHistory } from "react-router-dom";
 
 import { SearchInput } from "modules/explorer/components/SearchInput";
 import { useDAOs } from "services/contracts/baseDAO/hooks/useDAOs";
+import { PrimaryButton } from "../components/styled/PrimaryButton";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
@@ -58,13 +59,6 @@ const LoaderContainer = styled(Grid)({
   paddingTop: 40,
   paddingBottom: 40,
 });
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  minHeight: 53,
-  color: theme.palette.text.secondary,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-}));
 
 const DaoTotalContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
@@ -162,14 +156,14 @@ export const DAOsList: React.FC = () => {
             </TotalDao>
           </DaoTotalContainer>
           <CreateDaoContainer item>
-            <StyledButton
+            <PrimaryButton
               color="secondary"
               variant="outlined"
               onClick={() => history.push("/creator")}
               fullWidth={isMobileExtraSmall}
             >
               Create DAO
-            </StyledButton>
+            </PrimaryButton>
           </CreateDaoContainer>
         </Grid>
       </GridContainer>

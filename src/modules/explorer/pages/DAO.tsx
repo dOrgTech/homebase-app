@@ -35,10 +35,13 @@ const LoaderContainer = styled(Grid)({
   paddingBottom: 40,
 });
 
-const DAOInfoTitleAndDesc = styled(Grid)({
+const DAOInfoTitleAndDesc = styled(Grid)(({ theme }) => ({
   maxWidth: 600,
   marginBottom: 40,
-});
+  [theme.breakpoints.down("sm")]: {
+    marginBottom: 20,
+  },
+}));
 
 const DAOInfoVotingPeriod = styled(Grid)(({ theme }) => ({
   minWidth: 320,
@@ -74,7 +77,6 @@ const CustomH1 = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     fontSize: 45,
     lineHeight: "68px",
-    paddingRight: "5vw",
   },
 }));
 
@@ -133,7 +135,7 @@ export const DAO: React.FC = () => {
       {!isLoading ? (
         <Grid item xs>
           <RectangleContainer container justify="space-between">
-            <DAOInfoTitleAndDesc item xs={12} sm={8}>
+            <DAOInfoTitleAndDesc item xs={12} md={7} lg={8}>
               <Box>
                 <Typography
                   variant="subtitle2"
@@ -150,7 +152,7 @@ export const DAO: React.FC = () => {
                       container
                       spacing={2}
                       alignItems="center"
-                      justify="center"
+                      justify={isMobileSmall ? "center" : "flex-start"}
                     >
                       <Grid item>
                         <CustomH1
@@ -190,9 +192,9 @@ export const DAO: React.FC = () => {
                 </Grid>
               </Grid>
             </DAOInfoTitleAndDesc>
-            <DAOInfoVotingPeriod item xs={12} sm={4}>
+            <DAOInfoVotingPeriod item xs={12} md={5} lg={4}>
               <Box paddingBottom="32px">
-                <Grid container>
+                <Grid container wrap="nowrap">
                   <Grid item>
                     <BigIconContainer>
                       <img src={VotingPeriodIcon} />
@@ -218,8 +220,8 @@ export const DAO: React.FC = () => {
                   </Grid>
                 </Grid>
               </Box>
-              <Box paddingBottom="32px">
-                <Grid container>
+              <Box>
+                <Grid container wrap="nowrap">
                   <Grid item>
                     <BigIconContainer
                       width={80}

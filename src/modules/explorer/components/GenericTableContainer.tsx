@@ -1,16 +1,17 @@
-import { styled, withTheme, Grid } from "@material-ui/core";
-import React from "react";
+import { styled, Grid } from "@material-ui/core";
 
-const ListItemContainer = styled(withTheme(Grid))((props) => ({
+export const GenericTableContainer = styled(Grid)((props) => ({
   background: props.theme.palette.primary.main,
-  paddingLeft: "8%",
-  paddingRight: "8%",
+  padding: "0 8%",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
   },
+  [props.theme.breakpoints.down("sm")]: {
+    padding: "35px 0",
+    borderTop: `2px solid ${props.theme.palette.primary.light}`,
+    "& > div": {
+      borderBottom: `unset`,
+    },
+  },
 }));
-
-export const GenericTableContainer: React.FC<any> = ({ children }) => {
-  return <ListItemContainer>{children}</ListItemContainer>;
-};

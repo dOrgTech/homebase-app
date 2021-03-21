@@ -71,18 +71,20 @@ export const Holdings: React.FC = () => {
       <Grid item xs>
         <HoldingsHeader />
         <ResponsiveGenericTable>
-          <TableHeader item container wrap="nowrap" id="demo">
-            <Grid item xs={6}>
-              <ProposalTableHeadText align={"left"}>
-                TOKEN BALANCES
-              </ProposalTableHeadText>
-            </Grid>
-            <Grid item xs={6}>
-              <ProposalTableHeadText align={"right"}>
-                BALANCE
-              </ProposalTableHeadText>
-            </Grid>
-          </TableHeader>
+          {!isMobileSmall && (
+            <TableHeader item container wrap="nowrap" id="demo">
+              <Grid item xs={6}>
+                <ProposalTableHeadText align={"left"}>
+                  TOKEN BALANCES
+                </ProposalTableHeadText>
+              </Grid>
+              <Grid item xs={6}>
+                <ProposalTableHeadText align={"right"}>
+                  BALANCE
+                </ProposalTableHeadText>
+              </Grid>
+            </TableHeader>
+          )}
           {tokenBalances && tokenBalances.length
             ? tokenBalances.map((token, i) => (
                 <GenericTableContainer key={`token-${i}`}>

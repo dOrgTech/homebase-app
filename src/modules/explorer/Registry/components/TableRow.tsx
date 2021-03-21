@@ -1,9 +1,9 @@
 import React, { useCallback, useContext } from "react";
 import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-import { MoreHorizOutlined } from "@material-ui/icons";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import dayjs from "dayjs";
 import { useParams } from "react-router";
+import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
 
 const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
@@ -23,18 +23,6 @@ const TokenName = styled(withTheme(Paper))((props) => ({
   color: props.theme.palette.text.secondary,
   padding: 6,
 }));
-
-const CustomIcon = styled(MoreHorizOutlined)({
-  background: "#3866F9",
-  borderRadius: 4,
-  paddingLeft: 4,
-  paddingRight: 4,
-  color: "#fff",
-  maxHeight: 22,
-  cursor: "pointer",
-  fill: "#fff",
-  width: 41,
-});
 
 const Cursor = styled(Typography)({
   cursor: "default",
@@ -97,7 +85,7 @@ export const RegistryTableRow: React.FC<{
       </Grid>
       <Grid xs={2} item>
         <Grid container direction="row" justify="flex-end" alignItems="center">
-          <CustomIcon
+          <SettingsIcon
             onClick={(e) => {
               e.stopPropagation();
               dispatch({

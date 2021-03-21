@@ -18,21 +18,11 @@ import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
 import { ViewButton } from "./ViewButton";
+import { RectangleContainer } from "./styled/RectangleHeader";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
-  minHeight: 184,
   boxSizing: "border-box",
-}));
-
-const JustifyEndGrid = styled(Grid)({
-  textAlign: "end",
-});
-
-const MainContainer = styled(Grid)(({ theme }) => ({
-  padding: "44px 8%",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: "4vh",
 }));
 
 const StatsContainer = styled(Grid)(({ theme }) => ({
@@ -44,17 +34,15 @@ const TokensLocked = styled(Grid)({
   padding: "35px 8%",
 });
 
-const Container = styled(Grid)({
-  paddingTop: "4%",
-});
-
 const Subtitle = styled(Typography)({
   marginTop: 12,
 });
 
-const ButtonsContainer = styled(Grid)({
-  marginTop: "6%",
-});
+const ButtonsContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 15,
+  },
+}));
 
 const Cycle = styled(Typography)({
   opacity: 0.8,
@@ -106,6 +94,13 @@ const StatusTitle = styled(Typography)({
   marginRight: 12,
 });
 
+const ProposalStatusBadge = styled(StatusBadge)(({ theme }) => ({
+  marginLeft: 15,
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 15,
+  },
+}));
+
 export const ProposalDetails: React.FC = ({ children }) => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
@@ -128,44 +123,50 @@ export const ProposalDetails: React.FC = ({ children }) => {
   return (
     <>
       <Grid item xs>
-        <MainContainer>
-          <Container container direction="row">
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" color="secondary">
+        <RectangleContainer>
+          <Grid
+            container
+            direction={isMobileSmall ? "column" : "row"}
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography
+                variant="subtitle1"
+                color="secondary"
+                align={isMobileSmall ? "center" : "left"}
+              >
                 {daoName} &gt; PROPOSALS
               </Typography>
             </Grid>
+            <Grid item>
+              {proposal && <ProposalStatusBadge status={proposal.status} />}
+            </Grid>
             <Grid item xs={12}>
               <StyledContainer container direction="row">
-                <Grid item xs={12} sm={6}>
-                  <Subtitle variant="h3" color="textSecondary">
+                <Grid item xs={12} md={6}>
+                  <Subtitle
+                    variant="h3"
+                    color="textSecondary"
+                    align={isMobileSmall ? "center" : "left"}
+                  >
                     Proposal Title
                   </Subtitle>
-                  {proposal && (
-                    <StatusBadge
-                      style={{ marginTop: 12 }}
-                      lg={2}
-                      md={6}
-                      sm={6}
-                      status={proposal.status}
-                      xs={2}
-                    />
-                  )}
                 </Grid>
-                <JustifyEndGrid item xs={12} sm={6}>
+                <Grid item xs={12} md={6}>
                   <ButtonsContainer
                     container
                     direction="row"
                     alignItems="center"
-                    justify={isMobileSmall ? "flex-start" : "flex-end"}
+                    wrap="nowrap"
+                    justify={isMobileSmall ? "center" : "flex-end"}
                   >
                     <VoteDialog />
                   </ButtonsContainer>
-                </JustifyEndGrid>
+                </Grid>
               </StyledContainer>
             </Grid>
-          </Container>
-        </MainContainer>
+          </Grid>
+        </RectangleContainer>
         <RectangleHeader container direction="row">
           <Cycle color="textSecondary">CYCLE: {proposalCycle}</Cycle>
         </RectangleHeader>
