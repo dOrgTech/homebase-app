@@ -5,7 +5,10 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import { Grid, styled, Typography, TextField, Theme } from "@material-ui/core";
 import { useParams } from "react-router-dom";
-
+import VoteForDisabled from "../../../assets/img/up_gray.svg";
+import VoteFor from "../../../assets/img/up_green.svg";
+import VoteAgainst from "../../../assets/img/down_red.svg";
+import VoteAgainstDisabled from "../../../assets/img/down_gray.svg";
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
@@ -87,6 +90,15 @@ const CustomInput = styled(TextField)({
   },
 });
 
+const ArrowIcon = styled("img")(({ theme }) => ({
+  marginLeft: 18,
+  height: 27,
+  width: 25,
+  [theme.breakpoints.down("xs")]: {
+    marginLeft: 12,
+  },
+}));
+
 export const VoteDialog: React.FC = () => {
   const [support, setSupport] = React.useState(true);
   const [open, setOpen] = React.useState(false);
@@ -136,6 +148,11 @@ export const VoteDialog: React.FC = () => {
       >
         VOTE FOR
       </StyledButton>
+      {proposal?.status !== ProposalStatus.ACTIVE ? (
+        <ArrowIcon src={VoteForDisabled} alt="up_disabled" />
+      ) : (
+        <ArrowIcon src={VoteFor} alt="up" />
+      )}
       <StyledButton
         variant="outlined"
         onClick={() => handleClickOpen(false)}
@@ -145,6 +162,11 @@ export const VoteDialog: React.FC = () => {
       >
         VOTE AGAINST
       </StyledButton>
+      {proposal?.status !== ProposalStatus.ACTIVE ? (
+        <ArrowIcon src={VoteAgainstDisabled} alt="down_disabled" />
+      ) : (
+        <ArrowIcon src={VoteAgainst} alt="down" />
+      )}
       <CustomDialog
         open={open}
         onClose={handleClose}
