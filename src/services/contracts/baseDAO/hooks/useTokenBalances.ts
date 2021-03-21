@@ -5,7 +5,7 @@ import { BaseDAO } from "..";
 
 export const SUPPORTED_TOKENS = ["XTZ"];
 
-interface BalanceInfo {
+export interface BalanceInfo {
   name: string;
   balance?: number;
 }

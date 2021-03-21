@@ -38,6 +38,9 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   height: 30,
   paddingTop: 28,
   minWidth: 500,
+  [theme.breakpoints.down("xs")]: {
+    minWidth: 250,
+  },
 }));
 
 const ListItem = styled(Grid)(({ theme }) => ({

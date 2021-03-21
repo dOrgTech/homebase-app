@@ -49,7 +49,7 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
       container
       direction={isMobileSmall ? "column" : "row"}
       alignItems="center"
-      spacing={isMobileSmall ? 4 : 0}
+      spacing={isMobileSmall ? 3 : 0}
     >
       <Grid item sm={5}>
         <TokenName>
@@ -59,7 +59,19 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
           </Cursor>
         </TokenName>
       </Grid>
-      <Grid item sm={5}>
+      <Grid
+        item
+        sm={5}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-end"}
+      >
+        {isMobileSmall ? (
+          <Typography variant="subtitle1" color="textSecondary">
+            BALANCE{" "}
+          </Typography>
+        ) : null}
         <Cursor variant="subtitle1" color="textSecondary" align="right">
           {balance}
         </Cursor>

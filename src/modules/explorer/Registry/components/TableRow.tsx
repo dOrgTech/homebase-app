@@ -1,5 +1,13 @@
 import React, { useCallback, useContext } from "react";
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
+import {
+  Grid,
+  Paper,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import dayjs from "dayjs";
 import { useParams } from "react-router";
@@ -9,6 +17,9 @@ const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: 2,
   height: 83,
+  [theme.breakpoints.down("sm")]: {
+    marginBottom: 12,
+  },
 }));
 
 const TokenName = styled(withTheme(Paper))((props) => ({
@@ -42,6 +53,8 @@ export const RegistryTableRow: React.FC<{
 }> = ({ name, value, lastUpdated }) => {
   const { id } = useParams<{ id: string }>();
   const { dispatch } = useContext(ModalsContext);
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const onClickRow = useCallback(() => {
     dispatch({
@@ -56,12 +69,19 @@ export const RegistryTableRow: React.FC<{
   return (
     <Container
       container
-      direction="row"
+      direction={isMobileSmall ? "column" : "row"}
       alignItems="center"
-      justify="space-between"
+      justify={isMobileSmall ? "center" : "space-between"}
+      spacing={isMobileSmall ? 4 : 0}
       onClick={onClickRow}
     >
-      <Grid item xs={3}>
+      <Grid
+        xs={isMobileSmall ? 12 : 3}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-start"}
+      >
         <TokenName>
           {" "}
           <Cursor variant="subtitle1" color="textSecondary">
@@ -69,15 +89,49 @@ export const RegistryTableRow: React.FC<{
           </Cursor>
         </TokenName>
       </Grid>
-      <Grid item xs={4}>
-        <ValueContainer container direction="row">
+      <Grid
+        item
+        xs={isMobileSmall ? 12 : 4}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-start"}
+      >
+        <ValueContainer
+          container
+          direction="row"
+          alignItems="center"
+          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+        >
+          {isMobileSmall ? (
+            <Typography variant="subtitle1" color="textSecondary">
+              VALUE{" "}
+            </Typography>
+          ) : null}
           <Cursor variant="subtitle1" color="textSecondary">
             {value}
           </Cursor>
         </ValueContainer>
       </Grid>
-      <Grid item xs={3}>
-        <Grid container direction="row">
+      <Grid
+        item
+        xs={isMobileSmall ? 12 : 3}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-start"}
+      >
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+        >
+          {isMobileSmall ? (
+            <Typography variant="subtitle1" color="textSecondary">
+              LAST UPDATED{" "}
+            </Typography>
+          ) : null}
           <Cursor variant="subtitle1" color="textSecondary">
             {dayjs(lastUpdated).format("LLL")}
           </Cursor>

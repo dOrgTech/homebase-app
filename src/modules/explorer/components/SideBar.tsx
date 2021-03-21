@@ -6,7 +6,7 @@ import {
   useTheme,
   Theme,
 } from "@material-ui/core";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { ReactComponent as HouseIcon } from "assets/logos/house.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";

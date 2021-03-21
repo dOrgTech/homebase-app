@@ -42,10 +42,7 @@ export const TemplateHeader: React.FC<{
     <Grid item xs={12}>
       <CustomRectangleContainer container justify="space-between">
         <Grid item xs={12}>
-          <Container
-            container
-            direction={isMobileSmall ? "column" : "row"}
-          >
+          <Container container direction={isMobileSmall ? "column" : "row"}>
             <Grid item xs={12} sm={6}>
               <Typography
                 variant="subtitle1"

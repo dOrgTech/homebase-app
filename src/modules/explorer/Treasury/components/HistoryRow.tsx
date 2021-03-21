@@ -52,6 +52,7 @@ export const TreasuryHistoryRow: React.FC<any> = ({
       direction="row"
       alignItems="center"
       justify="space-between"
+      spacing={isMobileSmall ? 3 : 0}
     >
       <Grid
         item
@@ -73,7 +74,7 @@ export const TreasuryHistoryRow: React.FC<any> = ({
         justify={isMobileSmall ? "space-evenly" : "flex-end"}
       >
         <Typography variant="subtitle1" color="textSecondary" align="right">
-          {isMobileSmall ? "DATE: " : null} {dayjs(date).format("ll")}
+          {isMobileSmall ? "DATE " : null} {dayjs(date).format("ll")}
         </Typography>
       </Grid>
       <Grid
@@ -90,7 +91,7 @@ export const TreasuryHistoryRow: React.FC<any> = ({
         >
           {isMobileSmall ? (
             <Typography variant="subtitle1" color="textSecondary">
-              RECIPIENT:{" "}
+              RECIPIENT{" "}
             </Typography>
           ) : null}
           <TokenName>
@@ -109,7 +110,7 @@ export const TreasuryHistoryRow: React.FC<any> = ({
         justify={isMobileSmall ? "space-evenly" : "flex-end"}
       >
         <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {isMobileSmall ? "AMOUNT: " : null} {amount}
+          {isMobileSmall ? "AMOUNT " : null} {amount}
         </Cursor>
       </Grid>
     </Container>
