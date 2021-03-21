@@ -21,7 +21,7 @@ export const HoldingsHeader: React.FC = () => {
           });
         }}
       >
-        NEW PROPOSAL
+        NEW TRANSFER
       </PrimaryButton>
     </TemplateHeader>
   );

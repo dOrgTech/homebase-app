@@ -13,19 +13,17 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { PrimaryButton } from "./styled/PrimaryButton";
 
-const StyledButton = styled(Button)(
+const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
-    height: 53,
-    color: theme.palette.text.secondary,
     borderColor: support
       ? theme.palette.secondary.main
       : theme.palette.error.main,
-    minWidth: 171,
     marginLeft: 22,
     borderRadius: 4,
     marginTop: 5,
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
     },
   })
@@ -144,6 +142,7 @@ export const VoteDialog: React.FC = () => {
         onClick={() => handleClickOpen(false)}
         support={false}
         disabled={proposal?.status !== ProposalStatus.ACTIVE}
+        style={{ marginLeft: 15 }}
       >
         VOTE AGAINST
       </StyledButton>

@@ -1,10 +1,21 @@
-import React from "react";
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
+import React, { useContext } from "react";
+import {
+  Grid,
+  Paper,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
+import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
+import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
+import { useParams } from "react-router-dom";
 
 const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: 2,
-  height: 83,
+  minHeight: 83,
   [theme.breakpoints.down("sm")]: {
     marginBottom: 12,
   },
@@ -28,14 +39,19 @@ const Cursor = styled(Typography)({
 });
 
 export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const { dispatch } = useContext(ModalsContext);
+  const { id } = useParams<{ id: string }>();
+
   return (
     <Container
       container
-      direction="row"
+      direction={isMobileSmall ? "column" : "row"}
       alignItems="center"
-      justify="space-between"
+      spacing={isMobileSmall ? 4 : 0}
     >
-      <Grid item xs={6}>
+      <Grid item sm={5}>
         <TokenName>
           {" "}
           <Cursor variant="subtitle1" color="textSecondary">
@@ -43,10 +59,25 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
           </Cursor>
         </TokenName>
       </Grid>
-      <Grid item xs={6}>
+      <Grid item sm={5}>
         <Cursor variant="subtitle1" color="textSecondary" align="right">
           {balance}
         </Cursor>
+      </Grid>
+      <Grid sm={2} item>
+        <Grid container direction="row" justify="flex-end" alignItems="center">
+          <SettingsIcon
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: ActionTypes.OPEN_TREASURY_PROPOSAL,
+                payload: {
+                  daoAddress: id,
+                },
+              });
+            }}
+          />
+        </Grid>
       </Grid>
     </Container>
   );
