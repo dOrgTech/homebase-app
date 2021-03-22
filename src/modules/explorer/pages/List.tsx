@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   CircularProgress,
   Grid,
   styled,
@@ -14,6 +13,7 @@ import { useHistory } from "react-router-dom";
 
 import { SearchInput } from "modules/explorer/components/SearchInput";
 import { useDAOs } from "services/contracts/baseDAO/hooks/useDAOs";
+import { PrimaryButton } from "../components/styled/PrimaryButton";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
@@ -58,13 +58,6 @@ const LoaderContainer = styled(Grid)({
   paddingTop: 40,
   paddingBottom: 40,
 });
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  minHeight: 53,
-  color: theme.palette.text.secondary,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-}));
 
 const DaoTotalContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
@@ -150,7 +143,7 @@ export const DAOsList: React.FC = () => {
           container
           item
           direction="row"
-          justify={isMobileSmall ? "flex-start" : "flex-end"}
+          justify={isMobileSmall ? "center" : "flex-end"}
           alignItems="center"
           alignContent="center"
           xs={12}
@@ -162,14 +155,14 @@ export const DAOsList: React.FC = () => {
             </TotalDao>
           </DaoTotalContainer>
           <CreateDaoContainer item>
-            <StyledButton
+            <PrimaryButton
               color="secondary"
               variant="outlined"
               onClick={() => history.push("/creator")}
               fullWidth={isMobileExtraSmall}
             >
               Create DAO
-            </StyledButton>
+            </PrimaryButton>
           </CreateDaoContainer>
         </Grid>
       </GridContainer>
@@ -183,17 +176,29 @@ export const DAOsList: React.FC = () => {
               key={index}
               onClick={() => history.push(`/explorer/dao/${dao.id}`)}
             >
-              <Typography variant="subtitle1" color="secondary">
+              <Typography
+                variant="subtitle1"
+                color="secondary"
+                align={isMobileExtraSmall ? "center" : "left"}
+              >
                 {dao.symbol}
               </Typography>
               <Grid container direction="row" alignItems="center">
                 <Grid item xs={12} lg={6}>
-                  <Typography variant="h5" color="textSecondary">
+                  <Typography
+                    variant="h5"
+                    color="textSecondary"
+                    align={isMobileExtraSmall ? "center" : "left"}
+                  >
                     {dao.name}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} lg={6}>
-                  <Typography variant="subtitle1" color="textSecondary">
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align={isMobileExtraSmall ? "center" : "left"}
+                  >
                     {dao.voting_addresses} VOTING ADDRESSES
                   </Typography>
                 </Grid>

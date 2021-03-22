@@ -1,73 +1,28 @@
-import { Grid, styled, Typography, withTheme } from "@material-ui/core";
+import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useTreasuryInfo } from "services/tzkt/hooks/useTreasuryInfo";
 import { TransactionInfo } from "services/tzkt/types";
-import { Header } from "modules/explorer/components";
-import {
-  TreasuryTableRow,
-  TreasuryHistoryRow,
-} from "modules/explorer/Treasury";
+import { HoldingsHeader } from "modules/explorer/components";
 import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { CopyAddress } from "modules/common/CopyAddress";
-import { ResponsiveTableContainer } from "modules/explorer/components/ResponsiveTable";
-
-const ListItemContainer = styled(withTheme(Grid))((props) => ({
-  background: props.theme.palette.primary.main,
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
-  },
-}));
-
-const MainContainer = styled(Grid)({
-  minHeight: 125,
-  padding: "40px 8% 0 8%",
-});
-
-const BorderBottom = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
-}));
-
-const RightText = styled(Typography)({
-  opacity: 0.8,
-  fontWeight: 400,
-});
-
-const LeftText = styled(Typography)({
-  fontWeight: 700,
-});
-
-const ProposalTableHeadText: React.FC<{ align: any }> = ({ children, align }) =>
-  align === "left" ? (
-    <LeftText variant="subtitle1" color="textSecondary" align={align}>
-      {children}
-    </LeftText>
-  ) : (
-    <RightText variant="subtitle1" color="textSecondary" align={align}>
-      {children}
-    </RightText>
-  );
-
-const NoProposals = styled(Typography)({
-  marginTop: 20,
-  marginBottom: 20,
-});
+import { HistoryTable } from "../components/HistoryTable";
+import { TokenTable } from "../components/TokenBalancesTable";
+import { TabPanel } from "modules/explorer/components/TabPanel";
+import { AppTabBar } from "modules/explorer/components/AppTabBar";
 
 export const Holdings: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
   }>();
-  const { data: dao } = useDAO(id);
 
   const { data: tokenBalances } = useTokenBalances(id);
   const [treasuryMovements, setTreasuryMovements] = useState<TransactionInfo[]>(
     []
   );
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const transactions = useTreasuryInfo(id);
 
@@ -76,85 +31,32 @@ export const Holdings: React.FC = () => {
       setTreasuryMovements(transactions.data);
     }
   }, [transactions]);
+  const [selectedTab, setSelectedTab] = React.useState(0);
 
   return (
     <>
       <Grid item xs>
-        <MainContainer container justify="space-between">
-          <Grid item xs={12}>
-            <Header name={"MY GREAT TOKEN"} />
-            {dao && <CopyAddress address={dao.address} />}
-          </Grid>
-        </MainContainer>
-        <ResponsiveTableContainer>
-          <Grid container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={6}>
-                  <ProposalTableHeadText align={"left"}>
-                    TOKEN BALANCES
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={6}>
-                  <ProposalTableHeadText align={"right"}>
-                    BALANCE
-                  </ProposalTableHeadText>
-                </Grid>
-              </BorderBottom>
-            </Grid>
-          </Grid>
-
-          {tokenBalances && tokenBalances.length
-            ? tokenBalances.map((token, i) => (
-                <ListItemContainer key={`token-${i}`}>
-                  <TreasuryTableRow {...token} />
-                </ListItemContainer>
-              ))
-            : null}
-        </ResponsiveTableContainer>
-
-        <ResponsiveTableContainer>
-          <Grid container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={6}>
-                  <ProposalTableHeadText align={"left"}>
-                    TOKEN TRANSFER HISTORY
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"right"}>
-                    DATE
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"right"}>
-                    RECIPIENT
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"right"}>
-                    AMOUNT
-                  </ProposalTableHeadText>
-                </Grid>
-              </BorderBottom>
-            </Grid>
-          </Grid>
-
-          {treasuryMovements.length
-            ? treasuryMovements.map((token, i) => (
-                <ListItemContainer key={`token-${i}`}>
-                  <TreasuryHistoryRow {...token} />
-                </ListItemContainer>
-              ))
-            : null}
-
-          {history.length === 0 ? (
-            <NoProposals variant="subtitle1" color="textSecondary">
-              No active proposals
-            </NoProposals>
-          ) : null}
-        </ResponsiveTableContainer>
+        <HoldingsHeader />
+        {isMobileSmall ? (
+          <>
+            <AppTabBar
+              value={selectedTab}
+              setValue={setSelectedTab}
+              labels={["TOKEN BALANCES", "TRANSFER HISTORY"]}
+            />
+            <TabPanel value={selectedTab} index={0}>
+              <TokenTable tokenBalances={tokenBalances} />
+            </TabPanel>
+            <TabPanel value={selectedTab} index={1}>
+              <HistoryTable treasuryMovements={treasuryMovements} />
+            </TabPanel>
+          </>
+        ) : (
+          <>
+            <TokenTable tokenBalances={tokenBalances} />
+            <HistoryTable treasuryMovements={treasuryMovements} />
+          </>
+        )}
       </Grid>
     </>
   );

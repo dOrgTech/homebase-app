@@ -1,11 +1,17 @@
-import React from "react";
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-
-const Container = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: 2,
-  height: 83,
-}));
+import React, { useContext } from "react";
+import {
+  Grid,
+  Paper,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
+import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
+import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
+import { useParams } from "react-router-dom";
+import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 
 const TokenName = styled(withTheme(Paper))((props) => ({
   border: "2px solid rgba(255, 255, 255, 0.2)",
@@ -25,14 +31,18 @@ const Cursor = styled(Typography)({
 });
 
 export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const { dispatch } = useContext(ModalsContext);
+  const { id } = useParams<{ id: string }>();
+
   return (
-    <Container
+    <TemplateTableRowContainer
       container
-      direction="row"
+      direction={isMobileSmall ? "column" : "row"}
       alignItems="center"
-      justify="space-between"
     >
-      <Grid item xs={6}>
+      <Grid item sm={5}>
         <TokenName>
           {" "}
           <Cursor variant="subtitle1" color="textSecondary">
@@ -40,11 +50,38 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
           </Cursor>
         </TokenName>
       </Grid>
-      <Grid item xs={6}>
+      <Grid
+        item
+        sm={5}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-end"}
+      >
+        {isMobileSmall ? (
+          <Typography variant="subtitle1" color="textSecondary">
+            BALANCE{" "}
+          </Typography>
+        ) : null}
         <Cursor variant="subtitle1" color="textSecondary" align="right">
           {balance}
         </Cursor>
       </Grid>
-    </Container>
+      <Grid sm={2} item>
+        <Grid container direction="row" justify="flex-end" alignItems="center">
+          <SettingsIcon
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({
+                type: ActionTypes.OPEN_TREASURY_PROPOSAL,
+                payload: {
+                  daoAddress: id,
+                },
+              });
+            }}
+          />
+        </Grid>
+      </Grid>
+    </TemplateTableRowContainer>
   );
 };

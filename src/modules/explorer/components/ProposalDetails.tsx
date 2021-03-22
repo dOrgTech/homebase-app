@@ -1,6 +1,6 @@
 import {
-  Box,
   Grid,
+  Paper,
   styled,
   Typography,
   useMediaQuery,
@@ -11,34 +11,18 @@ import React from "react";
 import { useParams } from "react-router";
 
 import { ProgressBar as CustomBar } from "modules/explorer/components";
-import { UpVotesDialog } from "modules/explorer/components/VotersDialog";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
-import { StatsBox } from "modules/explorer/components/StatsBox";
 import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
+import { ViewButton } from "./ViewButton";
+import { RectangleContainer } from "./styled/RectangleHeader";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
-  minHeight: 184,
   boxSizing: "border-box",
-}));
-
-const JustifyEndGrid = styled(Grid)({
-  textAlign: "end",
-});
-
-const MainContainer = styled(Grid)(({ theme }) => ({
-  padding: "40px 8%",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: "4vh",
-}));
-
-const CycleContainer = styled(Grid)(({ theme }) => ({
-  padding: "20px 8%",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
 const StatsContainer = styled(Grid)(({ theme }) => ({
@@ -46,43 +30,78 @@ const StatsContainer = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
-const TokensLocked = styled(StatsBox)(({ theme }) => ({
-  padding: "0 50px 0 8%",
-  [theme.breakpoints.down("sm")]: {
-    padding: "50px 8%",
-  },
-}));
-
-const TextAgainst = styled(Typography)(({ theme }) => ({
-  color: `${theme.palette.error.main} !important`,
-}));
-
-const Container = styled(Grid)({
-  paddingTop: "4%",
+const TokensLocked = styled(Grid)({
+  padding: "35px 8%",
 });
 
 const Subtitle = styled(Typography)({
   marginTop: 12,
 });
 
-const ButtonsContainer = styled(Grid)({
-  marginTop: "6%",
-});
+const ButtonsContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 15,
+  },
+}));
 
 const Cycle = styled(Typography)({
   opacity: 0.8,
 });
 
-const DetailsContainer = styled(Grid)({
+const DetailsContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 0,
   padding: "40px 8%",
+  [theme.breakpoints.down("sm")]: {
+    padding: "40px 0",
+  },
+}));
+
+const TitleText = styled(Typography)({
+  fontWeight: "bold",
 });
 
-interface Props {
-  ProposalDetails: React.ReactNode;
-}
+const DescriptionText = styled(Typography)({
+  paddingTop: 28,
+  paddingBottom: 10,
+});
 
-export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
+const RectangleHeader = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  padding: "20px 8%",
+}));
+
+const DetailsHeader = styled(RectangleHeader)(({ theme }) => ({
+  borderTop: `2px solid ${theme.palette.primary.light}`,
+  margin: "20px 0 35px 0",
+}));
+
+const GreenDot = styled(Paper)(({ theme }) => ({
+  width: 9,
+  height: 9,
+  marginRight: 9,
+  background: theme.palette.secondary.main,
+}));
+
+const RedDot = styled(Paper)(({ theme }) => ({
+  width: 9,
+  height: 9,
+  marginRight: 9,
+  background: theme.palette.error.main,
+}));
+
+const StatusTitle = styled(Typography)({
+  fontWeight: "bold",
+  marginRight: 12,
+});
+
+const ProposalStatusBadge = styled(StatusBadge)(({ theme }) => ({
+  marginLeft: 15,
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 15,
+  },
+}));
+
+export const ProposalDetails: React.FC = ({ children }) => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
@@ -104,52 +123,108 @@ export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
   return (
     <>
       <Grid item xs>
-        <MainContainer>
-          <Container container direction="row">
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" color="secondary">
+        <RectangleContainer>
+          <Grid
+            container
+            direction={isMobileSmall ? "column" : "row"}
+            alignItems="center"
+          >
+            <Grid item>
+              <Typography
+                variant="subtitle1"
+                color="secondary"
+                align={isMobileSmall ? "center" : "left"}
+              >
                 {daoName} &gt; PROPOSALS
               </Typography>
             </Grid>
+            <Grid item>
+              {proposal && <ProposalStatusBadge status={proposal.status} />}
+            </Grid>
             <Grid item xs={12}>
               <StyledContainer container direction="row">
-                <Grid item xs={12} sm={6}>
-                  <Subtitle variant="h3" color="textSecondary">
+                <Grid item xs={12} md={6}>
+                  <Subtitle
+                    variant="h3"
+                    color="textSecondary"
+                    align={isMobileSmall ? "center" : "left"}
+                  >
                     Proposal Title
                   </Subtitle>
-                  <Subtitle color="textSecondary">
-                    Proposal Description
-                  </Subtitle>
-                  {proposal && (
-                    <StatusBadge
-                      style={{ marginTop: 12 }}
-                      lg={2}
-                      md={6}
-                      sm={6}
-                      status={proposal.status}
-                      xs={2}
-                    />
-                  )}
                 </Grid>
-                <JustifyEndGrid item xs={12} sm={6}>
+                <Grid item xs={12} md={6}>
                   <ButtonsContainer
                     container
                     direction="row"
                     alignItems="center"
-                    justify={isMobileSmall ? "flex-start" : "flex-end"}
+                    wrap="nowrap"
+                    justify={isMobileSmall ? "center" : "flex-end"}
                   >
                     <VoteDialog />
                   </ButtonsContainer>
-                </JustifyEndGrid>
+                </Grid>
               </StyledContainer>
             </Grid>
-          </Container>
-        </MainContainer>
-        <CycleContainer container direction="row">
+          </Grid>
+        </RectangleContainer>
+        <RectangleHeader container direction="row">
           <Cycle color="textSecondary">CYCLE: {proposalCycle}</Cycle>
-        </CycleContainer>
+        </RectangleHeader>
         <StatsContainer container>
-          <TokensLocked
+          <TokensLocked container direction="row" alignItems="center">
+            <Grid item xs={12}>
+              <Typography color="secondary">VOTES</Typography>
+            </Grid>
+            <Grid item xs={12} container direction="row" alignItems="center">
+              <Grid item xs={8} container direction="row" alignItems="center">
+                <Grid
+                  item
+                  xs={isMobileSmall ? 12 : 4}
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <GreenDot />
+                  <StatusTitle color="textSecondary">SUPPORT: </StatusTitle>
+                  <Typography color="textSecondary">
+                    {upVotes} ({upVotesPercentage}%){" "}
+                  </Typography>
+                </Grid>
+
+                <Grid
+                  xs={isMobileSmall ? 12 : 4}
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <RedDot />
+                  <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
+                  <Typography color="textSecondary">
+                    {downVotes} ({downVotesPercentage}%){" "}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              <Grid
+                xs={4}
+                container
+                direction="row"
+                alignItems="center"
+                justify="flex-end"
+              >
+                <ViewButton variant="outlined">VIEW</ViewButton>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <CustomBar
+                favor={true}
+                variant="determinate"
+                value={upVotesPercentage}
+                color="secondary"
+              />
+            </Grid>
+          </TokensLocked>
+          {/* <TokensLocked
             item
             xs={12}
             sm={6}
@@ -194,9 +269,9 @@ export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
                 </Typography>
               </Grid>
             </Grid>
-          </TokensLocked>
+          </TokensLocked> */}
 
-          <TokensLocked
+          {/* <TokensLocked
             item
             xs={12}
             sm={6}
@@ -238,10 +313,37 @@ export const ProposalsPageBase: React.FC<Props> = ({ ProposalDetails }) => {
                 </Typography>
               </Grid>
             </Grid>
-          </TokensLocked>
+          </TokensLocked> */}
         </StatsContainer>
         <DetailsContainer container direction="row">
-          {ProposalDetails}
+          <Grid item xs={12} md={7} style={{ paddingBottom: 40 }}>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={12}>
+                <TitleText
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align={isMobileSmall ? "center" : "left"}
+                >
+                  Proposal
+                </TitleText>
+                <DescriptionText
+                  variant="subtitle1"
+                  color="textSecondary"
+                  align={isMobileSmall ? "center" : "left"}
+                >
+                  Proposal Description
+                </DescriptionText>
+              </Grid>
+              {children}
+            </Grid>
+          </Grid>
+          {isMobileSmall && (
+            <DetailsHeader xs={12} alignItems="center" container>
+              <TitleText variant="subtitle1" color="textSecondary">
+                DETAILS
+              </TitleText>
+            </DetailsHeader>
+          )}
           <ProposalStatusHistory />
         </DetailsContainer>
       </Grid>

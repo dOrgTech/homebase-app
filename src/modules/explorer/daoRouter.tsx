@@ -4,12 +4,11 @@ import React from "react";
 import { DAO } from "modules/explorer/pages/DAO";
 import { Holdings } from "modules/explorer/Treasury/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
-import { ProposalsPageBase } from "modules/explorer/components/ProposalsPageBase";
 import { Registry } from "./Registry/pages/Registry";
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { SideBar } from "./components";
-import { ProposalDetails as TreausuryProposalDetails } from "./Treasury/components/ProposalDetails";
-import { ProposalDetails as RegistryProposalDetails } from "./Registry/components/ProposalDetails";
+import { RegistryProposalDetails } from "./Registry/components/ProposalDetails";
+import { TreasuryProposalDetails } from "./Treasury/components/ProposalDetails";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -34,11 +33,11 @@ export const DAORouter = (): JSX.Element => {
       <Switch>
         <Route path={`${match.url}/:id/proposal/treasury/:proposalId`}>
           <SideBar />
-          <ProposalsPageBase ProposalDetails={<TreausuryProposalDetails />} />
+          <TreasuryProposalDetails />
         </Route>
         <Route path={`${match.url}/:id/proposal/registry/:proposalId`}>
           <SideBar />
-          <ProposalsPageBase ProposalDetails={<RegistryProposalDetails />} />
+          <RegistryProposalDetails />
         </Route>
         <Route path={`${match.url}/:id/proposals`}>
           <SideBar />
