@@ -10,6 +10,9 @@ const useButtonStyles = makeStyles({
       backgroundColor: ({ color }: { color: string }) => hexToRgba(color, 0.04),
       borderColor: ({ color }: { color: string }) => color,
     },
+    height: 36,
+    borderWidth: 3,
+    borderRadius: 10,
   },
 });
 

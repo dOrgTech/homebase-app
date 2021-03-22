@@ -4,8 +4,9 @@ import {
   IconButton,
   useMediaQuery,
   useTheme,
+  Theme,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import { ReactComponent as HouseIcon } from "assets/logos/house.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
@@ -13,6 +14,7 @@ import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import debounce from "lodash/debounce";
 
 const Bar = styled(Grid)(({ theme }) => ({
   minWidth: 102,
@@ -48,17 +50,44 @@ const ButtonIcon = ({
   );
 };
 
-const StyledBottomBar = styled(Grid)(({ theme }) => ({
-  position: "fixed",
-  bottom: 0,
-  backgroundColor: theme.palette.primary.main,
-  borderTop: `2px solid ${theme.palette.primary.light}`,
-  zIndex: 10000,
-}));
+const StyledBottomBar = styled(Grid)(
+  ({ theme, visible }: { theme: Theme; visible: boolean }) => ({
+    position: "fixed",
+    height: 55,
+    bottom: visible ? 0 : -55,
+    backgroundColor: theme.palette.primary.main,
+    borderTop: `2px solid ${theme.palette.primary.light}`,
+    zIndex: 10000,
+    width: "100%",
+    transition: "bottom 0.5s",
+  })
+);
 
 const BottomNavBar: React.FC = ({ children }) => {
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = debounce(() => {
+      const currentScrollPos = window.pageYOffset;
+
+      setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+
+      setPrevScrollPos(currentScrollPos);
+    }, 100);
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScrollPos, visible]);
+
   return (
-    <StyledBottomBar container direction={"row"} justify={"space-evenly"}>
+    <StyledBottomBar
+      container
+      direction={"row"}
+      justify={"space-evenly"}
+      visible={visible}
+    >
       {children}
     </StyledBottomBar>
   );

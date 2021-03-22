@@ -1,15 +1,18 @@
 import React, { useCallback, useContext } from "react";
-import { Grid, Paper, styled, Typography, withTheme } from "@material-ui/core";
-import { MoreHorizOutlined } from "@material-ui/icons";
+import {
+  Grid,
+  Paper,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import dayjs from "dayjs";
 import { useParams } from "react-router";
-
-const Container = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: 2,
-  height: 83,
-}));
+import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
+import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 
 const TokenName = styled(withTheme(Paper))((props) => ({
   border: "2px solid rgba(255, 255, 255, 0.2)",
@@ -23,18 +26,6 @@ const TokenName = styled(withTheme(Paper))((props) => ({
   color: props.theme.palette.text.secondary,
   padding: 6,
 }));
-
-const CustomIcon = styled(MoreHorizOutlined)({
-  background: "#3866F9",
-  borderRadius: 4,
-  paddingLeft: 4,
-  paddingRight: 4,
-  color: "#fff",
-  maxHeight: 22,
-  cursor: "pointer",
-  fill: "#fff",
-  width: 41,
-});
 
 const Cursor = styled(Typography)({
   cursor: "default",
@@ -54,6 +45,8 @@ export const RegistryTableRow: React.FC<{
 }> = ({ name, value, lastUpdated }) => {
   const { id } = useParams<{ id: string }>();
   const { dispatch } = useContext(ModalsContext);
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const onClickRow = useCallback(() => {
     dispatch({
@@ -66,14 +59,20 @@ export const RegistryTableRow: React.FC<{
   }, [dispatch, name, value]);
 
   return (
-    <Container
+    <TemplateTableRowContainer
       container
       direction="row"
       alignItems="center"
-      justify="space-between"
+      justify={isMobileSmall ? "center" : "space-between"}
       onClick={onClickRow}
     >
-      <Grid item xs={3}>
+      <Grid
+        xs={isMobileSmall ? 12 : 3}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-start"}
+      >
         <TokenName>
           {" "}
           <Cursor variant="subtitle1" color="textSecondary">
@@ -81,15 +80,57 @@ export const RegistryTableRow: React.FC<{
           </Cursor>
         </TokenName>
       </Grid>
-      <Grid item xs={4}>
-        <ValueContainer container direction="row">
+      <Grid
+        item
+        xs={isMobileSmall ? 12 : 4}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-start"}
+      >
+        <ValueContainer
+          container
+          direction="row"
+          alignItems="center"
+          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+        >
+          {isMobileSmall ? (
+            <Typography
+              variant="subtitle1"
+              color="textSecondary"
+              style={{ fontWeight: "bold" }}
+            >
+              VALUE:
+            </Typography>
+          ) : null}
           <Cursor variant="subtitle1" color="textSecondary">
             {value}
           </Cursor>
         </ValueContainer>
       </Grid>
-      <Grid item xs={3}>
-        <Grid container direction="row">
+      <Grid
+        item
+        xs={isMobileSmall ? 12 : 3}
+        container
+        direction="row"
+        alignItems="center"
+        justify={isMobileSmall ? "space-evenly" : "flex-start"}
+      >
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+        >
+          {isMobileSmall ? (
+            <Typography
+              variant="subtitle1"
+              color="textSecondary"
+              style={{ fontWeight: "bold" }}
+            >
+              LAST UPDATED:
+            </Typography>
+          ) : null}
           <Cursor variant="subtitle1" color="textSecondary">
             {dayjs(lastUpdated).format("LLL")}
           </Cursor>
@@ -97,7 +138,7 @@ export const RegistryTableRow: React.FC<{
       </Grid>
       <Grid xs={2} item>
         <Grid container direction="row" justify="flex-end" alignItems="center">
-          <CustomIcon
+          <SettingsIcon
             onClick={(e) => {
               e.stopPropagation();
               dispatch({
@@ -112,6 +153,6 @@ export const RegistryTableRow: React.FC<{
           />
         </Grid>
       </Grid>
-    </Container>
+    </TemplateTableRowContainer>
   );
 };
