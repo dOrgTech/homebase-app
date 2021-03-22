@@ -53,6 +53,7 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
 
 const Description = styled(Typography)({
   maxWidth: 225,
+  minHeight: 70,
   textAlign: "center",
   marginBottom: 32,
 });
@@ -147,7 +148,7 @@ export const SelectTemplate = (): JSX.Element => {
                     color="textSecondary"
                     align="center"
                   >
-                    Non-profits, Companies, Founders
+                    Manage resources (tez, FA2) collectively
                   </Description>
                 </Grid>
               </CustomCardContent>
@@ -188,7 +189,7 @@ export const SelectTemplate = (): JSX.Element => {
                   justify="center"
                 >
                   <Description variant="subtitle1" color="textSecondary">
-                    Non-profits, Companies, Founders
+                    Govern arbitrary smart contracts, curate marketplaces, and more
                   </Description>
                 </Grid>
               </CustomCardContent>
