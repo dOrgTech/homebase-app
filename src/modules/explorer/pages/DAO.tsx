@@ -166,7 +166,7 @@ export const DAO: React.FC = () => {
                         <ViewButton
                           variant="outlined"
                           onClick={onFlush}
-                          disabled={!data}
+                          disabled={!data?.storage.proposalsToFlush}
                         >
                           EXECUTE
                         </ViewButton>

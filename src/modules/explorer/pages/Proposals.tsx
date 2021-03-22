@@ -124,9 +124,9 @@ export const Proposals: React.FC = () => {
                   <ViewButton
                     variant="outlined"
                     onClick={onFlush}
-                    disabled={!dao}
+                    disabled={!dao?.storage.proposalsToFlush}
                   >
-                    FLUSH
+                    EXECUTE
                   </ViewButton>
                   <Tooltip title="Execute all passed proposals and drop all expired or rejected">
                     <InfoIconInput color="secondary" />
