@@ -21,6 +21,8 @@ import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { ProposalsTable } from "../components/ProposalsTable";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
+import { AppTabBar } from "../components/AppTabBar";
+import { TabPanel } from "../components/TabPanel";
 
 const InfoIconInput = styled(Info)({
   cursor: "default",
@@ -43,6 +45,7 @@ export const Proposals: React.FC = () => {
   const { mutate } = useFlush();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const [selectedTab, setSelectedTab] = React.useState(0);
 
   const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
@@ -152,10 +155,27 @@ export const Proposals: React.FC = () => {
           </ButtonsContainer>
         </RectangleContainer>
         <DAOStatsRow />
-        <ProposalsTable
-          headerText="Active Proposals"
-          status={ProposalStatus.ACTIVE}
+        <AppTabBar
+          value={selectedTab}
+          setValue={setSelectedTab}
+          labels={["ACTIVE PROPOSALS", "PASSED PROPOSALS", "ALL PROPOSALS"]}
         />
+        <TabPanel value={selectedTab} index={0}>
+          <ProposalsTable
+            headerText="Active Proposals"
+            status={ProposalStatus.ACTIVE}
+          />
+        </TabPanel>
+        <TabPanel value={selectedTab} index={1}>
+          <ProposalsTable
+            headerText="Passed Proposals"
+            status={ProposalStatus.PASSED}
+          />
+        </TabPanel>
+        <TabPanel value={selectedTab} index={2}>
+          <ProposalsTable headerText="All Proposals" />
+        </TabPanel>
+
         {/* <ProposalsContainer
             container
             direction="row"
@@ -170,12 +190,6 @@ export const Proposals: React.FC = () => {
               LOAD MORE
             </UnderlineText>
           </ProposalsContainer> */}
-
-        <ProposalsTable
-          headerText="Passed Proposals"
-          status={ProposalStatus.PASSED}
-        />
-        <ProposalsTable headerText="All Proposals" />
       </Grid>
     </>
   );

@@ -1,5 +1,4 @@
 import React from "react";
-import { Box, Typography } from "@material-ui/core";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -18,11 +17,7 @@ export const TabPanel = (props: TabPanelProps) => {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <>{children}</>}
     </div>
   );
 };

@@ -17,7 +17,9 @@ const Container = styled(Grid)(({ theme }) => ({
   padding: 2,
   minHeight: 83,
   [theme.breakpoints.down("sm")]: {
-    marginBottom: 12,
+    "& > div": {
+      paddingBottom: 24,
+    },
   },
 }));
 
@@ -49,7 +51,6 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
       container
       direction={isMobileSmall ? "column" : "row"}
       alignItems="center"
-      spacing={isMobileSmall ? 3 : 0}
     >
       <Grid item sm={5}>
         <TokenName>

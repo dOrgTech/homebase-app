@@ -77,8 +77,7 @@ export const Registry: React.FC = () => {
             <AppTabBar
               value={value}
               setValue={setValue}
-              label1={"REGISTRY ITEMS"}
-              label2={"UPDATE HISTORY"}
+              labels={["REGISTRY ITEMS", "UPDATE HISTORY"]}
             />
             <TabPanel value={value} index={0}>
               <RegistryItemsTable

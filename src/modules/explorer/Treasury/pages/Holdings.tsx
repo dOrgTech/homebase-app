@@ -31,7 +31,7 @@ export const Holdings: React.FC = () => {
       setTreasuryMovements(transactions.data);
     }
   }, [transactions]);
-  const [value, setValue] = React.useState(0);
+  const [selectedTab, setSelectedTab] = React.useState(0);
 
   return (
     <>
@@ -40,34 +40,21 @@ export const Holdings: React.FC = () => {
         {isMobileSmall ? (
           <>
             <AppTabBar
-              value={value}
-              setValue={setValue}
-              label1={"TOKEN BALANCES"}
-              label2={"TRANSFER HISTORY"}
+              value={selectedTab}
+              setValue={setSelectedTab}
+              labels={["TOKEN BALANCES", "TRANSFER HISTORY"]}
             />
-            <TabPanel value={value} index={0}>
-              <TokenTable
-                isMobileSmall={isMobileSmall}
-                tokenBalances={tokenBalances}
-              />
+            <TabPanel value={selectedTab} index={0}>
+              <TokenTable tokenBalances={tokenBalances} />
             </TabPanel>
-            <TabPanel value={value} index={1}>
-              <HistoryTable
-                isMobileSmall={isMobileSmall}
-                treasuryMovements={treasuryMovements}
-              />
+            <TabPanel value={selectedTab} index={1}>
+              <HistoryTable treasuryMovements={treasuryMovements} />
             </TabPanel>
           </>
         ) : (
           <>
-            <TokenTable
-              isMobileSmall={isMobileSmall}
-              tokenBalances={tokenBalances}
-            />
-            <HistoryTable
-              isMobileSmall={isMobileSmall}
-              treasuryMovements={treasuryMovements}
-            />
+            <TokenTable tokenBalances={tokenBalances} />
+            <HistoryTable treasuryMovements={treasuryMovements} />
           </>
         )}
       </Grid>

@@ -1,5 +1,11 @@
 import React from "react";
-import { Grid, styled, Typography } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import { GenericTableContainer } from "modules/explorer/components/GenericTableContainer";
 import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
@@ -13,9 +19,11 @@ const NoProposals = styled(Typography)({
 });
 
 export const HistoryTable: React.FC<{
-  isMobileSmall: boolean;
   treasuryMovements: Array<TransactionInfo>;
-}> = ({ isMobileSmall, treasuryMovements }) => {
+}> = ({ treasuryMovements }) => {
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (

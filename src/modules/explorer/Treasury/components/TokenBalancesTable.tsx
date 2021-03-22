@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
 import { GenericTableContainer } from "modules/explorer/components/GenericTableContainer";
 import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
@@ -8,9 +8,11 @@ import { TreasuryTableRow } from "..";
 import { ProposalTableHeadText } from "./TableHeader";
 
 export const TokenTable: React.FC<{
-  isMobileSmall: boolean;
   tokenBalances: Array<BalanceInfo> | undefined;
-}> = ({ isMobileSmall, tokenBalances }) => {
+}> = ({ tokenBalances }) => {
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
