@@ -11,17 +11,7 @@ import {
 import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { useParams } from "react-router-dom";
-
-const Container = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: 2,
-  minHeight: 83,
-  [theme.breakpoints.down("sm")]: {
-    "& > div": {
-      paddingBottom: 24,
-    },
-  },
-}));
+import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 
 const TokenName = styled(withTheme(Paper))((props) => ({
   border: "2px solid rgba(255, 255, 255, 0.2)",
@@ -47,7 +37,7 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
   const { id } = useParams<{ id: string }>();
 
   return (
-    <Container
+    <TemplateTableRowContainer
       container
       direction={isMobileSmall ? "column" : "row"}
       alignItems="center"
@@ -92,6 +82,6 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
           />
         </Grid>
       </Grid>
-    </Container>
+    </TemplateTableRowContainer>
   );
 };

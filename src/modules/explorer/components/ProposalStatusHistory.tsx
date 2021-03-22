@@ -14,6 +14,8 @@ import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import dayjs from "dayjs";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { formatNumber } from "../utils/FormatNumber";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useVotesStats } from "../hooks/useVotesStats";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
@@ -61,10 +63,15 @@ export const ProposalStatusHistory: React.FC = () => {
     proposalId: string;
     id: string;
   }>();
+  const { data: dao } = useDAO(daoId);
+  const { data: proposal } = useProposal(daoId, proposalId);
 
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const { data: proposal } = useProposal(daoId, proposalId);
+  const { votesQuorumPercentage } = useVotesStats({
+    upVotes: proposal?.upVotes || 0,
+    downVotes: proposal?.downVotes || 0,
+    quorumTreshold: dao?.storage.quorumTreshold || 0,
+  });
 
   const history = useMemo(() => {
     if (!proposal) {
@@ -122,7 +129,7 @@ export const ProposalStatusHistory: React.FC = () => {
         </HistoryContent>
         <HistoryContent item xs={12}>
           <ProgressBar
-            progress={90}
+            progress={votesQuorumPercentage}
             radius={50}
             strokeWidth={7}
             strokeColor="#3866F9"
@@ -131,7 +138,7 @@ export const ProposalStatusHistory: React.FC = () => {
           >
             <div className="indicator">
               <ProgressText textColor="#3866F9">
-                {formatNumber(90)}%
+                {formatNumber(votesQuorumPercentage)}%
               </ProgressText>
             </div>
           </ProgressBar>

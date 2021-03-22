@@ -52,13 +52,12 @@ export const TreasuryHistoryRow: React.FC<any> = ({
       direction="row"
       alignItems="center"
       justify="space-between"
-      spacing={isMobileSmall ? 3 : 0}
     >
       <Grid
         item
         xs={isMobileSmall ? 12 : 6}
         container
-        justify={isMobileSmall ? "space-evenly" : "flex-start"}
+        justify={isMobileSmall ? "center" : "flex-start"}
       >
         <TokenName>
           {" "}
@@ -71,9 +70,13 @@ export const TreasuryHistoryRow: React.FC<any> = ({
         item
         xs={isMobileSmall ? 12 : 2}
         container
-        justify={isMobileSmall ? "space-evenly" : "flex-end"}
+        justify={isMobileSmall ? "center" : "flex-end"}
       >
-        <Typography variant="subtitle1" color="textSecondary" align="right">
+        <Typography
+          variant="subtitle1"
+          color="textSecondary"
+          align={isMobileSmall ? "center" : "right"}
+        >
           {isMobileSmall ? "DATE " : null} {dayjs(date).format("ll")}
         </Typography>
       </Grid>
@@ -81,16 +84,15 @@ export const TreasuryHistoryRow: React.FC<any> = ({
         xs={isMobileSmall ? 12 : 3}
         item
         container
-        justify={isMobileSmall ? "space-evenly" : "flex-end"}
+        justify={isMobileSmall ? "center" : "flex-end"}
       >
-        <Grid
-          container
-          direction="row"
-          justify={isMobileSmall ? "space-evenly" : "center"}
-          alignItems="center"
-        >
+        <Grid container direction="row" justify={"center"} alignItems="center">
           {isMobileSmall ? (
-            <Typography variant="subtitle1" color="textSecondary">
+            <Typography
+              variant="subtitle1"
+              color="textSecondary"
+              align={isMobileSmall ? "center" : "right"}
+            >
               RECIPIENT{" "}
             </Typography>
           ) : null}
@@ -107,7 +109,7 @@ export const TreasuryHistoryRow: React.FC<any> = ({
         item
         xs={isMobileSmall ? 12 : 1}
         container
-        justify={isMobileSmall ? "space-evenly" : "flex-end"}
+        justify={isMobileSmall ? "center" : "flex-end"}
       >
         <Cursor variant="subtitle1" color="textSecondary" align="right">
           {isMobileSmall ? "AMOUNT " : null} {amount}

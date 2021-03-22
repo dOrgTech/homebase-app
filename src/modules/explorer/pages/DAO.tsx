@@ -300,7 +300,7 @@ export const DAO: React.FC = () => {
             <UnderlineText
               variant="subtitle1"
               color="secondary"
-              onClick={() => history.push(`/explorer/proposals/${id}`)}
+              onClick={() => history.push(`/explorer/dao/${id}/proposals`)}
             >
               VIEW ALL PROPOSALS
             </UnderlineText>

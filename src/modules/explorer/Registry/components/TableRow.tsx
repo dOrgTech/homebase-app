@@ -12,15 +12,7 @@ import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import dayjs from "dayjs";
 import { useParams } from "react-router";
 import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
-
-const Container = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: 2,
-  height: 83,
-  [theme.breakpoints.down("sm")]: {
-    marginBottom: 12,
-  },
-}));
+import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 
 const TokenName = styled(withTheme(Paper))((props) => ({
   border: "2px solid rgba(255, 255, 255, 0.2)",
@@ -67,12 +59,11 @@ export const RegistryTableRow: React.FC<{
   }, [dispatch, name, value]);
 
   return (
-    <Container
+    <TemplateTableRowContainer
       container
-      direction={isMobileSmall ? "column" : "row"}
+      direction="row"
       alignItems="center"
       justify={isMobileSmall ? "center" : "space-between"}
-      spacing={isMobileSmall ? 4 : 0}
       onClick={onClickRow}
     >
       <Grid
@@ -104,8 +95,12 @@ export const RegistryTableRow: React.FC<{
           justify={isMobileSmall ? "space-evenly" : "flex-start"}
         >
           {isMobileSmall ? (
-            <Typography variant="subtitle1" color="textSecondary">
-              VALUE{" "}
+            <Typography
+              variant="subtitle1"
+              color="textSecondary"
+              style={{ fontWeight: "bold" }}
+            >
+              VALUE:
             </Typography>
           ) : null}
           <Cursor variant="subtitle1" color="textSecondary">
@@ -128,8 +123,12 @@ export const RegistryTableRow: React.FC<{
           justify={isMobileSmall ? "space-evenly" : "flex-start"}
         >
           {isMobileSmall ? (
-            <Typography variant="subtitle1" color="textSecondary">
-              LAST UPDATED{" "}
+            <Typography
+              variant="subtitle1"
+              color="textSecondary"
+              style={{ fontWeight: "bold" }}
+            >
+              LAST UPDATED:
             </Typography>
           ) : null}
           <Cursor variant="subtitle1" color="textSecondary">
@@ -154,6 +153,6 @@ export const RegistryTableRow: React.FC<{
           />
         </Grid>
       </Grid>
-    </Container>
+    </TemplateTableRowContainer>
   );
 };
