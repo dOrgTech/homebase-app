@@ -5,6 +5,8 @@ import {
   Paper,
   styled,
   Typography,
+  useMediaQuery,
+  useTheme,
   withTheme,
 } from "@material-ui/core";
 import dayjs from "dayjs";
@@ -13,6 +15,14 @@ const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: 2,
   height: 83,
+  [theme.breakpoints.down("sm")]: {
+    minHeight: 183,
+    marginBottom: 16,
+    borderBottom: `unset`,
+    "& > div": {
+      paddingBottom: 16,
+    },
+  },
 }));
 
 const TokenName = styled(withTheme(Paper))((props) => ({
@@ -43,6 +53,8 @@ const DescriptionText = styled(Typography)({
 export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
   const localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <Link href="https://better-call.dev/" target="_blank">
       <Container
@@ -51,7 +63,13 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
         alignItems="center"
         justify="space-between"
       >
-        <Grid item xs={4}>
+        <Grid
+          item
+          xs={isMobileSmall ? 12 : 4}
+          container
+          alignItems="center"
+          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+        >
           <TokenName>
             {" "}
             <Cursor variant="subtitle1" color="textSecondary">
@@ -59,36 +77,65 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
             </Cursor>
           </TokenName>
         </Grid>
-        <Grid item xs={3}>
+        <Grid
+          item
+          xs={isMobileSmall ? 12 : 3}
+          container
+          alignItems="center"
+          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+        >
           <DescriptionText
             variant="subtitle1"
             color="textSecondary"
-            align="left"
+            align={isMobileSmall ? "center" : "left"}
           >
             Proposal title
           </DescriptionText>
         </Grid>
-        <Grid xs={3} item>
+        <Grid item xs={isMobileSmall ? 12 : 3}>
           <Grid
             container
             direction="row"
-            justify="flex-end"
+            xs={12}
+            item
+            justify={isMobileSmall ? "space-evenly" : "flex-end"}
             alignItems="center"
           >
-            {" "}
             <DescriptionText
               variant="subtitle1"
               color="textSecondary"
-              align="left"
+              align={isMobileSmall ? "center" : "left"}
             >
-              <Cursor variant="subtitle1" color="textSecondary">
-                {dayjs(date).format("ll")}
-              </Cursor>
+              {isMobileSmall ? (
+                <span style={{ fontWeight: "bold" }}>DATE:</span>
+              ) : null}{" "}
+              {dayjs(date).format("ll")}
             </DescriptionText>
           </Grid>
         </Grid>
-        <Grid item xs={2}>
-          <Grid container direction="row">
+        <Grid
+          item
+          xs={isMobileSmall ? 12 : 2}
+          container
+          alignItems="center"
+          justify={isMobileSmall ? "center" : "flex-start"}
+        >
+          <Grid
+            container
+            direction="row"
+            xs={12}
+            alignItems="center"
+            justify={isMobileSmall ? "center" : "flex-start"}
+          >
+            {isMobileSmall ? (
+              <Typography
+                variant="subtitle1"
+                color="textSecondary"
+                style={{ paddingRight: 12, fontWeight: "bold" }}
+              >
+                PROPOSAL:
+              </Typography>
+            ) : null}
             <TokenName>
               <Cursor variant="subtitle1" color="textSecondary">
                 {address.slice(0, 6)}...

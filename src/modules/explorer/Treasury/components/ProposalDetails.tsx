@@ -1,31 +1,26 @@
 import React from "react";
-import { Grid, Typography, styled } from "@material-ui/core";
+import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { mutezToXtz, toShortAddress } from "services/contracts/utils";
+import { ProposalDetails } from "modules/explorer/components/ProposalDetails";
+import { TransferBadge } from "./TransferBadge";
 
-const BoxItem = styled(Grid)(({ theme }) => ({
-  paddingBottom: 24,
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
+const Container = styled(Grid)({
+  paddingTop: 21,
+});
 
-const Detail = styled(Grid)(({ theme }) => ({
-  height: 93,
-  display: "flex",
-  alignItems: "center",
-  paddingBottom: 0,
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
-
-export const ProposalDetails = () => {
+export const TreasuryProposalDetails = () => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
   }>();
   const { data: proposalData } = useProposal(daoId, proposalId);
   const proposal = proposalData as TreasuryProposalWithStatus | undefined;
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const transfers = useMemo(() => {
     if (!proposal || !proposal.transfers) {
@@ -33,9 +28,6 @@ export const ProposalDetails = () => {
     }
 
     return proposal.transfers.map((transfer) => {
-      //TODO: can the from be different?
-      const from = "DAO's treasury";
-
       const to =
         transfer.beneficiary.toLowerCase() === daoId.toLowerCase()
           ? "DAO's treasury"
@@ -49,42 +41,29 @@ export const ProposalDetails = () => {
           ? mutezToXtz(transfer.amount)
           : transfer.amount;
 
-      return `Transfer ${value}${currency} from ${from} to ${to}`;
+      return {
+        value,
+        to,
+        currency,
+      };
     });
   }, [proposal, daoId]);
 
   return (
-    <Grid item xs={12} sm={6} style={{ paddingBottom: 40 }}>
-      <Grid container direction="row">
-        <BoxItem item xs={12}>
-          <Typography variant="subtitle1" color="textSecondary">
-            DETAILS
-          </Typography>
-        </BoxItem>
-
-        {transfers.map((item, index) => {
-          return (
-            <Detail item xs={12} key={index}>
-              <Grid container direction="row">
-                <Grid item xs={2}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="center"
-                  >
-                    {index + 1}
-                  </Typography>
-                </Grid>
-                <Grid item xs={10}>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    {item}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Detail>
-          );
-        })}
-      </Grid>
-    </Grid>
+    <ProposalDetails>
+      {transfers.map(({ value, to, currency }, index) => {
+        return (
+          <Container
+            item
+            key={index}
+            container
+            alignItems="center"
+            direction={isMobileSmall ? "column" : "row"}
+          >
+            <TransferBadge amount={value} address={to} currency={currency} />
+          </Container>
+        );
+      })}
+    </ProposalDetails>
   );
 };

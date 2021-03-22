@@ -1,10 +1,8 @@
-import { Box, Grid, styled, Typography, withTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
+import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 
 import { RegistryHeader } from "../components/RegistryHeader";
-import { RegistryTableRow } from "../components/TableRow";
-import { RegistryHistoryRow } from "../components/HistoryRow";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { RegistryDAO } from "services/contracts/baseDAO";
 import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
@@ -14,70 +12,18 @@ import {
   ProposalStatus,
   RegistryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
-
-const ListItemContainer = styled(withTheme(Grid))((props) => ({
-  paddingLeft: 112,
-  background: props.theme.palette.primary.main,
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
-  },
-}));
-
-const MainContainer = styled(Grid)(({ theme }) => ({
-  minHeight: 125,
-  padding: "40px 112px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
-
-const TableContainer = styled(Box)({
-  width: "100%",
-  padding: "72px 112px",
-  boxSizing: "border-box",
-  paddingBottom: "24px",
-  paddingLeft: 0,
-});
-
-const TableHeader = styled(Grid)({
-  paddingLeft: 112,
-});
-
-const BorderBottom = styled(Grid)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingBottom: 20,
-}));
-
-const RightText = styled(Typography)({
-  opacity: 0.8,
-  fontWeight: 400,
-});
-
-const LeftText = styled(Typography)({
-  fontWeight: 700,
-});
-
-const ProposalTableHeadText: React.FC<{ align: any }> = ({ children, align }) =>
-  align === "left" ? (
-    <LeftText variant="subtitle1" color="textSecondary" align={align}>
-      {children}
-    </LeftText>
-  ) : (
-    <RightText variant="subtitle1" color="textSecondary" align={align}>
-      {children}
-    </RightText>
-  );
-
-const NoProposals = styled(Typography)({
-  marginTop: 20,
-  marginBottom: 20,
-  paddingLeft: 112,
-});
+import { RegistryItemsTable } from "../components/RegistryItemsTable";
+import { HistoryTable } from "../components/HistoryTable";
+import { AppTabBar } from "modules/explorer/components/AppTabBar";
+import { TabPanel } from "modules/explorer/components/TabPanel";
 
 export const Registry: React.FC = () => {
   const { id } = useParams<{
     proposalId: string;
     id: string;
   }>();
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { data: daoData } = useDAO(id);
   const dao = daoData as RegistryDAO | undefined;
@@ -119,96 +65,42 @@ export const Registry: React.FC = () => {
     }));
   }, [registryData]);
 
+  const [value, setValue] = React.useState(0);
+
   return (
     <>
       <Grid item xs>
-        <MainContainer container justify="space-between">
-          <Grid item xs={12}>
-            <RegistryHeader name={"MY GREAT TOKEN"} />
-          </Grid>
-        </MainContainer>
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    REGISTRY ITEMS
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={4}>
-                  <Grid item container direction="row">
-                    <ProposalTableHeadText align={"left"}>
-                      VALUE
-                    </ProposalTableHeadText>
-                  </Grid>
-                </Grid>
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    LAST UPDATED
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}></Grid>
-              </BorderBottom>
-            </Grid>
-          </TableHeader>
+        <RegistryHeader />
 
-          {registryList.map((item, i) => (
-            <ListItemContainer key={`item-${i}`}>
-              <RegistryTableRow {...item} />
-            </ListItemContainer>
-          ))}
-          {registryList.length === 0 ? (
-            <ListItemContainer>
-              <NoProposals variant="subtitle1" color="textSecondary">
-                No registry items
-              </NoProposals>
-            </ListItemContainer>
-          ) : null}
-        </TableContainer>
-
-        <TableContainer>
-          <TableHeader container wrap="nowrap">
-            <Grid item xs={12}>
-              <BorderBottom item container wrap="nowrap">
-                <Grid item xs={4}>
-                  <ProposalTableHeadText align={"left"}>
-                    UPDATE HISTORY
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    PROPOSAL TITLE
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={3}>
-                  <ProposalTableHeadText align={"left"}>
-                    DATE
-                  </ProposalTableHeadText>
-                </Grid>
-                <Grid item xs={2}>
-                  <ProposalTableHeadText align={"left"}>
-                    PROPOSAL
-                  </ProposalTableHeadText>
-                </Grid>
-              </BorderBottom>
-            </Grid>
-          </TableHeader>
-
-          {proposals.map((item, i) => (
-            <ListItemContainer key={`item-${i}`}>
-              <RegistryHistoryRow {...item} />
-            </ListItemContainer>
-          ))}
-
-          {proposals.length === 0 ? (
-            <ListItemContainer>
-              <NoProposals variant="subtitle1" color="textSecondary">
-                No entries
-              </NoProposals>
-            </ListItemContainer>
-          ) : null}
-        </TableContainer>
+        {isMobileSmall ? (
+          <>
+            <AppTabBar
+              value={value}
+              setValue={setValue}
+              labels={["REGISTRY ITEMS", "UPDATE HISTORY"]}
+            />
+            <TabPanel value={value} index={0}>
+              <RegistryItemsTable
+                isMobileSmall={isMobileSmall}
+                registryList={registryList}
+              />
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              <HistoryTable
+                isMobileSmall={isMobileSmall}
+                proposals={proposals}
+              />
+            </TabPanel>
+          </>
+        ) : (
+          <>
+            <RegistryItemsTable
+              isMobileSmall={isMobileSmall}
+              registryList={registryList}
+            />
+            <HistoryTable isMobileSmall={isMobileSmall} proposals={proposals} />
+          </>
+        )}
       </Grid>
     </>
   );
