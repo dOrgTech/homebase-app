@@ -53,6 +53,7 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
 
 const Description = styled(Typography)({
   maxWidth: 225,
+  minHeight: 70,
   textAlign: "center",
   marginBottom: 32,
 });
