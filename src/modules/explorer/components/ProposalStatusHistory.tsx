@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import dayjs from "dayjs";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { formatNumber } from "../utils/FormatNumber";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
@@ -129,7 +130,9 @@ export const ProposalStatusHistory: React.FC = () => {
             trackStrokeColor={theme.palette.primary.light}
           >
             <div className="indicator">
-              <ProgressText textColor="#3866F9">{90}%</ProgressText>
+              <ProgressText textColor="#3866F9">
+                {formatNumber(90)}%
+              </ProgressText>
             </div>
           </ProgressBar>
         </HistoryContent>
@@ -146,7 +149,7 @@ export const ProposalStatusHistory: React.FC = () => {
         </HistoryContent>
         {proposal && (
           <HistoryContent item xs={12}>
-            <UserBadge address={proposal.proposer} />
+            <UserBadge address={proposal.proposer} full={true} />
           </HistoryContent>
         )}
         <HistoryContent item xs={12}>

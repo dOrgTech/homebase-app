@@ -19,6 +19,7 @@ import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
 import { ViewButton } from "./ViewButton";
 import { RectangleContainer } from "./styled/RectangleHeader";
+import { formatNumber } from "../utils/FormatNumber";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -187,7 +188,7 @@ export const ProposalDetails: React.FC = ({ children }) => {
                   <GreenDot />
                   <StatusTitle color="textSecondary">SUPPORT: </StatusTitle>
                   <Typography color="textSecondary">
-                    {upVotes} ({upVotesPercentage}%){" "}
+                    {upVotes} ({formatNumber(Number(upVotesPercentage))}%){" "}
                   </Typography>
                 </Grid>
 
@@ -200,7 +201,7 @@ export const ProposalDetails: React.FC = ({ children }) => {
                   <RedDot />
                   <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
                   <Typography color="textSecondary">
-                    {downVotes} ({downVotesPercentage}%){" "}
+                    {downVotes} ({formatNumber(Number(downVotesPercentage))}%){" "}
                   </Typography>
                 </Grid>
               </Grid>

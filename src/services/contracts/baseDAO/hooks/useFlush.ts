@@ -19,6 +19,7 @@ export const useFlush = () => {
       } = openNotification({
         message: "Please sign the transaction to flush",
         persist: true,
+        variant: "info",
       });
       try {
         const data = await params.dao.flush(params.numOfProposalsToFlush);
