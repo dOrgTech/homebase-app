@@ -24,7 +24,7 @@ export const RegistryItemsTable: React.FC<{
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
-        <TableHeader item container wrap="nowrap" id="demo">
+        <TableHeader item container wrap="nowrap" id="demo" alignItems="center">
           <Grid item xs={3}>
             <ProposalTableHeadText align={"left"}>
               REGISTRY ITEMS

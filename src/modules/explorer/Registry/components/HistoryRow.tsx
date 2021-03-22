@@ -16,8 +16,12 @@ const Container = styled(Grid)(({ theme }) => ({
   padding: 2,
   height: 83,
   [theme.breakpoints.down("sm")]: {
-    height: 183,
+    minHeight: 183,
     marginBottom: 16,
+    borderBottom: `unset`,
+    "& > div": {
+      paddingBottom: 16,
+    },
   },
 }));
 
@@ -58,7 +62,6 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
         direction="row"
         alignItems="center"
         justify="space-between"
-        spacing={isMobileSmall ? 3 : 0}
       >
         <Grid
           item
@@ -84,7 +87,7 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
           <DescriptionText
             variant="subtitle1"
             color="textSecondary"
-            align="left"
+            align={isMobileSmall ? "center" : "left"}
           >
             Proposal title
           </DescriptionText>
@@ -98,19 +101,15 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
             justify={isMobileSmall ? "space-evenly" : "flex-end"}
             alignItems="center"
           >
-            {isMobileSmall ? (
-              <Typography variant="subtitle1" color="textSecondary">
-                DATE{" "}
-              </Typography>
-            ) : null}
             <DescriptionText
               variant="subtitle1"
               color="textSecondary"
-              align="left"
+              align={isMobileSmall ? "center" : "left"}
             >
-              <Cursor variant="subtitle1" color="textSecondary">
-                {dayjs(date).format("ll")}
-              </Cursor>
+              {isMobileSmall ? (
+                <span style={{ fontWeight: "bold" }}>DATE:</span>
+              ) : null}{" "}
+              {dayjs(date).format("ll")}
             </DescriptionText>
           </Grid>
         </Grid>
@@ -119,18 +118,22 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
           xs={isMobileSmall ? 12 : 2}
           container
           alignItems="center"
-          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+          justify={isMobileSmall ? "center" : "flex-start"}
         >
           <Grid
             container
             direction="row"
             xs={12}
             alignItems="center"
-            justify={isMobileSmall ? "space-evenly" : "flex-start"}
+            justify={isMobileSmall ? "center" : "flex-start"}
           >
             {isMobileSmall ? (
-              <Typography variant="subtitle1" color="textSecondary">
-                PROPOSAL{" "}
+              <Typography
+                variant="subtitle1"
+                color="textSecondary"
+                style={{ paddingRight: 12, fontWeight: "bold" }}
+              >
+                PROPOSAL:
               </Typography>
             ) : null}
             <TokenName>
