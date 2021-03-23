@@ -139,10 +139,6 @@ const InfoIconInput = styled(InfoOutlined)({
   cursor: "default",
 });
 
-const StakeContainer = styled(Grid)({
-  display: "block",
-});
-
 //@TODO: Remove any from this component
 const GovernanceForm = ({
   submitForm,
