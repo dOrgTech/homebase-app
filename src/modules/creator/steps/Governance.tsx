@@ -188,6 +188,7 @@ const GovernanceForm = ({
 
   return (
     <>
+      {console.log(JSON.stringify(errors))}
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -318,8 +319,8 @@ const GovernanceForm = ({
             </GridItemCenter>
           </ItemContainer>
         </AdditionContainer>
-        {errors.proposeStakeRequired ? (
-          <ErrorText>{errors.proposeStakeRequired}</ErrorText>
+        {(errors.proposeStakeRequired || errors.proposeStakePercentage) ? (
+          <ErrorText>{errors.proposeStakeRequired || errors.proposeStakePercentage}</ErrorText>
         ) : null}
       </StakeContainer>
 
