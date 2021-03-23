@@ -159,6 +159,7 @@ interface Values {
   transfers: Transfer[];
   description: string;
   agoraPostId: number;
+  title: string;
 }
 
 const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0 };
@@ -166,6 +167,7 @@ const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
   description: "",
   agoraPostId: 0,
+  title: "",
 };
 
 export const NewTreasuryProposalDialog: React.FC = () => {
@@ -375,9 +377,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                     justify="flex-end"
                                   >
                                     <Field
-                                      name={`transfers.${
-                                        activeTransfer - 1
-                                      }.recipient`}
+                                      name={`transfers.${activeTransfer - 1
+                                        }.recipient`}
                                       type="string"
                                       placeholder="Type an Address Here"
                                       component={CustomTextField}
@@ -402,9 +403,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                     justify="flex-end"
                                   >
                                     <Field
-                                      name={`transfers.${
-                                        activeTransfer - 1
-                                      }.amount`}
+                                      name={`transfers.${activeTransfer - 1
+                                        }.amount`}
                                       type="number"
                                       placeholder="Type an Amount"
                                       component={CustomTextField}
@@ -435,6 +435,48 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                   variant="subtitle1"
                                   color="textSecondary"
                                 >
+                                  Proposal Title
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  align="right"
+                                  variant="subtitle1"
+                                  color="textSecondary"
+                                >
+                                  {values.title
+                                    ? values.title.trim().split(" ")
+                                      .length
+                                    : 0}{" "}
+                                  Words
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Field
+                              name="title"
+                              type="number"
+                              multiline
+                              rows={6}
+                              placeholder="Type a Title"
+                              component={CustomTextarea}
+                            />
+                          </Grid>
+                        </DescriptionContainer>
+                        <DescriptionContainer container direction="row">
+                          <Grid item xs={12}>
+                            <Grid
+                              container
+                              direction="row"
+                              alignItems="center"
+                              justify="space-between"
+                            >
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="subtitle1"
+                                  color="textSecondary"
+                                >
                                   Proposal Description
                                 </Typography>
                               </Grid>
@@ -446,7 +488,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 >
                                   {values.description
                                     ? values.description.trim().split(" ")
-                                        .length
+                                      .length
                                     : 0}{" "}
                                   Words
                                 </Typography>

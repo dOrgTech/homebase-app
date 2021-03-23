@@ -164,12 +164,14 @@ const CustomTextarea = styled(TextField)({
 interface Values {
   list: Registry[];
   description: string;
+  title: string;
 }
 
 const EMPTY_LIST_ITEM: Registry = { key: "", value: "" };
 const INITIAL_FORM_VALUES: Values = {
   list: [EMPTY_LIST_ITEM],
   description: "",
+  title: "",
 };
 
 export const UpdateRegistryDialog: React.FC = () => {
@@ -463,6 +465,47 @@ export const UpdateRegistryDialog: React.FC = () => {
                           </>
                         )}
                       />
+                      <DescriptionContainer container direction="row">
+                        <Grid item xs={12}>
+                          <Grid
+                            container
+                            direction="row"
+                            alignItems="center"
+                            justify="space-between"
+                          >
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="subtitle1"
+                                color="textSecondary"
+                              >
+                                Proposal Title
+                              </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                              <Typography
+                                align="right"
+                                variant="subtitle1"
+                                color="textSecondary"
+                              >
+                                {values.title
+                                  ? values.title.trim().split(" ").length
+                                  : 0}{" "}
+                                Words
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Field
+                            name="title"
+                            type="number"
+                            multiline
+                            rows={6}
+                            placeholder="Type a Title"
+                            component={CustomTextarea}
+                          />
+                        </Grid>
+                      </DescriptionContainer>
                       <DescriptionContainer container direction="row">
                         <Grid item xs={12}>
                           <Grid
