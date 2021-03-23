@@ -27,6 +27,7 @@ import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
+import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -111,13 +112,6 @@ const styles = {
   },
 };
 
-const DescriptionContainer = styled(Grid)({
-  minHeight: 250,
-  paddingLeft: 24,
-  paddingRight: 24,
-  paddingTop: 24,
-});
-
 const UploadFileLabel = styled("label")(({ theme }) => ({
   height: 53,
   color: theme.palette.secondary.main,
@@ -133,19 +127,6 @@ const CustomTextField = styled(TextField)({
   "& .MuiInputBase-input": {
     textAlign: "end",
     paddingRight: 12,
-  },
-});
-
-const CustomTextarea = styled(TextField)({
-  textAlign: "end",
-  "& .MuiInputBase-multiline": {
-    textAlign: "initial",
-    border: "1px solid #434242",
-    boxSizing: "border-box",
-    "& .MuiInputBase-inputMultiline": {
-      padding: 12,
-      textAlign: "initial",
-    },
   },
 });
 
@@ -422,90 +403,10 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                             </>
                           )}
                         />
-                        <DescriptionContainer container direction="row">
-                          <Grid item xs={12}>
-                            <Grid
-                              container
-                              direction="row"
-                              alignItems="center"
-                              justify="space-between"
-                            >
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="subtitle1"
-                                  color="textSecondary"
-                                >
-                                  Proposal Title
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography
-                                  align="right"
-                                  variant="subtitle1"
-                                  color="textSecondary"
-                                >
-                                  {values.title
-                                    ? values.title.trim().split(" ")
-                                      .length
-                                    : 0}{" "}
-                                  Words
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Field
-                              name="title"
-                              type="number"
-                              multiline
-                              rows={6}
-                              placeholder="Type a Title"
-                              component={CustomTextarea}
-                            />
-                          </Grid>
-                        </DescriptionContainer>
-                        <DescriptionContainer container direction="row">
-                          <Grid item xs={12}>
-                            <Grid
-                              container
-                              direction="row"
-                              alignItems="center"
-                              justify="space-between"
-                            >
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="subtitle1"
-                                  color="textSecondary"
-                                >
-                                  Proposal Description
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography
-                                  align="right"
-                                  variant="subtitle1"
-                                  color="textSecondary"
-                                >
-                                  {values.description
-                                    ? values.description.trim().split(" ")
-                                      .length
-                                    : 0}{" "}
-                                  Words
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Field
-                              name="description"
-                              type="number"
-                              multiline
-                              rows={6}
-                              placeholder="Type a Description"
-                              component={CustomTextarea}
-                            />
-                          </Grid>
-                        </DescriptionContainer>
+
+                        <ProposalTextContainer title="Proposal Title" value={values.title}/>
+
+                        <ProposalTextContainer title="Proposal Description" value={values.title}/>
 
                         <UploadButtonContainer container direction="row">
                           <UploadFileLabel>
