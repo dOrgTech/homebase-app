@@ -18,6 +18,7 @@ import { toShortAddress } from "services/contracts/utils";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { RowContainer } from "./tables/RowContainer";
+import { formatNumber } from "../utils/FormatNumber";
 
 export interface ProposalTableRowData {
   cycle: number;
@@ -151,7 +152,7 @@ export const ProposalTableRow: React.FC<
             >
               <div className="indicator">
                 <ProgressText textColor={color}>
-                  {Number(votesSumPercentage.toFixed(1))}%
+                  {formatNumber(Number(votesSumPercentage))}%
                 </ProgressText>
               </div>
             </ProgressBar>
@@ -178,7 +179,7 @@ export const ProposalTableRow: React.FC<
             >
               <div className="indicator">
                 <ProgressText textColor="#3866F9">
-                  {Number(votesQuorumPercentage.toFixed(1))}%
+                  {formatNumber(Number(votesQuorumPercentage))}%
                 </ProgressText>
               </div>
             </ProgressBar>

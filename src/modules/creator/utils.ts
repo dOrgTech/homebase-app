@@ -41,6 +41,10 @@ export const handleGovernanceFormErrors = (
     errors.votingMinutes = "The voting time must be greater than 0 minutes";
   }
 
+  if (proposeStakeRequired < 0) {
+    errors.proposeStakeRequired = "Negative values not allowed";
+  }
+
   if (votingDays < 0) {
     errors.votingMinutes = "Negative values not allowed";
   }

@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { mutezToXtz, toShortAddress } from "services/contracts/utils";
+import { mutezToXtz } from "services/contracts/utils";
 import { ProposalDetails } from "modules/explorer/components/ProposalDetails";
 import { TransferBadge } from "./TransferBadge";
 
@@ -31,7 +31,7 @@ export const TreasuryProposalDetails = () => {
       const to =
         transfer.beneficiary.toLowerCase() === daoId.toLowerCase()
           ? "DAO's treasury"
-          : toShortAddress(transfer.beneficiary);
+          : transfer.beneficiary;
 
       const currency =
         transfer.currency === "mutez" ? "XTZ" : transfer.currency;
@@ -60,7 +60,12 @@ export const TreasuryProposalDetails = () => {
             alignItems="center"
             direction={isMobileSmall ? "column" : "row"}
           >
-            <TransferBadge amount={value} address={to} currency={currency} />
+            <TransferBadge
+              amount={value}
+              address={to}
+              currency={currency}
+              long={true}
+            />
           </Container>
         );
       })}
