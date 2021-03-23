@@ -7,9 +7,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  LinearProgress,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
@@ -23,11 +23,14 @@ const CloseButton = styled(Typography)({
   cursor: "pointer",
 });
 
-const Title = styled(DialogTitle)({
+const Title = styled(DialogTitle)(({ theme }) => ({
   height: 30,
   paddingBottom: 0,
   minWidth: 500,
-});
+  [theme.breakpoints.down("xs")]: {
+    minWidth: 250,
+  },
+}));
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthSm": {
@@ -59,9 +62,10 @@ const TableHeader = styled(Grid)({
   padding: "33px 64px",
 });
 
-const LinearBar = styled(ProgressBar)({
+const LinearBar = styled(LinearProgress)({
   marginBottom: "-3px",
   marginTop: 30,
+  backgroundColor: "#3d3d3d !important",
 });
 
 export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
@@ -164,7 +168,6 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       value={
                         totalLocked ? (holder.tokens / totalLocked) * 100 : 0
                       }
-                      favor={true}
                     />
                   </Grid>
                   <Grid item xs={6}>

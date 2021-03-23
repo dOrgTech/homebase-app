@@ -351,6 +351,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                         values.transfers.length + 1,
                                         EMPTY_TRANSFER
                                       );
+                                      setActiveTransfer(activeTransfer + 1);
                                     }}
                                   >
                                     +
