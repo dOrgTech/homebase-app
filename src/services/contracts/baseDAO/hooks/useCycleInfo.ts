@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 
 const calculateTimeLeft = (originationTime?: string, votingPeriod?: number) => {
@@ -16,7 +16,18 @@ export const useCycleInfo = (
   originationTime?: string,
   votingPeriod?: number
 ) => {
-  return useMemo(() => {
-    return calculateTimeLeft(originationTime, votingPeriod);
+  const [timeLeft, setTimeLeft] = useState<{
+    time: number;
+    current: number;
+  }>();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const result = calculateTimeLeft(originationTime, votingPeriod);
+      setTimeLeft(result);
+    }, 1000);
+    return () => clearInterval(interval);
   }, [originationTime, votingPeriod]);
+
+  return timeLeft;
 };

@@ -53,11 +53,12 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
 
 const Description = styled(Typography)({
   maxWidth: 225,
+  minHeight: 70,
   textAlign: "center",
   marginBottom: 32,
 });
 
-const CustomCardContent = styled(CardContent)({
+const CustomCardContent = styled(CardContent)(({ theme }) => ({
   padding: "27px 37px 0px 37px",
   "&:last-child": {
     paddingBottom: "0px",
@@ -65,7 +66,10 @@ const CustomCardContent = styled(CardContent)({
   textAlign: "left",
   minHeight: 168,
   minWidth: 280,
-});
+  [theme.breakpoints.down("xs")]: {
+    minWidth: "unset",
+  },
+}));
 
 const Phrase = styled(Typography)({
   marginTop: 12,
@@ -144,7 +148,7 @@ export const SelectTemplate = (): JSX.Element => {
                     color="textSecondary"
                     align="center"
                   >
-                    Non-profits, Companies, Founders
+                    Manage resources (tez, FA2) collectively
                   </Description>
                 </Grid>
               </CustomCardContent>
@@ -185,7 +189,7 @@ export const SelectTemplate = (): JSX.Element => {
                   justify="center"
                 >
                   <Description variant="subtitle1" color="textSecondary">
-                    Non-profits, Companies, Founders
+                    Govern arbitrary smart contracts, curate marketplaces, and more
                   </Description>
                 </Grid>
               </CustomCardContent>

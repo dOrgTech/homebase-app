@@ -1,37 +1,33 @@
 import React, { useCallback } from "react";
-import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import {
-  Grid,
-  styled,
-  Typography,
-  TextField,
-  Theme,
-  Box,
-} from "@material-ui/core";
+import { Grid, styled, Typography, TextField, Theme } from "@material-ui/core";
 import { useParams } from "react-router-dom";
-
+import VoteForDisabled from "../../../assets/img/up_gray.svg";
+import VoteFor from "../../../assets/img/up_green.svg";
+import VoteAgainst from "../../../assets/img/down_red.svg";
+import VoteAgainstDisabled from "../../../assets/img/down_gray.svg";
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { PrimaryButton } from "./styled/PrimaryButton";
 
-const StyledButton = styled(Button)(
+const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
-    height: 53,
-    color: theme.palette.text.secondary,
     borderColor: support
       ? theme.palette.secondary.main
       : theme.palette.error.main,
-    minWidth: 171,
     marginLeft: 22,
     borderRadius: 4,
     marginTop: 5,
+    [theme.breakpoints.down("sm")]: {
+      marginLeft: 0,
+    },
   })
 );
 
@@ -94,6 +90,15 @@ const CustomInput = styled(TextField)({
   },
 });
 
+const ArrowIcon = styled("img")(({ theme }) => ({
+  marginLeft: 18,
+  height: 27,
+  width: 25,
+  [theme.breakpoints.down("xs")]: {
+    marginLeft: 12,
+  },
+}));
+
 export const VoteDialog: React.FC = () => {
   const [support, setSupport] = React.useState(true);
   const [open, setOpen] = React.useState(false);
@@ -134,7 +139,7 @@ export const VoteDialog: React.FC = () => {
   }, [amount, connect, dao, mutate, proposalId, support, tezos]);
 
   return (
-    <Box>
+    <>
       <StyledButton
         variant="outlined"
         onClick={() => handleClickOpen(true)}
@@ -143,14 +148,25 @@ export const VoteDialog: React.FC = () => {
       >
         VOTE FOR
       </StyledButton>
+      {proposal?.status !== ProposalStatus.ACTIVE ? (
+        <ArrowIcon src={VoteForDisabled} alt="up_disabled" />
+      ) : (
+        <ArrowIcon src={VoteFor} alt="up" />
+      )}
       <StyledButton
         variant="outlined"
         onClick={() => handleClickOpen(false)}
         support={false}
         disabled={proposal?.status !== ProposalStatus.ACTIVE}
+        style={{ marginLeft: 15 }}
       >
         VOTE AGAINST
       </StyledButton>
+      {proposal?.status !== ProposalStatus.ACTIVE ? (
+        <ArrowIcon src={VoteAgainstDisabled} alt="down_disabled" />
+      ) : (
+        <ArrowIcon src={VoteAgainst} alt="down" />
+      )}
       <CustomDialog
         open={open}
         onClose={handleClose}
@@ -221,6 +237,6 @@ export const VoteDialog: React.FC = () => {
           </DialogContentText>
         </DialogContent>
       </CustomDialog>
-    </Box>
+    </>
   );
 };

@@ -20,11 +20,9 @@
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-hooks/recommended",
-    "prettier/@typescript-eslint",
-    "plugin:prettier/recommended"
+    "prettier"
   ],
   "rules": {
-    "prettier/prettier": "warn",
     "@typescript-eslint/no-explicit-any": "off",
     "react/prop-types": "off",
     "@typescript-eslint/no-var-requires": "off",

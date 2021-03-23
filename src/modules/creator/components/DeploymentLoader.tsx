@@ -101,6 +101,7 @@ export const DeploymentLoader: React.FC<Props> = ({
   activeStep,
   error,
 }) => {
+  const errorMessage = "Something went wrong, please try again later."
   const [focusedState, setFocusedState] = useState(0);
   const isFinished = activeStep === states.length;
   const isStarted = Number.isInteger(activeStep);
@@ -125,7 +126,7 @@ export const DeploymentLoader: React.FC<Props> = ({
           <WaitingText variant="subtitle1" color="textSecondary">
             {showActiveText
               ? error
-                ? error.message
+                ? errorMessage
                 : states[focusedState].activeText
               : showCompletedText
               ? states[focusedState].completedText

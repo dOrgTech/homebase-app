@@ -41,6 +41,10 @@ const SpacingContainer = styled(Grid)({
   marginTop: 25,
 });
 
+const StakeContainer = styled(Grid)({
+  display: "block",
+});
+
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
   border: `1px solid ${theme.palette.primary.light}`,
   height: 62,

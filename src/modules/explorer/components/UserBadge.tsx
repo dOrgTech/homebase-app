@@ -1,32 +1,54 @@
-import { Grid, styled, Typography } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  Link,
+  useTheme,
+  useMediaQuery,
+} from "@material-ui/core";
 import { Blockie } from "modules/common/Blockie";
 import React from "react";
 import { toShortAddress } from "services/contracts/utils";
-import hexToRgba from "hex-to-rgba";
+import { HighlightedBadge } from "./styled/HighlightedBadge";
 
-const Container = styled(Grid)(({ theme }) => ({
-  backgroundColor: hexToRgba(theme.palette.secondary.light, 0.07),
-  boxSizing: "border-box",
-  padding: 8,
-  width: "fit-content",
-  borderRadius: 4,
-}));
-
-export const UserBadge: React.FC<{ address: string }> = ({ address }) => {
+export const UserBadge: React.FC<{ address: string; full?: boolean }> = ({
+  address,
+  full,
+}) => {
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   return (
-    <Container justify="center" alignItems="center" direction="row" container>
+    <HighlightedBadge
+      justify="center"
+      alignItems="center"
+      direction="row"
+      container
+    >
       <Grid item>
         <Blockie address={address} size={23} />
       </Grid>
-      <Grid item>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          style={{ paddingLeft: 8 }}
-        >
-          {toShortAddress(address)}
-        </Typography>
-      </Grid>
-    </Container>
+      {!full ? (
+        <Grid item>
+          <Typography
+            variant="body1"
+            color="textSecondary"
+            style={{ paddingLeft: 8 }}
+          >
+            {toShortAddress(address)}
+          </Typography>
+        </Grid>
+      ) : (
+        <Grid item>
+          <Link href={"https://edo2net.tzkt.io/" + address} target="_blank">
+            <Typography
+              variant="body1"
+              color="textSecondary"
+              style={{ paddingLeft: 8 }}
+            >
+              {isMobileSmall ? toShortAddress(address) : address}
+            </Typography>
+          </Link>
+        </Grid>
+      )}
+    </HighlightedBadge>
   );
 };

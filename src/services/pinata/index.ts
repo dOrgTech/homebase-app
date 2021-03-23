@@ -69,7 +69,7 @@ export const getContractsAddresses = async (): Promise<string[]> => {
     return [];
   }
 
-  return metadataToAddresses(metadata);
+  return Array.from(new Set(metadataToAddresses(metadata)));
 };
 
 export const addNewContractToIPFS = async (
