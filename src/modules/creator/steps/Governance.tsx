@@ -41,6 +41,10 @@ const SpacingContainer = styled(Grid)({
   marginTop: 25,
 });
 
+const StakeContainer = styled(Grid)({
+  display: "block",
+});
+
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
   border: `1px solid ${theme.palette.primary.light}`,
   height: 62,
@@ -184,6 +188,7 @@ const GovernanceForm = ({
 
   return (
     <>
+      {console.log(JSON.stringify(errors))}
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -279,7 +284,7 @@ const GovernanceForm = ({
         </Typography>
       </SecondContainer>
 
-      <Grid container direction="row" alignItems="center">
+      <StakeContainer container direction="row" alignItems="center">
         <AdditionContainer item xs={11} sm={4}>
           <ItemContainer
             container
@@ -313,11 +318,11 @@ const GovernanceForm = ({
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposeStakeRequired && touched.proposeStakeRequired ? (
-            <ErrorText>{errors.proposeStakeRequired}</ErrorText>
-          ) : null}
         </AdditionContainer>
-      </Grid>
+        {(errors.proposeStakeRequired || errors.proposeStakePercentage) ? (
+          <ErrorText>{errors.proposeStakeRequired || errors.proposeStakePercentage}</ErrorText>
+        ) : null}
+      </StakeContainer>
 
       <SecondContainer container direction="row">
         <Typography

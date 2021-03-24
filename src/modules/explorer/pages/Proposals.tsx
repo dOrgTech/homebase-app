@@ -44,7 +44,7 @@ export const Proposals: React.FC = () => {
   const { data } = useDAO(id);
   const { mutate } = useFlush();
   const theme = useTheme();
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
 
   const { tezos, connect } = useTezos();
@@ -126,7 +126,7 @@ export const Proposals: React.FC = () => {
                     onClick={onFlush}
                     disabled={!dao}
                   >
-                    FLUSH
+                    EXECUTE
                   </ViewButton>
                   <Tooltip title="Execute all passed proposals and drop all expired or rejected">
                     <InfoIconInput color="secondary" />
@@ -155,26 +155,43 @@ export const Proposals: React.FC = () => {
           </ButtonsContainer>
         </RectangleContainer>
         <DAOStatsRow />
-        <AppTabBar
-          value={selectedTab}
-          setValue={setSelectedTab}
-          labels={["ACTIVE PROPOSALS", "PASSED PROPOSALS", "ALL PROPOSALS"]}
-        />
-        <TabPanel value={selectedTab} index={0}>
-          <ProposalsTable
-            headerText="Active Proposals"
-            status={ProposalStatus.ACTIVE}
-          />
-        </TabPanel>
-        <TabPanel value={selectedTab} index={1}>
-          <ProposalsTable
-            headerText="Passed Proposals"
-            status={ProposalStatus.PASSED}
-          />
-        </TabPanel>
-        <TabPanel value={selectedTab} index={2}>
-          <ProposalsTable headerText="All Proposals" />
-        </TabPanel>
+        {isMobileSmall ? (
+          <>
+            <AppTabBar
+              value={selectedTab}
+              setValue={setSelectedTab}
+              labels={["ACTIVE PROPOSALS", "PASSED PROPOSALS", "ALL PROPOSALS"]}
+            />
+            <TabPanel value={selectedTab} index={0}>
+              <ProposalsTable
+                headerText="Active Proposals"
+                status={ProposalStatus.ACTIVE}
+              />
+            </TabPanel>
+            <TabPanel value={selectedTab} index={1}>
+              <ProposalsTable
+                headerText="Passed Proposals"
+                status={ProposalStatus.PASSED}
+              />
+            </TabPanel>
+            <TabPanel value={selectedTab} index={2}>
+              <ProposalsTable headerText="All Proposals" />
+            </TabPanel>
+          </>
+        ) : (
+          <>
+            <ProposalsTable
+              headerText="Active Proposals"
+              status={ProposalStatus.ACTIVE}
+            />
+
+            <ProposalsTable
+              headerText="Passed Proposals"
+              status={ProposalStatus.PASSED}
+            />
+            <ProposalsTable headerText="All Proposals" />
+          </>
+        )}
 
         {/* <ProposalsContainer
             container

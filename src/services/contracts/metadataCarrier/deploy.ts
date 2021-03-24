@@ -65,12 +65,18 @@ export const deployMetadataCarrier = async ({
     const contract = await c.contract();
     console.log("Metadata Carrier deployment completed", c);
     return { contract, keyName, deployAddress: contract.address };
-  } catch (e) {
+  } catch (e: Error | any | unknown) {
     // This should be handled above!
     if (e.name === "UnconfiguredSignerError") {
       // If this happens its because the user is not connected to any wallet
       // Let's connect to a wallet provider and trigger the deployment method again
     }
-    console.log("error ", e);
+    if (e instanceof Error) {
+      const error: Error = e;
+      console.log(error.name + ": " + error.message + "\n" + error.stack);
+    }
+    else {
+      console.log(e);
+    }
   }
 };

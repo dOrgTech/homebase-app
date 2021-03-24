@@ -358,6 +358,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                                       values.list.length + 1,
                                       EMPTY_LIST_ITEM
                                     );
+                                    setActiveItem(activeItem + 1);
                                   }}
                                 >
                                   +

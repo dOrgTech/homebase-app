@@ -6,10 +6,10 @@ Homebase is a platform designed to let users create and manage DAOs on the Tezos
 # Prequisites
 The following dependencies are required to run homebase-app:
 
-| Dependency | Version|
-|-|-|
-| Node | `v12.18.4` or above |
-| Yarn | `v1.22.*` or above |
+| Dependency | Version             |
+| ---------- | ------------------- |
+| Node       | `v12.18.4` or above |
+| Yarn       | `v1.22.*` or above  |
 
 # Third Party Services
 
@@ -18,28 +18,28 @@ The following third party services are being used by Homebase:
 ## [Better Call Dev API](https://better-call.dev/docs)
 ### Base URL: https://api.better-call.dev/v1
 
-| Endpoint | URL | METHOD |
-|-|-|-|
-| BigMap Keys | /bigmap/{network}/{number}/keys | GET |
-| Contract | /contract/{network}/{address} | GET |
-| Contract Operations | /contract/{network}/{address}/operations?size=10000&entrypoints=vote | GET |
-| Contract Storage | /contract/{network}/{address}/storage | GET |
+| Endpoint            | URL                                                                  | METHOD |
+| ------------------- | -------------------------------------------------------------------- | ------ |
+| BigMap Keys         | /bigmap/{network}/{number}/keys                                      | GET    |
+| Contract            | /contract/{network}/{address}                                        | GET    |
+| Contract Operations | /contract/{network}/{address}/operations?size=10000&entrypoints=vote | GET    |
+| Contract Storage    | /contract/{network}/{address}/storage                                | GET    |
 
 ## [Pinata IPFS](https://pinata.cloud/)
 ### Base URL: https://api.pinata.cloud
 
-| Endpoint | URL | METHOD |
-|-|-|-|
-| Pin to IPFS | /pinning/pinJSONToIPFS | POST |
-| Pin List | /data/pinList?status=pinned | GET |
-| Hash Metadata | /pinning/hashMetadata | PUT |
+| Endpoint      | URL                         | METHOD |
+| ------------- | --------------------------- | ------ |
+| Pin to IPFS   | /pinning/pinJSONToIPFS      | POST   |
+| Pin List      | /data/pinList?status=pinned | GET    |
+| Hash Metadata | /pinning/hashMetadata       | PUT    |
 
 ## [TZKT API](https://api.tzkt.io/)
 ### Base URL: https://api.tzkt.io/
 
-| Endpoint | URL | METHOD |
-|-|-|-|
-| Operations | /v1/accounts/${address}/operations | GET |
+| Endpoint   | URL                                | METHOD |
+| ---------- | ---------------------------------- | ------ |
+| Operations | /v1/accounts/${address}/operations | GET    |
 
 
 ## [Airgap's Beacon SDK](https://github.com/airgap-it/beacon-sdk)
@@ -103,12 +103,12 @@ All DAOs, regardless of their template, have:
   * Active proposals
   * Frozen tokens
   * Voting addresses
-  * `Flush` button
+  * `Execute` button
 
 **Proposals page**: contains all proposals related information and related actions. Here you can see:
   * DAO name
   * `New Proposal` button and creation modal
-  * `Flush` button
+  * `Execute` button
   * Active proposals
   * Frozen tokens
   * Voting addresses
@@ -192,7 +192,7 @@ To run the project:
 
 # Glossary
 
-* **Flush**: execute all passed proposals from periods previous to the last one. If the proposal is rejected or did not meet the quorum treshold, then the flush operation removes it from the proposals list.
+* **Execute (Flush)**: execute all passed proposals from periods previous to the last one. If the proposal is rejected or did not meet the quorum treshold, then the Execute operation removes it from the proposals list.
 
 * **Administrator**: address with permissions to mint, burn and transfer tokens in the DAO without a proposal. It is configured by the DAO creator and can be another contract (like a multisig)
 

@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import dayjs from "dayjs";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
 
@@ -137,7 +138,7 @@ export const ProposalStatusHistory: React.FC = () => {
           >
             <div className="indicator">
               <ProgressText textColor="#3866F9">
-                {votesQuorumPercentage}%
+                {formatNumber(votesQuorumPercentage)}%
               </ProgressText>
             </div>
           </ProgressBar>
@@ -155,7 +156,7 @@ export const ProposalStatusHistory: React.FC = () => {
         </HistoryContent>
         {proposal && (
           <HistoryContent item xs={12}>
-            <UserBadge address={proposal.proposer} />
+            <UserBadge address={proposal.proposer} full={true} />
           </HistoryContent>
         )}
         <HistoryContent item xs={12}>
