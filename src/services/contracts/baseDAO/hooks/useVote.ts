@@ -1,6 +1,7 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
+import { saveRecent } from "services/contracts/utils";
 import { BaseDAO } from "..";
 
 interface Params {
@@ -40,6 +41,8 @@ export const useVote = () => {
           variant: "success",
           detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
         });
+        console.log(params.dao);
+        saveRecent(params.dao)
         return data;
       } catch (e) {
         console.log(e);

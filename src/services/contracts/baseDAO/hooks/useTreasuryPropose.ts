@@ -1,7 +1,9 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
+import useLocalStorage from "modules/common/hooks/useLocalStorage";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { Transfer } from "services/contracts/baseDAO/types";
+import { saveRecent } from "services/contracts/utils";
 import { TreasuryDAO } from "..";
 
 interface Params {
@@ -43,6 +45,9 @@ export const useTreasuryPropose = () => {
           variant: "success",
           detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
         });
+        console.log(params.dao);
+        saveRecent(params.dao);
+
         return data;
       } catch (e) {
         console.log(e);
