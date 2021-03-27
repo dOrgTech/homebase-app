@@ -3,6 +3,7 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { Transfer } from "services/contracts/baseDAO/types";
 import { TreasuryDAO } from "..";
+import { useCacheDAOs } from "./useCacheDAOs";
 
 interface Params {
   dao: TreasuryDAO;
@@ -14,6 +15,7 @@ interface Params {
 export const useTreasuryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
+  const { setDAO } = useCacheDAOs();
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -43,7 +45,9 @@ export const useTreasuryPropose = () => {
           variant: "success",
           detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
         });
+        setDAO(params.dao);
         return data;
+
       } catch (e) {
         console.log(e);
         closeProposalNotification(proposalNotification);

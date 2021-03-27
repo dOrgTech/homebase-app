@@ -6,7 +6,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  withTheme,
+  withTheme
 } from "@material-ui/core";
 import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -14,19 +14,28 @@ import { useHistory } from "react-router-dom";
 import { SearchInput } from "modules/explorer/components/SearchInput";
 import { useDAOs } from "services/contracts/baseDAO/hooks/useDAOs";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
+import { AppTabBar } from "../components/AppTabBar";
+import { TabPanel } from "../components/TabPanel";
+import { useCacheDAOs } from "services/contracts/baseDAO/hooks/useCacheDAOs";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
-  padding: 37,
+  padding: 37
 });
+
+const styles = {
+  button: {
+    maxWidth: "50%",
+  },
+}
 
 const TotalDao = styled(Typography)({
   padding: "0 37px",
   lineHeight: "124.3%",
-  letterSpacing: "-0.01em",
+  letterSpacing: "-0.01em"
 });
 
-const DaoContainer = styled(withTheme(Grid))((props) => ({
+const DaoContainer = styled(withTheme(Grid))(props => ({
   minHeight: 179,
   border: `2px solid ${props.theme.palette.primary.light}`,
   boxSizing: "border-box",
@@ -36,52 +45,56 @@ const DaoContainer = styled(withTheme(Grid))((props) => ({
   padding: "50px 37px",
   borderTop: "none",
   "&:nth-child(odd)": {
-    borderLeft: "none",
+    borderLeft: "none"
   },
   "&:nth-child(even)": {
     borderRight: "none",
-    borderLeft: "none",
+    borderLeft: "none"
   },
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
-    cursor: "pointer",
-  },
+    cursor: "pointer"
+  }
 }));
 
 const GridBackground = styled(Grid)(({ theme }) => ({
   background: "inherit",
-  borderTop: `2px solid ${theme.palette.primary.light}`,
+  borderTop: `2px solid ${theme.palette.primary.light}`
 }));
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
-  paddingBottom: 40,
+  paddingBottom: 40
 });
 
 const DaoTotalContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
-    order: 2,
-  },
+    order: 2
+  }
 }));
 
 const CreateDaoContainer = styled(Grid)({
-  margin: "20px 0",
+  margin: "20px 0"
 });
 
 export const DAOsList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
+  const [selectedTab, setSelectedTab] = React.useState(0);
+
   const {
     data,
     isLoading,
     hasNextPage,
     isFetchingNextPage,
-    fetchNextPage,
+    fetchNextPage
   } = useDAOs();
 
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+
+  const { daos: recent } = useCacheDAOs();
 
   const daos = useMemo(() => {
     if (!data) {
@@ -99,16 +112,16 @@ export const DAOsList: React.FC = () => {
 
   const currentDAOs = useMemo(() => {
     if (daos) {
-      const formattedDAOs = daos.map((dao) => ({
+      const formattedDAOs = daos.map(dao => ({
         id: dao.address,
         name: dao.metadata.unfrozenToken.name,
         symbol: dao.metadata.unfrozenToken.symbol,
-        voting_addresses: dao.ledger.length,
+        voting_addresses: dao.ledger.length
       }));
 
       if (searchText) {
         return formattedDAOs.filter(
-          (formattedDao) =>
+          formattedDao =>
             formattedDao.name
               .toLowerCase()
               .includes(searchText.toLowerCase()) ||
@@ -166,52 +179,106 @@ export const DAOsList: React.FC = () => {
           </CreateDaoContainer>
         </Grid>
       </GridContainer>
-      <GridBackground container direction="row">
-        {currentDAOs.map((dao: any, index: any) => {
-          return (
-            <DaoContainer
-              item
-              xs={12}
-              sm={6}
-              key={index}
-              onClick={() => history.push(`/explorer/dao/${dao.id}`)}
-            >
-              <Typography
-                variant="subtitle1"
-                color="secondary"
-                align={isMobileExtraSmall ? "center" : "left"}
-              >
-                {dao.symbol}
-              </Typography>
-              <Grid container direction="row" alignItems="center">
-                <Grid item xs={12} lg={6}>
-                  <Typography
-                    variant="h5"
-                    color="textSecondary"
-                    align={isMobileExtraSmall ? "center" : "left"}
-                  >
-                    {dao.name}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} lg={6}>
+
+      <>
+        <AppTabBar
+          class1={styles.button}
+          value={selectedTab}
+          setValue={setSelectedTab}
+          labels={["ALL", "RECENT"]}
+        />
+        <TabPanel value={selectedTab} index={0}>
+          <GridBackground container direction="row">
+            {currentDAOs.map((dao: any, index: any) => {
+              return (
+                <DaoContainer
+                  item
+                  xs={12}
+                  sm={6}
+                  key={index}
+                  onClick={() => history.push(`/explorer/dao/${dao.id}`)}
+                >
                   <Typography
                     variant="subtitle1"
-                    color="textSecondary"
+                    color="secondary"
                     align={isMobileExtraSmall ? "center" : "left"}
                   >
-                    {dao.voting_addresses} VOTING ADDRESSES
+                    {dao.symbol}
                   </Typography>
-                </Grid>
-              </Grid>
-            </DaoContainer>
-          );
-        })}
-        {isFetchingNextPage || isLoading ? (
-          <LoaderContainer container direction="row" justify="center">
-            <CircularProgress color="secondary" />
-          </LoaderContainer>
-        ) : null}
-      </GridBackground>
+                  <Grid container direction="row" alignItems="center">
+                    <Grid item xs={12} lg={6}>
+                      <Typography
+                        variant="h5"
+                        color="textSecondary"
+                        align={isMobileExtraSmall ? "center" : "left"}
+                      >
+                        {dao.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                      <Typography
+                        variant="subtitle1"
+                        color="textSecondary"
+                        align={isMobileExtraSmall ? "center" : "left"}
+                      >
+                        {dao.voting_addresses} VOTING ADDRESSES
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </DaoContainer>
+              );
+            })}
+            {isFetchingNextPage || isLoading ? (
+              <LoaderContainer container direction="row" justify="center">
+                <CircularProgress color="secondary" />
+              </LoaderContainer>
+            ) : null}
+          </GridBackground>
+        </TabPanel>
+        <TabPanel value={selectedTab} index={1}>
+        <GridBackground container direction="row">
+            {recent.map((dao: any, index: any) => {
+              return (
+                <DaoContainer
+                  item
+                  xs={12}
+                  sm={6}
+                  key={index}
+                  onClick={() => history.push(`/explorer/dao/${dao.id}`)}
+                >
+                  <Typography
+                    variant="subtitle1"
+                    color="secondary"
+                    align={isMobileExtraSmall ? "center" : "left"}
+                  >
+                    {dao.symbol}
+                  </Typography>
+                  <Grid container direction="row" alignItems="center">
+                    <Grid item xs={12} lg={6}>
+                      <Typography
+                        variant="h5"
+                        color="textSecondary"
+                        align={isMobileExtraSmall ? "center" : "left"}
+                      >
+                        {dao.name}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                      <Typography
+                        variant="subtitle1"
+                        color="textSecondary"
+                        align={isMobileExtraSmall ? "center" : "left"}
+                      >
+                        {dao.voting_addresses} VOTING ADDRESSES
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </DaoContainer>
+              );
+            })}
+          </GridBackground>
+        </TabPanel>
+      </>
     </Box>
   );
 };
