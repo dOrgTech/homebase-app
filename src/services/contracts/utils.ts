@@ -2,13 +2,6 @@ import { TezosToolkit } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import blockies from "blockies-ts";
 
-interface ListDAO {
-  id: string;
-  name: string;
-  symbol: string;
-  voting_addresses: number;
-}
-
 export const connectIfNotConnected = async (
   tezos: TezosToolkit,
   connect: () => Promise<TezosToolkit>
@@ -70,24 +63,3 @@ export const getBlockie = (address: string): string => {
   return blockies.create({ seed: address }).toDataURL();
 };
 
-export const saveRecent = (dao: any) => {
-  let updatedList = [];
-  const currentList = localStorage.getItem('recentDAOs');
-  if (currentList) {
-    console.log(dao);
-    console.log('entra');
-    updatedList = JSON.parse(currentList);
-    // console.log(list);
-    updatedList.push(dao);
-    // console.log(list);
-  }
-  localStorage.setItem('recentDAOs', JSON.stringify(updatedList));
-}
-
-export const initializeRecent = () => {
-  const initialArray: Array<any> = [];
-  const currentList = localStorage.getItem('recentDAOs');
-  if (!currentList) {
-    localStorage.setItem('recentDAOs', JSON.stringify(initialArray));   
-  }
-}

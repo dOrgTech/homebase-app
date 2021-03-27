@@ -1,8 +1,8 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
-import { saveRecent } from "services/contracts/utils";
 import { BaseDAO } from "..";
+import { useCacheDAOs } from "./useCacheDAOs";
 
 interface Params {
   dao: BaseDAO;
@@ -14,6 +14,7 @@ interface Params {
 export const useVote = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
+  const { setDAO } = useCacheDAOs();
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -41,8 +42,7 @@ export const useVote = () => {
           variant: "success",
           detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
         });
-        console.log(params.dao);
-        saveRecent(params.dao)
+        setDAO(params.dao);
         return data;
       } catch (e) {
         console.log(e);

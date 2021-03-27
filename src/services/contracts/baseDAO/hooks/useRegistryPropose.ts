@@ -3,6 +3,7 @@ import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 import { RegistryItem } from "../registryDAO/types";
 import { useNotification } from "modules/common/hooks/useNotification";
+import { useCacheDAOs } from "./useCacheDAOs";
 
 interface Params {
   dao: RegistryDAO;
@@ -14,6 +15,7 @@ interface Params {
 export const useRegistryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
+  const { setDAO } = useCacheDAOs();
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -41,6 +43,7 @@ export const useRegistryPropose = () => {
           variant: "success",
           detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
         });
+        setDAO(params.dao);
         return data;
       } catch (e) {
         console.log(e);

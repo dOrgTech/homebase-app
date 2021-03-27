@@ -15,7 +15,8 @@ export const AppTabBar: React.FC<{
   value: number;
   setValue: any;
   labels: string[];
-}> = ({ value, setValue, labels }) => {
+  class1?: any;
+}> = ({ value, setValue, labels, class1 }) => {
   const a11yProps = (index: any) => {
     return {
       id: `simple-tab-${index}`,
@@ -35,7 +36,7 @@ export const AppTabBar: React.FC<{
         aria-label="simple tabs example"
       >
         {labels.map((label, i) => (
-          <CustomTab label={label} {...a11yProps(i)} key={i} />
+          <CustomTab label={label} {...a11yProps(i)} key={i} style={class1} />
         ))}
       </Tabs>
     </StyledAppBar>

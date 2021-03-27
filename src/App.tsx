@@ -18,7 +18,6 @@ import { theme } from "theme";
 
 import "App.css";
 import { ModalsProvider } from "modules/explorer/ModalsContext";
-import { initializeRecent } from "services/contracts/utils";
 
 const queryClient = new QueryClient();
 
@@ -51,7 +50,6 @@ const styles = makeStyles({
 
 const App: React.FC = () => {
   const classes = styles();
-  initializeRecent();
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider
