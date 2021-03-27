@@ -276,11 +276,6 @@ export const DAOsList: React.FC = () => {
                 </DaoContainer>
               );
             })}
-            {isFetchingNextPage || isLoading ? (
-              <LoaderContainer container direction="row" justify="center">
-                <CircularProgress color="secondary" />
-              </LoaderContainer>
-            ) : null}
           </GridBackground>
         </TabPanel>
       </>

@@ -183,6 +183,9 @@ const validate = (values: MemberSettings) => {
     if (!item.address || !String(item.balance)) {
       errors.tokenHolders = "Please fill all the inputs";
     }
+    if (item.balance < 0) {
+      errors.tokenHolders = "The balance must be greater than 0";
+    }
   });
 
   return errors;

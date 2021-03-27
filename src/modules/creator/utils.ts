@@ -69,6 +69,10 @@ export const handleGovernanceFormErrors = (
     errors.maxProposalSize = "Must be greater than 0";
   }
 
+  if (!quorumTreshold || quorumTreshold <= 0) {
+    errors.quorumTreshold = "Must be greater than 0";
+  }
+
   if (template === "treasury") {
     if (!minXtzAmount || minXtzAmount <= 0) {
       errors.minXtzAmount = "Must be greater than 0";
@@ -79,10 +83,6 @@ export const handleGovernanceFormErrors = (
     }
 
     return errors;
-  }
-
-  if (!quorumTreshold || quorumTreshold <= 0) {
-    errors.quorumTreshold = "Must be greater than 0";
   }
 
   console.log(errors);
