@@ -20,7 +20,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
-import { Input } from "@material-ui/icons";
+import { AccountBalanceWallet } from "@material-ui/icons";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -124,7 +124,7 @@ const StyledPopover = styled(Popover)({
   }
 });
 
-const LogIn = styled(Input)(({ theme }) => ({
+const LogIn = styled(AccountBalanceWallet)(({ theme }) => ({
   color: theme.palette.secondary.main,
   height: 28,
   width: 28,
