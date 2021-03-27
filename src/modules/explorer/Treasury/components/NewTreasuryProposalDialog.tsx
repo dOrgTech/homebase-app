@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  Dialog,
+  Dialog
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
@@ -21,16 +21,17 @@ import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasury
 import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
 import {
   fromMigrationParamsFile,
-  validateTransactionsJSON,
+  validateTransactionsJSON
 } from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
+import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const Title = styled(DialogTitle)(({ theme }) => ({
@@ -39,8 +40,8 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   paddingTop: 28,
   minWidth: 500,
   [theme.breakpoints.down("xs")]: {
-    minWidth: 250,
-  },
+    minWidth: 250
+  }
 }));
 
 const ListItem = styled(Grid)(({ theme }) => ({
@@ -48,7 +49,15 @@ const ListItem = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 24px",
+  padding: "0px 24px"
+}));
+
+const AmountItem = styled(Grid)(({ theme }) => ({
+  minHeight: 137,
+  display: "flex",
+  alignItems: "center",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  padding: "14px 24px"
 }));
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
@@ -56,15 +65,15 @@ const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: "0px 24px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  borderBottom: `2px solid ${theme.palette.primary.light}`
 }));
 
 const FileInput = styled("input")({
-  display: "none",
+  display: "none"
 });
 
 const SendContainer = styled(Grid)({
-  height: 55,
+  height: 55
 });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
@@ -73,11 +82,11 @@ const BatchBar = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   padding: "0px 24px",
   cursor: "pointer",
-  overflowX: "auto",
+  overflowX: "auto"
 }));
 
 const SwitchContainer = styled(Grid)({
-  textAlign: "end",
+  textAlign: "end"
 });
 
 const TransferActive = styled(Grid)({
@@ -85,7 +94,7 @@ const TransferActive = styled(Grid)({
   minWidth: 51,
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "center"
 });
 
 const AddButton = styled(Paper)({
@@ -99,23 +108,23 @@ const AddButton = styled(Paper)({
   alignItems: "center",
   display: "flex",
   justifyContent: "center",
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const styles = {
   visible: {
-    display: "none",
+    display: "none"
   },
   active: {
-    background: "#3866F9",
-  },
+    background: "#3866F9"
+  }
 };
 
 const DescriptionContainer = styled(Grid)({
   minHeight: 250,
   paddingLeft: 24,
   paddingRight: 24,
-  paddingTop: 24,
+  paddingTop: 24
 });
 
 const UploadFileLabel = styled("label")(({ theme }) => ({
@@ -125,15 +134,15 @@ const UploadFileLabel = styled("label")(({ theme }) => ({
   minWidth: 171,
   cursor: "pointer",
   margin: "auto",
-  display: "block",
+  display: "block"
 }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
   "& .MuiInputBase-input": {
     textAlign: "end",
-    paddingRight: 12,
-  },
+    paddingRight: 12
+  }
 });
 
 const CustomTextarea = styled(TextField)({
@@ -144,16 +153,30 @@ const CustomTextarea = styled(TextField)({
     boxSizing: "border-box",
     "& .MuiInputBase-inputMultiline": {
       padding: 12,
-      textAlign: "initial",
-    },
-  },
+      textAlign: "initial"
+    }
+  }
 });
 
 const SendButton = styled(ViewButton)({
   width: "100%",
   border: "none",
-  borderTop: "1px solid #4BCF93",
+  borderTop: "1px solid #4BCF93"
 });
+
+const AmountText = styled(Typography)({
+  color: "rgba(255, 255, 255, 0.7)",
+  fontSize: 14,
+  lineHeight: "146.3%",
+  marginRight: 10,
+});
+
+const AmountContainer = styled(Grid)(({ theme }) => ({
+  paddingRight: 16,
+  [theme.breakpoints.down("sm")]: {
+    paddingRight: 0,
+  }
+}));
 
 interface Values {
   transfers: Transfer[];
@@ -165,7 +188,7 @@ const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0 };
 const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
   description: "",
-  agoraPostId: 0,
+  agoraPostId: 0
 };
 
 export const NewTreasuryProposalDialog: React.FC = () => {
@@ -175,21 +198,22 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const {
     state: {
       treasuryProposal: { open },
-      daoId,
+      daoId
     },
-    dispatch,
+    dispatch
   } = useContext(ModalsContext);
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
   const openNotification = useNotification();
+  const { data: tokenBalances } = useTokenBalances(daoData?.address);
 
   const handleClose = useCallback(() => {
     dispatch({
       type: ActionTypes.CLOSE,
       payload: {
-        modal: "treasuryProposal",
-      },
+        modal: "treasuryProposal"
+      }
     });
   }, [dispatch]);
 
@@ -197,9 +221,9 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     async (values: Values, { setSubmitting }: any) => {
       setSubmitting(true);
 
-      const transfers: Transfer[] = values.transfers.map((transfer) => ({
+      const transfers: Transfer[] = values.transfers.map(transfer => ({
         ...transfer,
-        amount: Number(xtzToMutez(transfer.amount.toString())),
+        amount: Number(xtzToMutez(transfer.amount.toString()))
       }));
 
       console.log(transfers);
@@ -211,7 +235,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
           dao,
           transfers,
           tokensToFreeze: dao.storage.frozenExtraValue,
-          agoraPostId: values.agoraPostId,
+          agoraPostId: values.agoraPostId
         });
 
         handleClose();
@@ -291,7 +315,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           openNotification({
                             message: "Error while parsing JSON",
                             persist: true,
-                            variant: "error",
+                            variant: "error"
                           });
                           return;
                         }
@@ -302,7 +326,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                         openNotification({
                           message: "Error while parsing JSON",
                           persist: true,
-                          variant: "error",
+                          variant: "error"
                         });
                       }
                     }
@@ -313,7 +337,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                       <>
                         <FieldArray
                           name="transfers"
-                          render={(arrayHelpers) => (
+                          render={arrayHelpers => (
                             <>
                               {isBatch ? (
                                 <BatchBar
@@ -386,7 +410,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 </Grid>
                               </ListItem>
 
-                              <ListItem container direction="row">
+                              <AmountItem container direction="row">
                                 <Grid item xs={6}>
                                   <Typography
                                     variant="subtitle1"
@@ -412,13 +436,30 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                         inputProps: {
                                           step: 0.01,
                                           min: dao.storage.minXtzAmount,
-                                          max: dao.storage.maxXtzAmount,
-                                        },
+                                          max: dao.storage.maxXtzAmount
+                                        }
                                       }}
                                     />
                                   </SwitchContainer>
                                 </Grid>
-                              </ListItem>
+                                <Grid item xs={6}>
+                                  <AmountText>DAO Balance</AmountText>
+                                </Grid>
+                                <Grid item xs={6}>
+                                  {tokenBalances?.map(token => (
+                                    <AmountContainer
+                                      item
+                                      container
+                                      direction="row"
+                                      key={token.name}
+                                      justify="flex-end"
+                                    >
+                                      <AmountText>{token.balance}</AmountText>{" "}
+                                      <AmountText>{token.name}</AmountText>
+                                    </AmountContainer>
+                                  ))}
+                                </Grid>
+                              </AmountItem>
                             </>
                           )}
                         />
