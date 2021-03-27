@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import React, { useEffect, useMemo, useState } from "react";
 
-import { ReactComponent as HouseIcon } from "assets/logos/house.svg";
+import { ReactComponent as HouseIcon } from "assets/logos/home.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
