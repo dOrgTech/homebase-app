@@ -27,7 +27,7 @@ import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
-import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
+import { useTezosBalances } from "services/contracts/baseDAO/hooks/useTezosBalance";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -206,7 +206,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
   const openNotification = useNotification();
-  const { data: tokenBalances } = useTokenBalances(daoData?.address);
+  const { data: tezosBalance } = useTezosBalances(daoData?.address);
 
   const handleClose = useCallback(() => {
     dispatch({
@@ -225,8 +225,6 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         ...transfer,
         amount: Number(xtzToMutez(transfer.amount.toString()))
       }));
-
-      console.log(transfers);
 
       await connectIfNotConnected(tezos, connect);
 
@@ -446,18 +444,17 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                   <AmountText>DAO Balance</AmountText>
                                 </Grid>
                                 <Grid item xs={6}>
-                                  {tokenBalances?.map(token => (
+                                  {tezosBalance?
                                     <AmountContainer
                                       item
                                       container
                                       direction="row"
-                                      key={token.name}
                                       justify="flex-end"
                                     >
-                                      <AmountText>{token.balance}</AmountText>{" "}
-                                      <AmountText>{token.name}</AmountText>
-                                    </AmountContainer>
-                                  ))}
+                                      <AmountText>{Number(tezosBalance.balance) / Math.pow(10, tezosBalance.decimals) }</AmountText>{" "}
+                                      <AmountText>{tezosBalance.name}</AmountText>
+                                    </AmountContainer> : null
+                                  }
                                 </Grid>
                               </AmountItem>
                             </>

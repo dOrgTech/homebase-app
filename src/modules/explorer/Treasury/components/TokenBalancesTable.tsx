@@ -3,13 +3,14 @@ import { GenericTableContainer } from "modules/explorer/components/GenericTableC
 import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 import React from "react";
-import { BalanceInfo } from "services/contracts/baseDAO/hooks/useTokenBalances";
+import { useParams } from "react-router-dom";
+import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
 import { TreasuryTableRow } from "..";
 import { ProposalTableHeadText } from "./TableHeader";
 
-export const TokenTable: React.FC<{
-  tokenBalances: Array<BalanceInfo> | undefined;
-}> = ({ tokenBalances }) => {
+export const TokenTable: React.FC = () => {
+  const { id: daoId } = useParams<{ id: string }>()
+  const { data: tokenBalances } = useTokenBalances(daoId)
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
