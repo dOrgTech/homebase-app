@@ -46,7 +46,6 @@ export const Proposals: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
-
   const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
 

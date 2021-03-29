@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Box,
   CircularProgress,
@@ -29,6 +29,7 @@ import { ProposalsTable } from "../components/ProposalsTable";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
+import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -92,6 +93,7 @@ const DescriptionContainer = styled(Box)({
 });
 
 export const DAO: React.FC = () => {
+  const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading: isDaoLoading } = useDAO(id);
@@ -117,6 +119,11 @@ export const DAO: React.FC = () => {
   );
   const isLoading = isDaoLoading || isProposalsLoading;
 
+  useEffect(() => {
+    saveDaoId(id);
+    saveDaoSymbol(symbol);
+  }, [id, symbol, saveDaoId, saveDaoSymbol]);
+  
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
     // @TODO: we need to add an atribute to the proposals
