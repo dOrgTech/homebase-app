@@ -28,7 +28,6 @@ import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
-=======
 import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
 
 const CloseButton = styled(Typography)({
@@ -446,9 +445,9 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           )}
                         />
 
-                        <ProposalTextContainer title="Proposal Title" value={values.title}/>
+                        <ProposalTextContainer title="Proposal Title" value={values.title} />
 
-                        <ProposalTextContainer title="Proposal Description" value={values.title}/>
+                        <ProposalTextContainer title="Proposal Description" value={values.title} />
 
                         <UploadButtonContainer container direction="row">
                           <UploadFileLabel>
