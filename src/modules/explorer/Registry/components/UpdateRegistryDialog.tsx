@@ -447,9 +447,9 @@ export const UpdateRegistryDialog: React.FC = () => {
                         )}
                       />
 
-                      <ProposalTextContainer title="Proposal Title" value={values.title} />
+                      <ProposalTextContainer title="Proposal Title" value={values.title} type="title" />
 
-                      <ProposalTextContainer title="Proposal Description" value={values.title} />
+                      <ProposalTextContainer title="Proposal Description" value={values.description} type="description" />
 
                       <UploadButtonContainer container direction="row">
                         <UploadFileLabel>

@@ -13,16 +13,16 @@ export const CustomTextarea = styled(TextField)({
       textAlign: "initial",
     },
   },
+  paddingTop: 24
 });
 
 export const DescriptionContainer = styled(Grid)({
-  minHeight: 250,
   paddingLeft: 24,
   paddingRight: 24,
   paddingTop: 24,
 });
 
-export const ProposalTextContainer: React.FC<{ title: string, value: string }> = ({ title, value }) => {
+export const ProposalTextContainer: React.FC<{ title: string, value: string, type: "description" | "title" }> = ({ title, value, type }) => {
   return (
     <DescriptionContainer container direction="row">
       <Grid item xs={12}>
@@ -57,10 +57,10 @@ export const ProposalTextContainer: React.FC<{ title: string, value: string }> =
       </Grid>
       <Grid item xs={12}>
         <Field
-          name="description"
-          type="number"
+          name={type}
+          type="string"
           multiline
-          rows={6}
+          rows={type === "description" ? 6 : 2}
           placeholder={`Type a ${title}`}
           component={CustomTextarea}
         />
