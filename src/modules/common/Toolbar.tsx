@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,7 +10,7 @@ import {
   Theme,
   useTheme,
   Popover,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -20,10 +20,12 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
-import { Input } from "@material-ui/icons";
+import { AccountBalanceWallet } from "@material-ui/icons";
+import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
+import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 
 const StyledAppBar = styled(AppBar)({
-  boxShadow: "none",
+  boxShadow: "none"
 });
 
 const StyledToolbar = styled(Toolbar)(
@@ -33,7 +35,7 @@ const StyledToolbar = styled(Toolbar)(
     boxSizing: "border-box",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    minHeight: mode === "creator" ? 80 : 100,
+    minHeight: mode === "creator" ? 80 : 100
   })
 );
 
@@ -42,30 +44,30 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
-  marginLeft: 8,
+  marginLeft: 8
 });
 
 const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const ConnectWallet = styled(Button)({
   maxHeight: 50,
-  alignSelf: "baseline",
+  alignSelf: "baseline"
 });
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
   borderRadius: 4,
-  backgroundColor: "#282B31",
+  backgroundColor: "#282B31"
 }));
 
 const AddressMenuItem = styled(Grid)(({ theme }) => ({
@@ -95,7 +97,7 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("xs")]: {
     marginLeft: 15,
     padding: "0px"
-  },
+  }
 }));
 
 const custom = (theme: Theme, mode: "creator" | "explorer") => ({
@@ -124,7 +126,7 @@ const StyledPopover = styled(Popover)({
   }
 });
 
-const LogIn = styled(Input)(({ theme }) => ({
+const LogIn = styled(AccountBalanceWallet)(({ theme }) => ({
   color: theme.palette.secondary.main,
   height: 28,
   width: 28,
@@ -138,6 +140,19 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
     marginLeft: 16
   }
 }));
+
+const BalanceContainer = styled(Grid)({
+  background: "rgb(75, 207, 147)",
+  borderRadius: 4,
+  padding: 4,
+  "&:hover": {
+    background: "#608871"
+  }
+});
+
+const Symbol = styled(Typography)({
+  marginLeft: 4
+});
 
 export const ConnectWalletButton = ({
   connect
@@ -160,6 +175,10 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const { daoId, daoSymbol } = useVisitedDAO();
+  const { data } = useTokenHolders(daoId);
+
+  console.log(data);
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -175,6 +194,15 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     navigator.clipboard.writeText(address);
     setPopperOpen(false);
   };
+
+  const userBalance = useMemo(() => {
+    if (!data) {
+      return 0;
+    } 
+    const balance = data.find(({address}) => address.toLowerCase() === account.toLowerCase());
+    const unfrozenBalance = balance ? balance.balances[0] : 0;
+    return unfrozenBalance || 0;
+  }, [data, account])
 
   const location = useLocation();
   const history = useHistory();
@@ -192,36 +220,38 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       <StyledToolbar mode={mode}>
         <Grid container direction="row" alignItems="center" wrap="wrap">
           {mode === "explorer" ? (
-            <Grid
-              item
-              xs={11}
-              sm={3}
-              style={
-                location.pathname === "/creator"
-                  ? custom(theme, mode).appLogoHeight
-                  : undefined
-              }
-            >
-              <Box
+            <>
+              <Grid
+                item
+                xs={11}
+                sm={3}
                 style={
                   location.pathname === "/creator"
-                    ? custom(theme, mode).logo
+                    ? custom(theme, mode).appLogoHeight
                     : undefined
                 }
-                onClick={() => history.push("/explorer")}
               >
-                <ToolbarContainer container alignItems="center" wrap="nowrap">
-                  <Grid item>
-                    <LogoItem src={HomeButton} />
-                  </Grid>
-                  <Grid item>
-                    <Box paddingLeft="10px">
-                      <LogoText color="textSecondary">Homebase</LogoText>
-                    </Box>
-                  </Grid>
-                </ToolbarContainer>
-              </Box>
-            </Grid>
+                <Box
+                  style={
+                    location.pathname === "/creator"
+                      ? custom(theme, mode).logo
+                      : undefined
+                  }
+                  onClick={() => history.push("/explorer")}
+                >
+                  <ToolbarContainer container alignItems="center" wrap="nowrap">
+                    <Grid item>
+                      <LogoItem src={HomeButton} />
+                    </Grid>
+                    <Grid item>
+                      <Box paddingLeft="10px">
+                        <LogoText color="textSecondary">Homebase</LogoText>
+                      </Box>
+                    </Grid>
+                  </ToolbarContainer>
+                </Box>
+              </Grid>
+            </>
           ) : null}
 
           <Grid
@@ -247,6 +277,29 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   alignItems="center"
                   justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
                 >
+                  <Grid
+                    item
+                    xs={7}
+                    container
+                    justify="flex-end"
+                    direction="row"
+                  >
+                    {!isMobileSmall && data && data.length > 0 ? (
+                      <BalanceContainer
+                        container
+                        item
+                        justify="center"
+                        direction="row"
+                        xs={3}
+                        sm={4}
+                      >
+                        <Typography color="textSecondary">
+                          {userBalance}
+                        </Typography>
+                        <Symbol color="textSecondary">{daoSymbol}</Symbol>
+                      </BalanceContainer>
+                    ) : null}
+                  </Grid>
                   <AddressBarWrapper item>
                     <AddressContainer
                       container
