@@ -1,37 +1,38 @@
-import { useBalance } from "modules/common/hooks/useBalance";
-import { useQuery } from "react-query";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { BaseDAO } from "..";
-
-export const SUPPORTED_TOKENS = ["XTZ"];
-
-export interface BalanceInfo {
-  name: string;
-  balance?: number;
-}
+import { useQuery } from "react-query";
+import { getDAOTokenBalances } from "services/bakingBad/tokenBalances";
+import { TokenBalance } from "services/bakingBad/tokenBalances/types";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { useTezosBalances } from "./useTezosBalance";
 
 export const useTokenBalances = (contractAddress: string | undefined) => {
   const { data: dao } = useDAO(contractAddress);
-  const getBalance = useBalance();
+  const { network } = useTezos();
+  const {
+    data: tezosBalance,
+    error: tezosBalanceError,
+    isLoading: tezosBalanceIsLoading,
+  } = useTezosBalances(contractAddress);
 
-  const result = useQuery<BalanceInfo[], Error>(
+  const { error, isLoading, ...rest } = useQuery<TokenBalance[], Error>(
     ["balances", contractAddress],
     async () => {
-      const allBalances = SUPPORTED_TOKENS.map((token) =>
-        getBalance((dao as BaseDAO).address, token)
+      const tokenBalances = await getDAOTokenBalances(
+        (dao as BaseDAO).address,
+        network
       );
-      const balances = await Promise.all(allBalances);
-      return SUPPORTED_TOKENS.map((token, index) => {
-        return {
-          name: token,
-          balance: balances[index],
-        };
-      });
+
+      return [...tokenBalances, tezosBalance as TokenBalance]
     },
     {
-      enabled: !!dao,
+      enabled: !!dao && !!tezosBalance,
     }
   );
 
-  return result;
+  return {
+    error: error || tezosBalanceError,
+    isLoading: isLoading || tezosBalanceIsLoading,
+    ...rest,
+  };
 };

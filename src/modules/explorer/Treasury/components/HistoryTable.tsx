@@ -9,20 +9,24 @@ import {
 import { GenericTableContainer } from "modules/explorer/components/GenericTableContainer";
 import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
-import { TransactionInfo } from "services/tzkt/types";
 import { TreasuryHistoryRow } from "./HistoryRow";
 import { ProposalTableHeadText } from "./TableHeader";
+import { useTransfers } from "services/contracts/baseDAO/hooks/useTransfers";
+import { useParams } from "react-router-dom";
 
 const NoProposals = styled(Typography)({
   marginTop: 20,
   marginBottom: 20,
 });
 
-export const HistoryTable: React.FC<{
-  treasuryMovements: Array<TransactionInfo>;
-}> = ({ treasuryMovements }) => {
+export const HistoryTable: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const { id } = useParams<{
+    proposalId: string;
+    id: string;
+  }>();
+  const { data: transfers } = useTransfers(id);
 
   return (
     <ResponsiveGenericTable>
@@ -49,17 +53,23 @@ export const HistoryTable: React.FC<{
         </TableHeader>
       )}
 
-      {treasuryMovements.length > 0
-        ? treasuryMovements.map((token, i) => (
+      {transfers && transfers.length > 0
+        ? transfers.map((transfer, i) => (
             <GenericTableContainer key={`token-${i}`}>
-              <TreasuryHistoryRow {...token} />
+              <TreasuryHistoryRow
+                name={transfer.token.symbol}
+                amount={(Number(transfer.amount) / Math.pow(10, transfer.token.decimals)).toString()}
+                recipient={transfer.to}
+                date={transfer.timestamp}
+                hash={transfer.hash}
+              />
             </GenericTableContainer>
           ))
         : null}
 
       {history.length === 0 ? (
         <NoProposals variant="subtitle1" color="textSecondary">
-          No active proposals
+          No transfers listed
         </NoProposals>
       ) : null}
     </ResponsiveGenericTable>
