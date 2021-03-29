@@ -2,6 +2,7 @@ import {
   Box,
   CircularProgress,
   Grid,
+  makeStyles,
   styled,
   Typography,
   useMediaQuery,
@@ -17,17 +18,30 @@ import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useCacheDAOs } from "services/contracts/baseDAO/hooks/useCacheDAOs";
+import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
   padding: 37
 });
 
-const styles = {
-  button: {
-    maxWidth: "50%",
+const styles = makeStyles({
+  root: {
+    borderRadius: "4px 4px 0px 0px",
+    maxWidth: 135,
+    marginRight: 10,
+    background: "#3D3D3D",
+    "&:before": {
+      opacity:  0.5,
+    }
   },
-}
+  selected: {
+    background: "rgba(124, 255, 181, 0.15)",
+    "&:before": {
+      opacity: 0.15,
+    },
+  },
+});
 
 const TotalDao = styled(Typography)({
   padding: "0 37px",
@@ -79,9 +93,10 @@ const CreateDaoContainer = styled(Grid)({
 });
 
 export const DAOsList: React.FC = () => {
+  const { saveDaoId } = useVisitedDAO();
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
-
+  const style = styles();
   const {
     data,
     isLoading,
@@ -103,6 +118,10 @@ export const DAOsList: React.FC = () => {
 
     return data.pages.flat();
   }, [data]);
+
+  useEffect(() => {
+    saveDaoId("")
+  }, [saveDaoId]);
 
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -182,7 +201,7 @@ export const DAOsList: React.FC = () => {
 
       <>
         <AppTabBar
-          class1={styles.button}
+          class1={style}
           value={selectedTab}
           setValue={setSelectedTab}
           labels={["ALL", "RECENT"]}

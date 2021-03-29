@@ -16,7 +16,6 @@ export const Holdings: React.FC = () => {
     proposalId: string;
     id: string;
   }>();
-
   const { data: tokenBalances } = useTokenBalances(id);
   const [treasuryMovements, setTreasuryMovements] = useState<TransactionInfo[]>(
     []
