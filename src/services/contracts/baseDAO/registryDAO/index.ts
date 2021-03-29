@@ -62,6 +62,7 @@ export class RegistryDAO extends BaseDAO {
         slashDivisionValue: Number(dto.children[8].children[5].value),
         maxProposalSize: Number(dto.children[8].children[6].value),
         proposalsMapNumber: dto.children[9].value,
+        proposalsToFlush: dto.children[10].children,
       };
 
       return result;

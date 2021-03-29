@@ -14,6 +14,7 @@ export interface BaseStorage {
   quorumTreshold: number;
   proposalsMapNumber: number;
   ledgerMapNumber: number;
+  proposalsToFlush: any;
 }
 
 export interface TreasuryStorage extends BaseStorage {
