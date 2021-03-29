@@ -62,3 +62,4 @@ export const getBlockie = (address: string): string => {
 
   return blockies.create({ seed: address }).toDataURL();
 };
+

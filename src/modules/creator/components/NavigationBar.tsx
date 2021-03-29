@@ -13,6 +13,7 @@ import { NavigationBarProps } from "modules/creator/state";
 const Footer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
   justifyContent: "flex-end",
+  zIndex: 20,
 }));
 
 const BackButton = styled(Paper)({
@@ -51,6 +52,7 @@ const FooterContainer = styled(Grid)(({ isMobile }: { isMobile: boolean }) => ({
   padding: 0,
   margin: 0,
   height: "100%",
+  zIndex: 20,
 }));
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {

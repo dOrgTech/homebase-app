@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,7 +10,7 @@ import {
   Theme,
   useTheme,
   Popover,
-  useMediaQuery,
+  useMediaQuery
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -20,9 +20,12 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
+import { AccountBalanceWallet } from "@material-ui/icons";
+import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
+import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 
 const StyledAppBar = styled(AppBar)({
-  boxShadow: "none",
+  boxShadow: "none"
 });
 
 const StyledToolbar = styled(Toolbar)(
@@ -32,7 +35,7 @@ const StyledToolbar = styled(Toolbar)(
     boxSizing: "border-box",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    minHeight: mode === "creator" ? 80 : 100,
+    minHeight: mode === "creator" ? 80 : 100
   })
 );
 
@@ -41,30 +44,30 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
-  marginLeft: 8,
+  marginLeft: 8
 });
 
 const AddressContainer = styled(Grid)({
   width: "min-content",
   paddingRight: 24,
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const ConnectWallet = styled(Button)({
   maxHeight: 50,
-  alignSelf: "baseline",
+  alignSelf: "baseline"
 });
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
   borderRadius: 4,
-  backgroundColor: "#282B31",
+  backgroundColor: "#282B31"
 }));
 
 const AddressMenuItem = styled(Grid)(({ theme }) => ({
@@ -75,13 +78,13 @@ const AddressMenuItem = styled(Grid)(({ theme }) => ({
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${theme.palette.secondary.light}`,
-    cursor: "pointer",
-  },
+    cursor: "pointer"
+  }
 }));
 
 const AddressMenuIcon = styled(Grid)({
   paddingRight: "12px",
-  marginBottom: "-4px",
+  marginBottom: "-4px"
 });
 
 const AddressBarWrapper = styled(Grid)(({ theme }) => ({
@@ -89,11 +92,12 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   marginRight: 10,
   borderRadius: 4,
   "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
+    background: "rgba(129, 254, 183, 0.03)"
   },
   [theme.breakpoints.down("xs")]: {
-    marginLeft: -15,
-  },
+    marginLeft: 15,
+    padding: "0px"
+  }
 }));
 
 const custom = (theme: Theme, mode: "creator" | "explorer") => ({
@@ -101,31 +105,57 @@ const custom = (theme: Theme, mode: "creator" | "explorer") => ({
     height: "100%",
     alignItems: "baseline",
     display: "flex",
-    marginTop: 22,
+    marginTop: 22
   },
   appBorder: {
     borderBottom:
-      mode === "explorer"
-        ? `2px solid ${theme.palette.primary.light}`
-        : "unset",
+      mode === "explorer" ? `2px solid ${theme.palette.primary.light}` : "unset"
   },
   appLogoHeight: {
-    borderRight: `2px solid ${theme.palette.primary.light}`,
-  },
+    borderRight: `2px solid ${theme.palette.primary.light}`
+  }
 });
 
 const LogoItem = styled("img")({
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const StyledPopover = styled(Popover)({
   ".MuiPaper-root": {
-    borderRadius: 4,
-  },
+    borderRadius: 4
+  }
+});
+
+const LogIn = styled(AccountBalanceWallet)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  height: 28,
+  width: 28,
+  marginLeft: 15
+}));
+
+const ToolbarContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    display: "flex",
+    justifyContent: "center",
+    marginLeft: 16
+  }
+}));
+
+const BalanceContainer = styled(Grid)({
+  background: "rgb(75, 207, 147)",
+  borderRadius: 4,
+  padding: 4,
+  "&:hover": {
+    background: "#608871"
+  }
+});
+
+const Symbol = styled(Typography)({
+  marginLeft: 4
 });
 
 export const ConnectWalletButton = ({
-  connect,
+  connect
 }: {
   connect: () => Promise<TezosToolkit>;
 }) => (
@@ -135,7 +165,7 @@ export const ConnectWalletButton = ({
 );
 
 export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
-  mode,
+  mode
 }) => {
   const { connect, account, reset } = useTezos();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -144,6 +174,11 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const [popperOpen, setPopperOpen] = useState(false);
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const { daoId, daoSymbol } = useVisitedDAO();
+  const { data } = useTokenHolders(daoId);
+
+  console.log(data);
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -159,6 +194,15 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     navigator.clipboard.writeText(address);
     setPopperOpen(false);
   };
+
+  const userBalance = useMemo(() => {
+    if (!data) {
+      return 0;
+    } 
+    const balance = data.find(({address}) => address.toLowerCase() === account.toLowerCase());
+    const unfrozenBalance = balance ? balance.balances[0] : 0;
+    return unfrozenBalance || 0;
+  }, [data, account])
 
   const location = useLocation();
   const history = useHistory();
@@ -176,50 +220,55 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       <StyledToolbar mode={mode}>
         <Grid container direction="row" alignItems="center" wrap="wrap">
           {mode === "explorer" ? (
-            <Grid
-              item
-              xs={12}
-              sm={3}
-              style={
-                location.pathname === "/creator"
-                  ? custom(theme, mode).appLogoHeight
-                  : undefined
-              }
-            >
-              <Box
+            <>
+              <Grid
+                item
+                xs={11}
+                sm={3}
                 style={
                   location.pathname === "/creator"
-                    ? custom(theme, mode).logo
+                    ? custom(theme, mode).appLogoHeight
                     : undefined
                 }
-                onClick={() => history.push("/explorer")}
               >
-                <Grid container alignItems="center" wrap="nowrap">
-                  <Grid item>
-                    <LogoItem src={HomeButton} />
-                  </Grid>
-                  <Grid item>
-                    <Box paddingLeft="10px">
-                      <LogoText color="textSecondary">Homebase</LogoText>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
+                <Box
+                  style={
+                    location.pathname === "/creator"
+                      ? custom(theme, mode).logo
+                      : undefined
+                  }
+                  onClick={() => history.push("/explorer")}
+                >
+                  <ToolbarContainer container alignItems="center" wrap="nowrap">
+                    <Grid item>
+                      <LogoItem src={HomeButton} />
+                    </Grid>
+                    <Grid item>
+                      <Box paddingLeft="10px">
+                        <LogoText color="textSecondary">Homebase</LogoText>
+                      </Box>
+                    </Grid>
+                  </ToolbarContainer>
+                </Box>
+              </Grid>
+            </>
           ) : null}
 
           <Grid
             item
-            xs={mode === "creator" ? 12 : isMobileExtraSmall ? 12 : 9}
+            xs={
+              mode === "creator" && !isMobileSmall
+                ? 12
+                : isMobileExtraSmall
+                ? 1
+                : 9
+            }
             container
             justify={
               isMobileExtraSmall && mode === "explorer"
                 ? "flex-start"
                 : "flex-end"
             }
-            style={{
-              marginTop: isMobileExtraSmall && mode === "explorer" ? 25 : 0,
-            }}
           >
             {account ? (
               <>
@@ -228,6 +277,29 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   alignItems="center"
                   justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
                 >
+                  <Grid
+                    item
+                    xs={7}
+                    container
+                    justify="flex-end"
+                    direction="row"
+                  >
+                    {!isMobileSmall && data && data.length > 0 ? (
+                      <BalanceContainer
+                        container
+                        item
+                        justify="center"
+                        direction="row"
+                        xs={3}
+                        sm={4}
+                      >
+                        <Typography color="textSecondary">
+                          {userBalance}
+                        </Typography>
+                        <Symbol color="textSecondary">{daoSymbol}</Symbol>
+                      </BalanceContainer>
+                    ) : null}
+                  </Grid>
                   <AddressBarWrapper item>
                     <AddressContainer
                       container
@@ -239,14 +311,18 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                       <Grid item>
                         <Blockie address={account} marginRight={"8px"} />
                       </Grid>
-                      <Grid item>
-                        <Typography variant="subtitle1">
-                          {toShortAddress(account)}
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <StatusDot />
-                      </Grid>
+                      {!isMobileSmall || !isMobileExtraSmall ? (
+                        <>
+                          <Grid item>
+                            <Typography variant="subtitle1">
+                              {toShortAddress(account)}
+                            </Typography>
+                          </Grid>
+                          <Grid item>
+                            <StatusDot />
+                          </Grid>
+                        </>
+                      ) : null}
                     </AddressContainer>
                   </AddressBarWrapper>
                 </Grid>
@@ -260,7 +336,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                     setPopperOpen(false);
                   }}
                   PaperProps={{
-                    style: { borderRadius: 4, backgroundColor: "transparent" },
+                    style: { borderRadius: 4, backgroundColor: "transparent" }
                   }}
                 >
                   <AddressMenu>
@@ -280,7 +356,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                     </AddressMenuItem>
                     <AddressMenuItem
                       style={{
-                        borderTop: "2px solid rgba(255, 255, 255, 0.2)",
+                        borderTop: "2px solid rgba(255, 255, 255, 0.2)"
                       }}
                       container
                       alignItems="center"
@@ -298,8 +374,10 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   </AddressMenu>
                 </StyledPopover>
               </>
-            ) : (
+            ) : !isMobileSmall ? (
               <ConnectWalletButton connect={connect} />
+            ) : (
+              <LogIn onClick={connect} />
             )}
           </Grid>
         </Grid>

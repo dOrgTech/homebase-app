@@ -4,18 +4,26 @@ import {
   Link,
   useTheme,
   useMediaQuery,
+  styled
 } from "@material-ui/core";
 import { Blockie } from "modules/common/Blockie";
 import React from "react";
 import { toShortAddress } from "services/contracts/utils";
 import { HighlightedBadge } from "./styled/HighlightedBadge";
 
+const CustomBlockie = styled(Blockie)({
+  marginRight: 2,
+});
+
 export const UserBadge: React.FC<{ address: string; full?: boolean }> = ({
   address,
-  full,
+  full
 }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMediumSmall = useMediaQuery(theme.breakpoints.down("md"));
+  const isLargeScreen = useMediaQuery(theme.breakpoints.down("lg"));
+
   return (
     <HighlightedBadge
       justify="center"
@@ -24,7 +32,7 @@ export const UserBadge: React.FC<{ address: string; full?: boolean }> = ({
       container
     >
       <Grid item>
-        <Blockie address={address} size={23} />
+        <CustomBlockie address={address} size={22} />
       </Grid>
       {!full ? (
         <Grid item>
@@ -42,9 +50,13 @@ export const UserBadge: React.FC<{ address: string; full?: boolean }> = ({
             <Typography
               variant="body1"
               color="textSecondary"
-              style={{ paddingLeft: 8 }}
+              style={
+                isLargeScreen ? { paddingLeft: 2, fontSize: 14.5 } : undefined
+              }
             >
-              {isMobileSmall ? toShortAddress(address) : address}
+              {isMobileSmall || isMediumSmall
+                ? toShortAddress(address)
+                : address}
             </Typography>
           </Link>
         </Grid>
