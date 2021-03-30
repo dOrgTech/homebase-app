@@ -28,6 +28,7 @@ import { fromStateToTreasuryStorage, deployTreasuryDAO } from "./service";
 import { MigrationParams, Transfer } from "../types";
 import { BaseDAO } from "..";
 import { dtoToTreasuryProposals } from "services/bakingBad/proposals/mappers";
+import { xtzToMutez } from "services/contracts/utils";
 
 export interface TreasuryDeployParams {
   params: MigrationParams;
@@ -192,12 +193,37 @@ export class TreasuryDAO extends BaseDAO {
     const contractMethod = contract.methods.propose(
       tokensToFreeze,
       agoraPostId,
-      transfers.map(({ amount, recipient }) => ({
-        transfer_type: {
-          amount,
-          recipient,
-        },
-      }))
+      transfers.map((transfer) => {
+        if(transfer.type === "FA2"){
+          return [
+            [
+              "transfer_fa2",
+              {
+                contract_address: "KT19yUiYtyCdW6pLh7eBfDEpAkQj8SAV6ZrN",
+                transfer_list: [
+                  {
+                    address: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x",
+                    txs: [
+                      {
+                        to_: "tz1Zqb3hBBN8wLcJYhADcasi1jZdp2YLdG3L",
+                        token_id: 0,
+                        amount: 5
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        } else {
+          return {
+            transfer_type: {
+              amount: Number(xtzToMutez(transfer.amount.toString())),
+              recipient: transfer.recipient,
+            }
+          }
+        }
+      })
     );
 
     const result = await contractMethod.send();

@@ -46,9 +46,22 @@ export type Settings = OrgSettings | VotingSettings | MemberSettings;
 
 export type ErrorValues<T> = Partial<Record<keyof T, string>>;
 
-export interface Transfer {
+export type Transfer = XTZTransfer | FA2Transfer
+
+export interface XTZTransfer {
   amount: number;
   recipient: string;
+  type: "XTZ";
+}
+
+export interface FA2Transfer {
+  from: string;
+  txs: {
+    to: string;
+    tokenId: number;
+    amount: number;
+  }[]
+  type: "FA2";
 }
 
 export interface Registry {

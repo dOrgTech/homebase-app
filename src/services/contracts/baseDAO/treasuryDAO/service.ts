@@ -1,14 +1,10 @@
 import { MichelsonMap, TezosToolkit, Wallet } from "@taquito/taquito";
-import { Parser } from "@taquito/michel-codec";
-import { MichelsonV1Expression } from "@taquito/rpc";
 
 import { TreasuryParams } from "services/contracts/baseDAO/treasuryDAO/types";
 import {
-  MigrationParams,
-  ProposeParams,
+  MigrationParams
 } from "services/contracts/baseDAO/types";
 import code from "services/contracts/baseDAO/treasuryDAO/michelson/contract";
-import proposeMetadataCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
 import {
   fromStateToBaseStorage,
   setMembersAllocation,
@@ -104,43 +100,6 @@ export const deployTreasuryDAO = async ({
     console.log("error ", e);
     throw new Error("Error deploying Treasury DAO");
   }
-};
-
-export const calculateProposalSize = async (
-  contractAddress: string,
-  {
-    transfers,
-    agoraPostId,
-  }: Omit<ProposeParams["contractParams"], "tokensToFreeze">,
-  tezos: TezosToolkit
-): Promise<number> => {
-  const contract = await tezos.wallet.at(contractAddress);
-
-  const p = new Parser();
-
-  const { parameter } = contract.methods
-    .propose(
-      0,
-      agoraPostId,
-      transfers.map(({ amount, recipient }) => ({
-        transfer_type: {
-          amount,
-          recipient,
-        },
-      }))
-    )
-    .toTransferParams();
-  const dataJSON = (parameter?.value as any).args[1];
-
-  const typeJSON = p.parseMichelineExpression(proposeMetadataCode);
-  delete (typeJSON as any).annots;
-
-  const pack = await tezos.rpc.packData({
-    data: dataJSON as MichelsonV1Expression,
-    type: typeJSON as MichelsonV1Expression,
-  });
-
-  return pack.packed.length / 2;
 };
 
 export const getTokensToStakeInPropose = (

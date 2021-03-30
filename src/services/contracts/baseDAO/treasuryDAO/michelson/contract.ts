@@ -34,8 +34,10 @@ export default `parameter (or (or (or (or (unit %accept_ownership)
 (or (or (unit %confirm_migration)
 (bytes %drop_proposal))
 (or (nat %flush)
-(pair %getVotePermitCounter (unit %viewParam)
-                            (contract %viewCallbackTo nat)))))
+(pair %get_vote_permit_counter (unit %voidParam)
+                               (lambda %voidResProxy 
+                                                     nat
+                                                     nat)))))
 (or (or (or (address :newAddress %migrate)
 (pair %mint (address %to_)
             (pair (nat %token_id)
@@ -47,13 +49,13 @@ export default `parameter (or (or (or (or (unit %accept_ownership)
                                                              (pair %transfer_type
                                                                    (mutez %amount)
                                                                    (address %recipient))
-                                                             (pair %transfer_type
+                                                             (pair %transfer_fa2
                                                                    (address %contract_address)
-                                                                   (list %transfer_list (pair 
+                                                                   (list %transfer_list (pair
                                                                                               (address %from_)
-                                                                                              (list %txs (pair 
+                                                                                              (list %txs (pair
                                                                                                                (address %to_)
-                                                                                                               (pair 
+                                                                                                               (pair
                                                                                                                      (nat %token_id)
                                                                                                                      (nat %amount)))))))))))
 (nat %set_quorum_threshold)))
@@ -76,23 +78,24 @@ export default `parameter (or (or (or (or (unit %accept_ownership)
                                         (option %permit (pair 
                                                               (key %key)
                                                               (signature %signature)))))
-    (pair %get_total_supply (nat %viewParam)
-                            (contract %viewCallbackTo nat)))))));
-storage (pair (pair (pair (big_map %ledger (pair address
+    (pair %get_total_supply (nat %voidParam)
+                            (lambda %voidResProxy nat
+                                                  nat)))))));
+storage (pair (pair (pair (pair (big_map %ledger (pair address
+                             nat)
                        nat)
-                 nat)
-(pair (big_map %operators (pair (address :owner)
+      (big_map %operators (pair (address :owner)
                                 (address :operator))
-                          unit)
-      (address %token_address)))
-(pair (pair (address %admin)
-      (address %pending_owner))
-(pair (or %migration_status (unit %notInMigration)
+                          unit))
+(pair (address %token_address)
+      (address %admin)))
+(pair (pair (address %pending_owner)
+      (or %migration_status (unit %notInMigration)
                             (or (address %migratingTo)
-                                (address %migratedTo)))
-      (nat %voting_period))))
-(pair (pair (nat %quorum_threshold)
-(pair (pair %extra (pair (nat %frozen_scale_value)
+                                (address %migratedTo))))
+(pair (nat %voting_period)
+      (nat %quorum_threshold))))
+(pair (pair (pair (pair %extra (pair (nat %frozen_scale_value)
                          (pair 
                                (nat %frozen_extra_value)
                                (nat %slash_scale_value)))
@@ -126,18 +129,22 @@ storage (pair (pair (pair (big_map %ledger (pair address
                                       (pair 
                                             (nat %proposer_frozen_token)
                                             (list %voters (pair 
-                                                                address
-                                                                nat))))))))
-(pair (pair (set %proposal_key_list_sort_by_date (pair 
+                                                                (pair 
+                                                                      (nat %amount)
+                                                                      (bool %type))
+                                                                (address %address))))))))
+(pair (set %proposal_key_list_sort_by_date (pair 
                                                  timestamp
                                                  bytes))
-      (nat %permits_counter))
-(pair (big_map %metadata string
+      (nat %permits_counter)))
+(pair (pair (big_map %metadata string
                          bytes)
       (map %total_supply nat
-                         nat)))));
+                         nat))
+(pair (nat %unfrozen_token_id)
+      (nat %frozen_token_id)))));
 code { DIP { PUSH
-(lambda (pair (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))) (pair address (pair nat nat))) (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))))
+(lambda (pair (pair (pair (pair (pair (big_map (pair address nat) nat) (big_map (pair address address) unit)) (pair address address)) (pair (pair address (or unit (or address address))) (pair nat nat))) (pair (pair (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair (pair nat bool) address))))))) (pair (set (pair timestamp bytes)) nat)) (pair (pair (big_map string bytes) (map nat nat)) (pair nat nat)))) (pair address (pair nat nat))) (pair (pair (pair (pair (big_map (pair address nat) nat) (big_map (pair address address) unit)) (pair address address)) (pair (pair address (or unit (or address address))) (pair nat nat))) (pair (pair (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair (pair nat bool) address))))))) (pair (set (pair timestamp bytes)) nat)) (pair (pair (big_map string bytes) (map nat nat)) (pair nat nat)))))
 { DUP;
 CAR;
 DIP { CDR;
@@ -148,21 +155,14 @@ DIP { DUP;
    CAR;
    DIP { CDR } };
 PAIR };
-DIP 2
-{ DUP };
-DIG 2;
-DIP 2
-{ DUP };
-DIG 2;
+DUP 3;
+DUP 3;
 CDR;
-DIP 2
-{ DUP };
-DIG 2;
-DIP { DUP };
-SWAP;
+DUP 3;
+DUP 2;
 DIP { CDR;
 CDR;
-CDR;
+CAR;
 CDR };
 GET;
 IF_NONE { UNIT;
@@ -177,7 +177,7 @@ SWAP;
 DIP { DIP { DUP;
    CDR;
    CDR;
-   CDR;
+   CAR;
    CDR } };
 UPDATE;
 DIP { DUP;
@@ -187,8 +187,8 @@ DUP;
 DIP { CAR };
 CDR;
 DUP;
-DIP { CAR };
-CDR;
+DIP { CDR };
+CAR;
 DUP;
 DIP { CAR };
 CDR };
@@ -196,17 +196,15 @@ SWAP;
 DROP;
 SWAP;
 PAIR;
-SWAP;
 PAIR;
 SWAP;
 PAIR;
 SWAP;
 PAIR;
 DUP;
-DIP 2
-{ DUP };
-DIG 2;
+DUP 3;
 DIP { CAR;
+CAR;
 CAR;
 CAR };
 GET;
@@ -215,6 +213,7 @@ IF_NONE { SWAP;
  SOME;
  SWAP;
  DIP { DIP { DUP;
+             CAR;
              CAR;
              CAR;
              CAR } };
@@ -227,9 +226,13 @@ IF_NONE { SWAP;
        CAR;
        DUP;
        DIP { CDR };
+       CAR;
+       DUP;
+       DIP { CDR };
        CAR };
  SWAP;
  DROP;
+ PAIR;
  PAIR;
  PAIR;
  PAIR }
@@ -241,9 +244,13 @@ IF_NONE { SWAP;
  DIP { DIP { DUP;
              CAR;
              CAR;
+             CAR;
              CAR } };
  UPDATE;
  DIP { DUP;
+       DIP { CDR };
+       CAR;
+       DUP;
        DIP { CDR };
        CAR;
        DUP;
@@ -256,9 +263,10 @@ IF_NONE { SWAP;
  DROP;
  PAIR;
  PAIR;
+ PAIR;
  PAIR } };
 PUSH
-(lambda (pair (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))) (pair address (pair nat nat))) (pair (pair (pair (big_map (pair address nat) nat) (pair (big_map (pair address address) unit) address)) (pair (pair address address) (pair (or unit (or address address)) nat))) (pair (pair nat (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair address nat)))))))) (pair (pair (set (pair timestamp bytes)) nat) (pair (big_map string bytes) (map nat nat))))))
+(lambda (pair (pair (pair (pair (pair (big_map (pair address nat) nat) (big_map (pair address address) unit)) (pair address address)) (pair (pair address (or unit (or address address))) (pair nat nat))) (pair (pair (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair (pair nat bool) address))))))) (pair (set (pair timestamp bytes)) nat)) (pair (pair (big_map string bytes) (map nat nat)) (pair nat nat)))) (pair address (pair nat nat))) (pair (pair (pair (pair (big_map (pair address nat) nat) (big_map (pair address address) unit)) (pair address address)) (pair (pair address (or unit (or address address))) (pair nat nat))) (pair (pair (pair (pair (pair nat (pair nat nat)) (pair (pair nat mutez) (pair mutez nat))) (big_map bytes (pair (pair nat (pair nat timestamp)) (pair (pair (pair nat (list (or (pair mutez address) (pair address (list (pair address (list (pair address (pair nat nat))))))))) address) (pair nat (list (pair (pair nat bool) address))))))) (pair (set (pair timestamp bytes)) nat)) (pair (pair (big_map string bytes) (map nat nat)) (pair nat nat)))))
 { DUP;
 CAR;
 DIP { CDR;
@@ -270,10 +278,9 @@ DIP { DUP;
    DIP { CDR } };
 PAIR };
 DUP;
-DIP 2
-{ DUP };
-DIG 2;
+DUP 3;
 DIP { CAR;
+CAR;
 CAR;
 CAR };
 GET;
@@ -291,21 +298,14 @@ IF_NONE { SWAP;
       PAIR;
       FAILWITH } }
 { SWAP;
- DIP 3
-     { DUP };
- DIG 3;
- DIP 3
-     { DUP };
- DIG 3;
+ DUP 4;
+ DUP 4;
  CDR;
- DIP 2
-     { DUP };
- DIG 2;
- DIP { DUP };
- SWAP;
+ DUP 3;
+ DUP 2;
  DIP { CDR;
        CDR;
-       CDR;
+       CAR;
        CDR };
  GET;
  IF_NONE { UNIT;
@@ -326,7 +326,7 @@ IF_NONE { SWAP;
  DIP { DIP { DUP;
              CDR;
              CDR;
-             CDR;
+             CAR;
              CDR } };
  UPDATE;
  DIP { DUP;
@@ -336,8 +336,8 @@ IF_NONE { SWAP;
        DIP { CAR };
        CDR;
        DUP;
-       DIP { CAR };
-       CDR;
+       DIP { CDR };
+       CAR;
        DUP;
        DIP { CAR };
        CDR };
@@ -345,18 +345,14 @@ IF_NONE { SWAP;
  DROP;
  SWAP;
  PAIR;
- SWAP;
  PAIR;
  SWAP;
  PAIR;
  SWAP;
  PAIR;
  SWAP;
- DIP 3
-     { DUP };
- DIG 3;
- DIP { DUP };
- SWAP;
+ DUP 4;
+ DUP 2;
  SUB;
  ISNAT;
  IF_NONE { DIP { DROP 2 };
@@ -373,9 +369,13 @@ IF_NONE { SWAP;
            DIP { DIP { DUP;
                        CAR;
                        CAR;
+                       CAR;
                        CAR } };
            UPDATE;
            DIP { DUP;
+                 DIP { CDR };
+                 CAR;
+                 DUP;
                  DIP { CDR };
                  CAR;
                  DUP;
@@ -389,6 +389,7 @@ IF_NONE { SWAP;
            PAIR;
            PAIR;
            PAIR;
+           PAIR;
            SWAP;
            DROP } } } };
 DUP;
@@ -398,8 +399,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      DUP;
                      CAR;
                      CDR;
-                     CDR;
                      CAR;
+                     CDR;
                      IF_LEFT { DROP }
                              { IF_LEFT { DROP }
                                        { PUSH string "MIGRATED";
@@ -409,37 +410,36 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      CAR;
                      CDR;
                      CAR;
-                     CDR;
+                     CAR;
                      SENDER;
                      COMPARE;
                      EQ;
                      IF {  }
-                        { UNIT;
-                          PUSH string "NOT_PENDING_ADMIN";
-                          PAIR;
+                        { PUSH string "NOT_PENDING_ADMIN";
                           FAILWITH };
                      DUP;
                      CAR;
                      CDR;
                      CAR;
-                     CDR;
+                     CAR;
                      DIP { DUP;
+                           DIP { CDR };
+                           CAR;
+                           DUP;
                            DIP { CDR };
                            CAR;
                            DUP;
                            DIP { CAR };
                            CDR;
                            DUP;
-                           DIP { CDR };
-                           CAR;
-                           DUP;
-                           DIP { CDR };
-                           CAR };
+                           DIP { CAR };
+                           CDR };
                      SWAP;
                      DROP;
-                     PAIR;
+                     SWAP;
                      PAIR;
                      SWAP;
+                     PAIR;
                      PAIR;
                      PAIR;
                      NIL operation;
@@ -447,8 +447,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                    { DIP { DUP;
                            CAR;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            IF_LEFT { DROP }
                                    { IF_LEFT { DROP }
                                              { PUSH string "MIGRATED";
@@ -456,16 +456,14 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                FAILWITH } };
                            DUP;
                            CAR;
+                           CAR;
                            CDR;
-                           CAR;
-                           CAR;
+                           CDR;
                            SENDER;
                            COMPARE;
                            EQ;
                            IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
+                              { PUSH string "NOT_ADMIN";
                                 FAILWITH } };
                      SWAP;
                      DIP { DUP;
@@ -477,9 +475,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                            PAIR;
                            SWAP;
                            CAR };
-                     DIP 3
-                         { DUP };
-                     DIG 3;
+                     DUP 4;
                      DIP { DIP { PAIR };
                            PAIR };
                      SWAP;
@@ -489,8 +485,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
          { IF_LEFT { IF_LEFT { IF_LEFT { DIP { DUP;
                                                CAR;
                                                CDR;
-                                               CDR;
                                                CAR;
+                                               CDR;
                                                IF_LEFT { DROP }
                                                        { IF_LEFT { DROP }
                                                                  { PUSH string "MIGRATED";
@@ -499,8 +495,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                          DUP;
                                          CAR;
                                          DIP { CDR;
-                                               DIP { DUP };
-                                               SWAP };
+                                               DUP 2 };
                                          NIL (pair (pair address nat) nat);
                                          SWAP;
                                          ITER { DUP;
@@ -511,11 +506,21 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                 SWAP;
                                                 DUG 2;
                                                 DUP;
-                                                INT;
+                                                DUP 6;
+                                                DUP;
+                                                CDR;
+                                                CDR;
+                                                CDR;
+                                                CAR;
+                                                DIP { SWAP };
+                                                COMPARE;
                                                 EQ;
-                                                IF {  }
-                                                   { DUP;
-                                                     PUSH nat 1;
+                                                IF { DROP }
+                                                   { DIP { DUP };
+                                                     CDR;
+                                                     CDR;
+                                                     CDR;
+                                                     CDR;
                                                      COMPARE;
                                                      EQ;
                                                      IF {  }
@@ -527,6 +532,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                 PAIR;
                                                 DIG 3;
                                                 DUP;
+                                                CAR;
                                                 CAR;
                                                 CAR;
                                                 CAR;
@@ -552,8 +558,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                        { DIP { DUP;
                                                CAR;
                                                CDR;
-                                               CDR;
                                                CAR;
+                                               CDR;
                                                IF_LEFT { DROP }
                                                        { IF_LEFT { DROP }
                                                                  { PUSH string "MIGRATED";
@@ -562,9 +568,9 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                          ITER { SWAP;
                                                 DUP;
                                                 CAR;
+                                                CAR;
                                                 CDR;
-                                                CAR;
-                                                CAR;
+                                                CDR;
                                                 SENDER;
                                                 COMPARE;
                                                 EQ;
@@ -592,8 +598,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                                  DUP;
                                                                  CAR;
                                                                  CAR;
-                                                                 CDR;
                                                                  CAR;
+                                                                 CDR;
                                                                  SWAP;
                                                                  DUG 3;
                                                                  SWAP;
@@ -622,19 +628,27 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                        SWAP;
                                                        DROP;
                                                        DUP;
-                                                       INT;
+                                                       DUP 6;
+                                                       DUP;
+                                                       CDR;
+                                                       CDR;
+                                                       CDR;
+                                                       CAR;
+                                                       DIP { SWAP };
+                                                       COMPARE;
                                                        EQ;
-                                                       IF {  }
-                                                          { DUP;
-                                                            PUSH nat 1;
+                                                       IF { DROP }
+                                                          { DIP { DUP };
+                                                            CDR;
+                                                            CDR;
+                                                            CDR;
+                                                            CDR;
                                                             COMPARE;
                                                             EQ;
                                                             IF { DIG 5;
                                                                  DUP;
                                                                  IF { DUG 5 }
-                                                                    { UNIT;
-                                                                      PUSH string "FROZEN_TOKEN_NOT_TRANSFERABLE";
-                                                                      PAIR;
+                                                                    { PUSH string "FROZEN_TOKEN_NOT_TRANSFERABLE";
                                                                       FAILWITH } }
                                                                { UNIT;
                                                                  PUSH string "FA2_TOKEN_UNDEFINED";
@@ -648,16 +662,12 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                        DIG 3;
                                                        DUG 2;
                                                        DIG 4;
-                                                       DIP 7
-                                                           { DUP };
-                                                       DIG 7;
+                                                       DUP 8;
                                                        DIP { DIP { PAIR };
                                                              PAIR };
                                                        SWAP;
                                                        EXEC;
-                                                       DIP 6
-                                                           { DUP };
-                                                       DIG 6;
+                                                       DUP 7;
                                                        DIP { DIP { PAIR };
                                                              PAIR };
                                                        SWAP;
@@ -670,26 +680,36 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                              { DIP { DUP;
                                      CAR;
                                      CDR;
-                                     CDR;
                                      CAR;
+                                     CDR;
                                      IF_LEFT { DROP }
                                              { IF_LEFT { DROP }
                                                        { PUSH string "MIGRATED";
                                                          PAIR;
                                                          FAILWITH } } };
-                               ITER { IF_LEFT { DUP;
+                               ITER { IF_LEFT { DIP { DUP };
+                                                DUP;
                                                 CDR;
                                                 CDR;
                                                 DIP { DUP;
                                                       CDR;
                                                       CAR;
-                                                      DIP { CAR } };
+                                                      DIP { CAR };
+                                                      DIG 2;
+                                                      DUP;
+                                                      CDR;
+                                                      CDR;
+                                                      CDR;
+                                                      CAR };
                                                 DUP;
-                                                INT;
+                                                DIP { SWAP };
+                                                COMPARE;
                                                 EQ;
-                                                IF { DROP }
-                                                   { DUP;
-                                                     PUSH nat 1;
+                                                IF { DROP 2 }
+                                                   { DIP { CDR;
+                                                           CDR;
+                                                           CDR;
+                                                           CDR };
                                                      COMPARE;
                                                      EQ;
                                                      IF { PUSH string "OPERATION_PROHIBITED";
@@ -704,22 +724,18 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                 COMPARE;
                                                 EQ;
                                                 IF {  }
-                                                   { UNIT;
-                                                     PUSH string "NOT_OWNER";
-                                                     PAIR;
+                                                   { PUSH string "NOT_OWNER";
                                                      FAILWITH };
                                                 PAIR;
                                                 SWAP;
                                                 DUP;
                                                 CAR;
                                                 CAR;
-                                                CDR;
                                                 CAR;
+                                                CDR;
                                                 DIG 2;
-                                                DIP { DUP };
-                                                SWAP;
-                                                DIP { DUP };
-                                                SWAP;
+                                                DUP 2;
+                                                DUP 2;
                                                 MEM;
                                                 IF { DROP 2 }
                                                    { UNIT;
@@ -733,31 +749,41 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                            DIP { CDR };
                                                            CAR;
                                                            DUP;
-                                                           DIP { CAR };
-                                                           CDR;
-                                                           DUP;
                                                            DIP { CDR };
-                                                           CAR };
+                                                           CAR;
+                                                           DUP;
+                                                           DIP { CAR };
+                                                           CDR };
                                                      SWAP;
                                                      DROP;
-                                                     PAIR;
                                                      SWAP;
+                                                     PAIR;
                                                      PAIR;
                                                      PAIR;
                                                      PAIR } }
-                                              { DUP;
+                                              { DIP { DUP };
+                                                DUP;
                                                 CDR;
                                                 CDR;
                                                 DIP { DUP;
                                                       CDR;
                                                       CAR;
-                                                      DIP { CAR } };
+                                                      DIP { CAR };
+                                                      DIG 2;
+                                                      DUP;
+                                                      CDR;
+                                                      CDR;
+                                                      CDR;
+                                                      CAR };
                                                 DUP;
-                                                INT;
+                                                DIP { SWAP };
+                                                COMPARE;
                                                 EQ;
-                                                IF { DROP }
-                                                   { DUP;
-                                                     PUSH nat 1;
+                                                IF { DROP 2 }
+                                                   { DIP { CDR;
+                                                           CDR;
+                                                           CDR;
+                                                           CDR };
                                                      COMPARE;
                                                      EQ;
                                                      IF { PUSH string "OPERATION_PROHIBITED";
@@ -772,22 +798,18 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                 COMPARE;
                                                 EQ;
                                                 IF {  }
-                                                   { UNIT;
-                                                     PUSH string "NOT_OWNER";
-                                                     PAIR;
+                                                   { PUSH string "NOT_OWNER";
                                                      FAILWITH };
                                                 PAIR;
                                                 SWAP;
                                                 DUP;
                                                 CAR;
                                                 CAR;
-                                                CDR;
                                                 CAR;
+                                                CDR;
                                                 DIG 2;
-                                                DIP { DUP };
-                                                SWAP;
-                                                DIP { DUP };
-                                                SWAP;
+                                                DUP 2;
+                                                DUP 2;
                                                 MEM;
                                                 IF { PUSH (option unit) None;
                                                      SWAP;
@@ -799,15 +821,15 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                            DIP { CDR };
                                                            CAR;
                                                            DUP;
-                                                           DIP { CAR };
-                                                           CDR;
-                                                           DUP;
                                                            DIP { CDR };
-                                                           CAR };
+                                                           CAR;
+                                                           DUP;
+                                                           DIP { CAR };
+                                                           CDR };
                                                      SWAP;
                                                      DROP;
-                                                     PAIR;
                                                      SWAP;
+                                                     PAIR;
                                                      PAIR;
                                                      PAIR;
                                                      PAIR }
@@ -818,8 +840,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                DUP;
                                CAR;
                                CDR;
-                               CDR;
                                CAR;
+                               CDR;
                                IF_LEFT { DROP }
                                        { IF_LEFT { DROP }
                                                  { PUSH string "MIGRATED";
@@ -833,21 +855,17 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      DUP;
                      CAR;
                      CDR;
-                     CDR;
                      CAR;
+                     CDR;
                      IF_LEFT { DROP;
-                               UNIT;
                                PUSH string "NOT_MIGRATING";
-                               PAIR;
                                FAILWITH }
                              { IF_LEFT { DUP;
                                          SENDER;
                                          COMPARE;
                                          EQ;
                                          IF {  }
-                                            { UNIT;
-                                              PUSH string "NOT_MIGRATION_TARGET";
-                                              PAIR;
+                                            { PUSH string "NOT_MIGRATION_TARGET";
                                               FAILWITH };
                                          RIGHT address;
                                          RIGHT unit;
@@ -858,15 +876,15 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                DIP { CAR };
                                                CDR;
                                                DUP;
-                                               DIP { CAR };
-                                               CDR;
-                                               DUP;
                                                DIP { CDR };
-                                               CAR };
+                                               CAR;
+                                               DUP;
+                                               DIP { CAR };
+                                               CDR };
                                          SWAP;
                                          DROP;
-                                         PAIR;
                                          SWAP;
+                                         PAIR;
                                          PAIR;
                                          SWAP;
                                          PAIR;
@@ -879,8 +897,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                    { DIP { DUP;
                            CAR;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            IF_LEFT { DROP }
                                    { IF_LEFT { DROP }
                                              { PUSH string "MIGRATED";
@@ -888,36 +906,28 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                FAILWITH } };
                            DUP;
                            CAR;
+                           CAR;
                            CDR;
-                           CAR;
-                           CAR;
+                           CDR;
                            SENDER;
                            COMPARE;
                            EQ;
                            IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
-                                FAILWITH };
-                           DUP };
-                     SWAP;
-                     DIP { DUP };
-                     SWAP;
+                              { PUSH string "NOT_ADMIN";
+                                FAILWITH } };
+                     DUP 2;
+                     DUP 2;
                      DIP { CDR;
                            CAR;
-                           CDR;
+                           CAR;
                            CDR };
                      GET;
-                     IF_NONE { UNIT;
-                               PUSH string "PROPOSAL_NOT_EXIST";
-                               PAIR;
+                     IF_NONE { PUSH string "PROPOSAL_NOT_EXIST";
                                FAILWITH }
                              {  };
-                     DIP { SWAP;
-                           DUP };
-                     SWAP;
-                     DIP { DUP };
-                     SWAP;
+                     DIP { SWAP };
+                     DUP 2;
+                     DUP 2;
                      CAR;
                      CDR;
                      CDR;
@@ -925,7 +935,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      CAR;
                      CDR;
                      CDR;
-                     CDR;
+                     CAR;
                      INT;
                      ADD;
                      NOW;
@@ -933,10 +943,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      GE;
                      IF { PUSH bool True }
                         { PUSH bool False };
-                     IF { DIP { DUP };
-                          SWAP;
-                          DIP { DUP };
-                          SWAP;
+                     IF { DUP 2;
+                          DUP 2;
                           DUP;
                           CAR;
                           CAR;
@@ -945,9 +953,10 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                 CAR };
                           ADD;
                           SWAP;
+                          CAR;
                           CDR;
-                          CAR;
-                          CAR;
+                          CDR;
+                          CDR;
                           COMPARE;
                           LE;
                           IF { PUSH bool True }
@@ -976,58 +985,57 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                      CDR;
                                      DIP { SWAP } };
                                SWAP;
-                               DIP { SWAP;
-                                     DUP };
-                               SWAP;
-                               DIP { DUP };
-                               SWAP;
-                               PUSH nat 1;
-                               SWAP;
+                               DIP { SWAP };
+                               DUP 2;
+                               DUP 2;
+                               DIP { DUP;
+                                     CDR;
+                                     CDR;
+                                     CDR;
+                                     CDR };
                                PAIR;
                                DIP { CAR;
                                      CAR;
+                                     CAR;
                                      CAR };
                                GET;
-                               IF_NONE { UNIT;
-                                         PUSH string "PROPOSER_NOT_EXIST_IN_LEDGER";
-                                         PAIR;
+                               IF_NONE { PUSH string "PROPOSER_NOT_EXIST_IN_LEDGER";
                                          FAILWITH }
                                        {  };
                                DIG 3;
-                               DIP { DUP };
-                               SWAP;
-                               DIP { DUP };
-                               SWAP;
+                               DUP 2;
+                               DUP 2;
                                COMPARE;
                                GT;
                                IF { DROP }
                                   { SWAP;
                                     DROP };
                                DIG 2;
-                               DIP 2
-                                   { DUP };
-                               DIG 2;
-                               DIP 2
-                                   { DUP };
-                               DIG 2;
-                               PUSH nat 1;
+                               DUP 3;
+                               DUP 3;
+                               DUP 3;
+                               CDR;
+                               CDR;
+                               CDR;
+                               CDR;
                                PAIR;
                                DIP { SWAP };
                                SWAP;
                                DIP { SWAP };
-                               DIP 8
-                                   { DUP };
-                               DIG 8;
+                               DUP 9;
                                DIP { DIP { PAIR };
                                      PAIR };
                                SWAP;
                                EXEC;
-                               DIP { PUSH nat 0;
-                                     PAIR;
+                               DUP;
+                               CDR;
+                               CDR;
+                               CDR;
+                               CAR;
+                               SWAP;
+                               DIP { PAIR;
                                      SWAP };
-                               DIP 7
-                                   { DUP };
-                               DIG 7;
+                               DUP 8;
                                DIP { DIP { PAIR };
                                      PAIR };
                                SWAP;
@@ -1041,33 +1049,34 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                CDR;
                                ITER { DUP;
                                       CAR;
+                                      CAR;
                                       DIP { CDR };
-                                      SWAP;
                                       DIG 2;
-                                      DIP 2
-                                          { DUP };
-                                      DIG 2;
-                                      DIP 2
-                                          { DUP };
-                                      DIG 2;
-                                      PUSH nat 1;
+                                      DUP 3;
+                                      DUP 3;
+                                      DUP 3;
+                                      CDR;
+                                      CDR;
+                                      CDR;
+                                      CDR;
                                       PAIR;
                                       DIP { SWAP };
                                       SWAP;
                                       DIP { SWAP };
-                                      DIP 8
-                                          { DUP };
-                                      DIG 8;
+                                      DUP 9;
                                       DIP { DIP { PAIR };
                                             PAIR };
                                       SWAP;
                                       EXEC;
-                                      DIP { PUSH nat 0;
-                                            PAIR;
+                                      DUP;
+                                      CDR;
+                                      CDR;
+                                      CDR;
+                                      CAR;
+                                      SWAP;
+                                      DIP { PAIR;
                                             SWAP };
-                                      DIP 7
-                                          { DUP };
-                                      DIG 7;
+                                      DUP 8;
                                       DIP { DIP { PAIR };
                                             PAIR };
                                       SWAP;
@@ -1080,8 +1089,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                PAIR;
                                DIP { DUP;
                                      CDR;
-                                     CDR;
                                      CAR;
+                                     CDR;
                                      CAR;
                                      PUSH bool False };
                                UPDATE;
@@ -1089,37 +1098,33 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                      DIP { CAR };
                                      CDR;
                                      DUP;
-                                     DIP { CAR };
-                                     CDR;
-                                     DUP;
                                      DIP { CDR };
                                      CAR;
+                                     DUP;
+                                     DIP { CAR };
+                                     CDR;
                                      DUP;
                                      DIP { CDR };
                                      CAR };
                                SWAP;
                                DROP;
                                PAIR;
-                               PAIR;
                                SWAP;
+                               PAIR;
                                PAIR;
                                SWAP;
                                PAIR;
                                SWAP;
                                PAIR }
-                             { UNIT;
-                               PUSH string "FAIL_DROP_PROPOSAL_NOT_ACCEPTED";
-                               PAIR;
+                             { PUSH string "FAIL_DROP_PROPOSAL_NOT_ACCEPTED";
                                FAILWITH } }
-                        { UNIT;
-                          PUSH string "FAIL_DROP_PROPOSAL_NOT_OVER";
-                          PAIR;
+                        { PUSH string "FAIL_DROP_PROPOSAL_NOT_OVER";
                           FAILWITH } } }
          { IF_LEFT { DIP { DUP;
                            CAR;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            IF_LEFT { DROP }
                                    { IF_LEFT { DROP }
                                              { PUSH string "MIGRATED";
@@ -1128,9 +1133,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      DUP;
                      INT;
                      EQ;
-                     IF { UNIT;
-                          PUSH string "BAD_ENTRYPOINT_PARAMETER";
-                          PAIR;
+                     IF { PUSH string "BAD_ENTRYPOINT_PARAMETER";
                           FAILWITH }
                         {  };
                      PUSH nat 0;
@@ -1139,29 +1142,23 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      DIG 2;
                      DUP;
                      CDR;
+                     CAR;
                      CDR;
                      CAR;
-                     CAR;
                      ITER { CDR;
-                            DIP { DUP };
-                            SWAP;
-                            DIP { DUP };
-                            SWAP;
+                            DUP 2;
+                            DUP 2;
                             DIP { CDR;
                                   CAR;
-                                  CDR;
+                                  CAR;
                                   CDR };
                             GET;
-                            IF_NONE { UNIT;
-                                      PUSH string "PROPOSAL_NOT_EXIST";
-                                      PAIR;
+                            IF_NONE { PUSH string "PROPOSAL_NOT_EXIST";
                                       FAILWITH }
                                     {  };
-                            DIP { SWAP;
-                                  DUP };
-                            SWAP;
-                            DIP { DUP };
-                            SWAP;
+                            DIP { SWAP };
+                            DUP 2;
+                            DUP 2;
                             CAR;
                             CDR;
                             CDR;
@@ -1169,7 +1166,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                             CAR;
                             CDR;
                             CDR;
-                            CDR;
+                            CAR;
                             INT;
                             ADD;
                             NOW;
@@ -1183,9 +1180,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                  DIP { CDR };
                                  SWAP;
                                  DUP;
-                                 DIP 2
-                                     { DUP };
-                                 DIG 2;
+                                 DUP 3;
                                  COMPARE;
                                  GE;
                                  IF { SWAP;
@@ -1198,10 +1193,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                       PUSH bool False };
                                  NOT;
                                  IF { DUG 4;
-                                      DIP { DUP };
-                                      SWAP;
-                                      DIP { DUP };
-                                      SWAP;
+                                      DUP 2;
+                                      DUP 2;
                                       DUP;
                                       CAR;
                                       CAR;
@@ -1210,9 +1203,10 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                             CAR };
                                       ADD;
                                       SWAP;
+                                      CAR;
                                       CDR;
-                                      CAR;
-                                      CAR;
+                                      CDR;
+                                      CDR;
                                       COMPARE;
                                       LE;
                                       IF { PUSH bool True }
@@ -1239,58 +1233,57 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                  CDR;
                                                  DIP { SWAP } };
                                            SWAP;
-                                           DIP { SWAP;
-                                                 DUP };
-                                           SWAP;
-                                           DIP { DUP };
-                                           SWAP;
-                                           PUSH nat 1;
-                                           SWAP;
+                                           DIP { SWAP };
+                                           DUP 2;
+                                           DUP 2;
+                                           DIP { DUP;
+                                                 CDR;
+                                                 CDR;
+                                                 CDR;
+                                                 CDR };
                                            PAIR;
                                            DIP { CAR;
                                                  CAR;
+                                                 CAR;
                                                  CAR };
                                            GET;
-                                           IF_NONE { UNIT;
-                                                     PUSH string "PROPOSER_NOT_EXIST_IN_LEDGER";
-                                                     PAIR;
+                                           IF_NONE { PUSH string "PROPOSER_NOT_EXIST_IN_LEDGER";
                                                      FAILWITH }
                                                    {  };
                                            DIG 3;
-                                           DIP { DUP };
-                                           SWAP;
-                                           DIP { DUP };
-                                           SWAP;
+                                           DUP 2;
+                                           DUP 2;
                                            COMPARE;
                                            GT;
                                            IF { DROP }
                                               { SWAP;
                                                 DROP };
                                            DIG 2;
-                                           DIP 2
-                                               { DUP };
-                                           DIG 2;
-                                           DIP 2
-                                               { DUP };
-                                           DIG 2;
-                                           PUSH nat 1;
+                                           DUP 3;
+                                           DUP 3;
+                                           DUP 3;
+                                           CDR;
+                                           CDR;
+                                           CDR;
+                                           CDR;
                                            PAIR;
                                            DIP { SWAP };
                                            SWAP;
                                            DIP { SWAP };
-                                           DIP 9
-                                               { DUP };
-                                           DIG 9;
+                                           DUP 10;
                                            DIP { DIP { PAIR };
                                                  PAIR };
                                            SWAP;
                                            EXEC;
-                                           DIP { PUSH nat 0;
-                                                 PAIR;
+                                           DUP;
+                                           CDR;
+                                           CDR;
+                                           CDR;
+                                           CAR;
+                                           SWAP;
+                                           DIP { PAIR;
                                                  SWAP };
-                                           DIP 8
-                                               { DUP };
-                                           DIG 8;
+                                           DUP 9;
                                            DIP { DIP { PAIR };
                                                  PAIR };
                                            SWAP;
@@ -1304,33 +1297,34 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                            CDR;
                                            ITER { DUP;
                                                   CAR;
+                                                  CAR;
                                                   DIP { CDR };
-                                                  SWAP;
                                                   DIG 2;
-                                                  DIP 2
-                                                      { DUP };
-                                                  DIG 2;
-                                                  DIP 2
-                                                      { DUP };
-                                                  DIG 2;
-                                                  PUSH nat 1;
+                                                  DUP 3;
+                                                  DUP 3;
+                                                  DUP 3;
+                                                  CDR;
+                                                  CDR;
+                                                  CDR;
+                                                  CDR;
                                                   PAIR;
                                                   DIP { SWAP };
                                                   SWAP;
                                                   DIP { SWAP };
-                                                  DIP 9
-                                                      { DUP };
-                                                  DIG 9;
+                                                  DUP 10;
                                                   DIP { DIP { PAIR };
                                                         PAIR };
                                                   SWAP;
                                                   EXEC;
-                                                  DIP { PUSH nat 0;
-                                                        PAIR;
+                                                  DUP;
+                                                  CDR;
+                                                  CDR;
+                                                  CDR;
+                                                  CAR;
+                                                  SWAP;
+                                                  DIP { PAIR;
                                                         SWAP };
-                                                  DIP 8
-                                                      { DUP };
-                                                  DIG 8;
+                                                  DUP 9;
                                                   DIP { DIP { PAIR };
                                                         PAIR };
                                                   SWAP;
@@ -1370,9 +1364,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                                       DIP { SWAP };
                                                                       CONS;
                                                                       SWAP } } };
-                                           IF { UNIT;
-                                                PUSH string "FAIL_DECISION_LAMBDA";
-                                                PAIR;
+                                           IF { PUSH string "FAIL_DECISION_LAMBDA";
                                                 FAILWITH }
                                               {  };
                                            DIG 4;
@@ -1386,8 +1378,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                            PAIR;
                                            DIP { DUP;
                                                  CDR;
-                                                 CDR;
                                                  CAR;
+                                                 CDR;
                                                  CAR;
                                                  PUSH bool False };
                                            UPDATE;
@@ -1395,33 +1387,31 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                  DIP { CAR };
                                                  CDR;
                                                  DUP;
-                                                 DIP { CAR };
-                                                 CDR;
-                                                 DUP;
                                                  DIP { CDR };
                                                  CAR;
+                                                 DUP;
+                                                 DIP { CAR };
+                                                 CDR;
                                                  DUP;
                                                  DIP { CDR };
                                                  CAR };
                                            SWAP;
                                            DROP;
                                            PAIR;
-                                           PAIR;
                                            SWAP;
+                                           PAIR;
                                            PAIR;
                                            SWAP;
                                            PAIR }
-                                         { DIP { DUP };
-                                           SWAP;
-                                           DIP { DUP };
-                                           SWAP;
+                                         { DUP 2;
+                                           DUP 2;
                                            CDR;
                                            CDR;
                                            CAR;
                                            SWAP;
                                            CDR;
                                            CAR;
-                                           CDR;
+                                           CAR;
                                            CAR;
                                            DUP;
                                            CAR;
@@ -1445,32 +1435,27 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                        CDR;
                                                        CAR;
                                                        CDR;
-                                                       DIP { SWAP } };
-                                                 DUP };
+                                                       DIP { SWAP } } };
+                                           DUP 2;
+                                           DUP 2;
                                            SWAP;
-                                           DIP { DUP };
                                            SUB;
                                            ISNAT;
                                            IF_NONE { DIG 3;
-                                                     DIP 2
-                                                         { DUP };
-                                                     DIG 2;
-                                                     DIP 4
-                                                         { DUP };
-                                                     DIG 4 }
+                                                     DUP 3;
+                                                     DUP 5 }
                                                    { DROP;
                                                      DIG 3;
-                                                     DIP { DUP };
-                                                     SWAP;
-                                                     DIP 4
-                                                         { DUP };
-                                                     DIG 4 };
-                                           DIP { PUSH nat 1;
+                                                     DUP 2;
+                                                     DUP 5 };
+                                           DIP { DUP 2;
+                                                 CDR;
+                                                 CDR;
+                                                 CDR;
+                                                 CDR;
                                                  PAIR };
                                            DIG 2;
-                                           DIP 10
-                                               { DUP };
-                                           DIG 10;
+                                           DUP 11;
                                            DIP { DIP { PAIR };
                                                  PAIR };
                                            SWAP;
@@ -1484,58 +1469,57 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                            IF_NONE { PUSH nat 0 }
                                                    {  };
                                            SWAP;
-                                           DIP { SWAP;
-                                                 DUP };
-                                           SWAP;
-                                           DIP { DUP };
-                                           SWAP;
-                                           PUSH nat 1;
-                                           SWAP;
+                                           DIP { SWAP };
+                                           DUP 2;
+                                           DUP 2;
+                                           DIP { DUP;
+                                                 CDR;
+                                                 CDR;
+                                                 CDR;
+                                                 CDR };
                                            PAIR;
                                            DIP { CAR;
                                                  CAR;
+                                                 CAR;
                                                  CAR };
                                            GET;
-                                           IF_NONE { UNIT;
-                                                     PUSH string "PROPOSER_NOT_EXIST_IN_LEDGER";
-                                                     PAIR;
+                                           IF_NONE { PUSH string "PROPOSER_NOT_EXIST_IN_LEDGER";
                                                      FAILWITH }
                                                    {  };
                                            DIG 3;
-                                           DIP { DUP };
-                                           SWAP;
-                                           DIP { DUP };
-                                           SWAP;
+                                           DUP 2;
+                                           DUP 2;
                                            COMPARE;
                                            GT;
                                            IF { DROP }
                                               { SWAP;
                                                 DROP };
                                            DIG 2;
-                                           DIP 2
-                                               { DUP };
-                                           DIG 2;
-                                           DIP 2
-                                               { DUP };
-                                           DIG 2;
-                                           PUSH nat 1;
+                                           DUP 3;
+                                           DUP 3;
+                                           DUP 3;
+                                           CDR;
+                                           CDR;
+                                           CDR;
+                                           CDR;
                                            PAIR;
                                            DIP { SWAP };
                                            SWAP;
                                            DIP { SWAP };
-                                           DIP 9
-                                               { DUP };
-                                           DIG 9;
+                                           DUP 10;
                                            DIP { DIP { PAIR };
                                                  PAIR };
                                            SWAP;
                                            EXEC;
-                                           DIP { PUSH nat 0;
-                                                 PAIR;
+                                           DUP;
+                                           CDR;
+                                           CDR;
+                                           CDR;
+                                           CAR;
+                                           SWAP;
+                                           DIP { PAIR;
                                                  SWAP };
-                                           DIP 8
-                                               { DUP };
-                                           DIG 8;
+                                           DUP 9;
                                            DIP { DIP { PAIR };
                                                  PAIR };
                                            SWAP;
@@ -1549,33 +1533,34 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                            CDR;
                                            ITER { DUP;
                                                   CAR;
+                                                  CAR;
                                                   DIP { CDR };
-                                                  SWAP;
                                                   DIG 2;
-                                                  DIP 2
-                                                      { DUP };
-                                                  DIG 2;
-                                                  DIP 2
-                                                      { DUP };
-                                                  DIG 2;
-                                                  PUSH nat 1;
+                                                  DUP 3;
+                                                  DUP 3;
+                                                  DUP 3;
+                                                  CDR;
+                                                  CDR;
+                                                  CDR;
+                                                  CDR;
                                                   PAIR;
                                                   DIP { SWAP };
                                                   SWAP;
                                                   DIP { SWAP };
-                                                  DIP 9
-                                                      { DUP };
-                                                  DIG 9;
+                                                  DUP 10;
                                                   DIP { DIP { PAIR };
                                                         PAIR };
                                                   SWAP;
                                                   EXEC;
-                                                  DIP { PUSH nat 0;
-                                                        PAIR;
+                                                  DUP;
+                                                  CDR;
+                                                  CDR;
+                                                  CDR;
+                                                  CAR;
+                                                  SWAP;
+                                                  DIP { PAIR;
                                                         SWAP };
-                                                  DIP 8
-                                                      { DUP };
-                                                  DIG 8;
+                                                  DUP 9;
                                                   DIP { DIP { PAIR };
                                                         PAIR };
                                                   SWAP;
@@ -1588,8 +1573,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                            PAIR;
                                            DIP { DUP;
                                                  CDR;
-                                                 CDR;
                                                  CAR;
+                                                 CDR;
                                                  CAR;
                                                  PUSH bool False };
                                            UPDATE;
@@ -1597,19 +1582,19 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                  DIP { CAR };
                                                  CDR;
                                                  DUP;
-                                                 DIP { CAR };
-                                                 CDR;
-                                                 DUP;
                                                  DIP { CDR };
                                                  CAR;
+                                                 DUP;
+                                                 DIP { CAR };
+                                                 CDR;
                                                  DUP;
                                                  DIP { CDR };
                                                  CAR };
                                            SWAP;
                                            DROP;
                                            PAIR;
-                                           PAIR;
                                            SWAP;
+                                           PAIR;
                                            PAIR;
                                            SWAP;
                                            PAIR } }
@@ -1626,25 +1611,23 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      PAIR }
                    { DUP;
                      CAR;
-                     DIP { CDR;
-                           DIP { DUP };
-                           SWAP };
-                     DROP;
-                     CDR;
-                     CDR;
-                     CAR;
-                     CDR;
-                     DIP { AMOUNT };
-                     TRANSFER_TOKENS;
-                     NIL operation;
+                     DIP { CDR };
                      SWAP;
-                     CONS;
-                     PAIR } } } }
+                     DIP { DROP;
+                           CDR;
+                           CAR;
+                           CDR;
+                           CDR };
+                     SWAP;
+                     EXEC;
+                     PUSH string "VoidResult";
+                     PAIR;
+                     FAILWITH } } } }
 { IF_LEFT { IF_LEFT { IF_LEFT { DIP { DUP;
                            CAR;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            IF_LEFT { DROP }
                                    { IF_LEFT { DROP }
                                              { PUSH string "MIGRATED";
@@ -1652,16 +1635,14 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                FAILWITH } };
                            DUP;
                            CAR;
+                           CAR;
                            CDR;
-                           CAR;
-                           CAR;
+                           CDR;
                            SENDER;
                            COMPARE;
                            EQ;
                            IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
+                              { PUSH string "NOT_ADMIN";
                                 FAILWITH } };
                      LEFT address;
                      RIGHT unit;
@@ -1672,15 +1653,15 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                            DIP { CAR };
                            CDR;
                            DUP;
-                           DIP { CAR };
-                           CDR;
-                           DUP;
                            DIP { CDR };
-                           CAR };
+                           CAR;
+                           DUP;
+                           DIP { CAR };
+                           CDR };
                      SWAP;
                      DROP;
-                     PAIR;
                      SWAP;
+                     PAIR;
                      PAIR;
                      SWAP;
                      PAIR;
@@ -1690,8 +1671,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                    { DIP { DUP;
                            CAR;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            IF_LEFT { DROP }
                                    { IF_LEFT { DROP }
                                              { PUSH string "MIGRATED";
@@ -1699,16 +1680,14 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                FAILWITH } };
                            DUP;
                            CAR;
+                           CAR;
                            CDR;
-                           CAR;
-                           CAR;
+                           CDR;
                            SENDER;
                            COMPARE;
                            EQ;
                            IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
+                              { PUSH string "NOT_ADMIN";
                                 FAILWITH } };
                      SWAP;
                      DIP { DUP;
@@ -1720,29 +1699,23 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                            PAIR;
                            SWAP;
                            CAR };
-                     DIP 4
-                         { DUP };
-                     DIG 4;
+                     DUP 5;
                      DIP { DIP { PAIR };
                            PAIR };
                      SWAP;
                      EXEC;
                      NIL operation;
                      PAIR } }
-         { IF_LEFT { DIP { DUP };
-                     SWAP;
-                     DIP { DUP };
-                     SWAP;
+         { IF_LEFT { DUP 2;
+                     DUP 2;
                      DUP;
                      CDR;
                      PACK;
                      SIZE;
-                     DIP 2
-                         { DUP };
-                     DIG 2;
+                     DUP 3;
                      CDR;
                      CAR;
-                     CDR;
+                     CAR;
                      CAR;
                      CDR;
                      CDR;
@@ -1750,12 +1723,10 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      DIP { DUP };
                      COMPARE;
                      GT;
-                     IF { DIP 2
-                              { DUP };
-                          DIG 2;
+                     IF { DUP 3;
                           CDR;
                           CAR;
-                          CDR;
+                          CAR;
                           CAR;
                           DUP;
                           CAR;
@@ -1767,8 +1738,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                           CDR;
                           CAR;
                           ADD;
-                          DIP { DUP };
-                          SWAP;
+                          DUP 2;
                           CAR;
                           SWAP;
                           COMPARE;
@@ -1778,17 +1748,13 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                PUSH bool True;
                                SWAP;
                                ITER { IF_LEFT { CAR;
-                                                DIP 2
-                                                    { DUP };
-                                                DIG 2;
+                                                DUP 3;
                                                 CDR;
                                                 CAR;
-                                                CDR;
                                                 CAR;
-                                                DIP { DUP };
-                                                SWAP;
-                                                DIP { DUP };
-                                                SWAP;
+                                                CAR;
+                                                DUP 2;
+                                                DUP 2;
                                                 CDR;
                                                 CDR;
                                                 CAR;
@@ -1812,31 +1778,30 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                         { DROP 3;
                           PUSH bool False };
                      IF {  }
-                        { UNIT;
-                          PUSH string "FAIL_PROPOSAL_CHECK";
-                          PAIR;
+                        { PUSH string "FAIL_PROPOSAL_CHECK";
                           FAILWITH };
-                     DIP { DUP };
-                     SWAP;
-                     CDR;
+                     DUP 2;
                      CDR;
                      CAR;
+                     CDR;
                      CAR;
                      SIZE;
                      PUSH nat 500;
                      COMPARE;
                      LE;
-                     IF { UNIT;
-                          PUSH string "MAX_PROPOSALS_REACHED";
-                          PAIR;
+                     IF { PUSH string "MAX_PROPOSALS_REACHED";
                           FAILWITH }
                         {  };
-                     DIP { DUP };
-                     SWAP;
-                     PUSH nat 0;
+                     DUP 2;
+                     DUP;
+                     CDR;
+                     CDR;
+                     CDR;
+                     CAR;
                      SENDER;
                      PAIR;
                      DIP { CAR;
+                           CAR;
                            CAR;
                            CAR };
                      GET;
@@ -1848,14 +1813,11 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                PAIR;
                                FAILWITH }
                              {  };
-                     DIP { DUP };
-                     SWAP;
+                     DUP 2;
                      CAR;
                      COMPARE;
                      GT;
-                     IF { UNIT;
-                          PUSH string "PROPOSAL_INSUFFICIENT_BALANCE";
-                          PAIR;
+                     IF { PUSH string "PROPOSAL_INSUFFICIENT_BALANCE";
                           FAILWITH }
                         {  };
                      DUP;
@@ -1864,39 +1826,38 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      SENDER;
                      SWAP;
                      DIG 2;
-                     DIP 2
-                         { DUP };
-                     DIG 2;
-                     DIP 2
-                         { DUP };
-                     DIG 2;
-                     PUSH nat 0;
+                     DUP 3;
+                     DUP 3;
+                     DUP 3;
+                     CDR;
+                     CDR;
+                     CDR;
+                     CAR;
                      PAIR;
                      DIP { SWAP };
                      SWAP;
                      DIP { SWAP };
-                     DIP 6
-                         { DUP };
-                     DIG 6;
+                     DUP 7;
                      DIP { DIP { PAIR };
                            PAIR };
                      SWAP;
                      EXEC;
-                     DIP { PUSH nat 1;
-                           PAIR;
+                     DUP;
+                     CDR;
+                     CDR;
+                     CDR;
+                     CDR;
+                     SWAP;
+                     DIP { PAIR;
                            SWAP };
-                     DIP 5
-                         { DUP };
-                     DIG 5;
+                     DUP 6;
                      DIP { DIP { PAIR };
                            PAIR };
                      SWAP;
                      EXEC;
                      SWAP;
-                     DIP { DUP };
-                     SWAP;
-                     DIP { DUP };
-                     SWAP;
+                     DUP 2;
+                     DUP 2;
                      SENDER;
                      SWAP;
                      PAIR;
@@ -1904,12 +1865,10 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      BLAKE2B;
                      DIP { CDR;
                            CAR;
-                           CDR;
+                           CAR;
                            CDR };
                      MEM;
-                     IF { UNIT;
-                          PUSH string "PROPOSAL_NOT_UNIQUE";
-                          PAIR;
+                     IF { PUSH string "PROPOSAL_NOT_UNIQUE";
                           FAILWITH }
                         {  };
                      NOW;
@@ -1928,15 +1887,13 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                            DIP { DUP;
                                  CDR;
                                  CAR;
-                                 DIP { PUSH (list (pair address nat)) { } };
+                                 DIP { PUSH (list (pair (pair nat bool) address)) { } };
                                  PAIR };
                            PAIR };
                      PAIR;
                      DIP { SWAP };
                      SOME;
-                     DIP 2
-                         { DUP };
-                     DIG 2;
+                     DUP 3;
                      CDR;
                      SENDER;
                      SWAP;
@@ -1947,7 +1904,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                      DIP { DIP { DIP { DUP;
                                        CDR;
                                        CAR;
-                                       CDR;
+                                       CAR;
                                        CDR } };
                            UPDATE;
                            DIP { DUP;
@@ -1957,8 +1914,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                  DIP { CDR };
                                  CAR;
                                  DUP;
-                                 DIP { CAR };
-                                 CDR;
+                                 DIP { CDR };
+                                 CAR;
                                  DUP;
                                  DIP { CAR };
                                  CDR };
@@ -1966,19 +1923,16 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                            DROP;
                            SWAP;
                            PAIR;
-                           SWAP;
                            PAIR;
                            PAIR;
                            SWAP;
                            PAIR;
                            DUP;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            CAR };
-                     DIP 3
-                         { DUP };
-                     DIG 3;
+                     DUP 4;
                      CAR;
                      PAIR;
                      PUSH bool True;
@@ -1988,19 +1942,19 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                            DIP { CAR };
                            CDR;
                            DUP;
-                           DIP { CAR };
-                           CDR;
-                           DUP;
                            DIP { CDR };
                            CAR;
+                           DUP;
+                           DIP { CAR };
+                           CDR;
                            DUP;
                            DIP { CDR };
                            CAR };
                      SWAP;
                      DROP;
                      PAIR;
-                     PAIR;
                      SWAP;
+                     PAIR;
                      PAIR;
                      SWAP;
                      PAIR;
@@ -2012,8 +1966,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                    { DIP { DUP;
                            CAR;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            IF_LEFT { DROP }
                                    { IF_LEFT { DROP }
                                              { PUSH string "MIGRATED";
@@ -2021,88 +1975,26 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                FAILWITH } };
                            DUP;
                            CAR;
+                           CAR;
                            CDR;
-                           CAR;
-                           CAR;
+                           CDR;
                            SENDER;
                            COMPARE;
                            EQ;
                            IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
+                              { PUSH string "NOT_ADMIN";
                                 FAILWITH } };
                      DUP;
                      PUSH nat 1000;
                      COMPARE;
                      LT;
-                     IF { UNIT;
-                          PUSH string "OUT_OF_BOUND_QUORUM_THRESHOLD";
-                          PAIR;
+                     IF { PUSH string "OUT_OF_BOUND_QUORUM_THRESHOLD";
                           FAILWITH }
                         { DUP;
                           PUSH nat 1;
                           COMPARE;
                           GT;
-                          IF { UNIT;
-                               PUSH string "OUT_OF_BOUND_QUORUM_THRESHOLD";
-                               PAIR;
-                               FAILWITH }
-                             { DIP { DUP;
-                                     DIP { CAR };
-                                     CDR;
-                                     DUP;
-                                     DIP { CDR };
-                                     CAR;
-                                     DUP;
-                                     DIP { CDR };
-                                     CAR };
-                               SWAP;
-                               DROP;
-                               PAIR;
-                               PAIR;
-                               SWAP;
-                               PAIR;
-                               NIL operation;
-                               PAIR } } } } }
-{ IF_LEFT { IF_LEFT { DIP { DUP;
-                           CAR;
-                           CDR;
-                           CDR;
-                           CAR;
-                           IF_LEFT { DROP }
-                                   { IF_LEFT { DROP }
-                                             { PUSH string "MIGRATED";
-                                               PAIR;
-                                               FAILWITH } };
-                           DUP;
-                           CAR;
-                           CDR;
-                           CAR;
-                           CAR;
-                           SENDER;
-                           COMPARE;
-                           EQ;
-                           IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
-                                FAILWITH } };
-                     DUP;
-                     PUSH nat 2592000;
-                     COMPARE;
-                     LT;
-                     IF { UNIT;
-                          PUSH string "OUT_OF_BOUND_VOTING_PERIOD";
-                          PAIR;
-                          FAILWITH }
-                        { DUP;
-                          PUSH nat 1;
-                          COMPARE;
-                          GT;
-                          IF { UNIT;
-                               PUSH string "OUT_OF_BOUND_VOTING_PERIOD";
-                               PAIR;
+                          IF { PUSH string "OUT_OF_BOUND_QUORUM_THRESHOLD";
                                FAILWITH }
                              { DIP { DUP;
                                      DIP { CDR };
@@ -2126,27 +2018,78 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                PAIR;
                                PAIR;
                                NIL operation;
-                               PAIR } } }
-                   { DIP { DUP;
+                               PAIR } } } } }
+{ IF_LEFT { IF_LEFT { DIP { DUP;
                            CAR;
                            CDR;
                            CAR;
+                           CDR;
+                           IF_LEFT { DROP }
+                                   { IF_LEFT { DROP }
+                                             { PUSH string "MIGRATED";
+                                               PAIR;
+                                               FAILWITH } };
+                           DUP;
                            CAR;
+                           CAR;
+                           CDR;
+                           CDR;
                            SENDER;
                            COMPARE;
                            EQ;
                            IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
+                              { PUSH string "NOT_ADMIN";
+                                FAILWITH } };
+                     DUP;
+                     PUSH nat 2592000;
+                     COMPARE;
+                     LT;
+                     IF { PUSH string "OUT_OF_BOUND_VOTING_PERIOD";
+                          FAILWITH }
+                        { DUP;
+                          PUSH nat 1;
+                          COMPARE;
+                          GT;
+                          IF { PUSH string "OUT_OF_BOUND_VOTING_PERIOD";
+                               FAILWITH }
+                             { DIP { DUP;
+                                     DIP { CDR };
+                                     CAR;
+                                     DUP;
+                                     DIP { CAR };
+                                     CDR;
+                                     DUP;
+                                     DIP { CAR };
+                                     CDR;
+                                     DUP;
+                                     DIP { CDR };
+                                     CAR };
+                               SWAP;
+                               DROP;
+                               PAIR;
+                               SWAP;
+                               PAIR;
+                               SWAP;
+                               PAIR;
+                               PAIR;
+                               NIL operation;
+                               PAIR } } }
+                   { DIP { DUP;
+                           CAR;
+                           CAR;
+                           CDR;
+                           CDR;
+                           SENDER;
+                           COMPARE;
+                           EQ;
+                           IF {  }
+                              { PUSH string "NOT_ADMIN";
                                 FAILWITH } };
                      DUP;
                      CDR;
                      DIP { CAR;
                            CONTRACT %transfer (list (pair address (list (pair address (pair nat nat)))));
-                           IF_NONE { UNIT;
-                                     PUSH string "FAIL_TRANSFER_CONTRACT_TOKENS";
-                                     PAIR;
+                           IF_NONE { PUSH string "FAIL_TRANSFER_CONTRACT_TOKENS";
                                      FAILWITH }
                                    {  };
                            PUSH mutez 0 };
@@ -2158,8 +2101,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
          { IF_LEFT { DIP { DUP;
                            CAR;
                            CDR;
-                           CDR;
                            CAR;
+                           CDR;
                            IF_LEFT { DROP }
                                    { IF_LEFT { DROP }
                                              { PUSH string "MIGRATED";
@@ -2167,16 +2110,14 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                FAILWITH } };
                            DUP;
                            CAR;
+                           CAR;
                            CDR;
-                           CAR;
-                           CAR;
+                           CDR;
                            SENDER;
                            COMPARE;
                            EQ;
                            IF {  }
-                              { UNIT;
-                                PUSH string "NOT_ADMIN";
-                                PAIR;
+                              { PUSH string "NOT_ADMIN";
                                 FAILWITH };
                            DUP;
                            DIP { CDR };
@@ -2188,11 +2129,10 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                            DIP { CDR };
                            CAR;
                            DUP;
-                           DIP { CAR };
-                           CDR };
+                           DIP { CDR };
+                           CAR };
                      SWAP;
                      DROP;
-                     SWAP;
                      PAIR;
                      PAIR;
                      SWAP;
@@ -2203,8 +2143,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                    { IF_LEFT { DIP { DUP;
                                      CAR;
                                      CDR;
-                                     CDR;
                                      CAR;
+                                     CDR;
                                      IF_LEFT { DROP }
                                              { IF_LEFT { DROP }
                                                        { PUSH string "MIGRATED";
@@ -2214,16 +2154,14 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                       CDR;
                                       DIP { CAR };
                                       IF_NONE { DIP { SENDER } }
-                                              { DIP { DUP };
-                                                SWAP;
+                                              { DUP 2;
                                                 DIP { DIP { CHAIN_ID;
-                                                            DIP { SELF;
-                                                                  ADDRESS };
+                                                            DIP { SELF_ADDRESS };
                                                             PAIR;
                                                             DIP { DIP { DUP;
                                                                         CDR;
-                                                                        CDR;
                                                                         CAR;
+                                                                        CDR;
                                                                         CDR;
                                                                         DUP;
                                                                         DIP { PUSH nat 1;
@@ -2232,11 +2170,11 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                                                     DIP { CAR };
                                                                                     CDR;
                                                                                     DUP;
-                                                                                    DIP { CAR };
-                                                                                    CDR;
-                                                                                    DUP;
                                                                                     DIP { CDR };
                                                                                     CAR;
+                                                                                    DUP;
+                                                                                    DIP { CAR };
+                                                                                    CDR;
                                                                                     DUP;
                                                                                     DIP { CAR };
                                                                                     CDR };
@@ -2244,8 +2182,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                                               DROP;
                                                                               SWAP;
                                                                               PAIR;
-                                                                              PAIR;
                                                                               SWAP;
+                                                                              PAIR;
                                                                               PAIR;
                                                                               SWAP;
                                                                               PAIR } };
@@ -2255,11 +2193,9 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                             PAIR;
                                                             SWAP;
                                                             DROP;
-                                                            PACK;
-                                                            DUP };
-                                                      SWAP;
-                                                      DIP { DUP };
-                                                      SWAP;
+                                                            PACK };
+                                                      DUP 2;
+                                                      DUP 2;
                                                       DUP;
                                                       CAR;
                                                       DIP { CDR };
@@ -2274,26 +2210,20 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                            PUSH string "MISSIGNED";
                                                            PAIR;
                                                            FAILWITH } } };
-                                      DIP { SWAP;
-                                            DUP };
-                                      SWAP;
-                                      DIP { DUP };
-                                      SWAP;
+                                      DIP { SWAP };
+                                      DUP 2;
+                                      DUP 2;
                                       CAR;
                                       DIP { CDR;
                                             CAR;
-                                            CDR;
+                                            CAR;
                                             CDR };
                                       GET;
-                                      IF_NONE { UNIT;
-                                                PUSH string "PROPOSAL_NOT_EXIST";
-                                                PAIR;
+                                      IF_NONE { PUSH string "PROPOSAL_NOT_EXIST";
                                                 FAILWITH }
                                               {  };
-                                      DIP { DUP };
-                                      SWAP;
-                                      DIP { DUP };
-                                      SWAP;
+                                      DUP 2;
+                                      DUP 2;
                                       DUP;
                                       CAR;
                                       CAR;
@@ -2307,14 +2237,10 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                       PUSH nat 1000;
                                       COMPARE;
                                       LT;
-                                      IF { UNIT;
-                                           PUSH string "MAX_VOTES_REACHED";
-                                           PAIR;
+                                      IF { PUSH string "MAX_VOTES_REACHED";
                                            FAILWITH }
                                          {  };
-                                      DIP 2
-                                          { DUP };
-                                      DIG 2;
+                                      DUP 3;
                                       SWAP;
                                       CAR;
                                       CDR;
@@ -2323,25 +2249,25 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                       CAR;
                                       CDR;
                                       CDR;
-                                      CDR;
+                                      CAR;
                                       INT;
                                       ADD;
                                       NOW;
                                       COMPARE;
                                       GE;
-                                      IF { UNIT;
-                                           PUSH string "VOTING_PERIOD_OVER";
-                                           PAIR;
+                                      IF { PUSH string "VOTING_PERIOD_OVER";
                                            FAILWITH }
                                          {  };
-                                      DIP { DUP };
-                                      SWAP;
-                                      PUSH nat 0;
-                                      DIP 4
-                                          { DUP };
-                                      DIG 4;
+                                      DUP 2;
+                                      DUP;
+                                      CDR;
+                                      CDR;
+                                      CDR;
+                                      CAR;
+                                      DUP 5;
                                       PAIR;
                                       DIP { CAR;
+                                            CAR;
                                             CAR;
                                             CAR };
                                       GET;
@@ -2354,75 +2280,64 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                                 PAIR;
                                                 FAILWITH }
                                               {  };
-                                      DIP { DUP };
-                                      SWAP;
+                                      DUP 2;
                                       CDR;
                                       CDR;
                                       COMPARE;
                                       GT;
-                                      IF { UNIT;
-                                           PUSH string "VOTING_INSUFFICIENT_BALANCE";
-                                           PAIR;
+                                      IF { PUSH string "VOTING_INSUFFICIENT_BALANCE";
                                            FAILWITH }
                                          {  };
-                                      DIP { DUP };
-                                      SWAP;
-                                      DIP { DUP };
-                                      SWAP;
+                                      DUP 2;
+                                      DUP 2;
                                       CAR;
                                       DIP { CDR;
                                             CAR;
-                                            CDR;
+                                            CAR;
                                             CDR };
                                       GET;
-                                      IF_NONE { UNIT;
-                                                PUSH string "PROPOSAL_NOT_EXIST";
-                                                PAIR;
+                                      IF_NONE { PUSH string "PROPOSAL_NOT_EXIST";
                                                 FAILWITH }
                                               {  };
                                       DIG 2;
-                                      DIP 2
-                                          { DUP };
-                                      DIG 2;
+                                      DUP 3;
                                       CDR;
                                       CDR;
-                                      DIP 4
-                                          { DUP };
-                                      DIG 4;
+                                      DUP 5;
                                       SWAP;
                                       DIG 2;
-                                      DIP 2
-                                          { DUP };
-                                      DIG 2;
-                                      DIP 2
-                                          { DUP };
-                                      DIG 2;
-                                      PUSH nat 0;
+                                      DUP 3;
+                                      DUP 3;
+                                      DUP 3;
+                                      CDR;
+                                      CDR;
+                                      CDR;
+                                      CAR;
                                       PAIR;
                                       DIP { SWAP };
                                       SWAP;
                                       DIP { SWAP };
-                                      DIP 8
-                                          { DUP };
-                                      DIG 8;
+                                      DUP 9;
                                       DIP { DIP { PAIR };
                                             PAIR };
                                       SWAP;
                                       EXEC;
-                                      DIP { PUSH nat 1;
-                                            PAIR;
+                                      DUP;
+                                      CDR;
+                                      CDR;
+                                      CDR;
+                                      CDR;
+                                      SWAP;
+                                      DIP { PAIR;
                                             SWAP };
-                                      DIP 7
-                                          { DUP };
-                                      DIG 7;
+                                      DUP 8;
                                       DIP { DIP { PAIR };
                                             PAIR };
                                       SWAP;
                                       EXEC;
                                       DIG 2;
                                       DIG 2;
-                                      DIP { DUP };
-                                      SWAP;
+                                      DUP 2;
                                       DUP;
                                       DIP { CDR;
                                             CDR };
@@ -2462,15 +2377,18 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                            SWAP;
                                            PAIR;
                                            PAIR };
-                                      DIP { DUP };
-                                      SWAP;
+                                      DUP 2;
+                                      DUP;
                                       CDR;
                                       CDR;
-                                      DIP 4
-                                          { DUP };
-                                      DIG 4;
-                                      PAIR;
                                       DIP { DUP;
+                                            CDR;
+                                            CAR };
+                                      PAIR;
+                                      DIP { DUP 5 };
+                                      PAIR;
+                                      DIP { DROP;
+                                            DUP;
                                             CDR;
                                             CDR;
                                             CDR };
@@ -2497,7 +2415,7 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                       DIP { DIP { DUP;
                                                   CDR;
                                                   CAR;
-                                                  CDR;
+                                                  CAR;
                                                   CDR };
                                             SOME };
                                       UPDATE;
@@ -2508,8 +2426,8 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                             DIP { CDR };
                                             CAR;
                                             DUP;
-                                            DIP { CAR };
-                                            CDR;
+                                            DIP { CDR };
+                                            CAR;
                                             DUP;
                                             DIP { CAR };
                                             CDR };
@@ -2517,7 +2435,6 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                       DROP;
                                       SWAP;
                                       PAIR;
-                                      SWAP;
                                       PAIR;
                                       PAIR;
                                       SWAP;
@@ -2528,23 +2445,21 @@ IF_LEFT { IF_LEFT { IF_LEFT { IF_LEFT { DROP;
                                PAIR }
                              { DUP;
                                CAR;
-                               DIP { CDR;
-                                     DIP { DUP };
-                                     SWAP };
-                               DIP { CDR;
-                                     CDR;
-                                     CDR;
-                                     CDR };
-                               GET;
-                               IF_NONE { UNIT;
-                                         PUSH string "FA2_TOKEN_UNDEFINED";
-                                         PAIR;
-                                         FAILWITH }
-                                       {  };
-                               DIP { AMOUNT };
-                               TRANSFER_TOKENS;
-                               NIL operation;
+                               DIP { CDR };
                                SWAP;
-                               CONS;
-                               PAIR } } } } };
+                               DIP { DIP { CDR;
+                                           CDR;
+                                           CAR;
+                                           CDR };
+                                     GET;
+                                     IF_NONE { UNIT;
+                                               PUSH string "FA2_TOKEN_UNDEFINED";
+                                               PAIR;
+                                               FAILWITH }
+                                             {  } };
+                               SWAP;
+                               EXEC;
+                               PUSH string "VoidResult";
+                               PAIR;
+                               FAILWITH } } } } };
 DIP { DROP 2 } };`;

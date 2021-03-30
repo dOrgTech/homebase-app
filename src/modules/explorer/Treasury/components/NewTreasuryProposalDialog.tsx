@@ -16,7 +16,7 @@ import { TextField } from "formik-material-ui";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { xtzToMutez, connectIfNotConnected } from "services/contracts/utils";
+import { connectIfNotConnected } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
 import {
@@ -184,7 +184,7 @@ interface Values {
   agoraPostId: number;
 }
 
-const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0 };
+const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0, type: "XTZ" };
 const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
   description: "",
@@ -221,19 +221,12 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     async (values: Values, { setSubmitting }: any) => {
       setSubmitting(true);
 
-      const transfers: Transfer[] = values.transfers.map(transfer => ({
-        ...transfer,
-        amount: Number(xtzToMutez(transfer.amount.toString()))
-      }));
-
-      console.log(transfers);
-
       await connectIfNotConnected(tezos, connect);
 
       if (dao) {
         mutate({
           dao,
-          transfers,
+          transfers: values.transfers,
           tokensToFreeze: dao.storage.frozenExtraValue,
           agoraPostId: values.agoraPostId
         });
