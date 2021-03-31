@@ -10,7 +10,8 @@ import {
   Theme,
   useTheme,
   Popover,
-  useMediaQuery
+  useMediaQuery,
+  withTheme
 } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -40,9 +41,11 @@ const StyledExplorerToolbar = styled(StyledToolbar)({
   minHeight: 100
 });
 
-const StyledCreatorToolbar = styled(StyledToolbar)({
+const StyledCreatorToolbar = styled(withTheme(StyledToolbar))(props => ({
+  borderBottom: `2px solid ${props.theme.palette.primary.light}`,
   minHeight: 80
-});
+})
+);
 
 const StatusDot = styled(Box)({
   borderRadius: "100%",
@@ -106,18 +109,9 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
 }));
 
 const custom = (theme: Theme, mode: "creator" | "explorer") => ({
-  logo: {
-    height: "100%",
-    alignItems: "baseline",
-    display: "flex",
-    marginTop: 22
-  },
   appBorder: {
     borderBottom:
       mode === "explorer" ? `2px solid ${theme.palette.primary.light}` : "unset"
-  },
-  appLogoHeight: {
-    borderRight: `2px solid ${theme.palette.primary.light}`
   }
 });
 
@@ -224,24 +218,15 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     >
       <StyledToolbar>
         <Grid container direction="row" alignItems="center" wrap="wrap">
+          {/*Start: explorer only code*/}
           {mode === "explorer" ? (
             <>
               <Grid
                 item
                 xs={11}
                 sm={3}
-                style={
-                  location.pathname === "/creator"
-                    ? custom(theme, mode).appLogoHeight
-                    : undefined
-                }
               >
                 <Box
-                  style={
-                    location.pathname === "/creator"
-                      ? custom(theme, mode).logo
-                      : undefined
-                  }
                   onClick={() => history.push("/explorer")}
                 >
                   <ToolbarContainer container alignItems="center" wrap="nowrap">
@@ -258,7 +243,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
               </Grid>
             </>
           ) : null}
-
+          {/*End: explorer only code*/}
           <Grid
             item
             xs={
