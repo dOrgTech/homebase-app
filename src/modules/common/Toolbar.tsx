@@ -13,7 +13,7 @@ import {
   useMediaQuery,
   withTheme
 } from "@material-ui/core";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
 import HomeButton from "assets/logos/homebase.svg";
@@ -36,16 +36,6 @@ const StyledToolbar = styled(Toolbar)({
   justifyContent: "space-between",
   flexWrap: "wrap",
 });
-
-const StyledExplorerToolbar = styled(StyledToolbar)({
-  minHeight: 100
-});
-
-const StyledCreatorToolbar = styled(withTheme(StyledToolbar))(props => ({
-  borderBottom: `2px solid ${props.theme.palette.primary.light}`,
-  minHeight: 80
-})
-);
 
 const StatusDot = styled(Box)({
   borderRadius: "100%",
@@ -163,6 +153,81 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
+const StyledExplorerToolbar = styled(StyledToolbar)({
+  minHeight: 100
+});
+
+const StyledCreatorToolbar = styled(withTheme(StyledToolbar))(props => ({
+  borderBottom: `2px solid ${props.theme.palette.primary.light}`,
+  minHeight: 80
+})
+);
+
+interface BaseGridProps {
+  children: any, mode: "creator" | "explorer", isMobileSmall: boolean, isMobileExtraSmall: boolean
+}
+
+export const BaseGrid = ({
+  children,
+  mode,
+  isMobileSmall,
+  isMobileExtraSmall,
+}: BaseGridProps): JSX.Element => {
+  return (
+    <Grid
+      item
+      xs={
+        mode === "creator" && !isMobileSmall
+          ? 12
+          : isMobileExtraSmall
+            ? 1
+            : 9
+      }
+      container
+      justify={
+        isMobileExtraSmall && mode === "explorer"
+          ? "flex-start"
+          : "flex-end"
+      }
+    >
+      {children}
+    </Grid>
+  );
+};
+
+interface ExplorerLogoProps {
+  history: any,
+}
+
+export const ExplorerLogo = ({
+  history,
+}: ExplorerLogoProps): JSX.Element => {
+  return (
+    <>
+      <Grid
+        item
+        xs={11}
+        sm={3}
+      >
+        <Box
+          onClick={() => history.push("/explorer")}
+        >
+          <ToolbarContainer container alignItems="center" wrap="nowrap">
+            <Grid item>
+              <LogoItem src={HomeButton} />
+            </Grid>
+            <Grid item>
+              <Box paddingLeft="10px">
+                <LogoText color="textSecondary">Homebase</LogoText>
+              </Box>
+            </Grid>
+          </ToolbarContainer>
+        </Box>
+      </Grid>
+    </>
+  );
+};
+
 export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   mode
 }) => {
@@ -203,7 +268,6 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     return unfrozenBalance || 0;
   }, [data, account])
 
-  const location = useLocation();
   const history = useHistory();
 
   return (
@@ -211,55 +275,17 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       position="sticky"
       color="primary"
       style={
-        location.pathname === "/creator"
-          ? undefined
-          : custom(theme, mode).appBorder
+        mode === "explorer" ?
+          custom(theme, mode).appBorder :
+          undefined
       }
     >
       <StyledToolbar>
         <Grid container direction="row" alignItems="center" wrap="wrap">
-          {/*Start: explorer only code*/}
           {mode === "explorer" ? (
-            <>
-              <Grid
-                item
-                xs={11}
-                sm={3}
-              >
-                <Box
-                  onClick={() => history.push("/explorer")}
-                >
-                  <ToolbarContainer container alignItems="center" wrap="nowrap">
-                    <Grid item>
-                      <LogoItem src={HomeButton} />
-                    </Grid>
-                    <Grid item>
-                      <Box paddingLeft="10px">
-                        <LogoText color="textSecondary">Homebase</LogoText>
-                      </Box>
-                    </Grid>
-                  </ToolbarContainer>
-                </Box>
-              </Grid>
-            </>
+            <ExplorerLogo history={history} />
           ) : null}
-          {/*End: explorer only code*/}
-          <Grid
-            item
-            xs={
-              mode === "creator" && !isMobileSmall
-                ? 12
-                : isMobileExtraSmall
-                  ? 1
-                  : 9
-            }
-            container
-            justify={
-              isMobileExtraSmall && mode === "explorer"
-                ? "flex-start"
-                : "flex-end"
-            }
-          >
+          <BaseGrid mode={mode} isMobileSmall={isMobileSmall} isMobileExtraSmall={isMobileExtraSmall}>
             {account ? (
               <>
                 <Grid
@@ -369,9 +395,9 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
             ) : (
               <LogIn onClick={connect} />
             )}
-          </Grid>
+          </BaseGrid>
         </Grid>
       </StyledToolbar>
-    </StyledAppBar>
+    </StyledAppBar >
   );
 };
