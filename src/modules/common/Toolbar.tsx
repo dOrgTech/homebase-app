@@ -28,16 +28,21 @@ const StyledAppBar = styled(AppBar)({
   boxShadow: "none"
 });
 
-const StyledToolbar = styled(Toolbar)(
-  ({ mode }: { mode: "creator" | "explorer" }) => ({
-    display: "flex",
-    padding: "22px 37px",
-    boxSizing: "border-box",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    minHeight: mode === "creator" ? 80 : 100
-  })
-);
+const StyledToolbar = styled(Toolbar)({
+  display: "flex",
+  padding: "22px 37px",
+  boxSizing: "border-box",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+});
+
+const StyledExplorerToolbar = styled(StyledToolbar)({
+  minHeight: 100
+});
+
+const StyledCreatorToolbar = styled(StyledToolbar)({
+  minHeight: 80
+});
 
 const StatusDot = styled(Box)({
   borderRadius: "100%",
@@ -198,8 +203,8 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const userBalance = useMemo(() => {
     if (!data) {
       return 0;
-    } 
-    const balance = data.find(({address}) => address.toLowerCase() === account.toLowerCase());
+    }
+    const balance = data.find(({ address }) => address.toLowerCase() === account.toLowerCase());
     const unfrozenBalance = balance ? balance.balances[0] : 0;
     return unfrozenBalance || 0;
   }, [data, account])
@@ -217,7 +222,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
           : custom(theme, mode).appBorder
       }
     >
-      <StyledToolbar mode={mode}>
+      <StyledToolbar>
         <Grid container direction="row" alignItems="center" wrap="wrap">
           {mode === "explorer" ? (
             <>
@@ -260,8 +265,8 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
               mode === "creator" && !isMobileSmall
                 ? 12
                 : isMobileExtraSmall
-                ? 1
-                : 9
+                  ? 1
+                  : 9
             }
             container
             justify={
