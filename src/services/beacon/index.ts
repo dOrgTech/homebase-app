@@ -26,24 +26,18 @@ export const connectWithBeacon = async (): Promise<{
   wallet: BeaconWallet;
   network: Network;
 }> => {
-  return await new Promise(async (resolve, reject) => {
+  return await new Promise(async (resolve) => {
     const wallet = new BeaconWallet({
       name: "Homebase",
       iconUrl: "https://tezostaquito.io/img/favicon.png",
       eventHandlers: {
-        PERMISSION_REQUEST_SUCCESS: {
-          handler: (data) => {
-            console.log("permission data:", data);
-            const network = data.account.network.type;
+        ACTIVE_ACCOUNT_SET: {
+          handler: (account) => {
+            const network = account.network.type;
             resolve({
               wallet,
               network: networkNameMap[network],
             });
-          },
-        },
-        PERMISSION_REQUEST_ERROR: {
-          handler: () => {
-            reject("Permission request error");
           },
         },
       },
