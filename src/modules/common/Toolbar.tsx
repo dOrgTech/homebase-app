@@ -153,11 +153,11 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
-const StyledExplorerToolbar = styled(StyledToolbar)({
+const StyledExplorerAppBar = styled(StyledAppBar)({
   minHeight: 100
 });
 
-const StyledCreatorToolbar = styled(withTheme(StyledToolbar))(props => ({
+const StyledCreatorAppBar = styled(withTheme(StyledAppBar))(props => ({
   borderBottom: `2px solid ${props.theme.palette.primary.light}`,
   minHeight: 80
 })
