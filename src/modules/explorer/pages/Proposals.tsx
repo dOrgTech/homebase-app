@@ -46,7 +46,6 @@ export const Proposals: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
-
   const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
 
@@ -124,7 +123,7 @@ export const Proposals: React.FC = () => {
                   <ViewButton
                     variant="outlined"
                     onClick={onFlush}
-                    disabled={!dao}
+                    disabled={!dao?.storage.proposalsToFlush}
                   >
                     EXECUTE
                   </ViewButton>

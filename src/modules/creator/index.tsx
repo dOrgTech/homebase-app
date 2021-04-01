@@ -34,6 +34,7 @@ const StepContentContainer = styled(Grid)({
   boxSizing: "border-box",
   overflowY: "auto",
   padding: "4vw",
+  zIndex: 10,
 });
 
 const StyledStepper = styled(Stepper)({

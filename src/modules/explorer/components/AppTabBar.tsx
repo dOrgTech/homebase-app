@@ -1,5 +1,5 @@
 import React from "react";
-import { AppBar, styled, Tab, Tabs } from "@material-ui/core";
+import { AppBar, styled, Tab, Tabs, useMediaQuery, useTheme } from "@material-ui/core";
 
 const CustomTab = styled(Tab)({
   flex: 1,
@@ -28,6 +28,9 @@ export const AppTabBar: React.FC<{
     setValue(newValue);
   };
 
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <StyledAppBar position="static">
       <Tabs
@@ -36,7 +39,7 @@ export const AppTabBar: React.FC<{
         aria-label="simple tabs example"
       >
         {labels.map((label, i) => (
-          <CustomTab label={label} {...a11yProps(i)} key={i} style={class1} />
+          <CustomTab label={label} {...a11yProps(i)} key={i} classes={!isMobileSmall ? class1 : undefined} />
         ))}
       </Tabs>
     </StyledAppBar>

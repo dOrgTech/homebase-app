@@ -30,7 +30,11 @@ const Cursor = styled(Typography)({
   textTransform: "uppercase",
 });
 
-export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
+export const TreasuryTableRow: React.FC<{
+  symbol: string;
+  balance: string;
+  decimals: number;
+}> = ({ symbol, balance, decimals }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { dispatch } = useContext(ModalsContext);
@@ -46,7 +50,7 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
         <TokenName>
           {" "}
           <Cursor variant="subtitle1" color="textSecondary">
-            {name}
+            {symbol}
           </Cursor>
         </TokenName>
       </Grid>
@@ -64,7 +68,7 @@ export const TreasuryTableRow: React.FC<any> = ({ name, balance }) => {
           </Typography>
         ) : null}
         <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {balance}
+          {decimals && (Number(balance) / Math.pow(10, decimals))}
         </Cursor>
       </Grid>
       <Grid sm={2} item>
