@@ -13,7 +13,6 @@ export const TokenTable: React.FC = () => {
   const { data: tokenBalances } = useTokenBalances(daoId)
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
