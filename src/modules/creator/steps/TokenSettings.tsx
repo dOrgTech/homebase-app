@@ -24,6 +24,7 @@ import {
   AddCircleOutline,
   RemoveCircleOutline,
 } from "@material-ui/icons";
+import { useTotalSupply } from "modules/common/hooks/useTotalSupply";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -169,10 +170,16 @@ const TokenHoldersGrid = styled(Grid)({
 });
 
 const Total = ({ values }: { values: MemberSettings }) => {
+  const { saveTotalSupply } = useTotalSupply();
   const totalTokens = values.tokenHolders.reduce(
     (a: number, b: TokenHolder) => a + b.balance,
     0
   );
+
+  useEffect(() => {
+    saveTotalSupply(totalTokens);
+  }, [values, saveTotalSupply, totalTokens])
+
   return <div>{isNaN(totalTokens) ? "0" : totalTokens}</div>;
 };
 
@@ -214,7 +221,7 @@ const TokenSettingsForm = ({
         },
         back: {
           text: "BACK",
-          handler: () => history.push(`voting`),
+          handler: () => history.push(`dao`),
         },
       });
     }
@@ -258,6 +265,8 @@ const TokenSettingsForm = ({
                   prev + (t.balance || 0),
                 0
               );
+
+              // saveTotalSupply(totalSupply);
 
               return (
                 <>
@@ -424,9 +433,10 @@ export const TokenSettings = (): JSX.Element => {
       ...state.data,
       memberSettings: values,
     });
+    console.log(values);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_MEMBERS_SETTINGS, members: values });
-    history.push(`summary`);
+    history.push(`voting`);
   };
 
   return (
