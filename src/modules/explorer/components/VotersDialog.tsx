@@ -65,12 +65,18 @@ const Row = styled(Grid)(({ theme }) => ({
   "&:last-child": {
     marginBottom: 30,
     borderBottom: `2px solid ${theme.palette.primary.light}`
+  },
+  [theme.breakpoints.down("sm")]: {
+    padding: "20px 34px",
   }
 }));
 
-const TableHeader = styled(Grid)({
-  padding: "23px 64px"
-});
+const TableHeader = styled(Grid)(({ theme }) => ({
+  padding: "23px 64px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "23px 24px",
+  }
+}));
 
 const LinearBar = styled(ProgressBar)({
   marginBottom: "-3px",
@@ -82,7 +88,10 @@ const NoTokens = styled(Grid)(({ theme }) => ({
   borderTop: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 0,
   display: "flex",
-  alignItems: "end"
+  alignItems: "end",
+  [theme.breakpoints.down("sm")]: {
+    padding: "20px 34px",
+  }
 }));
 
 const styles = makeStyles({
@@ -103,6 +112,13 @@ const styles = makeStyles({
   }
 });
 
+const Header = styled(Grid)(({ theme }) => ({
+  padding: "20px 64px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "20px 34px",
+  }
+}));
+
 export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   daoAddress,
   proposalAddress,
@@ -117,13 +133,11 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   const [selectedTab, setSelectedTab] = React.useState(0);
   const style = styles();
 
-  const { votesSum } = useVotesStats(
-    {
-      quorumTreshold: dao?.storage.quorumTreshold || 0,
-      upVotes: proposal?.upVotes || 0,
-      downVotes: proposal?.downVotes || 0
-    }
-  );
+  const { votesSum } = useVotesStats({
+    quorumTreshold: dao?.storage.quorumTreshold || 0,
+    upVotes: proposal?.upVotes || 0,
+    downVotes: proposal?.downVotes || 0
+  });
 
   const votes = useMemo(() => {
     if (!votesData) {
@@ -225,37 +239,52 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                 </Grid>
               </>
             ) : votes && votes.length > 0 ? (
-              votes.map((vote, index) => {
-                return (
-                  <Row
-                    container
-                    direction="row"
-                    alignItems="center"
-                    key={index}
-                  >
-                    <Grid item xs={6}>
-                      <Typography variant="subtitle1" color="textSecondary">
-                        {toShortAddress(vote.voter)}
-                      </Typography>
-                      <LinearBar
-                        color="secondary"
-                        variant="determinate"
-                        favor={vote.favor}
-                        value={votesSum ? (vote.value / votesSum) * 100 : 0}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography
-                        variant="subtitle1"
-                        color="textSecondary"
-                        align="right"
-                      >
-                        {vote.value}
-                      </Typography>
-                    </Grid>
-                  </Row>
-                );
-              })
+              <>
+                <Header container direction="row" alignItems="center">
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      {votes.length} {votes.length !== 1 ? " addresses" : " address" }
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6} container justify="flex-end">
+                    <Typography variant="subtitle1" color="textSecondary">
+                      % of Votes
+                    </Typography>
+                  </Grid>
+                </Header>
+
+                {votes.map((vote, index) => {
+                  return (
+                    <Row
+                      container
+                      direction="row"
+                      alignItems="center"
+                      key={index}
+                    >
+                      <Grid item xs={6}>
+                        <Typography variant="subtitle1" color="textSecondary">
+                          {toShortAddress(vote.voter)}
+                        </Typography>
+                        <LinearBar
+                          color="secondary"
+                          variant="determinate"
+                          favor={vote.favor}
+                          value={votesSum ? (vote.value / votesSum) * 100 : 0}
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography
+                          variant="subtitle1"
+                          color="textSecondary"
+                          align="right"
+                        >
+                          {vote.value}
+                        </Typography>
+                      </Grid>
+                    </Row>
+                  );
+                })}
+              </>
             ) : (
               <NoTokens container direction="row" alignItems="center">
                 <Grid item xs={12}>
