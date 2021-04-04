@@ -16,7 +16,8 @@ export const AppTabBar: React.FC<{
   setValue: any;
   labels: string[];
   class1?: any;
-}> = ({ value, setValue, labels, class1 }) => {
+  centered?: boolean;
+}> = ({ value, setValue, labels, class1, centered }) => {
   const a11yProps = (index: any) => {
     return {
       id: `simple-tab-${index}`,
@@ -37,6 +38,7 @@ export const AppTabBar: React.FC<{
         value={value}
         onChange={handleChange}
         aria-label="simple tabs example"
+        style={centered ? {display: "flex", justifyContent: "center", marginLeft: 12} : undefined}
       >
         {labels.map((label, i) => (
           <CustomTab label={label} {...a11yProps(i)} key={i} classes={!isMobileSmall ? class1 : undefined} />

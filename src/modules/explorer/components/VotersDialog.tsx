@@ -9,6 +9,7 @@ import {
   DialogContentText,
   DialogTitle,
   CircularProgress,
+  makeStyles
 } from "@material-ui/core";
 
 import { ProgressBar } from "modules/explorer/components";
@@ -18,6 +19,9 @@ import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
 import { toShortAddress } from "services/contracts/utils";
 import { ViewButton } from "./ViewButton";
 import { useVotesStats } from "../hooks/useVotesStats";
+import { VotersProgress } from "./VotersProgress";
+import { AppTabBar } from "./AppTabBar";
+import { TabPanel } from "./TabPanel";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -27,28 +31,29 @@ interface UpVotesDialogData {
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 const Title = styled(DialogTitle)({
   height: 30,
   paddingBottom: 0,
-  minWidth: 500,
+  minWidth: 250
 });
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthSm": {
     minHeight: "400px !important",
-    maxHeight: 600,
-  },
+    maxHeight: 600
+  }
 });
 
 const StyledViewButton = styled(ViewButton)({
-  marginTop: -30,
+  marginTop: -30
 });
 
 const TextHeader = styled(Typography)({
   marginTop: 10,
+  marginBottom: 10
 });
 
 const Row = styled(Grid)(({ theme }) => ({
@@ -59,25 +64,17 @@ const Row = styled(Grid)(({ theme }) => ({
   alignItems: "end",
   "&:last-child": {
     marginBottom: 30,
-    borderBottom: `2px solid ${theme.palette.primary.light}`,
-  },
+    borderBottom: `2px solid ${theme.palette.primary.light}`
+  }
 }));
 
 const TableHeader = styled(Grid)({
-  padding: "23px 64px",
+  padding: "23px 64px"
 });
 
 const LinearBar = styled(ProgressBar)({
   marginBottom: "-3px",
-  marginTop: 30,
-});
-
-const PercentageText = styled(Typography)({
-  color: "rgba(255, 255, 255, 0.8)",
-});
-
-const VotesContainer = styled(Grid)({
-  marginTop: 66,
+  marginTop: 30
 });
 
 const NoTokens = styled(Grid)(({ theme }) => ({
@@ -85,13 +82,31 @@ const NoTokens = styled(Grid)(({ theme }) => ({
   borderTop: `2px solid ${theme.palette.primary.light}`,
   paddingBottom: 0,
   display: "flex",
-  alignItems: "end",
+  alignItems: "end"
 }));
+
+const styles = makeStyles({
+  root: {
+    borderRadius: "4px 4px 0px 0px",
+    maxWidth: 135,
+    marginRight: 10,
+    background: "#3D3D3D",
+    "&:before": {
+      opacity: 0.5
+    }
+  },
+  selected: {
+    background: "rgba(124, 255, 181, 0.15)",
+    "&:before": {
+      opacity: 0.15
+    }
+  }
+});
 
 export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   daoAddress,
   proposalAddress,
-  favor,
+  favor
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -99,12 +114,14 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   const { data: proposal } = useProposal(daoAddress, proposalAddress);
   const theme = useTheme();
   const { data: votesData, isLoading } = useVotes(proposalAddress, daoAddress);
+  const [selectedTab, setSelectedTab] = React.useState(0);
+  const style = styles();
 
-  const { votesSum, votesQuorumPercentage, votes: votesAmount } = useVotesStats(
+  const { votesSum } = useVotesStats(
     {
       quorumTreshold: dao?.storage.quorumTreshold || 0,
       upVotes: proposal?.upVotes || 0,
-      downVotes: proposal?.downVotes || 0,
+      downVotes: proposal?.downVotes || 0
     }
   );
 
@@ -113,8 +130,18 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
       return [];
     }
 
-    return votesData.filter((voteData) => voteData.favor === favor);
-  }, [votesData, favor]);
+    if (selectedTab === 0) {
+      return votesData;
+    }
+
+    if (selectedTab === 1) {
+      return votesData.filter(voteData => voteData.favor === true);
+    }
+
+    if (selectedTab === 2) {
+      return votesData.filter(voteData => voteData.favor === false);
+    }
+  }, [votesData, selectedTab]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -133,7 +160,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
         }
         onClick={handleClickOpen}
       >
-        VIEW VOTES
+        VIEW
       </StyledViewButton>
       <CustomDialog
         open={open}
@@ -163,57 +190,41 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                   style={{
                     color: favor
                       ? theme.palette.secondary.main
-                      : theme.palette.error.main,
+                      : theme.palette.error.main
                   }}
                 >
-                  {favor ? "FOR" : "OPPOSE"}
+                  VOTES{" "}
                 </Typography>
               </Grid>
               <Grid item xs={12}>
                 <TextHeader variant="h3" color="textSecondary">
-                  {votesAmount}
+                  {votesSum}
                 </TextHeader>
+                <VotersProgress
+                  showButton={false}
+                  daoId={daoAddress}
+                  proposalId={proposalAddress}
+                />
               </Grid>
-              <Grid item xs={12}>
-                <Grid container direction="row" alignItems="center">
-                  <Grid item xs={10}>
-                    <ProgressBar
-                      value={votesQuorumPercentage}
-                      favor={favor}
-                      variant="determinate"
-                    />
-                  </Grid>
-                  <Grid item xs={2}>
-                    <PercentageText align="right">
-                      {Number(votesQuorumPercentage.toFixed(1))}%
-                    </PercentageText>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <VotesContainer item xs={12}>
-                <Grid item container direction="row" alignItems="center">
-                  <Grid xs={6}>
-                    <Typography variant="subtitle1" color="textSecondary">
-                      {votes.length} Votes
-                    </Typography>
-                  </Grid>
-
-                  <Grid xs={6}>
-                    <Typography
-                      variant="subtitle1"
-                      color="textSecondary"
-                      align="right"
-                    >
-                      Value
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </VotesContainer>
             </TableHeader>
 
+            <AppTabBar
+              class1={style}
+              value={selectedTab}
+              setValue={setSelectedTab}
+              labels={["ALL", "SUPPORT", "OPPOSE"]}
+              centered={true}
+            />
+
+            <TabPanel value={selectedTab} index={0}></TabPanel>
+
             {isLoading ? (
-              <CircularProgress color="secondary" />
-            ) : votes.length > 0 ? (
+              <>
+                <Grid container direction="row" justify="center">
+                  <CircularProgress color="secondary" />
+                </Grid>
+              </>
+            ) : votes && votes.length > 0 ? (
               votes.map((vote, index) => {
                 return (
                   <Row
@@ -229,7 +240,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                       <LinearBar
                         color="secondary"
                         variant="determinate"
-                        favor={favor}
+                        favor={vote.favor}
                         value={votesSum ? (vote.value / votesSum) * 100 : 0}
                       />
                     </Grid>
@@ -248,9 +259,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
             ) : (
               <NoTokens container direction="row" alignItems="center">
                 <Grid item xs={12}>
-                  <Typography>
-                    No votes {favor ? "in favor" : "against"}
-                  </Typography>
+                  <Typography>No votes</Typography>
                 </Grid>
               </NoTokens>
             )}
