@@ -38,6 +38,7 @@ export const getProposalVotes = async (
   }
 
   const result: OperationsDTO = await response.json();
+  console.log(result);
 
   return dtoToVotes(result, proposalKey);
 };

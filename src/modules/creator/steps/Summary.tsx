@@ -91,7 +91,7 @@ export const Summary = (): JSX.Element => {
         text: "LAUNCH",
       },
       back: {
-        handler: () => history.push(`token`),
+        handler: () => history.push(`voting`),
         text: "BACK",
       },
     });

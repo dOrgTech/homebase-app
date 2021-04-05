@@ -85,7 +85,7 @@ export type OperationDTO<
     paid_storage_size_diff: number;
   };
   parameters: TEntrypoint extends "vote"
-    ? VoteParameters
+    ? Array<VoteParameters>
     : TEntrypoint extends "propose"
     ? ProposeParameters
     : any;
