@@ -19,6 +19,7 @@ import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleGovernanceFormErrors } from "modules/creator/utils";
 import { VotingSettings } from "services/contracts/baseDAO/types";
 import { InfoOutlined } from "@material-ui/icons";
+import { useTotalSupply } from "modules/common/hooks/useTotalSupply";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -146,6 +147,7 @@ const GovernanceForm = ({
   setFieldValue,
   errors,
   touched,
+  totalSupply,
 }: any) => {
   const {
     dispatch,
@@ -170,7 +172,7 @@ const GovernanceForm = ({
         },
         back: {
           text: "BACK",
-          handler: () => history.push(`dao`),
+          handler: () => history.push(`token`),
         },
       });
     }
@@ -312,7 +314,7 @@ const GovernanceForm = ({
                 {orgSettings.symbol}
               </Typography>
               <Tooltip
-                title={`Amount of ${orgSettings.symbol} required to make a proposal`}
+                title={`Amount of ${orgSettings.symbol} required to make a proposal. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -481,16 +483,16 @@ const GovernanceForm = ({
                 {orgSettings.symbol}
               </Typography>
               <Tooltip
-                title={`Amount of ${orgSettings.symbol} required to be locked through voting for a proposal to be passed/rejected`}
+                title={`Amount of ${orgSettings.symbol} required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.quorumTreshold && touched.quorumTreshold ? (
+        </AdditionContainer>
+        {errors.quorumTreshold && touched.quorumTreshold ? (
             <ErrorText>{errors.quorumTreshold}</ErrorText>
           ) : null}
-        </AdditionContainer>
       </Grid>
 
       <SpacingContainer direction="row" container alignItems="center">
@@ -545,6 +547,7 @@ export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { votingSettings } = state.data;
   const history = useHistory();
+  const { totalSupply } = useTotalSupply();
 
   const saveStepInfo = (
     values: VotingSettings,
@@ -557,7 +560,7 @@ export const Governance: React.FC = () => {
     updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
-    history.push(`token`);
+    history.push(`summary`);
   };
 
   return (
@@ -581,7 +584,7 @@ export const Governance: React.FC = () => {
       <Formik
         enableReinitialize
         validate={(values: VotingSettings) =>
-          handleGovernanceFormErrors(values, state.data.template)
+          handleGovernanceFormErrors(values, state.data.template, Number(totalSupply))
         }
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
@@ -600,6 +603,7 @@ export const Governance: React.FC = () => {
                 validate={(values: VotingSettings) =>
                   handleGovernanceFormErrors(values, state.data.template)
                 }
+                totalSupply={totalSupply}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}
