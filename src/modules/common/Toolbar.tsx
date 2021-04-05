@@ -150,16 +150,16 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
-interface BaseGridProps {
+interface ToolbarWrapperProps {
   children: any, mode: "creator" | "explorer", isMobileSmall: boolean, isMobileExtraSmall: boolean
 }
 
-const BaseGrid = ({
+const ToolbarWrapper = ({
   children,
   mode,
   isMobileSmall,
   isMobileExtraSmall,
-}: BaseGridProps): JSX.Element => {
+}: ToolbarWrapperProps): JSX.Element => {
   return (
     <Grid
       item
@@ -272,7 +272,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
           {mode === "explorer" ? (
             <ExplorerLogo history={history} />
           ) : null}
-          <BaseGrid mode={mode} isMobileSmall={isMobileSmall} isMobileExtraSmall={isMobileExtraSmall}>
+          <ToolbarWrapper mode={mode} isMobileSmall={isMobileSmall} isMobileExtraSmall={isMobileExtraSmall}>
             {account ? (
               <>
                 <Grid
@@ -382,7 +382,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
             ) : (
               <LogIn onClick={connect} />
             )}
-          </BaseGrid>
+          </ToolbarWrapper>
         </Grid>
       </StyledToolbar>
     </StyledAppBar >
