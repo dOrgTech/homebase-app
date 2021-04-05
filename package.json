@@ -10,7 +10,9 @@
     "eject": "react-scripts eject",
     "lint:ci": "eslint --color 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:check": "eslint --quiet 'src/**/*.{js,jsx,ts,tsx}'",
-    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
+    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
+    "generate1": "contract-type-generator --g ./contracts1 ./output1",
+    "generate2": "contract-type-generator --json --g ./contracts2 ./output2"
   },
   "dependencies": {
     "@airgap/beacon-sdk": "^2.2.2",
@@ -42,6 +44,7 @@
     "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "@taquito/contract-type-generator": "8.1.0-20db307d--722",
     "serve": "^11.3.2"
   },
   "devDependencies": {

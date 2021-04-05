@@ -1,3 +1,4 @@
+import { generateMorleyContracts } from './../../../morley/index';
 import {
   TezosToolkit,
   ContractAbstraction,
@@ -20,15 +21,14 @@ import {
   TreasuryStorage,
 } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { BaseConstructorParams, getContract } from "..";
+import { BaseConstructorParams, fromStateToBaseStorage, getContract, setMembersAllocation, setMetadata } from "..";
 import { getDAOListMetadata } from "../../metadataCarrier";
 import { MetadataDeploymentResult } from "../../metadataCarrier/deploy";
 import { DAOListMetadata } from "../../metadataCarrier/types";
-import { fromStateToTreasuryStorage, deployTreasuryDAO } from "./service";
 import { MigrationParams, Transfer } from "../types";
 import { BaseDAO } from "..";
 import { dtoToTreasuryProposals } from "services/bakingBad/proposals/mappers";
-import { xtzToMutez } from "services/contracts/utils";
+import { TreasuryParams } from './types';
 
 export interface TreasuryDeployParams {
   params: MigrationParams;
@@ -68,6 +68,14 @@ export class TreasuryDAO extends BaseDAO {
     }
   };
 
+  private static fromStateToStorage = (
+    info: MigrationParams
+  ): TreasuryParams["storage"] => {
+    const storageData = fromStateToBaseStorage(info);
+  
+    return storageData;
+  };
+
   public static deploy = async ({
     params,
     metadata,
@@ -77,13 +85,41 @@ export class TreasuryDAO extends BaseDAO {
     metadata: MetadataDeploymentResult;
     tezos: TezosToolkit;
   }) => {
-    const treasuryParams = fromStateToTreasuryStorage(params);
+    const treasuryParams = TreasuryDAO.fromStateToStorage(params);
 
-    return await deployTreasuryDAO({
-      storage: treasuryParams,
-      metadataCarrierDeploymentData: metadata,
-      tezos,
-    });
+    if (!metadata.deployAddress) {
+      throw new Error(
+        "Error deploying treasury DAO: There's not address of metadata"
+      );
+    }
+
+    const ledger = setMembersAllocation(treasuryParams.membersTokenAllocation);
+    const metadataObj = setMetadata(metadata);
+    const account = await tezos.wallet.pkh()
+    console.log("ACCOUNT: " + account)
+
+    try {
+      console.log("Originating Morley contracts");
+      const morleyContracts = await generateMorleyContracts("treasury", treasuryParams, account)
+      console.log("Originating Treasury DAO contract...");
+  
+      const t = await tezos.wallet.originate({
+        code: morleyContracts.steps.originator,
+        init: morleyContracts.steps.storage
+      })
+        
+      const operation = await t.send();
+      console.log("Waiting for confirmation on Treasury DAO contract...", t);
+      const { address: originatorAddress } = await operation.contract();
+      const originatorContract = await tezos.wallet.at(originatorAddress)
+      await originatorContract.methods.load_lambda(morleyContracts.steps.lambda1).send()
+      await originatorContract.methods.load_lambda(morleyContracts.steps.lambda2).send()
+      await originatorContract.methods.run_lambda([["unit"]]).send()
+      return originatorContract;
+    } catch (e) {
+      console.log("error ", e);
+      throw new Error("Error deploying Treasury DAO");
+    }
   };
 
   public static create = async (
@@ -194,37 +230,25 @@ export class TreasuryDAO extends BaseDAO {
     const contractMethod = contract.methods.propose(
       tokensToFreeze,
       agoraPostId,
-      transfers.map((transfer) => {
-        if(transfer.type === "FA2"){
-          return [
-            [
-              "transfer_fa2",
+      [
+        {
+          transfer_fa2: {
+            contract_address: "KT19yUiYtyCdW6pLh7eBfDEpAkQj8SAV6ZrN",
+            transfer_list: [
               {
-                contract_address: "KT19yUiYtyCdW6pLh7eBfDEpAkQj8SAV6ZrN",
-                transfer_list: [
+                from_: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x",
+                txs: [
                   {
-                    address: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x",
-                    txs: [
-                      {
-                        to_: "tz1Zqb3hBBN8wLcJYhADcasi1jZdp2YLdG3L",
-                        token_id: 0,
-                        amount: 5
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          ]
-        } else {
-          return {
-            transfer_type: {
-              amount: Number(xtzToMutez(transfer.amount.toString())),
-              recipient: transfer.recipient,
-            }
-          }
-        }
-      })
+                    to_: "tz1Zqb3hBBN8wLcJYhADcasi1jZdp2YLdG3L",
+                    token_id: 0,
+                    amount: 5,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ]
     );
 
     const result = await contractMethod.send();
