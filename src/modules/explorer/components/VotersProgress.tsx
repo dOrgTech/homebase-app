@@ -70,7 +70,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             <GreenDot />
             <StatusTitle color="textSecondary">SUPPORT: </StatusTitle>
             <Typography color="textSecondary">
-              {upVotes} ({formatNumber(Number(upVotesPercentage))}%){" "}
+              {upVotes} ({ upVotesPercentage && upVotesPercentage > 100 ? 100 : formatNumber(Number(upVotesPercentage))}%){" "}
             </Typography>
           </Grid>
 
@@ -83,7 +83,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             <RedDot />
             <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
             <Typography color="textSecondary">
-              {downVotes} ({formatNumber(Number(downVotesPercentage))}%){" "}
+              {downVotes} ({downVotesPercentage && downVotesPercentage > 100 ? 100 : formatNumber(Number(downVotesPercentage))}%){" "}
             </Typography>
           </Grid>
         </Grid>
