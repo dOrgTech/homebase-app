@@ -10,9 +10,7 @@ import {
   Theme,
   useTheme,
   Popover,
-  useMediaQuery,
-  withTheme
-} from "@material-ui/core";
+  useMediaQuery} from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
@@ -98,10 +96,9 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   }
 }));
 
-const custom = (theme: Theme, mode: "creator" | "explorer") => ({
+const explorerBorder = (theme: Theme) => ({
   appBorder: {
-    borderBottom:
-      mode === "explorer" ? `2px solid ${theme.palette.primary.light}` : "unset"
+    borderBottom: `2px solid ${theme.palette.primary.light}`
   }
 });
 
@@ -153,21 +150,11 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
-const StyledExplorerAppBar = styled(StyledAppBar)({
-  minHeight: 100
-});
-
-const StyledCreatorAppBar = styled(withTheme(StyledAppBar))(props => ({
-  borderBottom: `2px solid ${props.theme.palette.primary.light}`,
-  minHeight: 80
-})
-);
-
 interface BaseGridProps {
   children: any, mode: "creator" | "explorer", isMobileSmall: boolean, isMobileExtraSmall: boolean
 }
 
-export const BaseGrid = ({
+const BaseGrid = ({
   children,
   mode,
   isMobileSmall,
@@ -199,7 +186,7 @@ interface ExplorerLogoProps {
   history: any,
 }
 
-export const ExplorerLogo = ({
+const ExplorerLogo = ({
   history,
 }: ExplorerLogoProps): JSX.Element => {
   return (
@@ -276,7 +263,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       color="primary"
       style={
         mode === "explorer" ?
-          custom(theme, mode).appBorder :
+          explorerBorder(theme).appBorder :
           undefined
       }
     >
