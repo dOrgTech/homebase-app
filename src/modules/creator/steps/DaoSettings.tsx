@@ -255,7 +255,7 @@ export const DaoSettings = (): JSX.Element => {
     updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
-    history.push(`voting`);
+    history.push(`token`);
   };
 
   return (

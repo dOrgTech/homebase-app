@@ -6,7 +6,7 @@ import {
   Box,
   InputAdornment,
   Tooltip,
-  TextField,
+  TextField
 } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
@@ -16,24 +16,25 @@ import { useHistory, useRouteMatch } from "react-router";
 import {
   CreatorContext,
   ActionTypes,
-  TokenHolder,
+  TokenHolder
 } from "modules/creator/state";
 import { ErrorValues, MemberSettings } from "services/contracts/baseDAO/types";
 import {
   InfoOutlined,
   AddCircleOutline,
-  RemoveCircleOutline,
+  RemoveCircleOutline
 } from "@material-ui/icons";
+import { useTotalSupply } from "modules/common/hooks/useTotalSupply";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
   borderBottom: `1px solid ${theme.palette.primary.light}`,
   marginTop: 10,
-  marginBottom: 39,
+  marginBottom: 39
 }));
 
 const SecondContainer = styled(Grid)({
-  marginTop: 25,
+  marginTop: 25
 });
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
@@ -44,8 +45,8 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${theme.palette.secondary.light}`,
-  },
+    borderLeft: `2px solid ${theme.palette.secondary.light}`
+  }
 }));
 
 const CustomBalanceContainer = styled(Grid)(({ theme }) => ({
@@ -57,83 +58,83 @@ const CustomBalanceContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${theme.palette.secondary.light}`,
+    borderLeft: `2px solid ${theme.palette.secondary.light}`
   },
 
   [theme.breakpoints.down("sm")]: {
-    padding: "18px 8px",
-  },
+    padding: "18px 8px"
+  }
 }));
 
 const ErrorText = styled(Typography)({
   fontSize: 13,
   color: "red",
-  marginTop: 10,
+  marginTop: 10
 });
 
 const AddIcon = styled(AddCircleOutline)({
-  marginLeft: 8,
+  marginLeft: 8
 });
 
 const CustomFormikTextField = withStyles({
   root: {
     "& .MuiInput-root": {
       fontWeight: 300,
-      textAlign: "initial",
+      textAlign: "initial"
     },
     "& .MuiInputBase-input": {
-      textAlign: "initial",
+      textAlign: "initial"
     },
     "& .MuiInput-underline:before": {
-      borderBottom: "none !important",
+      borderBottom: "none !important"
     },
     "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important",
+      borderBottom: "none !important"
     },
     "& .MuiInput-underline:after": {
-      borderBottom: "none !important",
-    },
-  },
+      borderBottom: "none !important"
+    }
+  }
 })(FormikTextField);
 
 const CustomTextField = withStyles({
   root: {
     "& .MuiInput-root": {
       fontWeight: 300,
-      textAlign: "initial",
+      textAlign: "initial"
     },
     "& .MuiInputBase-input": {
-      textAlign: "initial",
+      textAlign: "initial"
     },
     "& .MuiInput-underline:before": {
-      borderBottom: "none !important",
+      borderBottom: "none !important"
     },
     "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important",
+      borderBottom: "none !important"
     },
     "& .MuiInput-underline:after": {
-      borderBottom: "none !important",
-    },
-  },
+      borderBottom: "none !important"
+    }
+  }
 })(TextField);
 
 const CustomTotalContainer = styled(Typography)({
   padding: "11px 21px",
-  boxSizing: "border-box",
+  boxSizing: "border-box"
 });
 
 const InfoIconInput = styled(InfoOutlined)({
-  cursor: "default",
+  cursor: "default"
 });
 
 const CustomValueContainer = styled(Typography)({
   padding: "11px 21px",
   boxSizing: "border-box",
-  fontWeight: 700,
+  fontWeight: 700
 });
 
 const AddText = styled(Typography)({
-  fontSize: 14,
+  fontSize: 14
 });
 
 const AddButon = styled("button")({
@@ -147,7 +148,7 @@ const AddButon = styled("button")({
   color: "#4BCF93",
   display: "flex",
   justifyContent: "flex-end",
-  paddingRight: 17.5,
+  paddingRight: 17.5
 });
 
 const RemoveButton = styled("button")({
@@ -160,12 +161,12 @@ const RemoveButton = styled("button")({
   width: "100%",
   cursor: "pointer",
   textDecoration: "underline",
-  color: "#fff",
+  color: "#fff"
 });
 
 const TokenHoldersGrid = styled(Grid)({
   maxHeight: 269,
-  overflowY: "auto",
+  overflowY: "auto"
 });
 
 const Total = ({ values }: { values: MemberSettings }) => {
@@ -195,7 +196,7 @@ const TokenSettingsForm = ({
   values,
   submitForm,
   touched,
-  errors,
+  errors
 }: { values: MemberSettings } & any) => {
   const { dispatch } = useContext(CreatorContext);
 
@@ -210,12 +211,12 @@ const TokenSettingsForm = ({
           text: "CONTINUE",
           handler: () => {
             submitForm(values);
-          },
+          }
         },
         back: {
           text: "BACK",
-          handler: () => history.push(`voting`),
-        },
+          handler: () => history.push(`dao`)
+        }
       });
     }
   }, [dispatch, errors, history, match.path, match.url, submitForm, values]);
@@ -247,7 +248,7 @@ const TokenSettingsForm = ({
 
           <FieldArray
             name="tokenHolders"
-            render={(arrayHelpers) => {
+            render={arrayHelpers => {
               const someEmpty = values.tokenHolders.some(
                 (t: { address: string; balance: number }) =>
                   t.address === "" || !(t.balance > 0)
@@ -258,6 +259,8 @@ const TokenSettingsForm = ({
                   prev + (t.balance || 0),
                 0
               );
+
+              // saveTotalSupply(totalSupply);
 
               return (
                 <>
@@ -309,7 +312,7 @@ const TokenSettingsForm = ({
                                       ).toFixed(2)
                                     ) + "%"
                                   : "0%",
-                                readOnly: true,
+                                readOnly: true
                               }}
                             />
                           </Grid>
@@ -345,7 +348,7 @@ const TokenSettingsForm = ({
                           onClick={() =>
                             arrayHelpers.insert(values.tokenHolders.length, {
                               address: "",
-                              balance: 0,
+                              balance: 0
                             })
                           }
                         >
@@ -398,7 +401,7 @@ const TokenSettingsForm = ({
                       <InfoIconInput color="secondary" />
                     </Tooltip>
                   </InputAdornment>
-                ),
+                )
               }}
             ></Field>
           </CustomInputContainer>
@@ -414,19 +417,27 @@ const TokenSettingsForm = ({
 export const TokenSettings = (): JSX.Element => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { memberSettings } = state.data;
+  const { saveTotalSupply } = useTotalSupply();
   const history = useHistory();
 
   const saveStepInfo = (
     values: MemberSettings,
     { setSubmitting }: { setSubmitting: (b: boolean) => void }
   ) => {
+
+    const totalTokens = values.tokenHolders.reduce(
+      (a: number, b: TokenHolder) => a + b.balance,
+      0
+    );
+    
     updateCache({
       ...state.data,
-      memberSettings: values,
+      memberSettings: values
     });
+    saveTotalSupply(totalTokens);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_MEMBERS_SETTINGS, members: values });
-    history.push(`summary`);
+    history.push(`voting`);
   };
 
   return (
@@ -461,7 +472,7 @@ export const TokenSettings = (): JSX.Element => {
           setFieldValue,
           values,
           errors,
-          touched,
+          touched
         }) => {
           return (
             <Form style={{ width: "100%" }}>

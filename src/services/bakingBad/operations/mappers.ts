@@ -5,7 +5,7 @@ export const dtoToVotes = (
   proposalKey: string
 ): Vote[] => {
   const operations = operationsDTO.operations as any;
-
+  console.log(operations);
   const proposalVoteDTOs: OperationDTO<"vote">[] = operations.filter(
     (operation: OperationDTO<"vote">) => {
       if (operation.entrypoint !== "vote") {
@@ -13,7 +13,7 @@ export const dtoToVotes = (
       }
 
       return (
-        operation.parameters.children[0].children[0].value.toLowerCase() ===
+        operation.parameters[0].children[0].children[0].value.toLowerCase() ===
         proposalKey.toLowerCase()
       );
     }
@@ -22,8 +22,8 @@ export const dtoToVotes = (
   return proposalVoteDTOs.map((voteDto) => ({
     timestamp: voteDto.timestamp,
     voter: voteDto.source,
-    favor: voteDto.parameters.children[0].children[1].value,
-    value: Number(voteDto.parameters.children[0].children[2].value),
+    favor: voteDto.parameters[0].children[0].children[1].value,
+    value: Number(voteDto.parameters[0].children[0].children[2].value),
     proposalKey: proposalKey.toLowerCase(),
   }));
 };

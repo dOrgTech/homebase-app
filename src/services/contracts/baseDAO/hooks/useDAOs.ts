@@ -44,7 +44,7 @@ export const useDAOs = () => {
     }
   }, [connect, tezos]);
 
-  console.log(result.error || addressesError);
+  // console.log(result.error || addressesError);
 
   return {
     ...result,
