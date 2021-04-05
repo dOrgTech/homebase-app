@@ -190,6 +190,10 @@ To run the project:
 - Create a `.env` file in the root, based on the `.env.example` provided in the code and ask one of the maintainers for the Pinata API Key
 - `yarn dev`
 
+To run the tests:
+
+- `yarn test`
+
 # Glossary
 
 * **Execute (Flush)**: execute all passed proposals from periods previous to the last one. If the proposal is rejected or did not meet the quorum treshold, then the Execute operation removes it from the proposals list.
