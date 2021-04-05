@@ -18,7 +18,8 @@ export const handleOrgFormErrors = (
 
 export const handleGovernanceFormErrors = (
   values: VotingSettings,
-  template: DAOTemplate
+  template: DAOTemplate,
+  totalSupply?: number,
 ) => {
   const errors: ErrorValues<VotingSettings> = {};
   const {
@@ -65,12 +66,20 @@ export const handleGovernanceFormErrors = (
     errors.proposeStakeRequired = "Negative values not allowed";
   }
 
+  if (totalSupply && proposeStakeRequired > Number(totalSupply)) {
+    errors.proposeStakeRequired = "The required stake must be smaller than the total supply";
+  }
+
   if (!maxProposalSize || maxProposalSize <= 0) {
     errors.maxProposalSize = "Must be greater than 0";
   }
 
   if (!quorumTreshold || quorumTreshold <= 0) {
     errors.quorumTreshold = "Must be greater than 0";
+  }
+
+  if (totalSupply && quorumTreshold > Number(totalSupply)) {
+    errors.quorumTreshold = "Quorum Treshold must be smaller than the total supply";
   }
 
   if (template === "treasury") {

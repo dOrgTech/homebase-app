@@ -178,7 +178,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const { daoId, daoSymbol } = useVisitedDAO();
   const { data } = useTokenHolders(daoId);
 
-  console.log(data);
+  // console.log(data);
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
