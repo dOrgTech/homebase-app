@@ -8,11 +8,13 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  Dialog
+  Dialog,
+  TextField as MaterialTextField
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
 // import { useSnackbar } from "notistack";
+import { Autocomplete } from "formik-material-ui-lab";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -27,8 +29,9 @@ import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
-import { useTezosBalances } from "services/contracts/baseDAO/hooks/useTezosBalance";
 import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
+import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
+import { TokenBalance } from "services/bakingBad/tokenBalances/types";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -149,13 +152,13 @@ const AmountText = styled(Typography)({
   color: "rgba(255, 255, 255, 0.7)",
   fontSize: 14,
   lineHeight: "146.3%",
-  marginRight: 10,
+  marginRight: 10
 });
 
 const AmountContainer = styled(Grid)(({ theme }) => ({
   paddingRight: 16,
   [theme.breakpoints.down("sm")]: {
-    paddingRight: 0,
+    paddingRight: 0
   }
 }));
 
@@ -171,7 +174,7 @@ const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
   description: "",
   agoraPostId: 0,
-  title: "",
+  title: ""
 };
 
 export const NewTreasuryProposalDialog: React.FC = () => {
@@ -186,11 +189,11 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     dispatch
   } = useContext(ModalsContext);
   const { data: daoData } = useDAO(daoId);
+  // const { id: daoId } = useParams<{ id: string }>()
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
   const openNotification = useNotification();
-  const { data: tezosBalance } = useTezosBalances(daoData?.address);
-
+  const { data: tezosBalance } = useTokenBalances(daoId);
   const handleClose = useCallback(() => {
     dispatch({
       type: ActionTypes.CLOSE,
@@ -203,7 +206,15 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const onSubmit = useCallback(
     async (values: Values, { setSubmitting }: any) => {
       setSubmitting(true);
-
+      
+      values.transfers.map((transfer) => {
+        if (transfer.type !== 'XTZ') {
+          transfer.type = 'FA2';
+          return transfer;
+        }
+      });
+      
+      console.log(values);
       await connectIfNotConnected(tezos, connect);
 
       if (dao) {
@@ -219,6 +230,17 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     },
     [connect, dao, handleClose, mutate, tezos]
   );
+
+  const getBalance = (values: Values) => {
+    if (tezosBalance) {
+      const current = tezosBalance.find(
+        balance => balance.symbol === values.transfers[activeTransfer - 1].type
+      );
+      if (current) {
+        return Number(current.balance) / Math.pow(10, current.decimals);
+      }
+    }
+  };
 
   return (
     <>
@@ -375,8 +397,9 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                     justify="flex-end"
                                   >
                                     <Field
-                                      name={`transfers.${activeTransfer - 1
-                                        }.recipient`}
+                                      name={`transfers.${
+                                        activeTransfer - 1
+                                      }.recipient`}
                                       type="string"
                                       placeholder="Type an Address Here"
                                       component={CustomTextField}
@@ -385,24 +408,50 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 </Grid>
                               </ListItem>
 
-                              <AmountItem container direction="row">
-                                <Grid item xs={6}>
+                              <AmountItem
+                                container
+                                direction="row"
+                                alignItems="center"
+                              >
+                                <Grid item xs={5}>
+                                  <Field
+                                    component={Autocomplete}
+                                    name={`transfers.${
+                                      activeTransfer - 1
+                                    }.type`}
+                                    options={tezosBalance?.map(
+                                      option => option.symbol
+                                    )}
+                                    getOptionLabel={(option: TokenBalance) =>
+                                      option
+                                    }
+                                    renderInput={(params: any) => (
+                                      <MaterialTextField
+                                        {...params}
+                                        label="Select asset"
+                                      />
+                                    )}
+                                  />
+                                </Grid>
+                                <Grid item xs={2}>
                                   <Typography
                                     variant="subtitle1"
                                     color="textSecondary"
+                                    style={{ marginTop: 12 }}
                                   >
-                                    XTZ Amount
+                                    Amount
                                   </Typography>
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={5}>
                                   <SwitchContainer
                                     item
                                     xs={12}
                                     justify="flex-end"
                                   >
                                     <Field
-                                      name={`transfers.${activeTransfer - 1
-                                        }.amount`}
+                                      name={`transfers.${
+                                        activeTransfer - 1
+                                      }.amount`}
                                       type="number"
                                       placeholder="Type an Amount"
                                       component={CustomTextField}
@@ -416,30 +465,52 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                     />
                                   </SwitchContainer>
                                 </Grid>
-                                <Grid item xs={6}>
-                                  <AmountText>DAO Balance</AmountText>
-                                </Grid>
-                                <Grid item xs={6}>
-                                  {tezosBalance?
-                                    <AmountContainer
-                                      item
-                                      container
-                                      direction="row"
-                                      justify="flex-end"
-                                    >
-                                      <AmountText>{Number(tezosBalance.balance) / Math.pow(10, tezosBalance.decimals) }</AmountText>{" "}
-                                      <AmountText>{tezosBalance.name}</AmountText>
-                                    </AmountContainer> : null
-                                  }
-                                </Grid>
+
+                                {values.transfers[activeTransfer - 1] ? (
+                                  <>
+                                    <Grid item xs={6}>
+                                      <AmountText>DAO Balance</AmountText>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                      {tezosBalance ? (
+                                        <AmountContainer
+                                          item
+                                          container
+                                          direction="row"
+                                          justify="flex-end"
+                                        >
+                                          <AmountText>
+                                            {getBalance(values)}
+                                          </AmountText>
+                                          <AmountText>
+                                            {values.transfers[
+                                              activeTransfer - 1
+                                            ] &&
+                                              values.transfers[
+                                                activeTransfer - 1
+                                              ].type}
+                                          </AmountText>
+                                        </AmountContainer>
+                                      ) : null}
+                                    </Grid>
+                                  </>
+                                ) : null}
                               </AmountItem>
                             </>
                           )}
                         />
 
-                        <ProposalTextContainer title="Proposal Title" value={values.title} type="title" />
+                        <ProposalTextContainer
+                          title="Proposal Title"
+                          value={values.title}
+                          type="title"
+                        />
 
-                        <ProposalTextContainer title="Proposal Description" value={values.description} type="description" />
+                        <ProposalTextContainer
+                          title="Proposal Description"
+                          value={values.description}
+                          type="description"
+                        />
 
                         <UploadButtonContainer container direction="row">
                           <UploadFileLabel>
