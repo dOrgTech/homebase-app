@@ -34,6 +34,7 @@
     "formik-material-ui": "^3.0.1",
     "hex-to-rgba": "^2.0.1",
     "jsonschema": "^1.4.0",
+    "node-fetch": "^2.6.1",
     "notistack": "^1.0.3",
     "react": "^17.0.1",
     "react-compound-timer": "^1.2.0",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.35",
+    "@types/node-fetch": "^2.5.9",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.2",
     "@types/react-router-dom": "^5.1.6",

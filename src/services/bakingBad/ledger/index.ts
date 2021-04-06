@@ -2,6 +2,7 @@ import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
 import { dtoToLedger } from "services/bakingBad/ledger/mappers";
 import { Ledger, LedgerDTO } from "services/bakingBad/ledger/types";
+import fetch from "node-fetch";
 
 export const getLedgerAddresses = async (
   ledgerMapNumber: number,
