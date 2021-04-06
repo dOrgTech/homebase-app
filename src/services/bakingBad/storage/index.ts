@@ -1,6 +1,7 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
 import { StorageDTO } from "services/bakingBad/storage/types";
+import fetch from "node-fetch";
 
 export const getStorage = async (
   contractAddress: string,

@@ -1,6 +1,7 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
 import { ProposalsDTO } from "services/bakingBad/proposals/types";
+import fetch from "node-fetch";
 
 export const getProposalsDTO = async (
   proposalsMapNumber: number,
