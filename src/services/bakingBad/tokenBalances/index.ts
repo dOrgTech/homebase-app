@@ -1,6 +1,7 @@
 import { Network } from "services/beacon/context";
 import { API_URL } from "..";
 import { TokenBalance, TokenBalancesDTO } from "./types";
+import fetch from "node-fetch";
 
 export const getDAOTokenBalances = async (
   daoId: string,
