@@ -1,7 +1,7 @@
 import { DAOTemplate } from "./../../../modules/creator/state/types";
 import { ContractAbstraction, TezosToolkit, Wallet } from "@taquito/taquito";
 
-import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
+import { MetadataCarrierDeploymentData, MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
 
 export type Contract = ContractAbstraction<Wallet> | undefined;
 
@@ -136,3 +136,13 @@ export interface MetadataStorageState {
     unfrozenToken: Token;
   };
 }
+
+export interface DAOParams {
+  storage: BaseStorageParams;
+  metadataCarrierDeploymentData: MetadataCarrierDeploymentData;
+}
+
+export type ParamsWithoutMetadata = Omit<
+  DAOParams,
+  "metadataCarrierDeploymentData"
+>;

@@ -5,18 +5,24 @@ import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
 import { BaseStorage } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { getContract } from ".";
+import { DAOParams, fromStateToBaseStorage, getContract, MigrationParams } from ".";
 import { getDAOListMetadata } from "../metadataCarrier";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import {
   RegistryDAO,
-  RegistryDeployParams,
   TreasuryDAO,
-  TreasuryDeployParams,
 } from ".";
 import { getProposalVotes } from "services/bakingBad/operations";
+import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
+import { generateMorleyContracts } from "services/morley";
+import { getOriginatedAddress } from "services/bakingBad/originatorContract";
 
-type DeployParams = TreasuryDeployParams | RegistryDeployParams;
+interface DeployParams {
+  params: MigrationParams;
+  metadata: MetadataDeploymentResult;
+  tezos: TezosToolkit;
+  network: Network;
+}
 
 export interface BaseConstructorParams {
   address: string;
@@ -40,9 +46,6 @@ export abstract class BaseDAO {
   public metadata;
   public tezos;
   public network;
-
-  // abstract propose: (...args: any[]) => Promise<TransactionWalletOperation>;
-  // abstract vote: (...args: any[]) => Promise<TransactionWalletOperation>;
 
   abstract proposals: () => Promise<ProposalWithStatus[]>;
 
@@ -87,17 +90,62 @@ export abstract class BaseDAO {
     return instance;
   };
 
+  private static fromStateToStorage = (
+    info: MigrationParams
+  ): DAOParams["storage"] => {
+    const storageData = fromStateToBaseStorage(info);
+  
+    return storageData;
+  };
+
   public static baseDeploy = async (
     template: DAOTemplate,
-    params: DeployParams
+    { params, metadata, tezos, network }: DeployParams,
   ): Promise<ContractAbstraction<Wallet>> => {
-    switch (template) {
-      case "treasury":
-        return TreasuryDAO.deploy(params as TreasuryDeployParams);
-      case "registry":
-        return RegistryDAO.deploy(params as RegistryDeployParams);
-      default:
-        throw new Error("Unrecognized DAO type. This should never happen");
+    const treasuryParams = BaseDAO.fromStateToStorage(params);
+
+    if (!metadata.deployAddress) {
+      throw new Error(
+        "Error deploying treasury DAO: There's not address of metadata"
+      );
+    }
+
+    const account = await tezos.wallet.pkh()
+
+    try {
+      console.log("Originating Morley contracts");
+      const morleyContracts = await generateMorleyContracts({
+        template, 
+        storage: treasuryParams,
+        originatorAddress: account,
+        metadata
+      })
+      console.log("Originating DAO contract...");
+  
+      const t = await tezos.wallet.originate({
+        code: morleyContracts.steps.originator,
+        init: morleyContracts.steps.storage
+      })
+        
+      const operation = await t.send();
+      console.log("Waiting for confirmation on DAO contract...", t);
+      const { address: originatorAddress } = await operation.contract();
+      const originatorContract = await tezos.wallet.at(originatorAddress)
+
+      for (const lambda of morleyContracts.steps.lambdas) {
+        const op = await originatorContract.methods.load_lambda(lambda).send()
+        await op.confirmation(1)
+      }
+
+      const runLambdaOp = await originatorContract.methods.run_lambda([["unit"]]).send()
+      await runLambdaOp.confirmation(1)
+
+      const originatedAddress = await getOriginatedAddress(originatorAddress, network)
+
+      return await tezos.wallet.at(originatedAddress);
+    } catch (e) {
+      console.log("error ", e);
+      throw new Error("Error deploying DAO");
     }
   };
 

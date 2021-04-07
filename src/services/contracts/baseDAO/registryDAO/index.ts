@@ -24,21 +24,12 @@ import {
 import { Network } from "services/beacon/context";
 import { getContract } from "..";
 import { getDAOListMetadata } from "../../metadataCarrier";
-import { MetadataDeploymentResult } from "../../metadataCarrier/deploy";
 import { DAOListMetadata } from "../../metadataCarrier/types";
-import { fromStateToRegistryStorage, deployRegistryDAO } from "./service";
-import { MigrationParams } from "../types";
 import { BaseConstructorParams, BaseDAO } from "..";
 import { RegistryItem } from "./types";
 
 interface RegistryConstructorParams extends BaseConstructorParams {
   storage: RegistryStorage;
-}
-
-export interface RegistryDeployParams {
-  params: MigrationParams;
-  metadata: MetadataDeploymentResult;
-  tezos: TezosToolkit;
 }
 
 export class RegistryDAO extends BaseDAO {
@@ -71,24 +62,6 @@ export class RegistryDAO extends BaseDAO {
         `Storage mapping failed in RegistryDAO. Probably was wrongly instantiated? Error: ${e}`
       );
     }
-  };
-
-  public static deploy = async ({
-    params,
-    metadata,
-    tezos,
-  }: {
-    params: MigrationParams;
-    metadata: MetadataDeploymentResult;
-    tezos: TezosToolkit;
-  }) => {
-    const registryParams = fromStateToRegistryStorage(params);
-
-    return await deployRegistryDAO({
-      storage: registryParams,
-      metadataCarrierDeploymentData: metadata,
-      tezos,
-    });
   };
 
   public static create = async (

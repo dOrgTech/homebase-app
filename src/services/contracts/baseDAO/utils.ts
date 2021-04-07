@@ -1,36 +1,10 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
-import { char2Bytes, tzip16 } from "@taquito/tzip16";
-import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
+import { tzip16 } from "@taquito/tzip16";
 import {
   BaseStorageParams,
-  MemberTokenAllocation,
   MigrationParams,
   TokenHolder,
 } from "./types";
-
-export const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
-  const map = new MichelsonMap();
-
-  allocations.forEach((allocation) => {
-    map.set(
-      { 0: allocation.address, 1: allocation.tokenId },
-      allocation.amount
-    );
-  });
-
-  return map;
-};
-
-export const setMetadata = ({
-  deployAddress,
-  keyName,
-}: MetadataCarrierDeploymentData) => {
-  const map = new MichelsonMap();
-
-  map.set("", char2Bytes(`tezos-storage://${deployAddress}/${keyName}`));
-
-  return map;
-};
 
 const SECONDS_IN_MINUTE = 60;
 const SECONDS_IN_HOUR = 60 * 60;

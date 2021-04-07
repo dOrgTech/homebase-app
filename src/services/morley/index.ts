@@ -1,13 +1,20 @@
 import { DAOTemplate } from "modules/creator/state"
 import { BaseStorageParams } from "services/contracts/baseDAO"
-import { dtoToMorleyContracts, storageToArgs } from "./mappers"
+import { MetadataDeploymentResult } from "services/contracts/metadataCarrier/deploy"
+import { dtoToMorleyContracts, storageParamsToMorleyArgs } from "./mappers"
 import { GeneratorArgs, MorleyContractsDTO } from "./types"
 
 export const API_URL = "https://cors-container.herokuapp.com/https://morley-large-originator.herokuapp.com/steps"
 
-export const generateMorleyContracts = async (template: DAOTemplate, storage: BaseStorageParams, originatorAddress: string) => {
+interface MorleyParams {
+  template: DAOTemplate;
+  storage: BaseStorageParams;
+  originatorAddress: string;
+  metadata: MetadataDeploymentResult
+}
 
-  const args = storageToArgs(storage)
+export const generateMorleyContracts = async ({ storage, template, originatorAddress, metadata }: MorleyParams) => {
+  const args = storageParamsToMorleyArgs(storage, metadata)
 
   const url = `${API_URL}/${originatorAddress}/${template}?${Object.keys(args).map(
     (key) => `${key}=${args[key as keyof GeneratorArgs]}`

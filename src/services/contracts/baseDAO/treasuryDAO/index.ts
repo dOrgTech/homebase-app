@@ -1,4 +1,3 @@
-import { generateMorleyContracts } from './../../../morley/index';
 import {
   TezosToolkit,
   ContractAbstraction,
@@ -21,20 +20,12 @@ import {
   TreasuryStorage,
 } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { BaseConstructorParams, fromStateToBaseStorage, getContract, setMembersAllocation, setMetadata } from "..";
+import { BaseConstructorParams, getContract } from "..";
 import { getDAOListMetadata } from "../../metadataCarrier";
-import { MetadataDeploymentResult } from "../../metadataCarrier/deploy";
 import { DAOListMetadata } from "../../metadataCarrier/types";
-import { MigrationParams, Transfer } from "../types";
+import {  Transfer } from "../types";
 import { BaseDAO } from "..";
 import { dtoToTreasuryProposals } from "services/bakingBad/proposals/mappers";
-import { TreasuryParams } from './types';
-
-export interface TreasuryDeployParams {
-  params: MigrationParams;
-  metadata: MetadataDeploymentResult;
-  tezos: TezosToolkit;
-}
 
 interface TreasuryConstructorParams extends BaseConstructorParams {
   storage: TreasuryStorage;
@@ -65,60 +56,6 @@ export class TreasuryDAO extends BaseDAO {
       throw new Error(
         `Storage mapping failed in RegistryDAO. Probably was wrongly instantiated? Error: ${e}`
       );
-    }
-  };
-
-  private static fromStateToStorage = (
-    info: MigrationParams
-  ): TreasuryParams["storage"] => {
-    const storageData = fromStateToBaseStorage(info);
-  
-    return storageData;
-  };
-
-  public static deploy = async ({
-    params,
-    metadata,
-    tezos,
-  }: {
-    params: MigrationParams;
-    metadata: MetadataDeploymentResult;
-    tezos: TezosToolkit;
-  }) => {
-    const treasuryParams = TreasuryDAO.fromStateToStorage(params);
-
-    if (!metadata.deployAddress) {
-      throw new Error(
-        "Error deploying treasury DAO: There's not address of metadata"
-      );
-    }
-
-    const ledger = setMembersAllocation(treasuryParams.membersTokenAllocation);
-    const metadataObj = setMetadata(metadata);
-    const account = await tezos.wallet.pkh()
-    console.log("ACCOUNT: " + account)
-
-    try {
-      console.log("Originating Morley contracts");
-      const morleyContracts = await generateMorleyContracts("treasury", treasuryParams, account)
-      console.log("Originating Treasury DAO contract...");
-  
-      const t = await tezos.wallet.originate({
-        code: morleyContracts.steps.originator,
-        init: morleyContracts.steps.storage
-      })
-        
-      const operation = await t.send();
-      console.log("Waiting for confirmation on Treasury DAO contract...", t);
-      const { address: originatorAddress } = await operation.contract();
-      const originatorContract = await tezos.wallet.at(originatorAddress)
-      await originatorContract.methods.load_lambda(morleyContracts.steps.lambda1).send()
-      await originatorContract.methods.load_lambda(morleyContracts.steps.lambda2).send()
-      await originatorContract.methods.run_lambda([["unit"]]).send()
-      return originatorContract;
-    } catch (e) {
-      console.log("error ", e);
-      throw new Error("Error deploying Treasury DAO");
     }
   };
 
