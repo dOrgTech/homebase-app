@@ -2,6 +2,7 @@ import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
 import { RegistryDTO, RegistryStorageItem } from "./types";
 import { dtoToRegistry } from "./mappers";
+import fetch from "node-fetch";
 
 export const getRegistry = async (
   registryMapNumber: number,
