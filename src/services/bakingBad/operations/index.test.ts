@@ -1,7 +1,7 @@
 import { getOriginationTime, getProposalVotes } from "services/bakingBad/operations";
 import { Network } from "services/beacon/context";
 
-// If the tests break, verify the test data tese constants reference first
+// If the tests break, verify the test data these constants reference first
 const testTreasuryContractAddress = "KT1Adh9GASXTqA7NoNjFPjk3M4CChmzgSTu8";
 const testProposalAddress = "7e562d21b35171d93c80c56a2d4a18a5f7fadcaf2ee641a4d344950245f88c8c";
 const testNetwork: Network = "edo2net";

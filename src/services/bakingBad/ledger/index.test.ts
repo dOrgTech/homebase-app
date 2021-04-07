@@ -1,7 +1,7 @@
 import { Network } from "services/beacon/context";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 
-// If the tests break, verify the test data tese constants reference first
+// If the tests break, verify the test data these constants reference first
 const testLedgerMapnumber = 1;
 const testNetwork: Network = "edo2net";
 

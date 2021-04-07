@@ -6,7 +6,7 @@
     "start": "serve -s build",
     "dev": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest --passWithNoTests --runInBand --forceExit",
+    "test": "jest --passWithNoTests --forceExit",
     "test:ci": "jest --passWithNoTests --runInBand --ci --reporters=default --reporters=jest-junit --testResultsProcessor=jest-junit --forceExit",
     "eject": "react-scripts eject",
     "lint:ci": "eslint --color 'src/**/*.{js,jsx,ts,tsx}'",
