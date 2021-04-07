@@ -43,7 +43,7 @@ export const getPinnedMetadata = async (): Promise<
     });
     const result: PinnedDataFromPinataDTO = await response.json();
     if ("rows" in result && result.rows.length) {
-      console.log("Found it! Here's your data: ", result.rows[0]);
+      console.log("Found it! Here's your data: ", result.rows[1]);
       return result.rows[0];
     }
     return undefined;
