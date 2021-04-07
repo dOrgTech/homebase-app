@@ -1,6 +1,7 @@
 import { Network } from "services/beacon/context";
 import { API_URL } from "..";
 import { TransferDTO, TransfersDTO } from "./types";
+import fetch from "node-fetch";
 
 export const getDAOTransfers = async (
   daoId: string,
