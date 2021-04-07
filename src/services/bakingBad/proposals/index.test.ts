@@ -38,7 +38,6 @@ test('Test obtaining proposals and mapping treasury proposals', async () => {
 });
 
 test('Test obtaining proposals and mapping registry proposals', async () => {
-
   const proposals = await getProposalsDTO(registryStorage.proposalsMapNumber, testNetwork);
   const registryProposals = dtoToRegistryProposals(proposals as RegistryProposalsDTO);
   expect(registryProposals).not.toBeUndefined();
