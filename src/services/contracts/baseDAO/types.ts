@@ -105,8 +105,7 @@ export interface MemberTokenAllocation {
 }
 
 export interface BaseExtraState {
-  frozenScaleValue: number;
-  frozenExtraValue: number;
+  fixedProposalFeeInToken: number;
   slashScaleValue: number;
   slashDivisionValue: number;
   maxXtzAmount: number;

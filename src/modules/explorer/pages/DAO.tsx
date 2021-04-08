@@ -96,7 +96,7 @@ export const DAO: React.FC = () => {
   const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading: isDaoLoading } = useDAO(id);
+  const { data, isLoading: isDaoLoading, error } = useDAO(id);
   const { mutate } = useFlush();
   const { tezos, connect } = useTezos();
 
@@ -119,9 +119,11 @@ export const DAO: React.FC = () => {
   );
   const isLoading = isDaoLoading || isProposalsLoading;
 
+  console.log(data, error, status)
+
   useEffect(() => {
     saveDaoId(id);
-    saveDaoSymbol(symbol);
+    saveDaoSymbol(symbol || "");
   }, [id, symbol, saveDaoId, saveDaoSymbol]);
   
   const onFlush = useCallback(async () => {

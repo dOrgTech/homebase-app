@@ -42,18 +42,23 @@ export class RegistryDAO extends BaseDAO {
   private static storageMapper = (dto: RegistryStorageDTO): RegistryStorage => {
     try {
       const result = {
-        ledgerMapNumber: dto.children[0].value,
-        votingPeriod: Number(dto.children[6].value),
-        quorumTreshold: Number(dto.children[7].value),
-        registryMapNumber: Number(dto.children[8].children[0].value),
-        proposalReceivers: dto.children[8].children[1],
-        frozenScaleValue: Number(dto.children[8].children[2].value),
-        frozenExtraValue: Number(dto.children[8].children[3].value),
-        slashScaleValue: Number(dto.children[8].children[4].value),
-        slashDivisionValue: Number(dto.children[8].children[5].value),
-        maxProposalSize: Number(dto.children[8].children[6].value),
-        proposalsMapNumber: dto.children[9].value,
-        proposalsToFlush: dto.children[10].children,
+        slashDivisionValue: Number(dto.children[1].children[8].value),
+        slashScaleValue: Number(dto.children[1].children[9].value),
+        maxProposalSize: Number(dto.children[1].children[2].value),
+        proposalReceivers: dto.children[1].children[5].value,
+        registry: dto.children[1].children[6].value,
+        registryAffected: dto.children[1].children[7].value,
+        votingPeriod: Number(dto.children[18].value),
+        quorumTreshold: Number(dto.children[14].value),
+        proposalsMapNumber: dto.children[13].value,
+        ledgerMapNumber: dto.children[6].value,
+        proposalsToFlush: dto.children[12].value,
+        totalSupply: {
+          0: Number(dto.children[16].children[0].value),
+          1: Number(dto.children[16].children[1].value)
+        },
+        fixedProposalFeeInToken: Number(dto.children[2].value),
+        admin: dto.children[0].value,
       };
 
       return result;
@@ -180,10 +185,9 @@ export class RegistryDAO extends BaseDAO {
     return result;
   };
 
+  //TODO
   public getRegistry = async () => {
-    const { registryMapNumber } = await this.fetchStorage();
-
-    const registry = await getRegistry(registryMapNumber, this.network);
+    const registry = await getRegistry(0, this.network);
 
     return registry;
   };

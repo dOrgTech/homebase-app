@@ -1,20 +1,18 @@
-import {
-  NamedMapNumberValue,
-  NamedMapValue,
-  UnnamedMapValue,
-} from "services/bakingBad/types";
-
 export interface BaseStorage {
   slashDivisionValue: number;
   slashScaleValue: number;
-  frozenScaleValue: number;
-  frozenExtraValue: number;
   maxProposalSize: number;
   votingPeriod: number;
   quorumTreshold: number;
   proposalsMapNumber: number;
   ledgerMapNumber: number;
   proposalsToFlush: any;
+  totalSupply: {
+    0: number;
+    1: number;
+  };
+  fixedProposalFeeInToken: number;
+  admin: string;
 }
 
 export interface TreasuryStorage extends BaseStorage {
@@ -23,8 +21,9 @@ export interface TreasuryStorage extends BaseStorage {
 }
 
 export interface RegistryStorage extends BaseStorage {
-  registryMapNumber: number;
-  proposalReceivers: any;
+  registry: string;
+  proposalReceivers: string;
+  registryAffected: string;
 }
 
 export type Storage = RegistryStorage | TreasuryStorage;
@@ -32,95 +31,553 @@ export type Storage = RegistryStorage | TreasuryStorage;
 export type StorageDTO = TreasuryStorageDTO | RegistryStorageDTO;
 
 export interface RegistryStorageDTO {
-  prim: string;
-  type: string;
+  prim: "pair";
+  type: "namedtuple";
+  name: "@pair_1";
   children: [
-    NamedMapNumberValue,
-    NamedMapNumberValue,
-    NamedMapValue,
-    NamedMapValue,
-    NamedMapValue,
     {
-      prim: string;
-      type: string;
-      name: string;
-      children: [UnnamedMapValue];
+      prim: "address";
+      type: "address";
+      name: "admin";
+      value: string;
     },
-    NamedMapValue,
-    NamedMapValue,
     {
-      prim: string;
-      type: string;
-      name: string;
+      prim: "map";
+      type: "map";
+      name: "extra";
       children: [
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "frozen_extra_value";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "frozen_scale_value";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "max_proposal_size";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "max_xtz_amount";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "min_xtz_amount";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "proposal_receivers";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "registry";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "registry_affected";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "slash_division_value";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "slash_scale_value";
+          value: string;
+        }
       ];
     },
-    NamedMapNumberValue,
     {
-      prim: string;
-      type: string;
-      name: string;
-      children?: NamedMapValue[];
+      prim: "nat";
+      type: "nat";
+      name: "fixed_proposal_fee_in_token";
+      value: string;
     },
-    NamedMapValue,
-    NamedMapNumberValue,
     {
-      prim: string;
-      type: string;
-      name: string;
-      children: NamedMapValue[];
+      prim: "big_map";
+      type: "big_map";
+      name: "freeze_history";
+      value: number;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "frozen_token_id";
+      value: string;
+    },
+    {
+      prim: "pair";
+      type: "namedtuple";
+      name: "last_period_change";
+      children: [
+        {
+          prim: "timestamp";
+          type: "timestamp";
+          name: "changed_on";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "period_num";
+          value: string;
+        }
+      ];
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "ledger";
+      value: number;
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "metadata";
+      value: number;
+    },
+    {
+      prim: "or";
+      type: "namedenum";
+      name: "migration_status";
+      children: [
+        {
+          prim: "unit";
+          type: "unit";
+          name: "not_in_migration";
+        }
+      ];
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "operators";
+      value: number;
+    },
+    {
+      prim: "address";
+      type: "address";
+      name: "pending_owner";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "permits_counter";
+      value: string;
+    },
+    {
+      prim: "set";
+      type: "set";
+      name: "proposal_key_list_sort_by_date";
+      value?: string[]
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "proposals";
+      value: number;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "quorum_threshold";
+      value: string;
+    },
+    {
+      prim: "address";
+      type: "address";
+      name: "token_address";
+      value: string;
+    },
+    {
+      prim: "map";
+      type: "map";
+      name: "total_supply";
+      children: [
+        {
+          prim: "nat";
+          type: "nat";
+          name: string;
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: string;
+          value: string;
+        }
+      ];
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "unfrozen_token_id";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "voting_period";
+      value: string;
+    },
+    {
+      prim: "map";
+      type: "map";
+      name: "custom_entrypoints";
+      children: [
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "lookup_registry";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "receive_xtz";
+          value: string;
+        }
+      ];
+    },
+    {
+      prim: "lambda";
+      type: "lambda";
+      name: "decision_lambda";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_proposals";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_quorum_threshold";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_votes";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_voting_period";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "min_quorum_threshold";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "min_voting_period";
+      value: string;
+    },
+    {
+      prim: "lambda";
+      type: "lambda";
+      name: "proposal_check";
+      value: string;
+    },
+    {
+      prim: "lambda";
+      type: "lambda";
+      name: "rejected_proposal_return_value";
+      value: string;
     }
   ];
 }
 
 export interface TreasuryStorageDTO {
-  prim: string;
-  type: string;
+  prim: "pair";
+  type: "namedtuple";
+  name: "@pair_1";
   children: [
-    NamedMapNumberValue,
-    NamedMapNumberValue,
-    NamedMapValue,
-    NamedMapValue,
-    NamedMapValue,
     {
-      prim: string;
-      type: string;
-      name: string;
-      children: [UnnamedMapValue];
+      prim: "address";
+      type: "address";
+      name: "admin";
+      value: string;
     },
-    NamedMapValue,
-    NamedMapValue,
     {
-      prim: string;
-      type: string;
-      name: string;
+      prim: "map";
+      type: "map";
+      name: "extra";
       children: [
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "frozen_extra_value";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "frozen_scale_value";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "max_proposal_size";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "max_xtz_amount";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "min_xtz_amount";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "slash_division_value";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "slash_scale_value";
+          value: string;
+        }
       ];
     },
-    NamedMapNumberValue,
     {
-      prim: string;
-      type: string;
-      name: string;
-      children?: NamedMapValue[];
+      prim: "nat";
+      type: "nat";
+      name: "fixed_proposal_fee_in_token";
+      value: string;
     },
-    NamedMapValue,
-    NamedMapNumberValue
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "freeze_history";
+      value: number;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "frozen_token_id";
+      value: string;
+    },
+    {
+      prim: "pair";
+      type: "namedtuple";
+      name: "last_period_change";
+      children: [
+        {
+          prim: "timestamp";
+          type: "timestamp";
+          name: "changed_on";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "period_num";
+          value: string;
+        }
+      ];
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "ledger";
+      value: number;
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "metadata";
+      value: number;
+    },
+    {
+      prim: "or";
+      type: "namedenum";
+      name: "migration_status";
+      children: [
+        {
+          prim: "unit";
+          type: "unit";
+          name: "not_in_migration";
+        }
+      ];
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "operators";
+      value: number;
+    },
+    {
+      prim: "address";
+      type: "address";
+      name: "pending_owner";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "permits_counter";
+      value: string;
+    },
+    {
+      prim: "set";
+      type: "set";
+      name: "proposal_key_list_sort_by_date";
+      value?: string[];
+    },
+    {
+      prim: "big_map";
+      type: "big_map";
+      name: "proposals";
+      value: number;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "quorum_threshold";
+      value: string;
+    },
+    {
+      prim: "address";
+      type: "address";
+      name: "token_address";
+      value: string;
+    },
+    {
+      prim: "map";
+      type: "map";
+      name: "total_supply";
+      children: [
+        {
+          prim: "nat";
+          type: "nat";
+          name: "0";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "1";
+          value: string;
+        }
+      ];
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "unfrozen_token_id";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "voting_period";
+      value: string;
+    },
+    {
+      prim: "map";
+      type: "map";
+      name: "custom_entrypoints";
+      children: [
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "receive_xtz";
+          value: string;
+        }
+      ];
+    },
+    {
+      prim: "lambda";
+      type: "lambda";
+      name: "decision_lambda";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_proposals";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_quorum_threshold";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_votes";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "max_voting_period";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "min_quorum_threshold";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "min_voting_period";
+      value: string;
+    },
+    {
+      prim: "lambda";
+      type: "lambda";
+      name: "proposal_check";
+      value: string;
+    },
+    {
+      prim: "lambda";
+      type: "lambda";
+      name: "rejected_proposal_return_value";
+      value: string;
+    }
   ];
 }

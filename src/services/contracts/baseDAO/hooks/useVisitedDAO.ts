@@ -1,24 +1,15 @@
 import useLocalStorage from "modules/common/hooks/useLocalStorage";
+import { useCallback } from "react";
 
 export const useVisitedDAO = () => {
     const [ daoId, setDaoId ] = useLocalStorage("daoId", "");
     const [ daoSymbol, setDaoSymbol ] = useLocalStorage("daoSymbol", "");
-
-    const saveDaoId = (params: any) => {
-      setDaoId(params)
-      return;
-    }
-
-    const saveDaoSymbol = (params: any) => {
-        setDaoSymbol(params)
-        return;
-      }
     
     return {
       daoId,
-      saveDaoId,
+      saveDaoId: setDaoId,
       daoSymbol,
-      saveDaoSymbol
+      saveDaoSymbol: setDaoSymbol
     }
 
 }

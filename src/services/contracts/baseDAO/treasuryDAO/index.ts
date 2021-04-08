@@ -37,24 +37,28 @@ export class TreasuryDAO extends BaseDAO {
   private static storageMapper = (dto: TreasuryStorageDTO): TreasuryStorage => {
     try {
       const result = {
-        ledgerMapNumber: dto.children[0].value,
-        votingPeriod: Number(dto.children[6].value),
-        quorumTreshold: Number(dto.children[7].value),
-        frozenScaleValue: Number(dto.children[8].children[0].value),
-        frozenExtraValue: Number(dto.children[8].children[1].value),
-        slashScaleValue: Number(dto.children[8].children[2].value),
-        slashDivisionValue: Number(dto.children[8].children[3].value),
-        minXtzAmount: dto.children[8].children[4].value,
-        maxXtzAmount: dto.children[8].children[5].value,
-        maxProposalSize: Number(dto.children[8].children[6].value),
-        proposalsMapNumber: dto.children[9].value,
-        proposalsToFlush: dto.children[10].children,
+        slashDivisionValue: Number(dto.children[1].children[5].value),
+        slashScaleValue: Number(dto.children[1].children[6].value),
+        maxProposalSize: Number(dto.children[1].children[2].value),
+        votingPeriod: Number(dto.children[18].value),
+        quorumTreshold: Number(dto.children[14].value),
+        proposalsMapNumber: dto.children[13].value,
+        ledgerMapNumber: dto.children[6].value,
+        proposalsToFlush: dto.children[12].value,
+        totalSupply: {
+          0: Number(dto.children[16].children[0].value),
+          1: Number(dto.children[16].children[1].value)
+        },
+        fixedProposalFeeInToken: Number(dto.children[2].value),
+        admin: dto.children[0].value,
+        maxXtzAmount: dto.children[1].children[3].value,
+        minXtzAmount: dto.children[1].children[4].value
       };
 
       return result;
     } catch (e) {
       throw new Error(
-        `Storage mapping failed in RegistryDAO. Probably was wrongly instantiated? Error: ${e}`
+        `Storage mapping failed in TreasuryDAO. Probably was wrongly instantiated? Error: ${e}`
       );
     }
   };

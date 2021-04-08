@@ -221,7 +221,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         mutate({
           dao,
           transfers: values.transfers,
-          tokensToFreeze: dao.storage.frozenExtraValue,
+          tokensToFreeze: dao.storage.fixedProposalFeeInToken,
           agoraPostId: values.agoraPostId
         });
 
@@ -559,7 +559,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                               variant="subtitle1"
                               color="secondary"
                             >
-                              {dao.storage.frozenExtraValue}{" "}
+                              {dao.storage.fixedProposalFeeInToken}{" "}
                               {dao ? dao.metadata.unfrozenToken.symbol : ""}
                             </Typography>
                           </Grid>

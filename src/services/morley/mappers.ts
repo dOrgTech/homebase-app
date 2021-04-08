@@ -22,7 +22,7 @@ export const dtoToMorleyContracts = (dto: MorleyContractsDTO): MorleyContracts =
 export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult): GeneratorArgs => ({
   admin_address: storage.adminAddress,
   token_address: storage.adminAddress,
-  fixed_proposal_fee_in_token: `${storage.extra.frozenExtraValue}n`,
+  fixed_proposal_fee_in_token: `${storage.extra.fixedProposalFeeInToken}n`,
   max_proposal_size: `${storage.extra.maxProposalSize}n`,
   slash_division_value: `${storage.extra.slashDivisionValue}n`,
   slash_scale_value: `${storage.extra.slashScaleValue}n`,

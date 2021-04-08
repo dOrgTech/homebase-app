@@ -38,7 +38,7 @@ export const fromStateToBaseStorage = (
 
     extra: {
       frozenScaleValue: info.votingSettings.proposeStakePercentage,
-      frozenExtraValue: info.votingSettings.proposeStakeRequired,
+      fixedProposalFeeInToken: info.votingSettings.proposeStakeRequired,
       slashScaleValue: info.votingSettings.frozenScaleValue,
       slashDivisionValue: 100,
 

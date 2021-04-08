@@ -5,11 +5,11 @@ const pinContractsMetadata = async (): Promise<string | Error> => {
   const URL = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
   const body = {
     pinataContent: {
-      "Homebase-DAOs":
+      "Homebase-DAOs 2":
         "In order to access the contract addresses please check the metadata",
     },
     pinataMetadata: {
-      name: "Homebase DAOs",
+      name: "Homebase DAOs 2",
       keyvalues: {
         contracts: JSON.stringify([]),
       },
