@@ -17,7 +17,7 @@ import { useHistory } from "react-router";
 
 import { CreatorContext, StepInfo } from "modules/creator/state";
 import { CurrentStep, STEPS, useStepNumber } from "modules/creator/steps";
-import HomeButton from "assets/logos/homebase.svg";
+import HomeButton from "assets/logos/homebase_logo.svg";
 import { NavigationBar } from "modules/creator/components/NavigationBar";
 import { Navbar } from "modules/common/Toolbar";
 
@@ -94,6 +94,15 @@ const custom = (theme: Theme) => ({
   },
 });
 
+const LogoContainer = styled(Grid)(({ theme }) => ({
+  [theme.breakpoints.up("lg")]: {
+    marginTop: -40,
+  },
+  [theme.breakpoints.up("xl")]: {
+    marginTop: -100,
+  },
+}));
+
 const LogoItem = styled("img")({
   cursor: "pointer",
 });
@@ -119,7 +128,7 @@ export const DAOCreate: React.FC = () => {
           alignItems="center"
           direction="column"
         >
-          <Grid
+          <LogoContainer
             item
             container
             direction="column"
@@ -155,7 +164,7 @@ export const DAOCreate: React.FC = () => {
                 </Grid>
               </Box>
             </Grid>
-          </Grid>
+          </LogoContainer>
           <Grid item container direction="column" alignItems="center" xs>
             <ProgressBar
               progress={progress}
