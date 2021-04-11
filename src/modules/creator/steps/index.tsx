@@ -24,8 +24,8 @@ export const STEPS: StepInfo[] = [
 const urlToStepMap: Record<string, number> = {
   templates: 0,
   dao: 1,
-  voting: 1,
-  token: 2,
+  token: 1,
+  voting: 2,
   summary: 3,
   review: 4,
 };
