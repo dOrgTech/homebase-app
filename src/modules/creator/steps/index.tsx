@@ -25,8 +25,8 @@ const urlToStepMap: Record<string, number> = {
   templates: 0,
   dao: 1,
   token: 1,
-  voting: 2,
-  summary: 3,
+  voting: 1,
+  summary: 2,
   review: 4,
 };
 
