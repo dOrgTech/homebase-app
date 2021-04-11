@@ -94,15 +94,6 @@ const custom = (theme: Theme) => ({
   },
 });
 
-const LogoContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.up("lg")]: {
-    marginTop: -40,
-  },
-  [theme.breakpoints.up("xl")]: {
-    marginTop: -100,
-  },
-}));
-
 const LogoItem = styled("img")({
   cursor: "pointer",
 });
@@ -128,7 +119,7 @@ export const DAOCreate: React.FC = () => {
           alignItems="center"
           direction="column"
         >
-          <LogoContainer
+          <Grid
             item
             container
             direction="column"
@@ -164,7 +155,7 @@ export const DAOCreate: React.FC = () => {
                 </Grid>
               </Box>
             </Grid>
-          </LogoContainer>
+          </Grid>
           <Grid item container direction="column" alignItems="center" xs>
             <ProgressBar
               progress={progress}
