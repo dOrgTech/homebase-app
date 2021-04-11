@@ -18,6 +18,7 @@ import { ConnectWalletButton } from "modules/common/Toolbar";
 
 const RocketImg = styled("img")({
   marginBottom: 46,
+  height: 128,
 });
 
 const CustomButton = styled(Button)({
@@ -80,13 +81,13 @@ export const Review: React.FC = () => {
 
   return (
     <>
-      <Box width="100%">
+      <Grid container direction="row" justify="center">
         {account ? (
           <Grid
             container
             direction="column"
             justify="center"
-            alignItems="flex-start"
+            alignItems="center"
             style={{ height: "fit-content" }}
           >
             <Grid item>
@@ -117,7 +118,7 @@ export const Review: React.FC = () => {
         ) : (
           <ConnectWalletButton connect={connect} />
         )}
-      </Box>
+      </Grid>
       <DeploymentLoader
         states={states}
         activeStep={activeState}

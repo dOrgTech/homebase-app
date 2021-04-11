@@ -14,7 +14,7 @@ import {
 import { useHistory } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
-import HomeButton from "assets/logos/homebase.svg";
+import HomeButton from "assets/logos/homebase_logo.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
@@ -103,7 +103,8 @@ const explorerBorder = (theme: Theme) => ({
 });
 
 const LogoItem = styled("img")({
-  cursor: "pointer"
+  cursor: "pointer",
+  paddingTop: 8,
 });
 
 const StyledPopover = styled(Popover)({
