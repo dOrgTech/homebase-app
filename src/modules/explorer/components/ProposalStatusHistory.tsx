@@ -4,6 +4,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Tooltip
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
 import React, { useMemo } from "react";
@@ -16,9 +17,10 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
+import { InfoOutlined } from "@material-ui/icons";
 
 const HistoryContent = styled(Grid)({
-  paddingBottom: 24,
+  paddingBottom: 24
 });
 
 const HistoryItem = styled(Grid)(({ theme }) => ({
@@ -27,9 +29,14 @@ const HistoryItem = styled(Grid)(({ theme }) => ({
   display: "flex",
   height: "auto",
   [theme.breakpoints.down("sm")]: {
-    width: "unset",
-  },
+    width: "unset"
+  }
 }));
+
+const InfoIconInput = styled(InfoOutlined)({
+  cursor: "default",
+  marginLeft: 20
+});
 
 const ProgressText = styled(Typography)(
   ({ textColor }: { textColor: string }) => ({
@@ -45,15 +52,15 @@ const ProgressText = styled(Typography)(
     background: "inherit",
     fontFamily: "Roboto Mono",
     justifyContent: "center",
-    top: 0,
+    top: 0
   })
 );
 
 const HistoryContainer = styled(Grid)(({ theme }) => ({
   paddingLeft: 53,
   [theme.breakpoints.down("sm")]: {
-    padding: "0 20px",
-  },
+    padding: "0 20px"
+  }
 }));
 
 export const ProposalStatusHistory: React.FC = () => {
@@ -67,12 +74,13 @@ export const ProposalStatusHistory: React.FC = () => {
   const { data: proposal } = useProposal(daoId, proposalId);
 
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { votesQuorumPercentage } = useVotesStats({
+  const { votesQuorumPercentage, votes } = useVotesStats({
     upVotes: proposal?.upVotes || 0,
     downVotes: proposal?.downVotes || 0,
-    quorumTreshold: dao?.storage.quorumTreshold || 0,
+    quorumTreshold: dao?.storage.quorumTreshold || 0
   });
 
+  console.log(dao);
   const history = useMemo(() => {
     if (!proposal) {
       return [];
@@ -83,31 +91,31 @@ export const ProposalStatusHistory: React.FC = () => {
     }[] = [
       {
         date: dayjs(proposal.startDate).format("LLL"),
-        status: "created",
+        status: "created"
       },
       {
         date: dayjs(proposal.startDate).format("LLL"),
-        status: ProposalStatus.ACTIVE,
-      },
+        status: ProposalStatus.ACTIVE
+      }
     ];
 
     switch (proposal.status) {
       case ProposalStatus.DROPPED:
         baseStatuses.push({
           date: "",
-          status: ProposalStatus.DROPPED,
+          status: ProposalStatus.DROPPED
         });
         break;
       case ProposalStatus.REJECTED:
         baseStatuses.push({
           date: "",
-          status: ProposalStatus.REJECTED,
+          status: ProposalStatus.REJECTED
         });
         break;
       case ProposalStatus.PASSED:
         baseStatuses.push({
           date: "",
-          status: ProposalStatus.PASSED,
+          status: ProposalStatus.PASSED
         });
         break;
     }
@@ -123,9 +131,16 @@ export const ProposalStatusHistory: React.FC = () => {
         alignItems="center"
       >
         <HistoryContent item xs={12}>
-          <Typography variant="subtitle1" color="textSecondary">
-            QUORUM THRESHOLD %
-          </Typography>
+          <Grid container direction="row">
+            <Typography variant="subtitle1" color="textSecondary">
+              QUORUM THRESHOLD %
+            </Typography>
+            <Tooltip
+              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${dao?.storage.quorumTreshold} votes.`}
+            >
+              <InfoIconInput color="secondary" />
+            </Tooltip>
+          </Grid>
         </HistoryContent>
         <HistoryContent item xs={12}>
           <ProgressBar
