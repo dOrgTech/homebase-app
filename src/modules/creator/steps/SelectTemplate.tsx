@@ -29,7 +29,22 @@ const CustomCard = styled(withTheme(Grid))((props) => ({
   boxSizing: "border-box",
   marginBottom: 16,
   borderRadius: "0px",
-  "&:first-child": {
+  "&:last-child": {
+    marginLeft: "0px",
+  },
+}));
+
+const CustomSecondCard = styled(withTheme(Grid))((props) => ({
+  minHeight: 248,
+  boxShadow: "none",
+  maxWidth: 380,
+  background: props.theme.palette.primary.main,
+  border: `1px solid ${props.theme.palette.primary.light}`,
+  borderLeft: 0,
+  boxSizing: "border-box",
+  marginBottom: 16,
+  borderRadius: "0px",
+  "&:last-child": {
     marginLeft: "0px",
   },
 }));
@@ -48,6 +63,7 @@ const FooterContainer = styled(withTheme(Paper))((props) => ({
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
+    borderRight: `2px solid ${props.theme.palette.secondary.light}`,
   },
 }));
 
@@ -165,7 +181,7 @@ export const SelectTemplate = (): JSX.Element => {
             </CustomCard>
           </Grid>
           <Grid item>
-            <CustomCard>
+            <CustomSecondCard>
               <CustomCardContent>
                 <Grid
                   container
@@ -203,7 +219,7 @@ export const SelectTemplate = (): JSX.Element => {
                   USE TEMPLATE
                 </Typography>
               </FooterContainer>
-            </CustomCard>
+            </CustomSecondCard>
           </Grid>
         </Grid>
       </Box>
