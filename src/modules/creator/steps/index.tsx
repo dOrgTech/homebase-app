@@ -42,11 +42,11 @@ export const CurrentStep: React.FC = () => {
         <Route path={`${match.url}/dao`}>
           <DaoSettings />
         </Route>
-        <Route path={`${match.url}/voting`}>
-          <Governance />
-        </Route>
         <Route path={`${match.url}/token`}>
           <TokenSettings />
+        </Route>
+        <Route path={`${match.url}/voting`}>
+          <Governance />
         </Route>
         <Route path={`${match.url}/summary`}>
           <Summary />

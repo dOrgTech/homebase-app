@@ -34,7 +34,7 @@ export const useCreatorRouteValidation = (): string => {
 
   if (needsToFillOrgSettings) return match.url + "/dao";
   if (needsToFillGovernance && !isPreviousStep(["dao"]))
-    return match.url + "/voting";
+    return match.url + "/token";
   if (needsToFillMembers && !isPreviousStep(["dao", "voting"]))
     return match.url + "/token";
 
