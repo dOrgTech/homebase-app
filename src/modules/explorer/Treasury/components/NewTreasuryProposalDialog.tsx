@@ -171,7 +171,7 @@ const CustomTextFieldAmount = styled(TextField)(({theme}) =>({
   padding: 6,
   minHeight: 31,
   marginTop: 16,
-  width: "100%",
+  width: "auto",
   "& .MuiInputBase-input": {
     textAlign: "initial",
     paddingLeft: 40,
@@ -185,6 +185,7 @@ const CustomTextFieldAmount = styled(TextField)(({theme}) =>({
   [theme.breakpoints.down("sm")]: {
     paddingLeft: "inherit",
     paddingRight: "inherit",
+    width: "100%",
   }
 }));
 
