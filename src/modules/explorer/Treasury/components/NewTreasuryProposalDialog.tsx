@@ -9,7 +9,10 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-  TextField as MaterialTextField
+  TextField as MaterialTextField,
+  InputAdornment,
+  useTheme,
+  useMediaQuery
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
@@ -43,8 +46,12 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   height: 30,
   paddingTop: 28,
   minWidth: 500,
-  [theme.breakpoints.down("xs")]: {
-    minWidth: 250
+  padding: "24px 65px",
+  boxSizing: "border-box",
+  minHeight: 65,
+  [theme.breakpoints.down("sm")]: {
+    minWidth: 250,
+    padding: "24px 24px",
   }
 }));
 
@@ -53,7 +60,10 @@ const ListItem = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 24px"
+  padding: "0px 65px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "10px 24px",
+  }
 }));
 
 const AmountItem = styled(Grid)(({ theme }) => ({
@@ -61,32 +71,46 @@ const AmountItem = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "14px 24px"
+  paddingTop: 24,
+  paddingLeft: 65,
+  paddingRight: 65,
+  [theme.breakpoints.down("sm")]: {
+    padding: "24px 24px",
+  }
 }));
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   height: 70,
   display: "flex",
   alignItems: "center",
-  padding: "0px 24px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`
+  padding: "0px 65px",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  [theme.breakpoints.down("sm")]: {
+    padding: "24px 24px",
+  }
 }));
 
 const FileInput = styled("input")({
   display: "none"
 });
 
-const SendContainer = styled(Grid)({
-  height: 55
-});
+const SendContainer = styled(Grid)(({theme}) => ({
+  height: 80,
+  [theme.breakpoints.down("sm")]: {
+    height: 100,
+  }
+}));
 
 const BatchBar = styled(Grid)(({ theme }) => ({
   height: 60,
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 24px",
+  padding: "0px 65px",
   cursor: "pointer",
-  overflowX: "auto"
+  overflowX: "auto",
+  [theme.breakpoints.down("sm")]: {
+    padding: "24px 24px",
+  }
 }));
 
 const SwitchContainer = styled(Grid)({
@@ -142,11 +166,36 @@ const CustomTextField = styled(TextField)({
   }
 });
 
-const SendButton = styled(ViewButton)({
-  width: "100%",
-  border: "none",
-  borderTop: "1px solid #4BCF93"
-});
+const CustomTextFieldAmount = styled(TextField)(({theme}) =>({
+  border: "1px solid #434242",
+  padding: 6,
+  minHeight: 31,
+  marginTop: 16,
+  width: "auto",
+  "& .MuiInputBase-input": {
+    textAlign: "initial",
+    paddingLeft: 40,
+    paddingRight: 10,
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: 0,
+      paddingRight: 0,
+      textAlign: "center",
+    }
+  },
+  [theme.breakpoints.down("sm")]: {
+    paddingLeft: "inherit",
+    paddingRight: "inherit",
+    width: "100%",
+  }
+}));
+
+const SendButton = styled(ViewButton)(({theme}) => ({
+  width: 229,
+  border: "1px",
+  background: theme.palette.secondary.main,
+  borderRadius: 4,
+  color: theme.palette.text.secondary,
+}));
 
 const AmountText = styled(Typography)({
   color: "rgba(255, 255, 255, 0.7)",
@@ -156,9 +205,32 @@ const AmountText = styled(Typography)({
 });
 
 const AmountContainer = styled(Grid)(({ theme }) => ({
-  paddingRight: 16,
   [theme.breakpoints.down("sm")]: {
     paddingRight: 0
+  }
+}));
+
+const AutoCompleteField = styled(Autocomplete)({
+  "& .MuiInputLabel-root": {
+    display: "none"
+  },
+  "& .MuiInput-root": {
+    border: "1px solid #434242",
+    padding: 6
+  }
+});
+
+const DaoBalance = styled(Grid)({
+  minHeight: 50,
+})
+
+const CurrentAsset = styled(Typography)({
+  opacity: 0.7
+});
+
+const AmountSmallText = styled(Typography)(({theme}) => ({
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 14,
   }
 }));
 
@@ -178,6 +250,8 @@ const INITIAL_FORM_VALUES: Values = {
 };
 
 export const NewTreasuryProposalDialog: React.FC = () => {
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const { mutate } = useTreasuryPropose();
@@ -206,10 +280,10 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const onSubmit = useCallback(
     async (values: Values, { setSubmitting }: any) => {
       setSubmitting(true);
-      
-      values.transfers.map((transfer) => {
-        if (transfer.type !== 'XTZ') {
-          transfer.type = 'FA2';
+
+      values.transfers.map(transfer => {
+        if (transfer.type !== "XTZ") {
+          transfer.type = "FA2";
           return transfer;
         }
       });
@@ -413,61 +487,87 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 direction="row"
                                 alignItems="center"
                               >
-                                <Grid item xs={5}>
-                                  <Field
-                                    component={Autocomplete}
-                                    name={`transfers.${
-                                      activeTransfer - 1
-                                    }.type`}
-                                    options={tezosBalance?.map(
-                                      option => option.symbol
-                                    )}
-                                    getOptionLabel={(option: TokenBalance) =>
-                                      option
-                                    }
-                                    renderInput={(params: any) => (
-                                      <MaterialTextField
-                                        {...params}
-                                        label="Select asset"
-                                      />
-                                    )}
-                                  />
-                                </Grid>
-                                <Grid item xs={2}>
-                                  <Typography
-                                    variant="subtitle1"
-                                    color="textSecondary"
-                                    style={{ marginTop: 12 }}
-                                  >
-                                    Amount
-                                  </Typography>
-                                </Grid>
-                                <Grid item xs={5}>
-                                  <SwitchContainer
-                                    item
-                                    xs={12}
-                                    justify="flex-end"
-                                  >
+                                <Grid item xs={isMobileSmall ? 12 : 5}>
+                                  <Grid container direction="column">
+                                    <Typography
+                                      variant="subtitle1"
+                                      color="textSecondary"
+                                    >
+                                      Asset
+                                    </Typography>
                                     <Field
+                                      component={AutoCompleteField}
                                       name={`transfers.${
                                         activeTransfer - 1
-                                      }.amount`}
-                                      type="number"
-                                      placeholder="Type an Amount"
-                                      component={CustomTextField}
-                                      InputProps={{
-                                        inputProps: {
-                                          step: 0.01,
-                                          min: dao.storage.minXtzAmount,
-                                          max: dao.storage.maxXtzAmount
-                                        }
-                                      }}
+                                      }.type`}
+                                      options={tezosBalance?.map(
+                                        option => option.symbol
+                                      )}
+                                      getOptionLabel={(option: TokenBalance) =>
+                                        option
+                                      }
+                                      renderInput={(params: any) => (
+                                        <MaterialTextField
+                                          {...params}
+                                          label="Select asset"
+                                        />
+                                      )}
                                     />
-                                  </SwitchContainer>
+                                  </Grid>
+                                </Grid>
+                                <Grid item xs={isMobileSmall ? 12 : 2}></Grid>
+
+                                <Grid item xs={isMobileSmall ? 12 : 5}>
+                                  <Grid container direction="column">
+                                    <AmountSmallText
+                                      variant="subtitle1"
+                                      color="textSecondary"
+                                    >
+                                      Amount
+                                    </AmountSmallText>
+
+                                    <SwitchContainer
+                                      item
+                                      xs={12}
+                                      justify="flex-end"
+                                    >
+                                      <Field
+                                        name={`transfers.${
+                                          activeTransfer - 1
+                                        }.amount`}
+                                        type="number"
+                                        placeholder="Type an Amount"
+                                        component={CustomTextFieldAmount}
+                                        InputProps={{
+                                          inputProps: {
+                                            step: 0.01,
+                                            min: dao.storage.minXtzAmount,
+                                            max: dao.storage.maxXtzAmount
+                                          },
+                                          endAdornment: (
+                                            <InputAdornment position="start">
+                                              <CurrentAsset
+                                                color="textSecondary"
+                                                variant="subtitle1"
+                                              >
+                                                {" "}
+                                                {values.transfers[
+                                                  activeTransfer - 1
+                                                ] &&
+                                                  values.transfers[
+                                                    activeTransfer - 1
+                                                  ].type}
+                                              </CurrentAsset>
+                                            </InputAdornment>
+                                          )
+                                        }}
+                                      />
+                                    </SwitchContainer>
+                                  </Grid>
                                 </Grid>
 
                                 {values.transfers[activeTransfer - 1] ? (
-                                  <>
+                                  <DaoBalance container direction="row" alignItems="center" justify="space-between">
                                     <Grid item xs={6}>
                                       <AmountText>DAO Balance</AmountText>
                                     </Grid>
@@ -493,7 +593,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                         </AmountContainer>
                                       ) : null}
                                     </Grid>
-                                  </>
+                                  </DaoBalance>
                                 ) : null}
                               </AmountItem>
                             </>
@@ -569,6 +669,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           container
                           direction="row"
                           justify="center"
+                          alignItems="center"
                         >
                           <SendButton
                             customColor={theme.palette.secondary.main}
