@@ -16,11 +16,15 @@ export const CustomTextarea = styled(TextField)({
   paddingTop: 24
 });
 
-export const DescriptionContainer = styled(Grid)({
-  paddingLeft: 24,
-  paddingRight: 24,
+export const DescriptionContainer = styled(Grid)(({theme}) => ({
+  paddingLeft: 65,
+  paddingRight: 65,
   paddingTop: 24,
-});
+  [theme.breakpoints.down("sm")]: {
+    paddingLeft: 24,
+    paddingRight: 24,
+  }
+}));
 
 export const ProposalTextContainer: React.FC<{ title: string, value: string, type: "description" | "title" }> = ({ title, value, type }) => {
   return (
