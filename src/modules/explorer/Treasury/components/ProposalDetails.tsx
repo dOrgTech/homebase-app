@@ -1,10 +1,8 @@
 import React from "react";
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
-import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
+import { FA2Transfer, TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { mutezToXtz } from "services/contracts/utils";
 import { ProposalDetails } from "modules/explorer/components/ProposalDetails";
 import { TransferBadge } from "./TransferBadge";
 
@@ -22,53 +20,36 @@ export const TreasuryProposalDetails = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const transfers = useMemo(() => {
-    if (!proposal || !proposal.transfers) {
-      return [];
-    }
-
-    return proposal.transfers.map((transfer) => {
-      const to =
-        transfer.beneficiary.toLowerCase() === daoId.toLowerCase()
-          ? "DAO's treasury"
-          : transfer.beneficiary;
-
-      const currency =
-        transfer.currency === "mutez" ? "XTZ" : transfer.currency;
-
-      const value =
-        transfer.currency === "mutez"
-          ? mutezToXtz(transfer.amount)
-          : transfer.amount;
-
-      return {
-        value,
-        to,
-        currency,
-      };
-    });
-  }, [proposal, daoId]);
-
   return (
     <ProposalDetails>
-      {transfers.map(({ value, to, currency }, index) => {
+      {proposal && proposal.transfers? proposal.transfers.map((transfer, index) => {
         return (
-          <Container
-            item
-            key={index}
-            container
-            alignItems="center"
-            direction={isMobileSmall ? "column" : "row"}
-          >
-            <TransferBadge
-              amount={value}
-              address={to}
-              currency={currency}
-              long={true}
-            />
-          </Container>
-        );
-      })}
+            <Container
+              item
+              key={index}
+              container
+              alignItems="center"
+              direction={isMobileSmall ? "column" : "row"}
+            >
+              {
+                transfer.type === "XTZ"? (
+                <TransferBadge
+                  amount={transfer.amount}
+                  address={transfer.beneficiary}
+                  currency={'XTZ'}
+                  long={true}
+                />): (
+                  <TransferBadge
+                    amount={transfer.amount}
+                    address={transfer.beneficiary}
+                    contract={(transfer as FA2Transfer).contractAddress}
+                    long={true}
+                  />)
+              }
+              
+            </Container>
+        )
+      }): null}
     </ProposalDetails>
   );
 };

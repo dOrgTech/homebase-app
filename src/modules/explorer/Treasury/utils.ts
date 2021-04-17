@@ -1,11 +1,11 @@
 import { Validator } from "jsonschema";
-import { Transfer } from "services/contracts/baseDAO";
+import { TransferParams } from "services/contracts/baseDAO";
 
 const v = new Validator();
 
 export const fromMigrationParamsFile = async (
   file: File
-): Promise<Transfer[]> => {
+): Promise<TransferParams[]> => {
   const fileReader = new FileReader();
   fileReader.readAsText(file);
 

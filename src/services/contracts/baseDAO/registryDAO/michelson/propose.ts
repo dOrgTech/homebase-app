@@ -1,1 +1,0 @@
-export default `(or %proposal_metadata (pair %proposal_type (nat %agora_post_id) (list %diff (pair (bytes %key) (option %new_value bytes)))) (pair %proposal_type (pair (option %frozen_scale_value nat) (option %frozen_extra_value nat)) (pair (option %slash_scale_value nat) (pair (option %slash_division_value nat) (option %max_proposal_size nat)))))`;

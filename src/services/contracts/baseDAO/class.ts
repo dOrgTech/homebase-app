@@ -24,12 +24,19 @@ interface DeployParams {
   network: Network;
 }
 
+export type CycleType = "voting" | "proposing"
+
+export interface CycleInfo {
+  time: number;
+  current: number;
+  type: CycleType;
+}
+
 export interface BaseConstructorParams {
   address: string;
   network: Network;
   ledger: Ledger;
   template: DAOTemplate;
-  cycle: number;
   originationTime: string;
   storage: BaseStorage;
   metadata: DAOListMetadata;
@@ -40,7 +47,6 @@ export abstract class BaseDAO {
   public address;
   public ledger;
   public template;
-  public cycle;
   public originationTime;
   public storage;
   public metadata;
@@ -182,7 +188,6 @@ export abstract class BaseDAO {
     this.address = params.address;
     this.ledger = params.ledger;
     this.template = params.template;
-    this.cycle = params.cycle;
     this.originationTime = params.originationTime;
     this.storage = params.storage;
     this.metadata = params.metadata;

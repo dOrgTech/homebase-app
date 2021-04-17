@@ -96,7 +96,7 @@ export const DAO: React.FC = () => {
   const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading: isDaoLoading, error } = useDAO(id);
+  const { data, isLoading: isDaoLoading } = useDAO(id);
   const { mutate } = useFlush();
   const { tezos, connect } = useTezos();
 
@@ -104,9 +104,7 @@ export const DAO: React.FC = () => {
   const description = data && data.metadata.description;
   const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
 
-  const votingPeriod = data && data.storage.votingPeriod;
-  const originationTime = data && data.originationTime;
-  const cycleInfo = useCycleInfo(originationTime, votingPeriod);
+  const cycleInfo = useCycleInfo(id);
   const time = cycleInfo && cycleInfo.time;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
@@ -118,8 +116,6 @@ export const DAO: React.FC = () => {
     ProposalStatus.ACTIVE
   );
   const isLoading = isDaoLoading || isProposalsLoading;
-
-  console.log(data, error, status)
 
   useEffect(() => {
     saveDaoId(id);

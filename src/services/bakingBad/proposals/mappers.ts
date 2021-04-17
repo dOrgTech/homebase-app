@@ -1,60 +1,88 @@
 import {
+  FA2Transfer,
+  FA2TransferDTO,
   RegistryProposal,
   RegistryProposalsDTO,
+  Transfer,
   TreasuryProposal,
+  XTZTransferDTO,
 } from "./types";
 import {
-  ProposalsDTO,
   TreasuryProposalsDTO,
 } from "services/bakingBad/proposals/types";
+import { Parser } from "@taquito/michel-codec";
+import { mutezToXtz } from "services/contracts/utils";
+
+const parser = new Parser()
 
 export const dtoToTreasuryProposals = (
   proposalsDTO: TreasuryProposalsDTO
 ): TreasuryProposal[] => {
-  return proposalsDTO.map((dto) => ({
-    id: dto.data.key.value,
-    upVotes: Number(dto.data.value.children[0].value),
-    downVotes: Number(dto.data.value.children[1].value),
-    startDate: dto.data.value.children[2].value,
-    agoraPostId: dto.data.value.children[3].children[0].value,
-    proposer: dto.data.value.children[4].value,
-    proposerFrozenTokens: dto.data.value.children[5].value,
-    transfers: mapTransfers(dto),
-    voters: dtoToVoters(dto),
-  }));
+  return proposalsDTO.map((dto) => {
+    return {
+      id: dto.data.key.value,
+      upVotes: Number(dto.data.value.children[7].value),
+      downVotes: Number(dto.data.value.children[0].value),
+      startDate: dto.data.value.children[6].value,
+      agoraPostId: dto.data.value.children[1].children[0].value,
+      proposer: dto.data.value.children[3].value,
+      proposerFrozenTokens: dto.data.value.children[5].value,
+      transfers: mapTransfers(dto.data.value.children[1].children[1].value),
+      voters: []
+      // dtoToVoters(dto),
+    }
+  });
 };
 
-const dtoToVoters = (
-  proposalsDTO: ProposalsDTO[number]
-): { address: string; value: number }[] => {
-  const votersDTO = proposalsDTO.data.value.children[6].children;
-
-  if (!votersDTO) {
-    return [];
+const decodeXTZTransfer = (dto: XTZTransferDTO): Transfer => {
+  return {
+    amount: mutezToXtz(dto.args[0].args[0].int),
+    beneficiary: dto.args[0].args[1].string,
+    type: "XTZ"
   }
+}
 
-  return votersDTO.map((voterDTO) => ({
-    address: voterDTO.children[0].value,
-    value: Number(voterDTO.children[1].value),
-  }));
-};
+const decodeFA2Transfer = (dto: FA2TransferDTO): FA2Transfer => {
+  return {
+    contractAddress: dto.args[0].args[0].string,
+    beneficiary: dto.args[0].args[1][0].args[1][0].args[0].string,
+    tokenId: dto.args[0].args[1][0].args[1][0].args[1].args[0].int,
+    amount: dto.args[0].args[1][0].args[1][0].args[1].args[1].int,
+    type: "FA2"
+  }
+}
+
+// const dtoToVoters = (
+//   proposalsDTO: ProposalsDTO[number]
+// ): { address: string; value: number }[] => {
+//   const votersDTO = proposalsDTO.data.value.children[8].children;
+
+//   if (!votersDTO) {
+//     return [];
+//   }
+
+//   return votersDTO.map((voterDTO) => ({
+//     address: voterDTO.children[0].value,
+//     value: Number(voterDTO.children[1].value),
+//   }));
+// };
 
 const mapTransfers = (
-  dto: ProposalsDTO[number]
+  transferMichelsonString: string
 ): TreasuryProposal["transfers"] => {
-  const metadataDTO = dto.data.value.children[3].children[1];
-
-  if (!metadataDTO || !metadataDTO.children) {
-    return [];
+  if(transferMichelsonString === "{ { } }") {
+    return []
   }
 
-  const mutezTransfersDTO = metadataDTO.children;
-
-  return mutezTransfersDTO.map((transfer) => ({
-    beneficiary: transfer.children[0].children[1].value,
-    amount: transfer.children[0].children[0].value,
-    currency: transfer.children[0].children[0].type,
-  }));
+  const transferStringNoBraces = transferMichelsonString.substr(3, transferMichelsonString.length - 6)
+  return transferStringNoBraces.split(" ; ").map(transferString => {
+    const transfer = parser.parseData(transferString) as XTZTransferDTO | FA2TransferDTO
+    if(transfer.prim === "Left") {
+      return decodeXTZTransfer(transfer)
+    } else {
+      return decodeFA2Transfer(transfer)
+    }
+  })
 };
 
 const mapRegistryList = (
@@ -84,6 +112,7 @@ export const dtoToRegistryProposals = (
     proposer: dto.data.value.children[4].value,
     proposerFrozenTokens: dto.data.value.children[5].value,
     list: mapRegistryList(dto),
-    voters: dtoToVoters(dto),
+    voters: []
+    // dtoToVoters(dto),
   }));
 };

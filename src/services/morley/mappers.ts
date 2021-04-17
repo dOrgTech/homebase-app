@@ -1,4 +1,4 @@
-import { MemberTokenAllocation } from './../contracts/baseDAO/types';
+// import { MemberTokenAllocation } from './../contracts/baseDAO/types';
 import { BaseStorageParams } from "services/contracts/baseDAO";
 import { xtzToMutez } from "services/contracts/utils";
 import { GeneratorArgs, MorleyContracts, MorleyContractsDTO } from "./types";
@@ -22,10 +22,10 @@ export const dtoToMorleyContracts = (dto: MorleyContractsDTO): MorleyContracts =
 export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult): GeneratorArgs => ({
   admin_address: storage.adminAddress,
   token_address: storage.adminAddress,
-  fixed_proposal_fee_in_token: `${storage.extra.fixedProposalFeeInToken}n`,
   max_proposal_size: `${storage.extra.maxProposalSize}n`,
   slash_division_value: `${storage.extra.slashDivisionValue}n`,
   slash_scale_value: `${storage.extra.slashScaleValue}n`,
+  frozen_extra_value: `${storage.extra.frozenExtraValue}n`,
   // ledger: formatLedger(storage.membersTokenAllocation),
   metadata_map: formatMetadata(metadata),
   // quorum_treshold: `${storage.quorumTreshold}n`,
@@ -38,23 +38,23 @@ export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: 
 
 const formatBytes = (value: string) => value.startsWith("0x") ? value.substring(2, value.length): value
 
-const formatLedger = (allocations: MemberTokenAllocation[]) => {
-  return `"(Big_map.literal [
-    ${allocations.map(({ address, amount, tokenId }) => `(("${address}", ${tokenId}), ${amount});\n`)}
-  ])"`;
-}
+// const formatLedger = (allocations: MemberTokenAllocation[]) => {
+//   return `"(Big_map.literal [
+//     ${allocations.map(({ address, amount, tokenId }) => `(("${address}", ${tokenId}), ${amount});\n`)}
+//   ])"`;
+// }
 
-const formatTotalSupply = (allocations: MemberTokenAllocation[]) => {
-  const allocationsByTokenId = allocations.reduce((prev, current) => {
-    const id = Number(current.tokenId)
-    prev[id] = prev[id]? prev[id] + Number(current.amount) : 0
-    return prev
-  }, {} as Record<number, number>)
+// const formatTotalSupply = (allocations: MemberTokenAllocation[]) => {
+//   const allocationsByTokenId = allocations.reduce((prev, current) => {
+//     const id = Number(current.tokenId)
+//     prev[id] = prev[id]? prev[id] + Number(current.amount) : 0
+//     return prev
+//   }, {} as Record<number, number>)
 
-  return `"(Map.literal [
-    ${Object.entries(allocationsByTokenId).map(([tokenId, amount]) => `(${tokenId}, ${amount});\n`)}
-  ])"`
-}
+//   return `"(Map.literal [
+//     ${Object.entries(allocationsByTokenId).map(([tokenId, amount]) => `(${tokenId}, ${amount});\n`)}
+//   ])"`
+// }
 
 const formatMetadata = ({ deployAddress, keyName }: MetadataDeploymentResult) => {
   return `'(Big_map.literal [

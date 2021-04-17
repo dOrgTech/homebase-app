@@ -1,5 +1,7 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
 import { tzip16 } from "@taquito/tzip16";
+import dayjs from "dayjs";
+import { CycleType } from ".";
 import {
   BaseStorageParams,
   MigrationParams,
@@ -38,7 +40,7 @@ export const fromStateToBaseStorage = (
 
     extra: {
       frozenScaleValue: info.votingSettings.proposeStakePercentage,
-      fixedProposalFeeInToken: info.votingSettings.proposeStakeRequired,
+      frozenExtraValue: info.votingSettings.proposeStakeRequired,
       slashScaleValue: info.votingSettings.frozenScaleValue,
       slashDivisionValue: 100,
 
@@ -63,3 +65,17 @@ export const getContract = async (
 ) => {
   return await tezos.wallet.at(contractAddress, tzip16);
 };
+
+export const calculateCycleInfo = (originationTime: string, votingPeriod: number, lastPeriodNumber: number) => {
+  const current = dayjs().unix() - dayjs(originationTime).unix();
+  const periodLeftPercentage = (current / votingPeriod) % 1;
+  const timeLeftPercentage = votingPeriod * periodLeftPercentage;
+  const time = votingPeriod - Number(timeLeftPercentage.toFixed());
+  const currentPeriodNumber = Math.floor(current / votingPeriod) + lastPeriodNumber
+
+  return {
+    time: Number(time),
+    current: currentPeriodNumber,
+    type: currentPeriodNumber % 2 === 0? "voting": "proposing" as CycleType
+  };
+}

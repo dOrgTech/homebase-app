@@ -93,7 +93,6 @@ const CreateDaoContainer = styled(Grid)({
 });
 
 export const DAOsList: React.FC = () => {
-  const { saveDaoId } = useVisitedDAO();
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
   const style = styles();
@@ -118,10 +117,6 @@ export const DAOsList: React.FC = () => {
 
     return data.pages.flat();
   }, [data]);
-
-  useEffect(() => {
-    saveDaoId("")
-  }, [saveDaoId]);
 
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) {

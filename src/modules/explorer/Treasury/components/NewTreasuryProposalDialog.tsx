@@ -20,7 +20,7 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
-import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
+import { TransferParams, TreasuryDAO } from "services/contracts/baseDAO";
 import {
   fromMigrationParamsFile,
   validateTransactionsJSON
@@ -163,13 +163,13 @@ const AmountContainer = styled(Grid)(({ theme }) => ({
 }));
 
 interface Values {
-  transfers: Transfer[];
+  transfers: TransferParams[];
   description: string;
   agoraPostId: number;
   title: string;
 }
 
-const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0, type: "XTZ" };
+const EMPTY_TRANSFER: TransferParams = { recipient: "", amount: 0, type: "XTZ" };
 const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
   description: "",
@@ -214,14 +214,13 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         }
       });
       
-      console.log(values);
       await connectIfNotConnected(tezos, connect);
 
       if (dao) {
         mutate({
           dao,
           transfers: values.transfers,
-          tokensToFreeze: dao.storage.fixedProposalFeeInToken,
+          tokensToFreeze: dao.storage.frozenExtraValue,
           agoraPostId: values.agoraPostId
         });
 
@@ -294,6 +293,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
 
               <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
                 {({ submitForm, values }) => {
+                  console.log(values)
                   const importTransactions = async (
                     event: React.ChangeEvent<HTMLInputElement>
                   ) => {
@@ -559,7 +559,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                               variant="subtitle1"
                               color="secondary"
                             >
-                              {dao.storage.fixedProposalFeeInToken}{" "}
+                              {dao.storage.frozenExtraValue}{" "}
                               {dao ? dao.metadata.unfrozenToken.symbol : ""}
                             </Typography>
                           </Grid>

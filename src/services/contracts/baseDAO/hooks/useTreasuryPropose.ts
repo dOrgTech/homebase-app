@@ -1,15 +1,15 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
-import { Transfer } from "services/contracts/baseDAO/types";
 import { TreasuryDAO } from "..";
+import { TransferParams } from "../types";
 import { useCacheDAOs } from "./useCacheDAOs";
 
 interface Params {
   dao: TreasuryDAO;
   tokensToFreeze: number;
   agoraPostId: number;
-  transfers: Transfer[];
+  transfers: TransferParams[];
 }
 
 export const useTreasuryPropose = () => {

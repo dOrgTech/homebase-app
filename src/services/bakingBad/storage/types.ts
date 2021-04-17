@@ -1,6 +1,7 @@
 export interface BaseStorage {
   slashDivisionValue: number;
   slashScaleValue: number;
+  frozenExtraValue: number;
   maxProposalSize: number;
   votingPeriod: number;
   quorumTreshold: number;
@@ -10,6 +11,10 @@ export interface BaseStorage {
   totalSupply: {
     0: number;
     1: number;
+  };
+  lastPeriodChange: {
+    timestamp: string;
+    periodNumber: number;
   };
   fixedProposalFeeInToken: number;
   admin: string;
@@ -158,18 +163,6 @@ export interface RegistryStorageDTO {
       value: number;
     },
     {
-      prim: "or";
-      type: "namedenum";
-      name: "migration_status";
-      children: [
-        {
-          prim: "unit";
-          type: "unit";
-          name: "not_in_migration";
-        }
-      ];
-    },
-    {
       prim: "big_map";
       type: "big_map";
       name: "operators";
@@ -191,7 +184,7 @@ export interface RegistryStorageDTO {
       prim: "set";
       type: "set";
       name: "proposal_key_list_sort_by_date";
-      value?: string[]
+      value?: any;
     },
     {
       prim: "big_map";
@@ -200,10 +193,23 @@ export interface RegistryStorageDTO {
       value: number;
     },
     {
-      prim: "nat";
-      type: "nat";
+      prim: "pair";
+      type: "namedtuple";
       name: "quorum_threshold";
-      value: string;
+      children: [
+        {
+          prim: "nat";
+          type: "nat";
+          name: "numerator";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "denominator";
+          value: string;
+        }
+      ];
     },
     {
       prim: "address";
@@ -219,13 +225,13 @@ export interface RegistryStorageDTO {
         {
           prim: "nat";
           type: "nat";
-          name: string;
+          name: "0";
           value: string;
         },
         {
           prim: "nat";
           type: "nat";
-          name: string;
+          name: "1";
           value: string;
         }
       ];
@@ -274,10 +280,23 @@ export interface RegistryStorageDTO {
       value: string;
     },
     {
-      prim: "nat";
-      type: "nat";
+      prim: "pair";
+      type: "namedtuple";
       name: "max_quorum_threshold";
-      value: string;
+      children: [
+        {
+          prim: "nat";
+          type: "nat";
+          name: "numerator";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "denominator";
+          value: string;
+        }
+      ];
     },
     {
       prim: "nat";
@@ -292,10 +311,23 @@ export interface RegistryStorageDTO {
       value: string;
     },
     {
-      prim: "nat";
-      type: "nat";
+      prim: "pair";
+      type: "namedtuple";
       name: "min_quorum_threshold";
-      value: string;
+      children: [
+        {
+          prim: "nat";
+          type: "nat";
+          name: "numerator";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "denominator";
+          value: string;
+        }
+      ];
     },
     {
       prim: "nat";
@@ -367,6 +399,24 @@ export interface TreasuryStorageDTO {
         {
           prim: "bytes";
           type: "bytes";
+          name: "proposal_receivers";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "registry";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "registry_affected";
+          value: string;
+        },
+        {
+          prim: "bytes";
+          type: "bytes";
           name: "slash_division_value";
           value: string;
         },
@@ -428,18 +478,6 @@ export interface TreasuryStorageDTO {
       value: number;
     },
     {
-      prim: "or";
-      type: "namedenum";
-      name: "migration_status";
-      children: [
-        {
-          prim: "unit";
-          type: "unit";
-          name: "not_in_migration";
-        }
-      ];
-    },
-    {
       prim: "big_map";
       type: "big_map";
       name: "operators";
@@ -489,13 +527,13 @@ export interface TreasuryStorageDTO {
         {
           prim: "nat";
           type: "nat";
-          name: "0";
+          name: string;
           value: string;
         },
         {
           prim: "nat";
           type: "nat";
-          name: "1";
+          name: string;
           value: string;
         }
       ];
@@ -517,6 +555,12 @@ export interface TreasuryStorageDTO {
       type: "map";
       name: "custom_entrypoints";
       children: [
+        {
+          prim: "bytes";
+          type: "bytes";
+          name: "lookup_registry";
+          value: string;
+        },
         {
           prim: "bytes";
           type: "bytes";

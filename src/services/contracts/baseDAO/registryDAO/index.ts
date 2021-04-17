@@ -44,18 +44,23 @@ export class RegistryDAO extends BaseDAO {
       const result = {
         slashDivisionValue: Number(dto.children[1].children[8].value),
         slashScaleValue: Number(dto.children[1].children[9].value),
+        frozenExtraValue: Number(dto.children[1].children[0].value),
         maxProposalSize: Number(dto.children[1].children[2].value),
         proposalReceivers: dto.children[1].children[5].value,
+        lastPeriodChange: {
+          timestamp: dto.children[5].children[0].value,
+          periodNumber: Number(dto.children[5].children[1].value),
+        },
         registry: dto.children[1].children[6].value,
         registryAffected: dto.children[1].children[7].value,
-        votingPeriod: Number(dto.children[18].value),
-        quorumTreshold: Number(dto.children[14].value),
-        proposalsMapNumber: dto.children[13].value,
+        votingPeriod: Number(dto.children[17].value),
+        quorumTreshold: Number(dto.children[13].children[0].value),
+        proposalsMapNumber: dto.children[12].value,
         ledgerMapNumber: dto.children[6].value,
-        proposalsToFlush: dto.children[12].value,
+        proposalsToFlush: dto.children[11].value || [],
         totalSupply: {
-          0: Number(dto.children[16].children[0].value),
-          1: Number(dto.children[16].children[1].value)
+          0: Number(dto.children[15].children[0].value),
+          1: Number(dto.children[15].children[1].value)
         },
         fixedProposalFeeInToken: Number(dto.children[2].value),
         admin: dto.children[0].value,
@@ -95,15 +100,11 @@ export class RegistryDAO extends BaseDAO {
       (await getDAOListMetadata(contract));
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
     const originationTime = await getOriginationTime(contractAddress, network);
-    const cycle = Math.floor(
-      (dayjs().unix() - dayjs(originationTime).unix()) / storage.votingPeriod
-    );
 
     return new RegistryDAO({
       address: contractAddress,
       ledger,
       template: "registry",
-      cycle,
       originationTime,
       storage,
       metadata: metadataToUse,
@@ -127,7 +128,7 @@ export class RegistryDAO extends BaseDAO {
     const proposals = dtoToRegistryProposals(proposalsDTO);
 
     return proposals.map((proposal) => {
-      const { startDate, upVotes, downVotes } = proposal;
+      const { startDate } = proposal;
 
       const exactCycle =
         dayjs(startDate).unix() - dayjs(this.originationTime).unix();
@@ -135,17 +136,18 @@ export class RegistryDAO extends BaseDAO {
 
       //TODO: this business logic will change in the future
 
-      let status: ProposalStatus;
+      const status = ProposalStatus.ACTIVE;
 
-      if (cycle === this.cycle) {
-        status = ProposalStatus.ACTIVE;
-      } else if (Number(upVotes) >= this.storage.quorumTreshold) {
-        status = ProposalStatus.PASSED;
-      } else if (Number(downVotes) >= this.storage.quorumTreshold) {
-        status = ProposalStatus.REJECTED;
-      } else {
-        status = ProposalStatus.DROPPED;
-      }
+      // if (cycle === this.cycleInfo.current) {
+        // status = ProposalStatus.ACTIVE;
+      // }
+      // else if (Number(upVotes) >= this.storage.quorumTreshold) {
+      //   status = ProposalStatus.PASSED;
+      // } else if (Number(downVotes) >= this.storage.quorumTreshold) {
+      //   status = ProposalStatus.REJECTED;
+      // } else {
+      //   status = ProposalStatus.DROPPED;
+      // }
 
       return {
         ...proposal,

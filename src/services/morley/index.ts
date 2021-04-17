@@ -4,7 +4,7 @@ import { MetadataDeploymentResult } from "services/contracts/metadataCarrier/dep
 import { dtoToMorleyContracts, storageParamsToMorleyArgs } from "./mappers"
 import { GeneratorArgs, MorleyContractsDTO } from "./types"
 
-export const API_URL = "https://cors-container.herokuapp.com/https://morley-large-originator.herokuapp.com/steps"
+export const API_URL = "https://morley-large-originator.herokuapp.com/steps"
 
 interface MorleyParams {
   template: DAOTemplate;

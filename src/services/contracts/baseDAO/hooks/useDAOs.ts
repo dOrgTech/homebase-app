@@ -16,6 +16,8 @@ export const useDAOs = () => {
     error: addressesError,
   } = useQuery<string[], Error>("daosAddresses", getContractsAddresses);
 
+  console.log(addresses)
+
   const daosAddresses = addresses || [];
 
   const result = useInfiniteQuery<BaseDAO[], Error>(
@@ -43,8 +45,6 @@ export const useDAOs = () => {
       connect();
     }
   }, [connect, tezos]);
-
-  console.log(result.error || addressesError);
 
   return {
     ...result,

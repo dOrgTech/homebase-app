@@ -191,7 +191,7 @@ export const UpdateRegistryDialog: React.FC = () => {
       if (dao) {
         mutate({
           dao,
-          tokensToFreeze: dao.storage.fixedProposalFeeInToken,
+          tokensToFreeze: dao.storage.frozenExtraValue,
           agoraPostId: 0,
           items: values.list.map(({ key, value }) => ({
             key: char2Bytes(key),
@@ -474,7 +474,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                             variant="subtitle1"
                             color="secondary"
                           >
-                            {dao?.storage.fixedProposalFeeInToken || 0}{" "}
+                            {dao?.storage.frozenExtraValue || 0}{" "}
                           </Typography>
                         </Grid>
                       </ListItem>

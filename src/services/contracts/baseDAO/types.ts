@@ -46,21 +46,19 @@ export type Settings = OrgSettings | VotingSettings | MemberSettings;
 
 export type ErrorValues<T> = Partial<Record<keyof T, string>>;
 
-export type Transfer = XTZTransfer | FA2Transfer
+export type TransferParams = XTZTransferParams | FA2TransferParams
 
-export interface XTZTransfer {
+export interface XTZTransferParams {
   amount: number;
   recipient: string;
   type: "XTZ";
 }
 
-export interface FA2Transfer {
-  from: string;
-  txs: {
-    to: string;
-    tokenId: number;
-    amount: number;
-  }[]
+export interface FA2TransferParams {
+  to: string;
+  tokenId: number;
+  amount: number;
+  contractAddress: string;
   type: "FA2";
 }
 
@@ -75,7 +73,7 @@ export interface ProposeParams {
   contractParams: {
     tokensToFreeze: number;
     agoraPostId: number;
-    transfers: Transfer[];
+    transfers: TransferParams[];
   };
 }
 
@@ -105,7 +103,7 @@ export interface MemberTokenAllocation {
 }
 
 export interface BaseExtraState {
-  fixedProposalFeeInToken: number;
+  frozenExtraValue: number;
   slashScaleValue: number;
   slashDivisionValue: number;
   maxXtzAmount: number;

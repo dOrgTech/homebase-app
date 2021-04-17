@@ -18,17 +18,17 @@ export interface MorleyContracts {
 }
 
 export interface GeneratorArgs {
-  admin_address: string,
-  token_address: string,
-  fixed_proposal_fee_in_token: string,
-  max_proposal_size: string,
-  slash_division_value: string,
-  slash_scale_value: string,
-  // ledger: string,
-  metadata_map: string,
-  // quorum_treshold: string,
-  // total_supply: string,
-  // voting_period: string,
-  min_xtz_amount: string,
+  admin_address: string
+  token_address: string
+  max_proposal_size: string
+  slash_division_value: string
+  slash_scale_value: string
+  frozen_extra_value: string
+  // ledger: string
+  metadata_map: string
+  // quorum_treshold: string
+  // total_supply: string
+  // voting_period: string
+  min_xtz_amount: string
   max_xtz_amount: string
 }

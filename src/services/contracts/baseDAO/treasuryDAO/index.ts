@@ -3,8 +3,10 @@ import {
   ContractAbstraction,
   Wallet,
   ContractProvider,
+  MichelsonMap,
 } from "@taquito/taquito";
 import { Tzip16ContractAbstraction } from "@taquito/tzip16";
+import { Parser, Expr } from "@taquito/michel-codec";
 import dayjs from "dayjs";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
@@ -23,9 +25,13 @@ import { Network } from "services/beacon/context";
 import { BaseConstructorParams, getContract } from "..";
 import { getDAOListMetadata } from "../../metadataCarrier";
 import { DAOListMetadata } from "../../metadataCarrier/types";
-import {  Transfer } from "../types";
+import { TransferParams } from "../types";
 import { BaseDAO } from "..";
 import { dtoToTreasuryProposals } from "services/bakingBad/proposals/mappers";
+import { Schema } from "@taquito/michelson-encoder";
+import { xtzToMutez } from "services/contracts/utils";
+
+const parser = new Parser();
 
 interface TreasuryConstructorParams extends BaseConstructorParams {
   storage: TreasuryStorage;
@@ -39,20 +45,25 @@ export class TreasuryDAO extends BaseDAO {
       const result = {
         slashDivisionValue: Number(dto.children[1].children[5].value),
         slashScaleValue: Number(dto.children[1].children[6].value),
+        frozenExtraValue: Number(dto.children[1].children[0].value),
         maxProposalSize: Number(dto.children[1].children[2].value),
-        votingPeriod: Number(dto.children[18].value),
-        quorumTreshold: Number(dto.children[14].value),
-        proposalsMapNumber: dto.children[13].value,
+        votingPeriod: Number(dto.children[17].value),
+        quorumTreshold: Number(dto.children[13].value),
+        proposalsMapNumber: dto.children[12].value,
         ledgerMapNumber: dto.children[6].value,
-        proposalsToFlush: dto.children[12].value,
+        lastPeriodChange: {
+          timestamp: dto.children[5].children[0].value,
+          periodNumber: Number(dto.children[5].children[1].value),
+        },
+        proposalsToFlush: dto.children[11].value,
         totalSupply: {
-          0: Number(dto.children[16].children[0].value),
-          1: Number(dto.children[16].children[1].value)
+          0: Number(dto.children[15].children[0].value),
+          1: Number(dto.children[15].children[1].value),
         },
         fixedProposalFeeInToken: Number(dto.children[2].value),
         admin: dto.children[0].value,
         maxXtzAmount: dto.children[1].children[3].value,
-        minXtzAmount: dto.children[1].children[4].value
+        minXtzAmount: dto.children[1].children[4].value,
       };
 
       return result;
@@ -89,15 +100,11 @@ export class TreasuryDAO extends BaseDAO {
       (await getDAOListMetadata(contract));
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
     const originationTime = await getOriginationTime(contractAddress, network);
-    const cycle = Math.floor(
-      (dayjs().unix() - dayjs(originationTime).unix()) / storage.votingPeriod
-    );
 
     return new TreasuryDAO({
       address: contractAddress,
       ledger,
       template: "treasury",
-      cycle,
       originationTime,
       storage,
       metadata: metadataToUse,
@@ -129,7 +136,7 @@ export class TreasuryDAO extends BaseDAO {
     );
 
     return proposals.map((proposal) => {
-      const { startDate, upVotes, downVotes } = proposal;
+      const { startDate } = proposal;
 
       const exactCycle =
         dayjs(startDate).unix() - dayjs(this.originationTime).unix();
@@ -137,17 +144,18 @@ export class TreasuryDAO extends BaseDAO {
 
       //TODO: this business logic will change in the future
 
-      let status: ProposalStatus;
+      const status = ProposalStatus.ACTIVE;
 
-      if (cycle === this.cycle) {
-        status = ProposalStatus.ACTIVE;
-      } else if (Number(upVotes) >= this.storage.quorumTreshold) {
-        status = ProposalStatus.PASSED;
-      } else if (Number(downVotes) >= this.storage.quorumTreshold) {
-        status = ProposalStatus.REJECTED;
-      } else {
-        status = ProposalStatus.DROPPED;
-      }
+      // if (cycle === this.cycleInfo.current) {
+      // status = ProposalStatus.ACTIVE;
+      // }
+      // else if (Number(upVotes) >= this.storage.quorumTreshold) {
+      //   status = ProposalStatus.PASSED;
+      // } else if (Number(downVotes) >= this.storage.quorumTreshold) {
+      //   status = ProposalStatus.REJECTED;
+      // } else {
+      //   status = ProposalStatus.DROPPED;
+      // }
 
       return {
         ...proposal,
@@ -164,36 +172,67 @@ export class TreasuryDAO extends BaseDAO {
   }: {
     tokensToFreeze: number;
     agoraPostId: number;
-    transfers: Transfer[];
+    transfers: TransferParams[];
   }) => {
     const contract = await getContract(this.tezos, this.address);
 
-    const contractMethod = contract.methods.propose(
-      tokensToFreeze,
-      agoraPostId,
-      [
-        {
-          transfer_fa2: {
-            contract_address: "KT19yUiYtyCdW6pLh7eBfDEpAkQj8SAV6ZrN",
+    const michelsonType = parser.parseData(`(list (or (pair %xtz_transfer_type (mutez %amount) (address %recipient))
+    (pair %token_transfer_type
+       (address %contract_address)
+       (list %transfer_list
+          (pair (address %from_)
+                (list %txs (pair (address %to_) (pair (nat %token_id) (nat %amount)))))))))`);
+    const schema = new Schema(michelsonType as Expr);
+    const data = schema.Encode(transfers.map(transfer => {
+      if(transfer.type === "XTZ") {
+        return {
+          xtz_transfer_type: {
+            amount: Number(xtzToMutez(transfer.amount.toString())),
+            recipient: transfer.recipient,
+          }
+        }
+      } else {
+        return {
+          token_transfer_type: {
+            contract_address: transfer.contractAddress,
             transfer_list: [
               {
-                from_: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x",
+                from_: this.address,
                 txs: [
                   {
-                    to_: "tz1Zqb3hBBN8wLcJYhADcasi1jZdp2YLdG3L",
-                    token_id: 0,
-                    amount: 5,
+                    to_: transfer.to,
+                    token_id: transfer.tokenId,
+                    amount: transfer.amount,
                   },
                 ],
               },
             ],
-          },
-        },
-      ]
-    );
+          }
+        }
+      }
+    }))
+
+    const michelsonType2 = parser.parseData("(nat)") as Expr;
+    const schema2 = new Schema(michelsonType2 as Expr);
+    const data2 = schema2.Encode([agoraPostId]);
+
+    const { packed: pack1 } = await this.tezos.rpc.packData({
+      data,
+      type: michelsonType as Expr,
+    });
+
+    const { packed: pack2 } = await this.tezos.rpc.packData({
+      data: data2,
+      type: michelsonType2,
+    });
+
+    const proposalMetadata = new MichelsonMap();
+    proposalMetadata.set("agoraPostID", pack2);
+    proposalMetadata.set("transfers", pack1);
+
+    const contractMethod = contract.methods.propose(tokensToFreeze, proposalMetadata);
 
     const result = await contractMethod.send();
-
     return result;
   };
 }
