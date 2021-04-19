@@ -10,12 +10,11 @@ import {
   Theme,
   useTheme,
   Popover,
-  useMediaQuery
-} from "@material-ui/core";
-import { useHistory, useLocation } from "react-router-dom";
+  useMediaQuery} from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
-import HomeButton from "assets/logos/homebase.svg";
+import HomeButton from "assets/logos/homebase_logo.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
@@ -28,16 +27,13 @@ const StyledAppBar = styled(AppBar)({
   boxShadow: "none"
 });
 
-const StyledToolbar = styled(Toolbar)(
-  ({ mode }: { mode: "creator" | "explorer" }) => ({
-    display: "flex",
-    padding: "22px 37px",
-    boxSizing: "border-box",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    minHeight: mode === "creator" ? 80 : 100
-  })
-);
+const StyledToolbar = styled(Toolbar)({
+  display: "flex",
+  padding: "22px 37px",
+  boxSizing: "border-box",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+});
 
 const StatusDot = styled(Box)({
   borderRadius: "100%",
@@ -100,24 +96,15 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   }
 }));
 
-const custom = (theme: Theme, mode: "creator" | "explorer") => ({
-  logo: {
-    height: "100%",
-    alignItems: "baseline",
-    display: "flex",
-    marginTop: 22
-  },
+const explorerBorder = (theme: Theme) => ({
   appBorder: {
-    borderBottom:
-      mode === "explorer" ? `2px solid ${theme.palette.primary.light}` : "unset"
-  },
-  appLogoHeight: {
-    borderRight: `2px solid ${theme.palette.primary.light}`
+    borderBottom: `2px solid ${theme.palette.primary.light}`
   }
 });
 
 const LogoItem = styled("img")({
-  cursor: "pointer"
+  cursor: "pointer",
+  paddingTop: 8,
 });
 
 const StyledPopover = styled(Popover)({
@@ -164,6 +151,71 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
+interface ToolbarWrapperProps {
+  children: any, mode: "creator" | "explorer", isMobileSmall: boolean, isMobileExtraSmall: boolean
+}
+
+const ToolbarWrapper = ({
+  children,
+  mode,
+  isMobileSmall,
+  isMobileExtraSmall,
+}: ToolbarWrapperProps): JSX.Element => {
+  return (
+    <Grid
+      item
+      xs={
+        mode === "creator" && !isMobileSmall
+          ? 12
+          : isMobileExtraSmall
+            ? 1
+            : 9
+      }
+      container
+      justify={
+        isMobileExtraSmall && mode === "explorer"
+          ? "flex-start"
+          : "flex-end"
+      }
+    >
+      {children}
+    </Grid>
+  );
+};
+
+interface ExplorerLogoProps {
+  history: any,
+}
+
+const ExplorerLogo = ({
+  history,
+}: ExplorerLogoProps): JSX.Element => {
+  return (
+    <>
+      <Grid
+        item
+        xs={11}
+        sm={3}
+      >
+        <Box
+          onClick={() => history.push("/explorer")}
+        >
+          <ToolbarContainer container alignItems="center" wrap="nowrap">
+            <Grid item>
+              <LogoItem src={HomeButton} />
+            </Grid>
+            <Grid item>
+              <Box paddingLeft="10px">
+                <LogoText color="textSecondary">Homebase</LogoText>
+              </Box>
+            </Grid>
+          </ToolbarContainer>
+        </Box>
+      </Grid>
+    </>
+  );
+};
+
 export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   mode
 }) => {
@@ -178,7 +230,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const { daoId, daoSymbol } = useVisitedDAO();
   const { data } = useTokenHolders(daoId);
 
-  console.log(data);
+  // console.log(data);
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -198,13 +250,12 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const userBalance = useMemo(() => {
     if (!data) {
       return 0;
-    } 
-    const balance = data.find(({address}) => address.toLowerCase() === account.toLowerCase());
+    }
+    const balance = data.find(({ address }) => address.toLowerCase() === account.toLowerCase());
     const unfrozenBalance = balance ? balance.balances[0] : 0;
     return unfrozenBalance || 0;
   }, [data, account])
 
-  const location = useLocation();
   const history = useHistory();
 
   return (
@@ -212,64 +263,17 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       position="sticky"
       color="primary"
       style={
-        location.pathname === "/creator"
-          ? undefined
-          : custom(theme, mode).appBorder
+        mode === "explorer" ?
+          explorerBorder(theme).appBorder :
+          undefined
       }
     >
-      <StyledToolbar mode={mode}>
+      <StyledToolbar>
         <Grid container direction="row" alignItems="center" wrap="wrap">
           {mode === "explorer" ? (
-            <>
-              <Grid
-                item
-                xs={11}
-                sm={3}
-                style={
-                  location.pathname === "/creator"
-                    ? custom(theme, mode).appLogoHeight
-                    : undefined
-                }
-              >
-                <Box
-                  style={
-                    location.pathname === "/creator"
-                      ? custom(theme, mode).logo
-                      : undefined
-                  }
-                  onClick={() => history.push("/explorer")}
-                >
-                  <ToolbarContainer container alignItems="center" wrap="nowrap">
-                    <Grid item>
-                      <LogoItem src={HomeButton} />
-                    </Grid>
-                    <Grid item>
-                      <Box paddingLeft="10px">
-                        <LogoText color="textSecondary">Homebase</LogoText>
-                      </Box>
-                    </Grid>
-                  </ToolbarContainer>
-                </Box>
-              </Grid>
-            </>
+            <ExplorerLogo history={history} />
           ) : null}
-
-          <Grid
-            item
-            xs={
-              mode === "creator" && !isMobileSmall
-                ? 12
-                : isMobileExtraSmall
-                ? 1
-                : 9
-            }
-            container
-            justify={
-              isMobileExtraSmall && mode === "explorer"
-                ? "flex-start"
-                : "flex-end"
-            }
-          >
+          <ToolbarWrapper mode={mode} isMobileSmall={isMobileSmall} isMobileExtraSmall={isMobileExtraSmall}>
             {account ? (
               <>
                 <Grid
@@ -379,9 +383,9 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
             ) : (
               <LogIn onClick={connect} />
             )}
-          </Grid>
+          </ToolbarWrapper>
         </Grid>
       </StyledToolbar>
-    </StyledAppBar>
+    </StyledAppBar >
   );
 };

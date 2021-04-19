@@ -24,9 +24,9 @@ export const STEPS: StepInfo[] = [
 const urlToStepMap: Record<string, number> = {
   templates: 0,
   dao: 1,
+  token: 1,
   voting: 1,
-  token: 2,
-  summary: 3,
+  summary: 2,
   review: 4,
 };
 
@@ -42,11 +42,11 @@ export const CurrentStep: React.FC = () => {
         <Route path={`${match.url}/dao`}>
           <DaoSettings />
         </Route>
-        <Route path={`${match.url}/voting`}>
-          <Governance />
-        </Route>
         <Route path={`${match.url}/token`}>
           <TokenSettings />
+        </Route>
+        <Route path={`${match.url}/voting`}>
+          <Governance />
         </Route>
         <Route path={`${match.url}/summary`}>
           <Summary />
