@@ -121,7 +121,7 @@ export const DAO: React.FC = () => {
     saveDaoId(id);
     saveDaoSymbol(symbol || "");
   }, [id, symbol, saveDaoId, saveDaoSymbol]);
-  
+
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
     // @TODO: we need to add an atribute to the proposals
@@ -265,7 +265,7 @@ export const DAO: React.FC = () => {
                               direction="backward"
                             >
                               {({ reset }: { reset: () => void }) => {
-                                if (time * 1000 < 1) {
+                                if (time === 1) {
                                   reset();
                                 }
 
