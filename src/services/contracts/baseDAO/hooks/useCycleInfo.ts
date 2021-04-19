@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDAO } from "./useDAO";
 import { CycleInfo } from "..";
 
-export const useCycleInfo = (daoAddress: string) => {
+export const useCycleInfo = (daoAddress?: string) => {
   const { data: dao } = useDAO(daoAddress);
   const [timeLeft, setTimeLeft] = useState<CycleInfo>();
 

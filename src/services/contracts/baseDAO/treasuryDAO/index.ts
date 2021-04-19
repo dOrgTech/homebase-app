@@ -7,14 +7,12 @@ import {
 } from "@taquito/taquito";
 import { Tzip16ContractAbstraction } from "@taquito/tzip16";
 import { Parser, Expr } from "@taquito/michel-codec";
-import dayjs from "dayjs";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
 import { getProposalsDTO } from "services/bakingBad/proposals";
 import {
-  ProposalStatus,
+  TreasuryProposal,
   TreasuryProposalsDTO,
-  TreasuryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
 import { getStorage } from "services/bakingBad/storage";
 import {
@@ -124,7 +122,7 @@ export class TreasuryDAO extends BaseDAO {
     return TreasuryDAO.storageMapper(storageDTO as TreasuryStorageDTO);
   };
 
-  public proposals = async (): Promise<TreasuryProposalWithStatus[]> => {
+  public proposals = async (): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(
       proposalsMapNumber,
@@ -135,34 +133,7 @@ export class TreasuryDAO extends BaseDAO {
       proposalsDTO as TreasuryProposalsDTO
     );
 
-    return proposals.map((proposal) => {
-      const { startDate } = proposal;
-
-      const exactCycle =
-        dayjs(startDate).unix() - dayjs(this.originationTime).unix();
-      const cycle = Math.floor(exactCycle / this.storage.votingPeriod);
-
-      //TODO: this business logic will change in the future
-
-      const status = ProposalStatus.ACTIVE;
-
-      // if (cycle === this.cycleInfo.current) {
-      // status = ProposalStatus.ACTIVE;
-      // }
-      // else if (Number(upVotes) >= this.storage.quorumTreshold) {
-      //   status = ProposalStatus.PASSED;
-      // } else if (Number(downVotes) >= this.storage.quorumTreshold) {
-      //   status = ProposalStatus.REJECTED;
-      // } else {
-      //   status = ProposalStatus.DROPPED;
-      // }
-
-      return {
-        ...proposal,
-        cycle,
-        status,
-      };
-    });
+    return proposals;
   };
 
   public propose = async ({
@@ -194,14 +165,14 @@ export class TreasuryDAO extends BaseDAO {
       } else {
         return {
           token_transfer_type: {
-            contract_address: transfer.contractAddress,
+            contract_address: transfer.asset.contract,
             transfer_list: [
               {
                 from_: this.address,
                 txs: [
                   {
-                    to_: transfer.to,
-                    token_id: transfer.tokenId,
+                    to_: transfer.recipient,
+                    token_id: transfer.asset.token_id,
                     amount: transfer.amount,
                   },
                 ],

@@ -12,33 +12,31 @@ import {
   TextField as MaterialTextField,
   InputAdornment,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
-// import { useSnackbar } from "notistack";
 import { Autocomplete } from "formik-material-ui-lab";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
-import { TransferParams, TreasuryDAO } from "services/contracts/baseDAO";
+import { TreasuryDAO } from "services/contracts/baseDAO";
 import {
   fromMigrationParamsFile,
-  validateTransactionsJSON
+  validateTransactionsJSON,
 } from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
-import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
-import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
-import { TokenBalance } from "services/bakingBad/tokenBalances/types";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const Title = styled(DialogTitle)(({ theme }) => ({
@@ -52,7 +50,7 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     minWidth: 250,
     padding: "24px 24px",
-  }
+  },
 }));
 
 const ListItem = styled(Grid)(({ theme }) => ({
@@ -63,7 +61,7 @@ const ListItem = styled(Grid)(({ theme }) => ({
   padding: "0px 65px",
   [theme.breakpoints.down("sm")]: {
     padding: "10px 24px",
-  }
+  },
 }));
 
 const AmountItem = styled(Grid)(({ theme }) => ({
@@ -76,7 +74,7 @@ const AmountItem = styled(Grid)(({ theme }) => ({
   paddingRight: 65,
   [theme.breakpoints.down("sm")]: {
     padding: "24px 24px",
-  }
+  },
 }));
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
@@ -87,18 +85,18 @@ const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   [theme.breakpoints.down("sm")]: {
     padding: "24px 24px",
-  }
+  },
 }));
 
 const FileInput = styled("input")({
-  display: "none"
+  display: "none",
 });
 
-const SendContainer = styled(Grid)(({theme}) => ({
+const SendContainer = styled(Grid)(({ theme }) => ({
   height: 80,
   [theme.breakpoints.down("sm")]: {
     height: 100,
-  }
+  },
 }));
 
 const BatchBar = styled(Grid)(({ theme }) => ({
@@ -110,11 +108,11 @@ const BatchBar = styled(Grid)(({ theme }) => ({
   overflowX: "auto",
   [theme.breakpoints.down("sm")]: {
     padding: "24px 24px",
-  }
+  },
 }));
 
 const SwitchContainer = styled(Grid)({
-  textAlign: "end"
+  textAlign: "end",
 });
 
 const TransferActive = styled(Grid)({
@@ -122,7 +120,7 @@ const TransferActive = styled(Grid)({
   minWidth: 51,
   display: "flex",
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
 });
 
 const AddButton = styled(Paper)({
@@ -136,16 +134,16 @@ const AddButton = styled(Paper)({
   alignItems: "center",
   display: "flex",
   justifyContent: "center",
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const styles = {
   visible: {
-    display: "none"
+    display: "none",
   },
   active: {
-    background: "#3866F9"
-  }
+    background: "#3866F9",
+  },
 };
 
 const UploadFileLabel = styled("label")(({ theme }) => ({
@@ -155,18 +153,18 @@ const UploadFileLabel = styled("label")(({ theme }) => ({
   minWidth: 171,
   cursor: "pointer",
   margin: "auto",
-  display: "block"
+  display: "block",
 }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
   "& .MuiInputBase-input": {
     textAlign: "end",
-    paddingRight: 12
-  }
+    paddingRight: 12,
+  },
 });
 
-const CustomTextFieldAmount = styled(TextField)(({theme}) =>({
+const CustomTextFieldAmount = styled(TextField)(({ theme }) => ({
   border: "1px solid #434242",
   padding: 6,
   minHeight: 31,
@@ -180,16 +178,16 @@ const CustomTextFieldAmount = styled(TextField)(({theme}) =>({
       paddingLeft: 0,
       paddingRight: 0,
       textAlign: "center",
-    }
+    },
   },
   [theme.breakpoints.down("sm")]: {
     paddingLeft: "inherit",
     paddingRight: "inherit",
     width: "100%",
-  }
+  },
 }));
 
-const SendButton = styled(ViewButton)(({theme}) => ({
+const SendButton = styled(ViewButton)(({ theme }) => ({
   width: 229,
   border: "1px",
   background: theme.palette.secondary.main,
@@ -201,52 +199,71 @@ const AmountText = styled(Typography)({
   color: "rgba(255, 255, 255, 0.7)",
   fontSize: 14,
   lineHeight: "146.3%",
-  marginRight: 10
+  marginRight: 10,
 });
 
 const AmountContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
-    paddingRight: 0
-  }
+    paddingRight: 0,
+  },
 }));
 
 const AutoCompleteField = styled(Autocomplete)({
   "& .MuiInputLabel-root": {
-    display: "none"
+    display: "none",
   },
   "& .MuiInput-root": {
     border: "1px solid #434242",
-    padding: 6
-  }
+    padding: 6,
+  },
 });
 
 const DaoBalance = styled(Grid)({
   minHeight: 50,
-})
-
-const CurrentAsset = styled(Typography)({
-  opacity: 0.7
 });
 
-const AmountSmallText = styled(Typography)(({theme}) => ({
+const CurrentAsset = styled(Typography)({
+  opacity: 0.7,
+});
+
+const AmountSmallText = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     marginTop: 14,
-  }
+  },
 }));
 
+export interface FormTransferParams {
+  recipient: string;
+  amount: number;
+  asset?: DAOHolding;
+}
+
 interface Values {
-  transfers: TransferParams[];
+  transfers: FormTransferParams[];
   description: string;
   agoraPostId: number;
   title: string;
 }
 
-const EMPTY_TRANSFER: TransferParams = { recipient: "", amount: 0, type: "XTZ" };
+const EMPTY_TRANSFER: FormTransferParams = {
+  recipient: "",
+  amount: 0,
+  asset: {
+    contract: "",
+    level: 0,
+    token_id: -1,
+    symbol: "XTZ",
+    name: "XTZ",
+    decimals: 6,
+    balance: "0",
+  }
+};
+
 const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
   description: "",
   agoraPostId: 0,
-  title: ""
+  title: "",
 };
 
 export const NewTreasuryProposalDialog: React.FC = () => {
@@ -258,62 +275,91 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const {
     state: {
       treasuryProposal: { open },
-      daoId
+      daoId,
     },
-    dispatch
+    dispatch,
   } = useContext(ModalsContext);
   const { data: daoData } = useDAO(daoId);
-  // const { id: daoId } = useParams<{ id: string }>()
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
   const openNotification = useNotification();
-  const { data: tezosBalance } = useTokenBalances(daoId);
+  const { data: daoHoldings } = useDAOHoldings(daoId);
   const handleClose = useCallback(() => {
     dispatch({
       type: ActionTypes.CLOSE,
       payload: {
-        modal: "treasuryProposal"
-      }
+        modal: "treasuryProposal",
+      },
     });
   }, [dispatch]);
+
+  const currentAssetSymbol = useCallback((transfers: FormTransferParams[]) => {
+    const currentTransfer = transfers[activeTransfer - 1]
+
+    if(!daoHoldings || !currentTransfer.asset) {
+      return "-"
+    }
+
+    if((currentTransfer.asset as DAOHolding).symbol === "XTZ") {
+      return "XTZ"
+    }
+
+    const currentAsset = (daoHoldings as DAOHolding[]).find(balance => balance.contract === (currentTransfer.asset as DAOHolding).contract)
+
+    return currentAsset? currentAsset.symbol : "-"
+  }, [activeTransfer, daoHoldings])
 
   const onSubmit = useCallback(
     async (values: Values, { setSubmitting }: any) => {
       setSubmitting(true);
 
-      values.transfers.map(transfer => {
-        if (transfer.type !== "XTZ") {
-          transfer.type = "FA2";
-          return transfer;
-        }
-      });
-      
       await connectIfNotConnected(tezos, connect);
 
-      if (dao) {
+      if (dao && daoHoldings) {
         mutate({
           dao,
-          transfers: values.transfers,
+          transfers: values.transfers.map(transfer => ({
+            ...transfer,
+            asset: daoHoldings.find(balance => balance.contract === transfer.asset?.contract) as DAOHolding,
+            type: !transfer.asset || transfer.asset.symbol ? "XTZ": "FA2"
+          })),
           tokensToFreeze: dao.storage.frozenExtraValue,
-          agoraPostId: values.agoraPostId
+          agoraPostId: values.agoraPostId,
         });
 
         handleClose();
       }
     },
-    [connect, dao, handleClose, mutate, tezos]
+    [connect, dao, handleClose, mutate, tezos, daoHoldings]
   );
 
-  const getBalance = (values: Values) => {
-    if (tezosBalance) {
-      const current = tezosBalance.find(
-        balance => balance.symbol === values.transfers[activeTransfer - 1].type
-      );
-      if (current) {
-        return Number(current.balance) / Math.pow(10, current.decimals);
+  const getBalance = useCallback((values: Values): string => {
+    if (daoHoldings) {
+
+      const currentTransfer = values.transfers[activeTransfer - 1]
+
+      if(!currentTransfer.asset) {
+        return "-"
       }
+
+      if(currentTransfer.asset.symbol === "XTZ") {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return daoHoldings.find(balance => balance.symbol === "XTZ")!.balance
+      }
+
+      const fa2Token = daoHoldings.find(
+        balance => balance.contract === currentTransfer.asset?.contract
+      );
+
+      if (fa2Token) {
+        return (Number(fa2Token.balance) / Math.pow(10, fa2Token.decimals)).toString();
+      }
+
+      return "-"
     }
-  };
+    
+    return "-"
+  }, [activeTransfer, daoHoldings]);
 
   return (
     <>
@@ -367,7 +413,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
 
               <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
                 {({ submitForm, values }) => {
-                  console.log(values)
+                  console.log(values);
                   const importTransactions = async (
                     event: React.ChangeEvent<HTMLInputElement>
                   ) => {
@@ -377,7 +423,6 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                         const transactionsParsed = await fromMigrationParamsFile(
                           file
                         );
-                        console.log(transactionsParsed);
                         const errors = validateTransactionsJSON(
                           transactionsParsed
                         );
@@ -387,7 +432,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           openNotification({
                             message: "Error while parsing JSON",
                             persist: true,
-                            variant: "error"
+                            variant: "error",
                           });
                           return;
                         }
@@ -398,7 +443,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                         openNotification({
                           message: "Error while parsing JSON",
                           persist: true,
-                          variant: "error"
+                          variant: "error",
                         });
                       }
                     }
@@ -409,7 +454,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                       <>
                         <FieldArray
                           name="transfers"
-                          render={arrayHelpers => (
+                          render={(arrayHelpers) => (
                             <>
                               {isBatch ? (
                                 <BatchBar
@@ -499,12 +544,12 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                       component={AutoCompleteField}
                                       name={`transfers.${
                                         activeTransfer - 1
-                                      }.type`}
-                                      options={tezosBalance?.map(
-                                        option => option.symbol
+                                      }.asset`}
+                                      options={daoHoldings?.map(
+                                        (option) => option
                                       )}
-                                      getOptionLabel={(option: TokenBalance) =>
-                                        option
+                                      getOptionLabel={(option: DAOHolding) =>
+                                        option.symbol
                                       }
                                       renderInput={(params: any) => (
                                         <MaterialTextField
@@ -542,7 +587,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                           inputProps: {
                                             step: 0.01,
                                             min: dao.storage.minXtzAmount,
-                                            max: dao.storage.maxXtzAmount
+                                            max: dao.storage.maxXtzAmount,
                                           },
                                           endAdornment: (
                                             <InputAdornment position="start">
@@ -551,15 +596,10 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                                 variant="subtitle1"
                                               >
                                                 {" "}
-                                                {values.transfers[
-                                                  activeTransfer - 1
-                                                ] &&
-                                                  values.transfers[
-                                                    activeTransfer - 1
-                                                  ].type}
+                                                {currentAssetSymbol(values.transfers)}
                                               </CurrentAsset>
                                             </InputAdornment>
-                                          )
+                                          ),
                                         }}
                                       />
                                     </SwitchContainer>
@@ -567,12 +607,17 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 </Grid>
 
                                 {values.transfers[activeTransfer - 1] ? (
-                                  <DaoBalance container direction="row" alignItems="center" justify="space-between">
+                                  <DaoBalance
+                                    container
+                                    direction="row"
+                                    alignItems="center"
+                                    justify="space-between"
+                                  >
                                     <Grid item xs={6}>
                                       <AmountText>DAO Balance</AmountText>
                                     </Grid>
                                     <Grid item xs={6}>
-                                      {tezosBalance ? (
+                                      {daoHoldings ? (
                                         <AmountContainer
                                           item
                                           container
@@ -583,12 +628,9 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                             {getBalance(values)}
                                           </AmountText>
                                           <AmountText>
-                                            {values.transfers[
-                                              activeTransfer - 1
-                                            ] &&
-                                              values.transfers[
-                                                activeTransfer - 1
-                                              ].type}
+                                            {
+                                              currentAssetSymbol(values.transfers)
+                                            }
                                           </AmountText>
                                         </AmountContainer>
                                       ) : null}

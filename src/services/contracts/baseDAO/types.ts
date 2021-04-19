@@ -2,6 +2,7 @@ import { DAOTemplate } from "./../../../modules/creator/state/types";
 import { ContractAbstraction, TezosToolkit, Wallet } from "@taquito/taquito";
 
 import { MetadataCarrierDeploymentData, MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
+import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 
 export type Contract = ContractAbstraction<Wallet> | undefined;
 
@@ -46,20 +47,11 @@ export type Settings = OrgSettings | VotingSettings | MemberSettings;
 
 export type ErrorValues<T> = Partial<Record<keyof T, string>>;
 
-export type TransferParams = XTZTransferParams | FA2TransferParams
-
-export interface XTZTransferParams {
+export interface TransferParams {
   amount: number;
   recipient: string;
-  type: "XTZ";
-}
-
-export interface FA2TransferParams {
-  to: string;
-  tokenId: number;
-  amount: number;
-  contractAddress: string;
-  type: "FA2";
+  type: "XTZ" | "FA2";
+  asset: DAOHolding
 }
 
 export interface Registry {

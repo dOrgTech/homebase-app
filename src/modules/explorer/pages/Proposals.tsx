@@ -6,7 +6,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
@@ -23,6 +23,7 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
+import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 
 const InfoIconInput = styled(Info)({
   cursor: "default",
@@ -41,6 +42,7 @@ const ButtonsContainer = styled(Grid)(({ theme }) => ({
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
+  const cycleInfo = useCycleInfo(id)
   const { data } = useDAO(id);
   const { mutate } = useFlush();
   const theme = useTheme();
@@ -78,8 +80,6 @@ export const Proposals: React.FC = () => {
 
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
-    // @TODO: we need to add an atribute to the proposals
-    // type in order to know if it was flushed or not
     if (proposalsData && proposalsData.length && data) {
       mutate({
         dao: data,
@@ -90,6 +90,14 @@ export const Proposals: React.FC = () => {
 
     console.log("no proposal data");
   }, [connect, data, mutate, proposalsData, tezos]);
+
+  const shouldDisable = useMemo(() => {
+    if(cycleInfo && cycleInfo.type === "proposing") {
+      return true
+    }
+
+    return false
+  }, [cycleInfo])
 
   return (
     <>
@@ -146,7 +154,7 @@ export const Proposals: React.FC = () => {
               <PrimaryButton
                 variant="outlined"
                 onClick={onNewProposal}
-                disabled={!dao}
+                disabled={shouldDisable}
               >
                 NEW PROPOSAL
               </PrimaryButton>

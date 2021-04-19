@@ -1,21 +1,23 @@
 import { BaseDAO } from '..';
 import { useQuery } from "react-query";
-import { TokenBalance } from "services/bakingBad/tokenBalances/types";
+import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from 'services/beacon/hooks/useTezos';
 
+export const XTZ_ASSET_ID = 'tezos'
+
 export const useTezosBalances = (contractAddress: string | undefined) => {
   const { data: dao } = useDAO(contractAddress);
-  const { network, tezos } = useTezos()
+  const { tezos } = useTezos()
 
-  const result = useQuery<TokenBalance, Error>(
+  const result = useQuery<DAOHolding, Error>(
     ["tezosBalance", contractAddress],
     async () => {
       const balance = await tezos.tz.getBalance((dao as BaseDAO).address)
 
       return {
+        id: XTZ_ASSET_ID,
         contract: "",
-        network: network,
         level: 0,
         token_id: -1,
         symbol: "XTZ",

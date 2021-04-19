@@ -105,6 +105,43 @@ export type RegistryProposalsDTO = {
   count: number;
 }[];
 
+export type VotersDTO = {
+  prim: "list";
+  type: "list";
+  name: "voters";
+  children?: {
+    prim: "pair";
+    type: "namedtuple";
+    name: "@pair_75";
+    children: [
+      {
+        prim: "nat";
+        type: "nat";
+        name: "vote_amount";
+        value: string;
+      },
+      {
+        prim: "bool";
+        type: "bool";
+        name: "vote_type";
+        value: boolean;
+      },
+      {
+        prim: "address";
+        type: "address";
+        name: "voter_address";
+        value: string;
+      }
+    ];
+  }[]
+}
+
+export interface Voter {
+  address: string;
+  value: number;
+  support: boolean;
+}
+
 export type TreasuryProposalsDTO = {
   data: {
     key: {
@@ -179,12 +216,7 @@ export type TreasuryProposalsDTO = {
           name: "upvotes";
           value: string;
         },
-        {
-          prim: "list";
-          type: "list";
-          name: "voters";
-          children?: any;
-        }
+        VotersDTO
       ];
     };
     key_hash: string;
@@ -204,9 +236,11 @@ export interface Proposal {
   startDate: string;
   agoraPostId: string;
   proposer: string;
+  cycle: number;
   proposerFrozenTokens: string;
   voters: {
     address: string;
+    support: boolean;
     value: number;
   }[];
 }
@@ -222,25 +256,24 @@ export interface RegistryProposal extends Proposal {
   }[];
 }
 export interface ProposalWithStatus extends Proposal {
-  cycle: number;
   status: ProposalStatus;
 }
 
 export interface RegistryProposalWithStatus extends RegistryProposal {
-  cycle: number;
   status: ProposalStatus;
 }
 
 export interface TreasuryProposalWithStatus extends TreasuryProposal {
-  cycle: number;
   status: ProposalStatus;
 }
 
 export enum ProposalStatus {
+  CREATED = "created",
   ACTIVE = "active",
   PASSED = "passed",
   REJECTED = "rejected",
   DROPPED = "dropped",
+  EXECUTED = "executed",
 }
 
 export interface XTZTransferDTO {
@@ -249,8 +282,8 @@ export interface XTZTransferDTO {
     {
       prim: "Pair";
       args: [
-        { int: "500000" },
-        { string: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x" }
+        { int: string },
+        { string: string }
       ];
     }
   ];
@@ -262,18 +295,18 @@ export interface FA2TransferDTO {
     {
       prim: "Pair";
       args: [
-        { string: "KT1LjU6xSBRdH7Rwh1aJFWHxGqrpdejZTYJa" },
+        { string: string },
         [
           {
             prim: "Pair";
             args: [
-              { string: "KT1R8AZn5KG7mkbnJ5bzMuUw2isL8tMYkDVD" },
+              { string: string },
               [
                 {
                   prim: "Pair";
                   args: [
-                    { string: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x" },
-                    { prim: "Pair"; args: [{ int: "0" }, { int: "5" }] }
+                    { string: string },
+                    { prim: "Pair"; args: [{ int: string }, { int: string }] }
                   ];
                 }
               ]
@@ -286,12 +319,12 @@ export interface FA2TransferDTO {
 }
 
 export interface Transfer {
-  amount: string
-  beneficiary: string
-  type: "XTZ" | "FA2"
+  amount: string;
+  beneficiary: string;
+  type: "XTZ" | "FA2";
 }
 
 export interface FA2Transfer extends Transfer {
   contractAddress: string;
-  tokenId: string
+  tokenId: string;
 }

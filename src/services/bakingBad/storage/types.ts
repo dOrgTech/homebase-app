@@ -1,3 +1,8 @@
+export interface LastPeriodChange {
+  timestamp: string;
+  periodNumber: number;
+}
+
 export interface BaseStorage {
   slashDivisionValue: number;
   slashScaleValue: number;
@@ -12,10 +17,7 @@ export interface BaseStorage {
     0: number;
     1: number;
   };
-  lastPeriodChange: {
-    timestamp: string;
-    periodNumber: number;
-  };
+  lastPeriodChange: LastPeriodChange;
   fixedProposalFeeInToken: number;
   admin: string;
 }

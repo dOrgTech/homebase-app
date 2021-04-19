@@ -5,6 +5,8 @@ import {
   RegistryProposalsDTO,
   Transfer,
   TreasuryProposal,
+  Voter,
+  VotersDTO,
   XTZTransferDTO,
 } from "./types";
 import {
@@ -28,8 +30,8 @@ export const dtoToTreasuryProposals = (
       proposer: dto.data.value.children[3].value,
       proposerFrozenTokens: dto.data.value.children[5].value,
       transfers: mapTransfers(dto.data.value.children[1].children[1].value),
-      voters: []
-      // dtoToVoters(dto),
+      cycle: Number(dto.data.value.children[2].value),
+      voters: dtoToVoters(dto.data.value.children[8]),
     }
   });
 };
@@ -52,20 +54,22 @@ const decodeFA2Transfer = (dto: FA2TransferDTO): FA2Transfer => {
   }
 }
 
-// const dtoToVoters = (
-//   proposalsDTO: ProposalsDTO[number]
-// ): { address: string; value: number }[] => {
-//   const votersDTO = proposalsDTO.data.value.children[8].children;
+const dtoToVoters = (
+  votersDTO: VotersDTO
+): Voter[] => {
 
-//   if (!votersDTO) {
-//     return [];
-//   }
+  const voters = votersDTO.children
 
-//   return votersDTO.map((voterDTO) => ({
-//     address: voterDTO.children[0].value,
-//     value: Number(voterDTO.children[1].value),
-//   }));
-// };
+  if (!voters) {
+    return [];
+  }
+
+  return voters.map((voter) => ({
+    address: voter.children[2].value,
+    value: Number(voter.children[0].value),
+    support: Boolean(voter.children[1].value)
+  }));
+};
 
 const mapTransfers = (
   transferMichelsonString: string
@@ -103,6 +107,7 @@ const mapRegistryList = (
 export const dtoToRegistryProposals = (
   proposalsDTO: RegistryProposalsDTO
 ): RegistryProposal[] => {
+  //TODO: CHANGE THIS
   return proposalsDTO.map((dto) => ({
     id: dto.data.key.value,
     upVotes: Number(dto.data.value.children[0].value),
@@ -112,7 +117,8 @@ export const dtoToRegistryProposals = (
     proposer: dto.data.value.children[4].value,
     proposerFrozenTokens: dto.data.value.children[5].value,
     list: mapRegistryList(dto),
-    voters: []
+    voters: [],
+    cycle: 0,
     // dtoToVoters(dto),
   }));
 };

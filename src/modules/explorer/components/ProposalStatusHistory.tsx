@@ -74,19 +74,23 @@ export const ProposalStatusHistory: React.FC = () => {
   });
 
   const history = useMemo(() => {
-    if (!proposal) {
+    if (!proposal || !dao) {
       return [];
     }
+
+    const hasPeriodChanged = dao.storage.lastPeriodChange.periodNumber > proposal.cycle
+    const votingPeriod = dao.storage.votingPeriod
+
     const baseStatuses: {
       date: string;
-      status: ProposalStatus | "created";
+      status: ProposalStatus;
     }[] = [
       {
         date: dayjs(proposal.startDate).format("LLL"),
-        status: "created",
+        status: ProposalStatus.CREATED,
       },
       {
-        date: dayjs(proposal.startDate).format("LLL"),
+        date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod, "seconds").format("LLL"),
         status: ProposalStatus.ACTIVE,
       },
     ];
@@ -94,26 +98,26 @@ export const ProposalStatusHistory: React.FC = () => {
     switch (proposal.status) {
       case ProposalStatus.DROPPED:
         baseStatuses.push({
-          date: "",
+          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
           status: ProposalStatus.DROPPED,
         });
         break;
       case ProposalStatus.REJECTED:
         baseStatuses.push({
-          date: "",
+          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
           status: ProposalStatus.REJECTED,
         });
         break;
       case ProposalStatus.PASSED:
         baseStatuses.push({
-          date: "",
+          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
           status: ProposalStatus.PASSED,
         });
         break;
     }
 
     return baseStatuses;
-  }, [proposal]);
+  }, [dao, proposal]);
 
   return (
     <HistoryContainer item xs={12} md>

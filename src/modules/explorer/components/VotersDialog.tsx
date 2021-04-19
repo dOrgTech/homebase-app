@@ -113,7 +113,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
       return [];
     }
 
-    return votesData.filter((voteData) => voteData.favor === favor);
+    return votesData.filter((voteData) => voteData.support === favor);
   }, [votesData, favor]);
 
   const handleClickOpen = () => {
@@ -224,7 +224,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                   >
                     <Grid item xs={6}>
                       <Typography variant="subtitle1" color="textSecondary">
-                        {toShortAddress(vote.voter)}
+                        {toShortAddress(vote.address)}
                       </Typography>
                       <LinearBar
                         color="secondary"

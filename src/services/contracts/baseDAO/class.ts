@@ -1,4 +1,4 @@
-import { ProposalWithStatus } from "../../bakingBad/proposals/types";
+import { Proposal } from "../../bakingBad/proposals/types";
 import { TezosToolkit, ContractAbstraction, Wallet } from "@taquito/taquito";
 import { DAOTemplate } from "modules/creator/state";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
@@ -12,7 +12,6 @@ import {
   RegistryDAO,
   TreasuryDAO,
 } from ".";
-import { getProposalVotes } from "services/bakingBad/operations";
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
 import { generateMorleyContracts } from "services/morley";
 import { getOriginatedAddress } from "services/bakingBad/originatorContract";
@@ -53,7 +52,7 @@ export abstract class BaseDAO {
   public tezos;
   public network;
 
-  abstract proposals: () => Promise<ProposalWithStatus[]>;
+  abstract proposals: () => Promise<Proposal[]>;
 
   public static getDAO = async (params: {
     address: string;
@@ -218,9 +217,6 @@ export abstract class BaseDAO {
     return ledger;
   };
 
-  public votes = (proposalKey: string) =>
-    getProposalVotes(this.address, this.network, proposalKey);
-
   public vote = async ({
     proposalKey,
     amount,
@@ -232,13 +228,17 @@ export abstract class BaseDAO {
   }) => {
     const contract = await getContract(this.tezos, this.address);
 
+    console.log(proposalKey,
+      amount,
+      support)
     const result = await contract.methods
-      .vote([
-        {
+      .vote([{
+        argument: {
           proposal_key: proposalKey,
           vote_type: support,
           vote_amount: amount,
         },
+      }
       ])
       .send();
 

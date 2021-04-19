@@ -1,5 +1,5 @@
 import { getRegistry } from "./../../../bakingBad/registry/index";
-import { RegistryProposalWithStatus } from "./../../../bakingBad/proposals/types";
+import { RegistryProposal } from "./../../../bakingBad/proposals/types";
 import { dtoToRegistryProposals } from "./../../../bakingBad/proposals/mappers";
 import {
   TezosToolkit,
@@ -8,12 +8,10 @@ import {
   ContractProvider,
 } from "@taquito/taquito";
 import { Tzip16ContractAbstraction } from "@taquito/tzip16";
-import dayjs from "dayjs";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
 import { getProposalsDTO } from "services/bakingBad/proposals";
 import {
-  ProposalStatus,
   RegistryProposalsDTO,
 } from "services/bakingBad/proposals/types";
 import { getStorage } from "services/bakingBad/storage";
@@ -118,7 +116,7 @@ export class RegistryDAO extends BaseDAO {
     return RegistryDAO.storageMapper(storageDTO as RegistryStorageDTO);
   };
 
-  public proposals = async (): Promise<RegistryProposalWithStatus[]> => {
+  public proposals = async (): Promise<RegistryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = (await getProposalsDTO(
       proposalsMapNumber,
@@ -127,34 +125,7 @@ export class RegistryDAO extends BaseDAO {
 
     const proposals = dtoToRegistryProposals(proposalsDTO);
 
-    return proposals.map((proposal) => {
-      const { startDate } = proposal;
-
-      const exactCycle =
-        dayjs(startDate).unix() - dayjs(this.originationTime).unix();
-      const cycle = Math.floor(exactCycle / this.storage.votingPeriod);
-
-      //TODO: this business logic will change in the future
-
-      const status = ProposalStatus.ACTIVE;
-
-      // if (cycle === this.cycleInfo.current) {
-        // status = ProposalStatus.ACTIVE;
-      // }
-      // else if (Number(upVotes) >= this.storage.quorumTreshold) {
-      //   status = ProposalStatus.PASSED;
-      // } else if (Number(downVotes) >= this.storage.quorumTreshold) {
-      //   status = ProposalStatus.REJECTED;
-      // } else {
-      //   status = ProposalStatus.DROPPED;
-      // }
-
-      return {
-        ...proposal,
-        cycle,
-        status,
-      };
-    });
+    return proposals;
   };
 
   public propose = async ({
@@ -172,8 +143,6 @@ export class RegistryDAO extends BaseDAO {
       key,
       new_value: newValue,
     }));
-
-    console.log(contract.entrypoints.entrypoints);
 
     const contractMethod = contract.methods.propose(
       tokensToFreeze,

@@ -106,11 +106,3 @@ export type OperationDTO<
 export type OperationsDTO = {
   operations: OperationDTO[];
 };
-
-export interface Vote {
-  favor: boolean;
-  timestamp: string;
-  proposalKey: string;
-  voter: string;
-  value: number;
-}
