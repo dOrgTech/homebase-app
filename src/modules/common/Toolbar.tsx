@@ -178,7 +178,6 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const { daoId, daoSymbol } = useVisitedDAO();
   const { data } = useTokenHolders(daoId);
 
-  console.log(data);
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -202,6 +201,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     const balance = data.find(({address}) => address.toLowerCase() === account.toLowerCase());
     const unfrozenBalance = balance ? balance.balances[0] : 0;
     return unfrozenBalance || 0;
+
   }, [data, account])
 
   const location = useLocation();

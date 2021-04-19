@@ -30,6 +30,7 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
 import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
+import { FreezeDialog } from "../components/FreezeDialog";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -178,6 +179,12 @@ export const DAO: React.FC = () => {
                         <Tooltip title="Execute all passed proposals and drop all expired or rejected">
                           <InfoIconInput color="secondary" />
                         </Tooltip>
+                      </Grid>
+                      <Grid item>
+                          <FreezeDialog freeze={true}/>
+                      </Grid>
+                      <Grid item>
+                          <FreezeDialog freeze={false}/>
                       </Grid>
                     </Grid>
                   </Box>

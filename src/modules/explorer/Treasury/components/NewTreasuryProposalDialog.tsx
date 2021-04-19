@@ -29,7 +29,6 @@ import {
   validateTransactionsJSON
 } from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
-import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";

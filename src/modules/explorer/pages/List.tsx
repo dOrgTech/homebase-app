@@ -18,7 +18,6 @@ import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useCacheDAOs } from "services/contracts/baseDAO/hooks/useCacheDAOs";
-import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 
 const GridContainer = styled(Grid)({
   background: "inherit",

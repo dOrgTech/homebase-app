@@ -214,7 +214,6 @@ export abstract class BaseDAO {
       storage.ledgerMapNumber,
       this.network
     );
-
     return ledger;
   };
 
@@ -242,6 +241,20 @@ export abstract class BaseDAO {
       ])
       .send();
 
+    return result;
+  };
+
+  public freeze = async (amount: number) => {
+    const contract = await getContract(this.tezos, this.address);
+
+    const result = await contract.methods.freeze(amount).send();
+    return result;
+  };
+
+  public unfreeze = async (amount: number) => {
+    const contract = await getContract(this.tezos, this.address);
+
+    const result = await contract.methods.unfreeze(amount).send();
     return result;
   };
 }
