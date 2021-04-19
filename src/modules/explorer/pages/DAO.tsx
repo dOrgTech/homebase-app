@@ -30,6 +30,7 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
 import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
+import { FreezeDialog } from "../components/FreezeDialog";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -121,7 +122,7 @@ export const DAO: React.FC = () => {
     saveDaoId(id);
     saveDaoSymbol(symbol || "");
   }, [id, symbol, saveDaoId, saveDaoSymbol]);
-  
+
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
     // @TODO: we need to add an atribute to the proposals
@@ -178,6 +179,12 @@ export const DAO: React.FC = () => {
                         <Tooltip title="Execute all passed proposals and drop all expired or rejected">
                           <InfoIconInput color="secondary" />
                         </Tooltip>
+                      </Grid>
+                      <Grid item>
+                          <FreezeDialog freeze={true}/>
+                      </Grid>
+                      <Grid item>
+                          <FreezeDialog freeze={false}/>
                       </Grid>
                     </Grid>
                   </Box>
@@ -265,7 +272,7 @@ export const DAO: React.FC = () => {
                               direction="backward"
                             >
                               {({ reset }: { reset: () => void }) => {
-                                if (time * 1000 < 1) {
+                                if (time === 1) {
                                   reset();
                                 }
 
