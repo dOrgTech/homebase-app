@@ -22,7 +22,7 @@ export const useFreeze = () => {
         key: freezeNotification,
         closeSnackbar: closeFreezeNotification,
       } = openNotification({
-        message: "Freeze is being process...",
+        message: "Freeze is being processed...",
         persist: true,
         variant: "info",
       });

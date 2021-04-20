@@ -20,7 +20,7 @@ export const useUnfreeze = () => {
         key: unfreezeNotification,
         closeSnackbar: closeUnfreezeNotification,
       } = openNotification({
-        message: "Unfreeze is being process...",
+        message: "Unfreeze is being processed...",
         persist: true,
         variant: "info",
       });

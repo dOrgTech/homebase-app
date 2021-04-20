@@ -131,7 +131,7 @@ export interface RegistryStorageDTO {
       prim: "nat";
       type: "nat";
       name: "frozen_token_id";
-      value: string;
+      value: number;
     },
     {
       prim: "pair";
@@ -186,7 +186,7 @@ export interface RegistryStorageDTO {
       prim: "set";
       type: "set";
       name: "proposal_key_list_sort_by_date";
-      value?: any;
+      value?: string[];
     },
     {
       prim: "big_map";

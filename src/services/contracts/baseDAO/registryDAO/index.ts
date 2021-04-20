@@ -7,6 +7,7 @@ import {
   Wallet,
   ContractProvider,
 } from "@taquito/taquito";
+import { Parser, Expr } from "@taquito/michel-codec";
 import { Tzip16ContractAbstraction } from "@taquito/tzip16";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
@@ -15,6 +16,7 @@ import {
   RegistryProposalsDTO,
 } from "services/bakingBad/proposals/types";
 import { getStorage } from "services/bakingBad/storage";
+import { Schema } from "@taquito/michelson-encoder";
 import {
   RegistryStorage,
   RegistryStorageDTO,
@@ -29,6 +31,8 @@ import { RegistryItem } from "./types";
 interface RegistryConstructorParams extends BaseConstructorParams {
   storage: RegistryStorage;
 }
+
+const parser = new Parser();
 
 export class RegistryDAO extends BaseDAO {
   protected constructor(params: RegistryConstructorParams) {
@@ -139,6 +143,14 @@ export class RegistryDAO extends BaseDAO {
   }) => {
     const contract = await getContract(this.tezos, this.address);
 
+    // const michelsonType = parser.parseData(`(list (or (pair %xtz_transfer_type (mutez %amount) (address %recipient))
+    // (pair %token_transfer_type
+    //    (address %contract_address)
+    //    (list %transfer_list
+    //       (pair (address %from_)
+    //             (list %txs (pair (address %to_) (pair (nat %token_id) (nat %amount)))))))))`);
+    // const schema = new Schema(michelsonType as Expr);
+    // const data = schema.Encode()
     const diff = items.map(({ key, newValue }) => ({
       key,
       new_value: newValue,
@@ -156,7 +168,6 @@ export class RegistryDAO extends BaseDAO {
     return result;
   };
 
-  //TODO
   public getRegistry = async () => {
     const registry = await getRegistry(0, this.network);
 
