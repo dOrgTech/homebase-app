@@ -7,7 +7,6 @@ import {
   Wallet,
   ContractProvider,
 } from "@taquito/taquito";
-import { Parser, Expr } from "@taquito/michel-codec";
 import { Tzip16ContractAbstraction } from "@taquito/tzip16";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
@@ -16,7 +15,6 @@ import {
   RegistryProposalsDTO,
 } from "services/bakingBad/proposals/types";
 import { getStorage } from "services/bakingBad/storage";
-import { Schema } from "@taquito/michelson-encoder";
 import {
   RegistryStorage,
   RegistryStorageDTO,
@@ -31,8 +29,6 @@ import { RegistryItem } from "./types";
 interface RegistryConstructorParams extends BaseConstructorParams {
   storage: RegistryStorage;
 }
-
-const parser = new Parser();
 
 export class RegistryDAO extends BaseDAO {
   protected constructor(params: RegistryConstructorParams) {

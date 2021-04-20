@@ -321,7 +321,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
           transfers: values.transfers.map(transfer => ({
             ...transfer,
             asset: daoHoldings.find(balance => balance.contract === transfer.asset?.contract) as DAOHolding,
-            type: !transfer.asset || transfer.asset.symbol ? "XTZ": "FA2"
+            type: !transfer.asset || transfer.asset.symbol === "XTZ" ? "XTZ": "FA2"
           })),
           tokensToFreeze: dao.storage.frozenExtraValue,
           agoraPostId: values.agoraPostId,
@@ -545,9 +545,9 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                       name={`transfers.${
                                         activeTransfer - 1
                                       }.asset`}
-                                      options={daoHoldings?.map(
+                                      options={daoHoldings? daoHoldings.map(
                                         (option) => option
-                                      )}
+                                      ): []}
                                       getOptionLabel={(option: DAOHolding) =>
                                         option.symbol
                                       }

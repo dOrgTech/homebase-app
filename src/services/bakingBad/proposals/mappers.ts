@@ -38,7 +38,7 @@ export const dtoToTreasuryProposals = (
 
 const decodeXTZTransfer = (dto: XTZTransferDTO): Transfer => {
   return {
-    amount: mutezToXtz(dto.args[0].args[0].int),
+    amount: dto.args[0].args[0].int,
     beneficiary: dto.args[0].args[1].string,
     type: "XTZ"
   }

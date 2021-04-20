@@ -173,7 +173,7 @@ export class TreasuryDAO extends BaseDAO {
                   {
                     to_: transfer.recipient,
                     token_id: transfer.asset.token_id,
-                    amount: transfer.amount,
+                    amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
                   },
                 ],
               },

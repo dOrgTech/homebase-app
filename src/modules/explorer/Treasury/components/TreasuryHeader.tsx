@@ -30,7 +30,7 @@ export const HoldingsHeader: React.FC = () => {
             },
           });
         }}
-        disabled={shouldDisable}
+        disabled={shouldDisable || !cycleInfo}
       >
         NEW TRANSFER
       </PrimaryButton>

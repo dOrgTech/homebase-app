@@ -159,7 +159,8 @@ export const SideBar: React.FC = () => {
 
   return !isMobileExtraSmall ? (
     <SideNavBar>
-      {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => (
+      {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => {
+        return (
         <Grid item key={name}>
           <ButtonIcon
             Icon={Icon}
@@ -167,7 +168,7 @@ export const SideBar: React.FC = () => {
             isSelected={pathname.includes(name)}
           />
         </Grid>
-      ))}
+      )})}
     </SideNavBar>
   ) : (
     <BottomNavBar>
