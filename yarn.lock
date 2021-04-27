@@ -2439,6 +2439,11 @@
     "@webassemblyjs/wast-parser" "1.9.0"
     "@xtuc/long" "4.2.2"
 
+"@xendora/react-timer@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@xendora/react-timer/-/react-timer-1.1.0.tgz#aea810270c58b87cea024c33396d7473ccbd4cf6"
+  integrity sha512-ubk9Dx8xsnSZWFMcr3BEfPl7Tl/Qpb/RynV8/qkGWbgKH9QFDFArVXFjjU2Cqhmwo9cHrWg8g+Oj2ocD2UqWEA==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
