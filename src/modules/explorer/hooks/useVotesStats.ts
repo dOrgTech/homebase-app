@@ -49,5 +49,7 @@ export const useVotesStats = ({
   }, [quorumTreshold, upVotes, downVotes]);
 };
 
-const getRelativeVotePercentage = (votes: number, quorumOrSum: number) =>
-  quorumOrSum ? (votes * 100) / quorumOrSum : 0;
+const getRelativeVotePercentage = (votes: number, quorumOrSum: number) => {
+  const result = quorumOrSum ? (votes * 100) / quorumOrSum : 0;
+  return result > 100? 100: result
+}

@@ -8,31 +8,35 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  Dialog
+  Dialog,
+  TextField as MaterialTextField,
+  InputAdornment,
+  useTheme,
+  useMediaQuery,
 } from "@material-ui/core";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { TextField } from "formik-material-ui";
-// import { useSnackbar } from "notistack";
+import { Autocomplete } from "formik-material-ui-lab";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { xtzToMutez, connectIfNotConnected } from "services/contracts/utils";
+import { connectIfNotConnected } from "services/contracts/utils";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
-import { Transfer, TreasuryDAO } from "services/contracts/baseDAO";
+import { TreasuryDAO } from "services/contracts/baseDAO";
 import {
   fromMigrationParamsFile,
-  validateTransactionsJSON
+  validateTransactionsJSON,
 } from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
-import { theme } from "theme";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
-import { useTezosBalances } from "services/contracts/baseDAO/hooks/useTezosBalance";
 import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const Title = styled(DialogTitle)(({ theme }) => ({
@@ -40,9 +44,13 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   height: 30,
   paddingTop: 28,
   minWidth: 500,
-  [theme.breakpoints.down("xs")]: {
-    minWidth: 250
-  }
+  padding: "24px 65px",
+  boxSizing: "border-box",
+  minHeight: 65,
+  [theme.breakpoints.down("sm")]: {
+    minWidth: 250,
+    padding: "24px 24px",
+  },
 }));
 
 const ListItem = styled(Grid)(({ theme }) => ({
@@ -50,7 +58,10 @@ const ListItem = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 24px"
+  padding: "0px 65px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "10px 24px",
+  },
 }));
 
 const AmountItem = styled(Grid)(({ theme }) => ({
@@ -58,36 +69,50 @@ const AmountItem = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "14px 24px"
+  paddingTop: 24,
+  paddingLeft: 65,
+  paddingRight: 65,
+  [theme.breakpoints.down("sm")]: {
+    padding: "24px 24px",
+  },
 }));
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   height: 70,
   display: "flex",
   alignItems: "center",
-  padding: "0px 24px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`
+  padding: "0px 65px",
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  [theme.breakpoints.down("sm")]: {
+    padding: "24px 24px",
+  },
 }));
 
 const FileInput = styled("input")({
-  display: "none"
+  display: "none",
 });
 
-const SendContainer = styled(Grid)({
-  height: 55
-});
+const SendContainer = styled(Grid)(({ theme }) => ({
+  height: 80,
+  [theme.breakpoints.down("sm")]: {
+    height: 100,
+  },
+}));
 
 const BatchBar = styled(Grid)(({ theme }) => ({
   height: 60,
   alignItems: "center",
   borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 24px",
+  padding: "0px 65px",
   cursor: "pointer",
-  overflowX: "auto"
+  overflowX: "auto",
+  [theme.breakpoints.down("sm")]: {
+    padding: "24px 24px",
+  },
 }));
 
 const SwitchContainer = styled(Grid)({
-  textAlign: "end"
+  textAlign: "end",
 });
 
 const TransferActive = styled(Grid)({
@@ -95,7 +120,7 @@ const TransferActive = styled(Grid)({
   minWidth: 51,
   display: "flex",
   alignItems: "center",
-  justifyContent: "center"
+  justifyContent: "center",
 });
 
 const AddButton = styled(Paper)({
@@ -109,16 +134,16 @@ const AddButton = styled(Paper)({
   alignItems: "center",
   display: "flex",
   justifyContent: "center",
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const styles = {
   visible: {
-    display: "none"
+    display: "none",
   },
   active: {
-    background: "#3866F9"
-  }
+    background: "#3866F9",
+  },
 };
 
 const UploadFileLabel = styled("label")(({ theme }) => ({
@@ -128,22 +153,47 @@ const UploadFileLabel = styled("label")(({ theme }) => ({
   minWidth: 171,
   cursor: "pointer",
   margin: "auto",
-  display: "block"
+  display: "block",
 }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
   "& .MuiInputBase-input": {
     textAlign: "end",
-    paddingRight: 12
-  }
+    paddingRight: 12,
+  },
 });
 
-const SendButton = styled(ViewButton)({
-  width: "100%",
-  border: "none",
-  borderTop: "1px solid #4BCF93"
-});
+const CustomTextFieldAmount = styled(TextField)(({ theme }) => ({
+  border: "1px solid #434242",
+  padding: 6,
+  minHeight: 31,
+  marginTop: 16,
+  width: "auto",
+  "& .MuiInputBase-input": {
+    textAlign: "initial",
+    paddingLeft: 40,
+    paddingRight: 10,
+    [theme.breakpoints.down("sm")]: {
+      paddingLeft: 0,
+      paddingRight: 0,
+      textAlign: "center",
+    },
+  },
+  [theme.breakpoints.down("sm")]: {
+    paddingLeft: "inherit",
+    paddingRight: "inherit",
+    width: "100%",
+  },
+}));
+
+const SendButton = styled(ViewButton)(({ theme }) => ({
+  width: 229,
+  border: "1px",
+  background: theme.palette.secondary.main,
+  borderRadius: 4,
+  color: theme.palette.text.secondary,
+}));
 
 const AmountText = styled(Typography)({
   color: "rgba(255, 255, 255, 0.7)",
@@ -153,20 +203,62 @@ const AmountText = styled(Typography)({
 });
 
 const AmountContainer = styled(Grid)(({ theme }) => ({
-  paddingRight: 16,
   [theme.breakpoints.down("sm")]: {
     paddingRight: 0,
-  }
+  },
 }));
 
+const AutoCompleteField = styled(Autocomplete)({
+  "& .MuiInputLabel-root": {
+    display: "none",
+  },
+  "& .MuiInput-root": {
+    border: "1px solid #434242",
+    padding: 6,
+  },
+});
+
+const DaoBalance = styled(Grid)({
+  minHeight: 50,
+});
+
+const CurrentAsset = styled(Typography)({
+  opacity: 0.7,
+});
+
+const AmountSmallText = styled(Typography)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 14,
+  },
+}));
+
+export interface FormTransferParams {
+  recipient: string;
+  amount: number;
+  asset?: DAOHolding;
+}
+
 interface Values {
-  transfers: Transfer[];
+  transfers: FormTransferParams[];
   description: string;
   agoraPostId: number;
   title: string;
 }
 
-const EMPTY_TRANSFER: Transfer = { recipient: "", amount: 0 };
+const EMPTY_TRANSFER: FormTransferParams = {
+  recipient: "",
+  amount: 0,
+  asset: {
+    contract: "",
+    level: 0,
+    token_id: -1,
+    symbol: "XTZ",
+    name: "XTZ",
+    decimals: 6,
+    balance: "0",
+  }
+};
+
 const INITIAL_FORM_VALUES: Values = {
   transfers: [EMPTY_TRANSFER],
   description: "",
@@ -175,55 +267,99 @@ const INITIAL_FORM_VALUES: Values = {
 };
 
 export const NewTreasuryProposalDialog: React.FC = () => {
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const { mutate } = useTreasuryPropose();
   const {
     state: {
       treasuryProposal: { open },
-      daoId
+      daoId,
     },
-    dispatch
+    dispatch,
   } = useContext(ModalsContext);
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const { tezos, connect } = useTezos();
   const openNotification = useNotification();
-  const { data: tezosBalance } = useTezosBalances(daoData?.address);
-
+  const { data: daoHoldings } = useDAOHoldings(daoId);
   const handleClose = useCallback(() => {
     dispatch({
       type: ActionTypes.CLOSE,
       payload: {
-        modal: "treasuryProposal"
-      }
+        modal: "treasuryProposal",
+      },
     });
   }, [dispatch]);
+
+  const currentAssetSymbol = useCallback((transfers: FormTransferParams[]) => {
+    const currentTransfer = transfers[activeTransfer - 1]
+
+    if(!daoHoldings || !currentTransfer.asset) {
+      return "-"
+    }
+
+    if((currentTransfer.asset as DAOHolding).symbol === "XTZ") {
+      return "XTZ"
+    }
+
+    const currentAsset = (daoHoldings as DAOHolding[]).find(balance => balance.contract === (currentTransfer.asset as DAOHolding).contract)
+
+    return currentAsset? currentAsset.symbol : "-"
+  }, [activeTransfer, daoHoldings])
 
   const onSubmit = useCallback(
     async (values: Values, { setSubmitting }: any) => {
       setSubmitting(true);
 
-      const transfers: Transfer[] = values.transfers.map(transfer => ({
-        ...transfer,
-        amount: Number(xtzToMutez(transfer.amount.toString()))
-      }));
-
       await connectIfNotConnected(tezos, connect);
 
-      if (dao) {
+      if (dao && daoHoldings) {
         mutate({
           dao,
-          transfers,
+          transfers: values.transfers.map(transfer => ({
+            ...transfer,
+            asset: daoHoldings.find(balance => balance.contract === transfer.asset?.contract) as DAOHolding,
+            type: !transfer.asset || transfer.asset.symbol === "XTZ" ? "XTZ": "FA2"
+          })),
           tokensToFreeze: dao.storage.frozenExtraValue,
-          agoraPostId: values.agoraPostId
+          agoraPostId: values.agoraPostId,
         });
 
         handleClose();
       }
     },
-    [connect, dao, handleClose, mutate, tezos]
+    [connect, dao, handleClose, mutate, tezos, daoHoldings]
   );
+
+  const getBalance = useCallback((values: Values): string => {
+    if (daoHoldings) {
+
+      const currentTransfer = values.transfers[activeTransfer - 1]
+
+      if(!currentTransfer.asset) {
+        return "-"
+      }
+
+      if(currentTransfer.asset.symbol === "XTZ") {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return daoHoldings.find(balance => balance.symbol === "XTZ")!.balance
+      }
+
+      const fa2Token = daoHoldings.find(
+        balance => balance.contract === currentTransfer.asset?.contract
+      );
+
+      if (fa2Token) {
+        return (Number(fa2Token.balance) / Math.pow(10, fa2Token.decimals)).toString();
+      }
+
+      return "-"
+    }
+    
+    return "-"
+  }, [activeTransfer, daoHoldings]);
 
   return (
     <>
@@ -277,6 +413,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
 
               <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
                 {({ submitForm, values }) => {
+                  console.log(values);
                   const importTransactions = async (
                     event: React.ChangeEvent<HTMLInputElement>
                   ) => {
@@ -286,7 +423,6 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                         const transactionsParsed = await fromMigrationParamsFile(
                           file
                         );
-                        console.log(transactionsParsed);
                         const errors = validateTransactionsJSON(
                           transactionsParsed
                         );
@@ -296,7 +432,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           openNotification({
                             message: "Error while parsing JSON",
                             persist: true,
-                            variant: "error"
+                            variant: "error",
                           });
                           return;
                         }
@@ -307,7 +443,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                         openNotification({
                           message: "Error while parsing JSON",
                           persist: true,
-                          variant: "error"
+                          variant: "error",
                         });
                       }
                     }
@@ -318,7 +454,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                       <>
                         <FieldArray
                           name="transfers"
-                          render={arrayHelpers => (
+                          render={(arrayHelpers) => (
                             <>
                               {isBatch ? (
                                 <BatchBar
@@ -380,8 +516,9 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                     justify="flex-end"
                                   >
                                     <Field
-                                      name={`transfers.${activeTransfer - 1
-                                        }.recipient`}
+                                      name={`transfers.${
+                                        activeTransfer - 1
+                                      }.recipient`}
                                       type="string"
                                       placeholder="Type an Address Here"
                                       component={CustomTextField}
@@ -390,61 +527,132 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 </Grid>
                               </ListItem>
 
-                              <AmountItem container direction="row">
-                                <Grid item xs={6}>
-                                  <Typography
-                                    variant="subtitle1"
-                                    color="textSecondary"
-                                  >
-                                    XTZ Amount
-                                  </Typography>
-                                </Grid>
-                                <Grid item xs={6}>
-                                  <SwitchContainer
-                                    item
-                                    xs={12}
-                                    justify="flex-end"
-                                  >
+                              <AmountItem
+                                container
+                                direction="row"
+                                alignItems="center"
+                              >
+                                <Grid item xs={isMobileSmall ? 12 : 5}>
+                                  <Grid container direction="column">
+                                    <Typography
+                                      variant="subtitle1"
+                                      color="textSecondary"
+                                    >
+                                      Asset
+                                    </Typography>
                                     <Field
-                                      name={`transfers.${activeTransfer - 1
-                                        }.amount`}
-                                      type="number"
-                                      placeholder="Type an Amount"
-                                      component={CustomTextField}
-                                      InputProps={{
-                                        inputProps: {
-                                          step: 0.01,
-                                          min: dao.storage.minXtzAmount,
-                                          max: dao.storage.maxXtzAmount
-                                        }
-                                      }}
+                                      component={AutoCompleteField}
+                                      name={`transfers.${
+                                        activeTransfer - 1
+                                      }.asset`}
+                                      options={daoHoldings? daoHoldings.map(
+                                        (option) => option
+                                      ): []}
+                                      getOptionLabel={(option: DAOHolding) =>
+                                        option.symbol
+                                      }
+                                      renderInput={(params: any) => (
+                                        <MaterialTextField
+                                          {...params}
+                                          label="Select asset"
+                                        />
+                                      )}
                                     />
-                                  </SwitchContainer>
+                                  </Grid>
                                 </Grid>
-                                <Grid item xs={6}>
-                                  <AmountText>DAO Balance</AmountText>
-                                </Grid>
-                                <Grid item xs={6}>
-                                  {tezosBalance?
-                                    <AmountContainer
+                                <Grid item xs={isMobileSmall ? 12 : 2}></Grid>
+
+                                <Grid item xs={isMobileSmall ? 12 : 5}>
+                                  <Grid container direction="column">
+                                    <AmountSmallText
+                                      variant="subtitle1"
+                                      color="textSecondary"
+                                    >
+                                      Amount
+                                    </AmountSmallText>
+
+                                    <SwitchContainer
                                       item
-                                      container
-                                      direction="row"
+                                      xs={12}
                                       justify="flex-end"
                                     >
-                                      <AmountText>{Number(tezosBalance.balance) / Math.pow(10, tezosBalance.decimals) }</AmountText>{" "}
-                                      <AmountText>{tezosBalance.name}</AmountText>
-                                    </AmountContainer> : null
-                                  }
+                                      <Field
+                                        name={`transfers.${
+                                          activeTransfer - 1
+                                        }.amount`}
+                                        type="number"
+                                        placeholder="Type an Amount"
+                                        component={CustomTextFieldAmount}
+                                        InputProps={{
+                                          inputProps: {
+                                            step: 0.01,
+                                            min: dao.storage.minXtzAmount,
+                                            max: dao.storage.maxXtzAmount,
+                                          },
+                                          endAdornment: (
+                                            <InputAdornment position="start">
+                                              <CurrentAsset
+                                                color="textSecondary"
+                                                variant="subtitle1"
+                                              >
+                                                {" "}
+                                                {currentAssetSymbol(values.transfers)}
+                                              </CurrentAsset>
+                                            </InputAdornment>
+                                          ),
+                                        }}
+                                      />
+                                    </SwitchContainer>
+                                  </Grid>
                                 </Grid>
+
+                                {values.transfers[activeTransfer - 1] ? (
+                                  <DaoBalance
+                                    container
+                                    direction="row"
+                                    alignItems="center"
+                                    justify="space-between"
+                                  >
+                                    <Grid item xs={6}>
+                                      <AmountText>DAO Balance</AmountText>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                      {daoHoldings ? (
+                                        <AmountContainer
+                                          item
+                                          container
+                                          direction="row"
+                                          justify="flex-end"
+                                        >
+                                          <AmountText>
+                                            {getBalance(values)}
+                                          </AmountText>
+                                          <AmountText>
+                                            {
+                                              currentAssetSymbol(values.transfers)
+                                            }
+                                          </AmountText>
+                                        </AmountContainer>
+                                      ) : null}
+                                    </Grid>
+                                  </DaoBalance>
+                                ) : null}
                               </AmountItem>
                             </>
                           )}
                         />
 
-                        <ProposalTextContainer title="Proposal Title" value={values.title} type="title" />
+                        <ProposalTextContainer
+                          title="Proposal Title"
+                          value={values.title}
+                          type="title"
+                        />
 
-                        <ProposalTextContainer title="Proposal Description" value={values.description} type="description" />
+                        <ProposalTextContainer
+                          title="Proposal Description"
+                          value={values.description}
+                          type="description"
+                        />
 
                         <UploadButtonContainer container direction="row">
                           <UploadFileLabel>
@@ -503,6 +711,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           container
                           direction="row"
                           justify="center"
+                          alignItems="center"
                         >
                           <SendButton
                             customColor={theme.palette.secondary.main}

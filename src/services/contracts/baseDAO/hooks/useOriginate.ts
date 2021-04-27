@@ -33,7 +33,7 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES);
 
   const [activeState, setActiveState] = useState<number>();
-  const { tezos, connect } = useTezos();
+  const { tezos, connect, network } = useTezos();
 
   const result = useMutation<
     ContractAbstraction<ContractProvider | Wallet>,
@@ -80,6 +80,7 @@ export const useOriginate = (template: DAOTemplate) => {
         tezos,
         metadata,
         params,
+        network
       });
 
       if (!contract) {

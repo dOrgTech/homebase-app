@@ -1,33 +1,25 @@
+import { calculateCycleInfo } from './../utils';
 import { useEffect, useState } from "react";
-import dayjs from "dayjs";
+import { useDAO } from "./useDAO";
+import { CycleInfo } from "..";
 
-const calculateTimeLeft = (originationTime?: string, votingPeriod?: number) => {
-  if (votingPeriod && originationTime) {
-    const current = dayjs().unix() - dayjs(originationTime).unix();
-    const periodLeftPercentage = (current / votingPeriod) % 1;
-    const timeLeftPercentage = votingPeriod * periodLeftPercentage;
-    const time = votingPeriod - Number(timeLeftPercentage.toFixed());
-
-    return { time: Number(time), current: Math.floor(current / votingPeriod) };
-  }
-};
-
-export const useCycleInfo = (
-  originationTime?: string,
-  votingPeriod?: number
-) => {
-  const [timeLeft, setTimeLeft] = useState<{
-    time: number;
-    current: number;
-  }>();
+export const useCycleInfo = (daoAddress?: string) => {
+  const { data: dao } = useDAO(daoAddress);
+  const [timeLeft, setTimeLeft] = useState<CycleInfo>();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const result = calculateTimeLeft(originationTime, votingPeriod);
-      setTimeLeft(result);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [originationTime, votingPeriod]);
+    if (dao) {
+      const interval = setInterval(() => {
+        const result = calculateCycleInfo(
+          dao.storage.lastPeriodChange.timestamp,
+          dao.storage.votingPeriod,
+          dao.storage.lastPeriodChange.periodNumber
+        );
+        setTimeLeft(result);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [dao]);
 
   return timeLeft;
 };

@@ -2,16 +2,14 @@ import React from "react";
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 
-type Status = "created" | ProposalStatus;
-
-const statusColors = (status: Status, theme: Theme) => {
+const statusColors = (status: ProposalStatus, theme: Theme) => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return {
         background: "#DBDE39",
         color: theme.palette.primary.main,
       };
-    case "created":
+    case ProposalStatus.CREATED:
       return {
         background: "#3866F9",
         color: "white",
@@ -31,6 +29,11 @@ const statusColors = (status: Status, theme: Theme) => {
         background: theme.palette.primary.light,
         color: "white",
       };
+    case ProposalStatus.EXECUTED:
+      return {
+        background: theme.palette.primary.light,
+        color: "white",
+      };
   }
 };
 
@@ -39,7 +42,7 @@ const Badge = styled(Grid)(
     status,
     theme,
   }: {
-    status: "created" | ProposalStatus;
+    status: ProposalStatus;
     theme: Theme;
   }) => ({
     borderRadius: 4,
@@ -55,7 +58,7 @@ const Badge = styled(Grid)(
 );
 
 export const StatusBadge: React.FC<
-  { status: "created" | ProposalStatus } & GridProps
+  { status: ProposalStatus } & GridProps
 > = ({ status, ...props }) => (
   <Badge status={status} {...props}>
     <Typography> {status.toUpperCase()} </Typography>

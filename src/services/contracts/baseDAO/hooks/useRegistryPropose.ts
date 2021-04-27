@@ -28,7 +28,7 @@ export const useRegistryPropose = () => {
         variant: "info",
       });
       try {
-        const data = await params.dao.propose({
+        const data = await params.dao.proposeRegistryUpdate({
           ...params,
           tokensToFreeze: params.tokensToFreeze,
           agoraPostId: params.agoraPostId,

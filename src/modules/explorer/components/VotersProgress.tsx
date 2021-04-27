@@ -11,7 +11,7 @@ import { formatNumber } from "../utils/FormatNumber";
 import { UpVotesDialog } from "./VotersDialog";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
+import { TransferProposalWithStatus } from "services/bakingBad/proposals/types";
 import { ProgressBar as CustomBar } from "modules/explorer/components";
 
 interface VotersData {
@@ -47,7 +47,7 @@ export const VotersProgress: React.FC<VotersData> = ({
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: proposalData } = useProposal(daoId, proposalId);
-  const proposal = proposalData as TreasuryProposalWithStatus | undefined;
+  const proposal = proposalData as TransferProposalWithStatus | undefined;
   const { data: dao } = useDAO(daoId);
 
   const upVotes = proposal ? proposal.upVotes : 0;
@@ -58,11 +58,11 @@ export const VotersProgress: React.FC<VotersData> = ({
 
   return (
     <>
-      <Grid item xs={12} container direction="row" alignItems="center">
-        <Grid item xs={showButton ? 8 : 12} container direction="row" alignItems="center">
+      <Grid item xs={12} container direction="row" alignItems="center" spacing={1}>
+        <Grid item xs={showButton ? 8 : 12} container direction="row" alignItems="baseline" >
           <Grid
             item
-            xs={isMobileSmall ? 12 : showButton ? 4 : 6}
+            md={isMobileSmall ? 12 : showButton ? 4 : 6}
             container
             direction="row"
             alignItems="baseline"
@@ -75,7 +75,7 @@ export const VotersProgress: React.FC<VotersData> = ({
           </Grid>
 
           <Grid
-            xs={isMobileSmall ? 12 : showButton ? 4 : 6}
+            md={isMobileSmall ? 12 : showButton ? 3 : 6}
             container
             direction="row"
             alignItems="center"
@@ -84,6 +84,18 @@ export const VotersProgress: React.FC<VotersData> = ({
             <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
             <Typography color="textSecondary">
               {downVotes} ({downVotesPercentage && downVotesPercentage > 100 ? 100 : formatNumber(Number(downVotesPercentage))}%){" "}
+            </Typography>
+          </Grid>
+
+          <Grid
+            md={isMobileSmall ? 12 : showButton ? 3 : 6}
+            container
+            direction="row"
+            alignItems="center"
+          >
+            <StatusTitle color="textSecondary">THRESHOLD: </StatusTitle>
+            <Typography color="textSecondary">
+              {dao?.storage.quorumTreshold || 0}
             </Typography>
           </Grid>
         </Grid>

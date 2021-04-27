@@ -127,6 +127,20 @@ export const NewTransaction: React.FC = () => {
             >
               Update Registry
             </Option>
+            <Option
+              variant="subtitle1"
+              color="textSecondary"
+              onClick={() =>
+                dispatch({
+                  type: ActionTypes.OPEN_TREASURY_PROPOSAL,
+                  payload: {
+                    daoAddress: daoId,
+                  },
+                })
+              }
+            >
+              Transfer Tokens/Funds
+            </Option>
           </CustomContent>
         </DialogContent>
       </CustomDialog>

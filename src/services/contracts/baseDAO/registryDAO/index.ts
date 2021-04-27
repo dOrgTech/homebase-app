@@ -1,21 +1,20 @@
-import { getRegistry } from "./../../../bakingBad/registry/index";
-import { RegistryProposalWithStatus } from "./../../../bakingBad/proposals/types";
-import { dtoToRegistryProposals } from "./../../../bakingBad/proposals/mappers";
+import { Parser, Expr } from "@taquito/michel-codec";
+import {
+  dtoToRegistryUpdateProposals,
+  dtoToTransferProposals,
+} from "./../../../bakingBad/proposals/mappers";
 import {
   TezosToolkit,
   ContractAbstraction,
   Wallet,
   ContractProvider,
+  MichelsonMap,
 } from "@taquito/taquito";
-import { Tzip16ContractAbstraction } from "@taquito/tzip16";
-import dayjs from "dayjs";
+import { Schema } from "@taquito/michelson-encoder";
+import { bytes2Char, Tzip16ContractAbstraction } from "@taquito/tzip16";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
 import { getProposalsDTO } from "services/bakingBad/proposals";
-import {
-  ProposalStatus,
-  RegistryProposalsDTO,
-} from "services/bakingBad/proposals/types";
 import { getStorage } from "services/bakingBad/storage";
 import {
   RegistryStorage,
@@ -24,24 +23,52 @@ import {
 import { Network } from "services/beacon/context";
 import { getContract } from "..";
 import { getDAOListMetadata } from "../../metadataCarrier";
-import { MetadataDeploymentResult } from "../../metadataCarrier/deploy";
 import { DAOListMetadata } from "../../metadataCarrier/types";
-import { fromStateToRegistryStorage, deployRegistryDAO } from "./service";
-import { MigrationParams } from "../types";
 import { BaseConstructorParams, BaseDAO } from "..";
 import { RegistryItem } from "./types";
+import {
+  RegistryProposalsDTO,
+  RegistryUpdateProposal,
+  RegistryUpdateProposalsDTO,
+  TransferProposal,
+  TransferProposalsDTO,
+} from "services/bakingBad/proposals/types";
 
 interface RegistryConstructorParams extends BaseConstructorParams {
   storage: RegistryStorage;
 }
 
-export interface RegistryDeployParams {
-  params: MigrationParams;
-  metadata: MetadataDeploymentResult;
-  tezos: TezosToolkit;
+const parser = new Parser();
+
+const mapStorageRegistryList = (
+  listMichelsonString: string
+): {
+  key: string;
+  value: string;
+}[] => {
+  if(listMichelsonString === "{ { } }") {
+    return []
+  }
+
+  const listStringNoBraces = listMichelsonString.substr(3, listMichelsonString.length - 6)
+  return listStringNoBraces.split(" ; ").map(listString => {
+    const list = parser.parseData(listString) as RegistryItemDTO;
+
+    return { 
+      key: bytes2Char(list.args[0].string),
+      value: bytes2Char(list.args[1].string)
+    }
+  })
+};
+
+interface RegistryItemDTO {
+  prim: "Pair";
+  args: [{ string: string }, { string: string }];
 }
 
 export class RegistryDAO extends BaseDAO {
+  storage: RegistryStorage;
+
   protected constructor(params: RegistryConstructorParams) {
     super(params);
 
@@ -51,18 +78,28 @@ export class RegistryDAO extends BaseDAO {
   private static storageMapper = (dto: RegistryStorageDTO): RegistryStorage => {
     try {
       const result = {
-        ledgerMapNumber: dto.children[0].value,
-        votingPeriod: Number(dto.children[6].value),
-        quorumTreshold: Number(dto.children[7].value),
-        registryMapNumber: Number(dto.children[8].children[0].value),
-        proposalReceivers: dto.children[8].children[1],
-        frozenScaleValue: Number(dto.children[8].children[2].value),
-        frozenExtraValue: Number(dto.children[8].children[3].value),
-        slashScaleValue: Number(dto.children[8].children[4].value),
-        slashDivisionValue: Number(dto.children[8].children[5].value),
-        maxProposalSize: Number(dto.children[8].children[6].value),
-        proposalsMapNumber: dto.children[9].value,
-        proposalsToFlush: dto.children[10].children,
+        slashDivisionValue: Number(dto.children[1].children[8].value),
+        slashScaleValue: Number(dto.children[1].children[9].value),
+        frozenExtraValue: Number(dto.children[1].children[0].value),
+        maxProposalSize: Number(dto.children[1].children[2].value),
+        proposalReceivers: dto.children[1].children[5].value,
+        lastPeriodChange: {
+          timestamp: dto.children[5].children[0].value,
+          periodNumber: Number(dto.children[5].children[1].value),
+        },
+        registry: mapStorageRegistryList(dto.children[1].children[6].value),
+        registryAffected: dto.children[1].children[7].value,
+        votingPeriod: Number(dto.children[17].value),
+        quorumTreshold: (Number(dto.children[15].children[0].value) + Number(dto.children[15].children[1].value)) * Number(dto.children[13].children[0].value) / Number(dto.children[13].children[1].value),
+        proposalsMapNumber: dto.children[12].value,
+        ledgerMapNumber: dto.children[6].value,
+        proposalsToFlush: dto.children[11].value || [],
+        totalSupply: {
+          0: Number(dto.children[15].children[0].value),
+          1: Number(dto.children[15].children[1].value),
+        },
+        fixedProposalFeeInToken: Number(dto.children[2].value),
+        admin: dto.children[0].value,
       };
 
       return result;
@@ -71,24 +108,6 @@ export class RegistryDAO extends BaseDAO {
         `Storage mapping failed in RegistryDAO. Probably was wrongly instantiated? Error: ${e}`
       );
     }
-  };
-
-  public static deploy = async ({
-    params,
-    metadata,
-    tezos,
-  }: {
-    params: MigrationParams;
-    metadata: MetadataDeploymentResult;
-    tezos: TezosToolkit;
-  }) => {
-    const registryParams = fromStateToRegistryStorage(params);
-
-    return await deployRegistryDAO({
-      storage: registryParams,
-      metadataCarrierDeploymentData: metadata,
-      tezos,
-    });
   };
 
   public static create = async (
@@ -117,15 +136,11 @@ export class RegistryDAO extends BaseDAO {
       (await getDAOListMetadata(contract));
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
     const originationTime = await getOriginationTime(contractAddress, network);
-    const cycle = Math.floor(
-      (dayjs().unix() - dayjs(originationTime).unix()) / storage.votingPeriod
-    );
 
     return new RegistryDAO({
       address: contractAddress,
       ledger,
       template: "registry",
-      cycle,
       originationTime,
       storage,
       metadata: metadataToUse,
@@ -139,45 +154,29 @@ export class RegistryDAO extends BaseDAO {
     return RegistryDAO.storageMapper(storageDTO as RegistryStorageDTO);
   };
 
-  public proposals = async (): Promise<RegistryProposalWithStatus[]> => {
+  public proposals = async (): Promise<
+    (TransferProposal | RegistryUpdateProposal)[]
+  > => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = (await getProposalsDTO(
       proposalsMapNumber,
       this.network
     )) as RegistryProposalsDTO;
 
-    const proposals = dtoToRegistryProposals(proposalsDTO);
-
-    return proposals.map((proposal) => {
-      const { startDate, upVotes, downVotes } = proposal;
-
-      const exactCycle =
-        dayjs(startDate).unix() - dayjs(this.originationTime).unix();
-      const cycle = Math.floor(exactCycle / this.storage.votingPeriod);
-
-      //TODO: this business logic will change in the future
-
-      let status: ProposalStatus;
-
-      if (cycle === this.cycle) {
-        status = ProposalStatus.ACTIVE;
-      } else if (Number(upVotes) >= this.storage.quorumTreshold) {
-        status = ProposalStatus.PASSED;
-      } else if (Number(downVotes) >= this.storage.quorumTreshold) {
-        status = ProposalStatus.REJECTED;
+    const proposals = proposalsDTO.map((dto: RegistryProposalsDTO[number]) => {
+      if (dto.data.value.children[1].children[1].name === "transfers") {
+        return dtoToTransferProposals(dto as TransferProposalsDTO[number]);
       } else {
-        status = ProposalStatus.DROPPED;
+        return dtoToRegistryUpdateProposals(
+          dto as RegistryUpdateProposalsDTO[number]
+        );
       }
-
-      return {
-        ...proposal,
-        cycle,
-        status,
-      };
     });
+
+    return proposals;
   };
 
-  public propose = async ({
+  public proposeRegistryUpdate = async ({
     tokensToFreeze,
     agoraPostId,
     items,
@@ -188,30 +187,44 @@ export class RegistryDAO extends BaseDAO {
   }) => {
     const contract = await getContract(this.tezos, this.address);
 
-    const diff = items.map(({ key, newValue }) => ({
-      key,
-      new_value: newValue,
-    }));
+    const michelsonType = parser.parseData(
+      `(list (pair (string %registry_key) (option %registry_value (string))))`
+    );
+    const schema = new Schema(michelsonType as Expr);
 
-    console.log(contract.entrypoints.entrypoints);
+    const diff = items.map(
+      ({ key: registry_key, newValue: registry_value }) => ({
+        registry_key,
+        registry_value,
+      })
+    );
+    const data = schema.Encode(diff);
+
+    const michelsonType2 = parser.parseData("(nat)") as Expr;
+    const schema2 = new Schema(michelsonType2 as Expr);
+    const data2 = schema2.Encode([agoraPostId]);
+
+    const { packed: pack1 } = await this.tezos.rpc.packData({
+      data,
+      type: michelsonType as Expr,
+    });
+
+    const { packed: pack2 } = await this.tezos.rpc.packData({
+      data: data2,
+      type: michelsonType2,
+    });
+
+    const proposalMetadata = new MichelsonMap();
+    proposalMetadata.set("agoraPostID", pack2);
+    proposalMetadata.set("updates", pack1);
 
     const contractMethod = contract.methods.propose(
       tokensToFreeze,
-      "proposal_type",
-      agoraPostId,
-      diff
+      proposalMetadata
     );
 
     const result = await contractMethod.send();
 
     return result;
-  };
-
-  public getRegistry = async () => {
-    const { registryMapNumber } = await this.fetchStorage();
-
-    const registry = await getRegistry(registryMapNumber, this.network);
-
-    return registry;
   };
 }

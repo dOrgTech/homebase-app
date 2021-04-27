@@ -47,6 +47,9 @@ const CustomSecondCard = styled(withTheme(Grid))((props) => ({
   "&:last-child": {
     marginLeft: "0px",
   },
+  [props.theme.breakpoints.down("md")] : {
+    borderLeft: `1px solid ${props.theme.palette.primary.light}`,
+  }
 }));
 
 const FooterContainer = styled(withTheme(Paper))((props) => ({

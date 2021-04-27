@@ -4,16 +4,15 @@ import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGe
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useTokenBalances } from "services/contracts/baseDAO/hooks/useTokenBalances";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { TreasuryTableRow } from "..";
 import { ProposalTableHeadText } from "./TableHeader";
 
 export const TokenTable: React.FC = () => {
   const { id: daoId } = useParams<{ id: string }>()
-  const { data: tokenBalances } = useTokenBalances(daoId)
+  const { data: daoHoldings } = useDAOHoldings(daoId)
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
@@ -30,10 +29,10 @@ export const TokenTable: React.FC = () => {
           </Grid>
         </TableHeader>
       )}
-      {tokenBalances && tokenBalances.length
-        ? tokenBalances.map((token, i) => (
-            <GenericTableContainer key={`token-${i}`}>
-              <TreasuryTableRow {...token} />
+      {daoHoldings && daoHoldings.length
+        ? daoHoldings.map((holding, i) => (
+            <GenericTableContainer key={`holding-${i}`}>
+              <TreasuryTableRow {...holding} />
             </GenericTableContainer>
           ))
         : null}
