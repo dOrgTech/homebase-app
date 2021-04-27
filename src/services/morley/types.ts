@@ -24,6 +24,7 @@ export interface GeneratorArgs {
   slash_division_value: string
   slash_scale_value: string
   frozen_extra_value: string
+  frozen_scale_value: string
   // ledger: string
   metadata_map: string
   // quorum_treshold: string

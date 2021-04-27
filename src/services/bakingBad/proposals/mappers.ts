@@ -1,39 +1,37 @@
 import {
   FA2Transfer,
   FA2TransferDTO,
-  RegistryProposal,
-  RegistryProposalsDTO,
+  RegistryItemDTO,
+  RegistryUpdateProposal,
+  RegistryUpdateProposalsDTO,
   Transfer,
-  TreasuryProposal,
+  TransferProposal,
+  TransferProposalsDTO,
   Voter,
   VotersDTO,
   XTZTransferDTO,
 } from "./types";
-import {
-  TreasuryProposalsDTO,
-} from "services/bakingBad/proposals/types";
 import { Parser } from "@taquito/michel-codec";
-import { mutezToXtz } from "services/contracts/utils";
+import { bytes2Char } from "@taquito/tzip16";
 
 const parser = new Parser()
 
-export const dtoToTreasuryProposals = (
-  proposalsDTO: TreasuryProposalsDTO
-): TreasuryProposal[] => {
-  return proposalsDTO.map((dto) => {
-    return {
-      id: dto.data.key.value,
-      upVotes: Number(dto.data.value.children[7].value),
-      downVotes: Number(dto.data.value.children[0].value),
-      startDate: dto.data.value.children[6].value,
-      agoraPostId: dto.data.value.children[1].children[0].value,
-      proposer: dto.data.value.children[3].value,
-      proposerFrozenTokens: dto.data.value.children[5].value,
-      transfers: mapTransfers(dto.data.value.children[1].children[1].value),
-      cycle: Number(dto.data.value.children[2].value),
-      voters: dtoToVoters(dto.data.value.children[8]),
-    }
-  });
+export const dtoToTransferProposals = (
+  dto: TransferProposalsDTO[number]
+): TransferProposal => {
+  return {
+    id: dto.data.key.value,
+    upVotes: Number(dto.data.value.children[7].value),
+    downVotes: Number(dto.data.value.children[0].value),
+    startDate: dto.data.value.children[6].value,
+    agoraPostId: dto.data.value.children[1].children[0].value,
+    proposer: dto.data.value.children[3].value,
+    proposerFrozenTokens: dto.data.value.children[5].value,
+    transfers: mapTransfers(dto.data.value.children[1].children[1].value),
+    cycle: Number(dto.data.value.children[2].value),
+    voters: dtoToVoters(dto.data.value.children[8]),
+    type: "transfer"
+  }
 };
 
 const decodeXTZTransfer = (dto: XTZTransferDTO): Transfer => {
@@ -73,7 +71,7 @@ const dtoToVoters = (
 
 const mapTransfers = (
   transferMichelsonString: string
-): TreasuryProposal["transfers"] => {
+): TransferProposal["transfers"] => {
   if(transferMichelsonString === "{ { } }") {
     return []
   }
@@ -89,36 +87,38 @@ const mapTransfers = (
   })
 };
 
-const mapRegistryList = (
-  dto: RegistryProposalsDTO[number]
-): RegistryProposal["list"] => {
-  const listDto = dto.data.value.children[3].children[0].children[1].children;
-
-  if (!listDto) {
-    return [];
+export const mapProposalRegistryList = (
+  listMichelsonString: string
+): RegistryUpdateProposal["list"] => {
+  if(listMichelsonString === "{ { } }") {
+    return []
   }
 
-  return listDto.map((listItem) => ({
-    key: listItem.children[0].value,
-    value: listItem.children[1].value,
-  }));
+  const listStringNoBraces = listMichelsonString.substr(3, listMichelsonString.length - 6)
+  return listStringNoBraces.split(" ; ").map(listString => {
+    const list = parser.parseData(listString) as RegistryItemDTO;
+
+    return { 
+      key: bytes2Char(list.args[0].string),
+      value: bytes2Char(list.args[1].args[0].string)
+    }
+  })
 };
 
-export const dtoToRegistryProposals = (
-  proposalsDTO: RegistryProposalsDTO
-): RegistryProposal[] => {
-  //TODO: CHANGE THIS
-  return proposalsDTO.map((dto) => ({
+export const dtoToRegistryUpdateProposals = (
+  dto: RegistryUpdateProposalsDTO[number]
+): RegistryUpdateProposal => {
+  return {
     id: dto.data.key.value,
-    upVotes: Number(dto.data.value.children[0].value),
-    downVotes: Number(dto.data.value.children[1].value),
-    startDate: dto.data.value.children[2].value,
-    agoraPostId: dto.data.value.children[3].children[0].children[0].value,
-    proposer: dto.data.value.children[4].value,
+    upVotes: Number(dto.data.value.children[7].value),
+    downVotes: Number(dto.data.value.children[0].value),
+    startDate: dto.data.value.children[6].value,
+    agoraPostId: dto.data.value.children[1].children[0].value,
+    proposer: dto.data.value.children[3].value,
     proposerFrozenTokens: dto.data.value.children[5].value,
-    list: mapRegistryList(dto),
-    voters: [],
-    cycle: 0,
-    // dtoToVoters(dto),
-  }));
+    list: mapProposalRegistryList(dto.data.value.children[1].children[1].value),
+    cycle: Number(dto.data.value.children[2].value),
+    voters: dtoToVoters(dto.data.value.children[8]),
+    type: "registryUpdate"
+  };
 };

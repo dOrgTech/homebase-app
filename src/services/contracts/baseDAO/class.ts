@@ -1,11 +1,11 @@
 import { Proposal } from "../../bakingBad/proposals/types";
-import { TezosToolkit, ContractAbstraction, Wallet } from "@taquito/taquito";
+import { TezosToolkit, ContractAbstraction, Wallet, MichelsonMap } from "@taquito/taquito";
 import { DAOTemplate } from "modules/creator/state";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
 import { BaseStorage } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { DAOParams, fromStateToBaseStorage, getContract, MigrationParams } from ".";
+import { DAOParams, fromStateToBaseStorage, getContract, MigrationParams, TransferParams } from ".";
 import { getDAOListMetadata } from "../metadataCarrier";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import {
@@ -15,6 +15,11 @@ import {
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
 import { generateMorleyContracts } from "services/morley";
 import { getOriginatedAddress } from "services/bakingBad/originatorContract";
+import { Schema } from "@taquito/michelson-encoder";
+import { xtzToMutez } from "services/contracts/utils";
+import { Parser, Expr } from "@taquito/michel-codec";
+
+const parser = new Parser();
 
 interface DeployParams {
   params: MigrationParams;
@@ -180,7 +185,7 @@ export abstract class BaseDAO {
       })
     );
 
-    return results.filter((result) => typeof result !== "boolean") as BaseDAO[];
+    return results;
   };
 
   protected constructor(params: BaseConstructorParams) {
@@ -255,6 +260,77 @@ export abstract class BaseDAO {
     const contract = await getContract(this.tezos, this.address);
 
     const result = await contract.methods.unfreeze(amount).send();
+    return result;
+  };
+
+  public proposeTransfer = async ({
+    tokensToFreeze,
+    agoraPostId,
+    transfers,
+  }: {
+    tokensToFreeze: number;
+    agoraPostId: number;
+    transfers: TransferParams[];
+  }) => {
+    const contract = await getContract(this.tezos, this.address);
+
+    const michelsonType = parser.parseData(`(list (or (pair %xtz_transfer_type (mutez %amount) (address %recipient))
+    (pair %token_transfer_type
+       (address %contract_address)
+       (list %transfer_list
+          (pair (address %from_)
+                (list %txs (pair (address %to_) (pair (nat %token_id) (nat %amount)))))))))`);
+    const schema = new Schema(michelsonType as Expr);
+    const data = schema.Encode(transfers.map(transfer => {
+      if(transfer.type === "XTZ") {
+        return {
+          xtz_transfer_type: {
+            amount: Number(xtzToMutez(transfer.amount.toString())),
+            recipient: transfer.recipient,
+          }
+        }
+      } else {
+        return {
+          token_transfer_type: {
+            contract_address: transfer.asset.contract,
+            transfer_list: [
+              {
+                from_: this.address,
+                txs: [
+                  {
+                    to_: transfer.recipient,
+                    token_id: transfer.asset.token_id,
+                    amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
+                  },
+                ],
+              },
+            ],
+          }
+        }
+      }
+    }))
+
+    const michelsonType2 = parser.parseData("(nat)") as Expr;
+    const schema2 = new Schema(michelsonType2 as Expr);
+    const data2 = schema2.Encode([agoraPostId]);
+
+    const { packed: pack1 } = await this.tezos.rpc.packData({
+      data,
+      type: michelsonType as Expr,
+    });
+
+    const { packed: pack2 } = await this.tezos.rpc.packData({
+      data: data2,
+      type: michelsonType2,
+    });
+
+    const proposalMetadata = new MichelsonMap();
+    proposalMetadata.set("agoraPostID", pack2);
+    proposalMetadata.set("transfers", pack1);
+
+    const contractMethod = contract.methods.propose(tokensToFreeze, proposalMetadata);
+
+    const result = await contractMethod.send();
     return result;
   };
 }

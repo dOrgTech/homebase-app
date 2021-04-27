@@ -2,13 +2,12 @@ import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 import React from "react";
 
 import { DAO } from "modules/explorer/pages/DAO";
-import { Holdings } from "modules/explorer/Treasury/pages/Holdings";
+import { Holdings } from "modules/explorer/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
 import { Registry } from "./Registry/pages/Registry";
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { SideBar } from "./components";
-import { RegistryProposalDetails } from "./Registry/components/ProposalDetails";
-import { TreasuryProposalDetails } from "./Treasury/components/ProposalDetails";
+import { ProposalDetails } from "./components/ProposalDetails";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -33,11 +32,11 @@ export const DAORouter = (): JSX.Element => {
       <Switch>
         <Route path={`${match.url}/:id/proposal/treasury/:proposalId`}>
           <SideBar />
-          <TreasuryProposalDetails />
+          <ProposalDetails />
         </Route>
         <Route path={`${match.url}/:id/proposal/registry/:proposalId`}>
           <SideBar />
-          <RegistryProposalDetails />
+          <ProposalDetails />
         </Route>
         <Route path={`${match.url}/:id/proposals`}>
           <SideBar />

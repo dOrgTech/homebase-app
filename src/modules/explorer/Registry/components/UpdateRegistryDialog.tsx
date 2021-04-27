@@ -19,9 +19,7 @@ import { ModalsContext } from "modules/explorer/ModalsContext";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { char2Bytes } from "@taquito/tzip16";
-import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
 import { ViewButton } from "modules/explorer/components/ViewButton";
-// import { useNotification } from "modules/common/hooks/useNotification";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
@@ -172,7 +170,6 @@ export const UpdateRegistryDialog: React.FC = () => {
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
   const { mutate } = useRegistryPropose();
-  const { data: registryItems } = useRegistryList(daoId);
   const { tezos, connect } = useTezos();
 
   const handleClose = useCallback(() => {
@@ -373,7 +370,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                                     />
                                   ) : (
                                     <>
-                                      {registryItems && (
+                                      {dao && (
                                         <Field
                                           name={`list.${activeItem - 1}.key`}
                                           type="select"
@@ -386,7 +383,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                                             );
                                             setFieldValue(
                                               `list.${activeItem - 1}.value`,
-                                              registryItems.find(
+                                              dao.storage.registry.find(
                                                 (item) =>
                                                   item.key === e.target.value
                                               )?.value
@@ -397,8 +394,8 @@ export const UpdateRegistryDialog: React.FC = () => {
                                           <MenuItem value={"default"} disabled>
                                             Select a Key
                                           </MenuItem>
-                                          {registryItems &&
-                                            registryItems.map(({ key }, i) => (
+                                          {dao &&
+                                            dao.storage.registry.map(({ key }, i) => (
                                               <MenuItem
                                                 key={`option-${i}`}
                                                 value={key}
@@ -435,11 +432,17 @@ export const UpdateRegistryDialog: React.FC = () => {
                               <Grid item xs={12}>
                                 <Field
                                   name={`list.${activeItem - 1}.value`}
-                                  type="number"
                                   multiline
+                                  type="string"
                                   rows={6}
-                                  placeholder="Type a Description"
+                                  placeholder="Type a value"
                                   component={CustomTextarea}
+                                  onChange={(e: any) => {
+                                    setFieldValue(
+                                      `list.${activeItem - 1}.value`,
+                                      e.target.value
+                                    );
+                                  }}
                                 />
                               </Grid>
                             </DescriptionContainer>

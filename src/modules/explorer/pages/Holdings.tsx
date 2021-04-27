@@ -1,11 +1,10 @@
 import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
 import React from "react";
-
-import { HoldingsHeader } from "modules/explorer/components";
-import { HistoryTable } from "../components/HistoryTable";
-import { TokenTable } from "../components/TokenBalancesTable";
-import { TabPanel } from "modules/explorer/components/TabPanel";
-import { AppTabBar } from "modules/explorer/components/AppTabBar";
+import { HoldingsHeader } from "../components";
+import { AppTabBar } from "../components/AppTabBar";
+import { TabPanel } from "../components/TabPanel";
+import { HistoryTable } from "../Treasury/components/HistoryTable";
+import { TokenTable } from "../Treasury/components/TokenBalancesTable";
 
 export const Holdings: React.FC = () => {
   const theme = useTheme();

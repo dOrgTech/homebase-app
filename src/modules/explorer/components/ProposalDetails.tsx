@@ -12,11 +12,13 @@ import { useParams } from "react-router";
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
+import { RegistryProposalWithStatus, TransferProposalWithStatus } from "services/bakingBad/proposals/types";
 import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
 import { RectangleContainer } from "./styled/RectangleHeader";
 import { VotersProgress } from "./VotersProgress";
+import { TransferDetail } from "../Treasury/components/TransferDetail";
+import { RegistryUpdateDetail } from "../Registry/components/RegistryUpdateDetail";
 
 const StyledContainer = styled(withTheme(Grid))(props => ({
   background: props.theme.palette.primary.main,
@@ -80,14 +82,14 @@ const ProposalStatusBadge = styled(StatusBadge)(({ theme }) => ({
   }
 }));
 
-export const ProposalDetails: React.FC = ({ children }) => {
+export const ProposalDetails: React.FC = () => {
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
   }>();
   const theme = useTheme();
   const { data: proposalData } = useProposal(daoId, proposalId);
-  const proposal = proposalData as TreasuryProposalWithStatus | undefined;
+  const proposal = proposalData as (TransferProposalWithStatus | RegistryProposalWithStatus | undefined);
   const { data: dao } = useDAO(daoId);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -175,7 +177,7 @@ export const ProposalDetails: React.FC = ({ children }) => {
                   Proposal Description
                 </DescriptionText>
               </Grid>
-              {children}
+              {proposal? proposal.type === "transfer"? <TransferDetail proposal={proposal as TransferProposalWithStatus}/>: <RegistryUpdateDetail proposal={proposal as RegistryProposalWithStatus} />: null}
             </Grid>
           </Grid>
           {isMobileSmall && (

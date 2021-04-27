@@ -1,7 +1,3 @@
-import { UnnamedMapValue, NamedMapValue } from "services/bakingBad/types";
-
-// type TokenType = "mutez";
-
 export type MutezTransfer = {
   prim: string;
   type: string;
@@ -29,120 +25,7 @@ export type MutezTransfer = {
   ];
 };
 
-export type RegistryProposalsDTO = {
-  data: {
-    key: UnnamedMapValue;
-    value: {
-      prim: string;
-      type: string;
-      children: [
-        NamedMapValue,
-        NamedMapValue,
-        NamedMapValue,
-        {
-          prim: string;
-          type: string;
-          name: string;
-          children: [
-            {
-              prim: "pair";
-              type: "namedtuple";
-              name: "@pair_0";
-              children: [
-                {
-                  prim: "nat";
-                  type: "nat";
-                  name: "agora_post_id";
-                  value: string;
-                },
-                {
-                  prim: "list";
-                  type: "list";
-                  name: "diff";
-                  children?: {
-                    prim: "pair";
-                    type: "namedtuple";
-                    children: [
-                      {
-                        prim: "bytes";
-                        type: "bytes";
-                        name: "key";
-                        value: string;
-                      },
-                      {
-                        prim: "bytes";
-                        type: "bytes";
-                        name: "new_value";
-                        value: string;
-                      }
-                    ];
-                  }[];
-                }
-              ];
-            }
-          ];
-        },
-        NamedMapValue,
-        NamedMapValue,
-        {
-          prim: string;
-          type: string;
-          name: string;
-          children?: {
-            prim: string;
-            type: string;
-            name: string;
-            children: [UnnamedMapValue, UnnamedMapValue];
-          }[];
-        }
-      ];
-    };
-    key_hash: string;
-    key_string: string;
-    level: number;
-    timestamp: string;
-  };
-  count: number;
-}[];
-
-export type VotersDTO = {
-  prim: "list";
-  type: "list";
-  name: "voters";
-  children?: {
-    prim: "pair";
-    type: "namedtuple";
-    name: "@pair_75";
-    children: [
-      {
-        prim: "nat";
-        type: "nat";
-        name: "vote_amount";
-        value: string;
-      },
-      {
-        prim: "bool";
-        type: "bool";
-        name: "vote_type";
-        value: boolean;
-      },
-      {
-        prim: "address";
-        type: "address";
-        name: "voter_address";
-        value: string;
-      }
-    ];
-  }[]
-}
-
-export interface Voter {
-  address: string;
-  value: number;
-  support: boolean;
-}
-
-export type TreasuryProposalsDTO = {
+export type ProposalDTO<MetadataType = { prim: "bytes"; type: "bytes" }> = {
   data: {
     key: {
       prim: "bytes";
@@ -172,12 +55,7 @@ export type TreasuryProposalsDTO = {
               name: "agoraPostID";
               value: string;
             },
-            {
-              prim: "bytes";
-              type: "bytes";
-              name: "transfers";
-              value: string;
-            }
+            MetadataType
           ];
         },
         {
@@ -216,18 +94,75 @@ export type TreasuryProposalsDTO = {
           name: "upvotes";
           value: string;
         },
-        VotersDTO
+        {
+          prim: "list";
+          type: "list";
+          name: "voters";
+        }
       ];
     };
-    key_hash: string;
-    key_string: string;
-    level: number;
-    timestamp: string;
+    key_hash: "exprtZqjgqRrZr2h8Hd43wFQqnBxtNHH2UCuwaD1oEpYnJjg1DJmBH";
+    key_string: "26725b294531fe0261008394d72e79828e4595bf8ee63a5f46e7d669f2d6ef21";
+    level: 191891;
+    timestamp: "2021-04-21T11:42:59Z";
   };
   count: 1;
 }[];
 
-export type ProposalsDTO = RegistryProposalsDTO | TreasuryProposalsDTO;
+export type RegistryUpdateProposalsDTO = ProposalDTO<{
+  prim: "bytes";
+  type: "bytes";
+  name: "updates";
+  value: string;
+}>;
+
+export type VotersDTO = {
+  prim: "list";
+  type: "list";
+  name: "voters";
+  children?: {
+    prim: "pair";
+    type: "namedtuple";
+    name: "@pair_75";
+    children: [
+      {
+        prim: "nat";
+        type: "nat";
+        name: "vote_amount";
+        value: string;
+      },
+      {
+        prim: "bool";
+        type: "bool";
+        name: "vote_type";
+        value: boolean;
+      },
+      {
+        prim: "address";
+        type: "address";
+        name: "voter_address";
+        value: string;
+      }
+    ];
+  }[];
+};
+
+export interface Voter {
+  address: string;
+  value: number;
+  support: boolean;
+}
+
+export type TransferProposalsDTO = ProposalDTO<{
+  prim: "bytes";
+  type: "bytes";
+  name: "transfers";
+  value: string;
+}>;
+
+export type RegistryProposalsDTO =
+  | RegistryUpdateProposalsDTO
+  | TransferProposalsDTO;
 
 export interface Proposal {
   id: string;
@@ -238,6 +173,7 @@ export interface Proposal {
   proposer: string;
   cycle: number;
   proposerFrozenTokens: string;
+  type: "registryUpdate" | "transfer";
   voters: {
     address: string;
     support: boolean;
@@ -245,11 +181,11 @@ export interface Proposal {
   }[];
 }
 
-export interface TreasuryProposal extends Proposal {
+export interface TransferProposal extends Proposal {
   transfers: Transfer[];
 }
 
-export interface RegistryProposal extends Proposal {
+export interface RegistryUpdateProposal extends Proposal {
   list: {
     key: string;
     value: string;
@@ -259,11 +195,11 @@ export interface ProposalWithStatus extends Proposal {
   status: ProposalStatus;
 }
 
-export interface RegistryProposalWithStatus extends RegistryProposal {
+export interface RegistryProposalWithStatus extends RegistryUpdateProposal {
   status: ProposalStatus;
 }
 
-export interface TreasuryProposalWithStatus extends TreasuryProposal {
+export interface TransferProposalWithStatus extends TransferProposal {
   status: ProposalStatus;
 }
 
@@ -281,10 +217,7 @@ export interface XTZTransferDTO {
   args: [
     {
       prim: "Pair";
-      args: [
-        { int: string },
-        { string: string }
-      ];
+      args: [{ int: string }, { string: string }];
     }
   ];
 }
@@ -316,6 +249,11 @@ export interface FA2TransferDTO {
       ];
     }
   ];
+}
+
+export interface RegistryItemDTO {
+  prim: "Pair";
+  args: [{ string: string }, { args: [{ string: string }]; prim: "Some" }];
 }
 
 export interface Transfer {

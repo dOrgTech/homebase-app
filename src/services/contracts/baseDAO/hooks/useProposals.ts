@@ -10,23 +10,34 @@ import { BaseDAO } from "..";
 import { CycleInfo } from "../class";
 import { useCycleInfo } from "./useCycleInfo";
 
-const mapProposalStatus = (proposal: Proposal, cycleInfo: CycleInfo): ProposalWithStatus => {
-
+const mapProposalStatus = (proposal: Proposal, cycleInfo: CycleInfo, quorumTreshold: number): ProposalWithStatus => {
 
   if(proposal.cycle === cycleInfo.current) {
     return {
       ...proposal,
       status: ProposalStatus.CREATED,
     }
-  } else if(proposal.cycle + 1 === cycleInfo.current) {
+  } else if(cycleInfo.current === proposal.cycle + 1) {
     return {
       ...proposal,
       status: ProposalStatus.ACTIVE,
     }
   } else {
-    return {
-      ...proposal,
-      status: ProposalStatus.DROPPED,
+    if(proposal.upVotes >= quorumTreshold) {
+      return {
+        ...proposal,
+        status: ProposalStatus.PASSED,
+      }
+    } else if(proposal.downVotes >= quorumTreshold) {
+      return {
+        ...proposal,
+        status: ProposalStatus.REJECTED,
+      }
+    } else {
+      return {
+        ...proposal,
+        status: ProposalStatus.DROPPED,
+      }
     }
   }
 }
@@ -48,18 +59,18 @@ export const useProposals = (
   );
 
   const filteredData = useMemo(() => {
-    if (!result.data || !cycleInfo) {
+    if (!result.data || !cycleInfo || !dao) {
       return [];
     }
 
-    const proposalsWithStatus = result.data?.map((proposal) => mapProposalStatus(proposal, cycleInfo))
+    const proposalsWithStatus = result.data?.map((proposal) => mapProposalStatus(proposal, cycleInfo, dao.storage.quorumTreshold))
 
     if (!status) {
       return proposalsWithStatus;
     }
 
     return proposalsWithStatus.filter((proposalData) => proposalData.status === status);
-  }, [cycleInfo, result.data, status]);
+  }, [cycleInfo, result.data, status, dao]);
 
   return {
     ...result,

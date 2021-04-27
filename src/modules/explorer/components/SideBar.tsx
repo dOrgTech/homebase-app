@@ -133,19 +133,14 @@ export const SideBar: React.FC = () => {
         handler: () => history.push(`/explorer/dao/${daoId}/proposals`),
         name: "proposals",
       },
+      {
+        Icon: TreasuryIcon,
+        handler: () => history.push(`/explorer/dao/${daoId}/treasury`),
+        name: "treasury",
+      },
     ];
 
-    switch (dao.metadata.template) {
-      case "treasury":
-        return [
-          ...commonButons,
-          {
-            Icon: TreasuryIcon,
-            handler: () => history.push(`/explorer/dao/${daoId}/treasury`),
-            name: "treasury",
-          },
-        ];
-      case "registry":
+    if (dao.metadata.template === "registry") {
         return [
           ...commonButons,
           {
@@ -154,6 +149,8 @@ export const SideBar: React.FC = () => {
             name: "registry",
           },
         ];
+    } else {
+      return commonButons
     }
   }, [dao, daoId, history]);
 

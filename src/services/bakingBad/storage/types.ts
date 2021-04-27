@@ -28,7 +28,10 @@ export interface TreasuryStorage extends BaseStorage {
 }
 
 export interface RegistryStorage extends BaseStorage {
-  registry: string;
+  registry: {
+    key: string;
+    value: string;
+  }[];
   proposalReceivers: string;
   registryAffected: string;
 }
@@ -368,6 +371,7 @@ export interface TreasuryStorageDTO {
       type: "map";
       name: "extra";
       children: [
+
         {
           prim: "bytes";
           type: "bytes";
@@ -510,10 +514,23 @@ export interface TreasuryStorageDTO {
       value: number;
     },
     {
-      prim: "nat";
-      type: "nat";
+      prim: "pair";
+      type: "namedtuple";
       name: "quorum_threshold";
-      value: string;
+      children: [
+        {
+          prim: "nat";
+          type: "nat";
+          name: "numerator";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "denominator";
+          value: string;
+        }
+      ];
     },
     {
       prim: "address";

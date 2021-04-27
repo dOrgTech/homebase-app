@@ -29,7 +29,7 @@ export const useTreasuryPropose = () => {
       });
 
       try {
-        const data = await params.dao.propose({
+        const data = await params.dao.proposeTransfer({
           ...params,
           tokensToFreeze: params.tokensToFreeze,
           agoraPostId: params.agoraPostId,

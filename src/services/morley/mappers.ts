@@ -26,6 +26,7 @@ export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: 
   slash_division_value: `${storage.extra.slashDivisionValue}n`,
   slash_scale_value: `${storage.extra.slashScaleValue}n`,
   frozen_extra_value: `${storage.extra.frozenExtraValue}n`,
+  frozen_scale_value: '0n',
   // ledger: formatLedger(storage.membersTokenAllocation),
   metadata_map: formatMetadata(metadata),
   // quorum_treshold: `${storage.quorumTreshold}n`,

@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import { RegistryHeader } from "../components/RegistryHeader";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { RegistryDAO } from "services/contracts/baseDAO";
-import { useRegistryList } from "services/contracts/baseDAO/hooks/useRegistryList";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import dayjs from "dayjs";
 import {
@@ -27,7 +26,6 @@ export const Registry: React.FC = () => {
 
   const { data: daoData } = useDAO(id);
   const dao = daoData as RegistryDAO | undefined;
-  const { data: registryData } = useRegistryList(dao?.address);
   const { data: proposalsData } = useProposals(dao?.address);
   const registryProposalsData = proposalsData as
     | RegistryProposalWithStatus[]
@@ -55,15 +53,15 @@ export const Registry: React.FC = () => {
   }, [registryProposalsData]);
 
   const registryList = useMemo(() => {
-    if (!registryData) {
+    if (!dao) {
       return [];
     }
 
-    return registryData.map((d) => ({
+    return dao.storage.registry.map((d) => ({
       ...d,
       name: d.key,
     }));
-  }, [registryData]);
+  }, [dao]);
 
   const [value, setValue] = React.useState(0);
 
