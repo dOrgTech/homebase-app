@@ -129,7 +129,7 @@ export const DAO: React.FC = () => {
     ProposalStatus.ACTIVE
   );
   const isLoading = isDaoLoading || isProposalsLoading;
-  const tiRef = React.createRef();
+  // const tiRef = React.createRef();
 
   useEffect(() => {
     saveDaoId(id);
