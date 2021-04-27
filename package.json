@@ -20,6 +20,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@taquito/beacon-wallet": "^8.0.6-beta.0",
+    "@taquito/contract-type-generator": "8.1.0-20db307d--722",
     "@taquito/signer": "^8.0.6-beta.0",
     "@taquito/taquito": "^8.0.6-beta.0",
     "@taquito/tezbridge-signer": "^8.0.6-beta.0",
@@ -28,6 +29,7 @@
     "@taquito/tzip16": "^8.0.6-beta.0",
     "@thanos-wallet/dapp": "^2.2.2",
     "@types/lodash": "^4.14.168",
+    "@xendora/react-timer": "^1.1.0",
     "bignumber.js": "^9.0.1",
     "blockies-ts": "^1.0.0",
     "dayjs": "^1.10.4",
@@ -44,7 +46,6 @@
     "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "@taquito/contract-type-generator": "8.1.0-20db307d--722",
     "serve": "^11.3.2"
   },
   "devDependencies": {
