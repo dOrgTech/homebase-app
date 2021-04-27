@@ -1,11 +1,10 @@
 export interface TokenBalancesDTO {
-  balances: TokenBalance[];
+  balances: DAOHolding[];
   total: number;
 }
 
-export interface TokenBalance {
+export interface DAOHolding {
   contract: string;
-  network: string;
   level: number;
   token_id: number;
   symbol: string;

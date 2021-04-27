@@ -1,36 +1,12 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito";
-import { char2Bytes, tzip16 } from "@taquito/tzip16";
-import { MetadataCarrierDeploymentData } from "../metadataCarrier/types";
+import { tzip16 } from "@taquito/tzip16";
+import dayjs from "dayjs";
+import { CycleType } from ".";
 import {
   BaseStorageParams,
-  MemberTokenAllocation,
   MigrationParams,
   TokenHolder,
 } from "./types";
-
-export const setMembersAllocation = (allocations: MemberTokenAllocation[]) => {
-  const map = new MichelsonMap();
-
-  allocations.forEach((allocation) => {
-    map.set(
-      { 0: allocation.address, 1: allocation.tokenId },
-      allocation.amount
-    );
-  });
-
-  return map;
-};
-
-export const setMetadata = ({
-  deployAddress,
-  keyName,
-}: MetadataCarrierDeploymentData) => {
-  const map = new MichelsonMap();
-
-  map.set("", char2Bytes(`tezos-storage://${deployAddress}/${keyName}`));
-
-  return map;
-};
 
 const SECONDS_IN_MINUTE = 60;
 const SECONDS_IN_HOUR = 60 * 60;
@@ -89,3 +65,17 @@ export const getContract = async (
 ) => {
   return await tezos.wallet.at(contractAddress, tzip16);
 };
+
+export const calculateCycleInfo = (originationTime: string, votingPeriod: number, lastPeriodNumber: number) => {
+  const current = dayjs().unix() - dayjs(originationTime).unix();
+  const periodLeftPercentage = (current / votingPeriod) % 1;
+  const timeLeftPercentage = votingPeriod * periodLeftPercentage;
+  const time = votingPeriod - Number(timeLeftPercentage.toFixed());
+  const currentPeriodNumber = Math.floor(current / votingPeriod) + lastPeriodNumber
+
+  return {
+    time: Number(time),
+    current: currentPeriodNumber,
+    type: currentPeriodNumber % 2 === 0? "voting": "proposing" as CycleType
+  };
+}

@@ -149,11 +149,11 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
     }
 
     if (selectedTab === 1) {
-      return votesData.filter(voteData => voteData.favor === true);
+      return votesData.filter(voteData => voteData.support);
     }
 
     if (selectedTab === 2) {
-      return votesData.filter(voteData => voteData.favor === false);
+      return votesData.filter(voteData => !voteData.support);
     }
   }, [votesData, selectedTab]);
 
@@ -263,12 +263,12 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                     >
                       <Grid item xs={6}>
                         <Typography variant="subtitle1" color="textSecondary">
-                          {toShortAddress(vote.voter)}
+                          {toShortAddress(vote.address)}
                         </Typography>
                         <LinearBar
                           color="secondary"
                           variant="determinate"
-                          favor={vote.favor}
+                          favor={vote.support}
                           value={votesSum ? (vote.value / votesSum) * 100 : 0}
                         />
                       </Grid>

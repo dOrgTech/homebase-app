@@ -1,11 +1,11 @@
 import { Network } from "services/beacon/context";
 import { API_URL } from "..";
-import { TokenBalance, TokenBalancesDTO } from "./types";
+import { DAOHolding, TokenBalancesDTO } from "./types";
 
-export const getDAOTokenBalances = async (
+export const getDAOHoldings = async (
   daoId: string,
   network: Network
-): Promise<TokenBalance[]> => {
+): Promise<DAOHolding[]> => {
   const url = `${API_URL}/account/${network}/${daoId}/token_balances`;
 
   const response = await fetch(url);
@@ -16,5 +16,5 @@ export const getDAOTokenBalances = async (
 
   const result: TokenBalancesDTO = await response.json();
 
-  return result.balances;
+  return result.balances.map(balance => ({ ...balance, id: balance.contract }));
 };

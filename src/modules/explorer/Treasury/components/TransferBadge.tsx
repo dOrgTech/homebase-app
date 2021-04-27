@@ -13,6 +13,7 @@ import { ExternalLink } from "modules/common/ExternalLink";
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
 import React from "react";
 import { toShortAddress } from "services/contracts/utils";
+import { FA2Symbol } from "./FA2Symbol";
 
 const ArrowContainer = styled(Grid)(({ theme }) => ({
   color: theme.palette.text.secondary,
@@ -29,7 +30,8 @@ const linkStyle = makeStyles({
 interface Props extends GridProps {
   address: string;
   amount: string;
-  currency: string;
+  currency?: string;
+  contract?: string;
   long?: boolean;
 }
 
@@ -38,6 +40,7 @@ export const TransferBadge: React.FC<Props> = ({
   amount,
   currency,
   long,
+  contract,
   ...props
 }) => {
   const theme = useTheme();
@@ -53,7 +56,7 @@ export const TransferBadge: React.FC<Props> = ({
     >
       <Grid item>
         <Typography variant="body1" color="textSecondary">
-          {amount} {currency}
+          {amount} {contract ? <FA2Symbol contractAddress={contract} /> : currency}
         </Typography>
       </Grid>
       <ArrowContainer item>

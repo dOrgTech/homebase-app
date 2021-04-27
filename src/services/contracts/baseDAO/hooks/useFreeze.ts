@@ -1,58 +1,52 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
-import { TreasuryDAO } from "..";
-import { TransferParams } from "../types";
+import { BaseDAO } from "..";
 import { useCacheDAOs } from "./useCacheDAOs";
+import { useVisitedDAO } from "./useVisitedDAO";
 
 interface Params {
-  dao: TreasuryDAO;
-  tokensToFreeze: number;
-  agoraPostId: number;
-  transfers: TransferParams[];
+  dao: BaseDAO;
+  amount: number;
 }
 
-export const useTreasuryPropose = () => {
+export const useFreeze = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
+  const { saveDaoId } = useVisitedDAO();
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
       const {
-        key: proposalNotification,
-        closeSnackbar: closeProposalNotification,
+        key: freezeNotification,
+        closeSnackbar: closeFreezeNotification,
       } = openNotification({
-        message: "Treasury proposal is being created...",
+        message: "Freeze is being processed...",
         persist: true,
         variant: "info",
       });
-
       try {
-        const data = await params.dao.proposeTransfer({
-          ...params,
-          tokensToFreeze: params.tokensToFreeze,
-          agoraPostId: params.agoraPostId,
-          transfers: params.transfers,
-        });
+        const data = await (params.dao as BaseDAO).freeze(params.amount);
 
         await data.confirmation(1);
-        closeProposalNotification(proposalNotification);
 
+        closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "Treasury proposal transaction confirmed!",
+          message: "Freeze transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
         });
         setDAO(params.dao);
+        localStorage.removeItem('daoId');
+        saveDaoId(params.dao.address);
         return data;
-
       } catch (e) {
         console.log(e);
-        closeProposalNotification(proposalNotification);
+        closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "An error has happened with propose transaction!",
+          message: "And error has happened with freeze transaction!",
           variant: "error",
           autoHideDuration: 10000,
         });
@@ -61,8 +55,9 @@ export const useTreasuryPropose = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("proposals");
-      },
+        queryClient.invalidateQueries("ledger");
+        queryClient.invalidateQueries("dao");
+    },
     }
   );
 };

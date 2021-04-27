@@ -1,21 +1,21 @@
-import { Vote } from "./../../../bakingBad/operations/types";
-import { useQuery } from "react-query";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { BaseDAO } from "..";
+import { useMemo } from 'react';
+import { useProposal } from "./useProposal";
 
 export const useVotes = (
-  proposalKey: string | undefined,
+  proposalKey: string,
   contractAddress: string | undefined
 ) => {
-  const { data: dao } = useDAO(contractAddress);
+  const { data: proposal, ...rest } = useProposal(contractAddress, proposalKey)
 
-  const result = useQuery<Vote[], Error>(
-    ["votes", contractAddress, proposalKey],
-    () => (dao as BaseDAO).votes(proposalKey as string),
-    {
-      enabled: !!dao && !!proposalKey,
+  const votes = useMemo(() => {
+    if(!proposal) {
+      return []
     }
-  );
 
-  return result;
+    return proposal.voters
+
+  }, [proposal])
+  
+
+  return { data: votes, ...rest };
 };

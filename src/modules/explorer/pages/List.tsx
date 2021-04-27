@@ -18,7 +18,6 @@ import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useCacheDAOs } from "services/contracts/baseDAO/hooks/useCacheDAOs";
-import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
@@ -93,7 +92,6 @@ const CreateDaoContainer = styled(Grid)({
 });
 
 export const DAOsList: React.FC = () => {
-  const { saveDaoId } = useVisitedDAO();
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
   const style = styles();
@@ -118,10 +116,6 @@ export const DAOsList: React.FC = () => {
 
     return data.pages.flat();
   }, [data]);
-
-  useEffect(() => {
-    saveDaoId("")
-  }, [saveDaoId]);
 
   useEffect(() => {
     if (hasNextPage && !isFetchingNextPage) {
