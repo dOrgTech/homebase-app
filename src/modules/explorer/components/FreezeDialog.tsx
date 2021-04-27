@@ -122,7 +122,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
         onClick={handleClickOpen}
         variant="outlined"
       >
-        {freeze ? "Freeze" : "Unfreeze"}
+        {freeze ? "Stake" : "Unstake"}
       </ViewButton>
       <CustomDialog
         open={open}
@@ -139,7 +139,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
           >
             <Grid item xs={6}>
               <Typography variant="subtitle1" color="secondary">
-                {freeze ? "FREEZE" : "UNFREEZE"}{" "}
+                {freeze ? "STAKE" : "UNSTAKE"}{" "}
               </Typography>
             </Grid>
             <Grid item xs={6}>
@@ -205,7 +205,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
                 disabled={!amount}
                 onClick={onSubmit}
               >
-                {freeze ? "FREEZE" : "UNFREEZE"} TOKENS
+                {freeze ? "STAKE" : "UNSTAKE"} TOKENS
               </SendButton>
             </Grid>
           </DialogContentText>

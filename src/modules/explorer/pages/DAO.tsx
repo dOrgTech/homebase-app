@@ -8,10 +8,10 @@ import {
   useTheme,
   Tooltip,
   useMediaQuery,
+  Paper,
 } from "@material-ui/core";
 import Timer from "react-compound-timer";
 import { useHistory, useParams } from "react-router-dom";
-
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
@@ -89,6 +89,17 @@ const InfoIconInput = styled(Info)({
   marginLeft: 6,
 });
 
+const VotingLabel = styled(Paper)({
+  background: "rgba(129, 254, 183, 0.07)",
+  borderRadius: 4,
+  padding: "8px 23px",
+  boxShadow: "none",
+  marginLeft: 14,
+  width: "100%",
+  textAlign: "center",
+  maxWidth: 279,
+});
+
 const DescriptionContainer = styled(Box)({
   padding: "20px 0",
 });
@@ -108,6 +119,7 @@ export const DAO: React.FC = () => {
   const cycleInfo = useCycleInfo(id);
   const time = cycleInfo && cycleInfo.time;
   const theme = useTheme();
+  const isVotingPeriod = cycleInfo && cycleInfo.type;
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { data: proposals, isLoading: isProposalsLoading } = useProposals(
     data ? data.address : ""
@@ -117,11 +129,16 @@ export const DAO: React.FC = () => {
     ProposalStatus.ACTIVE
   );
   const isLoading = isDaoLoading || isProposalsLoading;
+  const tiRef = React.createRef();
 
   useEffect(() => {
     saveDaoId(id);
     saveDaoSymbol(symbol || "");
   }, [id, symbol, saveDaoId, saveDaoSymbol]);
+
+  // useEffect(() => {
+  //   console.log(time);
+  // }, []);
 
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
@@ -181,10 +198,10 @@ export const DAO: React.FC = () => {
                         </Tooltip>
                       </Grid>
                       <Grid item>
-                          <FreezeDialog freeze={true}/>
+                        <FreezeDialog freeze={true} />
                       </Grid>
                       <Grid item>
-                          <FreezeDialog freeze={false}/>
+                        <FreezeDialog freeze={false} />
                       </Grid>
                     </Grid>
                   </Box>
@@ -205,7 +222,17 @@ export const DAO: React.FC = () => {
               </Grid>
             </DAOInfoTitleAndDesc>
             <DAOInfoVotingPeriod item xs={12} md={5} lg={4}>
-              <Box paddingBottom="32px">
+              <Box paddingBottom="28px" width="100%">
+                <Grid container wrap="nowrap">
+                  <Grid item>
+                    <VotingLabel>
+                      <Typography color="textSecondary">{isVotingPeriod === "voting" ? "VOTING ON PROPOSALS" : "CREATING PROPOSALS"}</Typography>
+                    </VotingLabel>
+                  </Grid>
+                </Grid>
+              </Box>
+              <Box paddingBottom="16px">
+
                 <Grid container wrap="nowrap">
                   <Grid item>
                     <BigIconContainer>
@@ -270,10 +297,12 @@ export const DAO: React.FC = () => {
                             <Timer
                               initialTime={time * 1000}
                               direction="backward"
+                              onReset={() => console.log('onReset hook', time)}
+
                             >
-                              {({ reset }: { reset: () => void }) => {
+                              {({ reset}: { reset: () => void}) => {
                                 if (time === 1) {
-                                  reset();
+                                    reset();
                                 }
 
                                 return (
@@ -287,6 +316,7 @@ export const DAO: React.FC = () => {
                               }}
                             </Timer>
                           ) : null}
+
                         </Typography>
                       </Box>
                     </Box>
