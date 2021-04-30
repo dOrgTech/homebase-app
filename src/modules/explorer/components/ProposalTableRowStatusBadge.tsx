@@ -51,7 +51,7 @@ const Badge = styled(Grid)(
     padding: 4,
     textAlign: "center",
     maxWidth: 87,
-    marginRight: 10,
+    marginRight: 32,
     marginLeft: 10,
 
     background: statusColors(status, theme).background,
