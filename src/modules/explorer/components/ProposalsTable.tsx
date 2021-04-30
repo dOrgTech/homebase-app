@@ -23,6 +23,8 @@ const ProposalTableHeadText: React.FC = ({ children }) => (
 
 const ProposalTableHeadItem = styled(Typography)({
   fontWeight: "bold",
+  paddingLeft: 20,
+  paddingBottom: 9,
 });
 
 const NoProposals = styled(Typography)(({ theme }) => ({
