@@ -187,15 +187,6 @@ export const Proposals: React.FC = () => {
           </>
         ) : (
           <>
-            <ProposalsTable
-              headerText="Active Proposals"
-              status={ProposalStatus.ACTIVE}
-            />
-
-            <ProposalsTable
-              headerText="Passed Proposals"
-              status={ProposalStatus.PASSED}
-            />
             <ProposalsTable headerText="All Proposals" />
           </>
         )}

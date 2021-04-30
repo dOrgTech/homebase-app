@@ -16,6 +16,9 @@ export const theme = createMuiTheme({
     error: {
       main: "#ED254E",
     },
+    info: {
+      main: "#FFC839",
+    }
   },
   typography: {
     fontFamily: "Roboto Mono",

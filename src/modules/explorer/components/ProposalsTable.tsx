@@ -63,7 +63,7 @@ export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
               {headerText.toUpperCase()}
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}>
+          {/* <Grid item xs={2}>
             <ProposalTableHeadItem color="textSecondary" align="center">
               CYCLE
             </ProposalTableHeadItem>
@@ -71,7 +71,7 @@ export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
           <Grid item xs={4}></Grid>
           <Grid item xs={3}>
             <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
-          </Grid>
+          </Grid> */}
         </TableHeader>
       ) : null}
 
@@ -81,7 +81,6 @@ export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
             key={`proposal-${i}`}
             {...proposal}
             daoId={dao?.address}
-            quorumTreshold={dao?.storage.quorumTreshold || 0}
           />
         ))}
 
