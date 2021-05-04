@@ -329,14 +329,14 @@ export const DAO: React.FC = () => {
           {isMobileSmall && activeProposals && activeProposals.length > 0 && (
             <MobileHeader container justify="space-between" alignItems="center">
               <Typography variant="body1" color="textSecondary">
-                ACTIVE PROPOSALS
+                ALL PROPOSALS
               </Typography>
             </MobileHeader>
           )}
 
           <ProposalsTable
-            headerText="Active Proposals"
-            status={ProposalStatus.ACTIVE}
+            headerText="All Proposals"
+            // status={ProposalStatus.ACTIVE}
           />
           <Grid container direction="row" justify="center">
             <UnderlineText

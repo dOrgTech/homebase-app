@@ -11,73 +11,60 @@ import {
 import dayjs from "dayjs";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
-import ProgressBar from "react-customizable-progressbar";
-
 import { ProposalWithStatus } from "services/bakingBad/proposals/types";
-import { toShortAddress } from "services/contracts/utils";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useVotesStats } from "../hooks/useVotesStats";
 import { RowContainer } from "./tables/RowContainer";
-import { formatNumber } from "../utils/FormatNumber";
+import { TableStatusBadge } from "./ProposalTableRowStatusBadge";
+import { CheckCircleOutlined, CancelOutlined, ErrorOutlineOutlined } from '@material-ui/icons';
+import { ProposalStatus } from "services/bakingBad/proposals/types";
 
 export interface ProposalTableRowData {
-  cycle: number;
-  upVotes: number;
-  downVotes: number;
-  quorumTreshold: number;
   daoId?: string;
   id: string;
 }
 
 const ArrowContainer = styled(Grid)(({ theme }) => ({
-  display: "block",
+  display: "flex",
   [theme.breakpoints.down("sm")]: {
     display: "none",
   },
 }));
 
-const SupportText = styled(Typography)(
-  ({ textColor }: { textColor: string }) => ({
-    paddingLeft: 2,
-    paddingRight: 18,
-    color: textColor,
-  })
-);
-
-const ProgressText = styled(Typography)(
-  ({ textColor }: { textColor: string }) => ({
-    color: textColor,
-    display: "flex",
-    alignItems: "center",
-    position: "absolute",
-    width: "100%",
-    height: "100%",
-    fontSize: 16,
-    userSelect: "none",
-    boxShadow: "none",
-    background: "inherit",
-    fontFamily: "Roboto Mono",
-    justifyContent: "center",
-    top: 0,
-  })
-);
-
-const CycleText = styled(Typography)({
-  padding: "20px 0",
-});
-
 const ArrowButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.primary.light,
 }));
 
+const StatusText = styled(Typography)({
+  textTransform: "uppercase",
+  marginLeft: 10,
+  marginRight: 30,
+});
+
+const ErrorIcon = styled(ErrorOutlineOutlined)(({ theme }) => ({
+  color: theme.palette.info.main,
+}));
+
+const RowContent = styled(Box)(({ theme }) => ({
+  marginTop: 25,
+  [theme.breakpoints.down("sm")] : {
+    marginTop: 15,
+  }
+}));
+
+const ArrowInfo = styled(Typography)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 15,
+  },
+}));
+
 export const ProposalTableRow: React.FC<
-  ProposalWithStatus & { quorumTreshold: number; daoId: string | undefined }
-> = ({ quorumTreshold, cycle, upVotes, downVotes, daoId, id, startDate }) => {
+  ProposalWithStatus & { daoId: string | undefined }
+> = ({ daoId, id, startDate, status }) => {
   const history = useHistory();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const formattedDate = dayjs(startDate).format("MM/DD/YYYY");
+  const formattedDate = dayjs(startDate).format("LL");
   const { data: dao } = useDAO(daoId);
   const onClick = useCallback(() => {
     if (dao) {
@@ -85,113 +72,36 @@ export const ProposalTableRow: React.FC<
     }
   }, [dao, daoId, history, id]);
 
-  const { support, votesQuorumPercentage, votesSumPercentage } = useVotesStats({
-    upVotes,
-    downVotes,
-    quorumTreshold,
-  });
-  const color = support
-    ? theme.palette.secondary.main
-    : theme.palette.error.main;
 
   return (
     <RowContainer item container alignItems="center" onClick={onClick}>
-      <Grid item xs={12} md={3}>
+      <Grid item xs={12} lg={9} md={6}>
         <Box>
           <Typography
-            variant="body1"
+            variant="h4"
             color="textSecondary"
             align={isMobileSmall ? "center" : "left"}
           >
             Proposal Title
           </Typography>
         </Box>
-        <Box>
-          <Typography
-            variant="body1"
-            color="textSecondary"
-            align={isMobileSmall ? "center" : "left"}
-          >
-            {toShortAddress(id)} • {formattedDate}
-          </Typography>
-        </Box>
-      </Grid>
-      <Grid item xs={12} md={2}>
-        <CycleText variant="body1" color="textSecondary" align="center">
-          {isMobileSmall ? (
-            <Typography style={{ fontWeight: "bold" }}>Cycle</Typography>
-          ) : null}
-          {Number.isInteger(cycle) ? cycle : "-"}
-        </CycleText>
-      </Grid>
-
-      <Grid
-        item
-        container
-        alignItems="baseline"
-        xs={12}
-        md={6}
-        justify="center"
-      >
-        <Grid
-          item
-          container
-          alignItems="center"
-          xs
-          md={8}
-          justify={isMobileSmall ? "flex-end" : "center"}
-        >
-          <Grid item>
-            <ProgressBar
-              progress={votesSumPercentage}
-              radius={32}
-              strokeWidth={4}
-              strokeColor={color}
-              trackStrokeWidth={2}
-              trackStrokeColor={theme.palette.primary.light}
-            >
-              <div className="indicator">
-                <ProgressText textColor={color}>
-                  {formatNumber(Number(votesSumPercentage))}%
-                </ProgressText>
-              </div>
-            </ProgressBar>
+        <RowContent>
+          <Grid container direction={isMobileSmall ? "column" : "row"} alignItems={isMobileSmall ? "center" : "flex-start"}>
+            <TableStatusBadge  status={status} />
+            <ArrowInfo color="textSecondary">{"#43"} • Executed {formattedDate}</ArrowInfo>
           </Grid>
-          <Grid item xs={12} md={3}>
-            <SupportText
-              textColor={color}
-              align={isMobileSmall ? "right" : "left"}
-            >
-              {support ? "SUPPORT" : "OPPOSE"}
-            </SupportText>
-          </Grid>
-        </Grid>
-
-        <Grid item container alignItems="center" xs md={4} justify="flex-start">
-          <Grid item>
-            <ProgressBar
-              progress={votesQuorumPercentage}
-              radius={32}
-              strokeWidth={4}
-              strokeColor="#3866F9"
-              trackStrokeWidth={2}
-              trackStrokeColor={theme.palette.primary.light}
-            >
-              <div className="indicator">
-                <ProgressText textColor="#3866F9">
-                  {formatNumber(Number(votesQuorumPercentage))}%
-                </ProgressText>
-              </div>
-            </ProgressBar>
-          </Grid>
-          {isMobileSmall && (
-            <Grid item xs={12} md={3}>
-              <SupportText textColor={"#3866F9"}>TRESHOLD %</SupportText>
-            </Grid>
-          )}
-        </Grid>
+        </RowContent>
       </Grid>
-      <ArrowContainer item md={1}>
+      <ArrowContainer item lg={3} md={6} container direction="row" alignItems="center" justify="flex-end">
+        <>
+        {status === ProposalStatus.ACTIVE ? <ErrorIcon fontSize={"large"} /> : null} 
+        {status === ProposalStatus.CREATED ? <ErrorIcon fontSize={"large"} /> : null} 
+        {status === ProposalStatus.PASSED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null} 
+        {status === ProposalStatus.EXECUTED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null} 
+        {status === ProposalStatus.DROPPED ? <CancelOutlined fontSize={"large"} color="error" /> : null} 
+        {status === ProposalStatus.REJECTED ? <CancelOutlined fontSize={"large"} color="error" /> : null} 
+        <StatusText color="textSecondary">{status}</StatusText>
+        </>
         <ArrowButton>
           <ArrowForwardIcon fontSize={"large"} color="inherit" />
         </ArrowButton>
