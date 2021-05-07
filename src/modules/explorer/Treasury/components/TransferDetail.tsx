@@ -78,6 +78,7 @@ export const TransferDetail: React.FC<Props> = ({ proposal }) => {
                 amount={transfer.amount}
                 address={transfer.beneficiary}
                 contract={(transfer as FA2Transfer).contractAddress}
+                tokenId={(transfer as FA2Transfer).tokenId}
                 long={true}
               />
             )}

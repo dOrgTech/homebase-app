@@ -12,7 +12,7 @@ import {
   Tooltip,
   Switch,
 } from "@material-ui/core";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 import { Field, Form, Formik, getIn } from "formik";
@@ -27,11 +27,11 @@ import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetad
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 21,
   borderBottom: `1px solid ${theme.palette.primary.light}`,
-  marginTop: 10
+  marginTop: 10,
 }));
 
 const SecondContainer = styled(Grid)({
-  marginTop: 25
+  marginTop: 25,
 });
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
@@ -42,51 +42,47 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${theme.palette.secondary.light}`
-  }
+    borderLeft: `2px solid ${theme.palette.secondary.light}`,
+  },
 }));
-
-const CustomInputContainerInput = styled(CustomInputContainer)({
-  padding: "0px 21px"
-});
 
 const InfoIcon = styled(InfoOutlined)({
   position: "absolute",
   right: 25,
-  top: "50%"
+  top: "50%",
 });
 
 const InfoIconInput = styled(InfoOutlined)({
-  cursor: "default"
+  cursor: "default",
 });
 
 const TextareaContainer = styled(Grid)({
   display: "flex",
-  position: "relative"
+  position: "relative",
 });
 
 const CustomFormikTextField = withStyles({
   root: {
     "& .MuiInput-root": {
       fontWeight: 300,
-      textAlign: "initial"
+      textAlign: "initial",
     },
     "& .MuiInputBase-input": {
-      textAlign: "initial"
+      textAlign: "initial",
     },
     "& .MuiInput-underline:before": {
-      borderBottom: "none !important"
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important"
+      borderBottom: "none !important",
     },
     "& .MuiInput-underline:after": {
-      borderBottom: "none !important"
-    }
-  }
+      borderBottom: "none !important",
+    },
+  },
 })(FormikTextField);
 
-const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
+const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   minHeight: 152,
   boxSizing: "border-box",
   width: "100%",
@@ -102,81 +98,39 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   wordBreak: "break-word",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${props.theme.palette.secondary.light}`
-  }
+    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
+  },
 }));
 
 const ErrorText = styled(Typography)({
   fontSize: 14,
-  color: "red"
+  color: "red",
 });
 
-const CustomInput = styled("input")(({ theme }) => ({
-  background: "inherit",
-  border: "none",
-  fontSize: 16,
-  fontWeight: 400,
-  lineHeight: "146.3%",
-  letterSpacing: "-0.01em",
-  color: "#fff",
-  outline: "none",
-  height: "100%",
-  fontFamily: theme.typography.fontFamily,
-  width: "100%",
-  "&:hover": {
-    border: "none",
-    outline: "none",
-    background: "rgba(129, 254, 183, 0.001)"
-  },
-  "&:active": {
-    border: "none",
-    outline: "none",
-    background: "rgba(129, 254, 183, 0.001)"
-  },
-  "&:focus": {
-    border: "none",
-    outline: "none",
-    background: "rgba(129, 254, 183, 0.001)"
-  }
-}));
-
 const DaoSettingsForm = withRouter(
-  ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+  ({
+    submitForm,
+    values,
+    setFieldValue,
+    errors,
+    touched,
+    initialChecked,
+  }: any) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-    const [checked, setChecked] = useState(false);
-    const [address, setAddress] = useState("");
-    const { data } = useTokenMetadata(address);
+    const [checked, setChecked] = useState(initialChecked);
+
+    const { data: tokenMetadata } = useTokenMetadata(
+      values.governanceToken.address,
+      values.governanceToken.tokenId
+    );
 
     const {
       dispatch,
-      state: { governanceStep }
+      state: { governanceStep },
     } = useContext(CreatorContext);
     const match = useRouteMatch();
     const history = useHistory();
-
-    const handleAddress = useCallback(() => {
-      if (data) {
-        setFieldValue("name", data.name);
-        setFieldValue("symbol", data?.symbol);
-      }
-    }, [data, setFieldValue]);
-
-    const handleChecked = useCallback(() => {
-      values.name = "";
-      values.symbol = "";
-    }, [values]);
-
-    useEffect(() => {
-      setAddress(address);
-      if (address === "" || data === undefined) {
-        handleChecked();
-      }
-
-      if(address !== "" && data !== undefined) {
-        handleAddress();
-      } 
-    }, [address, data, handleAddress, handleChecked]);
 
     useEffect(() => {
       if (values) {
@@ -186,12 +140,12 @@ const DaoSettingsForm = withRouter(
             handler: () => {
               submitForm(values);
             },
-            text: "CONTINUE"
+            text: "CONTINUE",
           },
           back: {
             handler: () => history.push(`templates`),
-            text: "BACK"
-          }
+            text: "BACK",
+          },
         });
       }
     }, [
@@ -202,7 +156,7 @@ const DaoSettingsForm = withRouter(
       match.path,
       match.url,
       submitForm,
-      values
+      values,
     ]);
 
     return (
@@ -212,8 +166,12 @@ const DaoSettingsForm = withRouter(
             <Switch
               checked={checked}
               onChange={() => {
-                setChecked(!checked)
-                return handleChecked()}}
+                setChecked(!checked);
+
+                if (checked) {
+                  setFieldValue("governance.address", "");
+                }
+              }}
               name="checkedB"
             />
             <Typography color="textSecondary">
@@ -221,23 +179,36 @@ const DaoSettingsForm = withRouter(
             </Typography>
           </Grid>
           {checked ? (
-            <Grid item xs={isMobile ? 12 : 9}>
-              <Typography variant="subtitle1" color="textSecondary">
-                {" "}
-                Token Address{" "}
-              </Typography>
-              <CustomInputContainerInput>
-                <CustomInput
-                  id="outlined-basic"
-                  placeholder="tz1aaYo...."
-                  onBlur={(e: any) => {
-                    setAddress(e.target.value)}}
-                />
-              </CustomInputContainerInput>
-              {data === undefined && address !== "" ? (
-              <ErrorText>{"No data found"}</ErrorText>
-            ) : null}
-            </Grid>
+            <>
+              <Grid item xs={isMobile ? 12 : 9}>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {" "}
+                  Token Address{" "}
+                </Typography>
+                <CustomInputContainer>
+                  <Field
+                    id="outlined-basic"
+                    placeholder="KT1...."
+                    name="governanceToken.address"
+                    component={CustomFormikTextField}
+                  />
+                </CustomInputContainer>
+              </Grid>
+              <Grid item xs={isMobile ? 12 : 3}>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {" "}
+                  Token ID{" "}
+                </Typography>
+                <CustomInputContainer>
+                  <Field
+                    id="outlined-basic"
+                    placeholder="0"
+                    name="governanceToken.tokenId"
+                    component={CustomFormikTextField}
+                  />
+                </CustomInputContainer>
+              </Grid>
+            </>
           ) : null}
           <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
@@ -247,7 +218,6 @@ const DaoSettingsForm = withRouter(
             <CustomInputContainer>
               <Field
                 name="name"
-                disabled={checked}
                 inputProps={{ maxLength: 18 }}
                 type="text"
                 placeholder="My Group’s Token"
@@ -259,7 +229,7 @@ const DaoSettingsForm = withRouter(
                         <InfoIconInput color="secondary" />
                       </Tooltip>
                     </InputAdornment>
-                  )
+                  ),
                 }}
               ></Field>
             </CustomInputContainer>
@@ -277,10 +247,9 @@ const DaoSettingsForm = withRouter(
               <Field
                 name="symbol"
                 type="text"
-                disabled={checked}
                 inputProps={{
                   style: { textTransform: "uppercase" },
-                  maxLength: 6
+                  maxLength: 6,
                 }}
                 placeholder="MYTOK"
                 component={CustomFormikTextField}
@@ -291,7 +260,7 @@ const DaoSettingsForm = withRouter(
                         <InfoIconInput color="secondary" />
                       </Tooltip>
                     </InputAdornment>
-                  )
+                  ),
                 }}
               ></Field>
             </CustomInputContainer>
@@ -344,7 +313,7 @@ export const DaoSettings = (): JSX.Element => {
   ) => {
     const newState = {
       ...state.data,
-      orgSettings: values
+      orgSettings: values,
     };
     updateCache(newState);
     setSubmitting(true);
@@ -385,7 +354,7 @@ export const DaoSettings = (): JSX.Element => {
           setFieldValue,
           values,
           errors,
-          touched
+          touched,
         }) => {
           return (
             <Form style={{ width: "100%" }}>
@@ -397,6 +366,7 @@ export const DaoSettings = (): JSX.Element => {
                 errors={errors}
                 touched={touched}
                 values={values}
+                initialChecked={!!orgSettings.governanceToken.address}
               />
             </Form>
           );

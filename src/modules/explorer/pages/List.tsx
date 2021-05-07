@@ -18,6 +18,7 @@ import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useCacheDAOs } from "services/contracts/baseDAO/hooks/useCacheDAOs";
+import { DAOListMetadata } from "services/contracts/metadataCarrier/types";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
@@ -109,7 +110,7 @@ export const DAOsList: React.FC = () => {
 
   const { daos: recent } = useCacheDAOs();
 
-  const daos = useMemo(() => {
+  const daos = useMemo<DAOListMetadata[]>(() => {
     if (!data) {
       return [];
     }
@@ -127,9 +128,8 @@ export const DAOsList: React.FC = () => {
     if (daos) {
       const formattedDAOs = daos.map(dao => ({
         id: dao.address,
-        name: dao.metadata.unfrozenToken.name,
-        symbol: dao.metadata.unfrozenToken.symbol,
-        voting_addresses: dao.ledger.length
+        name: dao.unfrozenToken.name,
+        symbol: dao.unfrozenToken.symbol,
       }));
 
       if (searchText) {
@@ -202,7 +202,7 @@ export const DAOsList: React.FC = () => {
         />
         <TabPanel value={selectedTab} index={0}>
           <GridBackground container direction="row">
-            {currentDAOs.map((dao: any, index: any) => {
+            {currentDAOs.map((dao, index: any) => {
               return (
                 <DaoContainer
                   item
@@ -228,7 +228,7 @@ export const DAOsList: React.FC = () => {
                         {dao.name}
                       </Typography>
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    {/* <Grid item xs={12} lg={6}>
                       <Typography
                         variant="subtitle1"
                         color="textSecondary"
@@ -236,7 +236,7 @@ export const DAOsList: React.FC = () => {
                       >
                         {dao.voting_addresses} VOTING ADDRESSES
                       </Typography>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </DaoContainer>
               );

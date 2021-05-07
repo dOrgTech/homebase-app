@@ -32,6 +32,7 @@ interface Props extends GridProps {
   amount: string;
   currency?: string;
   contract?: string;
+  tokenId?: string;
   long?: boolean;
 }
 
@@ -41,6 +42,7 @@ export const TransferBadge: React.FC<Props> = ({
   currency,
   long,
   contract,
+  tokenId,
   ...props
 }) => {
   const theme = useTheme();
@@ -56,7 +58,7 @@ export const TransferBadge: React.FC<Props> = ({
     >
       <Grid item>
         <Typography variant="body1" color="textSecondary">
-          {amount} {contract ? <FA2Symbol contractAddress={contract} /> : currency}
+          {amount} {contract && tokenId? <FA2Symbol contractAddress={contract} tokenId={tokenId} /> : currency}
         </Typography>
       </Grid>
       <ArrowContainer item>

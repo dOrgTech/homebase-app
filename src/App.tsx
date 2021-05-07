@@ -19,7 +19,13 @@ import { theme } from "theme";
 import "App.css";
 import { ModalsProvider } from "modules/explorer/ModalsContext";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false
+    }
+  }
+});
 
 const styles = makeStyles({
   success: {

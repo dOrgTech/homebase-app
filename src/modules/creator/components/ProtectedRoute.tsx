@@ -19,7 +19,7 @@ export const useCreatorRouteValidation = (): string => {
 
   const members = Object.keys(memberSettings) as MemberKeys[];
 
-  const needsToFillOrgSettings = org.some((value) => !orgSettings[value]);
+  const needsToFillOrgSettings = org.some((value) => value !== "governanceToken" && !orgSettings[value]);
   const needsToFillGovernance = Object.keys(
     handleGovernanceFormErrors(votingSettings, template) || {}
   ).length;

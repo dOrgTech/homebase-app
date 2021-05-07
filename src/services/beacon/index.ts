@@ -6,12 +6,7 @@ export const rpcNodes: Record<Network, string> = {
   edo2net: "https://edonet.smartpy.io",
   delphinet: "https://api.tez.ie/rpc/delphinet",
   mainnet: "https://mainnet-tezos.giganode.io",
-};
-
-export const explorerUrls: Record<Network, string> = {
-  edo2net: "https://api.edo2net.tzkt.io",
-  delphinet: "https://api.delphinet.tzkt.io",
-  mainnet: "https://api.tzkt.io/",
+  florencenet: "https://edonet.smartpy.io"
 };
 
 const networkNameMap = {
@@ -20,6 +15,7 @@ const networkNameMap = {
   mainnet: "mainnet",
   custom: "edo2net",
   edonet: "edo2net",
+  florencenet: "florencenet"
 } as const;
 
 export const connectWithBeacon = async (): Promise<{

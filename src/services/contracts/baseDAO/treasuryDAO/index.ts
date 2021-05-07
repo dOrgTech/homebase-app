@@ -1,10 +1,6 @@
 import {
   TezosToolkit,
-  ContractAbstraction,
-  Wallet,
-  ContractProvider,
 } from "@taquito/taquito";
-import { Tzip16ContractAbstraction } from "@taquito/tzip16";
 
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
@@ -15,7 +11,7 @@ import {
   TreasuryStorage,
 } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { BaseConstructorParams, getContract } from "..";
+import { BaseConstructorParams } from "..";
 import { getDAOListMetadata } from "../../metadataCarrier";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 
@@ -69,17 +65,9 @@ export class TreasuryDAO extends BaseDAO {
     network: Network,
     tezos: TezosToolkit,
     prefetched?: {
-      contract?: ContractAbstraction<Wallet> & {
-        tzip16(
-          this: ContractAbstraction<Wallet | ContractProvider>
-        ): Tzip16ContractAbstraction;
-      };
       metadata?: DAOListMetadata;
     }
   ) => {
-    const contract =
-      (prefetched && prefetched.contract) ||
-      (await getContract(tezos, contractAddress));
     const storageDTO = (await getStorage(
       contractAddress,
       network
@@ -87,7 +75,7 @@ export class TreasuryDAO extends BaseDAO {
     const storage = TreasuryDAO.storageMapper(storageDTO);
     const metadataToUse =
       (prefetched && prefetched.metadata) ||
-      (await getDAOListMetadata(contract));
+      (await getDAOListMetadata(contractAddress, tezos));
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
     const originationTime = await getOriginationTime(contractAddress, network);
 

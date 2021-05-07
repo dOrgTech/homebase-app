@@ -20,7 +20,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@taquito/beacon-wallet": "^8.0.6-beta.0",
-    "@taquito/contract-type-generator": "8.1.0-20db307d--722",
     "@taquito/signer": "^8.0.6-beta.0",
     "@taquito/taquito": "^8.0.6-beta.0",
     "@taquito/tezbridge-signer": "^8.0.6-beta.0",

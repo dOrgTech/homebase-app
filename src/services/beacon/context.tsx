@@ -1,9 +1,9 @@
-import { TezosToolkit } from "@taquito/taquito";
+import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 import React, { createContext, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
 
-export type Network = "delphinet" | "mainnet" | "edo2net";
+export type Network = "delphinet" | "mainnet" | "edo2net" | "florencenet"
 
 interface TezosState {
   network: Network;
@@ -17,6 +17,7 @@ interface TezosProvider {
 }
 
 const Tezos = new TezosToolkit(rpcNodes.edo2net);
+Tezos.setPackerProvider(new MichelCodecPacker());
 Tezos.addExtension(new Tzip16Module());
 
 const INITIAL_STATE: TezosState = {

@@ -1,19 +1,16 @@
 import {
-  ContractAbstraction,
-  ContractProvider,
   MichelsonMap,
-  Wallet,
+  TezosToolkit,
 } from "@taquito/taquito";
-import { bytes2Char, Tzip16ContractAbstraction } from "@taquito/tzip16";
+import { bytes2Char } from "@taquito/tzip16";
 import { DAOListMetadata } from "services/contracts/metadataCarrier/types";
+import { getContract } from "../baseDAO";
 
 export const getDAOListMetadata = async (
-  contract: ContractAbstraction<Wallet> & {
-    tzip16(
-      this: ContractAbstraction<Wallet | ContractProvider>
-    ): Tzip16ContractAbstraction;
-  }
+  contractAddress: string,
+  tezos: TezosToolkit
 ): Promise<DAOListMetadata> => {
+  const contract = await getContract(tezos, contractAddress)
   const metadata = await contract.tzip16().getMetadata();
   const views = await contract.tzip16().metadataViews();
 
@@ -24,6 +21,7 @@ export const getDAOListMetadata = async (
   } = await views.token_metadata().executeView(0);
 
   return {
+    address: contractAddress,
     authors: metadata.metadata.authors || [],
     name: metadata.metadata.name || "",
     description: metadata.metadata.description || "",

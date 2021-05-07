@@ -123,17 +123,12 @@ export class RegistryDAO extends BaseDAO {
       metadata?: DAOListMetadata;
     }
   ) => {
-    const contract =
-      (prefetched && prefetched.contract) ||
-      (await getContract(tezos, contractAddress));
     const storageDTO = (await getStorage(
       contractAddress,
       network
     )) as RegistryStorageDTO;
     const storage = RegistryDAO.storageMapper(storageDTO);
-    const metadataToUse =
-      (prefetched && prefetched.metadata) ||
-      (await getDAOListMetadata(contract));
+    const metadataToUse = await getDAOListMetadata(contractAddress, tezos);
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
     const originationTime = await getOriginationTime(contractAddress, network);
 

@@ -6,7 +6,6 @@ import { Ledger } from "services/bakingBad/ledger/types";
 import { BaseStorage } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
 import { DAOParams, fromStateToBaseStorage, getContract, MigrationParams, TransferParams } from ".";
-import { getDAOListMetadata } from "../metadataCarrier";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import {
   RegistryDAO,
@@ -18,6 +17,7 @@ import { getOriginatedAddress } from "services/bakingBad/originatorContract";
 import { Schema } from "@taquito/michelson-encoder";
 import { xtzToMutez } from "services/contracts/utils";
 import { Parser, Expr } from "@taquito/michel-codec";
+import { getDAOListMetadata } from "../metadataCarrier";
 
 const parser = new Parser();
 
@@ -65,32 +65,29 @@ export abstract class BaseDAO {
     tezos: TezosToolkit;
   }): Promise<BaseDAO> => {
     const { address, network, tezos } = params;
-    const contract = await getContract(tezos, address);
-    const metadata = await getDAOListMetadata(contract);
-    const template = metadata.template;
+
+    const contract = await getContract(tezos, address)
+    const metadata = await contract.tzip16().getMetadata();
+    const storage = await contract.storage()
+    console.log("STORAGE", storage)
+
+    const template = (metadata.metadata as any).template
 
     let instance: any;
-
-    const prefetched = {
-      metadata,
-      contract,
-    };
 
     switch (template) {
       case "treasury":
         instance = await TreasuryDAO.create(
           address,
           network,
-          tezos,
-          prefetched
+          tezos
         );
         break;
       case "registry":
         instance = await RegistryDAO.create(
           address,
           network,
-          tezos,
-          prefetched
+          tezos
         );
         break;
       default:
@@ -161,9 +158,8 @@ export abstract class BaseDAO {
 
   public static getDAOs = async (
     addresses: string[],
-    tezos: TezosToolkit | undefined,
-    network: Network
-  ) => {
+    tezos: TezosToolkit | undefined
+  ): Promise<(DAOListMetadata | false)[]> => {
     if (!tezos) {
       return [];
     }
@@ -171,13 +167,10 @@ export abstract class BaseDAO {
     const results = await Promise.all(
       addresses.map(async (address) => {
         try {
-          const dao = await BaseDAO.getDAO({
-            address,
-            tezos,
-            network,
-          });
 
-          return dao;
+          const metadata = await getDAOListMetadata(address, tezos)
+
+          return metadata;
         } catch (e) {
           console.log(e);
           return false;

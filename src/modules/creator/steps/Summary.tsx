@@ -73,7 +73,6 @@ export const Summary = (): JSX.Element => {
   const match = useRouteMatch();
 
   const goToVoting = () => {
-    console.log(state);
     history.push(`voting`);
   };
 
@@ -117,6 +116,13 @@ export const Summary = (): JSX.Element => {
         </Grid>
 
         <SecondContainer container direction="row">
+          {state.data.orgSettings.governanceToken.address ? (
+            <Grid item xs={12}>
+              <TitleSpacing color="secondary" variant="subtitle1">
+                {state.data.orgSettings.governanceToken.address}
+              </TitleSpacing>
+            </Grid>
+          ) : null}
           <Grid item xs={12}>
             <TitleSpacing color="secondary" variant="subtitle1">
               {state.data.orgSettings.symbol}
