@@ -143,3 +143,12 @@ export type ParamsWithoutMetadata = Omit<
   DAOParams,
   "metadataCarrierDeploymentData"
 >;
+
+export interface Extra {
+  frozenExtraValue: number;
+  slashExtraValue: number;
+  minXtzAmount: number;
+  maxXtzAmount: number;
+  frozenScaleValue: number;
+  slashDivisionScale: number;
+}

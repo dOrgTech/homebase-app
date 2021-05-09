@@ -16,13 +16,15 @@ interface TezosProvider {
   dispatch: React.Dispatch<TezosAction>;
 }
 
-const Tezos = new TezosToolkit(rpcNodes.edo2net);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
+const Tezos = new TezosToolkit(rpcNodes[envNetwork]);
 Tezos.setPackerProvider(new MichelCodecPacker());
 Tezos.addExtension(new Tzip16Module());
 
 const INITIAL_STATE: TezosState = {
   tezos: Tezos,
-  network: "edo2net",
+  network: envNetwork,
   account: "",
 };
 

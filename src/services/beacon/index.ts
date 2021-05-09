@@ -6,17 +6,24 @@ export const rpcNodes: Record<Network, string> = {
   edo2net: "https://edonet.smartpy.io",
   delphinet: "https://api.tez.ie/rpc/delphinet",
   mainnet: "https://mainnet-tezos.giganode.io",
-  florencenet: "https://edonet.smartpy.io"
+  florencenet: "https://florencenet.smartpy.io",
 };
 
 const networkNameMap = {
   edo2net: "edo2net",
   delphinet: "delphinet",
   mainnet: "mainnet",
-  custom: "edo2net",
+  custom: "florencenet",
   edonet: "edo2net",
-  florencenet: "florencenet"
+  florencenet: "florencenet",
 } as const;
+
+console.log(process.env)
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const envNetwork = process.env
+  .REACT_APP_NETWORK!.toString()
+  .toLowerCase() as Network;
 
 export const connectWithBeacon = async (): Promise<{
   wallet: BeaconWallet;
@@ -39,10 +46,33 @@ export const connectWithBeacon = async (): Promise<{
       },
     });
 
+    let networkType;
+
+    switch (envNetwork) {
+      case "edo2net":
+        networkType = NetworkType.EDONET;
+        break;
+
+      case "delphinet":
+        networkType = NetworkType.DELPHINET;
+        break;
+
+      case "florencenet":
+        networkType = NetworkType.FLORENCENET;
+        break;
+
+      case "mainnet":
+        networkType = NetworkType.MAINNET;
+        break;
+
+      default:
+        networkType = NetworkType.FLORENCENET;
+        break;
+    }
+
     await wallet.requestPermissions({
       network: {
-        type: NetworkType.CUSTOM,
-        rpcUrl: "https://edonet.smartpy.io",
+        type: networkType,
       },
     });
   });

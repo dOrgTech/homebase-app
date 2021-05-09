@@ -1,19 +1,4 @@
 export interface MorleyContractsDTO {
-  steps: {
-    "00_originator.tz": string
-    "00_storage.tz": string
-    "01_packed_lambda.tz": string
-    "02_packed_lambda.tz": string
-  }
-  storage: string
-}
-
-export interface MorleyContracts {
-  steps: {
-    originator: string
-    storage: string
-    lambdas: string[]
-  }
   storage: string
 }
 

@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { RegistryItem } from "../registryDAO/types";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useCacheDAOs } from "./useCacheDAOs";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 interface Params {
   dao: RegistryDAO;
@@ -16,6 +17,7 @@ export const useRegistryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
+  const { network } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -41,7 +43,7 @@ export const useRegistryPropose = () => {
           message: "Registry proposal transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
-          detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
+          detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
         setDAO(params.dao);
         return data;

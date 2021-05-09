@@ -1,6 +1,7 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
+import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
 import { useCacheDAOs } from "./useCacheDAOs";
 
@@ -15,6 +16,7 @@ export const useVote = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
+  const { network } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -40,7 +42,7 @@ export const useVote = () => {
           message: "Vote transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
-          detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
+          detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
         setDAO(params.dao);
         return data;

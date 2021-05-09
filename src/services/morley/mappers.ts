@@ -1,22 +1,8 @@
 import { BaseStorageParams, MemberTokenAllocation } from "services/contracts/baseDAO";
 import { xtzToMutez } from "services/contracts/utils";
-import { GeneratorArgs, MorleyContracts, MorleyContractsDTO } from "./types";
+import { GeneratorArgs } from "./types";
 import { char2Bytes } from '@taquito/tzip16';
 import { MetadataDeploymentResult } from 'services/contracts/metadataCarrier/deploy';
-
-export const dtoToMorleyContracts = (dto: MorleyContractsDTO): MorleyContracts => {
-  return {
-    steps: {
-      originator: dto.steps["00_originator.tz"],
-      storage: `(${dto.steps["00_storage.tz"]})`,
-      lambdas: [
-        formatBytes(dto.steps["01_packed_lambda.tz"]),
-        formatBytes(dto.steps["02_packed_lambda.tz"])
-      ]
-    },
-    storage: dto.storage
-  }
-}
 
 export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult): GeneratorArgs => ({
   admin_address: storage.adminAddress,
@@ -34,8 +20,6 @@ export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: 
   min_xtz_amount: `${xtzToMutez(storage.extra.minXtzAmount.toString())}mutez`,
   max_xtz_amount: `${xtzToMutez(storage.extra.maxXtzAmount.toString())}mutez`,
 })
-
-const formatBytes = (value: string) => value.startsWith("0x") ? value.substring(2, value.length): value
 
 const formatLedger = (allocations: MemberTokenAllocation[]) => {
   return `'[

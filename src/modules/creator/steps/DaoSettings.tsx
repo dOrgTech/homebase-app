@@ -82,6 +82,10 @@ const CustomFormikTextField = withStyles({
   },
 })(FormikTextField);
 
+const MetadataContainer = styled(Grid)({
+  margin: "-4px 0 16px 0"
+})
+
 const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   minHeight: 152,
   boxSizing: "border-box",
@@ -114,16 +118,16 @@ const DaoSettingsForm = withRouter(
     setFieldValue,
     errors,
     touched,
-    initialChecked,
   }: any) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-    const [checked, setChecked] = useState(initialChecked);
 
-    const { data: tokenMetadata } = useTokenMetadata(
-      values.governanceToken.address,
-      values.governanceToken.tokenId
+    const { data: tokenMetadata, isLoading: loading } = useTokenMetadata(
+      values?.governanceToken?.address,
+      values?.governanceToken?.tokenId
     );
+
+    console.log(tokenMetadata)
 
     const {
       dispatch,
@@ -162,54 +166,40 @@ const DaoSettingsForm = withRouter(
     return (
       <>
         <SecondContainer container item direction="row" spacing={2} wrap="wrap">
-          <Grid item xs={12} container direction="row" alignItems="center">
-            <Switch
-              checked={checked}
-              onChange={() => {
-                setChecked(!checked);
-
-                if (checked) {
-                  setFieldValue("governance.address", "");
-                }
-              }}
-              name="checkedB"
-            />
-            <Typography color="textSecondary">
-              Create DAO from existing token.
+            <Grid item xs={isMobile ? 12 : 9}>
+              <Typography variant="subtitle1" color="textSecondary">
+                {" "}
+                Token Address{" "}
+              </Typography>
+              <CustomInputContainer>
+                <Field
+                  id="outlined-basic"
+                  placeholder="KT1...."
+                  name="governanceToken.address"
+                  component={CustomFormikTextField}
+                />
+              </CustomInputContainer>
+            </Grid>
+            <Grid item xs={isMobile ? 12 : 3}>
+              <Typography variant="subtitle1" color="textSecondary">
+                {" "}
+                Token ID{" "}
+              </Typography>
+              <CustomInputContainer>
+                <Field
+                  id="outlined-basic"
+                  placeholder="0"
+                  name="governanceToken.tokenId"
+                  component={CustomFormikTextField}
+                />
+              </CustomInputContainer>
+            </Grid>
+          { tokenMetadata && !loading && <MetadataContainer item xs={12}>
+            <Typography variant="subtitle2" color="secondary">
+              {tokenMetadata.name} ({tokenMetadata.symbol})
             </Typography>
-          </Grid>
-          {checked ? (
-            <>
-              <Grid item xs={isMobile ? 12 : 9}>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {" "}
-                  Token Address{" "}
-                </Typography>
-                <CustomInputContainer>
-                  <Field
-                    id="outlined-basic"
-                    placeholder="KT1...."
-                    name="governanceToken.address"
-                    component={CustomFormikTextField}
-                  />
-                </CustomInputContainer>
-              </Grid>
-              <Grid item xs={isMobile ? 12 : 3}>
-                <Typography variant="subtitle1" color="textSecondary">
-                  {" "}
-                  Token ID{" "}
-                </Typography>
-                <CustomInputContainer>
-                  <Field
-                    id="outlined-basic"
-                    placeholder="0"
-                    name="governanceToken.tokenId"
-                    component={CustomFormikTextField}
-                  />
-                </CustomInputContainer>
-              </Grid>
-            </>
-          ) : null}
+          </MetadataContainer>
+          }
           <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
@@ -307,6 +297,8 @@ export const DaoSettings = (): JSX.Element => {
   const { orgSettings } = state.data;
   const history = useHistory();
 
+  console.log(orgSettings)
+
   const saveStepInfo = (
     values: OrgSettings,
     { setSubmitting }: { setSubmitting: (b: boolean) => void }
@@ -366,7 +358,6 @@ export const DaoSettings = (): JSX.Element => {
                 errors={errors}
                 touched={touched}
                 values={values}
-                initialChecked={!!orgSettings.governanceToken.address}
               />
             </Form>
           );

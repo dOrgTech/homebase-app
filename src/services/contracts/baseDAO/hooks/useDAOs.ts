@@ -5,12 +5,12 @@ import { useInfiniteQuery, useQuery } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { DAOListMetadata } from "services/contracts/metadataCarrier/types";
 import { getContractsAddresses } from "services/pinata";
-import { BaseDAO } from "..";
+import { getMetadataFromAPI } from 'services/bakingBad/metadata';
 
 const PAGE_SIZE = 10;
 
 export const useDAOs = () => {
-  const { tezos, connect } = useTezos();
+  const { tezos, connect, network } = useTezos();
 
   const {
     data: addresses,
@@ -27,7 +27,20 @@ export const useDAOs = () => {
         pageParam * PAGE_SIZE,
         (pageParam + 1) * PAGE_SIZE
       );
-      return await BaseDAO.getDAOs(addressesToFetch, tezos);
+
+      return await Promise.all(
+        addressesToFetch.map(async (address) => {
+          try {
+  
+            const metadata = await getMetadataFromAPI(address, network)
+  
+            return metadata;
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        })
+      );
     },
     {
       enabled: !!daosAddresses.length && !!tezos,

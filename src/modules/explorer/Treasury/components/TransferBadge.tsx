@@ -12,6 +12,7 @@ import { Blockie } from "modules/common/Blockie";
 import { ExternalLink } from "modules/common/ExternalLink";
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
 import React from "react";
+import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { FA2Symbol } from "./FA2Symbol";
 
@@ -48,6 +49,8 @@ export const TransferBadge: React.FC<Props> = ({
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const link = linkStyle();
+  const { network } = useTezos()
+  
   return (
     <HighlightedBadge
       justify="center"
@@ -81,7 +84,7 @@ export const TransferBadge: React.FC<Props> = ({
             <Typography>
               <ExternalLink
                 className={link.root}
-                link={"https://edo2net.tzkt.io/" + address}
+                link={`https://${network}.tzkt.io/` + address}
               >
                 {isMobileSmall ? toShortAddress(address) : address}
               </ExternalLink>

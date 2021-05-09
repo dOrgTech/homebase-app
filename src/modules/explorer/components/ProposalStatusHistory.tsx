@@ -79,8 +79,7 @@ export const ProposalStatusHistory: React.FC = () => {
     downVotes: proposal?.downVotes || 0,
     quorumTreshold: dao?.storage.quorumTreshold || 0
   });
-
-  console.log(dao);
+  
   const history = useMemo(() => {
     if (!proposal || !dao) {
       return [];

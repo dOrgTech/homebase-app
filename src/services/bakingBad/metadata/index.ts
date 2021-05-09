@@ -1,27 +1,13 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
-
-export interface MetadataDTO {
-  address: string;
-  network: string;
-  extras: {
-    template: string;
-  };
-  name: string;
-  description: string;
-  version: string;
-  license: {
-    name: string;
-  };
-  homepage: string;
-  authors: string[];
-  interfaces: ["TZIP-12", "TZIP-17"];
-}
+import { DAOListMetadata } from "services/contracts/metadataCarrier/types";
+import { metadataFromAPIDTOtoDAOListMetadata } from "./mapper";
+import { MetadataDTO } from "./types";
 
 export const getMetadataFromAPI = async (
   contractAddress: string,
   network: Network
-): Promise<MetadataDTO> => {
+): Promise<DAOListMetadata> => {
   const url = `${API_URL}/account/${network}/${contractAddress}/metadata`;
 
   const response = await fetch(url);
@@ -32,5 +18,5 @@ export const getMetadataFromAPI = async (
 
   const result: MetadataDTO = await response.json();
 
-  return result
+  return metadataFromAPIDTOtoDAOListMetadata(result);
 };
