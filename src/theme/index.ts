@@ -69,6 +69,11 @@ export const theme = createMuiTheme({
         color: "#3D3D3D",
       },
     },
+    MuiTab: {
+      root: {
+        maxWidth: "100%",
+      },
+    },
     MuiStepLabel: {
       label: {
         color: "#fff",
