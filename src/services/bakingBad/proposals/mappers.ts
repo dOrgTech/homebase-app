@@ -90,7 +90,7 @@ const mapTransfers = (
 export const mapProposalRegistryList = (
   listMichelsonString: string
 ): RegistryUpdateProposal["list"] => {
-  if(listMichelsonString === "{ { } }") {
+  if(listMichelsonString === "{ {} }") {
     return []
   }
 

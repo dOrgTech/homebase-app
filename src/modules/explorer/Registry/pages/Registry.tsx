@@ -57,7 +57,7 @@ export const Registry: React.FC = () => {
       return [];
     }
 
-    return dao.storage.registry.map((d) => ({
+    return dao.extra.registry.map((d) => ({
       ...d,
       name: d.key,
     }));

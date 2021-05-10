@@ -3,11 +3,12 @@ import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetad
 
 interface Props {
   contractAddress: string;
+  tokenId: string;
 }
 
-export const FA2Symbol: React.FC<Props> = ({ contractAddress }) => {
+export const FA2Symbol: React.FC<Props> = ({ contractAddress, tokenId }) => {
 
-  const { data } = useTokenMetadata(contractAddress);
+  const { data } = useTokenMetadata(contractAddress, tokenId);
 
   return (
     <>

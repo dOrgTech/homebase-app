@@ -22,6 +22,10 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     name: "",
     symbol: "",
     description: "",
+    governanceToken: {
+      address: "",
+      tokenId: ""
+    }
   },
   votingSettings: {
     votingDays: 0,

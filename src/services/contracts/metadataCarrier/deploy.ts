@@ -47,9 +47,6 @@ export const deployMetadataCarrier = async ({
   try {
     console.log("Originating Metadata Carrier contract...");
 
-    console.log("Signer ", tezos.signer);
-    console.log("Wallet ", tezos.wallet);
-
     if (!("_pkh" in tezos.wallet)) {
       await connect();
     }

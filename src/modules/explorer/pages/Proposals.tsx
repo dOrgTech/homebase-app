@@ -92,7 +92,7 @@ export const Proposals: React.FC = () => {
   }, [connect, data, mutate, proposalsData, tezos]);
 
   const shouldDisable = useMemo(() => {
-    if(cycleInfo && cycleInfo.type === "proposing") {
+    if(cycleInfo && cycleInfo.type === "voting") {
       return true
     }
 

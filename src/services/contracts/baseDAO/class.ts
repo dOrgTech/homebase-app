@@ -3,21 +3,23 @@ import { TezosToolkit, ContractAbstraction, Wallet, MichelsonMap } from "@taquit
 import { DAOTemplate } from "modules/creator/state";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
-import { BaseStorage } from "services/bakingBad/storage/types";
+import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
-import { DAOParams, fromStateToBaseStorage, getContract, MigrationParams, TransferParams } from ".";
-import { getDAOListMetadata } from "../metadataCarrier";
+import { Extra, fromStateToBaseStorage, getContract, MigrationParams, TransferParams } from ".";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import {
   RegistryDAO,
   TreasuryDAO,
 } from ".";
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
-import { generateMorleyContracts } from "services/morley";
-import { getOriginatedAddress } from "services/bakingBad/originatorContract";
+import { generateStorageContract } from "services/morley";
 import { Schema } from "@taquito/michelson-encoder";
 import { xtzToMutez } from "services/contracts/utils";
 import { Parser, Expr } from "@taquito/michel-codec";
+import { getDAOListMetadata } from "../metadataCarrier";
+import baseDAOContractCode from "./michelson/baseDAO"
+import { getMetadataFromAPI } from "services/bakingBad/metadata";
+import { Storage } from "services/bakingBad/storage/types";
 
 const parser = new Parser();
 
@@ -36,15 +38,16 @@ export interface CycleInfo {
   type: CycleType;
 }
 
-export interface BaseConstructorParams {
+export interface ConstructorParams {
   address: string;
   network: Network;
   ledger: Ledger;
   template: DAOTemplate;
   originationTime: string;
-  storage: BaseStorage;
+  storage: Storage;
   metadata: DAOListMetadata;
   tezos: TezosToolkit;
+  extra: Extra
 }
 
 export abstract class BaseDAO {
@@ -56,6 +59,7 @@ export abstract class BaseDAO {
   public metadata;
   public tezos;
   public network;
+  public extra;
 
   abstract proposals: () => Promise<Proposal[]>;
 
@@ -65,24 +69,17 @@ export abstract class BaseDAO {
     tezos: TezosToolkit;
   }): Promise<BaseDAO> => {
     const { address, network, tezos } = params;
-    const contract = await getContract(tezos, address);
-    const metadata = await getDAOListMetadata(contract);
-    const template = metadata.template;
+    const metadata = await getMetadataFromAPI(address, network)
 
     let instance: any;
 
-    const prefetched = {
-      metadata,
-      contract,
-    };
-
-    switch (template) {
+    switch (metadata.template) {
       case "treasury":
         instance = await TreasuryDAO.create(
           address,
           network,
           tezos,
-          prefetched
+          metadata
         );
         break;
       case "registry":
@@ -90,7 +87,7 @@ export abstract class BaseDAO {
           address,
           network,
           tezos,
-          prefetched
+          metadata
         );
         break;
       default:
@@ -100,19 +97,11 @@ export abstract class BaseDAO {
     return instance;
   };
 
-  private static fromStateToStorage = (
-    info: MigrationParams
-  ): DAOParams["storage"] => {
-    const storageData = fromStateToBaseStorage(info);
-  
-    return storageData;
-  };
-
   public static baseDeploy = async (
     template: DAOTemplate,
-    { params, metadata, tezos, network }: DeployParams,
+    { params, metadata, tezos }: DeployParams,
   ): Promise<ContractAbstraction<Wallet>> => {
-    const treasuryParams = BaseDAO.fromStateToStorage(params);
+    const treasuryParams = fromStateToBaseStorage(params);
 
     if (!metadata.deployAddress) {
       throw new Error(
@@ -123,8 +112,8 @@ export abstract class BaseDAO {
     const account = await tezos.wallet.pkh()
 
     try {
-      console.log("Originating Morley contracts");
-      const morleyContracts = await generateMorleyContracts({
+      console.log("Making storage contract...");
+      const storageCode = await generateStorageContract({
         template, 
         storage: treasuryParams,
         originatorAddress: account,
@@ -133,26 +122,15 @@ export abstract class BaseDAO {
       console.log("Originating DAO contract...");
   
       const t = await tezos.wallet.originate({
-        code: morleyContracts.steps.originator,
-        init: morleyContracts.steps.storage
+        code: baseDAOContractCode,
+        init: storageCode
       })
         
       const operation = await t.send();
       console.log("Waiting for confirmation on DAO contract...", t);
-      const { address: originatorAddress } = await operation.contract();
-      const originatorContract = await tezos.wallet.at(originatorAddress)
+      const { address } = await operation.contract();
 
-      for (const lambda of morleyContracts.steps.lambdas) {
-        const op = await originatorContract.methods.load_lambda(lambda).send()
-        await op.confirmation(1)
-      }
-
-      const runLambdaOp = await originatorContract.methods.run_lambda([["unit"]]).send()
-      await runLambdaOp.confirmation(1)
-
-      const originatedAddress = await getOriginatedAddress(originatorAddress, network)
-
-      return await tezos.wallet.at(originatedAddress);
+      return await tezos.wallet.at(address);
     } catch (e) {
       console.log("error ", e);
       throw new Error("Error deploying DAO");
@@ -161,9 +139,8 @@ export abstract class BaseDAO {
 
   public static getDAOs = async (
     addresses: string[],
-    tezos: TezosToolkit | undefined,
-    network: Network
-  ) => {
+    tezos: TezosToolkit | undefined
+  ): Promise<(DAOListMetadata | false)[]> => {
     if (!tezos) {
       return [];
     }
@@ -171,13 +148,10 @@ export abstract class BaseDAO {
     const results = await Promise.all(
       addresses.map(async (address) => {
         try {
-          const dao = await BaseDAO.getDAO({
-            address,
-            tezos,
-            network,
-          });
 
-          return dao;
+          const metadata = await getDAOListMetadata(address, tezos)
+
+          return metadata;
         } catch (e) {
           console.log(e);
           return false;
@@ -188,7 +162,7 @@ export abstract class BaseDAO {
     return results;
   };
 
-  protected constructor(params: BaseConstructorParams) {
+  protected constructor(params: ConstructorParams) {
     this.address = params.address;
     this.ledger = params.ledger;
     this.template = params.template;
@@ -197,6 +171,7 @@ export abstract class BaseDAO {
     this.metadata = params.metadata;
     this.tezos = params.tezos;
     this.network = params.network;
+    this.extra = params.extra;
   }
 
   public flush = async (numerOfProposalsToFlush: number) => {
@@ -210,10 +185,8 @@ export abstract class BaseDAO {
     this.tezos = tezos;
   };
 
-  public abstract fetchStorage: () => Promise<BaseStorage>;
-
   public tokenHolders = async () => {
-    const storage = await this.fetchStorage();
+    const storage = await getStorage(this.address, this.network);
     const ledger = await getLedgerAddresses(
       storage.ledgerMapNumber,
       this.network

@@ -8,6 +8,8 @@ import {
 } from "@material-ui/core";
 import { Blockie } from "modules/common/Blockie";
 import React from "react";
+import { Network } from "services/beacon/context";
+import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { HighlightedBadge } from "./styled/HighlightedBadge";
 
@@ -23,6 +25,8 @@ export const UserBadge: React.FC<{ address: string; full?: boolean }> = ({
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumSmall = useMediaQuery(theme.breakpoints.down("md"));
   const isLargeScreen = useMediaQuery(theme.breakpoints.down("lg"));
+
+  const { network } = useTezos()
 
   return (
     <HighlightedBadge
@@ -46,7 +50,7 @@ export const UserBadge: React.FC<{ address: string; full?: boolean }> = ({
         </Grid>
       ) : (
         <Grid item>
-          <Link href={"https://edo2net.tzkt.io/" + address} target="_blank">
+          <Link href={`https://${network}.tzkt.io/` + address} target="_blank">
             <Typography
               variant="body1"
               color="textSecondary"

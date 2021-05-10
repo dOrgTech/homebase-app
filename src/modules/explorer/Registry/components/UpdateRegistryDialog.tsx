@@ -188,7 +188,7 @@ export const UpdateRegistryDialog: React.FC = () => {
       if (dao) {
         mutate({
           dao,
-          tokensToFreeze: dao.storage.frozenExtraValue,
+          tokensToFreeze: dao.extra.frozenExtraValue,
           agoraPostId: 0,
           items: values.list.map(({ key, value }) => ({
             key: char2Bytes(key),
@@ -383,7 +383,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                                             );
                                             setFieldValue(
                                               `list.${activeItem - 1}.value`,
-                                              dao.storage.registry.find(
+                                              dao.extra.registry.find(
                                                 (item) =>
                                                   item.key === e.target.value
                                               )?.value
@@ -395,7 +395,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                                             Select a Key
                                           </MenuItem>
                                           {dao &&
-                                            dao.storage.registry.map(({ key }, i) => (
+                                            dao.extra.registry.map(({ key }, i) => (
                                               <MenuItem
                                                 key={`option-${i}`}
                                                 value={key}
@@ -477,7 +477,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                             variant="subtitle1"
                             color="secondary"
                           >
-                            {dao?.storage.frozenExtraValue || 0}{" "}
+                            {dao?.extra.frozenExtraValue || 0}{" "}
                           </Typography>
                         </Grid>
                       </ListItem>

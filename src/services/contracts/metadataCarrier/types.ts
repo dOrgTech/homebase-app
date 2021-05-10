@@ -42,6 +42,7 @@ export interface DAOMetadataDTO {
 }
 
 export interface DAOListMetadata {
+  address: string;
   authors: string[];
   name: string;
   template: DAOTemplate;
