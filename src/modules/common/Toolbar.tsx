@@ -93,6 +93,9 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("xs")]: {
     marginLeft: 15,
     padding: "0px"
+  },
+  [theme.breakpoints.down("md")]: {
+    marginRight: -30
   }
 }));
 
@@ -125,6 +128,11 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
     display: "flex",
     justifyContent: "center",
     marginLeft: 16
+  },
+  [theme.breakpoints.down("md")]: {
+    display: "flex",
+    justifyContent: "center",
+    marginLeft: 0
   }
 }));
 
