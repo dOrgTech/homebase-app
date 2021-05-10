@@ -8,12 +8,16 @@ import { getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
 import { DAOListMetadata } from "../../metadataCarrier/types";
-
-import { BaseDAO } from "..";
+import { Schema } from "@taquito/michelson-encoder";
+import { xtzToMutez } from "services/contracts/utils";
+import { Parser, Expr } from "@taquito/michel-codec";
+import { BaseDAO, getContract, TransferParams } from "..";
 import { TransferProposal, TransferProposalsDTO } from "services/bakingBad/proposals/types";
 import { dtoToTransferProposals } from "services/bakingBad/proposals/mappers";
 import { TreasuryExtraDTO } from "./types";
 import { getExtra } from "services/bakingBad/extra";
+
+const parser = new Parser();
 
 export class TreasuryDAO extends BaseDAO {
   public static create = async (
@@ -60,5 +64,58 @@ export class TreasuryDAO extends BaseDAO {
     return proposals;
   };
 
+  public proposeTransfer = async ({
+    tokensToFreeze,
+    agoraPostId,
+    transfers,
+  }: {
+    tokensToFreeze: number;
+    agoraPostId: number;
+    transfers: TransferParams[];
+  }) => {
+    const contract = await getContract(this.tezos, this.address);
 
+    console.log(contract)
+
+    const michelsonType = parser.parseData();
+    const schema = new Schema(michelsonType as Expr);
+    const data = schema.Encode({ agora_post_id: agoraPostId, transfers: transfers.map(transfer => {
+      if(transfer.type === "XTZ") {
+        return {
+          xtz_transfer: {
+            amount: Number(xtzToMutez(transfer.amount.toString())),
+            recipient: transfer.recipient,
+          }
+        }
+      } else {
+        return {
+          token_transfer: {
+            contract_address: transfer.asset.contract,
+            token_transfer_list: [
+              {
+                from_: this.address,
+                txs: [
+                  {
+                    to_: transfer.recipient,
+                    token_id: transfer.asset.token_id,
+                    amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
+                  },
+                ],
+              },
+            ],
+          }
+        }
+      }
+    })})
+
+    const { packed: proposalMetadata } = await this.tezos.rpc.packData({
+      data,
+      type: michelsonType as Expr,
+    });
+
+    const contractMethod = contract.methods.propose(tokensToFreeze, proposalMetadata);
+
+    const result = await contractMethod.send();
+    return result;
+  };
 }

@@ -15,6 +15,7 @@ interface MorleyParams {
 
 export const generateStorageContract = async ({ storage, template, originatorAddress, metadata }: MorleyParams): Promise<string> => {
   const args = storageParamsToMorleyArgs(storage, metadata)
+  console.log(args);
 
   const url = `${API_URL}/${originatorAddress}/${template}?${Object.keys(args).map(
     (key) => `${key}=${args[key as keyof GeneratorArgs]}`

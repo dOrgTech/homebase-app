@@ -79,6 +79,6 @@ export const calculateCycleInfo = (originationTime: string, votingPeriod: number
   return {
     time: Number(time),
     current: currentPeriodNumber,
-    type: currentPeriodNumber % 2 === 0? "voting": "proposing" as CycleType
+    type: currentPeriodNumber % 2 === 0? "proposing" : "voting" as CycleType
   };
 }

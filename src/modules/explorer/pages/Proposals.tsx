@@ -154,7 +154,7 @@ export const Proposals: React.FC = () => {
               <PrimaryButton
                 variant="outlined"
                 onClick={onNewProposal}
-                disabled={shouldDisable || !cycleInfo}
+                // disabled={shouldDisable || !cycleInfo}
               >
                 NEW PROPOSAL
               </PrimaryButton>

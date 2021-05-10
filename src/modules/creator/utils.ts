@@ -82,18 +82,13 @@ export const handleGovernanceFormErrors = (
     errors.quorumTreshold = "Quorum Treshold must be smaller than the total supply";
   }
 
-  if (template === "treasury") {
-    if (!minXtzAmount || minXtzAmount <= 0) {
-      errors.minXtzAmount = "Must be greater than 0";
-    }
-
-    if (!maxXtzAmount || maxXtzAmount <= 0) {
-      errors.maxXtzAmount = "Must be greater than 0";
-    }
-
-    return errors;
+  if (!maxXtzAmount || maxXtzAmount <= 0) {
+    errors.maxXtzAmount = "Must be greater than 0";
   }
 
-  console.log(errors);
+  if(maxXtzAmount <= minXtzAmount) {
+    errors.minXtzAmount = "Must be lower than max XTZ amount"
+  }
+
   return errors;
 };

@@ -154,7 +154,7 @@ const GovernanceForm = ({
     state: {
       governanceStep,
       activeStep,
-      data: { orgSettings, template },
+      data: { orgSettings },
     },
   } = useContext(CreatorContext);
   const match = useRouteMatch();
@@ -364,86 +364,82 @@ const GovernanceForm = ({
         </Grid>
       </SecondContainer>
 
-      {template === "treasury" && (
-        <>
-          <SpacingContainer direction="row" container alignItems="center">
-            <Typography variant="subtitle1" color="textSecondary">
-              Transfer Amounts
-            </Typography>
-          </SpacingContainer>
-          <Grid
+      <SpacingContainer direction="row" container alignItems="center">
+        <Typography variant="subtitle1" color="textSecondary">
+          Transfer Amounts
+        </Typography>
+      </SpacingContainer>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
             container
             direction="row"
             alignItems="center"
-            style={{ marginTop: 14 }}
+            justify="center"
           >
-            <AdditionContainer item xs={12} sm={4}>
-              <ItemContainer
-                container
-                direction="row"
-                alignItems="center"
-                justify="center"
-              >
-                <GridItemCenter item xs={5}>
-                  <Field
-                    name="minXtzAmount"
-                    type="number"
-                    placeholder="00"
-                    component={TextField}
-                  ></Field>
-                </GridItemCenter>
-                <GridItemCenter
-                  item
-                  xs={7}
-                  container
-                  direction="row"
-                  justify="space-around"
-                >
-                  <ValueText color="textSecondary">Min. XTZ</ValueText>
-                  <Tooltip title="Minimum amount of XTZ that can be transferred">
-                    <InfoIconInput color="secondary" />
-                  </Tooltip>
-                </GridItemCenter>
-              </ItemContainer>
-              {errors.minXtzAmount && touched.minXtzAmount ? (
-                <ErrorText>{errors.minXtzAmount}</ErrorText>
-              ) : null}
-            </AdditionContainer>
-            <AdditionContainer item xs={12} sm={4}>
-              <ItemContainer
-                container
-                direction="row"
-                alignItems="center"
-                justify="center"
-              >
-                <GridItemCenter item xs={5}>
-                  <Field
-                    name="maxXtzAmount"
-                    type="number"
-                    placeholder="00"
-                    component={TextField}
-                  ></Field>
-                </GridItemCenter>
-                <GridItemCenter
-                  item
-                  xs={7}
-                  container
-                  direction="row"
-                  justify="space-around"
-                >
-                  <ValueText color="textSecondary">Max. XTZ </ValueText>
-                  <Tooltip title="Maximum amount of XTZ that can be transferred">
-                    <InfoIconInput color="secondary" />
-                  </Tooltip>
-                </GridItemCenter>
-              </ItemContainer>
-              {errors.maxXtzAmount && touched.maxXtzAmount ? (
-                <ErrorText>{errors.maxXtzAmount}</ErrorText>
-              ) : null}
-            </AdditionContainer>
-          </Grid>
-        </>
-      )}
+            <GridItemCenter item xs={5}>
+              <Field
+                name="minXtzAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Min. XTZ</ValueText>
+              <Tooltip title="Minimum amount of XTZ that can be transferred">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.minXtzAmount && touched.minXtzAmount ? (
+            <ErrorText>{errors.minXtzAmount}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={5}>
+              <Field
+                name="maxXtzAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Max. XTZ </ValueText>
+              <Tooltip title="Maximum amount of XTZ that can be transferred">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.maxXtzAmount && touched.maxXtzAmount ? (
+            <ErrorText>{errors.maxXtzAmount}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+      </Grid>
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
           Quorum Threshold
