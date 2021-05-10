@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import { Blockie } from "modules/common/Blockie";
 import React from "react";
-import { Network } from "services/beacon/context";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { HighlightedBadge } from "./styled/HighlightedBadge";

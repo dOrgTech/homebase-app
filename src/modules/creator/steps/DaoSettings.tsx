@@ -10,9 +10,8 @@ import {
   useTheme,
   InputAdornment,
   Tooltip,
-  Switch,
 } from "@material-ui/core";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useHistory, withRouter } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 import { Field, Form, Formik, getIn } from "formik";
