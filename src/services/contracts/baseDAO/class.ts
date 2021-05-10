@@ -247,26 +247,28 @@ export abstract class BaseDAO {
   }) => {
     const contract = await getContract(this.tezos, this.address);
 
-    const michelsonType = parser.parseData(`(list (or (pair %xtz_transfer_type (mutez %amount) (address %recipient))
-    (pair %token_transfer_type
+    console.log(contract)
+
+    const michelsonType = parser.parseData(`(pair (nat %agora_post_id) (list %transfers (or (pair %xtz_transfer (mutez %amount) (address %recipient))
+    (pair %token_transfer
        (address %contract_address)
-       (list %transfer_list
+       (list %token_transfer_list
           (pair (address %from_)
-                (list %txs (pair (address %to_) (pair (nat %token_id) (nat %amount)))))))))`);
+                (list %txs (pair (address %to_) (pair (nat %token_id) (nat %amount))))))))))`);
     const schema = new Schema(michelsonType as Expr);
-    const data = schema.Encode(transfers.map(transfer => {
+    const data = schema.Encode({ agora_post_id: agoraPostId, transfers: transfers.map(transfer => {
       if(transfer.type === "XTZ") {
         return {
-          xtz_transfer_type: {
+          xtz_transfer: {
             amount: Number(xtzToMutez(transfer.amount.toString())),
             recipient: transfer.recipient,
           }
         }
       } else {
         return {
-          token_transfer_type: {
+          token_transfer: {
             contract_address: transfer.asset.contract,
-            transfer_list: [
+            token_transfer_list: [
               {
                 from_: this.address,
                 txs: [
@@ -281,25 +283,12 @@ export abstract class BaseDAO {
           }
         }
       }
-    }))
+    })})
 
-    const michelsonType2 = parser.parseData("(nat)") as Expr;
-    const schema2 = new Schema(michelsonType2 as Expr);
-    const data2 = schema2.Encode([agoraPostId]);
-
-    const { packed: pack1 } = await this.tezos.rpc.packData({
+    const { packed: proposalMetadata } = await this.tezos.rpc.packData({
       data,
       type: michelsonType as Expr,
     });
-
-    const { packed: pack2 } = await this.tezos.rpc.packData({
-      data: data2,
-      type: michelsonType2,
-    });
-
-    const proposalMetadata = new MichelsonMap();
-    proposalMetadata.set("agoraPostID", pack2);
-    proposalMetadata.set("transfers", pack1);
 
     const contractMethod = contract.methods.propose(tokensToFreeze, proposalMetadata);
 
