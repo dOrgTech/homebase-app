@@ -11,7 +11,7 @@ import {
   useTheme,
   Popover,
   useMediaQuery} from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
 import HomeButton from "assets/logos/homebase_logo.svg";
@@ -20,8 +20,8 @@ import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 import { AccountBalanceWallet } from "@material-ui/icons";
-import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none"
@@ -43,11 +43,14 @@ const StatusDot = styled(Box)({
   marginLeft: 8
 });
 
-const AddressContainer = styled(Grid)({
+const AddressContainer = styled(Grid)(({ theme }) => ({
   width: "min-content",
   paddingRight: 24,
-  cursor: "pointer"
-});
+  cursor: "pointer",
+  [theme.breakpoints.down("sm")]: {
+    paddingRight: 0,
+  }
+}));
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
@@ -93,6 +96,9 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("xs")]: {
     marginLeft: 15,
     padding: "0px"
+  },
+  [theme.breakpoints.down("md")]: {
+    marginRight: -30
   }
 }));
 
@@ -125,6 +131,11 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
     display: "flex",
     justifyContent: "center",
     marginLeft: 16
+  },
+  [theme.breakpoints.down("md")]: {
+    display: "flex",
+    justifyContent: "center",
+    marginLeft: 0
   }
 }));
 
@@ -161,16 +172,27 @@ const ToolbarWrapper = ({
   isMobileSmall,
   isMobileExtraSmall,
 }: ToolbarWrapperProps): JSX.Element => {
+
+  const xsValue = useMemo(() => {
+    if(mode === "creator") {
+      if(!isMobileSmall) {
+        return 12
+      }
+    }
+
+    if(isMobileExtraSmall) {
+      return 1
+    }
+
+    return 9
+
+
+  }, [isMobileExtraSmall, isMobileSmall, mode])
+
   return (
     <Grid
       item
-      xs={
-        mode === "creator" && !isMobileSmall
-          ? 12
-          : isMobileExtraSmall
-            ? 1
-            : 9
-      }
+      xs={xsValue}
       container
       justify={
         isMobileExtraSmall && mode === "explorer"
@@ -227,7 +249,10 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { daoId, daoSymbol } = useVisitedDAO();
+  const { id: daoId } = useParams<{
+    id: string;
+  }>();
+  const { data: dao } = useDAO(daoId);
   const { data } = useTokenHolders(daoId);
 
 
@@ -269,7 +294,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       }
     >
       <StyledToolbar>
-        <Grid container direction="row" alignItems="center" wrap="wrap">
+        <Grid container direction="row" alignItems="center" wrap="wrap" justify={"flex-end"}>
           {mode === "explorer" ? (
             <ExplorerLogo history={history} />
           ) : null}
@@ -288,7 +313,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                     justify="flex-end"
                     direction="row"
                   >
-                    {!isMobileSmall && data && data.length > 0 ? (
+                    {!isMobileSmall && data && data.length > 0 && dao? (
                       <BalanceContainer
                         container
                         item
@@ -300,7 +325,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                         <Typography color="textSecondary">
                           {userBalance}
                         </Typography>
-                        <Symbol color="textSecondary">{daoSymbol}</Symbol>
+                        <Symbol color="textSecondary">{dao.metadata.unfrozenToken.symbol}</Symbol>
                       </BalanceContainer>
                     ) : null}
                   </Grid>

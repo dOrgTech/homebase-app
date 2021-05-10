@@ -92,7 +92,7 @@ export const Proposals: React.FC = () => {
   }, [connect, data, mutate, proposalsData, tezos]);
 
   const shouldDisable = useMemo(() => {
-    if(cycleInfo && cycleInfo.type === "proposing") {
+    if(cycleInfo && cycleInfo.type === "voting") {
       return true
     }
 
@@ -187,15 +187,6 @@ export const Proposals: React.FC = () => {
           </>
         ) : (
           <>
-            <ProposalsTable
-              headerText="Active Proposals"
-              status={ProposalStatus.ACTIVE}
-            />
-
-            <ProposalsTable
-              headerText="Passed Proposals"
-              status={ProposalStatus.PASSED}
-            />
             <ProposalsTable headerText="All Proposals" />
           </>
         )}

@@ -1,11 +1,13 @@
+import { getDAOListMetadata } from './../../metadataCarrier/index';
 import { useEffect } from "react";
 import { useInfiniteQuery, useQuery } from "react-query";
 
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { DAOListMetadata } from "services/contracts/metadataCarrier/types";
 import { getContractsAddresses } from "services/pinata";
-import { BaseDAO } from "..";
+import { getMetadataFromAPI } from 'services/bakingBad/metadata';
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 10;
 
 export const useDAOs = () => {
   const { tezos, connect, network } = useTezos();
@@ -16,28 +18,37 @@ export const useDAOs = () => {
     error: addressesError,
   } = useQuery<string[], Error>("daosAddresses", getContractsAddresses);
 
-  console.log(addresses)
-
   const daosAddresses = addresses || [];
 
-  const result = useInfiniteQuery<(BaseDAO | false)[], Error>(
+  const result = useInfiniteQuery<(DAOListMetadata | false)[], Error>(
     ["daos", addresses],
     async ({ pageParam = 0 }) => {
       const addressesToFetch = daosAddresses.slice(
         pageParam * PAGE_SIZE,
         (pageParam + 1) * PAGE_SIZE
       );
-      return await BaseDAO.getDAOs(addressesToFetch, tezos, network);
+
+      return await Promise.all(
+        addressesToFetch.map(async (address) => {
+          try {
+  
+            const metadata = await getMetadataFromAPI(address, network)
+  
+            return metadata;
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        })
+      );
     },
     {
       enabled: !!daosAddresses.length && !!tezos,
       getNextPageParam: (_, allPages) => {
-        console.log(allPages)
         const daosFetched = allPages.flat().length;
         const currentPage = Math.ceil(daosFetched / PAGE_SIZE) - 1;
         const maxPages = Math.ceil(daosAddresses.length / PAGE_SIZE) - 1;
 
-        console.log(maxPages, currentPage, daosFetched)
         return currentPage < maxPages ? currentPage + 1 : false;
       },
     }
@@ -46,6 +57,8 @@ export const useDAOs = () => {
   useEffect(() => {
     if (!tezos) {
       connect();
+    } else {
+      getDAOListMetadata("KT1WqtGuRQA1uuyjG8FKsoUpcBHoRBJaoEB9", tezos).then(data => console.log(data))
     }
   }, [connect, tezos]);
 
@@ -53,7 +66,7 @@ export const useDAOs = () => {
     ...result,
     data: result.data && {
       ...result.data,
-      pages: result.data.pages.map(page => page.filter(result => typeof result !== "boolean") as BaseDAO[])
+      pages: result.data.pages.map(page => page.filter(result => typeof result !== "boolean") as DAOListMetadata[])
     },
     isLoading: result.isLoading || addressesLoading,
     error: result.error || addressesError,

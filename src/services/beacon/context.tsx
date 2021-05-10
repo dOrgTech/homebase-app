@@ -1,9 +1,9 @@
-import { TezosToolkit } from "@taquito/taquito";
+import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 import React, { createContext, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
 
-export type Network = "delphinet" | "mainnet" | "edo2net";
+export type Network = "delphinet" | "mainnet" | "edo2net" | "florencenet"
 
 interface TezosState {
   network: Network;
@@ -16,12 +16,15 @@ interface TezosProvider {
   dispatch: React.Dispatch<TezosAction>;
 }
 
-const Tezos = new TezosToolkit(rpcNodes.edo2net);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
+const Tezos = new TezosToolkit(rpcNodes[envNetwork]);
+Tezos.setPackerProvider(new MichelCodecPacker());
 Tezos.addExtension(new Tzip16Module());
 
 const INITIAL_STATE: TezosState = {
   tezos: Tezos,
-  network: "edo2net",
+  network: envNetwork,
   account: "",
 };
 

@@ -16,6 +16,9 @@ export const theme = createMuiTheme({
     error: {
       main: "#ED254E",
     },
+    info: {
+      main: "#FFC839",
+    }
   },
   typography: {
     fontFamily: "Roboto Mono",
@@ -64,6 +67,11 @@ export const theme = createMuiTheme({
     MuiSlider: {
       root: {
         color: "#3D3D3D",
+      },
+    },
+    MuiTab: {
+      root: {
+        maxWidth: "100%",
       },
     },
     MuiStepLabel: {

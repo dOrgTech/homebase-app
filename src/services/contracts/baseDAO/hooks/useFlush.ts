@@ -1,11 +1,13 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
+import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
 
 export const useFlush = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
+  const { network } = useTezos()
 
   return useMutation<
     TransactionWalletOperation | Error,
@@ -30,7 +32,7 @@ export const useFlush = () => {
           message: "Flush transaction confirmed!",
           autoHideDuration: 5000,
           variant: "success",
-          detailsLink: "https://edo2net.tzkt.io/" + data.opHash,
+          detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
 
         return data;

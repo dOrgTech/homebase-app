@@ -10,7 +10,6 @@ import {
   useMediaQuery,
   Paper,
 } from "@material-ui/core";
-import Timer from "react-compound-timer";
 import { useHistory, useParams } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
@@ -31,6 +30,7 @@ import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
 import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { FreezeDialog } from "../components/FreezeDialog";
+import { useMemo } from "react";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -136,9 +136,36 @@ export const DAO: React.FC = () => {
     saveDaoSymbol(symbol || "");
   }, [id, symbol, saveDaoId, saveDaoSymbol]);
 
-  // useEffect(() => {
-  //   console.log(time);
-  // }, []);
+  const timerInfo = useMemo(() => {
+    if(!time) {
+      return {
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+      }
+    }
+
+    let n = time
+
+    const days = Math.floor(n / (24 * 3600));
+ 
+    n = n % (24 * 3600);
+    const hours = Math.floor(n / 3600);
+
+    n %= 3600;
+    const minutes = Math.floor(n / 60);
+
+    n %= 60;
+    const seconds = Math.floor(n);
+
+    return {
+      days,
+      hours,
+      minutes,
+      seconds
+    }
+  }, [time])
 
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
@@ -226,13 +253,16 @@ export const DAO: React.FC = () => {
                 <Grid container wrap="nowrap">
                   <Grid item>
                     <VotingLabel>
-                      <Typography color="textSecondary">{isVotingPeriod === "voting" ? "VOTING ON PROPOSALS" : "CREATING PROPOSALS"}</Typography>
+                      <Typography color="textSecondary">
+                        {isVotingPeriod === "voting"
+                          ? "VOTING ON PROPOSALS"
+                          : "CREATING PROPOSALS"}
+                      </Typography>
                     </VotingLabel>
                   </Grid>
                 </Grid>
               </Box>
               <Box paddingBottom="16px">
-
                 <Grid container wrap="nowrap">
                   <Grid item>
                     <BigIconContainer>
@@ -293,30 +323,10 @@ export const DAO: React.FC = () => {
                           variant={isMobileSmall ? "h2" : "h3"}
                           color="textSecondary"
                         >
-                          {time ? (
-                            <Timer
-                              initialTime={time * 1000}
-                              direction="backward"
-                              onReset={() => console.log('onReset hook', time)}
-
-                            >
-                              {({ reset}: { reset: () => void}) => {
-                                if (time === 1) {
-                                    reset();
-                                }
-
-                                return (
-                                  <React.Fragment>
-                                    <Box>
-                                      <Timer.Days />d <Timer.Hours />h{" "}
-                                      <Timer.Minutes />m <Timer.Seconds />s
-                                    </Box>
-                                  </React.Fragment>
-                                );
-                              }}
-                            </Timer>
-                          ) : null}
-
+                          <Box>
+                            {timerInfo.days}d {timerInfo.hours}h {timerInfo.minutes}
+                            m {timerInfo.seconds}s
+                          </Box>
                         </Typography>
                       </Box>
                     </Box>
@@ -329,14 +339,14 @@ export const DAO: React.FC = () => {
           {isMobileSmall && activeProposals && activeProposals.length > 0 && (
             <MobileHeader container justify="space-between" alignItems="center">
               <Typography variant="body1" color="textSecondary">
-                ACTIVE PROPOSALS
+                ALL PROPOSALS
               </Typography>
             </MobileHeader>
           )}
 
           <ProposalsTable
-            headerText="Active Proposals"
-            status={ProposalStatus.ACTIVE}
+            headerText="All Proposals"
+            // status={ProposalStatus.ACTIVE}
           />
           <Grid container direction="row" justify="center">
             <UnderlineText

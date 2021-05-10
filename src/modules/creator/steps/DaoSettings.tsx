@@ -21,6 +21,7 @@ import { CreatorContext, ActionTypes } from "modules/creator/state";
 import { handleOrgFormErrors } from "modules/creator/utils";
 import { OrgSettings } from "services/contracts/baseDAO/types";
 import { InfoOutlined } from "@material-ui/icons";
+import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 21,
@@ -80,6 +81,10 @@ const CustomFormikTextField = withStyles({
   },
 })(FormikTextField);
 
+const MetadataContainer = styled(Grid)({
+  margin: "-4px 0 16px 0"
+})
+
 const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   minHeight: 152,
   boxSizing: "border-box",
@@ -106,9 +111,22 @@ const ErrorText = styled(Typography)({
 });
 
 const DaoSettingsForm = withRouter(
-  ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+  ({
+    submitForm,
+    values,
+    setFieldValue,
+    errors,
+    touched,
+  }: any) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+    const { data: tokenMetadata, isLoading: loading } = useTokenMetadata(
+      values?.governanceToken?.address,
+      values?.governanceToken?.tokenId
+    );
+
+    console.log(tokenMetadata)
 
     const {
       dispatch,
@@ -147,10 +165,44 @@ const DaoSettingsForm = withRouter(
     return (
       <>
         <SecondContainer container item direction="row" spacing={2} wrap="wrap">
+            <Grid item xs={isMobile ? 12 : 9}>
+              <Typography variant="subtitle1" color="textSecondary">
+                {" "}
+                Token Address{" "}
+              </Typography>
+              <CustomInputContainer>
+                <Field
+                  id="outlined-basic"
+                  placeholder="KT1...."
+                  name="governanceToken.address"
+                  component={CustomFormikTextField}
+                />
+              </CustomInputContainer>
+            </Grid>
+            <Grid item xs={isMobile ? 12 : 3}>
+              <Typography variant="subtitle1" color="textSecondary">
+                {" "}
+                Token ID{" "}
+              </Typography>
+              <CustomInputContainer>
+                <Field
+                  id="outlined-basic"
+                  placeholder="0"
+                  name="governanceToken.tokenId"
+                  component={CustomFormikTextField}
+                />
+              </CustomInputContainer>
+            </Grid>
+          { tokenMetadata && !loading && <MetadataContainer item xs={12}>
+            <Typography variant="subtitle2" color="secondary">
+              {tokenMetadata.name} ({tokenMetadata.symbol})
+            </Typography>
+          </MetadataContainer>
+          }
           <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
-              DAO name{" "}
+              DAO Name{" "}
             </Typography>
             <CustomInputContainer>
               <Field
@@ -178,7 +230,7 @@ const DaoSettingsForm = withRouter(
           <Grid item xs={isMobile ? 12 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
-              Token symbol{" "}
+              Token Symbol{" "}
             </Typography>
             <CustomInputContainer>
               <Field
@@ -243,6 +295,8 @@ export const DaoSettings = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext);
   const { orgSettings } = state.data;
   const history = useHistory();
+
+  console.log(orgSettings)
 
   const saveStepInfo = (
     values: OrgSettings,

@@ -22,6 +22,10 @@ export type OrgSettings = {
   name: string;
   symbol: string;
   description: string;
+  governanceToken: {
+    address: string;
+    tokenId: string;
+  }
 };
 
 export type VotingSettings = {
@@ -106,6 +110,10 @@ export interface BaseExtraState {
 export interface BaseStorageParams {
   membersTokenAllocation: MemberTokenAllocation[];
   adminAddress: string;
+  governanceToken: {
+    address: string;
+    tokenId: string;
+  }
   quorumTreshold: number;
   votingPeriod: number;
   extra: BaseExtraState;
@@ -135,3 +143,12 @@ export type ParamsWithoutMetadata = Omit<
   DAOParams,
   "metadataCarrierDeploymentData"
 >;
+
+export interface Extra {
+  frozenExtraValue: number;
+  slashExtraValue: number;
+  minXtzAmount: number;
+  maxXtzAmount: number;
+  frozenScaleValue: number;
+  slashDivisionScale: number;
+}

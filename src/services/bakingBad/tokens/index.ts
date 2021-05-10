@@ -18,10 +18,10 @@ export interface TokenMetadata {
 
 export const getTokenMetadata = async (
   contractAddress: string,
-  network: Network
+  network: Network,
+  tokenId: string
 ) => {
-  const url = `${API_URL}/tokens/${network}/metadata?contract=${contractAddress}`;
-
+  const url = `${API_URL}/tokens/${network}/metadata?contract=${contractAddress}&token_id=${tokenId}`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch proposals from BakingBad API");

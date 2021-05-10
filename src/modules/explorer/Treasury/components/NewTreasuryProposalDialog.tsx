@@ -323,7 +323,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
             asset: daoHoldings.find(balance => balance.contract === transfer.asset?.contract) as DAOHolding,
             type: !transfer.asset || transfer.asset.symbol === "XTZ" ? "XTZ": "FA2"
           })),
-          tokensToFreeze: dao.storage.frozenExtraValue,
+          tokensToFreeze: dao.extra.frozenExtraValue,
           agoraPostId: values.agoraPostId,
         });
 
@@ -586,8 +586,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                         InputProps={{
                                           inputProps: {
                                             step: 0.01,
-                                            min: dao.storage.minXtzAmount,
-                                            max: dao.storage.maxXtzAmount,
+                                            min: dao.extra.minXtzAmount,
+                                            max: dao.extra.maxXtzAmount,
                                           },
                                           endAdornment: (
                                             <InputAdornment position="start">
@@ -701,7 +701,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                               variant="subtitle1"
                               color="secondary"
                             >
-                              {dao.storage.frozenExtraValue}{" "}
+                              {dao.extra.frozenExtraValue}{" "}
                               {dao ? dao.metadata.unfrozenToken.symbol : ""}
                             </Typography>
                           </Grid>

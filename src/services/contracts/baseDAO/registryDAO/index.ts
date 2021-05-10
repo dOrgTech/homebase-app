@@ -5,27 +5,18 @@ import {
 } from "./../../../bakingBad/proposals/mappers";
 import {
   TezosToolkit,
-  ContractAbstraction,
-  Wallet,
-  ContractProvider,
   MichelsonMap,
 } from "@taquito/taquito";
 import { Schema } from "@taquito/michelson-encoder";
-import { bytes2Char, Tzip16ContractAbstraction } from "@taquito/tzip16";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getOriginationTime } from "services/bakingBad/operations";
 import { getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
-import {
-  RegistryStorage,
-  RegistryStorageDTO,
-} from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
-import { getContract } from "..";
-import { getDAOListMetadata } from "../../metadataCarrier";
+import { ConstructorParams, getContract } from "..";
 import { DAOListMetadata } from "../../metadataCarrier/types";
-import { BaseConstructorParams, BaseDAO } from "..";
-import { RegistryItem } from "./types";
+import { BaseDAO } from "..";
+import { RegistryExtra, RegistryExtraDTO, RegistryItem } from "./types";
 import {
   RegistryProposalsDTO,
   RegistryUpdateProposal,
@@ -33,12 +24,19 @@ import {
   TransferProposal,
   TransferProposalsDTO,
 } from "services/bakingBad/proposals/types";
-
-interface RegistryConstructorParams extends BaseConstructorParams {
-  storage: RegistryStorage;
-}
+import { getExtra } from "services/bakingBad/extra";
+import { bytes2Char } from "@taquito/tzip16";
 
 const parser = new Parser();
+
+interface RegistryConstructorParams extends ConstructorParams {
+  extra: RegistryExtra
+}
+
+interface RegistryItemDTO {
+  prim: "Pair";
+  args: [{ string: string }, { string: string }];
+}
 
 const mapStorageRegistryList = (
   listMichelsonString: string
@@ -46,7 +44,7 @@ const mapStorageRegistryList = (
   key: string;
   value: string;
 }[] => {
-  if(listMichelsonString === "{ { } }") {
+  if(listMichelsonString === "{ {} }") {
     return []
   }
 
@@ -61,79 +59,26 @@ const mapStorageRegistryList = (
   })
 };
 
-interface RegistryItemDTO {
-  prim: "Pair";
-  args: [{ string: string }, { string: string }];
-}
-
 export class RegistryDAO extends BaseDAO {
-  storage: RegistryStorage;
-
-  protected constructor(params: RegistryConstructorParams) {
-    super(params);
-
-    this.storage = params.storage;
-  }
-
-  private static storageMapper = (dto: RegistryStorageDTO): RegistryStorage => {
-    try {
-      const result = {
-        slashDivisionValue: Number(dto.children[1].children[8].value),
-        slashScaleValue: Number(dto.children[1].children[9].value),
-        frozenExtraValue: Number(dto.children[1].children[0].value),
-        maxProposalSize: Number(dto.children[1].children[2].value),
-        proposalReceivers: dto.children[1].children[5].value,
-        lastPeriodChange: {
-          timestamp: dto.children[5].children[0].value,
-          periodNumber: Number(dto.children[5].children[1].value),
-        },
-        registry: mapStorageRegistryList(dto.children[1].children[6].value),
-        registryAffected: dto.children[1].children[7].value,
-        votingPeriod: Number(dto.children[17].value),
-        quorumTreshold: (Number(dto.children[15].children[0].value) + Number(dto.children[15].children[1].value)) * Number(dto.children[13].children[0].value) / Number(dto.children[13].children[1].value),
-        proposalsMapNumber: dto.children[12].value,
-        ledgerMapNumber: dto.children[6].value,
-        proposalsToFlush: dto.children[11].value || [],
-        totalSupply: {
-          0: Number(dto.children[15].children[0].value),
-          1: Number(dto.children[15].children[1].value),
-        },
-        fixedProposalFeeInToken: Number(dto.children[2].value),
-        admin: dto.children[0].value,
-      };
-
-      return result;
-    } catch (e) {
-      throw new Error(
-        `Storage mapping failed in RegistryDAO. Probably was wrongly instantiated? Error: ${e}`
-      );
-    }
-  };
+  public extra: RegistryExtra
 
   public static create = async (
     contractAddress: string,
     network: Network,
     tezos: TezosToolkit,
-    prefetched?: {
-      contract?: ContractAbstraction<Wallet> & {
-        tzip16(
-          this: ContractAbstraction<Wallet | ContractProvider>
-        ): Tzip16ContractAbstraction;
-      };
-      metadata?: DAOListMetadata;
-    }
+    metadata: DAOListMetadata
   ) => {
-    const contract =
-      (prefetched && prefetched.contract) ||
-      (await getContract(tezos, contractAddress));
-    const storageDTO = (await getStorage(
-      contractAddress,
-      network
-    )) as RegistryStorageDTO;
-    const storage = RegistryDAO.storageMapper(storageDTO);
-    const metadataToUse =
-      (prefetched && prefetched.metadata) ||
-      (await getDAOListMetadata(contract));
+    const storage = await getStorage(contractAddress, network);
+    const extraDto = await getExtra<RegistryExtraDTO>(storage.extraMapNumber, network)
+    const extra = {
+      registry: mapStorageRegistryList(extraDto[0].data.value.value),
+      frozenExtraValue: Number(extraDto[4].data.value.value),
+      slashExtraValue: Number(extraDto[5].data.value.value),
+      minXtzAmount: Number(extraDto[6].data.value.value),
+      maxXtzAmount: Number(extraDto[7].data.value.value),
+      frozenScaleValue: Number(extraDto[8].data.value.value),
+      slashDivisionScale: Number(extraDto[9].data.value.value),
+    }
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
     const originationTime = await getOriginationTime(contractAddress, network);
 
@@ -143,16 +88,17 @@ export class RegistryDAO extends BaseDAO {
       template: "registry",
       originationTime,
       storage,
-      metadata: metadataToUse,
+      metadata,
       tezos,
       network,
+      extra
     });
   };
 
-  public fetchStorage = async (): Promise<RegistryStorage> => {
-    const storageDTO = await getStorage(this.address, this.network);
-    return RegistryDAO.storageMapper(storageDTO as RegistryStorageDTO);
-  };
+  public constructor(params: RegistryConstructorParams) {
+    super(params)
+    this.extra = params.extra
+  }
 
   public proposals = async (): Promise<
     (TransferProposal | RegistryUpdateProposal)[]

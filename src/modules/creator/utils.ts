@@ -11,7 +11,7 @@ export const handleOrgFormErrors = (
   const errors: ErrorValues<OrgSettings> = {};
   Object.keys(values).map((field) => {
     const value = field as keyof OrgSettings;
-    if (!values[value]) errors[value] = "Required";
+    if (!values[value] && field !== "governance") errors[value] = "Required";
   });
   return errors;
 };

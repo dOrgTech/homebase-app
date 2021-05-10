@@ -12,6 +12,7 @@ import { Blockie } from "modules/common/Blockie";
 import { ExternalLink } from "modules/common/ExternalLink";
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
 import React from "react";
+import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { FA2Symbol } from "./FA2Symbol";
 
@@ -32,6 +33,7 @@ interface Props extends GridProps {
   amount: string;
   currency?: string;
   contract?: string;
+  tokenId?: string;
   long?: boolean;
 }
 
@@ -41,11 +43,14 @@ export const TransferBadge: React.FC<Props> = ({
   currency,
   long,
   contract,
+  tokenId,
   ...props
 }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const link = linkStyle();
+  const { network } = useTezos()
+  
   return (
     <HighlightedBadge
       justify="center"
@@ -56,7 +61,7 @@ export const TransferBadge: React.FC<Props> = ({
     >
       <Grid item>
         <Typography variant="body1" color="textSecondary">
-          {amount} {contract ? <FA2Symbol contractAddress={contract} /> : currency}
+          {amount} {contract && tokenId? <FA2Symbol contractAddress={contract} tokenId={tokenId} /> : currency}
         </Typography>
       </Grid>
       <ArrowContainer item>
@@ -79,7 +84,7 @@ export const TransferBadge: React.FC<Props> = ({
             <Typography>
               <ExternalLink
                 className={link.root}
-                link={"https://edo2net.tzkt.io/" + address}
+                link={`https://${network}.tzkt.io/` + address}
               >
                 {isMobileSmall ? toShortAddress(address) : address}
               </ExternalLink>

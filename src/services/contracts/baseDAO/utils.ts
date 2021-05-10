@@ -37,7 +37,10 @@ export const fromStateToBaseStorage = (
   const storageData = {
     membersTokenAllocation,
     adminAddress: info.memberSettings.administrator || "",
-
+    governanceToken: {
+      address: info.orgSettings.governanceToken.address,
+      tokenId: info.orgSettings.governanceToken.tokenId
+    },
     extra: {
       frozenScaleValue: info.votingSettings.proposeStakePercentage,
       frozenExtraValue: info.votingSettings.proposeStakeRequired,
