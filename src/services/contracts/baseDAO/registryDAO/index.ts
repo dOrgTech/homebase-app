@@ -70,8 +70,6 @@ export class RegistryDAO extends BaseDAO {
   ) => {
     const storage = await getStorage(contractAddress, network);
     const extraDto = await getExtra<RegistryExtraDTO>(storage.extraMapNumber, network)
-    console.log(bytes2Char)
-    console.log("EXTRA: ", extraDto[4].data.value.value)
     const extra = {
       registry: mapStorageRegistryList(extraDto[0].data.value.value),
       frozenExtraValue: Number(extraDto[4].data.value.value),
