@@ -224,3 +224,47 @@ export type RegistryExtraDTO = [
     count: 1;
   }
 ];
+
+export interface PMXTZTransferType {
+  xtz_transfer_type: {
+    amount: string;
+    recipient: string;
+  };
+}
+
+export interface PMFA2TransferType {
+  contract_address: string;
+  transfer_list: [
+    {
+      from_: string;
+      txs: [
+        {
+          to_: string;
+          token_id: string;
+          amount: string;
+        }
+      ];
+    }
+  ];
+}
+
+export interface PMTransferProposal {
+  transfer_proposal: {
+    agora_post_id: "0";
+    transfers: (PMXTZTransferType | PMFA2TransferType)[];
+  };
+}
+
+export interface PMRegistryUpdateProposal {
+  "0": {
+    agora_post_id: string;
+    registry_diff: 
+      {
+        "0": string;
+        "1": string;
+      }[]
+    ;
+  };
+}
+
+export type ProposalMetadata = PMTransferProposal | PMRegistryUpdateProposal;
