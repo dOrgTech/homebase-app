@@ -21,7 +21,7 @@ import { Autocomplete } from "formik-material-ui-lab";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { connectIfNotConnected } from "services/contracts/utils";
-import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
+import { useTransferPropose } from "services/contracts/baseDAO/hooks/useTransferPropose";
 import { TreasuryDAO } from "services/contracts/baseDAO";
 import {
   fromMigrationParamsFile,
@@ -271,7 +271,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
-  const { mutate } = useTreasuryPropose();
+  const { mutate } = useTransferPropose();
   const {
     state: {
       treasuryProposal: { open },
