@@ -1,11 +1,11 @@
 import { Proposal } from "../../bakingBad/proposals/types";
-import { TezosToolkit, ContractAbstraction, Wallet, MichelsonMap } from "@taquito/taquito";
+import { TezosToolkit, ContractAbstraction, Wallet, TransactionWalletOperation } from "@taquito/taquito";
 import { DAOTemplate } from "modules/creator/state";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
-import { Extra, fromStateToBaseStorage, getContract, MigrationParams } from ".";
+import { Extra, fromStateToBaseStorage, getContract, MigrationParams, TransferParams } from ".";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import {
   RegistryDAO,
@@ -230,5 +230,11 @@ export abstract class BaseDAO {
     const result = await contract.methods.unfreeze(amount).send();
     return result;
   };
+
+  public abstract proposeTransfer(args: {
+    tokensToFreeze: number;
+    agoraPostId: number;
+    transfers: TransferParams[];
+  }): Promise<TransactionWalletOperation>
 
 }

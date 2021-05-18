@@ -1,10 +1,8 @@
 import { Box, Grid, styled, Typography } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
-import { TokenHoldersRow } from "modules/explorer/components/TokenHolders";
 import {
   ActionTypes,
-  TokenHolder,
   CreatorContext,
 } from "modules/creator/state";
 
@@ -50,13 +48,6 @@ const UnderlinedGrid = styled(Grid)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.primary.light}`,
   padding: 2,
 }));
-
-const TokenHoldersContainer = styled(Box)({
-  marginTop: 5,
-  maxHeight: 200,
-  overflowY: "auto",
-  width: "100%",
-});
 
 const ViewMore = styled(Typography)({
   cursor: "pointer",
@@ -170,26 +161,12 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.memberSettings.administrator}
+                  {state.data.orgSettings.administrator}
                 </AdminAddress>
               </Grid>
             </AdminContainer>
           </Grid>
         </SecondContainer>
-
-        <TokenHoldersContainer>
-          {state.data.memberSettings.tokenHolders.map(
-            (holder: TokenHolder, i: number) => {
-              return (
-                <TokenHoldersRow
-                  key={`holder-${i}`}
-                  {...holder}
-                  symbol={state.data.orgSettings.symbol}
-                />
-              );
-            }
-          )}
-        </TokenHoldersContainer>
 
         <SecondContainer container direction="row">
           <Grid item xs={12}>
@@ -338,30 +315,6 @@ export const Summary = (): JSX.Element => {
                     >
                       {state.data.votingSettings.quorumTreshold}{" "}
                       {state.data.orgSettings.symbol}
-                    </Typography>
-                  </Grid>
-                </UnderlinedGrid>
-              </Grid>
-
-              <Grid item xs={12}>
-                <UnderlinedGrid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                >
-                  <Grid item xs={6}>
-                    <Typography variant="body2" color="textSecondary">
-                      Maximum proposal size
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography
-                      variant="subtitle1"
-                      color="textSecondary"
-                      align="right"
-                    >
-                      {state.data.votingSettings.maxProposalSize}
                     </Typography>
                   </Grid>
                 </UnderlinedGrid>

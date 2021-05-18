@@ -9,7 +9,6 @@ import {
   DaoSettings,
   Governance,
   Review,
-  TokenSettings,
 } from "modules/creator/steps";
 
 import { ProtectedRoute } from "modules/creator/components/ProtectedRoute";
@@ -24,13 +23,12 @@ export const STEPS: StepInfo[] = [
 const urlToStepMap: Record<string, number> = {
   templates: 0,
   dao: 1,
-  token: 1,
   voting: 1,
   summary: 2,
   review: 4,
 };
 
-export const CurrentStep: React.FC = () => {
+export const StepRouter: React.FC = () => {
   const match = useRouteMatch();
 
   return (
@@ -41,9 +39,6 @@ export const CurrentStep: React.FC = () => {
         </Route>
         <Route path={`${match.url}/dao`}>
           <DaoSettings />
-        </Route>
-        <Route path={`${match.url}/token`}>
-          <TokenSettings />
         </Route>
         <Route path={`${match.url}/voting`}>
           <Governance />
@@ -70,6 +65,7 @@ export const useStepNumber = (): number => {
       ? pathname.split("/").slice(-2)[0]
       : pathname.split("/").slice(-1)[0];
 
+    console.log(extracted)
     return urlToStepMap[extracted];
   }, [pathname]);
 };
@@ -79,4 +75,3 @@ export { Summary } from "modules/creator/steps/Summary";
 export { DaoSettings } from "modules/creator/steps/DaoSettings";
 export { Governance } from "modules/creator/steps/Governance";
 export { Review } from "modules/creator/steps/Review";
-export { TokenSettings } from "modules/creator/steps/TokenSettings";

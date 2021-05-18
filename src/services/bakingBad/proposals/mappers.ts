@@ -1,62 +1,93 @@
 import {
-  FA2Transfer,
-  FA2TransferDTO,
-  RegistryItemDTO,
+  ProposalDTO,
   RegistryUpdateProposal,
-  RegistryUpdateProposalsDTO,
   Transfer,
-  TransferProposal,
-  TransferProposalsDTO,
   Voter,
   VotersDTO,
-  XTZTransferDTO,
 } from "./types";
-import { Parser } from "@taquito/michel-codec";
+import { Expr, Parser } from "@taquito/michel-codec";
 import { bytes2Char } from "@taquito/tzip16";
+import {
+  PMFA2TransferType,
+  PMRegistryUpdateProposal,
+  PMTransferProposal,
+  PMXTZTransferType,
+  ProposalMetadata,
+} from "services/contracts/baseDAO/registryDAO/types";
+import proposeCode from "../../contracts/baseDAO/registryDAO/michelson/propose";
+import { Schema } from "@taquito/michelson-encoder";
+import { TransferParams } from "services/contracts/baseDAO/types";
+import { xtzToMutez } from "services/contracts/utils";
 
-const parser = new Parser()
+const parser = new Parser();
+const registryProposeSchema = new Schema(parser.parseData(proposeCode) as Expr);
 
-export const dtoToTransferProposals = (
-  dto: TransferProposalsDTO[number]
-): TransferProposal => {
+export const extractRegistryTransfersData = (
+  pm: PMTransferProposal
+): { transfers: Transfer[]; agoraPostId: number } => {
+  const agoraPostId = pm.transfer_proposal.agora_post_id;
+  const transfers = pm.transfer_proposal.transfers.map((transfer) => {
+    if (transfer.hasOwnProperty("xtz_transfer_type")) {
+      const xtzTransfer = transfer as PMXTZTransferType;
+
+      return {
+        amount: xtzTransfer.xtz_transfer_type.amount,
+        beneficiary: xtzTransfer.xtz_transfer_type.recipient,
+        type: "XTZ" as const,
+      };
+    } else {
+      const fa2Transfer = transfer as PMFA2TransferType;
+
+      return {
+        amount: fa2Transfer.transfer_list[0].txs[0].amount,
+        beneficiary: fa2Transfer.transfer_list[0].txs[0].to_,
+        contractAddress: fa2Transfer.contract_address,
+        tokenId: fa2Transfer.transfer_list[0].txs[0].token_id,
+        type: "FA2" as const,
+      };
+    }
+  });
+
   return {
-    id: dto.data.key.value,
-    upVotes: Number(dto.data.value.children[7].value),
-    downVotes: Number(dto.data.value.children[0].value),
-    startDate: dto.data.value.children[6].value,
-    agoraPostId: dto.data.value.children[1].children[0].value,
-    proposer: dto.data.value.children[3].value,
-    proposerFrozenTokens: dto.data.value.children[5].value,
-    transfers: mapTransfers(dto.data.value.children[1].children[1].value),
-    cycle: Number(dto.data.value.children[2].value),
-    voters: dtoToVoters(dto.data.value.children[8]),
-    type: "transfer"
-  }
+    transfers,
+    agoraPostId: Number(agoraPostId),
+  };
 };
 
-const decodeXTZTransfer = (dto: XTZTransferDTO): Transfer => {
+export const extractTransfersData = (
+  pm: ProposalMetadata
+): { transfers: Transfer[]; agoraPostId: number } => {
+  const agoraPostId = (pm as any).agora_post_id;
+  const transfers = (pm as any).transfers.map((transfer: any) => {
+    if (transfer.hasOwnProperty("xtz_transfer")) {
+      const xtzTransfer = transfer;
+
+      return {
+        amount: xtzTransfer.xtz_transfer.amount,
+        beneficiary: xtzTransfer.xtz_transfer.recipient,
+        type: "XTZ" as const,
+      };
+    } else {
+      const fa2Transfer = transfer;
+
+      return {
+        amount: fa2Transfer.transfer_list[0].txs[0].amount,
+        beneficiary: fa2Transfer.transfer_list[0].txs[0].to_,
+        contractAddress: fa2Transfer.contract_address,
+        tokenId: fa2Transfer.transfer_list[0].txs[0].token_id,
+        type: "FA2" as const,
+      };
+    }
+  });
+
   return {
-    amount: dto.args[0].args[0].int,
-    beneficiary: dto.args[0].args[1].string,
-    type: "XTZ"
-  }
-}
+    transfers,
+    agoraPostId: Number(agoraPostId),
+  };
+};
 
-const decodeFA2Transfer = (dto: FA2TransferDTO): FA2Transfer => {
-  return {
-    contractAddress: dto.args[0].args[0].string,
-    beneficiary: dto.args[0].args[1][0].args[1][0].args[0].string,
-    tokenId: dto.args[0].args[1][0].args[1][0].args[1].args[0].int,
-    amount: dto.args[0].args[1][0].args[1][0].args[1].args[1].int,
-    type: "FA2"
-  }
-}
-
-const dtoToVoters = (
-  votersDTO: VotersDTO
-): Voter[] => {
-
-  const voters = votersDTO.children
+export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
+  const voters = votersDTO.children;
 
   if (!voters) {
     return [];
@@ -65,60 +96,83 @@ const dtoToVoters = (
   return voters.map((voter) => ({
     address: voter.children[2].value,
     value: Number(voter.children[0].value),
-    support: Boolean(voter.children[1].value)
+    support: Boolean(voter.children[1].value),
   }));
 };
 
-const mapTransfers = (
-  transferMichelsonString: string
-): TransferProposal["transfers"] => {
-  if(transferMichelsonString === "{ { } }") {
-    return []
-  }
-
-  const transferStringNoBraces = transferMichelsonString.substr(3, transferMichelsonString.length - 6)
-  return transferStringNoBraces.split(" ; ").map(transferString => {
-    const transfer = parser.parseData(transferString) as XTZTransferDTO | FA2TransferDTO
-    if(transfer.prim === "Left") {
-      return decodeXTZTransfer(transfer)
-    } else {
-      return decodeFA2Transfer(transfer)
-    }
-  })
-};
-
 export const mapProposalRegistryList = (
-  listMichelsonString: string
-): RegistryUpdateProposal["list"] => {
-  if(listMichelsonString === "{ {} }") {
-    return []
+  pm: PMRegistryUpdateProposal
+): { registryDiff: RegistryUpdateProposal["list"], agoraPostId: string } => {
+
+  console.log(pm[0])
+
+  const agoraPostId = pm[0].agora_post_id;
+  const registryDiff = pm[0].registry_diff.map(item => ({
+    key: bytes2Char(item[0]),
+    value: bytes2Char(item[1])
+  }))
+
+  return {
+    agoraPostId,
+    registryDiff
   }
-
-  const listStringNoBraces = listMichelsonString.substr(3, listMichelsonString.length - 6)
-  return listStringNoBraces.split(" ; ").map(listString => {
-    const list = parser.parseData(listString) as RegistryItemDTO;
-
-    return { 
-      key: bytes2Char(list.args[0].string),
-      value: bytes2Char(list.args[1].args[0].string)
-    }
-  })
 };
 
-export const dtoToRegistryUpdateProposals = (
-  dto: RegistryUpdateProposalsDTO[number]
-): RegistryUpdateProposal => {
+export const mapTransferProposals = (dto: ProposalDTO[number]) => {
+  const proposalMetadata = dto.data.value.children[1].value;
+
+  const proposalMetadataNoBraces = proposalMetadata.substr(
+    2,
+    proposalMetadata.length - 4
+  );
+  const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
+  const proposalMetadataDTO: ProposalMetadata = registryProposeSchema.Execute(
+    michelsonExpr
+  );
+
+  const { agoraPostId, transfers } = extractTransfersData(proposalMetadataDTO);
+
   return {
     id: dto.data.key.value,
     upVotes: Number(dto.data.value.children[7].value),
     downVotes: Number(dto.data.value.children[0].value),
     startDate: dto.data.value.children[6].value,
-    agoraPostId: dto.data.value.children[1].children[0].value,
+    agoraPostId: agoraPostId.toString(),
     proposer: dto.data.value.children[3].value,
     proposerFrozenTokens: dto.data.value.children[5].value,
-    list: mapProposalRegistryList(dto.data.value.children[1].children[1].value),
+    transfers,
     cycle: Number(dto.data.value.children[2].value),
     voters: dtoToVoters(dto.data.value.children[8]),
-    type: "registryUpdate"
+    type: "transfer" as const,
+  };
+};
+
+export const mapXTZTransfersArgs = (
+  transfer: TransferParams
+) => {
+  return {
+    amount: Number(xtzToMutez(transfer.amount.toString())),
+    recipient: transfer.recipient,
+  };
+};
+
+export const mapFA2TransfersArgs = (
+  transfer: TransferParams,
+  daoAddress: string
+) => {
+  return {
+    contract_address: transfer.asset.contract,
+    transfer_list: [
+      {
+        from_: daoAddress,
+        txs: [
+          {
+            to_: transfer.recipient,
+            token_id: transfer.asset.token_id,
+            amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
+          },
+        ],
+      },
+    ],
   };
 };

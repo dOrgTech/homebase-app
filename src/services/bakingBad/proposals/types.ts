@@ -25,7 +25,7 @@ export type MutezTransfer = {
   ];
 };
 
-export type ProposalDTO<MetadataType = { prim: "bytes"; type: "bytes" }> = {
+export type ProposalDTO = {
   data: {
     key: {
       prim: "bytes";
@@ -48,15 +48,7 @@ export type ProposalDTO<MetadataType = { prim: "bytes"; type: "bytes" }> = {
           prim: "map";
           type: "map";
           name: "metadata";
-          children: [
-            {
-              prim: "bytes";
-              type: "bytes";
-              name: "agoraPostID";
-              value: string;
-            },
-            MetadataType
-          ];
+          value: string;
         },
         {
           prim: "nat";
@@ -109,13 +101,6 @@ export type ProposalDTO<MetadataType = { prim: "bytes"; type: "bytes" }> = {
   count: 1;
 }[];
 
-export type RegistryUpdateProposalsDTO = ProposalDTO<{
-  prim: "bytes";
-  type: "bytes";
-  name: "updates";
-  value: string;
-}>;
-
 export type VotersDTO = {
   prim: "list";
   type: "list";
@@ -152,18 +137,6 @@ export interface Voter {
   value: number;
   support: boolean;
 }
-
-export type TransferProposalsDTO = ProposalDTO<{
-  prim: "bytes";
-  type: "bytes";
-  name: "transfers";
-  value: string;
-}>;
-
-export type RegistryProposalsDTO =
-  | RegistryUpdateProposalsDTO
-  | TransferProposalsDTO;
-
 export interface Proposal {
   id: string;
   upVotes: number;

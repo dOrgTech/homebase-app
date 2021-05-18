@@ -127,11 +127,6 @@ const styles = {
   },
 };
 
-const LastInput = styled(Grid)({
-  marginTop: 14,
-  paddingBottom: 37,
-});
-
 const GridNoPadding = styled(Grid)({
   padding: "0px !important",
 });
@@ -172,7 +167,7 @@ const GovernanceForm = ({
         },
         back: {
           text: "BACK",
-          handler: () => history.push(`token`),
+          handler: () => history.push(`dao`),
         },
       });
     }
@@ -311,10 +306,10 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <Typography color="textSecondary">
-                {orgSettings.symbol}
+                {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
               </Typography>
               <Tooltip
-                title={`Amount of ${orgSettings.symbol} required to make a proposal. Total supply: ${totalSupply}`}
+                title={`Amount of $${orgSettings.governanceToken.tokenMetadata?.symbol || ""} required to make a proposal. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -464,9 +459,9 @@ const GovernanceForm = ({
                 name="quorumTreshold"
                 type="number"
                 placeholder="00"
-                inputProps={{ min: 0 }}
+                inputProps={{ min: 0, max: 100 }}
                 component={TextField}
-              ></Field>
+              />
             </GridItemCenter>
             <GridItemCenter
               item
@@ -476,10 +471,10 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <Typography color="textSecondary">
-                {orgSettings.symbol}
+                %
               </Typography>
               <Tooltip
-                title={`Amount of ${orgSettings.symbol} required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
+                title={`Amount of ${orgSettings.governanceToken.tokenMetadata?.symbol || ""} required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -490,50 +485,6 @@ const GovernanceForm = ({
             <ErrorText>{errors.quorumTreshold}</ErrorText>
           ) : null}
       </Grid>
-
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Maximum Proposal Size
-        </Typography>
-      </SpacingContainer>
-
-      <LastInput container direction="row" alignItems="center">
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="maxProposalSize"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={6}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <Typography color="textSecondary">
-                {orgSettings.symbol}
-              </Typography>
-              <Tooltip title="Maximum proposal size">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.maxProposalSize && touched.maxProposalSize ? (
-            <ErrorText>{errors.maxProposalSize}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-      </LastInput>
     </>
   );
 };

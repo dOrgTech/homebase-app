@@ -28,7 +28,6 @@ export const handleGovernanceFormErrors = (
     votingMinutes,
     proposeStakePercentage,
     proposeStakeRequired,
-    maxProposalSize,
     minXtzAmount,
     maxXtzAmount,
     quorumTreshold,
@@ -68,10 +67,6 @@ export const handleGovernanceFormErrors = (
 
   if (totalSupply && proposeStakeRequired > Number(totalSupply)) {
     errors.proposeStakeRequired = "The required stake must be smaller than the total supply";
-  }
-
-  if (!maxProposalSize || maxProposalSize <= 0) {
-    errors.maxProposalSize = "Must be greater than 0";
   }
 
   if (!quorumTreshold || quorumTreshold <= 0) {

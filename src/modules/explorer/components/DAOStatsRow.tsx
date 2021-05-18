@@ -12,6 +12,7 @@ import { useHistory, useParams } from "react-router-dom";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 import { StatsBox } from "./StatsBox";
 import { TokenHoldersDialog } from "./TokenHolders";
 
@@ -67,19 +68,12 @@ export const DAOStatsRow: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const history = useHistory();
   const { data: activeProposals } = useProposals(id, ProposalStatus.ACTIVE);
+  const { data: tokenMetadata } = useTokenMetadata(
+    data?.storage.governanceToken.address,
+    data?.storage.governanceToken.tokenId.toString()
+  );
 
   const amountLocked = useMemo(() => {
-    if (!data) {
-      return 0;
-    }
-
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[1] || 0;
-      return acc + frozenBalance;
-    }, 0);
-  }, [data]);
-
-  const amountNotLocked = useMemo(() => {
     if (!data) {
       return 0;
     }
@@ -89,6 +83,14 @@ export const DAOStatsRow: React.FC = () => {
       return acc + frozenBalance;
     }, 0);
   }, [data]);
+
+  const amountNotLocked = useMemo(() => {
+    if (!tokenMetadata) {
+      return 0;
+    }
+
+    return tokenMetadata.supply
+  }, [tokenMetadata]);
 
   const totalTokens = amountLocked + amountNotLocked;
 

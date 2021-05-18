@@ -34,7 +34,7 @@ export const TreasuryTableRow: React.FC<{
   symbol: string;
   balance: string;
   decimals: number;
-}> = ({ symbol, balance, decimals }) => {
+}> = ({ symbol, balance }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { dispatch } = useContext(ModalsContext);
@@ -68,7 +68,7 @@ export const TreasuryTableRow: React.FC<{
           </Typography>
         ) : null}
         <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {decimals && (Number(balance) / Math.pow(10, decimals))}
+          {balance}
         </Cursor>
       </Grid>
       <Grid sm={2} item>
