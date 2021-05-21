@@ -1,5 +1,4 @@
 import {
-  MemberSettings,
   MigrationParams,
   OrgSettings,
   VotingSettings,
@@ -64,13 +63,6 @@ function updateVotingSettings(voting: VotingSettings) {
   };
 }
 
-function updateMemberSettings(members: MemberSettings) {
-  return <const>{
-    type: ActionTypes.UPDATE_MEMBERS_SETTINGS,
-    members,
-  };
-}
-
 function updateDeploymentStatus({ deploying, contract }: DeploymentStatus) {
   return <const>{
     type: ActionTypes.UPDATE_DEPLOYMENT_STATUS,
@@ -96,7 +88,6 @@ export type CreatorAction = ReturnType<
   | typeof updateNavigationBar
   | typeof updateOrgSettings
   | typeof updateVotingSettings
-  | typeof updateMemberSettings
   | typeof updateDeploymentStatus
   | typeof clearCache
 >;
@@ -104,7 +95,6 @@ export type CreatorAction = ReturnType<
 export enum ActionTypes {
   UPDATE_NAVIGATION_BAR = "UPDATE_NAVIGATION_BAR",
   UPDATE_VOTING_SETTINGS = "UPDATE_VOTING_SETTINGS",
-  UPDATE_MEMBERS_SETTINGS = "UPDATE_MEMBERS_SETTINGS",
   UPDATE_ORGANIZATION_SETTINGS = "UPDATE_ORGANIZATION_SETTINGS",
   UPDATE_DEPLOYMENT_STATUS = "UPDATE_DEPLOYMENT_STATUS",
   CLEAR_CACHE = "CLEAR_CACHE",

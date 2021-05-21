@@ -127,11 +127,6 @@ const styles = {
   },
 };
 
-const LastInput = styled(Grid)({
-  marginTop: 14,
-  paddingBottom: 37,
-});
-
 const GridNoPadding = styled(Grid)({
   padding: "0px !important",
 });
@@ -154,7 +149,7 @@ const GovernanceForm = ({
     state: {
       governanceStep,
       activeStep,
-      data: { orgSettings, template },
+      data: { orgSettings },
     },
   } = useContext(CreatorContext);
   const match = useRouteMatch();
@@ -172,7 +167,7 @@ const GovernanceForm = ({
         },
         back: {
           text: "BACK",
-          handler: () => history.push(`token`),
+          handler: () => history.push(`dao`),
         },
       });
     }
@@ -190,7 +185,6 @@ const GovernanceForm = ({
 
   return (
     <>
-      {console.log(JSON.stringify(errors))}
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -276,6 +270,179 @@ const GovernanceForm = ({
       {errors.votingMinutes && touched.votingMinutes ? (
         <ErrorText>{errors.votingMinutes}</ErrorText>
       ) : null}
+
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Proposal time to expire
+        </Typography>
+      </SecondContainer>
+
+      <Grid container direction="row" wrap="wrap">
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryDays"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">days</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalExpiryDays && touched.proposalExpiryDays ? (
+            <ErrorText>{errors.proposalExpiryDays}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryHours"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">hours</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalExpiryHours && touched.proposalExpiryHours ? (
+            <ErrorText>{errors.proposalExpiryHours}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryMinutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">minutes</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+        </CustomInputContainer>
+      </Grid>
+
+      {errors.proposalExpiryMinutes && touched.proposalExpiryMinutes ? (
+        <ErrorText>{errors.proposalExpiryMinutes}</ErrorText>
+      ) : null}
+
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Proposal Flush Delay Duration
+        </Typography>
+      </SecondContainer>
+
+      <Grid container direction="row" wrap="wrap">
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalFlushDays"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">days</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalFlushDays && touched.proposalFlushDays ? (
+            <ErrorText>{errors.proposalFlushDays}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalFlushHours"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">hours</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalFlushHours && touched.proposalFlushHours ? (
+            <ErrorText>{errors.proposalFlushHours}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalFlushMinutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">minutes</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+        </CustomInputContainer>
+      </Grid>
+
+      {errors.proposalFlushMinutes && touched.proposalFlushMinutes ? (
+        <ErrorText>{errors.proposalFlushMinutes}</ErrorText>
+      ) : null}
+
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -311,18 +478,22 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <Typography color="textSecondary">
-                {orgSettings.symbol}
+                {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
               </Typography>
               <Tooltip
-                title={`Amount of ${orgSettings.symbol} required to make a proposal. Total supply: ${totalSupply}`}
+                title={`Amount of $${
+                  orgSettings.governanceToken.tokenMetadata?.symbol || ""
+                } required to make a proposal. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
         </AdditionContainer>
-        {(errors.proposeStakeRequired || errors.proposeStakePercentage) ? (
-          <ErrorText>{errors.proposeStakeRequired || errors.proposeStakePercentage}</ErrorText>
+        {errors.proposeStakeRequired || errors.proposeStakePercentage ? (
+          <ErrorText>
+            {errors.proposeStakeRequired || errors.proposeStakePercentage}
+          </ErrorText>
         ) : null}
       </StakeContainer>
 
@@ -364,86 +535,82 @@ const GovernanceForm = ({
         </Grid>
       </SecondContainer>
 
-      {template === "treasury" && (
-        <>
-          <SpacingContainer direction="row" container alignItems="center">
-            <Typography variant="subtitle1" color="textSecondary">
-              Transfer Amounts
-            </Typography>
-          </SpacingContainer>
-          <Grid
+      <SpacingContainer direction="row" container alignItems="center">
+        <Typography variant="subtitle1" color="textSecondary">
+          Transfer Amounts
+        </Typography>
+      </SpacingContainer>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
             container
             direction="row"
             alignItems="center"
-            style={{ marginTop: 14 }}
+            justify="center"
           >
-            <AdditionContainer item xs={12} sm={4}>
-              <ItemContainer
-                container
-                direction="row"
-                alignItems="center"
-                justify="center"
-              >
-                <GridItemCenter item xs={5}>
-                  <Field
-                    name="minXtzAmount"
-                    type="number"
-                    placeholder="00"
-                    component={TextField}
-                  ></Field>
-                </GridItemCenter>
-                <GridItemCenter
-                  item
-                  xs={7}
-                  container
-                  direction="row"
-                  justify="space-around"
-                >
-                  <ValueText color="textSecondary">Min. XTZ</ValueText>
-                  <Tooltip title="Minimum amount of XTZ that can be transferred">
-                    <InfoIconInput color="secondary" />
-                  </Tooltip>
-                </GridItemCenter>
-              </ItemContainer>
-              {errors.minXtzAmount && touched.minXtzAmount ? (
-                <ErrorText>{errors.minXtzAmount}</ErrorText>
-              ) : null}
-            </AdditionContainer>
-            <AdditionContainer item xs={12} sm={4}>
-              <ItemContainer
-                container
-                direction="row"
-                alignItems="center"
-                justify="center"
-              >
-                <GridItemCenter item xs={5}>
-                  <Field
-                    name="maxXtzAmount"
-                    type="number"
-                    placeholder="00"
-                    component={TextField}
-                  ></Field>
-                </GridItemCenter>
-                <GridItemCenter
-                  item
-                  xs={7}
-                  container
-                  direction="row"
-                  justify="space-around"
-                >
-                  <ValueText color="textSecondary">Max. XTZ </ValueText>
-                  <Tooltip title="Maximum amount of XTZ that can be transferred">
-                    <InfoIconInput color="secondary" />
-                  </Tooltip>
-                </GridItemCenter>
-              </ItemContainer>
-              {errors.maxXtzAmount && touched.maxXtzAmount ? (
-                <ErrorText>{errors.maxXtzAmount}</ErrorText>
-              ) : null}
-            </AdditionContainer>
-          </Grid>
-        </>
-      )}
+            <GridItemCenter item xs={5}>
+              <Field
+                name="minXtzAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Min. XTZ</ValueText>
+              <Tooltip title="Minimum amount of XTZ that can be transferred">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.minXtzAmount && touched.minXtzAmount ? (
+            <ErrorText>{errors.minXtzAmount}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={5}>
+              <Field
+                name="maxXtzAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Max. XTZ </ValueText>
+              <Tooltip title="Maximum amount of XTZ that can be transferred">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.maxXtzAmount && touched.maxXtzAmount ? (
+            <ErrorText>{errors.maxXtzAmount}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+      </Grid>
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
           Quorum Threshold
@@ -468,9 +635,9 @@ const GovernanceForm = ({
                 name="quorumTreshold"
                 type="number"
                 placeholder="00"
-                inputProps={{ min: 0 }}
+                inputProps={{ min: 0, max: 100 }}
                 component={TextField}
-              ></Field>
+              />
             </GridItemCenter>
             <GridItemCenter
               item
@@ -479,11 +646,10 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Typography color="textSecondary">
-                {orgSettings.symbol}
-              </Typography>
               <Tooltip
-                title={`Amount of ${orgSettings.symbol} required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
+                title={`Amount of ${
+                  orgSettings.governanceToken.tokenMetadata?.symbol || ""
+                } required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -491,17 +657,94 @@ const GovernanceForm = ({
           </ItemContainer>
         </AdditionContainer>
         {errors.quorumTreshold && touched.quorumTreshold ? (
-            <ErrorText>{errors.quorumTreshold}</ErrorText>
+          <ErrorText>{errors.quorumTreshold}</ErrorText>
+        ) : null}
+      </Grid>
+
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={5}>
+              <Field
+                name="minQuorumAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Min</ValueText>
+              <Tooltip title="Quorum min amount">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.minQuorumAmount && touched.minQuorumAmount ? (
+            <ErrorText>{errors.minQuorumAmount}</ErrorText>
           ) : null}
+        </AdditionContainer>
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={5}>
+              <Field
+                name="maxQuorumAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Max</ValueText>
+              <Tooltip title="Quorum max amount">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.maxQuorumAmount && touched.maxQuorumAmount ? (
+            <ErrorText>{errors.maxQuorumAmount}</ErrorText>
+          ) : null}
+        </AdditionContainer>
       </Grid>
 
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
-          Maximum Proposal Size
+          Quorum Change
         </Typography>
       </SpacingContainer>
 
-      <LastInput container direction="row" alignItems="center">
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
         <AdditionContainer item xs={12} sm={4}>
           <ItemContainer
             container
@@ -511,12 +754,12 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="maxProposalSize"
+                name="quorumChange"
                 type="number"
                 placeholder="00"
+                inputProps={{ min: 0, max: 100 }}
                 component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
+              />
             </GridItemCenter>
             <GridItemCenter
               item
@@ -525,24 +768,71 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Typography color="textSecondary">
-                {orgSettings.symbol}
-              </Typography>
-              <Tooltip title="Maximum proposal size">
+              <Tooltip
+                title="Quorum change"
+              >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.maxProposalSize && touched.maxProposalSize ? (
-            <ErrorText>{errors.maxProposalSize}</ErrorText>
-          ) : null}
         </AdditionContainer>
-      </LastInput>
+        {errors.quorumChange && touched.quorumChange ? (
+          <ErrorText>{errors.quorumChange}</ErrorText>
+        ) : null}
+      </Grid>
+
+      <SpacingContainer direction="row" container alignItems="center">
+        <Typography variant="subtitle1" color="textSecondary">
+          Quorum Max Change
+        </Typography>
+      </SpacingContainer>
+
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="quorumMaxChange"
+                type="number"
+                placeholder="00"
+                inputProps={{ min: 0, max: 100 }}
+                component={TextField}
+              />
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={6}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <Tooltip
+                title="Max Quorum Change"
+              >
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+        </AdditionContainer>
+        {errors.quorumMaxChange && touched.quorumMaxChange ? (
+          <ErrorText>{errors.quorumMaxChange}</ErrorText>
+        ) : null}
+      </Grid>
     </>
   );
 };
 
-//@TODO: Remove any from this component
+//TODO: Remove any from this component
 export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { votingSettings } = state.data;
@@ -584,7 +874,11 @@ export const Governance: React.FC = () => {
       <Formik
         enableReinitialize
         validate={(values: VotingSettings) =>
-          handleGovernanceFormErrors(values, state.data.template, Number(totalSupply))
+          handleGovernanceFormErrors(
+            values,
+            state.data.template,
+            Number(totalSupply)
+          )
         }
         onSubmit={saveStepInfo}
         initialValues={votingSettings}

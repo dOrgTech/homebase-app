@@ -81,28 +81,28 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
     setOpen(false);
   };
 
-  const { data: ledger } = useTokenHolders(address);
+  const { data } = useTokenHolders(address);
 
   const tokenHolders = useMemo(() => {
-    if (!ledger) {
+    if (!data) {
       return [];
     }
 
-    return ledger.map((holder) => ({
+    return data.map((holder) => ({
       address: holder.address,
-      tokens: holder.balances[1] || 0,
+      tokens: holder.balances[0] || 0,
     }));
-  }, [ledger]);
+  }, [data]);
 
   const totalLocked = useMemo(() => {
-    if (!ledger) {
+    if (!data) {
       return 0;
     }
 
-    return ledger.reduce((acc, holder) => {
-      return acc + (holder.balances[1] || 0);
+    return data.reduce((acc, holder) => {
+      return acc + (holder.balances[0] || 0);
     }, 0);
-  }, [ledger]);
+  }, [data]);
 
   return (
     <div>

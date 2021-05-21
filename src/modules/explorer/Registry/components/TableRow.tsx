@@ -10,8 +10,6 @@ import {
 } from "@material-ui/core";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import dayjs from "dayjs";
-import { useParams } from "react-router";
-import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
 import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 
 const TokenName = styled(withTheme(Paper))((props) => ({
@@ -43,7 +41,6 @@ export const RegistryTableRow: React.FC<{
   value: string;
   lastUpdated: string;
 }> = ({ name, value, lastUpdated }) => {
-  const { id } = useParams<{ id: string }>();
   const { dispatch } = useContext(ModalsContext);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -82,7 +79,7 @@ export const RegistryTableRow: React.FC<{
       </Grid>
       <Grid
         item
-        xs={isMobileSmall ? 12 : 4}
+        xs={isMobileSmall ? 12 : 6}
         container
         direction="row"
         alignItems="center"
@@ -134,23 +131,6 @@ export const RegistryTableRow: React.FC<{
           <Cursor variant="subtitle1" color="textSecondary">
             {dayjs(lastUpdated).format("LLL")}
           </Cursor>
-        </Grid>
-      </Grid>
-      <Grid xs={2} item>
-        <Grid container direction="row" justify="flex-end" alignItems="center">
-          <SettingsIcon
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
-                payload: {
-                  isUpdate: true,
-                  itemToUpdate: { key: name, value },
-                  daoAddress: id,
-                },
-              });
-            }}
-          />
         </Grid>
       </Grid>
     </TemplateTableRowContainer>

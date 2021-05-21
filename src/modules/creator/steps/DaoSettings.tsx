@@ -82,8 +82,8 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField);
 
 const MetadataContainer = styled(Grid)({
-  margin: "-4px 0 16px 0"
-})
+  margin: "-4px 0 16px 0",
+});
 
 const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   minHeight: 152,
@@ -111,13 +111,7 @@ const ErrorText = styled(Typography)({
 });
 
 const DaoSettingsForm = withRouter(
-  ({
-    submitForm,
-    values,
-    setFieldValue,
-    errors,
-    touched,
-  }: any) => {
+  ({ submitForm, values, setFieldValue, errors, touched }: any) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -126,7 +120,11 @@ const DaoSettingsForm = withRouter(
       values?.governanceToken?.tokenId
     );
 
-    console.log(tokenMetadata)
+    useEffect(() => {
+      if (tokenMetadata) {
+        setFieldValue("governanceToken.tokenMetadata", tokenMetadata);
+      }
+    }, [setFieldValue, tokenMetadata]);
 
     const {
       dispatch,
@@ -165,40 +163,41 @@ const DaoSettingsForm = withRouter(
     return (
       <>
         <SecondContainer container item direction="row" spacing={2} wrap="wrap">
-            <Grid item xs={isMobile ? 12 : 9}>
-              <Typography variant="subtitle1" color="textSecondary">
-                {" "}
-                Token Address{" "}
-              </Typography>
-              <CustomInputContainer>
-                <Field
-                  id="outlined-basic"
-                  placeholder="KT1...."
-                  name="governanceToken.address"
-                  component={CustomFormikTextField}
-                />
-              </CustomInputContainer>
-            </Grid>
-            <Grid item xs={isMobile ? 12 : 3}>
-              <Typography variant="subtitle1" color="textSecondary">
-                {" "}
-                Token ID{" "}
-              </Typography>
-              <CustomInputContainer>
-                <Field
-                  id="outlined-basic"
-                  placeholder="0"
-                  name="governanceToken.tokenId"
-                  component={CustomFormikTextField}
-                />
-              </CustomInputContainer>
-            </Grid>
-          { tokenMetadata && !loading && <MetadataContainer item xs={12}>
-            <Typography variant="subtitle2" color="secondary">
-              {tokenMetadata.name} ({tokenMetadata.symbol})
+          <Grid item xs={isMobile ? 12 : 9}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Token Address{" "}
             </Typography>
-          </MetadataContainer>
-          }
+            <CustomInputContainer>
+              <Field
+                id="outlined-basic"
+                placeholder="KT1...."
+                name="governanceToken.address"
+                component={CustomFormikTextField}
+              />
+            </CustomInputContainer>
+          </Grid>
+          <Grid item xs={isMobile ? 12 : 3}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Token ID{" "}
+            </Typography>
+            <CustomInputContainer>
+              <Field
+                id="outlined-basic"
+                placeholder="0"
+                name="governanceToken.tokenId"
+                component={CustomFormikTextField}
+              />
+            </CustomInputContainer>
+          </Grid>
+          {tokenMetadata && !loading && (
+            <MetadataContainer item xs={12}>
+              <Typography variant="subtitle2" color="secondary">
+                {tokenMetadata.name} ({tokenMetadata.symbol})
+              </Typography>
+            </MetadataContainer>
+          )}
           <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
@@ -286,6 +285,36 @@ const DaoSettingsForm = withRouter(
             <ErrorText>{errors.description}</ErrorText>
           ) : null}
         </SecondContainer>
+        <SecondContainer item container direction="row" alignItems="center">
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Administrator{" "}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <CustomInputContainer>
+              <Field
+                name="administrator"
+                type="text"
+                placeholder="tz1PXn...."
+                component={CustomFormikTextField}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip title="DAO Name info">
+                        <InfoIconInput color="secondary" />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
+              ></Field>
+            </CustomInputContainer>
+            {errors.administrator && touched.administrator ? (
+              <ErrorText>{errors.administrator}</ErrorText>
+            ) : null}
+          </Grid>
+        </SecondContainer>
       </>
     );
   }
@@ -295,8 +324,6 @@ export const DaoSettings = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext);
   const { orgSettings } = state.data;
   const history = useHistory();
-
-  console.log(orgSettings)
 
   const saveStepInfo = (
     values: OrgSettings,
@@ -309,7 +336,7 @@ export const DaoSettings = (): JSX.Element => {
     updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values });
-    history.push(`token`);
+    history.push(`voting`);
   };
 
   return (

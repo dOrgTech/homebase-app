@@ -4,7 +4,7 @@ import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolder
 
 export const useTokenHoldersWithVotes = (contractAddress: string) => {
   const {
-    data: ledger,
+    data: ledgerData,
     isLoading: ledgerIsLoading,
     error: ledgerError,
   } = useTokenHolders(contractAddress);
@@ -16,11 +16,11 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
   } = useProposals(contractAddress);
 
   const tokenHoldersWithVotes = useMemo(() => {
-    if (!proposals || !ledger) {
+    if (!proposals || !ledgerData) {
       return [];
     }
 
-    return ledger.map((tokenHolder) => {
+    return ledgerData.map((tokenHolder) => {
       let proposalsVoted = 0;
       let votes = 0;
 
@@ -42,7 +42,7 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
         proposalsVoted,
       };
     });
-  }, [proposals, ledger]);
+  }, [proposals, ledgerData]);
 
   return {
     data: tokenHoldersWithVotes,

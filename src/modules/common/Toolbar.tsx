@@ -276,8 +276,8 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       return 0;
     }
     const balance = data.find(({ address }) => address.toLowerCase() === account.toLowerCase());
-    const unfrozenBalance = balance ? balance.balances[0] : 0;
-    return unfrozenBalance || 0;
+    const frozenBalance = balance ? balance.balances[0] : 0;
+    return frozenBalance || 0;
 
   }, [data, account])
 

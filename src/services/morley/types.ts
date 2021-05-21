@@ -11,10 +11,18 @@ export interface GeneratorArgs {
   slash_scale_value: string
   frozen_extra_value: string
   frozen_scale_value: string
-  ledger: string
   metadata_map: string
   quorum_treshold: string
-  voting_period: string
   min_xtz_amount: string
   max_xtz_amount: string
+  //guardian_address: string
+  now_val: string;
+  min_quorum: string;
+  max_quorum: string;
+  quorum_change: string;
+  max_quorum_change: string;
+  proposal_flush_time: string;
+  proposal_expired_time: string;
+  governance_total_supply: string;
+  period: string;
 }

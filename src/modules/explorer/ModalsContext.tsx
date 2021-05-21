@@ -23,12 +23,7 @@ type RegistryTransactionAction = {
 type RegistryProposalAction = {
   type: ActionTypes.OPEN_REGISTRY_PROPOSAL;
   payload: {
-    isUpdate: boolean;
     daoAddress: string;
-    itemToUpdate?: {
-      key: string;
-      value: string;
-    };
   };
 };
 
@@ -76,13 +71,6 @@ interface ModalContextState {
   };
   registryProposal: {
     open: boolean;
-    params: {
-      isUpdate: boolean;
-      itemToUpdate?: {
-        key: string;
-        value: string;
-      };
-    };
   };
   registryItem: {
     open: boolean;
@@ -111,9 +99,6 @@ const INITIAL_STATE: ModalContextState = {
   },
   registryProposal: {
     open: false,
-    params: {
-      isUpdate: false,
-    },
   },
   registryItem: {
     open: false,
@@ -153,10 +138,6 @@ const reducer = (
         daoId: action.payload.daoAddress,
         registryProposal: {
           open: true,
-          params: {
-            isUpdate: action.payload.isUpdate,
-            itemToUpdate: action.payload.itemToUpdate,
-          },
         },
       };
     case ActionTypes.OPEN_TREASURY_PROPOSAL:

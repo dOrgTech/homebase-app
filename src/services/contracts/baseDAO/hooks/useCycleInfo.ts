@@ -1,5 +1,5 @@
 import { calculateCycleInfo } from './../utils';
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDAO } from "./useDAO";
 import { CycleInfo } from "..";
 
@@ -23,3 +23,16 @@ export const useCycleInfo = (daoAddress?: string) => {
 
   return timeLeft;
 };
+
+
+export const useIsProposalButtonDisabled = (daoAddress?: string) => {
+  const cycleInfo = useCycleInfo(daoAddress)
+
+  return useMemo(() => {
+    if(cycleInfo && cycleInfo.type === "voting") {
+      return true
+    }
+
+    return false
+  }, [cycleInfo])
+}

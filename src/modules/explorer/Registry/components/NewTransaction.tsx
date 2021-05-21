@@ -104,22 +104,6 @@ export const NewTransaction: React.FC = () => {
                 dispatch({
                   type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
                   payload: {
-                    isUpdate: false,
-                    daoAddress: daoId,
-                  },
-                })
-              }
-            >
-              Add to Registry{" "}
-            </Option>
-            <Option
-              variant="subtitle1"
-              color="textSecondary"
-              onClick={() =>
-                dispatch({
-                  type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
-                  payload: {
-                    isUpdate: true,
                     daoAddress: daoId,
                   },
                 })

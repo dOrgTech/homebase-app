@@ -25,7 +25,8 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     governanceToken: {
       address: "",
       tokenId: ""
-    }
+    },
+    administrator: "",
   },
   votingSettings: {
     votingDays: 0,
@@ -37,17 +38,18 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     frozenDivisionValue: 1,
     minXtzAmount: 0,
     maxXtzAmount: 0,
-    maxProposalSize: 0,
     quorumTreshold: 0,
-  },
-  memberSettings: {
-    tokenHolders: [
-      {
-        address: "",
-        balance: 0,
-      },
-    ],
-    administrator: "",
+
+    minQuorumAmount: 1,
+    maxQuorumAmount: 99,
+    quorumChange: 5,
+    quorumMaxChange: 19,
+    proposalFlushDays: 0,
+    proposalFlushHours: 0,
+    proposalFlushMinutes: 0,
+    proposalExpiryDays: 0,
+    proposalExpiryHours: 0,
+    proposalExpiryMinutes: 0,
   },
 };
 
@@ -106,15 +108,6 @@ export const reducer = (
         data: {
           ...state.data,
           votingSettings: action.voting,
-        },
-      };
-      return state;
-    case ActionTypes.UPDATE_MEMBERS_SETTINGS:
-      state = {
-        ...state,
-        data: {
-          ...state.data,
-          memberSettings: action.members,
         },
       };
       return state;

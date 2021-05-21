@@ -22,7 +22,7 @@ export const TokenTable: React.FC = () => {
               TOKEN BALANCES
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={7}>
             <ProposalTableHeadText align={"right"}>
               BALANCE
             </ProposalTableHeadText>

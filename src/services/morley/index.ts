@@ -1,4 +1,6 @@
+import { Network } from './../beacon/context';
 import { DAOTemplate } from "modules/creator/state"
+import { getTokenMetadata } from "services/bakingBad/tokens"
 import { BaseStorageParams } from "services/contracts/baseDAO"
 import { MetadataDeploymentResult } from "services/contracts/metadataCarrier/deploy"
 import { storageParamsToMorleyArgs } from "./mappers"
@@ -11,10 +13,12 @@ interface MorleyParams {
   storage: BaseStorageParams;
   originatorAddress: string;
   metadata: MetadataDeploymentResult
+  network: Network
 }
 
-export const generateStorageContract = async ({ storage, template, originatorAddress, metadata }: MorleyParams): Promise<string> => {
-  const args = storageParamsToMorleyArgs(storage, metadata)
+export const generateStorageContract = async ({ storage, template, originatorAddress, metadata, network }: MorleyParams): Promise<string> => {
+  const tokenMetadata = await getTokenMetadata(storage.governanceToken.address, network, storage.governanceToken.tokenId)
+  const args = storageParamsToMorleyArgs(storage, metadata, tokenMetadata)
 
   const url = `${API_URL}/${originatorAddress}/${template}?${Object.keys(args).map(
     (key) => `${key}=${args[key as keyof GeneratorArgs]}`

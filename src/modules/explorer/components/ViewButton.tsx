@@ -16,7 +16,9 @@ const useButtonStyles = makeStyles({
   },
 });
 
-export const ViewButton: React.FC<{ customColor?: string } & ButtonProps> = ({
+export type ViewButtonProps = { customColor?: string } & ButtonProps
+
+export const ViewButton: React.FC<ViewButtonProps> = ({
   customColor,
   ...props
 }) => {

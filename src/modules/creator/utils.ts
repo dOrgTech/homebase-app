@@ -28,7 +28,6 @@ export const handleGovernanceFormErrors = (
     votingMinutes,
     proposeStakePercentage,
     proposeStakeRequired,
-    maxProposalSize,
     minXtzAmount,
     maxXtzAmount,
     quorumTreshold,
@@ -70,10 +69,6 @@ export const handleGovernanceFormErrors = (
     errors.proposeStakeRequired = "The required stake must be smaller than the total supply";
   }
 
-  if (!maxProposalSize || maxProposalSize <= 0) {
-    errors.maxProposalSize = "Must be greater than 0";
-  }
-
   if (!quorumTreshold || quorumTreshold <= 0) {
     errors.quorumTreshold = "Must be greater than 0";
   }
@@ -82,18 +77,13 @@ export const handleGovernanceFormErrors = (
     errors.quorumTreshold = "Quorum Treshold must be smaller than the total supply";
   }
 
-  if (template === "treasury") {
-    if (!minXtzAmount || minXtzAmount <= 0) {
-      errors.minXtzAmount = "Must be greater than 0";
-    }
-
-    if (!maxXtzAmount || maxXtzAmount <= 0) {
-      errors.maxXtzAmount = "Must be greater than 0";
-    }
-
-    return errors;
+  if (!maxXtzAmount || maxXtzAmount <= 0) {
+    errors.maxXtzAmount = "Must be greater than 0";
   }
 
-  console.log(errors);
+  if(maxXtzAmount <= minXtzAmount) {
+    errors.minXtzAmount = "Must be lower than max XTZ amount"
+  }
+
   return errors;
 };

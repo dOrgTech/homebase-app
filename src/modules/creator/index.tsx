@@ -16,7 +16,7 @@ import ProgressBar from "react-customizable-progressbar";
 import { useHistory } from "react-router";
 
 import { CreatorContext, StepInfo } from "modules/creator/state";
-import { CurrentStep, STEPS, useStepNumber } from "modules/creator/steps";
+import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps";
 import HomeButton from "assets/logos/homebase_logo.svg";
 import { NavigationBar } from "modules/creator/components/NavigationBar";
 import { Navbar } from "modules/common/Toolbar";
@@ -192,7 +192,7 @@ export const DAOCreate: React.FC = () => {
           <Navbar mode="creator" />
           <Grid item style={{ width: "100%" }} xs>
             <StepContentContainer item container justify="center">
-              <CurrentStep />
+              <StepRouter />
             </StepContentContainer>
           </Grid>
         </Grid>
