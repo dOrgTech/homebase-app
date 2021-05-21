@@ -185,7 +185,6 @@ const GovernanceForm = ({
 
   return (
     <>
-      {console.log(JSON.stringify(errors))}
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -271,6 +270,179 @@ const GovernanceForm = ({
       {errors.votingMinutes && touched.votingMinutes ? (
         <ErrorText>{errors.votingMinutes}</ErrorText>
       ) : null}
+
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Proposal time to expire
+        </Typography>
+      </SecondContainer>
+
+      <Grid container direction="row" wrap="wrap">
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryDays"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">days</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalExpiryDays && touched.proposalExpiryDays ? (
+            <ErrorText>{errors.proposalExpiryDays}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryHours"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">hours</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalExpiryHours && touched.proposalExpiryHours ? (
+            <ErrorText>{errors.proposalExpiryHours}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryMinutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">minutes</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+        </CustomInputContainer>
+      </Grid>
+
+      {errors.proposalExpiryMinutes && touched.proposalExpiryMinutes ? (
+        <ErrorText>{errors.proposalExpiryMinutes}</ErrorText>
+      ) : null}
+
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Proposal Flush Delay Duration
+        </Typography>
+      </SecondContainer>
+
+      <Grid container direction="row" wrap="wrap">
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalFlushDays"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">days</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalFlushDays && touched.proposalFlushDays ? (
+            <ErrorText>{errors.proposalFlushDays}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalFlushHours"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">hours</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalFlushHours && touched.proposalFlushHours ? (
+            <ErrorText>{errors.proposalFlushHours}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalFlushMinutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">minutes</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+        </CustomInputContainer>
+      </Grid>
+
+      {errors.proposalFlushMinutes && touched.proposalFlushMinutes ? (
+        <ErrorText>{errors.proposalFlushMinutes}</ErrorText>
+      ) : null}
+
       <SecondContainer container direction="row">
         <Typography
           style={styles.voting}
@@ -309,15 +481,19 @@ const GovernanceForm = ({
                 {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
               </Typography>
               <Tooltip
-                title={`Amount of $${orgSettings.governanceToken.tokenMetadata?.symbol || ""} required to make a proposal. Total supply: ${totalSupply}`}
+                title={`Amount of $${
+                  orgSettings.governanceToken.tokenMetadata?.symbol || ""
+                } required to make a proposal. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
         </AdditionContainer>
-        {(errors.proposeStakeRequired || errors.proposeStakePercentage) ? (
-          <ErrorText>{errors.proposeStakeRequired || errors.proposeStakePercentage}</ErrorText>
+        {errors.proposeStakeRequired || errors.proposeStakePercentage ? (
+          <ErrorText>
+            {errors.proposeStakeRequired || errors.proposeStakePercentage}
+          </ErrorText>
         ) : null}
       </StakeContainer>
 
@@ -470,11 +646,10 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Typography color="textSecondary">
-                %
-              </Typography>
               <Tooltip
-                title={`Amount of ${orgSettings.governanceToken.tokenMetadata?.symbol || ""} required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
+                title={`Amount of ${
+                  orgSettings.governanceToken.tokenMetadata?.symbol || ""
+                } required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -482,14 +657,182 @@ const GovernanceForm = ({
           </ItemContainer>
         </AdditionContainer>
         {errors.quorumTreshold && touched.quorumTreshold ? (
-            <ErrorText>{errors.quorumTreshold}</ErrorText>
+          <ErrorText>{errors.quorumTreshold}</ErrorText>
+        ) : null}
+      </Grid>
+
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={5}>
+              <Field
+                name="minQuorumAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Min</ValueText>
+              <Tooltip title="Quorum min amount">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.minQuorumAmount && touched.minQuorumAmount ? (
+            <ErrorText>{errors.minQuorumAmount}</ErrorText>
           ) : null}
+        </AdditionContainer>
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={5}>
+              <Field
+                name="maxQuorumAmount"
+                type="number"
+                placeholder="00"
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={7}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <ValueText color="textSecondary">Max</ValueText>
+              <Tooltip title="Quorum max amount">
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.maxQuorumAmount && touched.maxQuorumAmount ? (
+            <ErrorText>{errors.maxQuorumAmount}</ErrorText>
+          ) : null}
+        </AdditionContainer>
+      </Grid>
+
+      <SpacingContainer direction="row" container alignItems="center">
+        <Typography variant="subtitle1" color="textSecondary">
+          Quorum Change
+        </Typography>
+      </SpacingContainer>
+
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="quorumChange"
+                type="number"
+                placeholder="00"
+                inputProps={{ min: 0, max: 100 }}
+                component={TextField}
+              />
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={6}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <Tooltip
+                title="Quorum change"
+              >
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+        </AdditionContainer>
+        {errors.quorumChange && touched.quorumChange ? (
+          <ErrorText>{errors.quorumChange}</ErrorText>
+        ) : null}
+      </Grid>
+
+      <SpacingContainer direction="row" container alignItems="center">
+        <Typography variant="subtitle1" color="textSecondary">
+          Quorum Max Change
+        </Typography>
+      </SpacingContainer>
+
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
+        <AdditionContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="quorumMaxChange"
+                type="number"
+                placeholder="00"
+                inputProps={{ min: 0, max: 100 }}
+                component={TextField}
+              />
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={6}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <Tooltip
+                title="Max Quorum Change"
+              >
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+        </AdditionContainer>
+        {errors.quorumMaxChange && touched.quorumMaxChange ? (
+          <ErrorText>{errors.quorumMaxChange}</ErrorText>
+        ) : null}
       </Grid>
     </>
   );
 };
 
-//@TODO: Remove any from this component
+//TODO: Remove any from this component
 export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { votingSettings } = state.data;
@@ -531,7 +874,11 @@ export const Governance: React.FC = () => {
       <Formik
         enableReinitialize
         validate={(values: VotingSettings) =>
-          handleGovernanceFormErrors(values, state.data.template, Number(totalSupply))
+          handleGovernanceFormErrors(
+            values,
+            state.data.template,
+            Number(totalSupply)
+          )
         }
         onSubmit={saveStepInfo}
         initialValues={votingSettings}

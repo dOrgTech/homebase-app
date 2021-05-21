@@ -39,6 +39,17 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     minXtzAmount: 0,
     maxXtzAmount: 0,
     quorumTreshold: 0,
+
+    minQuorumAmount: 1,
+    maxQuorumAmount: 99,
+    quorumChange: 5,
+    quorumMaxChange: 19,
+    proposalFlushDays: 0,
+    proposalFlushHours: 0,
+    proposalFlushMinutes: 0,
+    proposalExpiryDays: 0,
+    proposalExpiryHours: 0,
+    proposalExpiryMinutes: 0,
   },
 };
 

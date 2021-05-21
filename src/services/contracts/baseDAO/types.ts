@@ -41,6 +41,19 @@ export type VotingSettings = {
   minXtzAmount: number;
   maxXtzAmount: number;
   quorumTreshold: number;
+
+  minQuorumAmount: number;
+  maxQuorumAmount: number;
+  quorumChange: number;
+  quorumMaxChange: number;
+
+  proposalFlushDays: number;
+  proposalFlushHours: number;
+  proposalFlushMinutes: number;
+
+  proposalExpiryDays: number;
+  proposalExpiryHours: number;
+  proposalExpiryMinutes: number;
 };
 
 export type Settings = OrgSettings | VotingSettings;
@@ -111,6 +124,13 @@ export interface BaseStorageParams {
   quorumTreshold: number;
   votingPeriod: number;
   extra: BaseExtraState;
+
+  minQuorumAmount: number;
+  maxQuorumAmount: number;
+  quorumChange: number;
+  quorumMaxChange: number;
+  proposalFlushPeriod: number;
+  proposalExpiryPeriod: number;
 }
 
 export type Token = {

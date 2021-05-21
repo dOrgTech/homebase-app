@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   Grid,
   Paper,
@@ -8,9 +8,6 @@ import {
   useTheme,
   withTheme,
 } from "@material-ui/core";
-import { SettingsIcon } from "modules/explorer/components/SettingsIcon";
-import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
-import { useParams } from "react-router-dom";
 import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 
 const TokenName = styled(withTheme(Paper))((props) => ({
@@ -37,8 +34,6 @@ export const TreasuryTableRow: React.FC<{
 }> = ({ symbol, balance }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { dispatch } = useContext(ModalsContext);
-  const { id } = useParams<{ id: string }>();
 
   return (
     <TemplateTableRowContainer
@@ -46,7 +41,7 @@ export const TreasuryTableRow: React.FC<{
       direction={isMobileSmall ? "column" : "row"}
       alignItems="center"
     >
-      <Grid item sm={5}>
+      <Grid item sm={7}>
         <TokenName>
           {" "}
           <Cursor variant="subtitle1" color="textSecondary">
@@ -70,21 +65,6 @@ export const TreasuryTableRow: React.FC<{
         <Cursor variant="subtitle1" color="textSecondary" align="right">
           {balance}
         </Cursor>
-      </Grid>
-      <Grid sm={2} item>
-        <Grid container direction="row" justify="flex-end" alignItems="center">
-          <SettingsIcon
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: ActionTypes.OPEN_TREASURY_PROPOSAL,
-                payload: {
-                  daoAddress: id,
-                },
-              });
-            }}
-          />
-        </Grid>
       </Grid>
     </TemplateTableRowContainer>
   );

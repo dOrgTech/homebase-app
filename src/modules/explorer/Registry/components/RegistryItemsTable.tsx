@@ -30,7 +30,7 @@ export const RegistryItemsTable: React.FC<{
               REGISTRY ITEMS
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={6}>
             <Grid item container direction="row">
               <ProposalTableHeadText align={"left"}>
                 VALUE

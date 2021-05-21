@@ -4,7 +4,7 @@ export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
   maxProposals: Number(dto.children[17].value),
   maxVotes: Number(dto.children[18].value),
   votingPeriod: Number(dto.children[22].value),
-  quorumTreshold: Number(dto.children[20].children[0]) / Number(dto.children[20].children[1]),
+  quorumTreshold: Number(dto.children[20].children[0].value) / Number(dto.children[20].children[1].value),
   proposalsMapNumber: dto.children[12].value,
   ledgerMapNumber: dto.children[6].value,
   proposalsToFlush: dto.children[11].value,

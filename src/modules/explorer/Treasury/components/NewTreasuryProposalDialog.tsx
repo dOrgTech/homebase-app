@@ -14,7 +14,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@material-ui/core";
-import { Formik, Form, Field, FieldArray } from "formik";
+import { Formik, Form, Field, FieldArray, FormikErrors } from "formik";
 import { TextField } from "formik-material-ui";
 import { Autocomplete } from "formik-material-ui-lab";
 
@@ -28,11 +28,13 @@ import {
   validateTransactionsJSON,
 } from "modules/explorer/Treasury/utils";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
-import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useNotification } from "modules/common/hooks/useNotification";
-import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
+// import { ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
+import { ErrorText } from "modules/explorer/components/styled/ErrorText";
+import { SendButton } from "modules/explorer/components/ProposalFormSendButton";
+import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -53,17 +55,6 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   },
 }));
 
-const ListItem = styled(Grid)(({ theme }) => ({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 65px",
-  [theme.breakpoints.down("sm")]: {
-    padding: "10px 24px",
-  },
-}));
-
 const AmountItem = styled(Grid)(({ theme }) => ({
   minHeight: 137,
   display: "flex",
@@ -78,7 +69,7 @@ const AmountItem = styled(Grid)(({ theme }) => ({
 }));
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
-  height: 70,
+  minHeight: 70,
   display: "flex",
   alignItems: "center",
   padding: "0px 65px",
@@ -91,13 +82,6 @@ const UploadButtonContainer = styled(Grid)(({ theme }) => ({
 const FileInput = styled("input")({
   display: "none",
 });
-
-const SendContainer = styled(Grid)(({ theme }) => ({
-  height: 80,
-  [theme.breakpoints.down("sm")]: {
-    height: 100,
-  },
-}));
 
 const BatchBar = styled(Grid)(({ theme }) => ({
   height: 60,
@@ -147,7 +131,6 @@ const styles = {
 };
 
 const UploadFileLabel = styled("label")(({ theme }) => ({
-  height: 53,
   color: theme.palette.secondary.main,
   borderColor: theme.palette.secondary.main,
   minWidth: 171,
@@ -185,14 +168,6 @@ const CustomTextFieldAmount = styled(TextField)(({ theme }) => ({
     paddingRight: "inherit",
     width: "100%",
   },
-}));
-
-const SendButton = styled(ViewButton)(({ theme }) => ({
-  width: 229,
-  border: "1px",
-  background: theme.palette.secondary.main,
-  borderRadius: 4,
-  color: theme.palette.text.secondary,
 }));
 
 const AmountText = styled(Typography)({
@@ -235,7 +210,7 @@ const AmountSmallText = styled(Typography)(({ theme }) => ({
 export interface FormTransferParams {
   recipient: string;
   amount: number;
-  asset?: DAOHolding;
+  asset: DAOHolding;
 }
 
 interface Values {
@@ -265,6 +240,34 @@ const INITIAL_FORM_VALUES: Values = {
   agoraPostId: 0,
   title: "",
 };
+
+const validateForm = (values: Values, holdings: DAOHolding[]): FormikErrors<Values> => {
+  const errors: Record<string, any> = {
+    transfers: values.transfers.map(() => ({}))
+  }
+
+  values.transfers.forEach((transfer, i) => {
+    const asset = holdings.find(balance => balance.contract === values.transfers[i].asset.contract)
+
+    if(Number.isNaN(transfer.amount)) {
+      errors.transfers[i].amount = "Must be a number"
+    }
+
+    if(transfer.amount <= 0 ) {
+      errors.transfers[i].amount = "Must be a greater than 0"
+    }
+
+    if(asset && (transfer.amount > Number(asset.balance))) {
+      errors.transfers[i].amount = "Insufficient balance"
+    }
+
+    if(!transfer.recipient) {
+      errors.transfers[i].recipient = "Required"
+    }
+  })
+
+  return errors
+}
 
 export const NewTreasuryProposalDialog: React.FC = () => {
   const theme = useTheme();
@@ -352,7 +355,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
       );
 
       if (fa2Token) {
-        return (Number(fa2Token.balance) / Math.pow(10, fa2Token.decimals)).toString();
+        return fa2Token.balance;
       }
 
       return "-"
@@ -390,7 +393,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
           </Title>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              <ListItem container direction="row">
+              <ProposalFormListItem container direction="row">
                 <Grid item xs={6}>
                   <Typography variant="subtitle1" color="textSecondary">
                     Batch Transfer?
@@ -409,11 +412,14 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                     />
                   </SwitchContainer>
                 </Grid>
-              </ListItem>
+              </ProposalFormListItem>
 
-              <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit}>
-                {({ submitForm, values }) => {
-                  console.log(values);
+              <Formik initialValues={INITIAL_FORM_VALUES} onSubmit={onSubmit} validate={(values) => validateForm(values, daoHoldings || [])}>
+                {({ submitForm, values, errors, touched }) => {
+
+                  const recipientError = (errors.transfers?.[activeTransfer - 1] as any)?.recipient
+                  const amountError = (errors.transfers?.[activeTransfer - 1] as any)?.amount
+
                   const importTransactions = async (
                     event: React.ChangeEvent<HTMLInputElement>
                   ) => {
@@ -500,7 +506,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 </BatchBar>
                               ) : null}
 
-                              <ListItem container direction="row">
+                              <ProposalFormListItem container direction="row">
                                 <Grid item xs={6}>
                                   <Typography
                                     variant="subtitle1"
@@ -523,9 +529,12 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                       placeholder="Type an Address Here"
                                       component={CustomTextField}
                                     />
+                                    { recipientError && touched.transfers?.[activeTransfer - 1]?.recipient? (
+                                      <ErrorText>{recipientError}</ErrorText>
+                                    ) : null}
                                   </SwitchContainer>
                                 </Grid>
-                              </ListItem>
+                              </ProposalFormListItem>
 
                               <AmountItem
                                 container
@@ -580,8 +589,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                         name={`transfers.${
                                           activeTransfer - 1
                                         }.amount`}
-                                        type="number"
-                                        placeholder="Type an Amount"
+                                        type="tel"
+                                        placeholder="0"
                                         component={CustomTextFieldAmount}
                                         InputProps={{
                                           inputProps: {
@@ -602,6 +611,9 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                           ),
                                         }}
                                       />
+                                      { amountError && touched.transfers?.[activeTransfer - 1]?.amount? (
+                                      <ErrorText>{amountError}</ErrorText>
+                                    ) : null}
                                     </SwitchContainer>
                                   </Grid>
                                 </Grid>
@@ -642,7 +654,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           )}
                         />
 
-                        <ProposalTextContainer
+                        {/* <ProposalTextContainer
                           title="Proposal Title"
                           value={values.title}
                           type="title"
@@ -652,7 +664,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           title="Proposal Description"
                           value={values.description}
                           type="description"
-                        />
+                        /> */}
 
                         <UploadButtonContainer container direction="row">
                           <UploadFileLabel>
@@ -665,7 +677,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           </UploadFileLabel>
                         </UploadButtonContainer>
 
-                        <ListItem container direction="row">
+                        <ProposalFormListItem container direction="row">
                           <Grid item xs={6}>
                             <Typography
                               variant="subtitle1"
@@ -678,15 +690,15 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                             <SwitchContainer item xs={12} justify="flex-end">
                               <Field
                                 name={`agoraPostId`}
-                                type="number"
+                                type="tel"
                                 placeholder="Type an Agora Post ID"
                                 component={CustomTextField}
                               />
                             </SwitchContainer>
                           </Grid>
-                        </ListItem>
+                        </ProposalFormListItem>
 
-                        <ListItem container direction="row">
+                        <ProposalFormListItem container direction="row">
                           <Grid item xs={6}>
                             <Typography
                               variant="subtitle1"
@@ -705,28 +717,15 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                               {dao ? dao.metadata.unfrozenToken.symbol : ""}
                             </Typography>
                           </Grid>
-                        </ListItem>
+                        </ProposalFormListItem>
 
-                        <SendContainer
-                          container
-                          direction="row"
-                          justify="center"
-                          alignItems="center"
+                        <SendButton
+                          customColor={theme.palette.secondary.main}
+                          variant="outlined"
+                          onClick={submitForm}
                         >
-                          <SendButton
-                            customColor={theme.palette.secondary.main}
-                            variant="outlined"
-                            onClick={submitForm}
-                          >
-                            {/* <Typography
-                              variant="subtitle1"
-                              color="textSecondary"
-                            >
-                              SEND
-                            </Typography> */}
-                            SEND
-                          </SendButton>
-                        </SendContainer>
+                          SEND
+                        </SendButton>
                       </>
                     </Form>
                   );

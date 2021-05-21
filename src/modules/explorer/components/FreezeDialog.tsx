@@ -78,7 +78,7 @@ const CustomInput = styled(TextField)(({ theme }) => ({
 
 export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
   const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState<any>();
+  const [amount, setAmount] = React.useState<number>(0);
   const { daoSymbol } = useVisitedDAO();
   const { id: daoId } = useParams<{
     id: string;
@@ -95,6 +95,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
   const handleClose = () => {
     setOpen(false);
+    setAmount(0)
   };
 
   const onSubmit = useCallback(async () => {

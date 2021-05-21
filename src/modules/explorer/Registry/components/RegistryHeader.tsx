@@ -1,21 +1,14 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext } from "react";
 import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import { useParams } from "react-router";
 import { PrimaryButton } from "modules/explorer/components/styled/PrimaryButton";
 import { TemplateHeader } from "modules/explorer/components/TemplateHeader";
-import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
+import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
 
 export const RegistryHeader: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { dispatch } = useContext(ModalsContext);
-  const cycleInfo = useCycleInfo(id)
-  const shouldDisable = useMemo(() => {
-    if(cycleInfo && cycleInfo.type === "proposing") {
-      return true
-    }
-
-    return false
-  }, [cycleInfo])
+  const shouldDisable = useIsProposalButtonDisabled(id)
 
   return (
     <TemplateHeader template="registry">
@@ -25,12 +18,11 @@ export const RegistryHeader: React.FC = () => {
           dispatch({
             type: ActionTypes.OPEN_REGISTRY_PROPOSAL,
             payload: {
-              isUpdate: false,
               daoAddress: id,
             },
           })
         }
-        disabled={shouldDisable || !cycleInfo}
+        disabled={shouldDisable}
       >
         NEW ITEM
       </PrimaryButton>

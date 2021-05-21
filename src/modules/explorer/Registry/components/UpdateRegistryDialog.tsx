@@ -9,32 +9,23 @@ import {
   DialogContent,
   DialogContentText,
   Dialog,
-  MenuItem,
 } from "@material-ui/core";
-import { Formik, Form, Field, FieldArray } from "formik";
-import { TextField, Select } from "formik-material-ui";
+import { Formik, Form, Field, FieldArray, FormikErrors } from "formik";
+import { TextField } from "formik-material-ui";
 import { Registry, RegistryDAO } from "services/contracts/baseDAO";
 import { ActionTypes } from "modules/explorer/ModalsContext";
 import { ModalsContext } from "modules/explorer/ModalsContext";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { char2Bytes } from "@taquito/tzip16";
-import { ViewButton } from "modules/explorer/components/ViewButton";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
 import { useNotification } from "modules/common/hooks/useNotification";
-import { CustomTextarea, DescriptionContainer, ProposalTextContainer } from "modules/explorer/components/ProposalTextContainer";
-
-const SendButton = styled(ViewButton)({
-  width: "100%",
-  border: "none",
-  borderTop: "1px solid #4BCF93",
-});
-
-const FullWidthSelect = styled(Select)({
-  width: "100%",
-});
+import { CustomTextarea, DescriptionContainer } from "modules/explorer/components/ProposalTextContainer";
+import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
+import { SendButton } from "modules/explorer/components/ProposalFormSendButton";
+import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -48,14 +39,6 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   minWidth: 500,
 }));
 
-const ListItem = styled(Grid)(({ theme }) => ({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 24px",
-}));
-
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   height: 70,
   display: "flex",
@@ -66,10 +49,6 @@ const UploadButtonContainer = styled(Grid)(({ theme }) => ({
 
 const FileInput = styled("input")({
   display: "none",
-});
-
-const SendContainer = styled(Grid)({
-  height: 55,
 });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
@@ -153,14 +132,31 @@ const INITIAL_FORM_VALUES: Values = {
   title: "",
 };
 
+const validateForm = (values: Values): FormikErrors<Values> => {
+  const errors: Record<string, any> = {
+    list: values.list.map(() => ({}))
+  }
+
+  values.list.forEach((item, i) => {
+    if(!item.key) {
+      errors.list[i].key = "Required"
+    }
+
+    if(!item.value) {
+      errors.list[i].value = "Required"
+    }
+  })
+
+  return errors
+}
+
 export const UpdateRegistryDialog: React.FC = () => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(1);
   const {
     state: {
       registryProposal: {
-        open,
-        params: { isUpdate, itemToUpdate },
+        open
       },
       daoId,
     },
@@ -217,7 +213,7 @@ export const UpdateRegistryDialog: React.FC = () => {
           <Grid container direction="row">
             <Grid item xs={6}>
               <Typography variant="subtitle1" color="textSecondary">
-                {isUpdate ? "UPDATE REGISTRY ITEM" : "ADD REGISTRY ITEM"}
+                UPDATE REGISTRY ITEM
               </Typography>
             </Grid>
             <Grid item xs={6}>
@@ -233,7 +229,7 @@ export const UpdateRegistryDialog: React.FC = () => {
         </Title>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            <ListItem container direction="row">
+            <ProposalFormListItem container direction="row">
               <Grid item xs={6}>
                 <Typography variant="subtitle1" color="textSecondary">
                   Add Batches?
@@ -252,21 +248,26 @@ export const UpdateRegistryDialog: React.FC = () => {
                   />
                 </SwitchContainer>
               </Grid>
-            </ListItem>
+            </ProposalFormListItem>
 
             <Formik
               initialValues={{
                 ...INITIAL_FORM_VALUES,
                 list: [
                   {
-                    key: itemToUpdate?.key || "",
-                    value: itemToUpdate?.value || "",
+                    key: "",
+                    value: "",
                   },
                 ],
               }}
               onSubmit={onSubmit}
+              validate={validateForm}
             >
-              {({ submitForm, values, setFieldValue }) => {
+              {({ values, setFieldValue, errors, touched, setTouched }) => {
+
+                const keyError = (errors.list?.[activeItem - 1] as any)?.key
+                const valueError = (errors.list?.[activeItem - 1] as any)?.value
+
                 const importList = async (
                   event: React.ChangeEvent<HTMLInputElement>
                 ) => {
@@ -346,7 +347,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                               </BatchBar>
                             ) : null}
 
-                            <ListItem container direction="row">
+                            <ProposalFormListItem container direction="row">
                               <Grid item xs={6}>
                                 <Typography
                                   variant="subtitle1"
@@ -361,55 +362,18 @@ export const UpdateRegistryDialog: React.FC = () => {
                                   xs={12}
                                   justify="flex-end"
                                 >
-                                  {!isUpdate ? (
-                                    <Field
-                                      name={`list.${activeItem - 1}.key`}
-                                      type="string"
-                                      placeholder="Type a Key"
-                                      component={CustomTextField}
-                                    />
-                                  ) : (
-                                    <>
-                                      {dao && (
-                                        <Field
-                                          name={`list.${activeItem - 1}.key`}
-                                          type="select"
-                                          placeholder="Type a Key"
-                                          defaultValue={""}
-                                          onChange={(e: any) => {
-                                            setFieldValue(
-                                              `list.${activeItem - 1}.key`,
-                                              e.target.value
-                                            );
-                                            setFieldValue(
-                                              `list.${activeItem - 1}.value`,
-                                              dao.extra.registry.find(
-                                                (item) =>
-                                                  item.key === e.target.value
-                                              )?.value
-                                            );
-                                          }}
-                                          component={FullWidthSelect}
-                                        >
-                                          <MenuItem value={"default"} disabled>
-                                            Select a Key
-                                          </MenuItem>
-                                          {dao &&
-                                            dao.extra.registry.map(({ key }, i) => (
-                                              <MenuItem
-                                                key={`option-${i}`}
-                                                value={key}
-                                              >
-                                                {key}
-                                              </MenuItem>
-                                            ))}
-                                        </Field>
-                                      )}
-                                    </>
-                                  )}
+                                  <Field
+                                    name={`list.${activeItem - 1}.key`}
+                                    type="string"
+                                    placeholder="Type a Key"
+                                    component={CustomTextField}
+                                  />
+                                  { keyError && touched.list?.[activeItem - 1]?.key? (
+                                    <ErrorText>{keyError}</ErrorText>
+                                  ) : null}
                                 </SwitchContainer>
                               </Grid>
-                            </ListItem>
+                            </ProposalFormListItem>
 
                             <DescriptionContainer container direction="row">
                               <Grid item xs={12}>
@@ -442,17 +406,31 @@ export const UpdateRegistryDialog: React.FC = () => {
                                       `list.${activeItem - 1}.value`,
                                       e.target.value
                                     );
+
+                                    const listVals: any = touched.list
+                                    listVals[activeItem - 1] = {
+                                      ...listVals[activeItem - 1],
+                                      value: true
+                                    }
+
+                                    setTouched({
+                                      ...touched,
+                                      list: listVals
+                                    })
                                   }}
                                 />
+                                { valueError && touched.list?.[activeItem - 1]?.value? (
+                                  <ErrorText>{valueError}</ErrorText>
+                                ) : null}
                               </Grid>
                             </DescriptionContainer>
                           </>
                         )}
                       />
 
-                      <ProposalTextContainer title="Proposal Title" value={values.title} type="title" />
+                      {/* <ProposalTextContainer title="Proposal Title" value={values.title} type="title" />
 
-                      <ProposalTextContainer title="Proposal Description" value={values.description} type="description" />
+                      <ProposalTextContainer title="Proposal Description" value={values.description} type="description" /> */}
 
                       <UploadButtonContainer container direction="row">
                         <UploadFileLabel>
@@ -465,7 +443,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                         </UploadFileLabel>
                       </UploadButtonContainer>
 
-                      <ListItem container direction="row">
+                      <ProposalFormListItem container direction="row">
                         <Grid item xs={6}>
                           <Typography variant="subtitle1" color="textSecondary">
                             Proposal Fee
@@ -480,13 +458,11 @@ export const UpdateRegistryDialog: React.FC = () => {
                             {dao?.extra.frozenExtraValue || 0}{" "}
                           </Typography>
                         </Grid>
-                      </ListItem>
+                      </ProposalFormListItem>
 
-                      <SendContainer container direction="row" justify="center">
-                        <SendButton onClick={submitForm} disabled={!dao}>
-                          SEND
-                        </SendButton>
-                      </SendContainer>
+                      <SendButton onClick={() => onSubmit(values)} disabled={!dao}>
+                        SEND
+                      </SendButton>
                     </>
                   </Form>
                 );

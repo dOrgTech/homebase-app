@@ -94,7 +94,7 @@ export abstract class BaseDAO {
 
   public static baseDeploy = async (
     template: DAOTemplate,
-    { params, metadata, tezos }: DeployParams,
+    { params, metadata, tezos, network }: DeployParams
   ): Promise<ContractAbstraction<Wallet>> => {
     const treasuryParams = fromStateToBaseStorage(params);
 
@@ -109,6 +109,7 @@ export abstract class BaseDAO {
     try {
       console.log("Making storage contract...");
       const storageCode = await generateStorageContract({
+        network,
         template, 
         storage: treasuryParams,
         originatorAddress: account,
@@ -173,6 +174,13 @@ export abstract class BaseDAO {
     const contract = await getContract(this.tezos, this.address);
 
     const result = await contract.methods.flush(numerOfProposalsToFlush).send();
+    return result;
+  };
+
+  public dropProposal = async (proposalId: string) => {
+    const contract = await getContract(this.tezos, this.address);
+
+    const result = await contract.methods.drop_proposal(proposalId).send();
     return result;
   };
 

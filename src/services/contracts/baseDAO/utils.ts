@@ -35,6 +35,18 @@ export const fromStateToBaseStorage = (
       (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
       (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
       (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
+    minQuorumAmount: info.votingSettings.minQuorumAmount,
+    maxQuorumAmount: info.votingSettings.maxQuorumAmount,
+    quorumChange: info.votingSettings.quorumChange,
+    quorumMaxChange: info.votingSettings.quorumMaxChange,
+    proposalFlushPeriod: 
+      (info.votingSettings.proposalFlushHours || 0) * SECONDS_IN_HOUR +
+      (info.votingSettings.proposalFlushDays || 0) * SECONDS_IN_DAY +
+      (info.votingSettings.proposalFlushMinutes || 0) * SECONDS_IN_MINUTE,
+    proposalExpiryPeriod: 
+      (info.votingSettings.proposalExpiryHours || 0) * SECONDS_IN_HOUR +
+      (info.votingSettings.proposalExpiryDays || 0) * SECONDS_IN_DAY +
+      (info.votingSettings.proposalExpiryMinutes || 0) * SECONDS_IN_MINUTE,
   };
 
   return storageData;
