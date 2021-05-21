@@ -6,12 +6,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-import { ActionTypes, ModalsContext } from "../ModalsContext";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { Info } from "@material-ui/icons";
@@ -24,6 +23,8 @@ import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
+import { RegistryProposalFormContainer } from "../components/ProposalForm/container";
+import { useState } from "react";
 
 const InfoIconInput = styled(Info)({
   cursor: "default",
@@ -50,33 +51,9 @@ export const Proposals: React.FC = () => {
   const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
   const shouldDisable = useIsProposalButtonDisabled(id)
+  const [open, setOpen] = useState(false)
 
   const { data: proposalsData } = useProposals(dao && dao.address);
-
-  const { dispatch } = useContext(ModalsContext);
-
-  const onNewProposal = useCallback(() => {
-    if (dao) {
-      switch (dao.template) {
-        case "registry":
-          dispatch({
-            type: ActionTypes.OPEN_REGISTRY_TRANSACTION,
-            payload: {
-              daoAddress: dao.address,
-            },
-          });
-          break;
-        case "treasury":
-          dispatch({
-            type: ActionTypes.OPEN_TREASURY_PROPOSAL,
-            payload: {
-              daoAddress: dao.address,
-            },
-          });
-          break;
-      }
-    }
-  }, [dao, dispatch]);
 
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
@@ -89,6 +66,14 @@ export const Proposals: React.FC = () => {
     }
 
   }, [connect, data, mutate, proposalsData, tezos]);
+
+  const handleNewProposal = () => {
+    setOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setOpen(false)
+  }
 
   return (
     <>
@@ -144,8 +129,8 @@ export const Proposals: React.FC = () => {
             <Grid item>
               <PrimaryButton
                 variant="outlined"
-                onClick={onNewProposal}
-                disabled={shouldDisable}
+                onClick={handleNewProposal}
+                // disabled={shouldDisable}
               >
                 NEW PROPOSAL
               </PrimaryButton>
@@ -197,6 +182,14 @@ export const Proposals: React.FC = () => {
             </UnderlineText>
           </ProposalsContainer> */}
       </Grid>
+      {
+        dao? (
+          dao.template === "registry"?
+          <RegistryProposalFormContainer open={open} handleClose={handleCloseModal}/>:
+          <RegistryProposalFormContainer open={open} handleClose={handleCloseModal}/>
+        ): null
+      }
+      
     </>
   );
 };
