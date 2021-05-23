@@ -61,12 +61,12 @@ export const getContract = async (
   return await tezos.wallet.at(contractAddress, tzip16);
 };
 
-export const calculateCycleInfo = (originationTime: string, votingPeriod: number, lastPeriodNumber: number) => {
+export const calculateCycleInfo = (originationTime: string, votingPeriod: number) => {
   const current = dayjs().unix() - dayjs(originationTime).unix();
   const periodLeftPercentage = (current / votingPeriod) % 1;
   const timeLeftPercentage = votingPeriod * periodLeftPercentage;
   const time = votingPeriod - Number(timeLeftPercentage.toFixed());
-  const currentPeriodNumber = Math.floor(current / votingPeriod) + lastPeriodNumber
+  const currentPeriodNumber = Math.floor(current / votingPeriod)
 
   return {
     time: Number(time),
