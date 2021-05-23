@@ -21,6 +21,7 @@ export const fromStateToBaseStorage = (
       address: info.orgSettings.governanceToken.address,
       tokenId: info.orgSettings.governanceToken.tokenId
     },
+    guardian: info.orgSettings.guardian,
     extra: {
       frozenScaleValue: info.votingSettings.proposeStakePercentage,
       frozenExtraValue: info.votingSettings.proposeStakeRequired,
@@ -39,6 +40,7 @@ export const fromStateToBaseStorage = (
     maxQuorumAmount: info.votingSettings.maxQuorumAmount,
     quorumChange: info.votingSettings.quorumChange,
     quorumMaxChange: info.votingSettings.quorumMaxChange,
+    
     proposalFlushPeriod: 
       (info.votingSettings.proposalFlushHours || 0) * SECONDS_IN_HOUR +
       (info.votingSettings.proposalFlushDays || 0) * SECONDS_IN_DAY +

@@ -23,8 +23,9 @@ import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
-import { RegistryProposalFormContainer } from "../components/ProposalForm/container";
+import { RegistryProposalFormContainer } from "../components/ProposalForm/registryProposalForm";
 import { useState } from "react";
+import { TreasuryProposalFormContainer } from "../components/ProposalForm/treasuryProposalForm";
 
 const InfoIconInput = styled(Info)({
   cursor: "default",
@@ -186,7 +187,7 @@ export const Proposals: React.FC = () => {
         dao? (
           dao.template === "registry"?
           <RegistryProposalFormContainer open={open} handleClose={handleCloseModal}/>:
-          <RegistryProposalFormContainer open={open} handleClose={handleCloseModal}/>
+          <TreasuryProposalFormContainer open={open} handleClose={handleCloseModal}/>
         ): null
       }
       

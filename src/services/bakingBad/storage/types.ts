@@ -4,24 +4,38 @@ export interface LastPeriodChange {
 }
 
 export interface Storage {
-  maxProposals: number;
-  maxVotes: number;
-  votingPeriod: number;
-  quorumTreshold: number;
-  proposalsMapNumber: number;
-  ledgerMapNumber: number;
-  proposalsToFlush: any;
-  totalSupply: Record<number, number>;
-  lastPeriodChange: LastPeriodChange;
-  fixedProposalFeeInToken: number;
-  admin: string;
-  freezeHistory: number,
-  frozenTokenId: number,
+  admin: string,
   extraMapNumber: number,
+  freezeHistoryMapNumber: number,
+  frozenTokenId: number,
   governanceToken: {
     address: string,
     tokenId: number
-  }
+  },
+  guardian: string,
+  ledgerMapNumber: number,
+  proposalsToFlush: string[],
+  proposalsMapNumber: number,
+  quorumTresholdAtCycle: {
+    lastUpdatedCycle: number,
+    quorumTreshold: string,
+    staked: string
+  },
+  start_time: string,
+  totalSupply: {
+    0: string,
+  },
+  fixedProposalFeeInToken: string,
+  governanceTotalSupply: string,
+  maxProposals: number,
+  maxQuorumChange: string,
+  maxQuorumTreshold: string,
+  maxVotes: string,
+  minQuorumTreshold: string,
+  votingPeriod: number,
+  proposalExpiredTime: number,
+  proposalFlushTime: number,
+  quorumChange: string,
 }
 
 export interface StorageDTO {
@@ -40,12 +54,6 @@ export interface StorageDTO {
       type: "big_map";
       name: "extra";
       value: number;
-    },
-    {
-      prim: "nat";
-      type: "nat";
-      name: "fixed_proposal_fee_in_token";
-      value: string;
     },
     {
       prim: "big_map";
@@ -77,6 +85,12 @@ export interface StorageDTO {
           value: string;
         }
       ];
+    },
+    {
+      prim: "address";
+      type: "address";
+      name: "guardian";
+      value: string;
     },
     {
       prim: "big_map";
@@ -112,13 +126,38 @@ export interface StorageDTO {
       prim: "set";
       type: "set";
       name: "proposal_key_list_sort_by_date";
-      value: string[]
+      value: string[];
     },
     {
       prim: "big_map";
       type: "big_map";
       name: "proposals";
       value: number;
+    },
+    {
+      prim: "pair";
+      type: "namedtuple";
+      name: "quorum_threshold_at_cycle";
+      children: [
+        {
+          prim: "nat";
+          type: "nat";
+          name: "last_updated_cycle";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "quorum_threshold";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "staked";
+          value: string;
+        }
+      ];
     },
     {
       prim: "timestamp";
@@ -154,7 +193,31 @@ export interface StorageDTO {
     {
       prim: "nat";
       type: "nat";
+      name: "fixed_proposal_fee_in_token";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "governance_total_supply";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
       name: "max_proposals";
+      value: string;
+    },
+    {
+      prim: "int";
+      type: "int";
+      name: "max_quorum_change";
+      value: string;
+    },
+    {
+      prim: "int";
+      type: "int";
+      name: "max_quorum_threshold";
       value: string;
     },
     {
@@ -164,29 +227,40 @@ export interface StorageDTO {
       value: string;
     },
     {
+      prim: "int";
+      type: "int";
+      name: "min_quorum_threshold";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "period";
+      value: string;
+    },
+    {
       prim: "lambda";
       type: "lambda";
       name: "proposal_check";
       value: string;
     },
     {
-      prim: "pair";
-      type: "namedtuple";
-      name: "quorum_threshold";
-      children: [
-        {
-          prim: "nat";
-          type: "nat";
-          name: "numerator";
-          value: string;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "denominator";
-          value: string;
-        }
-      ];
+      prim: "nat";
+      type: "nat";
+      name: "proposal_expired_time";
+      value: string;
+    },
+    {
+      prim: "nat";
+      type: "nat";
+      name: "proposal_flush_time";
+      value: string;
+    },
+    {
+      prim: "int";
+      type: "int";
+      name: "quorum_change";
+      value: string;
     },
     {
       prim: "lambda";
@@ -194,11 +268,5 @@ export interface StorageDTO {
       name: "rejected_proposal_return_value";
       value: string;
     },
-    {
-      prim: "nat";
-      type: "nat";
-      name: "voting_period";
-      value: string;
-    }
   ];
 }
