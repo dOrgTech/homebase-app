@@ -1,26 +1,23 @@
 import { Dialog, Grid, styled, Typography } from "@material-ui/core";
-import { char2Bytes } from "@taquito/tzip16";
 import { Field, Formik, FormikProps } from "formik";
-import {
-  UpdateRegistryDialogValues,
-  validateUpdateRegistryForm,
-} from "modules/explorer/Registry/components/UpdateRegistryDialog";
 import {
   INITIAL_TRANSFER_FORM_VALUES,
   NewTreasuryProposalDialog,
   TransferProposalFormValues,
   validateTransferProposalForm,
 } from "modules/explorer/Treasury";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { RegistryDAO, TreasuryDAO } from "services/contracts/baseDAO";
+import { TreasuryDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { SendButton } from "../ProposalFormSendButton";
 import { ProposalFormListItem } from "../styled/ProposalFormListItem";
 import { TextField } from "formik-material-ui";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
+import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 
 interface Props {
   open: boolean;
@@ -39,35 +36,6 @@ const CustomTextField = styled(TextField)({
   },
 });
 
-// const onSubmit = useCallback(
-//   async (values: Values, { setSubmitting }: any) => {
-//     setSubmitting(true);
-
-//     await connectIfNotConnected(tezos, connect);
-
-//     if (dao && daoHoldings) {
-//       mutate({
-//         dao,
-//         transfers: values.transfers.map((transfer) => ({
-//           ...transfer,
-//           asset: daoHoldings.find(
-//             (balance) => balance.contract === transfer.asset?.contract
-//           ) as DAOHolding,
-//           type:
-//             !transfer.asset || transfer.asset.symbol === "XTZ"
-//               ? "XTZ"
-//               : "FA2",
-//         })),
-//         tokensToFreeze: dao.extra.frozenExtraValue,
-//         agoraPostId: values.agoraPostId,
-//       });
-
-//       handleClose();
-//     }
-//   },
-//   [connect, dao, handleClose, mutate, tezos, daoHoldings]
-// );
-
 export const TreasuryProposalFormContainer: React.FC<Props> = ({
   open,
   handleClose,
@@ -76,29 +44,38 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
     id: string;
   }>();
   const { data: daoData } = useDAO(daoId);
+  const { data: daoHoldings } = useDAOHoldings(daoId);
   const dao = daoData as TreasuryDAO | undefined;
-  // const { mutate } = useTreasuryPropose();
+  const { mutate } = useTreasuryPropose();
   const { tezos, connect } = useTezos();
+  const valuesRef = useRef<any>();
 
   const onSubmit = useCallback(
     async (values: TransferProposalFormValues) => {
       await connectIfNotConnected(tezos, connect);
 
-      if (dao) {
-        // mutate({
-        //   dao,
-        //   tokensToFreeze: dao.extra.frozenExtraValue,
-        //   agoraPostId: 0,
-        //   items: values.list.map(({ key, value }) => ({
-        //     key: char2Bytes(key),
-        //     newValue: char2Bytes(value),
-        //   })),
-        // });
+      if (dao && daoHoldings && valuesRef.current) {
+        mutate({
+          dao,
+          args: {
+            transfers: values.transferForm.transfers.map((transfer) => ({
+              ...transfer,
+              asset: daoHoldings.find(
+                (balance) => balance.contract === transfer.asset?.contract
+              ) as DAOHolding,
+              type:
+                !transfer.asset || transfer.asset.symbol === "XTZ"
+                  ? "XTZ"
+                  : "FA2",
+            })),
+            agoraPostId: valuesRef.current.agoraPostId,
+          },
+        });
 
         handleClose();
       }
     },
-    [connect, dao, handleClose, tezos]
+    [connect, dao, handleClose, mutate, tezos, daoHoldings]
   );
 
   const initialValues = {
@@ -118,52 +95,60 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
           onSubmit={onSubmit}
           // validate={validateTransferProposalForm}
         >
-          {(formikProps) => (
-            <NewTreasuryProposalDialog
-              {...((formikProps as unknown) as FormikProps<TransferProposalFormValues>)}
-            />
-          )}
+          {(formikProps) => {
+            valuesRef.current = formikProps.values
 
-          <ProposalFormListItem container direction="row">
-            <Grid item xs={6}>
-              <Typography variant="subtitle1" color="textSecondary">
-                Agora Post ID
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <SwitchContainer item xs={12} justify="flex-end">
-                <Field
-                  name={`agoraPostId`}
-                  type="tel"
-                  placeholder="Type an Agora Post ID"
-                  component={CustomTextField}
+            return (
+              <>
+                <NewTreasuryProposalDialog
+                  {...((formikProps as unknown) as FormikProps<TransferProposalFormValues>)}
                 />
-              </SwitchContainer>
-            </Grid>
-          </ProposalFormListItem>
 
-          <ProposalFormListItem container direction="row">
-            <Grid item xs={6}>
-              <Typography variant="subtitle1" color="textSecondary">
-                Proposal Fee
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography align="right" variant="subtitle1" color="secondary">
-                {dao && dao.extra.frozenExtraValue}{" "}
-                {dao ? dao.metadata.unfrozenToken.symbol : ""}
-              </Typography>
-            </Grid>
-          </ProposalFormListItem>
+                <ProposalFormListItem container direction="row">
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Agora Post ID
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <SwitchContainer item xs={12} justify="flex-end">
+                      <Field
+                        name={`agoraPostId`}
+                        type="number"
+                        placeholder="Type an Agora Post ID"
+                        component={CustomTextField}
+                      />
+                    </SwitchContainer>
+                  </Grid>
+                </ProposalFormListItem>
 
-          <SendButton
-            onClick={() => {
-              console.log("hey");
-            }}
-            disabled={!dao}
-          >
-            SEND
-          </SendButton>
+                <ProposalFormListItem container direction="row">
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Proposal Fee
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography
+                      align="right"
+                      variant="subtitle1"
+                      color="secondary"
+                    >
+                      {dao && dao.extra.frozenExtraValue}{" "}
+                      {dao ? dao.metadata.unfrozenToken.symbol : ""}
+                    </Typography>
+                  </Grid>
+                </ProposalFormListItem>
+
+                <SendButton
+                  onClick={() => onSubmit(formikProps.values)}
+                  disabled={!dao}
+                >
+                  SEND
+                </SendButton>
+              </>
+            );
+          }}
         </Formik>
       )}
     </Dialog>

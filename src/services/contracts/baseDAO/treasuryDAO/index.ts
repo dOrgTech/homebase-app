@@ -8,16 +8,15 @@ import { Network } from "services/beacon/context";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { Schema } from "@taquito/michelson-encoder";
 import { Parser, Expr } from "@taquito/michel-codec";
-import { BaseDAO, getContract, TransferParams } from "..";
+import { BaseDAO, getContract } from "..";
 import { TransferProposal } from "services/bakingBad/proposals/types";
-import { TreasuryExtraDTO } from "./types";
+import { TreasuryExtraDTO, TreasuryProposeArgs } from "./types";
 import { getExtra } from "services/bakingBad/extra";
 import proposeCode from "./michelson/propose";
 import {
   dtoToVoters,
   extractTransfersData,
-  mapFA2TransfersArgs,
-  mapXTZTransfersArgs,
+  mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { ProposalMetadata } from "../registryDAO/types";
 
@@ -102,32 +101,17 @@ export class TreasuryDAO extends BaseDAO {
     return proposals;
   };
 
-  public proposeTransfer = async ({
-    tokensToFreeze,
+  public propose = async ({
     agoraPostId,
     transfers,
-  }: {
-    tokensToFreeze: number;
-    agoraPostId: number;
-    transfers: TransferParams[];
-  }) => {
+  }: TreasuryProposeArgs) => {
     const contract = await getContract(this.tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
     const data = schema.Encode({
       agora_post_id: agoraPostId,
-      transfers: transfers.map((transfer) => {
-        if (transfer.type === "FA2") {
-          return {
-            token_transfer: mapFA2TransfersArgs(transfer, this.address),
-          };
-        } else {
-          return {
-            xtz_transfer: mapXTZTransfersArgs(transfer),
-          };
-        }
-      }),
+      transfers: mapTransfersArgs(transfers, this.address),
     });
 
     const { packed: proposalMetadata } = await this.tezos.rpc.packData({
@@ -136,7 +120,7 @@ export class TreasuryDAO extends BaseDAO {
     });
 
     const contractMethod = contract.methods.propose(
-      tokensToFreeze,
+      this.extra.frozenExtraValue,
       proposalMetadata
     );
 

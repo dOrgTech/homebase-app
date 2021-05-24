@@ -190,7 +190,6 @@ export interface FormTransferParams {
 export interface TransferProposalFormValues {
   transferForm: {
     transfers: FormTransferParams[];
-    enabled: boolean;
   };
 }
 
@@ -210,8 +209,7 @@ export const EMPTY_TRANSFER: FormTransferParams = {
 
 export const INITIAL_TRANSFER_FORM_VALUES: TransferProposalFormValues = {
   transferForm: {
-    transfers: [EMPTY_TRANSFER],
-    enabled: false
+    transfers: [EMPTY_TRANSFER]
   },
 };
 

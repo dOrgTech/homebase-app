@@ -19,8 +19,6 @@ import {
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { Registry } from "services/contracts/baseDAO";
-import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   height: 70,
@@ -106,6 +104,7 @@ export const EMPTY_LIST_ITEM: Registry = { key: "", value: "" };
 
 export const INITIAL_REGISTRY_FORM_VALUES: UpdateRegistryDialogValues = {
   list: [EMPTY_LIST_ITEM],
+  agoraPostId: "0"
 };
 
 export const validateUpdateRegistryForm = (
@@ -130,6 +129,7 @@ export const validateUpdateRegistryForm = (
 
 export interface UpdateRegistryDialogValues {
   list: Registry[];
+  agoraPostId: string;
 }
 
 export const UpdateRegistryDialog: React.FC<
@@ -137,10 +137,6 @@ export const UpdateRegistryDialog: React.FC<
 > = ({ values, setFieldValue, errors, touched, setTouched }) => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(1);
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
-  const { data: dao } = useDAO(daoId);
   const openNotification = useNotification();
 
   const keyError = (errors.list?.[activeItem - 1] as any)?.key;
@@ -326,23 +322,6 @@ export const UpdateRegistryDialog: React.FC<
                   <FileInput type="file" accept=".json" onChange={importList} />
                 </UploadFileLabel>
               </UploadButtonContainer>
-
-              <ProposalFormListItem container direction="row">
-                <Grid item xs={6}>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Proposal Fee
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography
-                    align="right"
-                    variant="subtitle1"
-                    color="secondary"
-                  >
-                    {dao?.extra.frozenExtraValue || 0}{" "}
-                  </Typography>
-                </Grid>
-              </ProposalFormListItem>
             </>
           </Form>
         </DialogContentText>

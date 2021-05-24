@@ -5,7 +5,7 @@ import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
-import { Extra, fromStateToBaseStorage, getContract, MigrationParams, TransferParams } from ".";
+import { Extra, fromStateToBaseStorage, getContract, MigrationParams } from ".";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import {
   RegistryDAO,
@@ -239,10 +239,6 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public abstract proposeTransfer(args: {
-    tokensToFreeze: number;
-    agoraPostId: number;
-    transfers: TransferParams[];
-  }): Promise<TransactionWalletOperation>
+  public abstract propose(...args: any[]): Promise<TransactionWalletOperation>
 
 }

@@ -102,20 +102,19 @@ export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
 
 export const mapProposalRegistryList = (
   pm: PMRegistryUpdateProposal
-): { registryDiff: RegistryUpdateProposal["list"], agoraPostId: string } => {
-
-  console.log(pm[0])
+): { registryDiff: RegistryUpdateProposal["list"]; agoraPostId: string } => {
+  console.log(pm[0]);
 
   const agoraPostId = pm[0].agora_post_id;
-  const registryDiff = pm[0].registry_diff.map(item => ({
+  const registryDiff = pm[0].registry_diff.map((item) => ({
     key: bytes2Char(item[0]),
-    value: bytes2Char(item[1])
-  }))
+    value: bytes2Char(item[1]),
+  }));
 
   return {
     agoraPostId,
-    registryDiff
-  }
+    registryDiff,
+  };
 };
 
 export const mapTransferProposals = (dto: ProposalDTO[number]) => {
@@ -147,12 +146,14 @@ export const mapTransferProposals = (dto: ProposalDTO[number]) => {
   };
 };
 
-export const mapXTZTransfersArgs = (
-  transfer: TransferParams
-) => {
+//TODO: move these mappers elsewhere
+
+export const mapXTZTransfersArgs = (transfer: TransferParams) => {
   return {
-    amount: Number(xtzToMutez(transfer.amount.toString())),
-    recipient: transfer.recipient,
+    xtz_transfer_type: {
+      amount: Number(xtzToMutez(transfer.amount.toString())),
+      recipient: transfer.recipient,
+    },
   };
 };
 
@@ -161,18 +162,33 @@ export const mapFA2TransfersArgs = (
   daoAddress: string
 ) => {
   return {
-    contract_address: transfer.asset.contract,
-    transfer_list: [
-      {
-        from_: daoAddress,
-        txs: [
-          {
-            to_: transfer.recipient,
-            token_id: transfer.asset.token_id,
-            amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
-          },
-        ],
-      },
-    ],
+    token_transfer_type: {
+      contract_address: transfer.asset.contract,
+      transfer_list: [
+        {
+          from_: daoAddress,
+          txs: [
+            {
+              to_: transfer.recipient,
+              token_id: transfer.asset.token_id,
+              amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
+            },
+          ],
+        },
+      ],
+    },
   };
+};
+
+export const mapTransfersArgs = (
+  transfers: TransferParams[],
+  daoAddress: string
+) => {
+  return transfers.map((transfer) => {
+    if (transfer.type === "FA2") {
+      return mapFA2TransfersArgs(transfer, daoAddress);
+    }
+
+    return mapXTZTransfersArgs(transfer);
+  });
 };
