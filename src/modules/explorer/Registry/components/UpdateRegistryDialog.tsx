@@ -1,43 +1,24 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback } from "react";
 import {
   Grid,
   styled,
   Switch,
   Typography,
   Paper,
-  DialogTitle,
   DialogContent,
   DialogContentText,
-  Dialog,
 } from "@material-ui/core";
-import { Formik, Form, Field, FieldArray, FormikErrors } from "formik";
+import { Form, Field, FieldArray, FormikProps, FormikErrors } from "formik";
 import { TextField } from "formik-material-ui";
-import { Registry, RegistryDAO } from "services/contracts/baseDAO";
-import { ActionTypes } from "modules/explorer/ModalsContext";
-import { ModalsContext } from "modules/explorer/ModalsContext";
-import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { char2Bytes } from "@taquito/tzip16";
-import { useTezos } from "services/beacon/hooks/useTezos";
-import { connectIfNotConnected } from "services/contracts/utils";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
 import { useNotification } from "modules/common/hooks/useNotification";
-import { CustomTextarea, DescriptionContainer } from "modules/explorer/components/ProposalTextContainer";
+import {
+  CustomTextarea,
+  DescriptionContainer,
+} from "modules/explorer/components/ProposalTextContainer";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
-import { SendButton } from "modules/explorer/components/ProposalFormSendButton";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
-
-const CloseButton = styled(Typography)({
-  fontWeight: 900,
-  cursor: "pointer",
-});
-
-const Title = styled(DialogTitle)(({ theme }) => ({
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  height: 30,
-  paddingTop: 28,
-  minWidth: 500,
-}));
+import { Registry } from "services/contracts/baseDAO";
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   height: 70,
@@ -119,358 +100,232 @@ const CustomTextField = styled(TextField)({
   },
 });
 
-interface Values {
-  list: Registry[];
-  description: string;
-  title: string;
-}
+export const EMPTY_LIST_ITEM: Registry = { key: "", value: "" };
 
-const EMPTY_LIST_ITEM: Registry = { key: "", value: "" };
-const INITIAL_FORM_VALUES: Values = {
+export const INITIAL_REGISTRY_FORM_VALUES: UpdateRegistryDialogValues = {
   list: [EMPTY_LIST_ITEM],
-  description: "",
-  title: "",
+  agoraPostId: "0"
 };
 
-const validateForm = (values: Values): FormikErrors<Values> => {
+export const validateUpdateRegistryForm = (
+  values: UpdateRegistryDialogValues
+): FormikErrors<UpdateRegistryDialogValues> => {
   const errors: Record<string, any> = {
-    list: values.list.map(() => ({}))
-  }
+    list: values.list.map(() => ({})),
+  };
 
   values.list.forEach((item, i) => {
-    if(!item.key) {
-      errors.list[i].key = "Required"
+    if (!item.key) {
+      errors.list[i].key = "Required";
     }
 
-    if(!item.value) {
-      errors.list[i].value = "Required"
+    if (!item.value) {
+      errors.list[i].value = "Required";
     }
-  })
+  });
 
-  return errors
+  return errors;
+};
+
+export interface UpdateRegistryDialogValues {
+  list: Registry[];
+  agoraPostId: string;
 }
 
-export const UpdateRegistryDialog: React.FC = () => {
+export const UpdateRegistryDialog: React.FC<
+  FormikProps<UpdateRegistryDialogValues>
+> = ({ values, setFieldValue, errors, touched, setTouched }) => {
   const [isBatch, setIsBatch] = React.useState(false);
   const [activeItem, setActiveItem] = React.useState(1);
-  const {
-    state: {
-      registryProposal: {
-        open
-      },
-      daoId,
-    },
-    dispatch,
-  } = useContext(ModalsContext);
   const openNotification = useNotification();
-  const { data: daoData } = useDAO(daoId);
-  const dao = daoData as RegistryDAO | undefined;
-  const { mutate } = useRegistryPropose();
-  const { tezos, connect } = useTezos();
 
-  const handleClose = useCallback(() => {
-    dispatch({
-      type: ActionTypes.CLOSE,
-      payload: {
-        modal: "registryProposal",
-      },
-    });
-  }, [dispatch]);
+  const keyError = (errors.list?.[activeItem - 1] as any)?.key;
+  const valueError = (errors.list?.[activeItem - 1] as any)?.value;
 
-  const onSubmit = useCallback(
-    async (values: Values) => {
-      await connectIfNotConnected(tezos, connect);
-
-      if (dao) {
-        mutate({
-          dao,
-          tokensToFreeze: dao.extra.frozenExtraValue,
-          agoraPostId: 0,
-          items: values.list.map(({ key, value }) => ({
-            key: char2Bytes(key),
-            newValue: char2Bytes(value),
-          })),
-        });
-
-        dispatch({
-          type: ActionTypes.CLOSE,
-          payload: { modal: "registryProposal" },
-        });
+  const importList = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.currentTarget.files) {
+        try {
+          const file = event.currentTarget.files[0];
+          const registryListParsed = await fromRegistryListFile(file);
+          console.log(registryListParsed);
+          const errors = validateRegistryListJSON(registryListParsed);
+          console.log(errors);
+          if (errors.length) {
+            openNotification({
+              message: "Error while parsing JSON",
+              persist: true,
+              variant: "error",
+            });
+            return;
+          }
+          setIsBatch(true);
+          values.list = registryListParsed;
+        } catch (e) {
+          openNotification({
+            message: "Error while parsing JSON",
+            persist: true,
+            variant: "error",
+          });
+        }
       }
     },
-    [connect, dao, dispatch, mutate, tezos]
+    [openNotification, values]
   );
 
   return (
     <>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <Title id="alert-dialog-title" color="textSecondary">
-          <Grid container direction="row">
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          <ProposalFormListItem container direction="row">
             <Grid item xs={6}>
               <Typography variant="subtitle1" color="textSecondary">
-                UPDATE REGISTRY ITEM
+                Add Batches?
               </Typography>
             </Grid>
             <Grid item xs={6}>
-              <CloseButton
-                color="textSecondary"
-                align="right"
-                onClick={handleClose}
-              >
-                X
-              </CloseButton>
+              <SwitchContainer item xs={12} justify="flex-end">
+                <Switch
+                  checked={isBatch}
+                  onChange={() => {
+                    setIsBatch(!isBatch);
+                    return;
+                  }}
+                  name="checkedA"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                />
+              </SwitchContainer>
             </Grid>
-          </Grid>
-        </Title>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            <ProposalFormListItem container direction="row">
-              <Grid item xs={6}>
-                <Typography variant="subtitle1" color="textSecondary">
-                  Add Batches?
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <SwitchContainer item xs={12} justify="flex-end">
-                  <Switch
-                    checked={isBatch}
-                    onChange={() => {
-                      setIsBatch(!isBatch);
-                      return;
-                    }}
-                    name="checkedA"
-                    inputProps={{ "aria-label": "secondary checkbox" }}
-                  />
-                </SwitchContainer>
-              </Grid>
-            </ProposalFormListItem>
+          </ProposalFormListItem>
 
-            <Formik
-              initialValues={{
-                ...INITIAL_FORM_VALUES,
-                list: [
-                  {
-                    key: "",
-                    value: "",
-                  },
-                ],
-              }}
-              onSubmit={onSubmit}
-              validate={validateForm}
-            >
-              {({ values, setFieldValue, errors, touched, setTouched }) => {
+          <Form autoComplete="off">
+            <>
+              <FieldArray
+                name="list"
+                render={(arrayHelpers) => (
+                  <>
+                    {isBatch ? (
+                      <BatchBar container direction="row" wrap="nowrap">
+                        {values.list.map((_, index) => {
+                          return (
+                            <TransferActive
+                              item
+                              key={index}
+                              onClick={() => setActiveItem(index + 1)}
+                              style={
+                                Number(index + 1) === activeItem
+                                  ? styles.active
+                                  : undefined
+                              }
+                            >
+                              <Typography
+                                variant="subtitle1"
+                                color="textSecondary"
+                              >
+                                #{index + 1}
+                              </Typography>
+                            </TransferActive>
+                          );
+                        })}
 
-                const keyError = (errors.list?.[activeItem - 1] as any)?.key
-                const valueError = (errors.list?.[activeItem - 1] as any)?.value
+                        <AddButton
+                          onClick={() => {
+                            arrayHelpers.insert(
+                              values.list.length + 1,
+                              EMPTY_LIST_ITEM
+                            );
+                            setActiveItem(activeItem + 1);
+                          }}
+                        >
+                          +
+                        </AddButton>
+                      </BatchBar>
+                    ) : null}
 
-                const importList = async (
-                  event: React.ChangeEvent<HTMLInputElement>
-                ) => {
-                  if (event.currentTarget.files) {
-                    try {
-                      const file = event.currentTarget.files[0];
-                      const registryListParsed = await fromRegistryListFile(
-                        file
-                      );
-                      console.log(registryListParsed);
-                      const errors = validateRegistryListJSON(
-                        registryListParsed
-                      );
-                      console.log(errors);
-                      if (errors.length) {
-                        openNotification({
-                          message: "Error while parsing JSON",
-                          persist: true,
-                          variant: "error",
-                        });
-                        return;
-                      }
-                      setIsBatch(true);
-                      values.list = registryListParsed;
-                    } catch (e) {
-                      openNotification({
-                        message: "Error while parsing JSON",
-                        persist: true,
-                        variant: "error",
-                      });
-                    }
-                  }
-                };
-
-                return (
-                  <Form autoComplete="off">
-                    <>
-                      <FieldArray
-                        name="list"
-                        render={(arrayHelpers) => (
-                          <>
-                            {isBatch ? (
-                              <BatchBar container direction="row" wrap="nowrap">
-                                {values.list.map((_, index) => {
-                                  return (
-                                    <TransferActive
-                                      item
-                                      key={index}
-                                      onClick={() => setActiveItem(index + 1)}
-                                      style={
-                                        Number(index + 1) === activeItem
-                                          ? styles.active
-                                          : undefined
-                                      }
-                                    >
-                                      <Typography
-                                        variant="subtitle1"
-                                        color="textSecondary"
-                                      >
-                                        #{index + 1}
-                                      </Typography>
-                                    </TransferActive>
-                                  );
-                                })}
-
-                                <AddButton
-                                  onClick={() => {
-                                    arrayHelpers.insert(
-                                      values.list.length + 1,
-                                      EMPTY_LIST_ITEM
-                                    );
-                                    setActiveItem(activeItem + 1);
-                                  }}
-                                >
-                                  +
-                                </AddButton>
-                              </BatchBar>
-                            ) : null}
-
-                            <ProposalFormListItem container direction="row">
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="subtitle1"
-                                  color="textSecondary"
-                                >
-                                  Key
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <SwitchContainer
-                                  item
-                                  xs={12}
-                                  justify="flex-end"
-                                >
-                                  <Field
-                                    name={`list.${activeItem - 1}.key`}
-                                    type="string"
-                                    placeholder="Type a Key"
-                                    component={CustomTextField}
-                                  />
-                                  { keyError && touched.list?.[activeItem - 1]?.key? (
-                                    <ErrorText>{keyError}</ErrorText>
-                                  ) : null}
-                                </SwitchContainer>
-                              </Grid>
-                            </ProposalFormListItem>
-
-                            <DescriptionContainer container direction="row">
-                              <Grid item xs={12}>
-                                <Grid
-                                  container
-                                  direction="row"
-                                  alignItems="center"
-                                  justify="space-between"
-                                >
-                                  <Grid item xs={12}>
-                                    <Typography
-                                      variant="subtitle1"
-                                      color="textSecondary"
-                                    >
-                                      Value
-                                    </Typography>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                              <Grid item xs={12}>
-                                <Field
-                                  name={`list.${activeItem - 1}.value`}
-                                  multiline
-                                  type="string"
-                                  rows={6}
-                                  placeholder="Type a value"
-                                  component={CustomTextarea}
-                                  onChange={(e: any) => {
-                                    setFieldValue(
-                                      `list.${activeItem - 1}.value`,
-                                      e.target.value
-                                    );
-
-                                    const listVals: any = touched.list
-                                    listVals[activeItem - 1] = {
-                                      ...listVals[activeItem - 1],
-                                      value: true
-                                    }
-
-                                    setTouched({
-                                      ...touched,
-                                      list: listVals
-                                    })
-                                  }}
-                                />
-                                { valueError && touched.list?.[activeItem - 1]?.value? (
-                                  <ErrorText>{valueError}</ErrorText>
-                                ) : null}
-                              </Grid>
-                            </DescriptionContainer>
-                          </>
-                        )}
-                      />
-
-                      {/* <ProposalTextContainer title="Proposal Title" value={values.title} type="title" />
-
-                      <ProposalTextContainer title="Proposal Description" value={values.description} type="description" /> */}
-
-                      <UploadButtonContainer container direction="row">
-                        <UploadFileLabel>
-                          -OR- UPLOAD JSON FILE
-                          <FileInput
-                            type="file"
-                            accept=".json"
-                            onChange={importList}
+                    <ProposalFormListItem container direction="row">
+                      <Grid item xs={6}>
+                        <Typography variant="subtitle1" color="textSecondary">
+                          Key
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <SwitchContainer item xs={12} justify="flex-end">
+                          <Field
+                            name={`list.${activeItem - 1}.key`}
+                            type="string"
+                            placeholder="Type a Key"
+                            component={CustomTextField}
                           />
-                        </UploadFileLabel>
-                      </UploadButtonContainer>
+                          {keyError && touched.list?.[activeItem - 1]?.key ? (
+                            <ErrorText>{keyError}</ErrorText>
+                          ) : null}
+                        </SwitchContainer>
+                      </Grid>
+                    </ProposalFormListItem>
 
-                      <ProposalFormListItem container direction="row">
-                        <Grid item xs={6}>
-                          <Typography variant="subtitle1" color="textSecondary">
-                            Proposal Fee
-                          </Typography>
+                    <DescriptionContainer container direction="row">
+                      <Grid item xs={12}>
+                        <Grid
+                          container
+                          direction="row"
+                          alignItems="center"
+                          justify="space-between"
+                        >
+                          <Grid item xs={12}>
+                            <Typography
+                              variant="subtitle1"
+                              color="textSecondary"
+                            >
+                              Value
+                            </Typography>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={6}>
-                          <Typography
-                            align="right"
-                            variant="subtitle1"
-                            color="secondary"
-                          >
-                            {dao?.extra.frozenExtraValue || 0}{" "}
-                          </Typography>
-                        </Grid>
-                      </ProposalFormListItem>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Field
+                          name={`list.${activeItem - 1}.value`}
+                          multiline
+                          type="string"
+                          rows={6}
+                          placeholder="Type a value"
+                          component={CustomTextarea}
+                          onChange={(e: any) => {
+                            setFieldValue(
+                              `list.${activeItem - 1}.value`,
+                              e.target.value
+                            );
 
-                      <SendButton onClick={() => onSubmit(values)} disabled={!dao}>
-                        SEND
-                      </SendButton>
-                    </>
-                  </Form>
-                );
-              }}
-            </Formik>
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
+                            const listVals: any = touched.list;
+                            listVals[activeItem - 1] = {
+                              ...listVals[activeItem - 1],
+                              value: true,
+                            };
+
+                            setTouched({
+                              ...touched,
+                              list: listVals,
+                            });
+                          }}
+                        />
+                        {valueError && touched.list?.[activeItem - 1]?.value ? (
+                          <ErrorText>{valueError}</ErrorText>
+                        ) : null}
+                      </Grid>
+                    </DescriptionContainer>
+                  </>
+                )}
+              />
+
+              <UploadButtonContainer container direction="row">
+                <UploadFileLabel>
+                  -OR- UPLOAD JSON FILE
+                  <FileInput type="file" accept=".json" onChange={importList} />
+                </UploadFileLabel>
+              </UploadButtonContainer>
+            </>
+          </Form>
+        </DialogContentText>
+      </DialogContent>
     </>
   );
 };

@@ -18,6 +18,7 @@ import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { InfoOutlined } from "@material-ui/icons";
+import { useQuorumTreshold } from "../hooks/useQuorumTreshold";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24
@@ -73,11 +74,12 @@ export const ProposalStatusHistory: React.FC = () => {
   const { data: dao } = useDAO(daoId);
   const { data: proposal } = useProposal(daoId, proposalId);
 
+  const quorumTreshold = useQuorumTreshold(dao);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { votesQuorumPercentage, votes } = useVotesStats({
     upVotes: proposal?.upVotes || 0,
     downVotes: proposal?.downVotes || 0,
-    quorumTreshold: dao?.storage.quorumTreshold || 0
+    quorumTreshold,
   });
   
   const history = useMemo(() => {
@@ -85,7 +87,6 @@ export const ProposalStatusHistory: React.FC = () => {
       return [];
     }
 
-    const hasPeriodChanged = dao.storage.lastPeriodChange.periodNumber > proposal.cycle
     const votingPeriod = dao.storage.votingPeriod
 
     const baseStatuses: {
@@ -97,7 +98,7 @@ export const ProposalStatusHistory: React.FC = () => {
         status: ProposalStatus.CREATED,
       },
       {
-        date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod, "seconds").format("LLL"),
+        date: dayjs(proposal.startDate).add(votingPeriod, "seconds").format("LLL"),
         status: ProposalStatus.ACTIVE,
       },
     ];
@@ -105,19 +106,19 @@ export const ProposalStatusHistory: React.FC = () => {
     switch (proposal.status) {
       case ProposalStatus.DROPPED:
         baseStatuses.push({
-          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
+          date: dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
           status: ProposalStatus.DROPPED,
         });
         break;
       case ProposalStatus.REJECTED:
         baseStatuses.push({
-          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
+          date: dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
           status: ProposalStatus.REJECTED,
         });
         break;
       case ProposalStatus.PASSED:
         baseStatuses.push({
-          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
+          date: dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
           status: ProposalStatus.PASSED,
         });
         break;
@@ -139,7 +140,7 @@ export const ProposalStatusHistory: React.FC = () => {
               QUORUM THRESHOLD %
             </Typography>
             <Tooltip
-              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${dao?.storage.quorumTreshold} votes.`}
+              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumTreshold} votes.`}
             >
               <InfoIconInput color="secondary" />
             </Tooltip>

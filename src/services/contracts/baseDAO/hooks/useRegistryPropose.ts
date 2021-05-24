@@ -1,17 +1,10 @@
-import { RegistryDAO } from "..";
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
-import { RegistryItem } from "../registryDAO/types";
+import { RegistryProposeArgs } from "../registryDAO/types";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useCacheDAOs } from "./useCacheDAOs";
 import { useTezos } from "services/beacon/hooks/useTezos";
-
-interface Params {
-  dao: RegistryDAO;
-  tokensToFreeze: number;
-  agoraPostId: number;
-  items: RegistryItem[];
-}
+import { RegistryDAO } from '../registryDAO';
 
 export const useRegistryPropose = () => {
   const queryClient = useQueryClient();
@@ -19,8 +12,8 @@ export const useRegistryPropose = () => {
   const { setDAO } = useCacheDAOs();
   const { network } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, Params>(
-    async (params) => {
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: RegistryDAO, args: RegistryProposeArgs }>(
+    async ({ dao, args }) => {
       const {
         key: proposalNotification,
         closeSnackbar: closeProposalNotification,
@@ -30,12 +23,7 @@ export const useRegistryPropose = () => {
         variant: "info",
       });
       try {
-        const data = await params.dao.proposeRegistryUpdate({
-          ...params,
-          tokensToFreeze: params.tokensToFreeze,
-          agoraPostId: params.agoraPostId,
-          items: params.items,
-        });
+        const data = await dao.propose(args);
         await data.confirmation(1);
         closeProposalNotification(proposalNotification);
 
@@ -45,7 +33,7 @@ export const useRegistryPropose = () => {
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        setDAO(params.dao);
+        setDAO(dao);
         return data;
       } catch (e) {
         console.log(e);

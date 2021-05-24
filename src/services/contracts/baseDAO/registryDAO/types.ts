@@ -1,8 +1,8 @@
-import { Extra } from "..";
+import { Extra, TransferParams } from "..";
 
 export interface RegistryItem {
   key: string;
-  newValue: string;
+  value: string;
 }
 
 export interface RegistryExtra extends Extra {
@@ -10,6 +10,16 @@ export interface RegistryExtra extends Extra {
     key: string;
     value: string;
   }[]
+}
+
+export interface RegistryProposeArgs {
+  transfer_proposal?: {
+    transfers: TransferParams[];
+  };
+  normal_proposal?: {
+    registry_diff: RegistryItem[];
+  };
+  agoraPostId: number;
 }
 
 export type RegistryExtraDTO = [

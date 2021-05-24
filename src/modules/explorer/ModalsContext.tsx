@@ -176,8 +176,6 @@ export const ModalsProvider: React.FC = ({ children }) => {
   return (
     <ModalsContext.Provider value={{ state, dispatch }}>
       {children}
-      <NewTreasuryProposalDialog />
-      <UpdateRegistryDialog />
       <NewTransaction />
       <RegistryItemDialog />
     </ModalsContext.Provider>

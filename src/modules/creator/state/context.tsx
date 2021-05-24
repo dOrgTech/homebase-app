@@ -27,6 +27,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
       tokenId: ""
     },
     administrator: "",
+    guardian: "",
   },
   votingSettings: {
     votingDays: 0,

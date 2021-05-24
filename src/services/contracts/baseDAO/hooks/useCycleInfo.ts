@@ -11,9 +11,8 @@ export const useCycleInfo = (daoAddress?: string) => {
     if (dao) {
       const interval = setInterval(() => {
         const result = calculateCycleInfo(
-          dao.storage.lastPeriodChange.timestamp,
+          dao.storage.start_time,
           dao.storage.votingPeriod,
-          dao.storage.lastPeriodChange.periodNumber
         );
         setTimeLeft(result);
       }, 1000);

@@ -10,7 +10,7 @@ import { BaseDAO } from "..";
 import { CycleInfo } from "../class";
 import { useCycleInfo } from "./useCycleInfo";
 
-const mapProposalStatus = (proposal: Proposal, cycleInfo: CycleInfo, quorumTreshold: number): ProposalWithStatus => {
+const mapProposalStatus = (proposal: Proposal, cycleInfo: CycleInfo, quorumTreshold: string): ProposalWithStatus => {
 
   if(proposal.cycle === cycleInfo.current) {
     return {
@@ -23,12 +23,12 @@ const mapProposalStatus = (proposal: Proposal, cycleInfo: CycleInfo, quorumTresh
       status: ProposalStatus.ACTIVE,
     }
   } else {
-    if(proposal.upVotes >= quorumTreshold) {
+    if(proposal.upVotes >= Number(quorumTreshold)) {
       return {
         ...proposal,
         status: ProposalStatus.PASSED,
       }
-    } else if(proposal.downVotes >= quorumTreshold) {
+    } else if(proposal.downVotes >= Number(quorumTreshold)) {
       return {
         ...proposal,
         status: ProposalStatus.REJECTED,
@@ -63,7 +63,7 @@ export const useProposals = (
       return [];
     }
 
-    const proposalsWithStatus = result.data?.map((proposal) => mapProposalStatus(proposal, cycleInfo, dao.storage.quorumTreshold))
+    const proposalsWithStatus = result.data?.map((proposal) => mapProposalStatus(proposal, cycleInfo, dao.storage.quorumTresholdAtCycle.quorumTreshold))
 
     if (!status) {
       return proposalsWithStatus;

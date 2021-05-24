@@ -1,3 +1,5 @@
+import { TransferParams } from "..";
+
 export type TreasuryExtraDTO = [
   {
     data: {
@@ -147,3 +149,8 @@ export type TreasuryExtraDTO = [
     count: 1;
   }
 ];
+
+export interface TreasuryProposeArgs {
+  agoraPostId: number;
+  transfers: TransferParams[];
+}

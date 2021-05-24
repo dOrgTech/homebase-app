@@ -2,9 +2,8 @@ import { Parser, Expr } from "@taquito/michel-codec";
 import {
   dtoToVoters,
   extractRegistryTransfersData,
-  mapFA2TransfersArgs,
   mapProposalRegistryList,
-  mapXTZTransfersArgs,
+  mapTransfersArgs,
 } from "./../../../bakingBad/proposals/mappers";
 import { TezosToolkit } from "@taquito/taquito";
 import { Schema } from "@taquito/michelson-encoder";
@@ -13,7 +12,7 @@ import { getOriginationTime } from "services/bakingBad/operations";
 import { getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
-import { ConstructorParams, getContract, TransferParams } from "..";
+import { ConstructorParams, getContract } from "..";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { BaseDAO } from "..";
 import {
@@ -22,14 +21,14 @@ import {
   ProposalMetadata,
   RegistryExtra,
   RegistryExtraDTO,
-  RegistryItem,
+  RegistryProposeArgs,
 } from "./types";
 import {
   RegistryUpdateProposal,
   TransferProposal,
 } from "services/bakingBad/proposals/types";
 import { getExtra } from "services/bakingBad/extra";
-import { bytes2Char } from "@taquito/tzip16";
+import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
 
 const parser = new Parser();
@@ -111,27 +110,39 @@ export class RegistryDAO extends BaseDAO {
     this.extra = params.extra;
   }
 
-  public proposeRegistryUpdate = async ({
-    tokensToFreeze,
+  public propose = async ({
     agoraPostId,
-    items,
-  }: {
-    tokensToFreeze: number;
-    agoraPostId: number;
-    items: RegistryItem[];
-  }) => {
+    transfer_proposal,
+    normal_proposal,
+  }: RegistryProposeArgs) => {
     const contract = await getContract(this.tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
+    const dataToEncode: Record<string, any> = {};
 
-    const diff = items.map((item) => [item.key, item.newValue]);
-    const data = schema.Encode({
-      normal_proposal: {
+    if(!transfer_proposal && !normal_proposal) {
+      throw new Error("No proposal arguments passed")
+    }
+
+    if (transfer_proposal) {
+      dataToEncode.transfer_proposal = {
+        transfers: mapTransfersArgs(transfer_proposal.transfers, this.address),
+        agora_post_id: agoraPostId
+      };
+    }
+
+    if (normal_proposal) {
+      dataToEncode.normal_proposal = {
+        registry_diff: normal_proposal.registry_diff.map((item) => [
+          char2Bytes(item.key),
+          char2Bytes(item.value),
+        ]),
         agora_post_id: agoraPostId,
-        registry_diff: diff,
-      },
-    });
+      };
+    }
+
+    const data = schema.Encode(dataToEncode);
 
     const { packed: proposalMetadata } = await this.tezos.rpc.packData({
       data,
@@ -139,57 +150,12 @@ export class RegistryDAO extends BaseDAO {
     });
 
     const contractMethod = contract.methods.propose(
-      tokensToFreeze,
+      this.extra.frozenExtraValue,
       proposalMetadata
     );
 
     const result = await contractMethod.send();
 
-    return result;
-  };
-
-  public proposeTransfer = async ({
-    tokensToFreeze,
-    agoraPostId,
-    transfers,
-  }: {
-    tokensToFreeze: number;
-    agoraPostId: number;
-    transfers: TransferParams[];
-  }) => {
-    const contract = await getContract(this.tezos, this.address);
-
-    const michelsonType = parser.parseData(proposeCode);
-
-    const schema = new Schema(michelsonType as Expr);
-    const data = schema.Encode({
-      transfer_proposal: {
-        agora_post_id: agoraPostId,
-        transfers: transfers.map((transfer) => {
-          if (transfer.type === "FA2") {
-            return {
-              token_transfer_type: mapFA2TransfersArgs(transfer, this.address),
-            };
-          } else {
-            return {
-              xtz_transfer_type: mapXTZTransfersArgs(transfer),
-            };
-          }
-        }),
-      }
-    });
-
-    const { packed: proposalMetadata } = await this.tezos.rpc.packData({
-      data,
-      type: michelsonType as Expr,
-    });
-
-    const contractMethod = contract.methods.propose(
-      tokensToFreeze,
-      proposalMetadata
-    );
-
-    const result = await contractMethod.send();
     return result;
   };
 
@@ -216,7 +182,7 @@ export class RegistryDAO extends BaseDAO {
         michelsonExpr
       );
 
-      if(proposalMetadataDTO.hasOwnProperty("transfer_proposal")) {
+      if (proposalMetadataDTO.hasOwnProperty("transfer_proposal")) {
         const { agoraPostId, transfers } = extractRegistryTransfersData(
           proposalMetadataDTO as PMTransferProposal
         );
@@ -235,7 +201,9 @@ export class RegistryDAO extends BaseDAO {
           type: "transfer" as const,
         };
       } else {
-        const { agoraPostId, registryDiff } = mapProposalRegistryList(proposalMetadataDTO as PMRegistryUpdateProposal)
+        const { agoraPostId, registryDiff } = mapProposalRegistryList(
+          proposalMetadataDTO as PMRegistryUpdateProposal
+        );
 
         return {
           id: dto.data.key.value,
@@ -251,7 +219,6 @@ export class RegistryDAO extends BaseDAO {
           type: "registryUpdate" as const,
         };
       }
-      
     });
 
     return proposals;
