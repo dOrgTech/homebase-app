@@ -15,7 +15,7 @@ export const useCycleInfo = (daoAddress?: string) => {
           dao.storage.votingPeriod,
         );
         setTimeLeft(result);
-      }, 1000);
+      }, 5000);
       return () => clearInterval(interval);
     }
   }, [dao]);
