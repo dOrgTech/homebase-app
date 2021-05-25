@@ -143,7 +143,6 @@ export const UpdateRegistryDialog: React.FC<
 
   const keyError = (errors.registryForm?.list?.[activeItem - 1] as any)?.key;
   const valueError = (errors.registryForm?.list?.[activeItem - 1] as any)?.value;
-  console.log(values)
 
   const importList = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,9 +150,8 @@ export const UpdateRegistryDialog: React.FC<
         try {
           const file = event.currentTarget.files[0];
           const registryListParsed = await fromRegistryListFile(file);
-          console.log(registryListParsed);
           const errors = validateRegistryListJSON(registryListParsed);
-          console.log(errors);
+
           if (errors.length) {
             openNotification({
               message: "Error while parsing JSON",

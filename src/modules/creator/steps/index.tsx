@@ -65,7 +65,6 @@ export const useStepNumber = (): number => {
       ? pathname.split("/").slice(-2)[0]
       : pathname.split("/").slice(-1)[0];
 
-    console.log(extracted)
     return urlToStepMap[extracted];
   }, [pathname]);
 };

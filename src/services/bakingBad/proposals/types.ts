@@ -173,22 +173,33 @@ export interface RegistryProposal extends Proposal {
 }
 export interface ProposalWithStatus extends Proposal {
   status: ProposalStatus;
+  flushable: boolean;
+  statusHistory: { status: ProposalStatus, timestamp: string }[]
 }
 
 export interface RegistryProposalWithStatus extends RegistryProposal {
   status: ProposalStatus;
+  flushable: boolean;
+  statusHistory: { status: ProposalStatus, timestamp: string }[]
 }
 
 export interface TreasuryProposalWithStatus extends TreasuryProposal {
   status: ProposalStatus;
+  flushable: boolean;
+  statusHistory: { status: ProposalStatus, timestamp: string }[]
 }
 
 export enum ProposalStatus {
-  CREATED = "created",
+  PENDING = "pending",
   ACTIVE = "active",
+
   PASSED = "passed",
   REJECTED = "rejected",
-  DROPPED = "dropped",
+
+  NO_QUORUM = "no quorum",
+
+  //DROPPED -> for drop_proposal
+  EXPIRED = "expired",
   EXECUTED = "executed",
 }
 

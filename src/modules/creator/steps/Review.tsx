@@ -59,8 +59,6 @@ export const Review: React.FC = () => {
   } = useOriginate(state.data.template);
   const history = useHistory();
 
-  console.log(validDAOData, info, metadataCarrierParams)
-
   // TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
