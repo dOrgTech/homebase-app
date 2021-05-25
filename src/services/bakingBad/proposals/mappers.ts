@@ -51,11 +51,9 @@ export const extractRegistryTransfersData = (
 };
 
 export const extractTransfersData = (
-  pm: ProposalMetadata
-): { transfers: Transfer[]; agoraPostId: string } => {
-  const agoraPostId = (pm as any).agora_post_id.toString();
-  console.log("YEAH: ", pm);
-  const transfers = (pm as any).transfers.map((transfer: any) => {
+  transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]
+): Transfer[] => {
+  const transfers = transfersDTO.map((transfer: any) => {
     if (transfer.hasOwnProperty("xtz_transfer_type")) {
       const xtzTransfer = transfer;
 
@@ -77,10 +75,7 @@ export const extractTransfersData = (
     }
   });
 
-  return {
-    transfers,
-    agoraPostId,
-  };
+  return transfers
 };
 
 export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
@@ -95,23 +90,6 @@ export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
     value: Number(voter.children[0].value),
     support: Boolean(voter.children[1].value),
   }));
-};
-
-export const mapProposalRegistryList = (
-  pm: PMRegistryProposal
-): { registryDiff: RegistryProposal["list"]; agoraPostId: string } => {
-  console.log(pm[0]);
-
-  const agoraPostId = pm[0].agora_post_id;
-  const registryDiff = pm[0].registry_diff.map((item) => ({
-    key: bytes2Char(item[0]),
-    value: bytes2Char(item[1]),
-  }));
-
-  return {
-    agoraPostId,
-    registryDiff,
-  };
 };
 
 export const mapProposalBase = (

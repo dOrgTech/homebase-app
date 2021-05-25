@@ -274,7 +274,8 @@ export interface PMRegistryProposal {
         "1": string;
       }[]
     ;
-  };
+    transfers: (PMXTZTransferType | PMFA2TransferType)[];
+  }
 }
 
 export type ProposalMetadata = PMTreasuryProposal | PMRegistryProposal;

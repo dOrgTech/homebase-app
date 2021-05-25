@@ -18,7 +18,7 @@ import {
   mapProposalBase,
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
-import { ProposalMetadata } from "../registryDAO/types";
+import { PMTreasuryProposal } from "../registryDAO/types";
 
 const parser = new Parser();
 
@@ -75,17 +75,17 @@ export class TreasuryDAO extends BaseDAO {
         proposalMetadata.length - 4
       );
       const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-      const proposalMetadataDTO: ProposalMetadata = schema.Execute(
+      const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(
         michelsonExpr
       );
 
-      const { agoraPostId, transfers } = extractTransfersData(
-        proposalMetadataDTO
+      const transfers = extractTransfersData(
+        proposalMetadataDTO.transfer_proposal.transfers
       );
 
       return {
         ...mapProposalBase(dto, "treasury"),
-        agoraPostId: agoraPostId.toString(),
+        agoraPostId: proposalMetadataDTO.transfer_proposal.agora_post_id.toString(),
         transfers,
       };
     });
@@ -93,10 +93,7 @@ export class TreasuryDAO extends BaseDAO {
     return proposals;
   };
 
-  public propose = async ({
-    agoraPostId,
-    transfers,
-  }: TreasuryProposeArgs) => {
+  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs) => {
     const contract = await getContract(this.tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
