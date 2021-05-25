@@ -2,14 +2,13 @@ import React, { useCallback } from "react";
 import {
   Grid,
   styled,
-  Switch,
   Typography,
   Paper,
   DialogContent,
   DialogContentText,
 } from "@material-ui/core";
 import { Form, Field, FieldArray, FormikProps, FormikErrors } from "formik";
-import { TextField } from "formik-material-ui";
+import { TextField, Switch } from "formik-material-ui";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
 import { useNotification } from "modules/common/hooks/useNotification";
 import {
@@ -103,18 +102,20 @@ const CustomTextField = styled(TextField)({
 export const EMPTY_LIST_ITEM: Registry = { key: "", value: "" };
 
 export const INITIAL_REGISTRY_FORM_VALUES: UpdateRegistryDialogValues = {
-  list: [EMPTY_LIST_ITEM],
-  agoraPostId: "0"
+  registryForm: {
+    list: [EMPTY_LIST_ITEM],
+    isBatch: false
+  }
 };
 
 export const validateUpdateRegistryForm = (
   values: UpdateRegistryDialogValues
 ): FormikErrors<UpdateRegistryDialogValues> => {
   const errors: Record<string, any> = {
-    list: values.list.map(() => ({})),
+    list: values.registryForm.list.map(() => ({})),
   };
 
-  values.list.forEach((item, i) => {
+  values.registryForm.list.forEach((item, i) => {
     if (!item.key) {
       errors.list[i].key = "Required";
     }
@@ -128,19 +129,21 @@ export const validateUpdateRegistryForm = (
 };
 
 export interface UpdateRegistryDialogValues {
-  list: Registry[];
-  agoraPostId: string;
+  registryForm: {
+    list: Registry[];
+    isBatch: boolean;
+  }
 }
 
 export const UpdateRegistryDialog: React.FC<
   FormikProps<UpdateRegistryDialogValues>
-> = ({ values, setFieldValue, errors, touched, setTouched }) => {
-  const [isBatch, setIsBatch] = React.useState(false);
+> = ({ values, setFieldValue, errors, touched }) => {
   const [activeItem, setActiveItem] = React.useState(1);
   const openNotification = useNotification();
 
-  const keyError = (errors.list?.[activeItem - 1] as any)?.key;
-  const valueError = (errors.list?.[activeItem - 1] as any)?.value;
+  const keyError = (errors.registryForm?.list?.[activeItem - 1] as any)?.key;
+  const valueError = (errors.registryForm?.list?.[activeItem - 1] as any)?.value;
+  console.log(values)
 
   const importList = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,8 +162,8 @@ export const UpdateRegistryDialog: React.FC<
             });
             return;
           }
-          setIsBatch(true);
-          values.list = registryListParsed;
+          setFieldValue("registryForm.isBatch", true);
+          values.registryForm.list = registryListParsed;
         } catch (e) {
           openNotification({
             message: "Error while parsing JSON",
@@ -170,7 +173,7 @@ export const UpdateRegistryDialog: React.FC<
         }
       }
     },
-    [openNotification, values]
+    [openNotification, setFieldValue, values.registryForm]
   );
 
   return (
@@ -180,20 +183,12 @@ export const UpdateRegistryDialog: React.FC<
           <ProposalFormListItem container direction="row">
             <Grid item xs={6}>
               <Typography variant="subtitle1" color="textSecondary">
-                Add Batches?
+                Batch Update?
               </Typography>
             </Grid>
             <Grid item xs={6}>
               <SwitchContainer item xs={12} justify="flex-end">
-                <Switch
-                  checked={isBatch}
-                  onChange={() => {
-                    setIsBatch(!isBatch);
-                    return;
-                  }}
-                  name="checkedA"
-                  inputProps={{ "aria-label": "secondary checkbox" }}
-                />
+                <Field component={Switch} type="checkbox" name="registryForm.isBatch" />
               </SwitchContainer>
             </Grid>
           </ProposalFormListItem>
@@ -201,12 +196,12 @@ export const UpdateRegistryDialog: React.FC<
           <Form autoComplete="off">
             <>
               <FieldArray
-                name="list"
+                name="registryForm.list"
                 render={(arrayHelpers) => (
                   <>
-                    {isBatch ? (
+                    {values.registryForm.isBatch ? (
                       <BatchBar container direction="row" wrap="nowrap">
-                        {values.list.map((_, index) => {
+                        {values.registryForm.list.map((_, index) => {
                           return (
                             <TransferActive
                               item
@@ -231,7 +226,7 @@ export const UpdateRegistryDialog: React.FC<
                         <AddButton
                           onClick={() => {
                             arrayHelpers.insert(
-                              values.list.length + 1,
+                              values.registryForm.list.length + 1,
                               EMPTY_LIST_ITEM
                             );
                             setActiveItem(activeItem + 1);
@@ -251,12 +246,12 @@ export const UpdateRegistryDialog: React.FC<
                       <Grid item xs={6}>
                         <SwitchContainer item xs={12} justify="flex-end">
                           <Field
-                            name={`list.${activeItem - 1}.key`}
+                            name={`registryForm.list.${activeItem - 1}.key`}
                             type="string"
                             placeholder="Type a Key"
                             component={CustomTextField}
                           />
-                          {keyError && touched.list?.[activeItem - 1]?.key ? (
+                          {keyError && touched.registryForm?.list?.[activeItem - 1]?.key ? (
                             <ErrorText>{keyError}</ErrorText>
                           ) : null}
                         </SwitchContainer>
@@ -283,31 +278,14 @@ export const UpdateRegistryDialog: React.FC<
                       </Grid>
                       <Grid item xs={12}>
                         <Field
-                          name={`list.${activeItem - 1}.value`}
+                          name={`registryForm.list.${activeItem - 1}.value`}
                           multiline
                           type="string"
                           rows={6}
                           placeholder="Type a value"
                           component={CustomTextarea}
-                          onChange={(e: any) => {
-                            setFieldValue(
-                              `list.${activeItem - 1}.value`,
-                              e.target.value
-                            );
-
-                            const listVals: any = touched.list;
-                            listVals[activeItem - 1] = {
-                              ...listVals[activeItem - 1],
-                              value: true,
-                            };
-
-                            setTouched({
-                              ...touched,
-                              list: listVals,
-                            });
-                          }}
                         />
-                        {valueError && touched.list?.[activeItem - 1]?.value ? (
+                        {valueError && touched.registryForm?.list?.[activeItem - 1]?.value ? (
                           <ErrorText>{valueError}</ErrorText>
                         ) : null}
                       </Grid>

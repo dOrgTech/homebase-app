@@ -4,7 +4,6 @@ import {
   INITIAL_TRANSFER_FORM_VALUES,
   NewTreasuryProposalDialog,
   TreasuryProposalFormValues,
-  validateTreasuryProposalForm,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef } from "react";
 import { useParams } from "react-router";
@@ -96,7 +95,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
           // validate={validateTreasuryProposalForm}
         >
           {(formikProps) => {
-            valuesRef.current = formikProps.values
+            valuesRef.current = formikProps.values;
 
             return (
               <>
