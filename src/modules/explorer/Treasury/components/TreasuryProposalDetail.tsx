@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
   FA2Transfer,
-  TransferProposalWithStatus,
+  TreasuryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
@@ -11,14 +11,14 @@ import { mutezToXtz } from "services/contracts/utils";
 import { TransferBadge } from "./TransferBadge";
 
 interface Props {
-  proposal: TransferProposalWithStatus;
+  proposal: TreasuryProposalWithStatus;
 }
 
 const Container = styled(Grid)({
   paddingTop: 21,
 });
 
-export const TransferDetail: React.FC<Props> = ({ proposal }) => {
+export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
   const theme = useTheme();
   const { id: daoId } = useParams<{
     proposalId: string;

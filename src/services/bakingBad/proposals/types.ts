@@ -1,3 +1,5 @@
+import { DAOTemplate } from "modules/creator/state";
+
 export type MutezTransfer = {
   prim: string;
   type: string;
@@ -51,21 +53,9 @@ export type ProposalDTO = {
           value: string;
         },
         {
-          prim: "nat";
-          type: "nat";
-          name: "period_num";
-          value: string;
-        },
-        {
           prim: "address";
           type: "address";
           name: "proposer";
-          value: string;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "proposer_fixed_fee_in_token";
           value: string;
         },
         {
@@ -75,8 +65,14 @@ export type ProposalDTO = {
           value: string;
         },
         {
-          prim: "timestamp";
-          type: "timestamp";
+          prim: "nat";
+          type: "nat";
+          name: "quorum_threshold";
+          value: string;
+        },
+        {
+          prim: "nat";
+          type: "nat";
           name: "start_date";
           value: string;
         },
@@ -90,7 +86,14 @@ export type ProposalDTO = {
           prim: "list";
           type: "list";
           name: "voters";
-        }
+          value: any;
+        },
+        {
+          prim: "nat";
+          type: "nat";
+          name: "voting_stage_num";
+          value: string;
+        },
       ];
     };
     key_hash: "exprtZqjgqRrZr2h8Hd43wFQqnBxtNHH2UCuwaD1oEpYnJjg1DJmBH";
@@ -142,11 +145,12 @@ export interface Proposal {
   upVotes: number;
   downVotes: number;
   startDate: string;
-  agoraPostId: string;
+  
+  quorumTreshold: string;
   proposer: string;
-  cycle: number;
+  period: number;
   proposerFrozenTokens: string;
-  type: "registryUpdate" | "transfer";
+  type: DAOTemplate;
   voters: {
     address: string;
     support: boolean;
@@ -154,25 +158,28 @@ export interface Proposal {
   }[];
 }
 
-export interface TransferProposal extends Proposal {
+export interface TreasuryProposal extends Proposal {
   transfers: Transfer[];
+  agoraPostId: string;
 }
 
-export interface RegistryUpdateProposal extends Proposal {
+export interface RegistryProposal extends Proposal {
   list: {
     key: string;
     value: string;
   }[];
+  transfers: Transfer[];
+  agoraPostId: string;
 }
 export interface ProposalWithStatus extends Proposal {
   status: ProposalStatus;
 }
 
-export interface RegistryProposalWithStatus extends RegistryUpdateProposal {
+export interface RegistryProposalWithStatus extends RegistryProposal {
   status: ProposalStatus;
 }
 
-export interface TransferProposalWithStatus extends TransferProposal {
+export interface TreasuryProposalWithStatus extends TreasuryProposal {
   status: ProposalStatus;
 }
 

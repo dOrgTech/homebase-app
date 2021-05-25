@@ -15,14 +15,14 @@ import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import {
   ProposalStatus,
   RegistryProposalWithStatus,
-  TransferProposalWithStatus,
+  TreasuryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
 import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
 import { RectangleContainer } from "./styled/RectangleHeader";
 import { VotersProgress } from "./VotersProgress";
-import { TransferDetail } from "../Treasury/components/TransferDetail";
-import { RegistryUpdateDetail } from "../Registry/components/RegistryUpdateDetail";
+import { TreasuryProposalDetail } from "../Treasury/components/TreasuryProposalDetail";
+import { RegistryProposalDetail } from "../Registry/components/RegistryProposalDetail";
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal";
 import { ViewButton } from "./ViewButton";
 import { BaseDAO } from "services/contracts/baseDAO";
@@ -101,14 +101,14 @@ export const ProposalDetails: React.FC = () => {
   const theme = useTheme();
   const { data: proposalData } = useProposal(daoId, proposalId);
   const proposal = proposalData as
-    | TransferProposalWithStatus
+    | TreasuryProposalWithStatus
     | RegistryProposalWithStatus
     | undefined;
   const { data: dao } = useDAO(daoId);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { mutate: dropProposal } = useDropProposal();
 
-  const proposalCycle = proposal ? proposal.cycle : "-";
+  const proposalCycle = proposal ? proposal.period : "-";
   const daoName = dao ? dao.metadata.unfrozenToken.name : "";
 
   return (
@@ -206,12 +206,12 @@ export const ProposalDetails: React.FC = () => {
                 </DescriptionText>
               </Grid>
               {proposal ? (
-                proposal.type === "transfer" ? (
-                  <TransferDetail
-                    proposal={proposal as TransferProposalWithStatus}
+                proposal.type === "treasury" ? (
+                  <TreasuryProposalDetail
+                    proposal={proposal as TreasuryProposalWithStatus}
                   />
                 ) : (
-                  <RegistryUpdateDetail
+                  <RegistryProposalDetail
                     proposal={proposal as RegistryProposalWithStatus}
                   />
                 )

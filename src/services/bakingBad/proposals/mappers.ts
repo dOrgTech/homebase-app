@@ -1,30 +1,26 @@
 import {
+  Proposal,
   ProposalDTO,
-  RegistryUpdateProposal,
+  RegistryProposal,
   Transfer,
   Voter,
   VotersDTO,
 } from "./types";
-import { Expr, Parser } from "@taquito/michel-codec";
 import { bytes2Char } from "@taquito/tzip16";
 import {
   PMFA2TransferType,
-  PMRegistryUpdateProposal,
-  PMTransferProposal,
+  PMRegistryProposal,
+  PMTreasuryProposal,
   PMXTZTransferType,
   ProposalMetadata,
 } from "services/contracts/baseDAO/registryDAO/types";
-import proposeCode from "../../contracts/baseDAO/registryDAO/michelson/propose";
-import { Schema } from "@taquito/michelson-encoder";
 import { TransferParams } from "services/contracts/baseDAO/types";
 import { xtzToMutez } from "services/contracts/utils";
-
-const parser = new Parser();
-const registryProposeSchema = new Schema(parser.parseData(proposeCode) as Expr);
+import { DAOTemplate } from "modules/creator/state";
 
 export const extractRegistryTransfersData = (
-  pm: PMTransferProposal
-): { transfers: Transfer[]; agoraPostId: number } => {
+  pm: PMTreasuryProposal
+): { transfers: Transfer[]; agoraPostId: string } => {
   const agoraPostId = pm.transfer_proposal.agora_post_id;
   const transfers = pm.transfer_proposal.transfers.map((transfer) => {
     if (transfer.hasOwnProperty("xtz_transfer_type")) {
@@ -50,21 +46,22 @@ export const extractRegistryTransfersData = (
 
   return {
     transfers,
-    agoraPostId: Number(agoraPostId),
+    agoraPostId,
   };
 };
 
 export const extractTransfersData = (
   pm: ProposalMetadata
-): { transfers: Transfer[]; agoraPostId: number } => {
-  const agoraPostId = (pm as any).agora_post_id;
+): { transfers: Transfer[]; agoraPostId: string } => {
+  const agoraPostId = (pm as any).agora_post_id.toString();
+  console.log("YEAH: ", pm);
   const transfers = (pm as any).transfers.map((transfer: any) => {
-    if (transfer.hasOwnProperty("xtz_transfer")) {
+    if (transfer.hasOwnProperty("xtz_transfer_type")) {
       const xtzTransfer = transfer;
 
       return {
-        amount: xtzTransfer.xtz_transfer.amount,
-        beneficiary: xtzTransfer.xtz_transfer.recipient,
+        amount: xtzTransfer.xtz_transfer_type.amount,
+        beneficiary: xtzTransfer.xtz_transfer_type.recipient,
         type: "XTZ" as const,
       };
     } else {
@@ -82,7 +79,7 @@ export const extractTransfersData = (
 
   return {
     transfers,
-    agoraPostId: Number(agoraPostId),
+    agoraPostId,
   };
 };
 
@@ -101,8 +98,8 @@ export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
 };
 
 export const mapProposalRegistryList = (
-  pm: PMRegistryUpdateProposal
-): { registryDiff: RegistryUpdateProposal["list"]; agoraPostId: string } => {
+  pm: PMRegistryProposal
+): { registryDiff: RegistryProposal["list"]; agoraPostId: string } => {
   console.log(pm[0]);
 
   const agoraPostId = pm[0].agora_post_id;
@@ -117,32 +114,21 @@ export const mapProposalRegistryList = (
   };
 };
 
-export const mapTransferProposals = (dto: ProposalDTO[number]) => {
-  const proposalMetadata = dto.data.value.children[1].value;
-
-  const proposalMetadataNoBraces = proposalMetadata.substr(
-    2,
-    proposalMetadata.length - 4
-  );
-  const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-  const proposalMetadataDTO: ProposalMetadata = registryProposeSchema.Execute(
-    michelsonExpr
-  );
-
-  const { agoraPostId, transfers } = extractTransfersData(proposalMetadataDTO);
-
+export const mapProposalBase = (
+  dto: ProposalDTO[number],
+  template: DAOTemplate
+): Proposal => {
   return {
     id: dto.data.key.value,
-    upVotes: Number(dto.data.value.children[7].value),
+    upVotes: Number(dto.data.value.children[6].value),
     downVotes: Number(dto.data.value.children[0].value),
-    startDate: dto.data.value.children[6].value,
-    agoraPostId: agoraPostId.toString(),
-    proposer: dto.data.value.children[3].value,
-    proposerFrozenTokens: dto.data.value.children[5].value,
-    transfers,
-    cycle: Number(dto.data.value.children[2].value),
-    voters: dtoToVoters(dto.data.value.children[8]),
-    type: "transfer" as const,
+    proposer: dto.data.value.children[2].value,
+    startDate: dto.data.value.children[5].value,
+    quorumTreshold: dto.data.value.children[4].value,
+    period: Number(dto.data.value.children[8].value),
+    proposerFrozenTokens: dto.data.value.children[3].value,
+    type: template,
+    voters: dtoToVoters(dto.data.value.children[7]),
   };
 };
 

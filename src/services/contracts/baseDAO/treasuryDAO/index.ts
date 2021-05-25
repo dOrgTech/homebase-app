@@ -9,13 +9,13 @@ import { DAOListMetadata } from "../../metadataCarrier/types";
 import { Schema } from "@taquito/michelson-encoder";
 import { Parser, Expr } from "@taquito/michel-codec";
 import { BaseDAO, getContract } from "..";
-import { TransferProposal } from "services/bakingBad/proposals/types";
+import { TreasuryProposal } from "services/bakingBad/proposals/types";
 import { TreasuryExtraDTO, TreasuryProposeArgs } from "./types";
 import { getExtra } from "services/bakingBad/extra";
 import proposeCode from "./michelson/propose";
 import {
-  dtoToVoters,
   extractTransfersData,
+  mapProposalBase,
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { ProposalMetadata } from "../registryDAO/types";
@@ -58,7 +58,7 @@ export class TreasuryDAO extends BaseDAO {
     });
   };
 
-  public proposals = async (): Promise<TransferProposal[]> => {
+  public proposals = async (): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(
       proposalsMapNumber,
@@ -84,17 +84,9 @@ export class TreasuryDAO extends BaseDAO {
       );
 
       return {
-        id: dto.data.key.value,
-        upVotes: Number(dto.data.value.children[7].value),
-        downVotes: Number(dto.data.value.children[0].value),
-        startDate: dto.data.value.children[6].value,
+        ...mapProposalBase(dto, "treasury"),
         agoraPostId: agoraPostId.toString(),
-        proposer: dto.data.value.children[3].value,
-        proposerFrozenTokens: dto.data.value.children[5].value,
         transfers,
-        cycle: Number(dto.data.value.children[2].value),
-        voters: dtoToVoters(dto.data.value.children[8]),
-        type: "transfer" as const,
       };
     });
 

@@ -11,7 +11,7 @@ import { formatNumber } from "../utils/FormatNumber";
 import { UpVotesDialog } from "./VotersDialog";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { TransferProposalWithStatus } from "services/bakingBad/proposals/types";
+import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { ProgressBar as CustomBar } from "modules/explorer/components";
 import { useQuorumTreshold } from "../hooks/useQuorumTreshold";
 
@@ -48,7 +48,7 @@ export const VotersProgress: React.FC<VotersData> = ({
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: proposalData } = useProposal(daoId, proposalId);
-  const proposal = proposalData as TransferProposalWithStatus | undefined;
+  const proposal = proposalData as TreasuryProposalWithStatus | undefined;
   const { data: dao } = useDAO(daoId);
   const quorumTreshold = useQuorumTreshold(dao);
 

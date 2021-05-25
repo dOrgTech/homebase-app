@@ -58,7 +58,7 @@ export const HistoryTable: React.FC = () => {
             <GenericTableContainer key={`token-${i}`}>
               <TreasuryHistoryRow
                 name={transfer.token.symbol}
-                amount={(Number(transfer.amount) / Math.pow(10, transfer.token.decimals)).toString()}
+                amount={transfer.amount}
                 recipient={transfer.to}
                 date={transfer.timestamp}
                 hash={transfer.hash}

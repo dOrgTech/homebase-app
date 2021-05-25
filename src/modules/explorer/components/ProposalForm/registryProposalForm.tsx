@@ -9,7 +9,7 @@ import {
 import {
   INITIAL_TRANSFER_FORM_VALUES,
   NewTreasuryProposalDialog,
-  TransferProposalFormValues,
+  TreasuryProposalFormValues,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef, useState } from "react";
 import { useParams } from "react-router";
@@ -142,7 +142,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                     </Grid>
                   </ProposalFormListItem>
                   <NewTreasuryProposalDialog
-                    {...((formikProps as unknown) as FormikProps<TransferProposalFormValues>)}
+                    {...((formikProps as unknown) as FormikProps<TreasuryProposalFormValues>)}
                   />
                 </TabPanel>
                 <TabPanel value={selectedTab} index={1}>

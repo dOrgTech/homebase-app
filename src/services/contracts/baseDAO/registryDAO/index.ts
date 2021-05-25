@@ -1,7 +1,7 @@
 import { Parser, Expr } from "@taquito/michel-codec";
 import {
-  dtoToVoters,
   extractRegistryTransfersData,
+  mapProposalBase,
   mapProposalRegistryList,
   mapTransfersArgs,
 } from "./../../../bakingBad/proposals/mappers";
@@ -16,17 +16,14 @@ import { ConstructorParams, getContract } from "..";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { BaseDAO } from "..";
 import {
-  PMRegistryUpdateProposal,
-  PMTransferProposal,
+  PMRegistryProposal,
+  PMTreasuryProposal,
   ProposalMetadata,
   RegistryExtra,
   RegistryExtraDTO,
   RegistryProposeArgs,
 } from "./types";
-import {
-  RegistryUpdateProposal,
-  TransferProposal,
-} from "services/bakingBad/proposals/types";
+import { RegistryProposal, Transfer } from "services/bakingBad/proposals/types";
 import { getExtra } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
@@ -121,24 +118,26 @@ export class RegistryDAO extends BaseDAO {
     const schema = new Schema(michelsonType as Expr);
     const dataToEncode: Record<string, any> = {};
 
-    if(!transfer_proposal && !normal_proposal) {
-      throw new Error("No proposal arguments passed")
+    if (!transfer_proposal && !normal_proposal) {
+      throw new Error("No proposal arguments passed");
     }
 
     if (transfer_proposal) {
       dataToEncode.transfer_proposal = {
         transfers: mapTransfersArgs(transfer_proposal.transfers, this.address),
-        agora_post_id: agoraPostId
+        agora_post_id: agoraPostId,
       };
     }
 
     if (normal_proposal) {
-      dataToEncode.normal_proposal = {
-        registry_diff: normal_proposal.registry_diff.map((item) => [
-          char2Bytes(item.key),
-          char2Bytes(item.value),
-        ]),
-        agora_post_id: agoraPostId,
+      dataToEncode.configuration_proposal = {
+        normal_proposal: {
+          registry_diff: normal_proposal.registry_diff.map((item) => [
+            char2Bytes(item.key),
+            char2Bytes(item.value),
+          ]),
+          agora_post_id: agoraPostId,
+        },
       };
     }
 
@@ -159,9 +158,7 @@ export class RegistryDAO extends BaseDAO {
     return result;
   };
 
-  public proposals = async (): Promise<
-    (TransferProposal | RegistryUpdateProposal)[]
-  > => {
+  public proposals = async (): Promise<RegistryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(
       proposalsMapNumber,
@@ -182,45 +179,39 @@ export class RegistryDAO extends BaseDAO {
         michelsonExpr
       );
 
+      let agoraPostId = "0";
+      let transfers: Transfer[] = [];
+      let list: {
+        key: string;
+        value: string;
+      }[] = [];
+
       if (proposalMetadataDTO.hasOwnProperty("transfer_proposal")) {
-        const { agoraPostId, transfers } = extractRegistryTransfersData(
-          proposalMetadataDTO as PMTransferProposal
+        const extracted = extractRegistryTransfersData(
+          proposalMetadataDTO as PMTreasuryProposal
         );
 
-        return {
-          id: dto.data.key.value,
-          upVotes: Number(dto.data.value.children[7].value),
-          downVotes: Number(dto.data.value.children[0].value),
-          startDate: dto.data.value.children[6].value,
-          agoraPostId: agoraPostId.toString(),
-          proposer: dto.data.value.children[3].value,
-          proposerFrozenTokens: dto.data.value.children[5].value,
-          transfers,
-          cycle: Number(dto.data.value.children[2].value),
-          voters: dtoToVoters(dto.data.value.children[8]),
-          type: "transfer" as const,
-        };
-      } else {
-        const { agoraPostId, registryDiff } = mapProposalRegistryList(
-          proposalMetadataDTO as PMRegistryUpdateProposal
-        );
-
-        return {
-          id: dto.data.key.value,
-          upVotes: Number(dto.data.value.children[7].value),
-          downVotes: Number(dto.data.value.children[0].value),
-          startDate: dto.data.value.children[6].value,
-          agoraPostId: agoraPostId,
-          proposer: dto.data.value.children[3].value,
-          proposerFrozenTokens: dto.data.value.children[5].value,
-          list: registryDiff,
-          cycle: Number(dto.data.value.children[2].value),
-          voters: dtoToVoters(dto.data.value.children[8]),
-          type: "registryUpdate" as const,
-        };
+        agoraPostId = extracted.agoraPostId;
+        transfers = extracted.transfers;
       }
+
+      if (proposalMetadataDTO.hasOwnProperty("configuration_proposal")) {
+        const extracted = mapProposalRegistryList(
+          proposalMetadataDTO as PMRegistryProposal
+        );
+
+        agoraPostId = extracted.agoraPostId;
+        list = extracted.registryDiff;
+      }
+
+      return {
+        ...mapProposalBase(dto, "registry"),
+        transfers,
+        list,
+        agoraPostId,
+      };
     });
 
-    return proposals;
+    return proposals as any;
   };
 }
