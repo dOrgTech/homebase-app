@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import {
   Grid,
   styled,
-  Switch,
   Typography,
   Paper,
   DialogContent,
@@ -13,7 +12,7 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import { Form, Field, FieldArray, FormikErrors, FormikProps } from "formik";
-import { TextField } from "formik-material-ui";
+import { TextField, Switch } from "formik-material-ui";
 import { Autocomplete } from "formik-material-ui-lab";
 
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
@@ -190,6 +189,7 @@ export interface FormTransferParams {
 export interface TreasuryProposalFormValues {
   transferForm: {
     transfers: FormTransferParams[];
+    isBatch: boolean;
   };
 }
 
@@ -209,7 +209,8 @@ export const EMPTY_TRANSFER: FormTransferParams = {
 
 export const INITIAL_TRANSFER_FORM_VALUES: TreasuryProposalFormValues = {
   transferForm: {
-    transfers: [EMPTY_TRANSFER]
+    transfers: [EMPTY_TRANSFER],
+    isBatch: false
   },
 };
 
@@ -248,10 +249,9 @@ export const validateTreasuryProposalForm = (
 
 export const NewTreasuryProposalDialog: React.FC<
   FormikProps<TreasuryProposalFormValues>
-> = ({ values, errors, touched }) => {
+> = ({ values, errors, touched, setFieldValue }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isBatch, setIsBatch] = React.useState(false);
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const { id: daoId } = useParams<{
     id: string;
@@ -336,7 +336,7 @@ export const NewTreasuryProposalDialog: React.FC<
             return;
           }
 
-          setIsBatch(true);
+          setFieldValue("transferForm.isBatch", true)
           values.transferForm.transfers = transactionsParsed;
         } catch (e) {
           openNotification({
@@ -347,7 +347,7 @@ export const NewTreasuryProposalDialog: React.FC<
         }
       }
     },
-    [openNotification, values]
+    [openNotification, setFieldValue, values.transferForm]
   );
 
   return (
@@ -362,15 +362,7 @@ export const NewTreasuryProposalDialog: React.FC<
             </Grid>
             <Grid item xs={6}>
               <SwitchContainer item xs={12} justify="flex-end">
-                <Switch
-                  checked={isBatch}
-                  onChange={() => {
-                    setIsBatch(!isBatch);
-                    return;
-                  }}
-                  name="checkedA"
-                  inputProps={{ "aria-label": "secondary checkbox" }}
-                />
+                <Field component={Switch} type="checkbox" name="transferForm.isBatch" />
               </SwitchContainer>
             </Grid>
           </ProposalFormListItem>
@@ -381,7 +373,7 @@ export const NewTreasuryProposalDialog: React.FC<
                 name="transferForm.transfers"
                 render={(arrayHelpers) => (
                   <>
-                    {isBatch ? (
+                    {values.transferForm.isBatch ? (
                       <BatchBar container direction="row" wrap="nowrap">
                         {values.transferForm.transfers.map((_, index) => {
                           return (

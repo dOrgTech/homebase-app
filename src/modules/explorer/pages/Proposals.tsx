@@ -22,7 +22,7 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
-import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
+// import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { RegistryProposalFormContainer } from "../components/ProposalForm/registryProposalForm";
 import { useState } from "react";
 import { TreasuryProposalFormContainer } from "../components/ProposalForm/treasuryProposalForm";
@@ -51,7 +51,7 @@ export const Proposals: React.FC = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
-  const shouldDisable = useIsProposalButtonDisabled(id)
+  // const shouldDisable = useIsProposalButtonDisabled(id)
   const [open, setOpen] = useState(false)
 
   const { data: proposalsData } = useProposals(dao && dao.address);

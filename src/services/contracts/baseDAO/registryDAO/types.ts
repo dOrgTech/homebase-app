@@ -13,10 +13,8 @@ export interface RegistryExtra extends Extra {
 }
 
 export interface RegistryProposeArgs {
-  transfer_proposal?: {
+  transfer_proposal: {
     transfers: TransferParams[];
-  };
-  normal_proposal?: {
     registry_diff: RegistryItem[];
   };
   agoraPostId: number;

@@ -1,18 +1,14 @@
 import {
   Proposal,
   ProposalDTO,
-  RegistryProposal,
   Transfer,
   Voter,
   VotersDTO,
 } from "./types";
-import { bytes2Char } from "@taquito/tzip16";
 import {
   PMFA2TransferType,
-  PMRegistryProposal,
   PMTreasuryProposal,
   PMXTZTransferType,
-  ProposalMetadata,
 } from "services/contracts/baseDAO/registryDAO/types";
 import { TransferParams } from "services/contracts/baseDAO/types";
 import { xtzToMutez } from "services/contracts/utils";

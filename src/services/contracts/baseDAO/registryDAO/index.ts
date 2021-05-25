@@ -107,28 +107,19 @@ export class RegistryDAO extends BaseDAO {
   public propose = async ({
     agoraPostId,
     transfer_proposal,
-    normal_proposal,
   }: RegistryProposeArgs) => {
     const contract = await getContract(this.tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
 
-    if (!transfer_proposal && !normal_proposal) {
-      throw new Error("No proposal arguments passed");
-    }
-
     const dataToEncode = {
       transfer_proposal: {
-        transfers: transfer_proposal
-          ? mapTransfersArgs(transfer_proposal.transfers, this.address)
-          : [],
-        registry_diff: normal_proposal
-          ? normal_proposal.registry_diff.map((item) => [
-              char2Bytes(item.key),
-              char2Bytes(item.value),
-            ])
-          : [],
+        transfers: mapTransfersArgs(transfer_proposal.transfers, this.address),
+        registry_diff: transfer_proposal.registry_diff.map((item) => [
+          char2Bytes(item.key),
+          char2Bytes(item.value),
+        ]),
         agora_post_id: agoraPostId,
       },
     };
@@ -159,38 +150,43 @@ export class RegistryDAO extends BaseDAO {
 
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
 
-    const proposals = proposalsDTO.map((dto) => {
-      const proposalMetadata = dto.data.value.children[1].value;
+    const proposals = proposalsDTO
+      .map((dto) => {
+        const proposalMetadata = dto.data.value.children[1].value;
 
-      const proposalMetadataNoBraces = proposalMetadata.substr(
-        2,
-        proposalMetadata.length - 4
-      );
-      const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-      const proposalMetadataDTO: PMRegistryProposal = schema.Execute(
-        michelsonExpr
-      );
+        const proposalMetadataNoBraces = proposalMetadata.substr(
+          2,
+          proposalMetadata.length - 4
+        );
+        const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
+        const proposalMetadataDTO: PMRegistryProposal = schema.Execute(
+          michelsonExpr
+        );
 
-      if(!proposalMetadataDTO["0"].transfers) {
-        return undefined
-      }
+        if (!proposalMetadataDTO["0"].transfers) {
+          return undefined;
+        }
 
-      const transfers = extractTransfersData(proposalMetadataDTO[0].transfers);
-      const agoraPostId = proposalMetadataDTO[0].agora_post_id;
-      const registryDiff = proposalMetadataDTO[0].registry_diff.map((item) => ({
-        key: bytes2Char(item[0]),
-        value: bytes2Char(item[1]),
-      }));
+        const transfers = extractTransfersData(
+          proposalMetadataDTO[0].transfers
+        );
+        const agoraPostId = proposalMetadataDTO[0].agora_post_id;
+        const registryDiff = proposalMetadataDTO[0].registry_diff.map(
+          (item) => ({
+            key: bytes2Char(item[0]),
+            value: bytes2Char(item[1]),
+          })
+        );
 
-      return {
-        ...mapProposalBase(dto, "registry"),
-        transfers,
-        list: registryDiff,
-        agoraPostId
-      };
-    })
-    //TODO: fix these types
-    .filter(p => !!p);
+        return {
+          ...mapProposalBase(dto, "registry"),
+          transfers,
+          list: registryDiff,
+          agoraPostId,
+        };
+      })
+      //TODO: fix these types
+      .filter((p) => !!p);
 
     return proposals as any[];
   };
