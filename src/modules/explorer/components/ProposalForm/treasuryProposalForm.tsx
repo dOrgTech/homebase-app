@@ -3,8 +3,8 @@ import { Field, Formik, FormikProps } from "formik";
 import {
   INITIAL_TRANSFER_FORM_VALUES,
   NewTreasuryProposalDialog,
-  TransferProposalFormValues,
-  validateTransferProposalForm,
+  TreasuryProposalFormValues,
+  validateTreasuryProposalForm,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef } from "react";
 import { useParams } from "react-router";
@@ -51,7 +51,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
   const valuesRef = useRef<any>();
 
   const onSubmit = useCallback(
-    async (values: TransferProposalFormValues) => {
+    async (values: TreasuryProposalFormValues) => {
       await connectIfNotConnected(tezos, connect);
 
       if (dao && daoHoldings && valuesRef.current) {
@@ -93,7 +93,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
         <Formik
           initialValues={initialValues}
           onSubmit={onSubmit}
-          // validate={validateTransferProposalForm}
+          // validate={validateTreasuryProposalForm}
         >
           {(formikProps) => {
             valuesRef.current = formikProps.values
@@ -101,7 +101,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
             return (
               <>
                 <NewTreasuryProposalDialog
-                  {...((formikProps as unknown) as FormikProps<TransferProposalFormValues>)}
+                  {...((formikProps as unknown) as FormikProps<TreasuryProposalFormValues>)}
                 />
 
                 <ProposalFormListItem container direction="row">

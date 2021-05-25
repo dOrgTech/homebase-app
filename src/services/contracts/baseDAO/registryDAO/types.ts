@@ -258,14 +258,14 @@ export interface PMFA2TransferType {
   ];
 }
 
-export interface PMTransferProposal {
+export interface PMTreasuryProposal {
   transfer_proposal: {
     agora_post_id: "0";
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
   };
 }
 
-export interface PMRegistryUpdateProposal {
+export interface PMRegistryProposal {
   "0": {
     agora_post_id: string;
     registry_diff: 
@@ -274,7 +274,8 @@ export interface PMRegistryUpdateProposal {
         "1": string;
       }[]
     ;
-  };
+    transfers: (PMXTZTransferType | PMFA2TransferType)[];
+  }
 }
 
-export type ProposalMetadata = PMTransferProposal | PMRegistryUpdateProposal;
+export type ProposalMetadata = PMTreasuryProposal | PMRegistryProposal;

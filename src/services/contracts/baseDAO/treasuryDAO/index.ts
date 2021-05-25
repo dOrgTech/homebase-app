@@ -9,16 +9,16 @@ import { DAOListMetadata } from "../../metadataCarrier/types";
 import { Schema } from "@taquito/michelson-encoder";
 import { Parser, Expr } from "@taquito/michel-codec";
 import { BaseDAO, getContract } from "..";
-import { TransferProposal } from "services/bakingBad/proposals/types";
+import { TreasuryProposal } from "services/bakingBad/proposals/types";
 import { TreasuryExtraDTO, TreasuryProposeArgs } from "./types";
 import { getExtra } from "services/bakingBad/extra";
 import proposeCode from "./michelson/propose";
 import {
-  dtoToVoters,
   extractTransfersData,
+  mapProposalBase,
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
-import { ProposalMetadata } from "../registryDAO/types";
+import { PMTreasuryProposal } from "../registryDAO/types";
 
 const parser = new Parser();
 
@@ -58,7 +58,7 @@ export class TreasuryDAO extends BaseDAO {
     });
   };
 
-  public proposals = async (): Promise<TransferProposal[]> => {
+  public proposals = async (): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(
       proposalsMapNumber,
@@ -75,36 +75,25 @@ export class TreasuryDAO extends BaseDAO {
         proposalMetadata.length - 4
       );
       const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-      const proposalMetadataDTO: ProposalMetadata = schema.Execute(
+      const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(
         michelsonExpr
       );
 
-      const { agoraPostId, transfers } = extractTransfersData(
-        proposalMetadataDTO
+      const transfers = extractTransfersData(
+        proposalMetadataDTO.transfer_proposal.transfers
       );
 
       return {
-        id: dto.data.key.value,
-        upVotes: Number(dto.data.value.children[7].value),
-        downVotes: Number(dto.data.value.children[0].value),
-        startDate: dto.data.value.children[6].value,
-        agoraPostId: agoraPostId.toString(),
-        proposer: dto.data.value.children[3].value,
-        proposerFrozenTokens: dto.data.value.children[5].value,
+        ...mapProposalBase(dto, "treasury"),
+        agoraPostId: proposalMetadataDTO.transfer_proposal.agora_post_id.toString(),
         transfers,
-        cycle: Number(dto.data.value.children[2].value),
-        voters: dtoToVoters(dto.data.value.children[8]),
-        type: "transfer" as const,
       };
     });
 
     return proposals;
   };
 
-  public propose = async ({
-    agoraPostId,
-    transfers,
-  }: TreasuryProposeArgs) => {
+  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs) => {
     const contract = await getContract(this.tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);

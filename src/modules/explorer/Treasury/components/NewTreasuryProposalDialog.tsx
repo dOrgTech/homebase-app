@@ -187,7 +187,7 @@ export interface FormTransferParams {
   asset: DAOHolding;
 }
 
-export interface TransferProposalFormValues {
+export interface TreasuryProposalFormValues {
   transferForm: {
     transfers: FormTransferParams[];
   };
@@ -207,16 +207,16 @@ export const EMPTY_TRANSFER: FormTransferParams = {
   },
 };
 
-export const INITIAL_TRANSFER_FORM_VALUES: TransferProposalFormValues = {
+export const INITIAL_TRANSFER_FORM_VALUES: TreasuryProposalFormValues = {
   transferForm: {
     transfers: [EMPTY_TRANSFER]
   },
 };
 
-export const validateTransferProposalForm = (
-  values: TransferProposalFormValues,
+export const validateTreasuryProposalForm = (
+  values: TreasuryProposalFormValues,
   holdings: DAOHolding[]
-): FormikErrors<TransferProposalFormValues> => {
+): FormikErrors<TreasuryProposalFormValues> => {
   const errors: Record<string, any> = {
     transfers: values.transferForm.transfers.map(() => ({})),
   };
@@ -247,7 +247,7 @@ export const validateTransferProposalForm = (
 };
 
 export const NewTreasuryProposalDialog: React.FC<
-  FormikProps<TransferProposalFormValues>
+  FormikProps<TreasuryProposalFormValues>
 > = ({ values, errors, touched }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -284,7 +284,7 @@ export const NewTreasuryProposalDialog: React.FC<
   );
 
   const getBalance = useCallback(
-    (values: TransferProposalFormValues): string => {
+    (values: TreasuryProposalFormValues): string => {
       if (daoHoldings) {
         const currentTransfer = values.transferForm.transfers[activeTransfer - 1];
 

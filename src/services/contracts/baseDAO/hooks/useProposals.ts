@@ -12,12 +12,12 @@ import { useCycleInfo } from "./useCycleInfo";
 
 const mapProposalStatus = (proposal: Proposal, cycleInfo: CycleInfo, quorumTreshold: string): ProposalWithStatus => {
 
-  if(proposal.cycle === cycleInfo.current) {
+  if(proposal.period === cycleInfo.current) {
     return {
       ...proposal,
       status: ProposalStatus.CREATED,
     }
-  } else if(cycleInfo.current === proposal.cycle + 1) {
+  } else if(cycleInfo.current === proposal.period + 1) {
     return {
       ...proposal,
       status: ProposalStatus.ACTIVE,
