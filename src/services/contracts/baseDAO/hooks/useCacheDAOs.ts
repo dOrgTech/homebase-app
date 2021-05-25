@@ -34,13 +34,11 @@ export const useCacheDAOs = () => {
     const checkDaos = () => daos;
 
     const setDAO = (params: any) => {
-        console.log(formatDAO(params));
         const formattedDao = formatDAO(params)
         if (!checkIfDAOSaved(formattedDao, daos)) {
             const updatedDaos = [...daos, formattedDao];
             setDaos(updatedDaos);
         }
-        console.log(daos);
         return daos
     }
 

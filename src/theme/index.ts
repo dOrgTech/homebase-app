@@ -194,7 +194,7 @@ export const theme = createMuiTheme({
     MuiDialog: {
       paper: {
         background: "#1C1F23",
-        width: 536,
+        width: 570,
         maxWidth: "100%",
       },
       root: {

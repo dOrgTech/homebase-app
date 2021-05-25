@@ -95,10 +95,10 @@ export const ProposalTableRow: React.FC<
       <ArrowContainer item lg={3} md={6} container direction="row" alignItems="center" justify="flex-end">
         <>
         {status === ProposalStatus.ACTIVE ? <ErrorIcon fontSize={"large"} /> : null} 
-        {status === ProposalStatus.CREATED ? <ErrorIcon fontSize={"large"} /> : null} 
+        {status === ProposalStatus.PENDING ? <ErrorIcon fontSize={"large"} /> : null} 
         {status === ProposalStatus.PASSED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null} 
         {status === ProposalStatus.EXECUTED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null} 
-        {status === ProposalStatus.DROPPED ? <CancelOutlined fontSize={"large"} color="error" /> : null} 
+        {status === ProposalStatus.EXPIRED ? <CancelOutlined fontSize={"large"} color="error" /> : null} 
         {status === ProposalStatus.REJECTED ? <CancelOutlined fontSize={"large"} color="error" /> : null} 
         <StatusText color="textSecondary">{status}</StatusText>
         </>

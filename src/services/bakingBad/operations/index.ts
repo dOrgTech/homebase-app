@@ -15,8 +15,6 @@ export const getOriginationTime = async (
 
   const result: any = await response.json();
 
-  console.log(result);
-
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return result.timestamp;
 };
