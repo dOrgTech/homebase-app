@@ -7,16 +7,17 @@ export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
   frozenTokenId: Number(dto.children[3].value),
   governanceToken: {
     address: dto.children[4].children[0].value,
-    tokenId: Number(dto.children[4].children[1].value)
+    tokenId: Number(dto.children[4].children[1].value),
   },
   guardian: dto.children[5].value,
   ledgerMapNumber: dto.children[6].value,
-  proposalsToFlush: dto.children[11].value,
+  proposalsToFlush:
+    dto.children[11]?.children.map((elem) => elem.children[1].value) || [],
   proposalsMapNumber: dto.children[12].value,
   quorumTresholdAtCycle: {
     lastUpdatedCycle: Number(dto.children[13].children[0].value),
     quorumTreshold: dto.children[13].children[1].value,
-    staked: dto.children[13].children[2].value
+    staked: dto.children[13].children[2].value,
   },
   start_time: dto.children[14].value,
   totalSupply: {
@@ -33,4 +34,4 @@ export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
   proposalExpiredTime: Number(dto.children[27].value),
   proposalFlushTime: Number(dto.children[28].value),
   quorumChange: dto.children[29].value,
-})
+});

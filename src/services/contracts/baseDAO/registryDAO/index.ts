@@ -7,7 +7,6 @@ import {
 import { TezosToolkit } from "@taquito/taquito";
 import { Schema } from "@taquito/michelson-encoder";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
-import { getOriginationTime } from "services/bakingBad/operations";
 import { getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
@@ -84,13 +83,11 @@ export class RegistryDAO extends BaseDAO {
       slashDivisionScale: Number(extraDto[9].data.value.value),
     };
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
-    const originationTime = await getOriginationTime(contractAddress, network);
 
     return new RegistryDAO({
       address: contractAddress,
       ledger,
       template: "registry",
-      originationTime,
       storage,
       metadata,
       tezos,

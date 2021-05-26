@@ -198,7 +198,7 @@ export enum ProposalStatus {
 
   NO_QUORUM = "no quorum",
 
-  //DROPPED -> for drop_proposal
+  DROPPED = "dropped",
   EXPIRED = "expired",
   EXECUTED = "executed",
 }

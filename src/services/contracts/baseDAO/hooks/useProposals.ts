@@ -9,12 +9,14 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import dayjs from "dayjs";
 import { BaseDAO } from "..";
 import { useCycleInfo } from "./useCycleInfo";
+import { useDroppedProposalOps } from "./useDroppedProposalOps";
 
 export const useProposals = (
   contractAddress: string | undefined,
   status?: ProposalStatus
 ) => {
   const { data: dao } = useDAO(contractAddress);
+  const { data: droppedProposalsOps } = useDroppedProposalOps(contractAddress);
 
   const cycleInfo = useCycleInfo(contractAddress);
 
@@ -27,7 +29,7 @@ export const useProposals = (
   );
 
   const filteredData: ProposalWithStatus[] = useMemo(() => {
-    if (!result.data || !cycleInfo || !dao) {
+    if (!result.data || !cycleInfo || !dao || !droppedProposalsOps) {
       return [];
     }
 
@@ -44,35 +46,99 @@ export const useProposals = (
         proposal.period * dao.storage.votingPeriod +
         dao.storage.proposalExpiredTime;
 
-      const statusHistory: { status: ProposalStatus, timestamp: string }[] = []
+      const statusHistory: { status: ProposalStatus; timestamp: string }[] = [];
+
+      const isNotExecutedOrDropped = dao.storage.proposalsToFlush.find(
+        (id) => id.toLowerCase() === proposal.id.toLowerCase()
+      );
+
+      if (!isNotExecutedOrDropped) {
+        const droppedProposalOp = droppedProposalsOps.find(
+          (droppedProposal) =>
+            droppedProposal.id.toLowerCase() === proposal.id.toLowerCase()
+        );
+
+        if (!!droppedProposalOp) {
+          statusHistory.push({
+            status: ProposalStatus.DROPPED,
+            timestamp: dayjs(droppedProposalOp.timestamp).format("LLL"),
+          });
+  
+          return {
+            ...proposal,
+            status: ProposalStatus.DROPPED,
+            flushable: false,
+            statusHistory,
+          };
+        }
+
+        statusHistory.push({
+          status: ProposalStatus.EXECUTED,
+          timestamp: dayjs(proposal.startDate).format("LLL"),
+        });
+
+        return {
+          ...proposal,
+          status: ProposalStatus.EXECUTED,
+          flushable: false,
+          statusHistory,
+        };
+      }
+
+      statusHistory.push({
+        status: ProposalStatus.PENDING,
+        timestamp: dayjs(proposal.startDate).format("LLL"),
+      });
 
       if (secondsPassed < activeThresholdInSeconds) {
         return {
           ...proposal,
           status: ProposalStatus.PENDING,
           flushable: false,
-          statusHistory
+          statusHistory,
         };
       }
 
       statusHistory.push({
-        status: ProposalStatus.PENDING,
-        timestamp: dayjs(proposal.startDate).format("LLL")
-      })
+        status: ProposalStatus.ACTIVE,
+        timestamp: dayjs(dao.storage.start_time)
+          .add(activeThresholdInSeconds, "seconds")
+          .format("LLL"),
+      });
 
       if (secondsPassed < passedOrRejectedThresholdInSeconds) {
         return {
           ...proposal,
           status: ProposalStatus.ACTIVE,
           flushable: false,
-          statusHistory
+          statusHistory,
         };
       }
 
+      if (proposal.upVotes >= Number(proposal.quorumTreshold)) {
+        statusHistory.push({
+          status: ProposalStatus.PASSED,
+          timestamp: dayjs(dao.storage.start_time)
+            .add(flushTresholdInSeconds, "seconds")
+            .format("LLL"),
+        });
+      }
+
+      if (proposal.downVotes >= Number(proposal.quorumTreshold)) {
+        statusHistory.push({
+          status: ProposalStatus.REJECTED,
+          timestamp: dayjs(dao.storage.start_time)
+            .add(flushTresholdInSeconds, "seconds")
+            .format("LLL"),
+        });
+      }
+
       statusHistory.push({
-        status: ProposalStatus.ACTIVE,
-        timestamp: dayjs(dao.storage.start_time).add(activeThresholdInSeconds, "seconds").format("LLL")
-      })
+        status: ProposalStatus.NO_QUORUM,
+        timestamp: dayjs(dao.storage.start_time)
+          .add(flushTresholdInSeconds, "seconds")
+          .format("LLL"),
+      });
 
       if (secondsPassed < expiredThresholdInSeconds) {
         let status = ProposalStatus.NO_QUORUM;
@@ -94,43 +160,26 @@ export const useProposals = (
           ...proposal,
           status,
           flushable,
-          statusHistory
+          statusHistory,
         };
       }
 
-      if (proposal.upVotes >= Number(proposal.quorumTreshold)) {
-        statusHistory.push({
-          status: ProposalStatus.PASSED,
-          timestamp: dayjs(dao.storage.start_time).add(flushTresholdInSeconds, "seconds").format("LLL")
-        })
-      }
-
-      if (proposal.downVotes >= Number(proposal.quorumTreshold)) {
-        statusHistory.push({
-          status: ProposalStatus.REJECTED,
-          timestamp: dayjs(dao.storage.start_time).add(flushTresholdInSeconds, "seconds").format("LLL")
-        })
-      }
-
-      statusHistory.push({
-        status: ProposalStatus.NO_QUORUM,
-        timestamp: dayjs(dao.storage.start_time).add(flushTresholdInSeconds, "seconds").format("LLL")
-      })
-
       statusHistory.push({
         status: ProposalStatus.EXPIRED,
-        timestamp: dayjs(dao.storage.start_time).add(expiredThresholdInSeconds, "seconds").format("LLL")
-      })
+        timestamp: dayjs(dao.storage.start_time)
+          .add(expiredThresholdInSeconds, "seconds")
+          .format("LLL"),
+      });
 
       return {
         ...proposal,
         status: ProposalStatus.EXPIRED,
         flushable: false,
-        statusHistory
+        statusHistory,
       };
     });
 
-    console.log(proposalsWithStatus)
+    console.log(proposalsWithStatus);
 
     if (!status) {
       return proposalsWithStatus;
@@ -139,7 +188,7 @@ export const useProposals = (
     return proposalsWithStatus.filter(
       (proposalData) => proposalData.status === status
     );
-  }, [cycleInfo, result.data, status, dao]);
+  }, [result.data, cycleInfo, dao, droppedProposalsOps, status]);
 
   return {
     ...result,

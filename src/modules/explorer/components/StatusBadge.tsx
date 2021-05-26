@@ -29,6 +29,11 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: theme.palette.primary.light,
         color: "white",
       };
+      case ProposalStatus.DROPPED:
+        return {
+          background: theme.palette.primary.light,
+          color: "white",
+        };
     case ProposalStatus.NO_QUORUM:
       return {
         background: theme.palette.primary.light,

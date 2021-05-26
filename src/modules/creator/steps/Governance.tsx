@@ -277,92 +277,6 @@ const GovernanceForm = ({
           variant="subtitle1"
           color="textSecondary"
         >
-          Proposal time to expire
-        </Typography>
-      </SecondContainer>
-
-      <Grid container direction="row" wrap="wrap">
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalExpiryDays"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">days</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.proposalExpiryDays && touched.proposalExpiryDays ? (
-            <ErrorText>{errors.proposalExpiryDays}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalExpiryHours"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">hours</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.proposalExpiryHours && touched.proposalExpiryHours ? (
-            <ErrorText>{errors.proposalExpiryHours}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalExpiryMinutes"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">minutes</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-        </CustomInputContainer>
-      </Grid>
-
-      {errors.proposalExpiryMinutes && touched.proposalExpiryMinutes ? (
-        <ErrorText>{errors.proposalExpiryMinutes}</ErrorText>
-      ) : null}
-
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
           Proposal Flush Delay Duration
         </Typography>
       </SecondContainer>
@@ -441,6 +355,92 @@ const GovernanceForm = ({
 
       {errors.proposalFlushMinutes && touched.proposalFlushMinutes ? (
         <ErrorText>{errors.proposalFlushMinutes}</ErrorText>
+      ) : null}
+
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Proposal time to expire
+        </Typography>
+      </SecondContainer>
+
+      <Grid container direction="row" wrap="wrap">
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryDays"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">days</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalExpiryDays && touched.proposalExpiryDays ? (
+            <ErrorText>{errors.proposalExpiryDays}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryHours"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">hours</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+          {errors.proposalExpiryHours && touched.proposalExpiryHours ? (
+            <ErrorText>{errors.proposalExpiryHours}</ErrorText>
+          ) : null}
+        </CustomInputContainer>
+        <CustomInputContainer item xs={12} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="proposalExpiryMinutes"
+                type="number"
+                placeholder="00"
+                component={TextField}
+                inputProps={{ min: 0 }}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter item xs={6}>
+              <Typography color="textSecondary">minutes</Typography>
+            </GridItemCenter>
+          </ItemContainer>
+        </CustomInputContainer>
+      </Grid>
+
+      {errors.proposalExpiryMinutes && touched.proposalExpiryMinutes ? (
+        <ErrorText>{errors.proposalExpiryMinutes}</ErrorText>
       ) : null}
 
       <SecondContainer container direction="row">
@@ -768,9 +768,7 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Tooltip
-                title="Quorum change"
-              >
+              <Tooltip title="Quorum change">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -816,9 +814,7 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Tooltip
-                title="Max Quorum Change"
-              >
+              <Tooltip title="Max Quorum Change">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
