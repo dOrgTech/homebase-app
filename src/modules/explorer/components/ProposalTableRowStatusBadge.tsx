@@ -36,6 +36,12 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         color: theme.palette.text.secondary,
         opacity: 0.4,
       };
+      case ProposalStatus.DROPPED:
+        return {
+          background: "rgb(61, 61, 61)",
+          color: theme.palette.text.secondary,
+          opacity: 0.4,
+        };
     case ProposalStatus.EXECUTED:
       return {
         background: "rgb(61, 61, 61)",

@@ -47,7 +47,7 @@ export const useFreeze = () => {
         console.log(e);
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "And error has happened with freeze transaction!",
+          message: "An error has happened with freeze transaction!",
           variant: "error",
           autoHideDuration: 10000,
         });

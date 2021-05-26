@@ -39,7 +39,7 @@ export const useDropProposal = () => {
       } catch (e) {
         closeDropProposal(dropProposal);
         openNotification({
-          message: "And error has happened with drop proposal transaction!",
+          message: "An error has happened with drop proposal transaction!",
           variant: "error",
           autoHideDuration: 5000,
         });

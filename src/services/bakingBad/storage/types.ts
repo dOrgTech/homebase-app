@@ -4,38 +4,38 @@ export interface LastPeriodChange {
 }
 
 export interface Storage {
-  admin: string,
-  extraMapNumber: number,
-  freezeHistoryMapNumber: number,
-  frozenTokenId: number,
+  admin: string;
+  extraMapNumber: number;
+  freezeHistoryMapNumber: number;
+  frozenTokenId: number;
   governanceToken: {
-    address: string,
-    tokenId: number
-  },
-  guardian: string,
-  ledgerMapNumber: number,
-  proposalsToFlush: string[],
-  proposalsMapNumber: number,
+    address: string;
+    tokenId: number;
+  };
+  guardian: string;
+  ledgerMapNumber: number;
+  proposalsToFlush: string[];
+  proposalsMapNumber: number;
   quorumTresholdAtCycle: {
-    lastUpdatedCycle: number,
-    quorumTreshold: string,
-    staked: string
-  },
-  start_time: string,
+    lastUpdatedCycle: number;
+    quorumTreshold: string;
+    staked: string;
+  };
+  start_time: string;
   totalSupply: {
-    0: string,
-  },
-  fixedProposalFeeInToken: string,
-  governanceTotalSupply: string,
-  maxProposals: number,
-  maxQuorumChange: string,
-  maxQuorumTreshold: string,
-  maxVotes: string,
-  minQuorumTreshold: string,
-  votingPeriod: number,
-  proposalExpiredTime: number,
-  proposalFlushTime: number,
-  quorumChange: string,
+    0: string;
+  };
+  fixedProposalFeeInToken: string;
+  governanceTotalSupply: string;
+  maxProposals: number;
+  maxQuorumChange: string;
+  maxQuorumTreshold: string;
+  maxVotes: string;
+  minQuorumTreshold: string;
+  votingPeriod: number;
+  proposalExpiredTime: number;
+  proposalFlushTime: number;
+  quorumChange: string;
 }
 
 export interface StorageDTO {
@@ -126,7 +126,25 @@ export interface StorageDTO {
       prim: "set";
       type: "set";
       name: "proposal_key_list_sort_by_date";
-      value: string[];
+      children: {
+        prim: "pair";
+        type: "namedtuple";
+        name: "@pair_50";
+        children: [
+          {
+            prim: "timestamp";
+            type: "timestamp";
+            name: "@timestamp_51";
+            value: string;
+          },
+          {
+            prim: "bytes";
+            type: "bytes";
+            name: "@bytes_52";
+            value: string;
+          }
+        ];
+      }[];
     },
     {
       prim: "big_map";
@@ -267,6 +285,6 @@ export interface StorageDTO {
       type: "lambda";
       name: "rejected_proposal_return_value";
       value: string;
-    },
+    }
   ];
 }

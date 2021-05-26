@@ -40,7 +40,6 @@ export interface ConstructorParams {
   network: Network;
   ledger: Ledger;
   template: DAOTemplate;
-  originationTime: string;
   storage: Storage;
   metadata: DAOListMetadata;
   tezos: TezosToolkit;
@@ -51,7 +50,6 @@ export abstract class BaseDAO {
   public address;
   public ledger;
   public template;
-  public originationTime;
   public storage;
   public metadata;
   public tezos;
@@ -153,7 +151,6 @@ export abstract class BaseDAO {
     this.address = params.address;
     this.ledger = params.ledger;
     this.template = params.template;
-    this.originationTime = params.originationTime;
     this.storage = params.storage;
     this.metadata = params.metadata;
     this.tezos = params.tezos;

@@ -1,7 +1,6 @@
 import { TezosToolkit } from "@taquito/taquito";
 
 import { getLedgerAddresses } from "services/bakingBad/ledger";
-import { getOriginationTime } from "services/bakingBad/operations";
 import { getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
@@ -43,13 +42,11 @@ export class TreasuryDAO extends BaseDAO {
       slashDivisionScale: Number(extraDTO[6].data.value.value),
     };
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
-    const originationTime = await getOriginationTime(contractAddress, network);
 
     return new TreasuryDAO({
       address: contractAddress,
       ledger,
       template: "treasury",
-      originationTime,
       storage,
       metadata,
       tezos,
