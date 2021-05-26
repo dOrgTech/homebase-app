@@ -1,26 +1,19 @@
+import { TreasuryDAO } from 'services/contracts/baseDAO';
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { BaseDAO } from "../class";
-import { TransferParams } from "../types";
+import { TreasuryProposeArgs } from "../treasuryDAO/types";
 import { useCacheDAOs } from "./useCacheDAOs";
 
-interface Params {
-  dao: BaseDAO;
-  tokensToFreeze: number;
-  agoraPostId: number;
-  transfers: TransferParams[];
-}
-
-export const useTransferPropose = () => {
+export const useTreasuryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
   const { network } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, Params>(
-    async (params) => {
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: TreasuryDAO, args: TreasuryProposeArgs }>(
+    async ({ dao, args }) => {
       const {
         key: proposalNotification,
         closeSnackbar: closeProposalNotification,
@@ -31,12 +24,7 @@ export const useTransferPropose = () => {
       });
 
       try {
-        const data = await params.dao.proposeTransfer({
-          ...params,
-          tokensToFreeze: params.tokensToFreeze,
-          agoraPostId: params.agoraPostId,
-          transfers: params.transfers,
-        });
+        const data = await dao.propose(args);
 
         await data.confirmation(1);
         closeProposalNotification(proposalNotification);
@@ -47,7 +35,7 @@ export const useTransferPropose = () => {
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        setDAO(params.dao);
+        setDAO(dao);
         return data;
 
       } catch (e) {

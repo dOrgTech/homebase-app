@@ -7,17 +7,16 @@ import {
   Tooltip
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
-import React, { useMemo } from "react";
+import React from "react";
 import { StatusBadge } from "./StatusBadge";
 import { UserBadge } from "./UserBadge";
 import { useParams } from "react-router-dom";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import dayjs from "dayjs";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { InfoOutlined } from "@material-ui/icons";
+import { useQuorumTreshold } from "../hooks/useQuorumTreshold";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24
@@ -73,58 +72,13 @@ export const ProposalStatusHistory: React.FC = () => {
   const { data: dao } = useDAO(daoId);
   const { data: proposal } = useProposal(daoId, proposalId);
 
+  const quorumTreshold = useQuorumTreshold(dao);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { votesQuorumPercentage, votes } = useVotesStats({
     upVotes: proposal?.upVotes || 0,
     downVotes: proposal?.downVotes || 0,
-    quorumTreshold: dao?.storage.quorumTreshold || 0
+    quorumTreshold,
   });
-  
-  const history = useMemo(() => {
-    if (!proposal || !dao) {
-      return [];
-    }
-
-    const hasPeriodChanged = dao.storage.lastPeriodChange.periodNumber > proposal.cycle
-    const votingPeriod = dao.storage.votingPeriod
-
-    const baseStatuses: {
-      date: string;
-      status: ProposalStatus;
-    }[] = [
-      {
-        date: dayjs(proposal.startDate).format("LLL"),
-        status: ProposalStatus.CREATED,
-      },
-      {
-        date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod, "seconds").format("LLL"),
-        status: ProposalStatus.ACTIVE,
-      },
-    ];
-
-    switch (proposal.status) {
-      case ProposalStatus.DROPPED:
-        baseStatuses.push({
-          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
-          status: ProposalStatus.DROPPED,
-        });
-        break;
-      case ProposalStatus.REJECTED:
-        baseStatuses.push({
-          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
-          status: ProposalStatus.REJECTED,
-        });
-        break;
-      case ProposalStatus.PASSED:
-        baseStatuses.push({
-          date: hasPeriodChanged? "": dayjs(proposal.startDate).add(votingPeriod * 2, "seconds").format("LLL"),
-          status: ProposalStatus.PASSED,
-        });
-        break;
-    }
-
-    return baseStatuses;
-  }, [dao, proposal]);
 
   return (
     <HistoryContainer item xs={12} md>
@@ -139,7 +93,7 @@ export const ProposalStatusHistory: React.FC = () => {
               QUORUM THRESHOLD %
             </Typography>
             <Tooltip
-              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${dao?.storage.quorumTreshold} votes.`}
+              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumTreshold} votes.`}
             >
               <InfoIconInput color="secondary" />
             </Tooltip>
@@ -182,7 +136,7 @@ export const ProposalStatusHistory: React.FC = () => {
             HISTORY
           </Typography>
         </HistoryContent>
-        {history.map((item, index) => {
+        {proposal?.statusHistory.map((item, index) => {
           return (
             <HistoryItem
               container
@@ -194,7 +148,7 @@ export const ProposalStatusHistory: React.FC = () => {
             >
               <StatusBadge item xs={3} status={item.status} />
               <Grid item xs={9}>
-                <Typography color="textSecondary">{item.date}</Typography>
+                <Typography color="textSecondary">{item.timestamp}</Typography>
               </Grid>
             </HistoryItem>
           );

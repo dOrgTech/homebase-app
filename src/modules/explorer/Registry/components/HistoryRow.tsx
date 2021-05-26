@@ -10,6 +10,7 @@ import {
   withTheme,
 } from "@material-ui/core";
 import dayjs from "dayjs";
+import { toShortAddress } from "services/contracts/utils";
 
 const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
@@ -50,7 +51,7 @@ const DescriptionText = styled(Typography)({
   whiteSpace: "nowrap",
 });
 
-export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
+export const RegistryHistoryRow: React.FC<any> = ({ name, address, date, id }) => {
   const localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
   const theme = useTheme();
@@ -89,7 +90,7 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date }) => {
             color="textSecondary"
             align={isMobileSmall ? "center" : "left"}
           >
-            Proposal title
+            Proposal {toShortAddress(id)}
           </DescriptionText>
         </Grid>
         <Grid item xs={isMobileSmall ? 12 : 3}>

@@ -11,8 +11,9 @@ import { formatNumber } from "../utils/FormatNumber";
 import { UpVotesDialog } from "./VotersDialog";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { TransferProposalWithStatus } from "services/bakingBad/proposals/types";
+import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { ProgressBar as CustomBar } from "modules/explorer/components";
+import { useQuorumTreshold } from "../hooks/useQuorumTreshold";
 
 interface VotersData {
   showButton: boolean;
@@ -47,14 +48,15 @@ export const VotersProgress: React.FC<VotersData> = ({
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: proposalData } = useProposal(daoId, proposalId);
-  const proposal = proposalData as TransferProposalWithStatus | undefined;
+  const proposal = proposalData as TreasuryProposalWithStatus | undefined;
   const { data: dao } = useDAO(daoId);
+  const quorumTreshold = useQuorumTreshold(dao);
 
   const upVotes = proposal ? proposal.upVotes : 0;
   const downVotes = proposal ? proposal.downVotes : 0;
-  const upVotesPercentage = dao && (upVotes * 100) / dao.storage.quorumTreshold;
+  const upVotesPercentage = dao && (upVotes * 100) / quorumTreshold;
   const downVotesPercentage =
-    dao && (downVotes * 100) / dao.storage.quorumTreshold;
+    dao && (downVotes * 100) / quorumTreshold;
 
   return (
     <>
@@ -95,7 +97,7 @@ export const VotersProgress: React.FC<VotersData> = ({
           >
             <StatusTitle color="textSecondary">THRESHOLD: </StatusTitle>
             <Typography color="textSecondary">
-              {dao?.storage.quorumTreshold || 0}
+              {quorumTreshold}
             </Typography>
           </Grid>
         </Grid>

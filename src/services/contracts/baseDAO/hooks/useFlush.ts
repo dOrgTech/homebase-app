@@ -1,4 +1,3 @@
-import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -10,7 +9,7 @@ export const useFlush = () => {
   const { network } = useTezos()
 
   return useMutation<
-    TransactionWalletOperation | Error,
+    any | Error,
     Error,
     { dao: BaseDAO; numOfProposalsToFlush: number }
   >(
@@ -39,7 +38,7 @@ export const useFlush = () => {
       } catch (e) {
         closeFlushNotification(flushNotification);
         openNotification({
-          message: "And error has happened with flush transaction!",
+          message: "An error has happened with flush transaction!",
           variant: "error",
           autoHideDuration: 5000,
         });

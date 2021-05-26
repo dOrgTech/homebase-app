@@ -50,7 +50,7 @@ export const useVote = () => {
         console.log(e);
         closeVoteNotification(voteNotification);
         openNotification({
-          message: "And error has happened with vote transaction!",
+          message: "An error has happened with vote transaction!",
           variant: "error",
           autoHideDuration: 10000,
         });

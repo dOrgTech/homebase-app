@@ -21,6 +21,7 @@ export const fromStateToBaseStorage = (
       address: info.orgSettings.governanceToken.address,
       tokenId: info.orgSettings.governanceToken.tokenId
     },
+    guardian: info.orgSettings.guardian,
     extra: {
       frozenScaleValue: info.votingSettings.proposeStakePercentage,
       frozenExtraValue: info.votingSettings.proposeStakeRequired,
@@ -39,6 +40,7 @@ export const fromStateToBaseStorage = (
     maxQuorumAmount: info.votingSettings.maxQuorumAmount,
     quorumChange: info.votingSettings.quorumChange,
     quorumMaxChange: info.votingSettings.quorumMaxChange,
+    
     proposalFlushPeriod: 
       (info.votingSettings.proposalFlushHours || 0) * SECONDS_IN_HOUR +
       (info.votingSettings.proposalFlushDays || 0) * SECONDS_IN_DAY +
@@ -59,16 +61,16 @@ export const getContract = async (
   return await tezos.wallet.at(contractAddress, tzip16);
 };
 
-export const calculateCycleInfo = (originationTime: string, votingPeriod: number, lastPeriodNumber: number) => {
+export const calculateCycleInfo = (originationTime: string, votingPeriod: number) => {
   const current = dayjs().unix() - dayjs(originationTime).unix();
   const periodLeftPercentage = (current / votingPeriod) % 1;
   const timeLeftPercentage = votingPeriod * periodLeftPercentage;
   const time = votingPeriod - Number(timeLeftPercentage.toFixed());
-  const currentPeriodNumber = Math.floor(current / votingPeriod) + lastPeriodNumber
+  const currentPeriodNumber = Math.floor(current / votingPeriod)
 
   return {
     time: Number(time),
     current: currentPeriodNumber,
-    type: currentPeriodNumber % 2 === 0? "proposing" : "voting" as CycleType
+    type: currentPeriodNumber % 2 === 0? "voting" : "proposing" as CycleType
   };
 }

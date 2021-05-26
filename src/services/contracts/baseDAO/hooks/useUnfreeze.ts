@@ -44,7 +44,7 @@ export const useUnfreeze = () => {
         console.log(e);
         closeUnfreezeNotification(unfreezeNotification);
         openNotification({
-          message: "And error has happened with unfreeze transaction!",
+          message: "An error has happened with unfreeze transaction!",
           variant: "error",
           autoHideDuration: 10000,
         });

@@ -315,6 +315,36 @@ const DaoSettingsForm = withRouter(
             ) : null}
           </Grid>
         </SecondContainer>
+        <SecondContainer item container direction="row" alignItems="center">
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Guardian{" "}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <CustomInputContainer>
+              <Field
+                name="guardian"
+                type="text"
+                placeholder="tz1PXn...."
+                component={CustomFormikTextField}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip title="DAO Name info">
+                        <InfoIconInput color="secondary" />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
+              ></Field>
+            </CustomInputContainer>
+            {errors.guardian && touched.guardian ? (
+              <ErrorText>{errors.guardian}</ErrorText>
+            ) : null}
+          </Grid>
+        </SecondContainer>
       </>
     );
   }

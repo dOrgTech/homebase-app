@@ -1,108 +1,67 @@
-import { MutezTransfer } from "../proposals/types";
-
-type EntryPoint = "vote" | "origination" | "propose";
-
-type VoteParameters = {
-  prim: string;
-  type: string;
-  name: "vote";
-  children: [
+export interface DropOperationDTO {
+  operations: [
     {
-      prim: "pair";
-      type: "namedtuple";
-      children: [
+      level: 211605;
+      fee: 11652;
+      counter: 4446;
+      gas_limit: 113108;
+      content_index: 0;
+      result: {
+        consumed_gas: 113008;
+        storage_size: 23927;
+      };
+      parameters: [
         {
           prim: "bytes";
           type: "bytes";
-          name: "proposal_key";
-          value: string;
-        },
-        {
-          prim: "bool";
-          type: "bool";
-          name: "vote_type";
-          value: boolean;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "vote_amount";
-          value: string;
-        },
-        {
-          name: "permit";
+          name: "drop_proposal";
+          value: "4a7f48e69f124200f14e0d1aec8690875cfc8cdfa03c39b4e972711979457695";
         }
       ];
-    }
-  ];
-};
-
-type ProposeParameters = {
-  prim: "pair";
-  type: "namedtuple";
-  children: [
-    {
-      prim: "nat";
-      type: "nat";
-      name: "frozen_token";
-      value: string;
+      timestamp: "2021-05-25T22:50:35Z";
+      id: "9900411e4abe4d558c6a738cac035b52";
+      protocol: "PsFLorenaUUuikDWvMDr6fGBRG8kt3e3D3fHoXK1j1BFRxeSH4i";
+      hash: "oohzqr8f5oD54NXBtieW7qbCTHhN7mNsxNfmaRnERk7N1BioHtt";
+      network: "florencenet";
+      kind: "transaction";
+      source: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x";
+      destination: "KT1TNactRPGN9uzF7KyqgU3CK8DaJdYorEhw";
+      status: "applied";
+      entrypoint: "drop_proposal";
+      internal: false;
+      mempool: false;
     },
     {
-      prim: "pair";
-      type: "namedtuple";
-      name: "proposal_metadata";
-      children: [
+      level: 209200;
+      fee: 11609;
+      counter: 4431;
+      gas_limit: 112673;
+      content_index: 0;
+      result: {
+        consumed_gas: 112573;
+        storage_size: 23201;
+      };
+      parameters: [
         {
-          prim: "nat";
-          type: "nat";
-          name: "agora_post_id";
-          value: string;
-        },
-        {
-          prim: "list";
-          type: "list";
-          name: "transfers";
-          children?: MutezTransfer[];
+          prim: "bytes";
+          type: "bytes";
+          name: "drop_proposal";
+          value: "b351bdc2aa7a00a04cf5b7916970877a1fdcb51d8c63aa7758a276b56353b008";
         }
       ];
+      timestamp: "2021-05-25T02:04:21Z";
+      id: "5652210d88b54a53bbd37f7506689311";
+      protocol: "PsFLorenaUUuikDWvMDr6fGBRG8kt3e3D3fHoXK1j1BFRxeSH4i";
+      hash: "onnVwt7UXi4GzG2UroqEcdHykuhky6x5ZJYhFRAqHCsp5v28KGR";
+      network: "florencenet";
+      kind: "transaction";
+      source: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x";
+      destination: "KT1TNactRPGN9uzF7KyqgU3CK8DaJdYorEhw";
+      status: "applied";
+      entrypoint: "drop_proposal";
+      internal: false;
+      mempool: false;
     }
   ];
-};
-
-export type OperationDTO<
-  TEntrypoint extends EntryPoint | undefined = undefined
-> = {
-  level: number;
-  fee: number;
-  counter: number;
-  gas_limit: number;
-  storage_limit: number;
-  burned: number;
-  content_index: number;
-  result: {
-    consumed_gas: number;
-    storage_size: number;
-    paid_storage_size_diff: number;
-  };
-  parameters: TEntrypoint extends "vote"
-    ? Array<VoteParameters>
-    : TEntrypoint extends "propose"
-    ? ProposeParameters
-    : any;
-  timestamp: string;
-  id: string;
-  protocol: string;
-  hash: string;
-  network: string;
-  kind: string;
-  source: string;
-  destination: string;
-  status: string;
-  entrypoint: EntryPoint;
-  internal: boolean;
-  mempool: boolean;
-};
-
-export type OperationsDTO = {
-  operations: OperationDTO[];
-};
+  last_id: "1621908277843121";
+}

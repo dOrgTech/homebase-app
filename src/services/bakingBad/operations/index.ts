@@ -1,11 +1,17 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
+import { DropOperationDTO } from "./types";
 
-export const getOriginationTime = async (
+export interface DroppedProposal {
+  timestamp: string;
+  id: string;
+}
+
+export const getDroppedProposals = async (
   contractAddress: string,
   network: Network
-): Promise<string> => {
-  const url = `${API_URL}/contract/${network}/${contractAddress}`;
+): Promise<DroppedProposal[]> => {
+  const url = `${API_URL}/contract/${network}/${contractAddress}/operations?entrypoints=drop_proposal`;
 
   const response = await fetch(url);
 
@@ -13,10 +19,10 @@ export const getOriginationTime = async (
     throw new Error("Failed to fetch contract info from BakingBad API");
   }
 
-  const result: any = await response.json();
+  const result: DropOperationDTO = await response.json();
 
-  console.log(result);
-
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return result.timestamp;
+  return result.operations.map((operation) => ({
+    id: operation.parameters[0].value,
+    timestamp: operation.timestamp,
+  }));
 };

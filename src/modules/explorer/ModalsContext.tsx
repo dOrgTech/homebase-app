@@ -1,8 +1,6 @@
 import React, { createContext, Dispatch, useReducer } from "react";
 import { RegistryItemDialog } from "./Registry/components/ItemDialog";
 import { NewTransaction } from "./Registry/components/NewTransaction";
-import { UpdateRegistryDialog } from "./Registry/components/UpdateRegistryDialog";
-import { NewTreasuryProposalDialog } from "./Treasury";
 
 export enum ActionTypes {
   OPEN_REGISTRY_TRANSACTION = "OPEN_REGISTRY_TRANSACTION",
@@ -176,8 +174,6 @@ export const ModalsProvider: React.FC = ({ children }) => {
   return (
     <ModalsContext.Provider value={{ state, dispatch }}>
       {children}
-      <NewTreasuryProposalDialog />
-      <UpdateRegistryDialog />
       <NewTransaction />
       <RegistryItemDialog />
     </ModalsContext.Provider>

@@ -1,8 +1,8 @@
-import { Extra } from "..";
+import { Extra, TransferParams } from "..";
 
 export interface RegistryItem {
   key: string;
-  newValue: string;
+  value: string;
 }
 
 export interface RegistryExtra extends Extra {
@@ -10,6 +10,14 @@ export interface RegistryExtra extends Extra {
     key: string;
     value: string;
   }[]
+}
+
+export interface RegistryProposeArgs {
+  transfer_proposal: {
+    transfers: TransferParams[];
+    registry_diff: RegistryItem[];
+  };
+  agoraPostId: number;
 }
 
 export type RegistryExtraDTO = [
@@ -248,14 +256,14 @@ export interface PMFA2TransferType {
   ];
 }
 
-export interface PMTransferProposal {
+export interface PMTreasuryProposal {
   transfer_proposal: {
     agora_post_id: "0";
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
   };
 }
 
-export interface PMRegistryUpdateProposal {
+export interface PMRegistryProposal {
   "0": {
     agora_post_id: string;
     registry_diff: 
@@ -264,7 +272,8 @@ export interface PMRegistryUpdateProposal {
         "1": string;
       }[]
     ;
-  };
+    transfers: (PMXTZTransferType | PMFA2TransferType)[];
+  }
 }
 
-export type ProposalMetadata = PMTransferProposal | PMRegistryUpdateProposal;
+export type ProposalMetadata = PMTreasuryProposal | PMRegistryProposal;

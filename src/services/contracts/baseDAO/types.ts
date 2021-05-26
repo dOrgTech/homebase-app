@@ -23,6 +23,7 @@ export type OrgSettings = {
   symbol: string;
   description: string;
   administrator: string;
+  guardian: string;
   governanceToken: {
     address: string;
     tokenId: string;
@@ -127,6 +128,7 @@ export interface BaseStorageParams {
 
   minQuorumAmount: number;
   maxQuorumAmount: number;
+  guardian: string
   quorumChange: number;
   quorumMaxChange: number;
   proposalFlushPeriod: number;

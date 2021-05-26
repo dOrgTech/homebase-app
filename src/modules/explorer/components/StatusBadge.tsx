@@ -9,7 +9,7 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: "#DBDE39",
         color: theme.palette.primary.main,
       };
-    case ProposalStatus.CREATED:
+    case ProposalStatus.PENDING:
       return {
         background: "#3866F9",
         color: "white",
@@ -24,7 +24,17 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: theme.palette.error.main,
         color: "white",
       };
-    case ProposalStatus.DROPPED:
+    case ProposalStatus.EXPIRED:
+      return {
+        background: theme.palette.primary.light,
+        color: "white",
+      };
+      case ProposalStatus.DROPPED:
+        return {
+          background: theme.palette.primary.light,
+          color: "white",
+        };
+    case ProposalStatus.NO_QUORUM:
       return {
         background: theme.palette.primary.light,
         color: "white",
@@ -38,13 +48,7 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
 };
 
 const Badge = styled(Grid)(
-  ({
-    status,
-    theme,
-  }: {
-    status: ProposalStatus;
-    theme: Theme;
-  }) => ({
+  ({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
     borderRadius: 4,
     padding: 2,
     textAlign: "center",
@@ -57,9 +61,10 @@ const Badge = styled(Grid)(
   })
 );
 
-export const StatusBadge: React.FC<
-  { status: ProposalStatus } & GridProps
-> = ({ status, ...props }) => (
+export const StatusBadge: React.FC<{ status: ProposalStatus } & GridProps> = ({
+  status,
+  ...props
+}) => (
   <Badge status={status} {...props}>
     <Typography> {status.toUpperCase()} </Typography>
   </Badge>

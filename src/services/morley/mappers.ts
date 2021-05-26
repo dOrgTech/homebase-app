@@ -7,11 +7,10 @@ import { TokenMetadata } from "services/bakingBad/tokens";
 
 export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult, tokenMetadata: TokenMetadata): GeneratorArgs => ({
   admin_address: storage.adminAddress,
-  //guardian_address: "KT1QbdJ7M7uAQZwLpvzerUyk7LYkJWDL7eDh",
+  guardian_address: storage.guardian,
   governance_token_address: `"${storage.governanceToken.address}"`,
   governance_token_id: `"${storage.governanceToken.tokenId}n"`,
   max_proposal_size: `2500n`,
-  now_val: `date +"%s"`,
   slash_division_value: `${storage.extra.slashDivisionValue}n`,
   slash_scale_value: `${storage.extra.slashScaleValue}n`,
   frozen_extra_value: `${storage.extra.frozenExtraValue}n`,

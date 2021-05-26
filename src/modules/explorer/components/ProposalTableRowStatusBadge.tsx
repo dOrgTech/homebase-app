@@ -9,7 +9,7 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: "rgba(255, 200, 57, 0.4)",
         color: "#FFC839",
       };
-    case ProposalStatus.CREATED:
+    case ProposalStatus.PENDING:
       return {
         background: "rgba(56, 102, 249, 0.4)",
         color: "#3866F9",
@@ -24,29 +24,35 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: "rgba(237, 37, 78, 0.4)",
         color: theme.palette.error.main,
       };
-    case ProposalStatus.DROPPED:
+    case ProposalStatus.NO_QUORUM:
       return {
         background: "rgb(61, 61, 61)",
         color: theme.palette.text.secondary,
-        opacity: 0.4
+        opacity: 0.4,
       };
+    case ProposalStatus.EXPIRED:
+      return {
+        background: "rgb(61, 61, 61)",
+        color: theme.palette.text.secondary,
+        opacity: 0.4,
+      };
+      case ProposalStatus.DROPPED:
+        return {
+          background: "rgb(61, 61, 61)",
+          color: theme.palette.text.secondary,
+          opacity: 0.4,
+        };
     case ProposalStatus.EXECUTED:
       return {
         background: "rgb(61, 61, 61)",
         color: theme.palette.text.secondary,
-        opacity: 0.4
+        opacity: 0.4,
       };
   }
 };
 
 const Badge = styled(Grid)(
-  ({
-    status,
-    theme,
-  }: {
-    status: ProposalStatus;
-    theme: Theme;
-  }) => ({
+  ({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
     borderRadius: 4,
     padding: 4,
     textAlign: "center",
