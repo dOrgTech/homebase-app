@@ -11,14 +11,14 @@ import {
   InputAdornment,
   Tooltip,
 } from "@material-ui/core";
+import { validateContractAddress, validateAddress } from '@taquito/utils';
 import React, { useContext, useEffect } from "react";
 import { useHistory, withRouter } from "react-router";
 import { useRouteMatch } from "react-router-dom";
-import { Field, Form, Formik, getIn } from "formik";
+import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 
 import { CreatorContext, ActionTypes } from "modules/creator/state";
-import { handleOrgFormErrors } from "modules/creator/utils";
 import { OrgSettings } from "services/contracts/baseDAO/types";
 import { InfoOutlined } from "@material-ui/icons";
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
@@ -176,6 +176,9 @@ const DaoSettingsForm = withRouter(
                 component={CustomFormikTextField}
               />
             </CustomInputContainer>
+            {errors.governanceToken?.address && touched.governanceToken?.address ? (
+              <ErrorText>{errors.governanceToken?.address}</ErrorText>
+            ) : null}
           </Grid>
           <Grid item xs={isMobile ? 12 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
@@ -190,6 +193,9 @@ const DaoSettingsForm = withRouter(
                 component={CustomFormikTextField}
               />
             </CustomInputContainer>
+            {errors.governanceToken?.tokenId && touched.governanceToken?.tokenId ? (
+              <ErrorText>{errors.governanceToken?.tokenId}</ErrorText>
+            ) : null}
           </Grid>
           {tokenMetadata && !loading && (
             <MetadataContainer item xs={12}>
@@ -350,6 +356,63 @@ const DaoSettingsForm = withRouter(
   }
 );
 
+const isInvalidKtOrTzAddress = (address: string) => (validateContractAddress(address) !== 3 && validateAddress(address) !== 3)
+
+const validateForm = (values: OrgSettings) => {
+  const errors: FormikErrors<OrgSettings> = {};
+
+  if(!values.name) {
+    errors.name = "Required"
+  }
+
+  if(!values.symbol) {
+    errors.symbol = "Required"
+  }
+
+  if(!values.description) {
+    errors.description = "Required"
+  }
+
+  if(!values.administrator) {
+    errors.administrator = "Required"
+  }
+
+  if(values.administrator && isInvalidKtOrTzAddress(values.administrator)) {
+    errors.administrator = "Invalid address"
+  }
+
+  if(!values.guardian) {
+    errors.guardian = "Required"
+  }
+
+  if(values.guardian && isInvalidKtOrTzAddress(values.guardian)) {
+    errors.guardian = "Invalid address"
+  }
+
+  if(!values.governanceToken.address) {
+    errors.governanceToken = {
+      ...errors.governanceToken,
+      address: "Required"
+    }
+  }
+
+  if(values.governanceToken.address && validateContractAddress(values.governanceToken.address) !== 3) {
+    errors.governanceToken = {
+      ...errors.governanceToken,
+      address: "Invalid address"
+    }
+  }
+
+  if(!values.governanceToken.tokenId) {
+    errors.governanceToken = {
+      ...errors.governanceToken,
+      tokenId: "Required"
+    }
+  }
+
+  return errors;
+}
+
 export const DaoSettings = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext);
   const { orgSettings } = state.data;
@@ -392,7 +455,9 @@ export const DaoSettings = (): JSX.Element => {
 
       <Formik
         enableReinitialize
-        validate={(values: OrgSettings) => handleOrgFormErrors(values)}
+        validate={validateForm}
+        validateOnBlur={true}
+        validateOnChange={false}
         onSubmit={saveStepInfo}
         initialValues={orgSettings}
       >
@@ -407,7 +472,6 @@ export const DaoSettings = (): JSX.Element => {
           return (
             <Form style={{ width: "100%" }}>
               <DaoSettingsForm
-                validate={(values: OrgSettings) => handleOrgFormErrors(values)}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}

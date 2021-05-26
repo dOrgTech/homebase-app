@@ -15,16 +15,16 @@ import { ProtectedRoute } from "modules/creator/components/ProtectedRoute";
 
 export const STEPS: StepInfo[] = [
   { title: "Select template", index: StepperIndex.SELECT_TEMPLATE },
-  { title: "Configure template", index: StepperIndex.CONFIGURE_TEMPLATE },
-  { title: "Review information", index: StepperIndex.REVIEW_INFORMATION },
-  { title: "Launch organization", index: StepperIndex.LAUNCH_ORGANIZATION },
+  { title: "Configure DAO settings", index: StepperIndex.CONFIGURE_TEMPLATE },
+  { title: "Configure Proposal & Voting", index: StepperIndex.REVIEW_INFORMATION },
+  { title: "Review information", index: StepperIndex.LAUNCH_ORGANIZATION },
 ];
 
 const urlToStepMap: Record<string, number> = {
   templates: 0,
   dao: 1,
-  voting: 1,
-  summary: 2,
+  voting: 2,
+  summary: 3,
   review: 4,
 };
 
