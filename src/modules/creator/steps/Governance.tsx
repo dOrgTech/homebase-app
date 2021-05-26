@@ -11,15 +11,13 @@ import {
 } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
 import React, { useContext, useEffect } from "react";
-import { Field, Form, Formik, getIn } from "formik";
+import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { useHistory } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 
 import { CreatorContext, ActionTypes } from "modules/creator/state";
-import { handleGovernanceFormErrors } from "modules/creator/utils";
 import { VotingSettings } from "services/contracts/baseDAO/types";
 import { InfoOutlined } from "@material-ui/icons";
-import { useTotalSupply } from "modules/common/hooks/useTotalSupply";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -135,14 +133,117 @@ const InfoIconInput = styled(InfoOutlined)({
   cursor: "default",
 });
 
-//@TODO: Remove any from this component
+const validateForm = (values: VotingSettings) => {
+  const errors: FormikErrors<VotingSettings> = {};
+
+  Object.keys(values).forEach((key) => {
+    if ((values[key as keyof VotingSettings] as number | string) === "") {
+      errors[key as keyof VotingSettings] = "Required";
+    }
+
+    if (Number(values[key as keyof VotingSettings]) < 0) {
+      errors[key as keyof VotingSettings] = "Cannot be negative";
+    }
+  });
+
+  if (!values.votingDays && !values.votingHours && !values.votingMinutes) {
+    errors.votingMinutes = "Voting Period Duration cannot be 0";
+  }
+
+  if (
+    !values.proposalFlushDays &&
+    !values.proposalFlushHours &&
+    !values.proposalFlushMinutes
+  ) {
+    errors.proposalFlushMinutes = "Proposal Flush Delay Duration cannot be 0";
+  }
+
+  if (
+    !values.proposalExpiryDays &&
+    !values.proposalExpiryHours &&
+    !values.proposalExpiryMinutes
+  ) {
+    errors.proposalExpiryMinutes = "Proposal time to expire cannot be 0";
+  }
+
+  if (
+    values.votingDays !== undefined &&
+    values.votingHours !== undefined &&
+    values.votingMinutes !== undefined &&
+    values.proposalFlushDays !== undefined &&
+    values.proposalFlushHours !== undefined &&
+    values.proposalFlushMinutes !== undefined &&
+    values.proposalExpiryDays !== undefined &&
+    values.proposalExpiryHours !== undefined &&
+    values.proposalExpiryMinutes !== undefined
+  ) {
+    const votingPeriodTime =
+      values.votingDays * 24 * 60 +
+      values.votingHours * 60 +
+      values.votingMinutes;
+
+    const proposalFlushTime =
+      values.proposalFlushDays * 24 * 60 +
+      values.proposalFlushHours * 60 +
+      values.proposalFlushMinutes;
+
+    const proposalExpiryTime =
+      values.proposalExpiryDays * 24 * 60 +
+      values.proposalExpiryHours * 60 +
+      values.proposalExpiryMinutes;
+
+    if (proposalFlushTime < votingPeriodTime * 2) {
+      errors.proposalFlushMinutes =
+        "Must be at least double of Voting Period Duration";
+    }
+
+    if (proposalExpiryTime <= proposalFlushTime) {
+      errors.proposalExpiryMinutes =
+        "Must be greater than Proposal Flush Delay Duration";
+    }
+  }
+
+  if (values.proposeStakeRequired <= 0) {
+    errors.proposeStakeRequired = "Must be greater than 0";
+  }
+
+  if (values.maxXtzAmount <= 0) {
+    errors.maxXtzAmount = "Must be greater than 0";
+  }
+
+  if (values.minXtzAmount > values.maxXtzAmount) {
+    errors.maxXtzAmount = "Must be greater than Min. XTZ amount";
+  }
+
+  if (values.minQuorumAmount <= 0) {
+    errors.minQuorumAmount = "Must be greater than 0";
+  }
+
+  if (values.maxQuorumAmount >= 100) {
+    errors.maxQuorumAmount = "Must be lower than 100";
+  }
+
+  if (values.minQuorumAmount > values.maxQuorumAmount) {
+    errors.maxQuorumAmount = "Must be greater than Min. Quorum amount";
+  }
+
+  if (
+    values.quorumTreshold > values.maxQuorumAmount ||
+    values.quorumTreshold < values.minQuorumAmount
+  ) {
+    errors.quorumTreshold = "Must be between Min and Max Quorum amounts";
+  }
+
+  return errors;
+};
+
+//TODO: Remove any from this component
 const GovernanceForm = ({
   submitForm,
   values,
   setFieldValue,
   errors,
   touched,
-  totalSupply,
 }: any) => {
   const {
     dispatch,
@@ -481,9 +582,11 @@ const GovernanceForm = ({
                 {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
               </Typography>
               <Tooltip
-                title={`Amount of $${
+                title={`Amount of ${
                   orgSettings.governanceToken.tokenMetadata?.symbol || ""
-                } required to make a proposal. Total supply: ${totalSupply}`}
+                } required to make a proposal. Total supply: ${
+                  orgSettings.governanceToken.tokenMetadata?.supply
+                }`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -630,7 +733,7 @@ const GovernanceForm = ({
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item xs={6}>
+            <GridItemCenter item xs={3}>
               <Field
                 name="quorumTreshold"
                 type="number"
@@ -638,6 +741,9 @@ const GovernanceForm = ({
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
               />
+            </GridItemCenter>
+            <GridItemCenter item xs={1}>
+              <ValueText color="textSecondary">%</ValueText>
             </GridItemCenter>
             <GridItemCenter
               item
@@ -649,7 +755,9 @@ const GovernanceForm = ({
               <Tooltip
                 title={`Amount of ${
                   orgSettings.governanceToken.tokenMetadata?.symbol || ""
-                } required to be locked through voting for a proposal to be passed/rejected. Total supply: ${totalSupply}`}
+                } required to be locked through voting for a proposal to be passed/rejected. Total supply: ${
+                  orgSettings.governanceToken.tokenMetadata?.supply
+                }`}
               >
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -674,7 +782,7 @@ const GovernanceForm = ({
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item xs={5}>
+            <GridItemCenter item xs={3}>
               <Field
                 name="minQuorumAmount"
                 type="number"
@@ -689,7 +797,7 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <ValueText color="textSecondary">Min</ValueText>
+              <ValueText color="textSecondary">% Min</ValueText>
               <Tooltip title="Quorum min amount">
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -706,7 +814,7 @@ const GovernanceForm = ({
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item xs={5}>
+            <GridItemCenter item xs={3}>
               <Field
                 name="maxQuorumAmount"
                 type="number"
@@ -721,7 +829,7 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <ValueText color="textSecondary">Max</ValueText>
+              <ValueText color="textSecondary">% Max</ValueText>
               <Tooltip title="Quorum max amount">
                 <InfoIconInput color="secondary" />
               </Tooltip>
@@ -752,7 +860,7 @@ const GovernanceForm = ({
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item xs={6}>
+            <GridItemCenter item xs={3}>
               <Field
                 name="quorumChange"
                 type="number"
@@ -760,6 +868,9 @@ const GovernanceForm = ({
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
               />
+            </GridItemCenter>
+            <GridItemCenter item xs={1}>
+              <ValueText color="textSecondary">%</ValueText>
             </GridItemCenter>
             <GridItemCenter
               item
@@ -798,7 +909,7 @@ const GovernanceForm = ({
             alignItems="center"
             justify="center"
           >
-            <GridItemCenter item xs={6}>
+            <GridItemCenter item xs={3}>
               <Field
                 name="quorumMaxChange"
                 type="number"
@@ -806,6 +917,9 @@ const GovernanceForm = ({
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
               />
+            </GridItemCenter>
+            <GridItemCenter item xs={1}>
+              <ValueText color="textSecondary">%</ValueText>
             </GridItemCenter>
             <GridItemCenter
               item
@@ -833,7 +947,6 @@ export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
   const { votingSettings } = state.data;
   const history = useHistory();
-  const { totalSupply } = useTotalSupply();
 
   const saveStepInfo = (
     values: VotingSettings,
@@ -869,13 +982,7 @@ export const Governance: React.FC = () => {
 
       <Formik
         enableReinitialize
-        validate={(values: VotingSettings) =>
-          handleGovernanceFormErrors(
-            values,
-            state.data.template,
-            Number(totalSupply)
-          )
-        }
+        validate={validateForm}
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
       >
@@ -890,10 +997,6 @@ export const Governance: React.FC = () => {
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm
-                validate={(values: VotingSettings) =>
-                  handleGovernanceFormErrors(values, state.data.template)
-                }
-                totalSupply={totalSupply}
                 submitForm={submitForm}
                 isSubmitting={isSubmitting}
                 setFieldValue={setFieldValue}
