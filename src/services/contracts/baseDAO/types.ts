@@ -11,6 +11,7 @@ export interface MigrationParams {
   template: DAOTemplate;
   orgSettings: OrgSettings;
   votingSettings: VotingSettings;
+  quorumSettings: QuorumSettings;
 }
 
 export interface TokenHolder {
@@ -31,6 +32,15 @@ export type OrgSettings = {
   }
 };
 
+export type QuorumSettings = {
+  quorumTreshold: number;
+  minQuorumAmount: number;
+  maxQuorumAmount: number;
+  quorumChange: number;
+  quorumMaxChange: number;
+  maxVotes: number;
+};
+
 export type VotingSettings = {
   votingDays: number;
   votingHours: number;
@@ -41,12 +51,6 @@ export type VotingSettings = {
   frozenDivisionValue: number;
   minXtzAmount: number;
   maxXtzAmount: number;
-  quorumTreshold: number;
-
-  minQuorumAmount: number;
-  maxQuorumAmount: number;
-  quorumChange: number;
-  quorumMaxChange: number;
 
   proposalFlushDays: number;
   proposalFlushHours: number;
@@ -55,11 +59,9 @@ export type VotingSettings = {
   proposalExpiryDays: number;
   proposalExpiryHours: number;
   proposalExpiryMinutes: number;
-
-  maxVotes: number;
 };
 
-export type Settings = OrgSettings | VotingSettings;
+export type Settings = OrgSettings | VotingSettings | QuorumSettings;
 
 export type ErrorValues<T> = Partial<Record<keyof T, string>>;
 

@@ -126,7 +126,7 @@ export interface StorageDTO {
       prim: "set";
       type: "set";
       name: "proposal_key_list_sort_by_date";
-      children: {
+      children?: {
         prim: "pair";
         type: "namedtuple";
         name: "@pair_50";

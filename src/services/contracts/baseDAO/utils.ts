@@ -31,16 +31,16 @@ export const fromStateToBaseStorage = (
       minXtzAmount: info.votingSettings.minXtzAmount,
       maxXtzAmount: info.votingSettings.maxXtzAmount || 0,
     },
-    quorumTreshold: info.votingSettings.quorumTreshold,
+    quorumTreshold: info.quorumSettings.quorumTreshold,
     votingPeriod:
       (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
       (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
       (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
-    minQuorumAmount: info.votingSettings.minQuorumAmount,
-    maxQuorumAmount: info.votingSettings.maxQuorumAmount,
-    quorumChange: info.votingSettings.quorumChange,
-    quorumMaxChange: info.votingSettings.quorumMaxChange,
-    maxVotes: info.votingSettings.maxVotes,
+    minQuorumAmount: info.quorumSettings.minQuorumAmount,
+    maxQuorumAmount: info.quorumSettings.maxQuorumAmount,
+    quorumChange: info.quorumSettings.quorumChange,
+    quorumMaxChange: info.quorumSettings.quorumMaxChange,
+    maxVotes: info.quorumSettings.maxVotes,
     
     proposalFlushPeriod: 
       (info.votingSettings.proposalFlushHours || 0) * SECONDS_IN_HOUR +

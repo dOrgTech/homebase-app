@@ -27,7 +27,7 @@ export const generateStorageContract = async ({ storage, template, originatorAdd
   const response = await fetch(url)
 
   if (!response.ok) {
-    throw new Error("Failed to fetch ledger addresses from BakingBad API");
+    throw new Error("Failed to make DAO Storage contract from BaseDAO-Dockerized API");
   }
 
   const result: BaseDAODockerContractsDTO = await response.json();

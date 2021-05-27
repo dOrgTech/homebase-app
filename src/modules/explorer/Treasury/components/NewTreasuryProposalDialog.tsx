@@ -11,7 +11,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@material-ui/core";
-import { Form, Field, FieldArray, FormikErrors, FormikProps } from "formik";
+import { Form, Field, FieldArray, useFormikContext } from "formik";
 import { TextField, Switch } from "formik-material-ui";
 import { Autocomplete } from "formik-material-ui-lab";
 
@@ -27,6 +27,7 @@ import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
 import { useParams } from "react-router-dom";
+import * as Yup from "yup";
 
 const AmountItem = styled(Grid)(({ theme }) => ({
   minHeight: 137,
@@ -210,46 +211,28 @@ export const EMPTY_TRANSFER: FormTransferParams = {
 export const INITIAL_TRANSFER_FORM_VALUES: TreasuryProposalFormValues = {
   transferForm: {
     transfers: [EMPTY_TRANSFER],
-    isBatch: false
+    isBatch: false,
   },
 };
 
-export const validateTreasuryProposalForm = (
-  values: TreasuryProposalFormValues,
-  holdings: DAOHolding[]
-): FormikErrors<TreasuryProposalFormValues> => {
-  const errors: Record<string, any> = {
-    transfers: values.transferForm.transfers.map(() => ({})),
-  };
+export const treasuryValidationSchema = Yup.object().shape({
+  transferForm: Yup.object().shape({
+    transfers: Yup.array().of(
+      Yup.object().shape({
+        amount: Yup.number().required("Required").positive("Should be positive"),
+        recipient: Yup.string().required("Required"),
+      })
+    ),
+  }),
+});
 
-  values.transferForm.transfers.forEach((transfer, i) => {
-    const asset = holdings.find(
-      (balance) => balance.contract === values.transferForm.transfers[i].asset.contract
-    );
-
-    if (Number.isNaN(transfer.amount)) {
-      errors.transferForm.transfers[i].amount = "Must be a number";
-    }
-
-    if (transfer.amount <= 0) {
-      errors.transferForm.transfers[i].amount = "Must be a greater than 0";
-    }
-
-    if (asset && transfer.amount > Number(asset.balance)) {
-      errors.transferForm.transfers[i].amount = "Insufficient balance";
-    }
-
-    if (!transfer.recipient) {
-      errors.transferForm.transfers[i].recipient = "Required";
-    }
-  });
-
-  return errors;
-};
-
-export const NewTreasuryProposalDialog: React.FC<
-  FormikProps<TreasuryProposalFormValues>
-> = ({ values, errors, touched, setFieldValue }) => {
+export const NewTreasuryProposalDialog: React.FC = () => {
+  const {
+    values,
+    errors,
+    touched,
+    setFieldValue,
+  } = useFormikContext<TreasuryProposalFormValues>();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTransfer, setActiveTransfer] = React.useState(1);
@@ -286,7 +269,8 @@ export const NewTreasuryProposalDialog: React.FC<
   const getBalance = useCallback(
     (values: TreasuryProposalFormValues): string => {
       if (daoHoldings) {
-        const currentTransfer = values.transferForm.transfers[activeTransfer - 1];
+        const currentTransfer =
+          values.transferForm.transfers[activeTransfer - 1];
 
         if (!currentTransfer.asset) {
           return "-";
@@ -314,9 +298,12 @@ export const NewTreasuryProposalDialog: React.FC<
     [activeTransfer, daoHoldings]
   );
 
-  const recipientError = (errors.transferForm?.transfers?.[activeTransfer - 1] as any)
-    ?.recipient;
-  const amountError = (errors.transferForm?.transfers?.[activeTransfer - 1] as any)?.amount;
+  const recipientError = (errors.transferForm?.transfers?.[
+    activeTransfer - 1
+  ] as any)?.recipient;
+  const amountError = (errors.transferForm?.transfers?.[
+    activeTransfer - 1
+  ] as any)?.amount;
 
   const importTransactions = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -336,7 +323,7 @@ export const NewTreasuryProposalDialog: React.FC<
             return;
           }
 
-          setFieldValue("transferForm.isBatch", true)
+          setFieldValue("transferForm.isBatch", true);
           values.transferForm.transfers = transactionsParsed;
         } catch (e) {
           openNotification({
@@ -362,7 +349,11 @@ export const NewTreasuryProposalDialog: React.FC<
             </Grid>
             <Grid item xs={6}>
               <SwitchContainer item xs={12} justify="flex-end">
-                <Field component={Switch} type="checkbox" name="transferForm.isBatch" />
+                <Field
+                  component={Switch}
+                  type="checkbox"
+                  name="transferForm.isBatch"
+                />
               </SwitchContainer>
             </Grid>
           </ProposalFormListItem>
@@ -420,13 +411,16 @@ export const NewTreasuryProposalDialog: React.FC<
                       <Grid item xs={6}>
                         <SwitchContainer item xs={12} justify="flex-end">
                           <Field
-                            name={`transferForm.transfers.${activeTransfer - 1}.recipient`}
+                            name={`transferForm.transfers.${
+                              activeTransfer - 1
+                            }.recipient`}
                             type="string"
                             placeholder="Type an Address Here"
                             component={CustomTextField}
                           />
                           {recipientError &&
-                          touched.transferForm?.transfers?.[activeTransfer - 1]?.recipient ? (
+                          touched.transferForm?.transfers?.[activeTransfer - 1]
+                            ?.recipient ? (
                             <ErrorText>{recipientError}</ErrorText>
                           ) : null}
                         </SwitchContainer>
@@ -441,7 +435,9 @@ export const NewTreasuryProposalDialog: React.FC<
                           </Typography>
                           <Field
                             component={AutoCompleteField}
-                            name={`transferForm.transfers.${activeTransfer - 1}.asset`}
+                            name={`transferForm.transfers.${
+                              activeTransfer - 1
+                            }.asset`}
                             options={
                               daoHoldings
                                 ? daoHoldings.map((option) => option)
@@ -472,7 +468,9 @@ export const NewTreasuryProposalDialog: React.FC<
 
                           <SwitchContainer item xs={12} justify="flex-end">
                             <Field
-                              name={`transferForm.transfers.${activeTransfer - 1}.amount`}
+                              name={`transferForm.transfers.${
+                                activeTransfer - 1
+                              }.amount`}
                               type="tel"
                               placeholder="0"
                               component={CustomTextFieldAmount}
@@ -489,14 +487,18 @@ export const NewTreasuryProposalDialog: React.FC<
                                       variant="subtitle1"
                                     >
                                       {" "}
-                                      {currentAssetSymbol(values.transferForm.transfers)}
+                                      {currentAssetSymbol(
+                                        values.transferForm.transfers
+                                      )}
                                     </CurrentAsset>
                                   </InputAdornment>
                                 ),
                               }}
                             />
                             {amountError &&
-                            touched.transferForm?.transfers?.[activeTransfer - 1]?.amount ? (
+                            touched.transferForm?.transfers?.[
+                              activeTransfer - 1
+                            ]?.amount ? (
                               <ErrorText>{amountError}</ErrorText>
                             ) : null}
                           </SwitchContainer>
@@ -523,7 +525,9 @@ export const NewTreasuryProposalDialog: React.FC<
                               >
                                 <AmountText>{getBalance(values)}</AmountText>
                                 <AmountText>
-                                  {currentAssetSymbol(values.transferForm.transfers)}
+                                  {currentAssetSymbol(
+                                    values.transferForm.transfers
+                                  )}
                                 </AmountText>
                               </AmountContainer>
                             ) : null}

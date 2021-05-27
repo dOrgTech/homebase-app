@@ -15,7 +15,7 @@ import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { RowContainer } from "./tables/RowContainer";
 import { TableStatusBadge } from "./ProposalTableRowStatusBadge";
-import { CheckCircleOutlined, CancelOutlined, ErrorOutlineOutlined } from '@material-ui/icons';
+import { CheckCircleOutlined, CancelOutlined, PauseCircleOutline, RemoveCircleOutline, PlayCircleOutlineOutlined } from '@material-ui/icons';
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
 
@@ -40,10 +40,6 @@ const StatusText = styled(Typography)({
   marginLeft: 10,
   marginRight: 30,
 });
-
-const ErrorIcon = styled(ErrorOutlineOutlined)(({ theme }) => ({
-  color: theme.palette.info.main,
-}));
 
 const RowContent = styled(Box)(({ theme }) => ({
   marginTop: 25,
@@ -95,12 +91,14 @@ export const ProposalTableRow: React.FC<
       </Grid>
       <ArrowContainer item lg={3} md={6} container direction="row" alignItems="center" justify="flex-end">
         <>
-        {status === ProposalStatus.ACTIVE ? <ErrorIcon fontSize={"large"} /> : null} 
-        {status === ProposalStatus.PENDING ? <ErrorIcon fontSize={"large"} /> : null} 
-        {status === ProposalStatus.PASSED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null} 
+        {status === ProposalStatus.ACTIVE ? <PlayCircleOutlineOutlined htmlColor="#FFC839" fontSize={"large"} /> : null} 
+        {status === ProposalStatus.PENDING ? <PauseCircleOutline htmlColor="rgba(56, 102, 249)" fontSize={"large"} /> : null} 
+        {status === ProposalStatus.PASSED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null}
+        {status === ProposalStatus.NO_QUORUM ? <RemoveCircleOutline fontSize={"large"} htmlColor="rgb(61, 61, 61)" /> : null}
         {status === ProposalStatus.EXECUTED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null} 
-        {status === ProposalStatus.EXPIRED ? <CancelOutlined fontSize={"large"} color="error" /> : null} 
-        {status === ProposalStatus.REJECTED ? <CancelOutlined fontSize={"large"} color="error" /> : null} 
+        {status === ProposalStatus.EXPIRED ? <CancelOutlined fontSize={"large"} htmlColor="rgb(61, 61, 61)" /> : null} 
+        {status === ProposalStatus.REJECTED ? <CancelOutlined fontSize={"large"} color="error" /> : null}
+        {status === ProposalStatus.DROPPED ? <CancelOutlined fontSize={"large"} color="error" /> : null}
         <StatusText color="textSecondary">{status}</StatusText>
         </>
         <ArrowButton>

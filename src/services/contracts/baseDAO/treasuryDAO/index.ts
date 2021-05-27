@@ -77,12 +77,12 @@ export class TreasuryDAO extends BaseDAO {
       );
 
       const transfers = extractTransfersData(
-        proposalMetadataDTO.transfer_proposal.transfers
+        proposalMetadataDTO.transfers
       );
 
       return {
         ...mapProposalBase(dto, "treasury"),
-        agoraPostId: proposalMetadataDTO.transfer_proposal.agora_post_id.toString(),
+        agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
         transfers,
       };
     });

@@ -1,6 +1,7 @@
 import {
   MigrationParams,
   OrgSettings,
+  QuorumSettings,
   VotingSettings,
 } from "services/contracts/baseDAO/types";
 
@@ -24,8 +25,6 @@ type DeploymentStatus = {
 };
 
 export type CreatorState = {
-  activeStep: number;
-  governanceStep: number;
   data: MigrationParams;
   deploymentStatus: DeploymentStatus;
 } & NavigationBarProps;
@@ -63,6 +62,13 @@ function updateVotingSettings(voting: VotingSettings) {
   };
 }
 
+function updateQuorumSettings(quorum: QuorumSettings) {
+  return <const>{
+    type: ActionTypes.UPDATE_QUORUM_SETTINGS,
+    quorum,
+  };
+}
+
 function updateDeploymentStatus({ deploying, contract }: DeploymentStatus) {
   return <const>{
     type: ActionTypes.UPDATE_DEPLOYMENT_STATUS,
@@ -88,6 +94,7 @@ export type CreatorAction = ReturnType<
   | typeof updateNavigationBar
   | typeof updateOrgSettings
   | typeof updateVotingSettings
+  | typeof updateQuorumSettings
   | typeof updateDeploymentStatus
   | typeof clearCache
 >;
@@ -95,6 +102,7 @@ export type CreatorAction = ReturnType<
 export enum ActionTypes {
   UPDATE_NAVIGATION_BAR = "UPDATE_NAVIGATION_BAR",
   UPDATE_VOTING_SETTINGS = "UPDATE_VOTING_SETTINGS",
+  UPDATE_QUORUM_SETTINGS = "UPDATE_QUORUM_SETTINGS",
   UPDATE_ORGANIZATION_SETTINGS = "UPDATE_ORGANIZATION_SETTINGS",
   UPDATE_DEPLOYMENT_STATUS = "UPDATE_DEPLOYMENT_STATUS",
   CLEAR_CACHE = "CLEAR_CACHE",

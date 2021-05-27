@@ -26,27 +26,23 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
       };
     case ProposalStatus.NO_QUORUM:
       return {
-        background: "rgb(61, 61, 61)",
+        background: "rgba(61, 61, 61, 0.4)",
         color: theme.palette.text.secondary,
-        opacity: 0.4,
       };
     case ProposalStatus.EXPIRED:
       return {
-        background: "rgb(61, 61, 61)",
+        background: "rgba(61, 61, 61, 0.4)",
         color: theme.palette.text.secondary,
-        opacity: 0.4,
       };
       case ProposalStatus.DROPPED:
         return {
-          background: "rgb(61, 61, 61)",
-          color: theme.palette.text.secondary,
-          opacity: 0.4,
+          background: "rgba(237, 37, 78, 0.4)",
+          color: theme.palette.error.main,
         };
     case ProposalStatus.EXECUTED:
       return {
-        background: "rgb(61, 61, 61)",
-        color: theme.palette.text.secondary,
-        opacity: 0.4,
+        background: "rgba(75, 207, 147, 0.4)",
+        color: theme.palette.secondary.main,
       };
   }
 };
@@ -62,7 +58,6 @@ const Badge = styled(Grid)(
 
     background: statusColors(status, theme).background,
     color: statusColors(status, theme).color,
-    opacity: statusColors(status, theme).opacity,
   })
 );
 

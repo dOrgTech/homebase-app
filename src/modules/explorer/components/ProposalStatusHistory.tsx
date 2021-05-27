@@ -87,7 +87,7 @@ export const ProposalStatusHistory: React.FC = () => {
             <Typography variant="subtitle1" color="textSecondary">
               QUORUM THRESHOLD %
             </Typography>
-            <Tooltip placement="top-end"   
+            <Tooltip placement="bottom"   
               title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumTreshold} votes.`}
             >
               <InfoIcon color="secondary" />

@@ -12,7 +12,7 @@ export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
   guardian: dto.children[5].value,
   ledgerMapNumber: dto.children[6].value,
   proposalsToFlush:
-    dto.children[11]?.children.map((elem) => elem.children[1].value) || [],
+    dto.children[11].children?.map((elem) => elem.children[1].value) || [],
   proposalsMapNumber: dto.children[12].value,
   quorumTresholdAtCycle: {
     lastUpdatedCycle: Number(dto.children[13].children[0].value),

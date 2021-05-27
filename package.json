@@ -28,6 +28,7 @@
     "@taquito/tzip16": "^9.0.0",
     "@thanos-wallet/dapp": "^2.2.2",
     "@types/lodash": "^4.14.168",
+    "@types/yup": "^0.29.11",
     "@xendora/react-timer": "^1.1.0",
     "bignumber.js": "^9.0.1",
     "blockies-ts": "^1.0.0",
@@ -45,7 +46,8 @@
     "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "serve": "^11.3.2"
+    "serve": "^11.3.2",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/jest": "^26.0.21",
