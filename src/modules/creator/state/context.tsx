@@ -40,7 +40,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     minXtzAmount: 0,
     maxXtzAmount: 0,
     quorumTreshold: 0,
-
+    maxVotes: 10000,
     minQuorumAmount: 1,
     maxQuorumAmount: 99,
     quorumChange: 5,
