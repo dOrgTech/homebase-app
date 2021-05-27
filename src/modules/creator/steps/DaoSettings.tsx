@@ -456,8 +456,6 @@ export const DaoSettings = (): JSX.Element => {
       <Formik
         enableReinitialize
         validate={validateForm}
-        validateOnBlur={true}
-        validateOnChange={false}
         onSubmit={saveStepInfo}
         initialValues={orgSettings}
       >
