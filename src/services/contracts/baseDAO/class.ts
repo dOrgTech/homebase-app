@@ -14,7 +14,7 @@ import { Extra, fromStateToBaseStorage, getContract, MigrationParams } from ".";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import { RegistryDAO, TreasuryDAO } from ".";
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
-import { generateStorageContract } from "services/morley";
+import { generateStorageContract } from "services/baseDAODocker";
 import { getDAOListMetadata } from "../metadataCarrier";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";

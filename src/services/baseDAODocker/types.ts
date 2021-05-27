@@ -1,4 +1,4 @@
-export interface MorleyContractsDTO {
+export interface BaseDAODockerContractsDTO {
   storage: string
 }
 
