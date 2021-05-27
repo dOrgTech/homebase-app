@@ -5,7 +5,7 @@ import { char2Bytes } from '@taquito/tzip16';
 import { MetadataDeploymentResult } from 'services/contracts/metadataCarrier/deploy';
 import { TokenMetadata } from "services/bakingBad/tokens";
 
-export const storageParamsToMorleyArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult, tokenMetadata: TokenMetadata): GeneratorArgs => ({
+export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult, tokenMetadata: TokenMetadata): GeneratorArgs => ({
   admin_address: storage.adminAddress,
   guardian_address: storage.guardian,
   governance_token_address: `"${storage.governanceToken.address}"`,
