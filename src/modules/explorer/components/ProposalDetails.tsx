@@ -1,6 +1,7 @@
 import {
   Grid,
   styled,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -25,10 +26,14 @@ import { RegistryProposalDetail } from "../Registry/components/RegistryProposalD
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal";
 import { ViewButton } from "./ViewButton";
 import { BaseDAO } from "services/contracts/baseDAO";
-import { connectIfNotConnected, toShortAddress } from "services/contracts/utils";
+import {
+  connectIfNotConnected,
+  toShortAddress,
+} from "services/contracts/utils";
 import { useCanDropProposal } from "../hooks/useCanDropProposal";
 import { useCallback } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { InfoIcon } from "./styled/InfoIcon";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -97,7 +102,7 @@ export const ProposalDetails: React.FC = () => {
     proposalId: string;
     id: string;
   }>();
-  const { tezos, connect } = useTezos()
+  const { tezos, connect } = useTezos();
   const theme = useTheme();
   const { data: proposalData } = useProposal(daoId, proposalId);
   const proposal = proposalData as
@@ -107,15 +112,15 @@ export const ProposalDetails: React.FC = () => {
   const { data: dao } = useDAO(daoId);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { mutate: dropProposal } = useDropProposal();
-  const canDropProposal = useCanDropProposal(dao, proposal)
+  const canDropProposal = useCanDropProposal(dao, proposal);
 
   const onDropProposal = useCallback(async () => {
-    await connectIfNotConnected(tezos, connect)
+    await connectIfNotConnected(tezos, connect);
     await dropProposal({
       dao: dao as BaseDAO,
       proposalId,
     });
-  }, [connect, dao, dropProposal, proposalId, tezos])
+  }, [connect, dao, dropProposal, proposalId, tezos]);
 
   const proposalCycle = proposal ? proposal.period : "-";
   const daoName = dao ? dao.metadata.unfrozenToken.name : "";
@@ -164,13 +169,22 @@ export const ProposalDetails: React.FC = () => {
                   </ButtonsContainer>
                 </Grid>
 
-                <DropButton
-                  variant="outlined"
-                  onClick={onDropProposal}
-                  disabled={!canDropProposal}
-                >
-                  DROP PROPOSAL
-                </DropButton>
+                <Grid container>
+                  <Grid item>
+                    <DropButton
+                      variant="outlined"
+                      onClick={onDropProposal}
+                      disabled={!canDropProposal}
+                    >
+                      DROP PROPOSAL
+                    </DropButton>
+                  </Grid>
+                  <Grid item>
+                    <Tooltip placement="top-end"    title="">
+                      <InfoIcon color="secondary" />
+                    </Tooltip>
+                  </Grid>
+                </Grid>
               </StyledContainer>
             </Grid>
           </Grid>

@@ -16,15 +16,33 @@ interface TezosProvider {
   dispatch: React.Dispatch<TezosAction>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
-const Tezos = new TezosToolkit(rpcNodes[envNetwork]);
+const getInitialNetwork = (): Network => {
+  const storageNetwork = window.localStorage.getItem("homebase:network")
+
+  if(storageNetwork) {
+    return storageNetwork as Network
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
+
+  if(!envNetwork) {
+    throw new Error("No Network ENV set")
+  }
+
+  window.localStorage.setItem("homebase:network", envNetwork)
+
+  return envNetwork
+}
+
+const network = getInitialNetwork()
+const Tezos = new TezosToolkit(rpcNodes[network]);
 Tezos.setPackerProvider(new MichelCodecPacker());
 Tezos.addExtension(new Tzip16Module());
 
 const INITIAL_STATE: TezosState = {
   tezos: Tezos,
-  network: envNetwork,
+  network: network,
   account: "",
 };
 

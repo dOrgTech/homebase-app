@@ -18,14 +18,7 @@ const networkNameMap = {
   florencenet: "florencenet",
 } as const;
 
-console.log(process.env)
-
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const envNetwork = process.env
-  .REACT_APP_NETWORK!.toString()
-  .toLowerCase() as Network;
-
-export const connectWithBeacon = async (): Promise<{
+export const connectWithBeacon = async (envNetwork: Network): Promise<{
   wallet: BeaconWallet;
   network: Network;
 }> => {

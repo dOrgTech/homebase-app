@@ -581,7 +581,7 @@ const GovernanceForm = ({
               <Typography color="textSecondary">
                 {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
               </Typography>
-              <Tooltip
+              <Tooltip placement="top-end"   
                 title={`Amount of ${
                   orgSettings.governanceToken.tokenMetadata?.symbol || ""
                 } required to make a proposal. Total supply: ${
@@ -672,7 +672,7 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <ValueText color="textSecondary">Min. XTZ</ValueText>
-              <Tooltip title="Minimum amount of XTZ that can be transferred">
+              <Tooltip placement="top-end"    title="Minimum amount of XTZ that can be transferred">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -704,7 +704,7 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <ValueText color="textSecondary">Max. XTZ </ValueText>
-              <Tooltip title="Maximum amount of XTZ that can be transferred">
+              <Tooltip placement="top-end"    title="Maximum amount of XTZ that can be transferred">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -752,7 +752,7 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Tooltip
+              <Tooltip placement="top-end"   
                 title={`Amount of ${
                   orgSettings.governanceToken.tokenMetadata?.symbol || ""
                 } required to be locked through voting for a proposal to be passed/rejected. Total supply: ${
@@ -798,7 +798,7 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <ValueText color="textSecondary">% Min</ValueText>
-              <Tooltip title="Quorum min amount">
+              <Tooltip placement="top-end"    title="Quorum min amount">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -830,7 +830,7 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <ValueText color="textSecondary">% Max</ValueText>
-              <Tooltip title="Quorum max amount">
+              <Tooltip placement="top-end"    title="Quorum max amount">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -879,7 +879,7 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Tooltip title="Quorum change">
+              <Tooltip placement="top-end"    title="Quorum change">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -928,7 +928,7 @@ const GovernanceForm = ({
               direction="row"
               justify="space-around"
             >
-              <Tooltip title="Max Quorum Change">
+              <Tooltip placement="top-end"    title="Max Quorum Change">
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>

@@ -1,6 +1,6 @@
 import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
 import React from "react";
-import { HoldingsHeader } from "../components";
+import { TemplateHeader } from "modules/explorer/components/TemplateHeader";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { HistoryTable } from "../Treasury/components/HistoryTable";
@@ -15,7 +15,7 @@ export const Holdings: React.FC = () => {
   return (
     <>
       <Grid item xs>
-        <HoldingsHeader />
+        <TemplateHeader template="treasury" />
         {isMobileSmall ? (
           <>
             <AppTabBar

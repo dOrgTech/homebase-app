@@ -15,8 +15,8 @@ import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
-import { InfoOutlined } from "@material-ui/icons";
 import { useQuorumTreshold } from "../hooks/useQuorumTreshold";
+import { InfoIcon } from "./styled/InfoIcon";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24
@@ -31,11 +31,6 @@ const HistoryItem = styled(Grid)(({ theme }) => ({
     width: "unset"
   }
 }));
-
-const InfoIconInput = styled(InfoOutlined)({
-  cursor: "default",
-  marginLeft: 20
-});
 
 const ProgressText = styled(Typography)(
   ({ textColor }: { textColor: string }) => ({
@@ -92,10 +87,10 @@ export const ProposalStatusHistory: React.FC = () => {
             <Typography variant="subtitle1" color="textSecondary">
               QUORUM THRESHOLD %
             </Typography>
-            <Tooltip
+            <Tooltip placement="top-end"   
               title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumTreshold} votes.`}
             >
-              <InfoIconInput color="secondary" />
+              <InfoIcon color="secondary" />
             </Tooltip>
           </Grid>
         </HistoryContent>

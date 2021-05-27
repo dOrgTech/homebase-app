@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 
-import { RegistryHeader } from "../components/RegistryHeader";
+import { TemplateHeader } from "modules/explorer/components/TemplateHeader";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { RegistryDAO } from "services/contracts/baseDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
@@ -68,7 +68,7 @@ export const Registry: React.FC = () => {
   return (
     <>
       <Grid item xs>
-        <RegistryHeader />
+        <TemplateHeader template="registry" />
 
         {isMobileSmall ? (
           <>
