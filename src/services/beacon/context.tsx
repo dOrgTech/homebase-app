@@ -16,8 +16,6 @@ interface TezosProvider {
   dispatch: React.Dispatch<TezosAction>;
 }
 
-console.log(process.env)
-
 const getInitialNetwork = (): Network => {
   const storageNetwork = window.localStorage.getItem("homebase:network")
 
