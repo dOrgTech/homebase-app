@@ -22,7 +22,9 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          REACT_APP_JWT: ${{ secrets.REACT_APP_JWT }}
+          REACT_APP_NETWORK: ${{ secrets.REACT_APP_NETWORK }}
         with:
           args: deploy --dir=build --prod
-          secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'
+          secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID", "REACT_APP_JWT", "REACT_APP_NETWORK"]'
 

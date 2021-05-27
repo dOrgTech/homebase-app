@@ -55,6 +55,8 @@ export type VotingSettings = {
   proposalExpiryDays: number;
   proposalExpiryHours: number;
   proposalExpiryMinutes: number;
+
+  maxVotes: number;
 };
 
 export type Settings = OrgSettings | VotingSettings;
@@ -133,6 +135,7 @@ export interface BaseStorageParams {
   quorumMaxChange: number;
   proposalFlushPeriod: number;
   proposalExpiryPeriod: number;
+  maxVotes: number;
 }
 
 export type Token = {

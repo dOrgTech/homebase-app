@@ -238,6 +238,10 @@ const validateForm = (values: VotingSettings) => {
     errors.quorumChange = "Cannot be greater than Max Quorum Change"
   }
 
+  if(values.maxVotes <= 0) {
+    errors.maxVotes = "Must be greater than 0"
+  }
+
   return errors;
 };
 
@@ -942,6 +946,62 @@ const GovernanceForm = ({
           <ErrorText>{errors.quorumMaxChange}</ErrorText>
         ) : null}
       </Grid>
+
+      <SecondContainer container direction="row">
+        <Typography
+          style={styles.voting}
+          variant="subtitle1"
+          color="textSecondary"
+        >
+          Max Votes
+        </Typography>
+      </SecondContainer>
+
+      <StakeContainer container direction="row" alignItems="center">
+        <AdditionContainer item xs={11} sm={4}>
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justify="center"
+          >
+            <GridItemCenter item xs={6}>
+              <Field
+                name="maxVotes"
+                type="number"
+                placeholder="00"
+                inputProps={{ min: 0, defaultValue: 0 }}
+                component={TextField}
+              ></Field>
+            </GridItemCenter>
+            <GridItemCenter
+              item
+              xs={6}
+              container
+              direction="row"
+              justify="space-around"
+            >
+              <Typography color="textSecondary">
+                {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
+              </Typography>
+              <Tooltip placement="top-end"   
+                title={`Amount of ${
+                  orgSettings.governanceToken.tokenMetadata?.symbol || ""
+                } required to make a proposal. Total supply: ${
+                  orgSettings.governanceToken.tokenMetadata?.supply
+                }`}
+              >
+                <InfoIconInput color="secondary" />
+              </Tooltip>
+            </GridItemCenter>
+          </ItemContainer>
+        </AdditionContainer>
+        {errors.maxVotes || errors.maxVotes ? (
+          <ErrorText>
+            {errors.maxVotes || errors.maxVotes}
+          </ErrorText>
+        ) : null}
+      </StakeContainer>
     </>
   );
 };
