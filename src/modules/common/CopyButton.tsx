@@ -15,9 +15,13 @@ export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
       onClick={() => {
         navigator.clipboard.writeText(text);
         setCopied(true);
+
+        setTimeout(() => {
+          setCopied(false)
+        }, 2000)
       }}
     >
-      <Tooltip placement="top-end"    title={!copied ? "Copy to Clipboard" : "Copied!"}>
+      <Tooltip placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
         <CopyIcon color="secondary" fontSize="small" />
       </Tooltip>
     </Box>

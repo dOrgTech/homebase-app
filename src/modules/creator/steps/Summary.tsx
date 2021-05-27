@@ -48,12 +48,15 @@ const UnderlinedGrid = styled(Grid)(({ theme }) => ({
 
 export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
-  const { activeStep } = state;
   const history = useHistory();
   const match = useRouteMatch();
 
   const goToVoting = () => {
     history.push(`voting`);
+  };
+
+  const goToQuorum = () => {
+    history.push(`quorum`);
   };
 
   const goToSettings = () => {
@@ -70,11 +73,11 @@ export const Summary = (): JSX.Element => {
         text: "LAUNCH",
       },
       back: {
-        handler: () => history.push(`voting`),
+        handler: () => history.push(`quorum`),
         text: "BACK",
       },
     });
-  }, [activeStep, dispatch, history, match.path, match.url]);
+  }, [dispatch, history, match.path, match.url]);
 
   return (
     <Box maxWidth={650}>
@@ -377,24 +380,143 @@ export const Summary = (): JSX.Element => {
             </Grid>
           )}
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
-                  Quorum threshold
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
-                  {state.data.votingSettings.quorumTreshold}%
-                </Typography>
-              </Grid>
-            </UnderlinedGrid>
-          </Grid>
+          <SecondContainer container direction="row">
+            <Grid item xs={6}>
+              <ContainerSpacing color="textSecondary" variant="subtitle1">
+                QUORUM SETTINGS
+              </ContainerSpacing>
+            </Grid>
+            <Grid item xs={6}>
+              <ContainerButton
+                color="secondary"
+                variant="subtitle1"
+                align="right"
+                onClick={goToQuorum}
+              >
+                EDIT
+              </ContainerButton>
+            </Grid>
+            <Grid item xs={12}>
+              <UnderlinedGrid
+                item
+                container
+                direction="row"
+                alignItems="center"
+              >
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="textSecondary">
+                    Quorum threshold
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {state.data.quorumSettings.quorumTreshold}%
+                  </Typography>
+                </Grid>
+              </UnderlinedGrid>
+            </Grid>
+
+            <Grid item xs={12}>
+              <UnderlinedGrid
+                item
+                container
+                direction="row"
+                alignItems="center"
+              >
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="textSecondary">
+                    Quorum Change
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {state.data.quorumSettings.quorumChange}%
+                  </Typography>
+                </Grid>
+              </UnderlinedGrid>
+            </Grid>
+
+            <Grid item xs={12}>
+              <UnderlinedGrid
+                item
+                container
+                direction="row"
+                alignItems="center"
+              >
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="textSecondary">
+                    Quorum Max Change
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {state.data.quorumSettings.quorumMaxChange}%
+                  </Typography>
+                </Grid>
+              </UnderlinedGrid>
+            </Grid>
+
+            <Grid item xs={12}>
+              <UnderlinedGrid
+                item
+                container
+                direction="row"
+                alignItems="center"
+              >
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="textSecondary">
+                    Quorum Min. Amount
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {state.data.quorumSettings.minQuorumAmount}%
+                  </Typography>
+                </Grid>
+              </UnderlinedGrid>
+            </Grid>
+
+            <Grid item xs={12}>
+              <UnderlinedGrid
+                item
+                container
+                direction="row"
+                alignItems="center"
+              >
+                <Grid item xs={6}>
+                  <Typography variant="body2" color="textSecondary">
+                    Quorum Max. Amount
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {state.data.quorumSettings.maxQuorumAmount}%
+                  </Typography>
+                </Grid>
+              </UnderlinedGrid>
+            </Grid>
+
+          </SecondContainer>
         </SecondContainer>
       </Grid>
     </Box>

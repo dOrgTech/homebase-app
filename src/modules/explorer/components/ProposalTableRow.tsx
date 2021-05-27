@@ -15,7 +15,7 @@ import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { RowContainer } from "./tables/RowContainer";
 import { TableStatusBadge } from "./ProposalTableRowStatusBadge";
-import { CheckCircleOutlined, CancelOutlined, ErrorOutlineOutlined, PauseCircleOutline, RemoveCircleOutline, PlayCircleOutlineOutlined } from '@material-ui/icons';
+import { CheckCircleOutlined, CancelOutlined, PauseCircleOutline, RemoveCircleOutline, PlayCircleOutlineOutlined } from '@material-ui/icons';
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
 
@@ -40,10 +40,6 @@ const StatusText = styled(Typography)({
   marginLeft: 10,
   marginRight: 30,
 });
-
-const ErrorIcon = styled(ErrorOutlineOutlined)(({ theme }) => ({
-  color: theme.palette.info.main,
-}));
 
 const RowContent = styled(Box)(({ theme }) => ({
   marginTop: 25,

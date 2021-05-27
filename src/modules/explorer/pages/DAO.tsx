@@ -206,7 +206,7 @@ export const DAO: React.FC = () => {
                           EXECUTE
                         </ViewButton>
                         <Tooltip
-                          placement="top-end"
+                          placement="bottom"
                           title="Execute all passed proposals and drop all expired or rejected"
                         >
                           <InfoIcon color="secondary" />

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Route, Switch, useLocation } from "react-router";
 import { Redirect, useRouteMatch } from "react-router-dom";
 
-import { StepInfo, StepperIndex } from "modules/creator/state";
+import { StepInfo } from "modules/creator/state";
 import {
   SelectTemplate,
   Summary,
@@ -12,20 +12,23 @@ import {
 } from "modules/creator/steps";
 
 import { ProtectedRoute } from "modules/creator/components/ProtectedRoute";
+import { Quorum } from "./Quorum";
 
 export const STEPS: StepInfo[] = [
-  { title: "Select template", index: StepperIndex.SELECT_TEMPLATE },
-  { title: "Configure DAO settings", index: StepperIndex.CONFIGURE_TEMPLATE },
-  { title: "Configure Proposal & Voting", index: StepperIndex.REVIEW_INFORMATION },
-  { title: "Review information", index: StepperIndex.LAUNCH_ORGANIZATION },
+  { title: "Select template", index: 0 },
+  { title: "Configure DAO settings", index: 1 },
+  { title: "Configure Proposal & Voting", index: 2 },
+  { title: "Adjust Quorum", index: 3 },
+  { title: "Review information", index: 4 },
 ];
 
 const urlToStepMap: Record<string, number> = {
   templates: 0,
   dao: 1,
   voting: 2,
-  summary: 3,
-  review: 4,
+  quorum: 3,
+  summary: 4,
+  review: 5,
 };
 
 export const StepRouter: React.FC = () => {
@@ -42,6 +45,9 @@ export const StepRouter: React.FC = () => {
         </Route>
         <Route path={`${match.url}/voting`}>
           <Governance />
+        </Route>
+        <Route path={`${match.url}/quorum`}>
+          <Quorum />
         </Route>
         <Route path={`${match.url}/summary`}>
           <Summary />

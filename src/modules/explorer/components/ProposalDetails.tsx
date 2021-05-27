@@ -180,7 +180,7 @@ export const ProposalDetails: React.FC = () => {
                     </DropButton>
                   </Grid>
                   <Grid item>
-                    <Tooltip placement="top-end"    title="">
+                    <Tooltip placement="bottom" title="Guardian and proposer may drop proposal at anytime. Anyone may drop proposal if proposal expired">
                       <InfoIcon color="secondary" />
                     </Tooltip>
                   </Grid>

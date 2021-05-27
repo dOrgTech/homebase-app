@@ -215,33 +215,6 @@ const validateForm = (values: VotingSettings) => {
     errors.maxXtzAmount = "Must be greater than Min. XTZ amount";
   }
 
-  if (values.minQuorumAmount <= 0) {
-    errors.minQuorumAmount = "Must be greater than 0";
-  }
-
-  if (values.maxQuorumAmount >= 100) {
-    errors.maxQuorumAmount = "Must be lower than 100";
-  }
-
-  if (values.minQuorumAmount > values.maxQuorumAmount) {
-    errors.maxQuorumAmount = "Must be greater than Min. Quorum amount";
-  }
-
-  if (
-    values.quorumTreshold > values.maxQuorumAmount ||
-    values.quorumTreshold < values.minQuorumAmount
-  ) {
-    errors.quorumTreshold = "Must be between Min and Max Quorum amounts";
-  }
-
-  if(values.quorumChange > values.quorumMaxChange) {
-    errors.quorumChange = "Cannot be greater than Max Quorum Change"
-  }
-
-  if(values.maxVotes <= 0) {
-    errors.maxVotes = "Must be greater than 0"
-  }
-
   return errors;
 };
 
@@ -256,8 +229,6 @@ const GovernanceForm = ({
   const {
     dispatch,
     state: {
-      governanceStep,
-      activeStep,
       data: { orgSettings },
     },
   } = useContext(CreatorContext);
@@ -280,17 +251,7 @@ const GovernanceForm = ({
         },
       });
     }
-  }, [
-    activeStep,
-    dispatch,
-    errors,
-    governanceStep,
-    history,
-    match.path,
-    match.url,
-    submitForm,
-    values,
-  ]);
+  }, [dispatch, errors, history, match.path, match.url, submitForm, values]);
 
   return (
     <>
@@ -589,7 +550,8 @@ const GovernanceForm = ({
               <Typography color="textSecondary">
                 {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
               </Typography>
-              <Tooltip placement="top-end"   
+              <Tooltip
+                placement="bottom"
                 title={`Amount of ${
                   orgSettings.governanceToken.tokenMetadata?.symbol || ""
                 } required to make a proposal. Total supply: ${
@@ -680,7 +642,10 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <ValueText color="textSecondary">Min. XTZ</ValueText>
-              <Tooltip placement="top-end"    title="Minimum amount of XTZ that can be transferred">
+              <Tooltip
+                placement="bottom"
+                title="Minimum amount of XTZ that can be transferred"
+              >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -712,7 +677,10 @@ const GovernanceForm = ({
               justify="space-around"
             >
               <ValueText color="textSecondary">Max. XTZ </ValueText>
-              <Tooltip placement="top-end"    title="Maximum amount of XTZ that can be transferred">
+              <Tooltip
+                placement="bottom"
+                title="Maximum amount of XTZ that can be transferred"
+              >
                 <InfoIconInput color="secondary" />
               </Tooltip>
             </GridItemCenter>
@@ -722,286 +690,6 @@ const GovernanceForm = ({
           ) : null}
         </AdditionContainer>
       </Grid>
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Quorum Threshold
-        </Typography>
-      </SpacingContainer>
-
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={3}>
-              <Field
-                name="quorumTreshold"
-                type="number"
-                placeholder="00"
-                inputProps={{ min: 0, max: 100 }}
-                component={TextField}
-              />
-            </GridItemCenter>
-            <GridItemCenter item xs={1}>
-              <ValueText color="textSecondary">%</ValueText>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={6}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <Tooltip placement="top-end"   
-                title={`Amount of ${
-                  orgSettings.governanceToken.tokenMetadata?.symbol || ""
-                } required to be locked through voting for a proposal to be passed/rejected. Total supply: ${
-                  orgSettings.governanceToken.tokenMetadata?.supply
-                }`}
-              >
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-        </AdditionContainer>
-        {errors.quorumTreshold && touched.quorumTreshold ? (
-          <ErrorText>{errors.quorumTreshold}</ErrorText>
-        ) : null}
-      </Grid>
-
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={3}>
-              <Field
-                name="minQuorumAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <ValueText color="textSecondary">% Min</ValueText>
-              <Tooltip placement="top-end"    title="Quorum min amount">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.minQuorumAmount && touched.minQuorumAmount ? (
-            <ErrorText>{errors.minQuorumAmount}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={3}>
-              <Field
-                name="maxQuorumAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <ValueText color="textSecondary">% Max</ValueText>
-              <Tooltip placement="top-end"    title="Quorum max amount">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.maxQuorumAmount && touched.maxQuorumAmount ? (
-            <ErrorText>{errors.maxQuorumAmount}</ErrorText>
-          ) : null}
-        </AdditionContainer>
-      </Grid>
-
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Quorum Change
-        </Typography>
-      </SpacingContainer>
-
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={3}>
-              <Field
-                name="quorumChange"
-                type="number"
-                placeholder="00"
-                inputProps={{ min: 0, max: 100 }}
-                component={TextField}
-              />
-            </GridItemCenter>
-            <GridItemCenter item xs={1}>
-              <ValueText color="textSecondary">%</ValueText>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={6}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <Tooltip placement="top-end"    title="Quorum change">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-        </AdditionContainer>
-        {errors.quorumChange && touched.quorumChange ? (
-          <ErrorText>{errors.quorumChange}</ErrorText>
-        ) : null}
-      </Grid>
-
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Quorum Max Change
-        </Typography>
-      </SpacingContainer>
-
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={3}>
-              <Field
-                name="quorumMaxChange"
-                type="number"
-                placeholder="00"
-                inputProps={{ min: 0, max: 100 }}
-                component={TextField}
-              />
-            </GridItemCenter>
-            <GridItemCenter item xs={1}>
-              <ValueText color="textSecondary">%</ValueText>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={6}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <Tooltip placement="top-end"    title="Max Quorum Change">
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-        </AdditionContainer>
-        {errors.quorumMaxChange && touched.quorumMaxChange ? (
-          <ErrorText>{errors.quorumMaxChange}</ErrorText>
-        ) : null}
-      </Grid>
-
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
-          Max Votes
-        </Typography>
-      </SecondContainer>
-
-      <StakeContainer container direction="row" alignItems="center">
-        <AdditionContainer item xs={11} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="maxVotes"
-                type="number"
-                placeholder="00"
-                inputProps={{ min: 0, defaultValue: 0 }}
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={6}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <Typography color="textSecondary">
-                {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
-              </Typography>
-              <Tooltip placement="top-end"   
-                title={`Amount of ${
-                  orgSettings.governanceToken.tokenMetadata?.symbol || ""
-                } required to make a proposal. Total supply: ${
-                  orgSettings.governanceToken.tokenMetadata?.supply
-                }`}
-              >
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-        </AdditionContainer>
-        {errors.maxVotes || errors.maxVotes ? (
-          <ErrorText>
-            {errors.maxVotes || errors.maxVotes}
-          </ErrorText>
-        ) : null}
-      </StakeContainer>
     </>
   );
 };
@@ -1023,7 +711,7 @@ export const Governance: React.FC = () => {
     updateCache(newState);
     setSubmitting(true);
     dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
-    history.push(`summary`);
+    history.push(`quorum`);
   };
 
   return (

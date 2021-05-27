@@ -5,7 +5,6 @@ import useLocalStorage from "modules/common/hooks/useLocalStorage";
 import {
   CreatorAction,
   CreatorState,
-  StepperIndex,
   ActionTypes,
 } from "modules/creator/state/types";
 
@@ -39,12 +38,6 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     frozenDivisionValue: 1,
     minXtzAmount: 0,
     maxXtzAmount: 0,
-    quorumTreshold: 0,
-    maxVotes: 10000,
-    minQuorumAmount: 1,
-    maxQuorumAmount: 99,
-    quorumChange: 5,
-    quorumMaxChange: 19,
     proposalFlushDays: 0,
     proposalFlushHours: 0,
     proposalFlushMinutes: 0,
@@ -52,11 +45,17 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     proposalExpiryHours: 0,
     proposalExpiryMinutes: 0,
   },
+  quorumSettings: {
+    quorumTreshold: 0,
+    maxVotes: 10000,
+    minQuorumAmount: 1,
+    maxQuorumAmount: 99,
+    quorumChange: 5,
+    quorumMaxChange: 19,
+  }
 };
 
 export const INITIAL_STATE: CreatorState = {
-  activeStep: StepperIndex.SELECT_TEMPLATE,
-  governanceStep: StepperIndex.SELECT_TEMPLATE,
   data: INITIAL_MIGRATION_STATE,
   deploymentStatus,
 };
@@ -103,6 +102,15 @@ export const reducer = (
         },
       };
       return state;
+    case ActionTypes.UPDATE_QUORUM_SETTINGS:
+      state = {
+        ...state,
+        data: {
+          ...state.data,
+          quorumSettings: action.quorum,
+        },
+      };
+      return state;
     case ActionTypes.UPDATE_VOTING_SETTINGS:
       state = {
         ...state,
@@ -130,8 +138,6 @@ export const reducer = (
           template: action.template,
         },
       };
-      return state;
-    default:
       return state;
   }
 };

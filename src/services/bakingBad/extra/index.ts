@@ -10,7 +10,7 @@ export const getExtra = async <TDTO>(
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch ledger addresses from BakingBad API");
+    throw new Error("Failed to fetch DAO's extra info from BakingBad API");
   }
 
   const result = await response.json();
