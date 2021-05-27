@@ -234,6 +234,10 @@ const validateForm = (values: VotingSettings) => {
     errors.quorumTreshold = "Must be between Min and Max Quorum amounts";
   }
 
+  if(values.quorumChange > values.quorumMaxChange) {
+    errors.quorumChange = "Cannot be greater than Max Quorum Change"
+  }
+
   return errors;
 };
 
