@@ -58,6 +58,7 @@ const DaoContainer = styled(withTheme(Grid))(props => ({
   borderRadius: 0,
   padding: "50px 37px",
   borderTop: "none",
+  wordBreak: "break-all",
   "&:nth-child(odd)": {
     borderLeft: "none"
   },

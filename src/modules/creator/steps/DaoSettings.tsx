@@ -219,7 +219,7 @@ const DaoSettingsForm = withRouter(
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
-                      <Tooltip title="DAO Name info">
+                      <Tooltip placement="top-end"    title="DAO Name info">
                         <InfoIconInput color="secondary" />
                       </Tooltip>
                     </InputAdornment>
@@ -250,7 +250,7 @@ const DaoSettingsForm = withRouter(
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
-                      <Tooltip title="Token symbol info">
+                      <Tooltip placement="top-end"    title="Token symbol info">
                         <InfoIconInput color="secondary" />
                       </Tooltip>
                     </InputAdornment>
@@ -283,7 +283,7 @@ const DaoSettingsForm = withRouter(
                 />
               )}
             </Field>
-            <Tooltip title="Description info">
+            <Tooltip placement="top-end"    title="Description info">
               <InfoIcon color="secondary" />
             </Tooltip>
           </TextareaContainer>
@@ -308,7 +308,7 @@ const DaoSettingsForm = withRouter(
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
-                      <Tooltip title="DAO Name info">
+                      <Tooltip placement="top-end"    title="DAO Name info">
                         <InfoIconInput color="secondary" />
                       </Tooltip>
                     </InputAdornment>
@@ -338,7 +338,7 @@ const DaoSettingsForm = withRouter(
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
-                      <Tooltip title="DAO Name info">
+                      <Tooltip placement="top-end"    title="DAO Name info">
                         <InfoIconInput color="secondary" />
                       </Tooltip>
                     </InputAdornment>

@@ -10,7 +10,8 @@ import {
   Theme,
   useTheme,
   Popover,
-  useMediaQuery} from "@material-ui/core";
+  useMediaQuery,
+} from "@material-ui/core";
 import { useHistory, useParams } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
@@ -22,9 +23,11 @@ import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 import { AccountBalanceWallet } from "@material-ui/icons";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
+import { Network } from "services/beacon/context";
 
 const StyledAppBar = styled(AppBar)({
-  boxShadow: "none"
+  boxShadow: "none",
 });
 
 const StyledToolbar = styled(Toolbar)({
@@ -40,7 +43,7 @@ const StatusDot = styled(Box)({
   width: 8,
   height: 8,
   background: "#4BCF93",
-  marginLeft: 8
+  marginLeft: 8,
 });
 
 const AddressContainer = styled(Grid)(({ theme }) => ({
@@ -49,24 +52,24 @@ const AddressContainer = styled(Grid)(({ theme }) => ({
   cursor: "pointer",
   [theme.breakpoints.down("sm")]: {
     paddingRight: 0,
-  }
+  },
 }));
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const ConnectWallet = styled(Button)({
   maxHeight: 50,
-  alignSelf: "baseline"
+  alignSelf: "baseline",
 });
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
   borderRadius: 4,
-  backgroundColor: "#282B31"
+  backgroundColor: "#282B31",
 }));
 
 const AddressMenuItem = styled(Grid)(({ theme }) => ({
@@ -77,13 +80,13 @@ const AddressMenuItem = styled(Grid)(({ theme }) => ({
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${theme.palette.secondary.light}`,
-    cursor: "pointer"
-  }
+    cursor: "pointer",
+  },
 }));
 
 const AddressMenuIcon = styled(Grid)({
   paddingRight: "12px",
-  marginBottom: "-4px"
+  marginBottom: "-4px",
 });
 
 const AddressBarWrapper = styled(Grid)(({ theme }) => ({
@@ -91,21 +94,21 @@ const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   marginRight: 10,
   borderRadius: 4,
   "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)"
+    background: "rgba(129, 254, 183, 0.03)",
   },
   [theme.breakpoints.down("xs")]: {
     marginLeft: 15,
-    padding: "0px"
+    padding: "0px",
   },
   [theme.breakpoints.down("md")]: {
-    marginRight: -30
-  }
+    marginRight: -30,
+  },
 }));
 
 const explorerBorder = (theme: Theme) => ({
   appBorder: {
-    borderBottom: `2px solid ${theme.palette.primary.light}`
-  }
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
+  },
 });
 
 const LogoItem = styled("img")({
@@ -115,28 +118,28 @@ const LogoItem = styled("img")({
 
 const StyledPopover = styled(Popover)({
   ".MuiPaper-root": {
-    borderRadius: 4
-  }
+    borderRadius: 4,
+  },
 });
 
 const LogIn = styled(AccountBalanceWallet)(({ theme }) => ({
   color: theme.palette.secondary.main,
   height: 28,
   width: 28,
-  marginLeft: 15
+  marginLeft: 15,
 }));
 
 const ToolbarContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     display: "flex",
     justifyContent: "center",
-    marginLeft: 16
+    marginLeft: 16,
   },
   [theme.breakpoints.down("md")]: {
     display: "flex",
     justifyContent: "center",
-    marginLeft: 0
-  }
+    marginLeft: 0,
+  },
 }));
 
 const BalanceContainer = styled(Grid)({
@@ -144,26 +147,29 @@ const BalanceContainer = styled(Grid)({
   borderRadius: 4,
   padding: 4,
   "&:hover": {
-    background: "#608871"
-  }
+    background: "#608871",
+  },
 });
 
 const Symbol = styled(Typography)({
-  marginLeft: 4
+  marginLeft: 4,
 });
 
 export const ConnectWalletButton = ({
-  connect
+  connect,
 }: {
   connect: () => Promise<TezosToolkit>;
 }) => (
-  <ConnectWallet color="secondary" variant="outlined" onClick={connect}>
+  <ConnectWallet color="secondary" variant="outlined" onClick={() => connect()}>
     Connect Wallet
   </ConnectWallet>
 );
 
 interface ToolbarWrapperProps {
-  children: any, mode: "creator" | "explorer", isMobileSmall: boolean, isMobileExtraSmall: boolean
+  children: any;
+  mode: "creator" | "explorer";
+  isMobileSmall: boolean;
+  isMobileExtraSmall: boolean;
 }
 
 const ToolbarWrapper = ({
@@ -172,22 +178,19 @@ const ToolbarWrapper = ({
   isMobileSmall,
   isMobileExtraSmall,
 }: ToolbarWrapperProps): JSX.Element => {
-
   const xsValue = useMemo(() => {
-    if(mode === "creator") {
-      if(!isMobileSmall) {
-        return 12
+    if (mode === "creator") {
+      if (!isMobileSmall) {
+        return 12;
       }
     }
 
-    if(isMobileExtraSmall) {
-      return 1
+    if (isMobileExtraSmall) {
+      return 1;
     }
 
-    return 9
-
-
-  }, [isMobileExtraSmall, isMobileSmall, mode])
+    return 9;
+  }, [isMobileExtraSmall, isMobileSmall, mode]);
 
   return (
     <Grid
@@ -195,9 +198,7 @@ const ToolbarWrapper = ({
       xs={xsValue}
       container
       justify={
-        isMobileExtraSmall && mode === "explorer"
-          ? "flex-start"
-          : "flex-end"
+        isMobileExtraSmall && mode === "explorer" ? "flex-start" : "flex-end"
       }
     >
       {children}
@@ -206,22 +207,14 @@ const ToolbarWrapper = ({
 };
 
 interface ExplorerLogoProps {
-  history: any,
+  history: any;
 }
 
-const ExplorerLogo = ({
-  history,
-}: ExplorerLogoProps): JSX.Element => {
+const ExplorerLogo = ({ history }: ExplorerLogoProps): JSX.Element => {
   return (
     <>
-      <Grid
-        item
-        xs={11}
-        sm={3}
-      >
-        <Box
-          onClick={() => history.push("/explorer")}
-        >
+      <Grid item xs={11} sm={3}>
+        <Box onClick={() => history.push("/explorer")}>
           <ToolbarContainer container alignItems="center" wrap="nowrap">
             <Grid item>
               <LogoItem src={HomeButton} />
@@ -239,9 +232,9 @@ const ExplorerLogo = ({
 };
 
 export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
-  mode
+  mode,
 }) => {
-  const { connect, account, reset } = useTezos();
+  const { connect, account, reset, changeNetwork, network } = useTezos();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
   );
@@ -255,6 +248,23 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const { data: dao } = useDAO(daoId);
   const { data } = useTokenHolders(daoId);
 
+  const [
+    networkAnchorEl,
+    setNetworkAnchorEl,
+  ] = React.useState<HTMLButtonElement | null>(null);
+  const [networkPopperOpen, setNetworkPopperOpen] = useState(false);
+
+  const handleNetworkClick = (event: React.MouseEvent<any>) => {
+    setNetworkAnchorEl(event.currentTarget);
+    setNetworkPopperOpen(!networkPopperOpen);
+  };
+
+  const handleNetworkChange = (network: Network) => {
+    changeNetwork(network);
+    setPopperOpen(!popperOpen);
+    setNetworkPopperOpen(!networkPopperOpen);
+    history.push("/explorer/daos");
+  };
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -275,11 +285,12 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     if (!data) {
       return 0;
     }
-    const balance = data.find(({ address }) => address.toLowerCase() === account.toLowerCase());
+    const balance = data.find(
+      ({ address }) => address.toLowerCase() === account.toLowerCase()
+    );
     const frozenBalance = balance ? balance.balances[0] : 0;
     return frozenBalance || 0;
-
-  }, [data, account])
+  }, [data, account]);
 
   const history = useHistory();
 
@@ -287,18 +298,22 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     <StyledAppBar
       position="sticky"
       color="primary"
-      style={
-        mode === "explorer" ?
-          explorerBorder(theme).appBorder :
-          undefined
-      }
+      style={mode === "explorer" ? explorerBorder(theme).appBorder : undefined}
     >
       <StyledToolbar>
-        <Grid container direction="row" alignItems="center" wrap="wrap" justify={"flex-end"}>
-          {mode === "explorer" ? (
-            <ExplorerLogo history={history} />
-          ) : null}
-          <ToolbarWrapper mode={mode} isMobileSmall={isMobileSmall} isMobileExtraSmall={isMobileExtraSmall}>
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          wrap="wrap"
+          justify={"flex-end"}
+        >
+          {mode === "explorer" ? <ExplorerLogo history={history} /> : null}
+          <ToolbarWrapper
+            mode={mode}
+            isMobileSmall={isMobileSmall}
+            isMobileExtraSmall={isMobileExtraSmall}
+          >
             {account ? (
               <>
                 <Grid
@@ -306,29 +321,37 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   alignItems="center"
                   justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
                 >
-                  <Grid
-                    item
-                    xs={7}
-                    container
-                    justify="flex-end"
-                    direction="row"
-                  >
-                    {!isMobileSmall && data && data.length > 0 && dao? (
-                      <BalanceContainer
-                        container
+                  {!isMobileSmall && data && data.length > 0 && dao ? (
+                    <>
+                      <Grid
                         item
-                        justify="center"
+                        xs={7}
+                        container
+                        justify="flex-end"
                         direction="row"
-                        xs={3}
-                        sm={4}
                       >
-                        <Typography color="textSecondary">
-                          {userBalance}
-                        </Typography>
-                        <Symbol color="textSecondary">{dao.metadata.unfrozenToken.symbol}</Symbol>
-                      </BalanceContainer>
-                    ) : null}
-                  </Grid>
+                        <BalanceContainer
+                          container
+                          item
+                          justify="center"
+                          direction="row"
+                          xs={3}
+                          sm={4}
+                        >
+                          <Typography color="textSecondary">
+                            {userBalance}
+                          </Typography>
+                          <Symbol color="textSecondary">
+                            {dao.metadata.unfrozenToken.symbol}
+                          </Symbol>
+                        </BalanceContainer>
+                      </Grid>
+                      <Grid item>
+                        <ChangeNetworkButton />
+                      </Grid>
+                    </>
+                  ) : null}
+
                   <AddressBarWrapper item>
                     <AddressContainer
                       container
@@ -365,7 +388,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                     setPopperOpen(false);
                   }}
                   PaperProps={{
-                    style: { borderRadius: 4, backgroundColor: "transparent" }
+                    style: { borderRadius: 4, backgroundColor: "transparent" },
                   }}
                 >
                   <AddressMenu>
@@ -384,8 +407,19 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                       </Grid>
                     </AddressMenuItem>
                     <AddressMenuItem
+                      container
+                      alignItems="center"
+                      onClick={handleNetworkClick}
+                    >
+                      <Grid item>
+                        <Typography variant="subtitle2" color="textSecondary">
+                          Change network ({network})
+                        </Typography>
+                      </Grid>
+                    </AddressMenuItem>
+                    <AddressMenuItem
                       style={{
-                        borderTop: "2px solid rgba(255, 255, 255, 0.2)"
+                        borderTop: "2px solid rgba(255, 255, 255, 0.2)",
                       }}
                       container
                       alignItems="center"
@@ -404,13 +438,32 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                 </StyledPopover>
               </>
             ) : !isMobileSmall ? (
-              <ConnectWalletButton connect={connect} />
+              <Grid container justify="flex-end" wrap="nowrap" spacing={1}>
+                <Grid item>
+                  <ChangeNetworkButton />
+                </Grid>
+                <Grid item>
+                  <ConnectWalletButton connect={() => connect()} />
+                </Grid>
+              </Grid>
             ) : (
-              <LogIn onClick={connect} />
+              <Grid container justify="flex-end" wrap="nowrap">
+                <Grid item>
+                  <LogIn onClick={() => connect()} />
+                </Grid>
+              </Grid>
             )}
           </ToolbarWrapper>
         </Grid>
       </StyledToolbar>
-    </StyledAppBar >
+      <NetworkMenu
+        open={networkPopperOpen}
+        anchorEl={networkAnchorEl}
+        onClose={() => {
+          setNetworkPopperOpen(false);
+        }}
+        handleNetworkChange={handleNetworkChange}
+      />
+    </StyledAppBar>
   );
 };

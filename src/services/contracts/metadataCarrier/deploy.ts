@@ -38,7 +38,6 @@ export const deployMetadataCarrier = async ({
   keyName,
   metadata,
   tezos,
-  connect,
 }: MetadataCarrierParameters & Tezos): Promise<
   MetadataDeploymentResult | undefined
 > => {
@@ -46,10 +45,6 @@ export const deployMetadataCarrier = async ({
 
   try {
     console.log("Originating Metadata Carrier contract...");
-
-    if (!("_pkh" in tezos.wallet)) {
-      await connect();
-    }
 
     const t = await tezos.wallet.originate({
       code,

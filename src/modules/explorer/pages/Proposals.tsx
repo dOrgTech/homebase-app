@@ -13,7 +13,6 @@ import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { Info } from "@material-ui/icons";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
@@ -22,17 +21,11 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
-// import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
+import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { RegistryProposalFormContainer } from "../components/ProposalForm/registryProposalForm";
 import { useState } from "react";
 import { TreasuryProposalFormContainer } from "../components/ProposalForm/treasuryProposalForm";
-
-const InfoIconInput = styled(Info)({
-  cursor: "default",
-  top: 0,
-  fontSize: 20,
-  marginLeft: 6,
-});
+import { InfoIcon } from "../components/styled/InfoIcon";
 
 const ButtonsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -51,8 +44,8 @@ export const Proposals: React.FC = () => {
   const [selectedTab, setSelectedTab] = React.useState(0);
   const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
-  // const shouldDisable = useIsProposalButtonDisabled(id)
-  const [open, setOpen] = useState(false)
+  const shouldDisable = useIsProposalButtonDisabled(id);
+  const [open, setOpen] = useState(false);
 
   const { data: proposalsData } = useProposals(dao && dao.address);
 
@@ -65,16 +58,15 @@ export const Proposals: React.FC = () => {
       });
       return;
     }
-
   }, [connect, data, mutate, proposalsData, tezos]);
 
   const handleNewProposal = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleCloseModal = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <>
@@ -112,8 +104,11 @@ export const Proposals: React.FC = () => {
                   >
                     EXECUTE
                   </ViewButton>
-                  <Tooltip title="Execute all passed proposals and drop all expired or rejected">
-                    <InfoIconInput color="secondary" />
+                  <Tooltip
+                    placement="top-end"
+                    title="Execute all passed proposals and drop all expired or rejected"
+                  >
+                    <InfoIcon color="secondary" />
                   </Tooltip>
                 </Grid>
               </Grid>
@@ -128,13 +123,25 @@ export const Proposals: React.FC = () => {
             spacing={2}
           >
             <Grid item>
-              <PrimaryButton
-                variant="outlined"
-                onClick={handleNewProposal}
-                // disabled={shouldDisable}
-              >
-                NEW PROPOSAL
-              </PrimaryButton>
+              <Grid container>
+                <Grid item>
+                  <PrimaryButton
+                    variant="outlined"
+                    onClick={handleNewProposal}
+                    disabled={shouldDisable}
+                  >
+                    NEW PROPOSAL
+                  </PrimaryButton>
+                </Grid>
+                {shouldDisable && (
+                  <Tooltip
+                    placement="top-end"
+                    title="Not on voting period"
+                  >
+                    <InfoIcon color="secondary" />
+                  </Tooltip>
+                )}
+              </Grid>
             </Grid>
           </ButtonsContainer>
         </RectangleContainer>
@@ -183,14 +190,19 @@ export const Proposals: React.FC = () => {
             </UnderlineText>
           </ProposalsContainer> */}
       </Grid>
-      {
-        dao? (
-          dao.template === "registry"?
-          <RegistryProposalFormContainer open={open} handleClose={handleCloseModal}/>:
-          <TreasuryProposalFormContainer open={open} handleClose={handleCloseModal}/>
-        ): null
-      }
-      
+      {dao ? (
+        dao.template === "registry" ? (
+          <RegistryProposalFormContainer
+            open={open}
+            handleClose={handleCloseModal}
+          />
+        ) : (
+          <TreasuryProposalFormContainer
+            open={open}
+            handleClose={handleCloseModal}
+          />
+        )
+      ) : null}
     </>
   );
 };

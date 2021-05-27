@@ -1,5 +1,3 @@
-import { getDAOListMetadata } from './../../metadataCarrier/index';
-import { useEffect } from "react";
 import { useInfiniteQuery, useQuery } from "react-query";
 
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -10,7 +8,7 @@ import { getMetadataFromAPI } from 'services/bakingBad/metadata';
 const PAGE_SIZE = 10;
 
 export const useDAOs = () => {
-  const { tezos, connect, network } = useTezos();
+  const { tezos, network } = useTezos();
 
   const {
     data: addresses,
@@ -53,14 +51,6 @@ export const useDAOs = () => {
       },
     }
   );
-
-  useEffect(() => {
-    if (!tezos) {
-      connect();
-    } else {
-      getDAOListMetadata("KT1WqtGuRQA1uuyjG8FKsoUpcBHoRBJaoEB9", tezos).then(data => console.log(data))
-    }
-  }, [connect, tezos]);
 
   return {
     ...result,

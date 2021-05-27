@@ -12,6 +12,7 @@ import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy
 import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
+import { connectIfNotConnected } from "services/contracts/utils";
 
 const INITIAL_STATES = [
   {
@@ -50,6 +51,8 @@ export const useOriginate = (template: DAOTemplate) => {
 
       setActiveState(0);
       setStates(updatedStates);
+
+      await connectIfNotConnected(tezos, connect)
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,

@@ -8,7 +8,6 @@ import {
   useTheme,
   Tooltip,
   useMediaQuery,
-  Paper,
 } from "@material-ui/core";
 import { useHistory, useParams } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
@@ -18,7 +17,6 @@ import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-import { Info } from "@material-ui/icons";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { DAOStatsRow } from "../components/DAOStatsRow";
@@ -31,6 +29,8 @@ import { MobileHeader } from "../components/styled/MobileHeader";
 import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { FreezeDialog } from "../components/FreezeDialog";
 import { useMemo } from "react";
+import { InfoIcon } from "../components/styled/InfoIcon";
+import { PeriodLabel } from "../components/styled/VotingLabel";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -82,27 +82,13 @@ const CustomH1 = styled(Typography)(({ theme }) => ({
   },
 }));
 
-const InfoIconInput = styled(Info)({
-  cursor: "default",
-  top: 0,
-  fontSize: 20,
-  marginLeft: 6,
-});
-
-const VotingLabel = styled(Paper)({
-  background: "rgba(129, 254, 183, 0.07)",
-  borderRadius: 4,
-  padding: "8px 23px",
-  boxShadow: "none",
-  marginLeft: 14,
-  width: "100%",
-  textAlign: "center",
-  maxWidth: 279,
-});
-
 const DescriptionContainer = styled(Box)({
   padding: "20px 0",
 });
+
+const StyledFreezeButtons = styled(Grid)(() => ({
+  maxWidth: "100%",
+}));
 
 export const DAO: React.FC = () => {
   const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
@@ -119,7 +105,6 @@ export const DAO: React.FC = () => {
   const cycleInfo = useCycleInfo(id);
   const time = cycleInfo && cycleInfo.time;
   const theme = useTheme();
-  const isVotingPeriod = cycleInfo && cycleInfo.type;
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { data: proposals, isLoading: isProposalsLoading } = useProposals(
     data ? data.address : ""
@@ -137,19 +122,19 @@ export const DAO: React.FC = () => {
   }, [id, symbol, saveDaoId, saveDaoSymbol]);
 
   const timerInfo = useMemo(() => {
-    if(!time) {
+    if (!time) {
       return {
         days: 0,
         hours: 0,
         minutes: 0,
-        seconds: 0
-      }
+        seconds: 0,
+      };
     }
 
-    let n = time
+    let n = time;
 
     const days = Math.floor(n / (24 * 3600));
- 
+
     n = n % (24 * 3600);
     const hours = Math.floor(n / 3600);
 
@@ -163,9 +148,9 @@ export const DAO: React.FC = () => {
       days,
       hours,
       minutes,
-      seconds
-    }
-  }, [time])
+      seconds,
+    };
+  }, [time]);
 
   const onFlush = useCallback(async () => {
     await connectIfNotConnected(tezos, connect);
@@ -220,15 +205,26 @@ export const DAO: React.FC = () => {
                         >
                           EXECUTE
                         </ViewButton>
-                        <Tooltip title="Execute all passed proposals and drop all expired or rejected">
-                          <InfoIconInput color="secondary" />
+                        <Tooltip
+                          placement="top-end"
+                          title="Execute all passed proposals and drop all expired or rejected"
+                        >
+                          <InfoIcon color="secondary" />
                         </Tooltip>
                       </Grid>
                       <Grid item>
-                        <FreezeDialog freeze={true} />
-                      </Grid>
-                      <Grid item>
-                        <FreezeDialog freeze={false} />
+                        <StyledFreezeButtons
+                          container
+                          wrap="nowrap"
+                          spacing={1}
+                        >
+                          <Grid item>
+                            <FreezeDialog freeze={true} />
+                          </Grid>
+                          <Grid item>
+                            <FreezeDialog freeze={false} />
+                          </Grid>
+                        </StyledFreezeButtons>
                       </Grid>
                     </Grid>
                   </Box>
@@ -252,13 +248,7 @@ export const DAO: React.FC = () => {
               <Box paddingBottom="28px" width="100%">
                 <Grid container wrap="nowrap">
                   <Grid item>
-                    <VotingLabel>
-                      <Typography color="textSecondary">
-                        {isVotingPeriod === "voting"
-                          ? "VOTING ON PROPOSALS"
-                          : "CREATING PROPOSALS"}
-                      </Typography>
-                    </VotingLabel>
+                    {data && <PeriodLabel daoId={data.address} />}
                   </Grid>
                 </Grid>
               </Box>
@@ -324,8 +314,8 @@ export const DAO: React.FC = () => {
                           color="textSecondary"
                         >
                           <Box>
-                            {timerInfo.days}d {timerInfo.hours}h {timerInfo.minutes}
-                            m {timerInfo.seconds}s
+                            {timerInfo.days}d {timerInfo.hours}h{" "}
+                            {timerInfo.minutes}m {timerInfo.seconds}s
                           </Box>
                         </Typography>
                       </Box>
