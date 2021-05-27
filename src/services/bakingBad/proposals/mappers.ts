@@ -7,44 +7,11 @@ import {
 } from "./types";
 import {
   PMFA2TransferType,
-  PMTreasuryProposal,
   PMXTZTransferType,
 } from "services/contracts/baseDAO/registryDAO/types";
 import { TransferParams } from "services/contracts/baseDAO/types";
 import { xtzToMutez } from "services/contracts/utils";
 import { DAOTemplate } from "modules/creator/state";
-
-export const extractRegistryTransfersData = (
-  pm: PMTreasuryProposal
-): { transfers: Transfer[]; agoraPostId: string } => {
-  const agoraPostId = pm.transfer_proposal.agora_post_id;
-  const transfers = pm.transfer_proposal.transfers.map((transfer) => {
-    if (transfer.hasOwnProperty("xtz_transfer_type")) {
-      const xtzTransfer = transfer as PMXTZTransferType;
-
-      return {
-        amount: xtzTransfer.xtz_transfer_type.amount,
-        beneficiary: xtzTransfer.xtz_transfer_type.recipient,
-        type: "XTZ" as const,
-      };
-    } else {
-      const fa2Transfer = transfer as PMFA2TransferType;
-
-      return {
-        amount: fa2Transfer.transfer_list[0].txs[0].amount,
-        beneficiary: fa2Transfer.transfer_list[0].txs[0].to_,
-        contractAddress: fa2Transfer.contract_address,
-        tokenId: fa2Transfer.transfer_list[0].txs[0].token_id,
-        type: "FA2" as const,
-      };
-    }
-  });
-
-  return {
-    transfers,
-    agoraPostId,
-  };
-};
 
 export const extractTransfersData = (
   transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]
