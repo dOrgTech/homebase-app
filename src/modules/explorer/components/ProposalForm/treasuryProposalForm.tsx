@@ -1,9 +1,10 @@
 import { Dialog, Grid, styled, Typography } from "@material-ui/core";
-import { Field, Formik, FormikProps } from "formik";
+import { Field, Formik } from "formik";
 import {
   INITIAL_TRANSFER_FORM_VALUES,
   NewTreasuryProposalDialog,
   TreasuryProposalFormValues,
+  treasuryValidationSchema,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef } from "react";
 import { useParams } from "react-router";
@@ -50,10 +51,14 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
   const valuesRef = useRef<any>();
 
   const onSubmit = useCallback(
-    async (values: TreasuryProposalFormValues) => {
+    async (
+      values: TreasuryProposalFormValues,
+      { setSubmitting }: { setSubmitting: (b: boolean) => void }
+    ) => {
       await connectIfNotConnected(tezos, connect);
 
       if (dao && daoHoldings && valuesRef.current) {
+        setSubmitting(true);
         mutate({
           dao,
           args: {
@@ -88,20 +93,19 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      {dao && (
+      {dao && daoHoldings && (
         <Formik
           initialValues={initialValues}
           onSubmit={onSubmit}
-          // validate={validateTreasuryProposalForm}
+          validationSchema={treasuryValidationSchema}
+          validateOnChange={false}
         >
           {(formikProps) => {
             valuesRef.current = formikProps.values;
 
             return (
               <>
-                <NewTreasuryProposalDialog
-                  {...((formikProps as unknown) as FormikProps<TreasuryProposalFormValues>)}
-                />
+                <NewTreasuryProposalDialog />
 
                 <ProposalFormListItem container direction="row">
                   <Grid item xs={6}>
@@ -139,10 +143,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
                   </Grid>
                 </ProposalFormListItem>
 
-                <SendButton
-                  onClick={() => onSubmit(formikProps.values)}
-                  disabled={!dao}
-                >
+                <SendButton onClick={formikProps.submitForm} disabled={!dao}>
                   SEND
                 </SendButton>
               </>

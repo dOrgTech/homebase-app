@@ -7,7 +7,12 @@ import {
   DialogContent,
   DialogContentText,
 } from "@material-ui/core";
-import { Form, Field, FieldArray, FormikProps, FormikErrors } from "formik";
+import {
+  Form,
+  Field,
+  FieldArray,
+  useFormikContext,
+} from "formik";
 import { TextField, Switch } from "formik-material-ui";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
 import { useNotification } from "modules/common/hooks/useNotification";
@@ -18,6 +23,7 @@ import {
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { Registry } from "services/contracts/baseDAO";
+import * as Yup from "yup";
 
 const UploadButtonContainer = styled(Grid)(({ theme }) => ({
   height: 70,
@@ -104,45 +110,40 @@ export const EMPTY_LIST_ITEM: Registry = { key: "", value: "" };
 export const INITIAL_REGISTRY_FORM_VALUES: UpdateRegistryDialogValues = {
   registryForm: {
     list: [EMPTY_LIST_ITEM],
-    isBatch: false
-  }
-};
-
-export const validateUpdateRegistryForm = (
-  values: UpdateRegistryDialogValues
-): FormikErrors<UpdateRegistryDialogValues> => {
-  const errors: Record<string, any> = {
-    list: values.registryForm.list.map(() => ({})),
-  };
-
-  values.registryForm.list.forEach((item, i) => {
-    if (!item.key) {
-      errors.list[i].key = "Required";
-    }
-
-    if (!item.value) {
-      errors.list[i].value = "Required";
-    }
-  });
-
-  return errors;
+    isBatch: false,
+  },
 };
 
 export interface UpdateRegistryDialogValues {
   registryForm: {
     list: Registry[];
     isBatch: boolean;
-  }
+  };
 }
 
-export const UpdateRegistryDialog: React.FC<
-  FormikProps<UpdateRegistryDialogValues>
-> = ({ values, setFieldValue, errors, touched }) => {
+export const registryValidationSchema = Yup.object().shape({
+  registryForm: Yup.object().shape({
+    list: Yup.array().of(
+      Yup.object().shape({
+        key: Yup.string().required("Required"),
+      })
+    ),
+  }),
+});
+
+export const UpdateRegistryDialog: React.FC = () => {
+  const {
+    values,
+    setFieldValue,
+    errors,
+    touched,
+  } = useFormikContext<UpdateRegistryDialogValues>();
   const [activeItem, setActiveItem] = React.useState(1);
   const openNotification = useNotification();
 
   const keyError = (errors.registryForm?.list?.[activeItem - 1] as any)?.key;
-  const valueError = (errors.registryForm?.list?.[activeItem - 1] as any)?.value;
+  const valueError = (errors.registryForm?.list?.[activeItem - 1] as any)
+    ?.value;
 
   const importList = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,7 +187,11 @@ export const UpdateRegistryDialog: React.FC<
             </Grid>
             <Grid item xs={6}>
               <SwitchContainer item xs={12} justify="flex-end">
-                <Field component={Switch} type="checkbox" name="registryForm.isBatch" />
+                <Field
+                  component={Switch}
+                  type="checkbox"
+                  name="registryForm.isBatch"
+                />
               </SwitchContainer>
             </Grid>
           </ProposalFormListItem>
@@ -249,7 +254,8 @@ export const UpdateRegistryDialog: React.FC<
                             placeholder="Type a Key"
                             component={CustomTextField}
                           />
-                          {keyError && touched.registryForm?.list?.[activeItem - 1]?.key ? (
+                          {keyError &&
+                          touched.registryForm?.list?.[activeItem - 1]?.key ? (
                             <ErrorText>{keyError}</ErrorText>
                           ) : null}
                         </SwitchContainer>
@@ -283,7 +289,8 @@ export const UpdateRegistryDialog: React.FC<
                           placeholder="Type a value"
                           component={CustomTextarea}
                         />
-                        {valueError && touched.registryForm?.list?.[activeItem - 1]?.value ? (
+                        {valueError &&
+                        touched.registryForm?.list?.[activeItem - 1]?.value ? (
                           <ErrorText>{valueError}</ErrorText>
                         ) : null}
                       </Grid>

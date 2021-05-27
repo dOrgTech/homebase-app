@@ -2,14 +2,15 @@ import { Dialog, Grid, styled, Typography } from "@material-ui/core";
 import { Field, Formik, FormikProps } from "formik";
 import {
   INITIAL_REGISTRY_FORM_VALUES,
+  registryValidationSchema,
   UpdateRegistryDialog,
   UpdateRegistryDialogValues,
-  validateUpdateRegistryForm,
 } from "modules/explorer/Registry/components/UpdateRegistryDialog";
 import {
   INITIAL_TRANSFER_FORM_VALUES,
   NewTreasuryProposalDialog,
   TreasuryProposalFormValues,
+  treasuryValidationSchema,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef, useState } from "react";
 import { useParams } from "react-router";
@@ -59,17 +60,21 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
   const [selectedTab, setSelectedTab] = useState(0);
   const { mutate } = useRegistryPropose();
   const { tezos, connect } = useTezos();
-  const valuesRef = useRef<Values>();
+  const formikRef = useRef<FormikProps<Values>>();
 
   const onSubmit = useCallback(
-    async (values: Values) => {
+    async (
+      values: Values,
+      { setSubmitting }: { setSubmitting: (b: boolean) => void }
+    ) => {
       await connectIfNotConnected(tezos, connect);
 
-      if (dao && daoHoldings && valuesRef?.current) {
+      if (dao && daoHoldings && formikRef?.current) {
+        setSubmitting(true);
         mutate({
           dao,
           args: {
-            agoraPostId: Number(valuesRef.current.agoraPostId),
+            agoraPostId: Number(formikRef.current.values.agoraPostId),
             //TODO: Fix types here:
             transfer_proposal: {
               transfers: values.transferForm.transfers
@@ -110,14 +115,15 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      {dao && (
+      {dao && daoHoldings && (
         <Formik
           initialValues={initialValues}
           onSubmit={onSubmit}
-          validate={validateUpdateRegistryForm}
+          validationSchema={registryValidationSchema.concat(treasuryValidationSchema)}
+          validateOnChange={false}
         >
           {(formikProps) => {
-            valuesRef.current = formikProps.values;
+            formikRef.current = formikProps;
 
             return (
               <>
@@ -127,14 +133,10 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                   labels={["TRANSFER", "UPDATE REGISTRY"]}
                 />
                 <TabPanel value={selectedTab} index={0}>
-                  <NewTreasuryProposalDialog
-                    {...((formikProps as unknown) as FormikProps<TreasuryProposalFormValues>)}
-                  />
+                  <NewTreasuryProposalDialog />
                 </TabPanel>
                 <TabPanel value={selectedTab} index={1}>
-                  <UpdateRegistryDialog
-                    {...((formikProps as unknown) as FormikProps<UpdateRegistryDialogValues>)}
-                  />
+                  <UpdateRegistryDialog />
                 </TabPanel>
 
                 <ProposalFormListItem container direction="row">
@@ -173,10 +175,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                   </Grid>
                 </ProposalFormListItem>
 
-                <SendButton
-                  onClick={() => onSubmit(formikProps.values)}
-                  disabled={!dao}
-                >
+                <SendButton onClick={formikProps.submitForm} disabled={!dao}>
                   SEND
                 </SendButton>
               </>
