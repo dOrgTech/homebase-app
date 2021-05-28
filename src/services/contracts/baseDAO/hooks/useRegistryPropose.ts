@@ -48,7 +48,7 @@ export const useRegistryPropose = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("proposals");
+        queryClient.resetQueries("proposals");
       },
     }
   );

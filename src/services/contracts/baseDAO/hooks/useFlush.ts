@@ -47,9 +47,9 @@ export const useFlush = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("dao");
-        queryClient.invalidateQueries("daos");
-        queryClient.invalidateQueries("proposals");
+        queryClient.resetQueries("dao");
+        queryClient.resetQueries("daos");
+        queryClient.resetQueries("proposals");
       },
     }
   );

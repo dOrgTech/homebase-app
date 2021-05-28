@@ -51,7 +51,7 @@ export const useTreasuryPropose = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("proposals");
+        queryClient.resetQueries("proposals");
       },
     }
   );
