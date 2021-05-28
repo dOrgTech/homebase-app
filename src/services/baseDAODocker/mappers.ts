@@ -33,5 +33,5 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
 const formatMetadata = ({ deployAddress, keyName }: MetadataDeploymentResult) => {
   return `'(Big_map.literal [
     ("", 0x${char2Bytes(`tezos-storage://${deployAddress}/${keyName}`)});
-  ] : metadata_map)'`;
+  ])'`;
 }
