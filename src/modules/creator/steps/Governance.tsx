@@ -192,9 +192,9 @@ const validateForm = (values: VotingSettings) => {
       values.proposalExpiryHours * 60 +
       values.proposalExpiryMinutes;
 
-    if (proposalFlushTime < votingPeriodTime * 2) {
+    if (proposalFlushTime <= votingPeriodTime * 2) {
       errors.proposalFlushMinutes =
-        "Must be at least double of Voting Period Duration";
+        "Must be more than double the Voting Period Duration";
     }
 
     if (proposalExpiryTime <= proposalFlushTime) {

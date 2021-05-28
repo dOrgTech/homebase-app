@@ -67,7 +67,7 @@ const InfoIconInput = styled(InfoOutlined)({
   cursor: "default",
 });
 
-const validateForm = (values: QuorumSettings) => {
+const validateForm = (values: QuorumSettings, totalSupply: number) => {
   const errors: FormikErrors<QuorumSettings> = {};
 
   Object.keys(values).forEach((key) => {
@@ -105,6 +105,10 @@ const validateForm = (values: QuorumSettings) => {
 
   if (values.maxVotes <= 0) {
     errors.maxVotes = "Must be greater than 0";
+  }
+
+  if(values.maxVotes >= totalSupply) {
+    errors.maxVotes = `Must be lesser than the gov. token's total supply (${totalSupply})`
   }
 
   return errors;
@@ -424,8 +428,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
 //TODO: Remove any from this component
 export const Quorum: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
-  const { quorumSettings } = state.data;
-  console.log(quorumSettings);
+  const { quorumSettings, orgSettings } = state.data;
   const history = useHistory();
 
   const saveStepInfo = (
@@ -463,7 +466,7 @@ export const Quorum: React.FC = () => {
 
       <Formik
         enableReinitialize
-        validate={validateForm}
+        validate={(values) => validateForm(values, orgSettings.governanceToken.tokenMetadata?.supply || 0)}
         onSubmit={saveStepInfo}
         initialValues={quorumSettings}
       >
