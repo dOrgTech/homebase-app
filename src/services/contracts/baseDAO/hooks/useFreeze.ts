@@ -23,7 +23,7 @@ export const useFreeze = () => {
         key: freezeNotification,
         closeSnackbar: closeFreezeNotification,
       } = openNotification({
-        message: "Freeze is being processed...",
+        message: "Stake is being processed...",
         persist: true,
         variant: "info",
       });
@@ -34,7 +34,7 @@ export const useFreeze = () => {
 
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "Freeze transaction confirmed!",
+          message: "Stake transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
@@ -47,7 +47,7 @@ export const useFreeze = () => {
         console.log(e);
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "An error has happened with freeze transaction!",
+          message: "An error has happened with stake transaction!",
           variant: "error",
           autoHideDuration: 10000,
         });

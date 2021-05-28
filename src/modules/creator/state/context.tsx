@@ -47,7 +47,6 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
   },
   quorumSettings: {
     quorumTreshold: 0,
-    maxVotes: 10000,
     minQuorumAmount: 1,
     maxQuorumAmount: 99,
     quorumChange: 5,

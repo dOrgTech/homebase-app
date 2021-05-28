@@ -38,7 +38,6 @@ export type QuorumSettings = {
   maxQuorumAmount: number;
   quorumChange: number;
   quorumMaxChange: number;
-  maxVotes: number;
 };
 
 export type VotingSettings = {
@@ -137,7 +136,6 @@ export interface BaseStorageParams {
   quorumMaxChange: number;
   proposalFlushPeriod: number;
   proposalExpiryPeriod: number;
-  maxVotes: number;
 }
 
 export type Token = {

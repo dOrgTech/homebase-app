@@ -40,7 +40,6 @@ export const fromStateToBaseStorage = (
     maxQuorumAmount: info.quorumSettings.maxQuorumAmount,
     quorumChange: info.quorumSettings.quorumChange,
     quorumMaxChange: info.quorumSettings.quorumMaxChange,
-    maxVotes: info.quorumSettings.maxVotes,
     
     proposalFlushPeriod: 
       (info.votingSettings.proposalFlushHours || 0) * SECONDS_IN_HOUR +
