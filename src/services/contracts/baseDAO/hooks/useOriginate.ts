@@ -1,3 +1,4 @@
+import { Network } from "services/beacon/context";
 import { OriginateParams } from "../types";
 import { DAOTemplate } from "../../../../modules/creator/state/types";
 import { useState } from "react";
@@ -13,6 +14,7 @@ import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
 import { connectIfNotConnected } from "services/contracts/utils";
+import { getMetadataFromAPI } from "services/bakingBad/metadata";
 
 const INITIAL_STATES = [
   {
@@ -28,6 +30,26 @@ const INITIAL_STATES = [
     completedText: "",
   },
 ];
+
+const waitForMetadata = async (
+  contractAddress: string,
+  network: Network,
+  retries = 0
+) => {
+  try {
+    await getMetadataFromAPI(contractAddress, network);
+  } catch (e) {
+    if (retries > 6) {
+      console.log(`Metadata indexation timed out: ${e}`);
+      return;
+    }
+
+    setTimeout(
+      async () => await waitForMetadata(contractAddress, network, retries + 1),
+      10000
+    );
+  }
+};
 
 export const useOriginate = (template: DAOTemplate) => {
   const queryClient = useQueryClient();
@@ -52,7 +74,7 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(0);
       setStates(updatedStates);
 
-      await connectIfNotConnected(tezos, connect)
+      await connectIfNotConnected(tezos, connect);
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
@@ -83,12 +105,14 @@ export const useOriginate = (template: DAOTemplate) => {
         tezos,
         metadata,
         params,
-        network
+        network,
       });
 
       if (!contract) {
         throw new Error(`Error deploying ${template}DAO`);
       }
+
+      await waitForMetadata(contract.address, network)
 
       updatedStates[1] = {
         ...updatedStates[1],
