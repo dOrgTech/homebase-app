@@ -53,9 +53,9 @@ export const useUnfreeze = () => {
     },
     {
       onSuccess: () => {
-          queryClient.invalidateQueries("ledger");
-        queryClient.invalidateQueries("dao");
-        queryClient.invalidateQueries("balances");
+          queryClient.resetQueries("ledger");
+        queryClient.resetQueries("dao");
+        queryClient.resetQueries("balances");
       },
     }
   );

@@ -141,7 +141,7 @@ export const useOriginate = (template: DAOTemplate) => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("daos");
+        queryClient.resetQueries("daos");
       },
     }
   );

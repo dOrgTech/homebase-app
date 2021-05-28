@@ -56,8 +56,8 @@ export const useFreeze = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries("ledger");
-        queryClient.invalidateQueries("dao");
+        queryClient.resetQueries("ledger");
+        queryClient.resetQueries("dao");
     },
     }
   );
