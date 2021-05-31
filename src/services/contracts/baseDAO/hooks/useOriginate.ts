@@ -31,24 +31,30 @@ const INITIAL_STATES = [
   },
 ];
 
-const waitForMetadata = async (
-  contractAddress: string,
-  network: Network,
-  retries = 0
-) => {
-  try {
-    await getMetadataFromAPI(contractAddress, network);
-  } catch (e) {
-    if (retries > 6) {
-      console.log(`Metadata indexation timed out: ${e}`);
-      return;
-    }
+const waitForMetadata = async (contractAddress: string, network: Network) => {
+  return new Promise(async (resolve, reject) => {
+    let tries = 0;
 
-    setTimeout(
-      async () => await waitForMetadata(contractAddress, network, retries + 1),
-      10000
-    );
-  }
+    const tryMetadata = async () => {
+      try {
+        await getMetadataFromAPI(contractAddress, network);
+        resolve(true);
+      } catch (e) {
+        if (tries > 12) {
+          console.log(`Metadata indexation timed out: ${e}`);
+          reject(false);
+        }
+
+        console.log(`Verifying metadata indexation, trial #${tries + 1}`);
+
+        tries++;
+
+        setTimeout(async () => await tryMetadata(), 10000);
+      }
+    };
+
+    await tryMetadata();
+  });
 };
 
 export const useOriginate = (template: DAOTemplate) => {
@@ -112,15 +118,13 @@ export const useOriginate = (template: DAOTemplate) => {
         throw new Error(`Error deploying ${template}DAO`);
       }
 
-      await waitForMetadata(contract.address, network)
-
       updatedStates[1] = {
         ...updatedStates[1],
         completedText: `Deployed ${template} DAO contract with address "${contract.address}"`,
       };
 
       updatedStates[2] = {
-        activeText: `Saving ${template} DAO address in IPFS`,
+        activeText: `Waiting for metadata to be indexed`,
         completedText: "",
       };
 
@@ -129,9 +133,13 @@ export const useOriginate = (template: DAOTemplate) => {
 
       await addNewContractToIPFS(contract.address);
 
+      const indexed = await waitForMetadata(contract.address, network);
+
       updatedStates[2] = {
         ...updatedStates[2],
-        completedText: `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`,
+        completedText: indexed
+          ? `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`
+          : `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully, but metadata has not been indexed yet. This usually takes a few minutes, your DAO page may not be available yet.`,
       };
 
       setActiveState(3);

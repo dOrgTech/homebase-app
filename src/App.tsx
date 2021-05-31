@@ -22,7 +22,7 @@ import { ModalsProvider } from "modules/explorer/ModalsContext";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: false
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 60000)
     }
   }
 });
