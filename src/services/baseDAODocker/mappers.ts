@@ -16,7 +16,7 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   frozen_extra_value: `${storage.extra.frozenExtraValue}n`,
   frozen_scale_value: '0n',
   metadata_map: formatMetadata(metadata),
-  quorum_treshold: `${storage.quorumTreshold}n`,
+  quorum_threshold: `${storage.quorumThreshold}n`,
   min_quorum: `${storage.minQuorumAmount}n`,
   max_quorum: `${storage.maxQuorumAmount}n`,
   quorum_change: `${storage.quorumChange}n`,

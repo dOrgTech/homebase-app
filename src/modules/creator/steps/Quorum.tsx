@@ -79,10 +79,10 @@ const validateForm = (values: QuorumSettings) => {
   }
 
   if (
-    values.quorumTreshold > values.maxQuorumAmount ||
-    values.quorumTreshold < values.minQuorumAmount
+    values.quorumThreshold > values.maxQuorumAmount ||
+    values.quorumThreshold < values.minQuorumAmount
   ) {
-    errors.quorumTreshold = "Must be between Min and Max Quorum amounts";
+    errors.quorumThreshold = "Must be between Min and Max Quorum amounts";
   }
 
   if (values.quorumChange > values.quorumMaxChange) {
@@ -144,7 +144,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
           >
             <GridItemCenter item xs={3}>
               <Field
-                name="quorumTreshold"
+                name="quorumThreshold"
                 type="number"
                 placeholder="00"
                 inputProps={{ min: 0, max: 100 }}
@@ -174,8 +174,8 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
             </GridItemCenter>
           </ItemContainer>
         </AdditionContainer>
-        {errors.quorumTreshold && touched.quorumTreshold ? (
-          <ErrorText>{errors.quorumTreshold}</ErrorText>
+        {errors.quorumThreshold && touched.quorumThreshold ? (
+          <ErrorText>{errors.quorumThreshold}</ErrorText>
         ) : null}
       </Grid>
 

@@ -65,7 +65,7 @@ export const mapProposalBase = (
     downVotes: Number(dto.data.value.children[0].value),
     proposer: dto.data.value.children[2].value,
     startDate: dto.data.value.children[5].value,
-    quorumTreshold: dto.data.value.children[4].value,
+    quorumThreshold: dto.data.value.children[4].value,
     period: Number(dto.data.value.children[8].value) - 1,
     proposerFrozenTokens: dto.data.value.children[3].value,
     type: template,

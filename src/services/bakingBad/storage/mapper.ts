@@ -14,9 +14,9 @@ export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
   proposalsToFlush:
     dto.children[11].children?.map((elem) => elem.children[1].value) || [],
   proposalsMapNumber: dto.children[12].value,
-  quorumTresholdAtCycle: {
+  quorumThresholdAtCycle: {
     lastUpdatedCycle: Number(dto.children[13].children[0].value),
-    quorumTreshold: dto.children[13].children[1].value,
+    quorumThreshold: dto.children[13].children[1].value,
     staked: dto.children[13].children[2].value,
   },
   start_time: dto.children[14].value,
@@ -27,9 +27,9 @@ export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
   governanceTotalSupply: dto.children[19].value,
   maxProposals: Number(dto.children[20].value),
   maxQuorumChange: dto.children[21].value,
-  maxQuorumTreshold: dto.children[22].value,
+  maxQuorumThreshold: dto.children[22].value,
   maxVotes: dto.children[23].value,
-  minQuorumTreshold: dto.children[24].value,
+  minQuorumThreshold: dto.children[24].value,
   votingPeriod: Number(dto.children[25].value),
   proposalExpiredTime: Number(dto.children[27].value),
   proposalFlushTime: Number(dto.children[28].value),

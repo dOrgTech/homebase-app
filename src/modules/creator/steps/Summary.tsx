@@ -414,7 +414,7 @@ export const Summary = (): JSX.Element => {
                     color="textSecondary"
                     align="right"
                   >
-                    {state.data.quorumSettings.quorumTreshold}%
+                    {state.data.quorumSettings.quorumThreshold}%
                   </Typography>
                 </Grid>
               </UnderlinedGrid>

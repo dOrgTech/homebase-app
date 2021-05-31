@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 
 interface Props {
-  quorumTreshold: number;
+  quorumThreshold: number;
   upVotes: number;
   downVotes: number;
 }
 
 export const useVotesStats = ({
-  quorumTreshold,
+  quorumThreshold,
   upVotes,
   downVotes,
 }: Props) => {
@@ -18,15 +18,15 @@ export const useVotesStats = ({
     const votes = support ? upVotes : downVotes;
     const downVotesQuorumPercentage = getRelativeVotePercentage(
       downVotes,
-      quorumTreshold
+      quorumThreshold
     );
     const upVotesQuorumPercentage = getRelativeVotePercentage(
       upVotes,
-      quorumTreshold
+      quorumThreshold
     );
     const votesQuorumPercentage = getRelativeVotePercentage(
       votes,
-      quorumTreshold
+      quorumThreshold
     );
     const downVotesSumPercentage = getRelativeVotePercentage(
       downVotes,
@@ -46,7 +46,7 @@ export const useVotesStats = ({
       upVotesSumPercentage,
       votesSumPercentage,
     };
-  }, [quorumTreshold, upVotes, downVotes]);
+  }, [quorumThreshold, upVotes, downVotes]);
 };
 
 const getRelativeVotePercentage = (votes: number, quorumOrSum: number) => {

@@ -15,7 +15,7 @@ import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
-import { useQuorumTreshold } from "../hooks/useQuorumTreshold";
+import { useQuorumThreshold } from "../hooks/useQuorumThreshold";
 import { InfoIcon } from "./styled/InfoIcon";
 
 const HistoryContent = styled(Grid)({
@@ -67,12 +67,12 @@ export const ProposalStatusHistory: React.FC = () => {
   const { data: dao } = useDAO(daoId);
   const { data: proposal } = useProposal(daoId, proposalId);
 
-  const quorumTreshold = useQuorumTreshold(dao);
+  const quorumThreshold = useQuorumThreshold(dao);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { votesQuorumPercentage, votes } = useVotesStats({
     upVotes: proposal?.upVotes || 0,
     downVotes: proposal?.downVotes || 0,
-    quorumTreshold,
+    quorumThreshold,
   });
 
   return (
@@ -88,7 +88,7 @@ export const ProposalStatusHistory: React.FC = () => {
               QUORUM THRESHOLD %
             </Typography>
             <Tooltip placement="bottom"   
-              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumTreshold} votes.`}
+              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumThreshold} votes.`}
             >
               <InfoIcon color="secondary" />
             </Tooltip>

@@ -39,7 +39,7 @@ export const useProposals = (
         (proposal.period + 1) * dao.storage.votingPeriod;
       const passedOrRejectedThresholdInSeconds =
         (proposal.period + 2) * dao.storage.votingPeriod;
-      const flushTresholdInSeconds =
+      const flushThresholdInSeconds =
         proposal.period * dao.storage.votingPeriod +
         dao.storage.proposalFlushTime;
       const expiredThresholdInSeconds =
@@ -115,20 +115,20 @@ export const useProposals = (
         };
       }
 
-      if (proposal.upVotes >= Number(proposal.quorumTreshold)) {
+      if (proposal.upVotes >= Number(proposal.quorumThreshold)) {
         statusHistory.push({
           status: ProposalStatus.PASSED,
           timestamp: dayjs(dao.storage.start_time)
-            .add(flushTresholdInSeconds, "seconds")
+            .add(flushThresholdInSeconds, "seconds")
             .format("LLL"),
         });
       }
 
-      if (proposal.downVotes >= Number(proposal.quorumTreshold)) {
+      if (proposal.downVotes >= Number(proposal.quorumThreshold)) {
         statusHistory.push({
           status: ProposalStatus.REJECTED,
           timestamp: dayjs(dao.storage.start_time)
-            .add(flushTresholdInSeconds, "seconds")
+            .add(flushThresholdInSeconds, "seconds")
             .format("LLL"),
         });
       }
@@ -136,7 +136,7 @@ export const useProposals = (
       statusHistory.push({
         status: ProposalStatus.NO_QUORUM,
         timestamp: dayjs(dao.storage.start_time)
-          .add(flushTresholdInSeconds, "seconds")
+          .add(flushThresholdInSeconds, "seconds")
           .format("LLL"),
       });
 
@@ -144,15 +144,15 @@ export const useProposals = (
         let status = ProposalStatus.NO_QUORUM;
         let flushable = true;
 
-        if (proposal.upVotes >= Number(proposal.quorumTreshold)) {
+        if (proposal.upVotes >= Number(proposal.quorumThreshold)) {
           status = ProposalStatus.PASSED;
         }
 
-        if (proposal.downVotes >= Number(proposal.quorumTreshold)) {
+        if (proposal.downVotes >= Number(proposal.quorumThreshold)) {
           status = ProposalStatus.REJECTED;
         }
 
-        if (secondsPassed < flushTresholdInSeconds) {
+        if (secondsPassed < flushThresholdInSeconds) {
           flushable = false;
         }
 

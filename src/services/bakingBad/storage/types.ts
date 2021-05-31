@@ -16,9 +16,9 @@ export interface Storage {
   ledgerMapNumber: number;
   proposalsToFlush: string[];
   proposalsMapNumber: number;
-  quorumTresholdAtCycle: {
+  quorumThresholdAtCycle: {
     lastUpdatedCycle: number;
-    quorumTreshold: string;
+    quorumThreshold: string;
     staked: string;
   };
   start_time: string;
@@ -29,9 +29,9 @@ export interface Storage {
   governanceTotalSupply: string;
   maxProposals: number;
   maxQuorumChange: string;
-  maxQuorumTreshold: string;
+  maxQuorumThreshold: string;
   maxVotes: string;
-  minQuorumTreshold: string;
+  minQuorumThreshold: string;
   votingPeriod: number;
   proposalExpiredTime: number;
   proposalFlushTime: number;
