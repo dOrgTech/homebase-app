@@ -146,7 +146,7 @@ export interface Proposal {
   downVotes: number;
   startDate: string;
   
-  quorumTreshold: string;
+  quorumThreshold: string;
   proposer: string;
   period: number;
   proposerFrozenTokens: string;

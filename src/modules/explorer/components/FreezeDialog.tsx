@@ -159,12 +159,10 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
             <TableHeader container direction="row" alignItems="center">
               <Grid item xs={12}>
                 <Typography variant="h5" color="textSecondary">
-                  Confirm the freezing of your tokens
+                  Confirm the {freeze ? "staking" : "unstaking"} of your tokens
                 </Typography>
               </Grid>
               <TextHeader variant="subtitle1" color="textSecondary">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
               </TextHeader>
             </TableHeader>
             <InputContainer

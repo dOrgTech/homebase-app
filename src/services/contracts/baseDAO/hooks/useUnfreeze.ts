@@ -22,7 +22,7 @@ export const useUnfreeze = () => {
         key: unfreezeNotification,
         closeSnackbar: closeUnfreezeNotification,
       } = openNotification({
-        message: "Unfreeze is being processed...",
+        message: "Unstake is being processed...",
         persist: true,
         variant: "info",
       });
@@ -33,7 +33,7 @@ export const useUnfreeze = () => {
 
         closeUnfreezeNotification(unfreezeNotification);
         openNotification({
-          message: "Unfreeze transaction confirmed!",
+          message: "Unstake transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
@@ -44,7 +44,7 @@ export const useUnfreeze = () => {
         console.log(e);
         closeUnfreezeNotification(unfreezeNotification);
         openNotification({
-          message: "An error has happened with unfreeze transaction!",
+          message: "An error has happened with unstake transaction!",
           variant: "error",
           autoHideDuration: 10000,
         });

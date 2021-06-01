@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Switch,
@@ -17,14 +17,14 @@ import ScrollToTop from "modules/common/ScrollToTop";
 import { theme } from "theme";
 
 import "App.css";
-import { ModalsProvider } from "modules/explorer/ModalsContext";
+import { WarningDialog } from "modules/explorer/components/WarningDialog";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: false
-    }
-  }
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 60000),
+    },
+  },
 });
 
 const styles = makeStyles({
@@ -55,7 +55,22 @@ const styles = makeStyles({
 });
 
 const App: React.FC = () => {
+  const [open, setOpen] = useState(false);
   const classes = styles();
+
+  useEffect(() => {
+    const visited = window.localStorage.getItem("homebase:visited");
+
+    if (!visited) {
+      setOpen(true);
+    }
+  }, []);
+
+  const handleClose = () => {
+    window.localStorage.setItem("homebase:visited", "true");
+    setOpen(false)
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider
@@ -76,15 +91,14 @@ const App: React.FC = () => {
                   </CreatorProvider>
                 </Route>
                 <Route path="/explorer">
-                  <ModalsProvider>
-                    <Navbar mode="explorer" />
-                    <DAOExplorerRouter />
-                  </ModalsProvider>
+                  <Navbar mode="explorer" />
+                  <DAOExplorerRouter />
                 </Route>
                 <Redirect to="/explorer" />
               </Switch>
             </Router>
           </Box>
+          <WarningDialog open={open} handleClose={handleClose} />
         </QueryClientProvider>
       </SnackbarProvider>
     </ThemeProvider>

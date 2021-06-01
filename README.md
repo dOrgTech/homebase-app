@@ -70,7 +70,7 @@ You will be taken to the DAO Creator, from which you will be asked to choose on 
     - B is a constant amount of tokens
   * **`Returned stake after proposal rejection`**
   * **`Transfer amounts`** **(Treasury only)**: maximum and minimum amounts that can be transferred in a treasury proposal transfer. Currently only supports `XTZ`
-  * **`Quorum threshold`**: currently a natural number representing the total amount of votes required for a proposal to pass. Each token staked in a vote operation represents a vote. Therefore, with a quorum treshold of 500, a vote that stakes 500 tokens would make the proposal pass.
+  * **`Quorum threshold`**: currently a natural number representing the total amount of votes required for a proposal to pass. Each token staked in a vote operation represents a vote. Therefore, with a quorum threshold of 500, a vote that stakes 500 tokens would make the proposal pass.
   * **`Maximum proposal size`**
 
 **Distribution Settings**:
@@ -116,14 +116,14 @@ All DAOs, regardless of their template, have:
     * Title
     * Hash
     * Creation date and cycle
-    * Quorum reached vs quorum treshold
+    * Quorum reached vs quorum threshold
     * For/Against votes vs total votes
 
 **Proposal detail page**: contains all specific information about a proposal and vote actions. Here you can see:
   * Breakdown of the proposal's details (transfers to execute, registry items to update, among others)
   * Proposal title and description
   * Status badge and history
-  * Quorum reached vs quorum treshold
+  * Quorum reached vs quorum threshold
   * Proposer
   * For and against votes, each with a detailed modal
   * Vote for and against buttons and modals. Only enabled if proposal is active
@@ -192,7 +192,7 @@ To run the project:
 
 # Glossary
 
-* **Execute (Flush)**: execute all passed proposals from periods previous to the last one. If the proposal is rejected or did not meet the quorum treshold, then the Execute operation removes it from the proposals list.
+* **Execute (Flush)**: execute all passed proposals from periods previous to the last one. If the proposal is rejected or did not meet the quorum threshold, then the Execute operation removes it from the proposals list.
 
 * **Administrator**: address with permissions to mint, burn and transfer tokens in the DAO without a proposal. It is configured by the DAO creator and can be another contract (like a multisig)
 

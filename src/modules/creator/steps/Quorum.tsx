@@ -22,16 +22,8 @@ const ErrorText = styled(Typography)({
   color: "red",
 });
 
-const SecondContainer = styled(Grid)({
-  marginTop: 10,
-});
-
 const SpacingContainer = styled(Grid)({
   marginTop: 25,
-});
-
-const StakeContainer = styled(Grid)({
-  display: "block",
 });
 
 const AdditionContainer = styled(Grid)(({ theme }) => ({
@@ -57,17 +49,11 @@ const ValueText = styled(Typography)({
   fontSize: 14,
 });
 
-const styles = {
-  voting: {
-    marginTop: 6,
-  },
-};
-
 const InfoIconInput = styled(InfoOutlined)({
   cursor: "default",
 });
 
-const validateForm = (values: QuorumSettings, totalSupply: number) => {
+const validateForm = (values: QuorumSettings) => {
   const errors: FormikErrors<QuorumSettings> = {};
 
   Object.keys(values).forEach((key) => {
@@ -93,22 +79,14 @@ const validateForm = (values: QuorumSettings, totalSupply: number) => {
   }
 
   if (
-    values.quorumTreshold > values.maxQuorumAmount ||
-    values.quorumTreshold < values.minQuorumAmount
+    values.quorumThreshold > values.maxQuorumAmount ||
+    values.quorumThreshold < values.minQuorumAmount
   ) {
-    errors.quorumTreshold = "Must be between Min and Max Quorum amounts";
+    errors.quorumThreshold = "Must be between Min and Max Quorum amounts";
   }
 
   if (values.quorumChange > values.quorumMaxChange) {
     errors.quorumChange = "Cannot be greater than Max Quorum Change";
-  }
-
-  if (values.maxVotes <= 0) {
-    errors.maxVotes = "Must be greater than 0";
-  }
-
-  if(values.maxVotes >= totalSupply) {
-    errors.maxVotes = `Must be lesser than the gov. token's total supply (${totalSupply})`
   }
 
   return errors;
@@ -166,7 +144,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
           >
             <GridItemCenter item xs={3}>
               <Field
-                name="quorumTreshold"
+                name="quorumThreshold"
                 type="number"
                 placeholder="00"
                 inputProps={{ min: 0, max: 100 }}
@@ -196,8 +174,8 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
             </GridItemCenter>
           </ItemContainer>
         </AdditionContainer>
-        {errors.quorumTreshold && touched.quorumTreshold ? (
-          <ErrorText>{errors.quorumTreshold}</ErrorText>
+        {errors.quorumThreshold && touched.quorumThreshold ? (
+          <ErrorText>{errors.quorumThreshold}</ErrorText>
         ) : null}
       </Grid>
 
@@ -370,57 +348,6 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
           <ErrorText>{errors.quorumMaxChange}</ErrorText>
         ) : null}
       </Grid>
-
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
-          Max Votes
-        </Typography>
-      </SecondContainer>
-
-      <StakeContainer container direction="row" alignItems="center">
-        <AdditionContainer item xs={11} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="maxVotes"
-                type="number"
-                placeholder="00"
-                inputProps={{ min: 0, defaultValue: 0 }}
-                component={TextField}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={6}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <Typography color="textSecondary">
-                {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
-              </Typography>
-              <Tooltip
-                placement="bottom"
-                title={`Max number of votes than can be cast per proposal`}
-              >
-                <InfoIconInput color="secondary" />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-        </AdditionContainer>
-        {errors.maxVotes || errors.maxVotes ? (
-          <ErrorText>{errors.maxVotes || errors.maxVotes}</ErrorText>
-        ) : null}
-      </StakeContainer>
     </>
   );
 };
@@ -428,7 +355,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
 //TODO: Remove any from this component
 export const Quorum: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext);
-  const { quorumSettings, orgSettings } = state.data;
+  const { quorumSettings } = state.data;
   const history = useHistory();
 
   const saveStepInfo = (
@@ -466,7 +393,7 @@ export const Quorum: React.FC = () => {
 
       <Formik
         enableReinitialize
-        validate={(values) => validateForm(values, orgSettings.governanceToken.tokenMetadata?.supply || 0)}
+        validate={(values) => validateForm(values)}
         onSubmit={saveStepInfo}
         initialValues={quorumSettings}
       >

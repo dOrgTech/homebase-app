@@ -2,7 +2,6 @@ import { Dialog, Grid, styled, Typography } from "@material-ui/core";
 import { Field, Formik, FormikProps } from "formik";
 import {
   INITIAL_REGISTRY_FORM_VALUES,
-  registryValidationSchema,
   UpdateRegistryDialog,
   UpdateRegistryDialogValues,
 } from "modules/explorer/Registry/components/UpdateRegistryDialog";
@@ -10,7 +9,6 @@ import {
   INITIAL_TRANSFER_FORM_VALUES,
   NewTreasuryProposalDialog,
   TreasuryProposalFormValues,
-  treasuryValidationSchema,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef, useState } from "react";
 import { useParams } from "react-router";
@@ -119,7 +117,6 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
         <Formik
           initialValues={initialValues}
           onSubmit={onSubmit}
-          validationSchema={registryValidationSchema.concat(treasuryValidationSchema)}
           validateOnChange={false}
         >
           {(formikProps) => {

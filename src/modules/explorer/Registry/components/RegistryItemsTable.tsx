@@ -3,7 +3,8 @@ import { GenericTableContainer } from "modules/explorer/components/GenericTableC
 import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 import { ProposalTableHeadText } from "modules/explorer/Treasury/components/TableHeader";
-import React from "react";
+import React, { useState } from "react";
+import { RegistryItemDialog } from "./ItemDialog";
 import { RegistryTableRow } from "./TableRow";
 
 const NoProposals = styled(Typography)(({ theme }) => ({
@@ -21,6 +22,14 @@ export const RegistryItemsTable: React.FC<{
   isMobileSmall: boolean;
   registryList: Array<any>;
 }> = ({ isMobileSmall, registryList }) => {
+  const [dialogRegistryItem, setDialogRegistryItem] =
+    useState<{ key: string; value: string }>();
+  const [open, setOpen] = useState(false);
+
+  const onClickRow = (item: { key: string; value: string }) => {
+    setDialogRegistryItem(item);
+  };
+
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
@@ -48,9 +57,15 @@ export const RegistryItemsTable: React.FC<{
 
       {registryList.map((item, i) => (
         <GenericTableContainer key={`item-${i}`}>
-          <RegistryTableRow {...item} />
+          <RegistryTableRow {...item} onClickRow={() => onClickRow(item)} />
         </GenericTableContainer>
       ))}
+
+      <RegistryItemDialog
+        item={dialogRegistryItem || { key: "", value: "" }}
+        open={open}
+        handleClose={() => setOpen(false)}
+      />
       {registryList.length === 0 ? (
         <NoProposals variant="subtitle1" color="textSecondary">
           No registry items

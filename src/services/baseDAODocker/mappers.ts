@@ -16,7 +16,7 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   frozen_extra_value: `${storage.extra.frozenExtraValue}n`,
   frozen_scale_value: '0n',
   metadata_map: formatMetadata(metadata),
-  quorum_treshold: `${storage.quorumTreshold}n`,
+  quorum_threshold: `${storage.quorumThreshold}n`,
   min_quorum: `${storage.minQuorumAmount}n`,
   max_quorum: `${storage.maxQuorumAmount}n`,
   quorum_change: `${storage.quorumChange}n`,
@@ -25,7 +25,7 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   proposal_expired_time: `${storage.proposalExpiryPeriod}n`,
   governance_total_supply: `${tokenMetadata.supply}n`,
   period: `${storage.votingPeriod}n`,
-  max_votes: `${storage.maxVotes}n`,
+  max_votes: `${tokenMetadata.supply}n`,
   min_xtz_amount: `${xtzToMutez(storage.extra.minXtzAmount.toString())}mutez`,
   max_xtz_amount: `${xtzToMutez(storage.extra.maxXtzAmount.toString())}mutez`,
 })

@@ -12,7 +12,7 @@ export interface GeneratorArgs {
   frozen_extra_value: string
   frozen_scale_value: string
   metadata_map: string
-  quorum_treshold: string
+  quorum_threshold: string
   min_xtz_amount: string
   max_xtz_amount: string
   max_votes: string;
