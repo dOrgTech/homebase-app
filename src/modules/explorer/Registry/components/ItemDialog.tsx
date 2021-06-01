@@ -8,8 +8,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
-import React, { useCallback, useContext } from "react";
+import React from "react";
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -59,26 +58,11 @@ const CloseButton = styled(Typography)({
   cursor: "pointer",
 });
 
-export const RegistryItemDialog: React.FC = () => {
-  const {
-    state: {
-      registryItem: {
-        open,
-        params: { key, value },
-      },
-    },
-    dispatch,
-  } = useContext(ModalsContext);
-
-  const handleClose = useCallback(() => {
-    dispatch({
-      type: ActionTypes.CLOSE,
-      payload: {
-        modal: "registryItem",
-      },
-    });
-  }, [dispatch]);
-
+export const RegistryItemDialog: React.FC<{
+  item: { key: string; value: string };
+  open: boolean;
+  handleClose: () => void;
+}> = ({ item: { key, value }, open, handleClose }) => {
   return (
     <>
       <Dialog

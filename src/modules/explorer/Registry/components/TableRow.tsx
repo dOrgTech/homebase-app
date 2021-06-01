@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React from "react";
 import {
   Grid,
   Paper,
@@ -8,7 +8,6 @@ import {
   useTheme,
   withTheme,
 } from "@material-ui/core";
-import { ActionTypes, ModalsContext } from "modules/explorer/ModalsContext";
 import dayjs from "dayjs";
 import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 
@@ -40,20 +39,10 @@ export const RegistryTableRow: React.FC<{
   name: string;
   value: string;
   lastUpdated: string;
-}> = ({ name, value, lastUpdated }) => {
-  const { dispatch } = useContext(ModalsContext);
+  onClickRow?: React.MouseEventHandler<HTMLDivElement> | undefined
+}> = ({ name, value, lastUpdated, onClickRow }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const onClickRow = useCallback(() => {
-    dispatch({
-      type: ActionTypes.OPEN_REGISTRY_ITEM,
-      payload: {
-        key: name,
-        value,
-      },
-    });
-  }, [dispatch, name, value]);
 
   return (
     <TemplateTableRowContainer

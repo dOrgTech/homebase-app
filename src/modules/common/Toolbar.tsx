@@ -11,6 +11,7 @@ import {
   useTheme,
   Popover,
   useMediaQuery,
+  Link,
 } from "@material-ui/core";
 import { useHistory, useParams } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -235,23 +236,21 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   mode,
 }) => {
   const { connect, account, reset, changeNetwork, network } = useTezos();
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
+  const [anchorEl, setAnchorEl] =
+    React.useState<HTMLButtonElement | null>(null);
   const [popperOpen, setPopperOpen] = useState(false);
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
+  const { id: daoId } =
+    useParams<{
+      id: string;
+    }>();
   const { data: dao } = useDAO(daoId);
   const { data } = useTokenHolders(daoId);
 
-  const [
-    networkAnchorEl,
-    setNetworkAnchorEl,
-  ] = React.useState<HTMLButtonElement | null>(null);
+  const [networkAnchorEl, setNetworkAnchorEl] =
+    React.useState<HTMLButtonElement | null>(null);
   const [networkPopperOpen, setNetworkPopperOpen] = useState(false);
 
   const handleNetworkClick = (event: React.MouseEvent<any>) => {
@@ -352,6 +351,21 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                     </>
                   ) : null}
 
+                  {!isMobileExtraSmall ? (
+                    <Grid item>
+                      <Link
+                        href="https://github.com/dOrgTech/homebase-app/issues/new"
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        style={{ textDecoration: "none" }}
+                      >
+                        <Button color="secondary" variant="outlined">
+                          Submit an issue
+                        </Button>
+                      </Link>
+                    </Grid>
+                  ) : null}
+
                   <AddressBarWrapper item>
                     <AddressContainer
                       container
@@ -439,6 +453,18 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
               </>
             ) : !isMobileSmall ? (
               <Grid container justify="flex-end" wrap="nowrap" spacing={1}>
+                <Grid item>
+                  <Link
+                    href="https://github.com/dOrgTech/homebase-app/issues/new"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Button color="secondary" variant="outlined">
+                      Submit an issue
+                    </Button>
+                  </Link>
+                </Grid>
                 <Grid item>
                   <ChangeNetworkButton />
                 </Grid>
