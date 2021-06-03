@@ -305,7 +305,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
           direction="row"
           alignItems="center"
           wrap="wrap"
-          justify={"flex-end"}
+          justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
         >
           {mode === "explorer" ? <ExplorerLogo history={history} /> : null}
           <ToolbarWrapper
@@ -480,6 +480,13 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
               </Grid>
             )}
           </ToolbarWrapper>
+          {isMobileExtraSmall && (
+            <Grid container justify="center" wrap="nowrap">
+              <Grid item>
+                <ChangeNetworkButton />
+              </Grid>
+            </Grid>
+          )}
         </Grid>
       </StyledToolbar>
       <NetworkMenu

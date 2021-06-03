@@ -15,7 +15,6 @@ import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
-import { useQuorumThreshold } from "../hooks/useQuorumThreshold";
 import { InfoIcon } from "./styled/InfoIcon";
 
 const HistoryContent = styled(Grid)({
@@ -67,7 +66,7 @@ export const ProposalStatusHistory: React.FC = () => {
   const { data: dao } = useDAO(daoId);
   const { data: proposal } = useProposal(daoId, proposalId);
 
-  const quorumThreshold = useQuorumThreshold(dao);
+  const quorumThreshold = Number(Number(proposal?.quorumThreshold).toFixed(2)) || 0
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { votesQuorumPercentage, votes } = useVotesStats({
     upVotes: proposal?.upVotes || 0,

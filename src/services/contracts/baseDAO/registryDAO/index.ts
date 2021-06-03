@@ -23,6 +23,7 @@ import { RegistryProposal } from "services/bakingBad/proposals/types";
 import { getExtra } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
+import { getTokenMetadata } from "services/bakingBad/tokens";
 
 const parser = new Parser();
 
@@ -145,6 +146,12 @@ export class RegistryDAO extends BaseDAO {
       this.network
     );
 
+    const tokenMetadata = await getTokenMetadata(
+      this.storage.governanceToken.address,
+      this.network,
+      this.storage.governanceToken.tokenId.toString()
+    );
+
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
 
     const proposals = proposalsDTO
@@ -176,7 +183,7 @@ export class RegistryDAO extends BaseDAO {
         );
 
         return {
-          ...mapProposalBase(dto, "registry"),
+          ...mapProposalBase(dto, "registry", tokenMetadata.supply / 10 ** tokenMetadata.decimals),
           transfers,
           list: registryDiff,
           agoraPostId,

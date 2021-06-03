@@ -47,6 +47,7 @@ export const ChangeNetworkButton = () => {
   const history = useHistory();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
@@ -61,7 +62,7 @@ export const ChangeNetworkButton = () => {
 
   return (
     <>
-      <Button color="secondary" variant="outlined" onClick={handleClick}>
+      <Button size={isMobileExtraSmall? "small": undefined} color="secondary" variant="outlined" onClick={handleClick}>
         {isMobileSmall ? "" : "Network: "}
         {network}
       </Button>
