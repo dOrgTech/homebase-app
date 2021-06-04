@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTezos } from 'services/beacon/hooks/useTezos';
+import { mutezToXtz } from 'services/contracts/utils';
 
 export const XTZ_ASSET_ID = 'tezos'
 
@@ -23,7 +24,7 @@ export const useTezosBalances = (contractAddress: string | undefined) => {
         symbol: "XTZ",
         name: "XTZ",
         decimals: 6,
-        balance: balance.toString(),
+        balance: mutezToXtz(balance.toString()),
       }
     },
     {

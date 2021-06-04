@@ -19,6 +19,7 @@ import { getDAOListMetadata } from "../metadataCarrier";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";
 import { Storage } from "services/bakingBad/storage/types";
+import { xtzToMutez } from "../utils";
 
 interface DeployParams {
   params: MigrationParams;
@@ -172,6 +173,17 @@ export abstract class BaseDAO {
     const result = await contract.methods.drop_proposal(proposalId).send();
     return result;
   };
+
+  public sendXtz = async (xtzAmount: string) => {
+    const contract = await getContract(this.tezos, this.address);
+
+    const result = await contract.methods.callCustom("receive_xtz", "").send({
+      amount: Number(xtzToMutez(xtzAmount)),
+      mutez: true
+    });
+    return result;
+    
+  }
 
   public setTezos = (tezos: TezosToolkit) => {
     this.tezos = tezos;
