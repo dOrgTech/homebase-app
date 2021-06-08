@@ -23,6 +23,7 @@ import { RegistryProposal } from "services/bakingBad/proposals/types";
 import { getExtra } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
+import { getTokenMetadata } from "services/bakingBad/tokens";
 
 const parser = new Parser();
 
@@ -73,14 +74,15 @@ export class RegistryDAO extends BaseDAO {
       storage.extraMapNumber,
       network
     );
+
     const extra = {
       registry: mapStorageRegistryList(extraDto[0].data.value.value),
-      frozenExtraValue: Number(extraDto[4].data.value.value),
-      slashExtraValue: Number(extraDto[5].data.value.value),
-      minXtzAmount: Number(extraDto[6].data.value.value),
-      maxXtzAmount: Number(extraDto[7].data.value.value),
-      frozenScaleValue: Number(extraDto[8].data.value.value),
-      slashDivisionScale: Number(extraDto[9].data.value.value),
+      frozenExtraValue: Number(char2Bytes(extraDto[4].data.value.value)),
+      slashExtraValue: Number(char2Bytes(extraDto[5].data.value.value)),
+      minXtzAmount: Number(char2Bytes(extraDto[6].data.value.value)),
+      maxXtzAmount: Number(char2Bytes(extraDto[7].data.value.value)),
+      frozenScaleValue: Number(char2Bytes(extraDto[8].data.value.value)),
+      slashDivisionScale: Number(char2Bytes(extraDto[9].data.value.value)),
     };
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
 
@@ -104,8 +106,8 @@ export class RegistryDAO extends BaseDAO {
   public propose = async ({
     agoraPostId,
     transfer_proposal,
-  }: RegistryProposeArgs) => {
-    const contract = await getContract(this.tezos, this.address);
+  }: RegistryProposeArgs, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
@@ -123,7 +125,7 @@ export class RegistryDAO extends BaseDAO {
 
     const data = schema.Encode(dataToEncode);
 
-    const { packed: proposalMetadata } = await this.tezos.rpc.packData({
+    const { packed: proposalMetadata } = await tezos.rpc.packData({
       data,
       type: michelsonType as Expr,
     });
@@ -138,11 +140,17 @@ export class RegistryDAO extends BaseDAO {
     return result;
   };
 
-  public proposals = async (): Promise<RegistryProposal[]> => {
+  public proposals = async (network: Network): Promise<RegistryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(
       proposalsMapNumber,
-      this.network
+      network
+    );
+
+    const tokenMetadata = await getTokenMetadata(
+      this.storage.governanceToken.address,
+      network,
+      this.storage.governanceToken.tokenId.toString()
     );
 
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
@@ -176,7 +184,7 @@ export class RegistryDAO extends BaseDAO {
         );
 
         return {
-          ...mapProposalBase(dto, "registry"),
+          ...mapProposalBase(dto, "registry", tokenMetadata.supply / 10 ** tokenMetadata.decimals),
           transfers,
           list: registryDiff,
           agoraPostId,

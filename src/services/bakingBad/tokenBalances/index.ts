@@ -16,5 +16,9 @@ export const getDAOHoldings = async (
 
   const result: TokenBalancesDTO = await response.json();
 
-  return result.balances.map(balance => ({ ...balance, id: balance.contract }));
+  return result.balances.map((balance) => ({
+    ...balance,
+    id: balance.contract,
+    balance: (Number(balance.balance) / 10 ** balance.decimals).toString(),
+  }));
 };

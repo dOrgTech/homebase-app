@@ -14,7 +14,6 @@ import {
 
 import { ProgressBar } from "modules/explorer/components";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
 import { toShortAddress } from "services/contracts/utils";
 import { ViewButton } from "./ViewButton";
@@ -22,7 +21,6 @@ import { useVotesStats } from "../hooks/useVotesStats";
 import { VotersProgress } from "./VotersProgress";
 import { AppTabBar } from "./AppTabBar";
 import { TabPanel } from "./TabPanel";
-import { useQuorumThreshold } from "../hooks/useQuorumThreshold";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -127,13 +125,12 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
 }) => {
   const [open, setOpen] = React.useState(false);
 
-  const { data: dao } = useDAO(daoAddress);
   const { data: proposal } = useProposal(daoAddress, proposalAddress);
   const theme = useTheme();
   const { data: votesData, isLoading } = useVotes(proposalAddress, daoAddress);
   const [selectedTab, setSelectedTab] = React.useState(0);
   const style = styles();
-  const quorumThreshold = useQuorumThreshold(dao)
+  const quorumThreshold =  Number(Number(proposal?.quorumThreshold).toFixed(2)) || 0
 
   const { votesSum } = useVotesStats({
     quorumThreshold,

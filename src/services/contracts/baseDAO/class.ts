@@ -19,6 +19,7 @@ import { getDAOListMetadata } from "../metadataCarrier";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";
 import { Storage } from "services/bakingBad/storage/types";
+import { xtzToMutez } from "../utils";
 
 interface DeployParams {
   params: MigrationParams;
@@ -52,11 +53,9 @@ export abstract class BaseDAO {
   public template;
   public storage;
   public metadata;
-  public tezos;
-  public network;
   public extra;
 
-  abstract proposals: () => Promise<Proposal[]>;
+  abstract proposals: (network: Network) => Promise<Proposal[]>;
 
   public static getDAO = async (params: {
     address: string;
@@ -153,35 +152,40 @@ export abstract class BaseDAO {
     this.template = params.template;
     this.storage = params.storage;
     this.metadata = params.metadata;
-    this.tezos = params.tezos;
-    this.network = params.network;
     this.extra = params.extra;
   }
 
-  public flush = async (numerOfProposalsToFlush: number) => {
-    const daoContract = await getContract(this.tezos, this.address);
+  public flush = async (numerOfProposalsToFlush: number, tezos: TezosToolkit) => {
+    const daoContract = await getContract(tezos, this.address);
     const operation = await daoContract.methods.flush(numerOfProposalsToFlush);
 
     const result = await operation.send();
     return result;
   };
 
-  public dropProposal = async (proposalId: string) => {
-    const contract = await getContract(this.tezos, this.address);
+  public dropProposal = async (proposalId: string, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, this.address);
 
     const result = await contract.methods.drop_proposal(proposalId).send();
     return result;
   };
 
-  public setTezos = (tezos: TezosToolkit) => {
-    this.tezos = tezos;
-  };
+  public sendXtz = async (xtzAmount: string, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, this.address);
 
-  public tokenHolders = async () => {
-    const storage = await getStorage(this.address, this.network);
+    const result = await contract.methods.callCustom("receive_xtz", "").send({
+      amount: Number(xtzToMutez(xtzAmount)),
+      mutez: true
+    });
+    return result;
+    
+  }
+
+  public tokenHolders = async (network: Network) => {
+    const storage = await getStorage(this.address, network);
     const ledger = await getLedgerAddresses(
       storage.ledgerMapNumber,
-      this.network
+      network
     );
     return ledger;
   };
@@ -190,12 +194,14 @@ export abstract class BaseDAO {
     proposalKey,
     amount,
     support,
+    tezos,
   }: {
     proposalKey: string;
     amount: number;
     support: boolean;
+    tezos: TezosToolkit;
   }) => {
-    const contract = await getContract(this.tezos, this.address);
+    const contract = await getContract(tezos, this.address);
 
     console.log(proposalKey, amount, support);
     const result = await contract.methods
@@ -213,19 +219,19 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public freeze = async (amount: number) => {
-    const daoContract = await getContract(this.tezos, this.address);
+  public freeze = async (amount: number, tezos: TezosToolkit) => {
+    const daoContract = await getContract(tezos, this.address);
     const govTokenContract = await getContract(
-      this.tezos,
+      tezos,
       this.storage.governanceToken.address
     );
-    const batch = await this.tezos.wallet
+    const batch = await tezos.wallet
       .batch()
       .withContractCall(
         govTokenContract.methods.update_operators([
           {
             add_operator: {
-              owner: await this.tezos.wallet.pkh(),
+              owner: await tezos.wallet.pkh(),
               operator: this.address,
               token_id: this.storage.governanceToken.tokenId,
             },
@@ -237,7 +243,7 @@ export abstract class BaseDAO {
         govTokenContract.methods.update_operators([
           {
             remove_operator: {
-              owner: await this.tezos.wallet.pkh(),
+              owner: await tezos.wallet.pkh(),
               operator: this.address,
               token_id: this.storage.governanceToken.tokenId,
             },
@@ -249,8 +255,8 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public unfreeze = async (amount: number) => {
-    const contract = await getContract(this.tezos, this.address);
+  public unfreeze = async (amount: number, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, this.address);
 
     const result = await contract.methods.unfreeze(amount).send();
     return result;

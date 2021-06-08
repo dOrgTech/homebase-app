@@ -18,6 +18,8 @@ import {
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
+import { getTokenMetadata } from "services/bakingBad/tokens";
+import { char2Bytes } from "@taquito/tzip16";
 
 const parser = new Parser();
 
@@ -34,12 +36,12 @@ export class TreasuryDAO extends BaseDAO {
       network
     );
     const extra = {
-      frozenExtraValue: Number(extraDTO[1].data.value.value),
-      slashExtraValue: Number(extraDTO[2].data.value.value),
-      minXtzAmount: Number(extraDTO[3].data.value.value),
-      maxXtzAmount: Number(extraDTO[4].data.value.value),
-      frozenScaleValue: Number(extraDTO[5].data.value.value),
-      slashDivisionScale: Number(extraDTO[6].data.value.value),
+      frozenExtraValue: Number(char2Bytes(extraDTO[1].data.value.value)),
+      slashExtraValue: Number(char2Bytes(extraDTO[2].data.value.value)),
+      minXtzAmount: Number(char2Bytes(extraDTO[3].data.value.value)),
+      maxXtzAmount: Number(char2Bytes(extraDTO[4].data.value.value)),
+      frozenScaleValue: Number(char2Bytes(extraDTO[5].data.value.value)),
+      slashDivisionScale: Number(char2Bytes(extraDTO[6].data.value.value)),
     };
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
 
@@ -55,11 +57,17 @@ export class TreasuryDAO extends BaseDAO {
     });
   };
 
-  public proposals = async (): Promise<TreasuryProposal[]> => {
+  public proposals = async (network: Network): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(
       proposalsMapNumber,
-      this.network
+      network
+    );
+
+    const tokenMetadata = await getTokenMetadata(
+      this.storage.governanceToken.address,
+      network,
+      this.storage.governanceToken.tokenId.toString()
     );
 
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
@@ -72,16 +80,17 @@ export class TreasuryDAO extends BaseDAO {
         proposalMetadata.length - 4
       );
       const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-      const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(
-        michelsonExpr
-      );
+      const proposalMetadataDTO: PMTreasuryProposal =
+        schema.Execute(michelsonExpr);
 
-      const transfers = extractTransfersData(
-        proposalMetadataDTO.transfers
-      );
+      const transfers = extractTransfersData(proposalMetadataDTO.transfers);
 
       return {
-        ...mapProposalBase(dto, "treasury"),
+        ...mapProposalBase(
+          dto,
+          "treasury",
+          tokenMetadata.supply / 10 ** tokenMetadata.decimals
+        ),
         agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
         transfers,
       };
@@ -90,8 +99,8 @@ export class TreasuryDAO extends BaseDAO {
     return proposals;
   };
 
-  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs) => {
-    const contract = await getContract(this.tezos, this.address);
+  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
@@ -100,7 +109,7 @@ export class TreasuryDAO extends BaseDAO {
       transfers: mapTransfersArgs(transfers, this.address),
     });
 
-    const { packed: proposalMetadata } = await this.tezos.rpc.packData({
+    const { packed: proposalMetadata } = await tezos.rpc.packData({
       data,
       type: michelsonType as Expr,
     });

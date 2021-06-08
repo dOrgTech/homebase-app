@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Box,
   Grid,
   styled,
   Typography,
@@ -11,6 +12,7 @@ import { RectangleContainer } from "./styled/RectangleHeader";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { SendXTZDialog } from "./SendXTZDialog";
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -26,6 +28,10 @@ const CustomRectangleContainer = styled(RectangleContainer)(({ theme }) => ({
     paddingBottom: 40,
   },
 }));
+
+const StyledSendXTZContainer = styled(Box)({
+  paddingTop: 10
+})
 
 export const TemplateHeader: React.FC<{
   template: DAOTemplate;
@@ -77,6 +83,10 @@ export const TemplateHeader: React.FC<{
               justify={isMobileSmall ? "center" : "flex-start"}
             />
           )}
+          <StyledSendXTZContainer>
+            <SendXTZDialog />
+          </StyledSendXTZContainer>
+          
         </Grid>
       </CustomRectangleContainer>
     </Grid>

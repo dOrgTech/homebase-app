@@ -13,7 +13,6 @@ import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { ProgressBar as CustomBar } from "modules/explorer/components";
-import { useQuorumThreshold } from "../hooks/useQuorumThreshold";
 
 interface VotersData {
   showButton: boolean;
@@ -50,7 +49,7 @@ export const VotersProgress: React.FC<VotersData> = ({
   const { data: proposalData } = useProposal(daoId, proposalId);
   const proposal = proposalData as TreasuryProposalWithStatus | undefined;
   const { data: dao } = useDAO(daoId);
-  const quorumThreshold = useQuorumThreshold(dao);
+  const quorumThreshold =  Number(Number(proposal?.quorumThreshold).toFixed(2)) || 0
 
   const upVotes = proposal ? proposal.upVotes : 0;
   const downVotes = proposal ? proposal.downVotes : 0;

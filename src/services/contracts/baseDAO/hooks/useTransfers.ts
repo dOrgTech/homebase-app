@@ -11,7 +11,13 @@ export const useTransfers = (contractAddress: string | undefined) => {
 
   const result = useQuery<TransferDTO[], Error>(
     ["transfers", contractAddress],
-    () => getDAOTransfers((dao as BaseDAO).address, network),
+    async () => {
+      const transfers = await getDAOTransfers((dao as BaseDAO).address, network);
+      return transfers.map(t => ({
+        ...t,
+        amount: (Number(t.amount) / (10 ** t.token.decimals)).toString()
+      }))
+    },
     {
       enabled: !!dao,
     }

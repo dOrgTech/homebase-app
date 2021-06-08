@@ -16,7 +16,7 @@ export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
   proposalsMapNumber: dto.children[12].value,
   quorumThresholdAtCycle: {
     lastUpdatedCycle: Number(dto.children[13].children[0].value),
-    quorumThreshold: dto.children[13].children[1].value,
+    quorumThreshold: ((Number(dto.children[13].children[1].value) / 1000000) * Number(dto.children[19].value)).toString(),
     staked: dto.children[13].children[2].value,
   },
   start_time: dto.children[14].value,

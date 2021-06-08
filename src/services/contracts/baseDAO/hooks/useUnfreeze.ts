@@ -14,7 +14,7 @@ export const useUnfreeze = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -27,7 +27,7 @@ export const useUnfreeze = () => {
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).unfreeze(params.amount);
+        const data = await (params.dao as BaseDAO).unfreeze(params.amount, tezos);
 
         await data.confirmation(1);
 

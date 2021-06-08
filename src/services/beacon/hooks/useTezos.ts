@@ -16,7 +16,7 @@ type WalletConnectReturn = {
 
 export const useTezos = (): WalletConnectReturn => {
   const {
-    state: { tezos, network, account },
+    state: { tezos, network, account, wallet },
     dispatch,
   } = useContext(TezosContext);
 
@@ -24,14 +24,21 @@ export const useTezos = (): WalletConnectReturn => {
 
   const connect = useCallback(async (newNetwork?: Network) => {
     const { wallet } = await connectWithBeacon(newNetwork || network);
-    tezos.setProvider({ wallet });
-    const account = await tezos.wallet.pkh();
+
+    const newTezos = new TezosToolkit(rpcNodes[newNetwork || network]);
+    newTezos.setPackerProvider(new MichelCodecPacker());
+    newTezos.addExtension(new Tzip16Module());
+
+    newTezos.setProvider({ wallet });
+    const account = await newTezos.wallet.pkh();
+
     dispatch({
       type: "UPDATE_TEZOS",
       payload: {
         network: newNetwork || network,
-        tezos,
+        tezos: newTezos,
         account,
+        wallet
       },
     });
 
@@ -41,16 +48,17 @@ export const useTezos = (): WalletConnectReturn => {
   return {
     tezos,
     connect,
-    reset: useCallback(() => {
-      Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith("beacon:")) {
-          localStorage.removeItem(key);
-        }
-      });
+    reset: useCallback(async () => {
+      if(!wallet) {
+        throw new Error("No Wallet Connected")
+      }
+      
+      await wallet.disconnect()
+
       dispatch({
         type: "RESET_TEZOS",
       });
-    }, [dispatch]),
+    }, [dispatch, wallet]),
     changeNetwork: async (newNetwork: Network) => {
       if (!("_pkh" in tezos.wallet)) {
         const Tezos = new TezosToolkit(rpcNodes[newNetwork]);
@@ -63,6 +71,7 @@ export const useTezos = (): WalletConnectReturn => {
             network: newNetwork,
             tezos: Tezos,
             account,
+            wallet: undefined
           },
         });
       } else {

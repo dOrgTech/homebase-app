@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import { BaseDAO } from "..";
 import { useCycleInfo } from "./useCycleInfo";
 import { useDroppedProposalOps } from "./useDroppedProposalOps";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 export const useProposals = (
   contractAddress: string | undefined,
@@ -17,12 +18,13 @@ export const useProposals = (
 ) => {
   const { data: dao } = useDAO(contractAddress);
   const { data: droppedProposalsOps } = useDroppedProposalOps(contractAddress);
+  const { network } = useTezos()
 
   const cycleInfo = useCycleInfo(contractAddress);
 
   const result = useQuery<Proposal[], Error>(
     ["proposals", contractAddress],
-    () => (dao as BaseDAO).proposals(),
+    () => (dao as BaseDAO).proposals(network),
     {
       enabled: !!dao,
     }

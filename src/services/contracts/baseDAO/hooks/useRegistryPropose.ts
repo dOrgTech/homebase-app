@@ -10,7 +10,7 @@ export const useRegistryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, { dao: RegistryDAO, args: RegistryProposeArgs }>(
     async ({ dao, args }) => {
@@ -23,7 +23,7 @@ export const useRegistryPropose = () => {
         variant: "info",
       });
       try {
-        const data = await dao.propose(args);
+        const data = await dao.propose(args, tezos);
         await data.confirmation(1);
         closeProposalNotification(proposalNotification);
 
