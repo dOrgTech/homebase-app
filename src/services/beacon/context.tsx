@@ -1,3 +1,4 @@
+import { BeaconWallet } from "@taquito/beacon-wallet";
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 import React, { createContext, useReducer } from "react";
@@ -9,6 +10,7 @@ interface TezosState {
   network: Network;
   tezos: TezosToolkit;
   account: string;
+  wallet: BeaconWallet | undefined
 }
 
 interface TezosProvider {
@@ -44,6 +46,7 @@ const INITIAL_STATE: TezosState = {
   tezos: Tezos,
   network: network,
   account: "",
+  wallet: undefined
 };
 
 export const TezosContext = createContext<TezosProvider>({
@@ -58,6 +61,7 @@ interface UpdateTezos {
     tezos: TezosToolkit;
     network: Network;
     account: string;
+    wallet: BeaconWallet | undefined;
   };
 }
 
@@ -75,6 +79,7 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
         tezos: action.payload.tezos,
         network: action.payload.network,
         account: action.payload.account,
+        wallet: action.payload.wallet
       };
     case "RESET_TEZOS":
       return INITIAL_STATE;

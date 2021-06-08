@@ -19,6 +19,7 @@ import {
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
 import { getTokenMetadata } from "services/bakingBad/tokens";
+import { char2Bytes } from "@taquito/tzip16";
 
 const parser = new Parser();
 
@@ -35,12 +36,12 @@ export class TreasuryDAO extends BaseDAO {
       network
     );
     const extra = {
-      frozenExtraValue: Number(extraDTO[1].data.value.value),
-      slashExtraValue: Number(extraDTO[2].data.value.value),
-      minXtzAmount: Number(extraDTO[3].data.value.value),
-      maxXtzAmount: Number(extraDTO[4].data.value.value),
-      frozenScaleValue: Number(extraDTO[5].data.value.value),
-      slashDivisionScale: Number(extraDTO[6].data.value.value),
+      frozenExtraValue: Number(char2Bytes(extraDTO[1].data.value.value)),
+      slashExtraValue: Number(char2Bytes(extraDTO[2].data.value.value)),
+      minXtzAmount: Number(char2Bytes(extraDTO[3].data.value.value)),
+      maxXtzAmount: Number(char2Bytes(extraDTO[4].data.value.value)),
+      frozenScaleValue: Number(char2Bytes(extraDTO[5].data.value.value)),
+      slashDivisionScale: Number(char2Bytes(extraDTO[6].data.value.value)),
     };
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
 
