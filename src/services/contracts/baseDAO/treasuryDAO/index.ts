@@ -57,16 +57,16 @@ export class TreasuryDAO extends BaseDAO {
     });
   };
 
-  public proposals = async (): Promise<TreasuryProposal[]> => {
+  public proposals = async (network: Network): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(
       proposalsMapNumber,
-      this.network
+      network
     );
 
     const tokenMetadata = await getTokenMetadata(
       this.storage.governanceToken.address,
-      this.network,
+      network,
       this.storage.governanceToken.tokenId.toString()
     );
 
@@ -99,8 +99,8 @@ export class TreasuryDAO extends BaseDAO {
     return proposals;
   };
 
-  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs) => {
-    const contract = await getContract(this.tezos, this.address);
+  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
@@ -109,7 +109,7 @@ export class TreasuryDAO extends BaseDAO {
       transfers: mapTransfersArgs(transfers, this.address),
     });
 
-    const { packed: proposalMetadata } = await this.tezos.rpc.packData({
+    const { packed: proposalMetadata } = await tezos.rpc.packData({
       data,
       type: michelsonType as Expr,
     });

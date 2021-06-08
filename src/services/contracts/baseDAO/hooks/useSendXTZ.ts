@@ -14,7 +14,7 @@ export const useSendXTZ = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -27,7 +27,7 @@ export const useSendXTZ = () => {
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).sendXtz(params.amount.toString());
+        const data = await (params.dao as BaseDAO).sendXtz(params.amount.toString(), tezos);
 
         await data.confirmation(1);
 

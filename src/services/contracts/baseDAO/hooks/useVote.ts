@@ -16,7 +16,7 @@ export const useVote = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -33,6 +33,7 @@ export const useVote = () => {
           proposalKey: params.proposalKey,
           amount: params.amount,
           support: params.support,
+          tezos
         });
 
         await data.confirmation(1);

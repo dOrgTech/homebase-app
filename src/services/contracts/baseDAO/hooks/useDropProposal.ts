@@ -7,7 +7,7 @@ import { BaseDAO } from "..";
 export const useDropProposal = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<
     TransactionWalletOperation | Error,
@@ -24,7 +24,7 @@ export const useDropProposal = () => {
         variant: "info",
       });
       try {
-        const data = await params.dao.dropProposal(params.proposalId);
+        const data = await params.dao.dropProposal(params.proposalId, tezos);
         closeDropProposal(dropProposal);
 
         await data.confirmation(1);

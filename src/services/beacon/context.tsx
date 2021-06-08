@@ -82,12 +82,19 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
         wallet: action.payload.wallet
       };
     case "RESET_TEZOS":
-      return INITIAL_STATE;
+      return {
+        ...state,
+        tezos: Tezos,
+        account: "",
+        wallet: undefined
+      }
   }
 };
 
 export const TezosProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
+  console.log(state.tezos.wallet)
 
   return (
     <TezosContext.Provider value={{ state, dispatch }}>

@@ -15,7 +15,7 @@ export const useFreeze = () => {
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
   const { saveDaoId } = useVisitedDAO();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<any | Error, Error, Params>(
     async (params) => {
@@ -28,7 +28,7 @@ export const useFreeze = () => {
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).freeze(params.amount);
+        const data = await (params.dao as BaseDAO).freeze(params.amount, tezos);
 
         await data.confirmation(1);
 

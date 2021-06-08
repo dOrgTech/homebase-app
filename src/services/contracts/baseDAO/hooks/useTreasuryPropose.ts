@@ -10,7 +10,7 @@ export const useTreasuryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, { dao: TreasuryDAO, args: TreasuryProposeArgs }>(
     async ({ dao, args }) => {
@@ -24,7 +24,7 @@ export const useTreasuryPropose = () => {
       });
 
       try {
-        const data = await dao.propose(args);
+        const data = await dao.propose(args, tezos);
 
         await data.confirmation(1);
         closeProposalNotification(proposalNotification);

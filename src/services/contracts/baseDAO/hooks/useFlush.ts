@@ -6,7 +6,7 @@ import { BaseDAO } from "..";
 export const useFlush = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network } = useTezos()
+  const { network, tezos } = useTezos()
 
   return useMutation<
     any | Error,
@@ -23,7 +23,7 @@ export const useFlush = () => {
         variant: "info",
       });
       try {
-        const data = await params.dao.flush(params.numOfProposalsToFlush);
+        const data = await params.dao.flush(params.numOfProposalsToFlush, tezos);
         closeFlushNotification(flushNotification);
 
         await data.confirmation(1);
