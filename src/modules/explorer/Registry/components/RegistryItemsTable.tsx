@@ -27,6 +27,7 @@ export const RegistryItemsTable: React.FC<{
   const [open, setOpen] = useState(false);
 
   const onClickRow = (item: { key: string; value: string }) => {
+    setOpen(true)
     setDialogRegistryItem(item);
   };
 
