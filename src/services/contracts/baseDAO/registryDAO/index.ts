@@ -36,6 +36,11 @@ interface RegistryItemDTO {
   args: [{ string: string }, { string: string }];
 }
 
+interface RegistryAffectedDTO {
+  prim: "Elt";
+  args: [{ string: string }, { bytes: string }];
+}
+
 const mapStorageRegistryList = (
   listMichelsonString: string
 ): {
@@ -60,6 +65,31 @@ const mapStorageRegistryList = (
   });
 };
 
+const mapStorageRegistryAffectedList = (
+  listMichelsonString: string
+): {
+  key: string;
+  proposalId: string;
+}[] => {
+  if (listMichelsonString === "{ {} }") {
+    return [];
+  }
+
+  const listStringNoBraces = listMichelsonString.substr(
+    3,
+    listMichelsonString.length - 6
+  );
+
+  return listStringNoBraces.split(" ; ").map((listString) => {
+    const list = parser.parseData(listString) as RegistryAffectedDTO;
+
+    return {
+      key: bytes2Char(list.args[0].string),
+      proposalId: list.args[1].bytes,
+    };
+  });
+};
+
 export class RegistryDAO extends BaseDAO {
   public extra: RegistryExtra;
 
@@ -75,7 +105,7 @@ export class RegistryDAO extends BaseDAO {
       network
     );
 
-    const extra = {
+    const extra: RegistryExtra = {
       registry: mapStorageRegistryList(extraDto[0].data.value.value),
       frozenExtraValue: Number(char2Bytes(extraDto[4].data.value.value)),
       slashExtraValue: Number(char2Bytes(extraDto[5].data.value.value)),
@@ -83,6 +113,9 @@ export class RegistryDAO extends BaseDAO {
       maxXtzAmount: Number(char2Bytes(extraDto[7].data.value.value)),
       frozenScaleValue: Number(char2Bytes(extraDto[8].data.value.value)),
       slashDivisionScale: Number(char2Bytes(extraDto[9].data.value.value)),
+      registryAffected: mapStorageRegistryAffectedList(
+        extraDto[3].data.value.value
+      ),
     };
     const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
 
@@ -103,10 +136,10 @@ export class RegistryDAO extends BaseDAO {
     this.extra = params.extra;
   }
 
-  public propose = async ({
-    agoraPostId,
-    transfer_proposal,
-  }: RegistryProposeArgs, tezos: TezosToolkit) => {
+  public propose = async (
+    { agoraPostId, transfer_proposal }: RegistryProposeArgs,
+    tezos: TezosToolkit
+  ) => {
     const contract = await getContract(tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);
@@ -142,10 +175,7 @@ export class RegistryDAO extends BaseDAO {
 
   public proposals = async (network: Network): Promise<RegistryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
-    const proposalsDTO = await getProposalsDTO(
-      proposalsMapNumber,
-      network
-    );
+    const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
     const tokenMetadata = await getTokenMetadata(
       this.storage.governanceToken.address,
@@ -164,9 +194,8 @@ export class RegistryDAO extends BaseDAO {
           proposalMetadata.length - 4
         );
         const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-        const proposalMetadataDTO: PMRegistryProposal = schema.Execute(
-          michelsonExpr
-        );
+        const proposalMetadataDTO: PMRegistryProposal =
+          schema.Execute(michelsonExpr);
 
         if (!proposalMetadataDTO["0"].transfers) {
           return undefined;
@@ -184,7 +213,11 @@ export class RegistryDAO extends BaseDAO {
         );
 
         return {
-          ...mapProposalBase(dto, "registry", tokenMetadata.supply / 10 ** tokenMetadata.decimals),
+          ...mapProposalBase(
+            dto,
+            "registry",
+            tokenMetadata.supply / 10 ** tokenMetadata.decimals
+          ),
           transfers,
           list: registryDiff,
           agoraPostId,

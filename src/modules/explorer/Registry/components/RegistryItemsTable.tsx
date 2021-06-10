@@ -51,7 +51,6 @@ export const RegistryItemsTable: React.FC<{
               LAST UPDATED
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}></Grid>
         </TableHeader>
       )}
 

@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Box,
   Grid,
   styled,
   Typography,
@@ -29,19 +28,20 @@ const CustomRectangleContainer = styled(RectangleContainer)(({ theme }) => ({
   },
 }));
 
-const StyledSendXTZContainer = styled(Box)({
-  paddingTop: 10
-})
+const StyledSendXTZContainer = styled(Grid)({
+  paddingTop: 10,
+});
 
 export const TemplateHeader: React.FC<{
   template: DAOTemplate;
 }> = ({ template, children }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { id } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
+  const { id } =
+    useParams<{
+      proposalId: string;
+      id: string;
+    }>();
   const { data: dao } = useDAO(id);
 
   return (
@@ -83,10 +83,11 @@ export const TemplateHeader: React.FC<{
               justify={isMobileSmall ? "center" : "flex-start"}
             />
           )}
-          <StyledSendXTZContainer>
-            <SendXTZDialog />
+          <StyledSendXTZContainer container justify={isMobileSmall? "center": "flex-start"}>
+            <Grid item>
+              <SendXTZDialog />
+            </Grid>
           </StyledSendXTZContainer>
-          
         </Grid>
       </CustomRectangleContainer>
     </Grid>
