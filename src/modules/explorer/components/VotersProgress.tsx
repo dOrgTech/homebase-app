@@ -53,7 +53,7 @@ export const VotersProgress: React.FC<VotersData> = ({
 
   const upVotes = proposal ? proposal.upVotes : 0;
   const downVotes = proposal ? proposal.downVotes : 0;
-  const upVotesPercentage = dao && (upVotes * 100) / quorumThreshold;
+  const upVotesPercentage = dao && (upVotes * 100) / quorumThreshold || 0;
   const downVotesPercentage =
     dao && (downVotes * 100) / quorumThreshold;
 
@@ -71,7 +71,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             <GreenDot />
             <StatusTitle color="textSecondary">SUPPORT: </StatusTitle>
             <Typography color="textSecondary">
-              {upVotes} ({ upVotesPercentage && upVotesPercentage > 100 ? 100 : formatNumber(Number(upVotesPercentage))}%){" "}
+              {proposal? upVotes: "-"} ({ upVotesPercentage && upVotesPercentage > 100 ? 100 : formatNumber(Number(upVotesPercentage))}%){" "}
             </Typography>
           </Grid>
 
@@ -84,7 +84,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             <RedDot />
             <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
             <Typography color="textSecondary">
-              {downVotes} ({downVotesPercentage && downVotesPercentage > 100 ? 100 : formatNumber(Number(downVotesPercentage))}%){" "}
+              {proposal? downVotes: "-"} ({downVotesPercentage && downVotesPercentage > 100 ? 100 : formatNumber(Number(downVotesPercentage))}%){" "}
             </Typography>
           </Grid>
 
@@ -96,7 +96,7 @@ export const VotersProgress: React.FC<VotersData> = ({
           >
             <StatusTitle color="textSecondary">THRESHOLD: </StatusTitle>
             <Typography color="textSecondary">
-              {quorumThreshold}
+              {proposal? quorumThreshold: "-"}
             </Typography>
           </Grid>
         </Grid>

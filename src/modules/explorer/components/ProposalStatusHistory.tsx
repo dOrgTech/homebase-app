@@ -95,7 +95,7 @@ export const ProposalStatusHistory: React.FC = () => {
         </HistoryContent>
         <HistoryContent item xs={12}>
           <ProgressBar
-            progress={votesQuorumPercentage}
+            progress={proposal? votesQuorumPercentage: 0}
             radius={50}
             strokeWidth={7}
             strokeColor="#3866F9"
@@ -104,7 +104,7 @@ export const ProposalStatusHistory: React.FC = () => {
           >
             <div className="indicator">
               <ProgressText textColor="#3866F9">
-                {formatNumber(votesQuorumPercentage)}%
+                {proposal? `${formatNumber(votesQuorumPercentage)}%`: "-"}
               </ProgressText>
             </div>
           </ProgressBar>
