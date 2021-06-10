@@ -10,6 +10,10 @@ export interface RegistryExtra extends Extra {
     key: string;
     value: string;
   }[]
+  registryAffected: {
+    key: string;
+    proposalId: string;
+  }[]
 }
 
 export interface RegistryProposeArgs {

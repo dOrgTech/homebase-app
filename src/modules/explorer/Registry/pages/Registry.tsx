@@ -8,7 +8,6 @@ import { RegistryDAO } from "services/contracts/baseDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import dayjs from "dayjs";
 import {
-  ProposalStatus,
   RegistryProposalWithStatus,
 } from "services/bakingBad/proposals/types";
 import { RegistryItemsTable } from "../components/RegistryItemsTable";
@@ -32,17 +31,20 @@ export const Registry: React.FC = () => {
     | undefined;
 
   const proposals = useMemo(() => {
-    if (!registryProposalsData) {
+    if (!registryProposalsData || !dao) {
       return [];
     }
 
+    const registryAffectedKeysProposalIds = dao.extra.registryAffected.map(r => r.proposalId)
+
     return registryProposalsData
-      .filter((proposal) => proposal.status === ProposalStatus.PASSED)
+      .filter((proposal) =>  registryAffectedKeysProposalIds.includes(proposal.id))
       .sort(
         (a, b) =>
           new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
       )
       .map((proposal) => ({
+        ...proposal,
         date: dayjs(proposal.startDate).format("L"),
         description: "Proposal description",
         address: proposal.id,
@@ -50,7 +52,7 @@ export const Registry: React.FC = () => {
           i === 0 ? item.key : `, ${item.key}`
         ),
       }));
-  }, [registryProposalsData]);
+  }, [dao, registryProposalsData]);
 
   const registryList = useMemo(() => {
     if (!dao) {

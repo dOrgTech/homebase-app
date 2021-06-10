@@ -57,7 +57,7 @@ export const RegistryHistoryRow: React.FC<any> = ({ name, address, date, id }) =
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   return (
-    <Link href="https://better-call.dev/" target="_blank">
+    <Link>
       <Container
         container
         direction="row"
