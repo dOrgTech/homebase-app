@@ -1,4 +1,5 @@
 import {
+  CircularProgress,
   Grid,
   styled,
   Typography,
@@ -36,10 +37,15 @@ const UnderlineText = styled(Typography)(() => ({
   margin: "28px 0",
 }));
 
+const LoaderContainer = styled(Grid)({
+  paddingTop: 40,
+  paddingBottom: 40,
+});
+
 export const TopHoldersTable: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [displayAll, setDisplayAll] = useState(false);
-  const { data: members } = useTokenHoldersWithVotes(id);
+  const { data: members, isLoading } = useTokenHoldersWithVotes(id);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   // const { data: dao } = useDAO(id)
@@ -83,6 +89,14 @@ export const TopHoldersTable: React.FC = () => {
           </>
         )}
       </Header>
+
+      <>
+      {isLoading && (
+        <LoaderContainer container direction="row" justify="center">
+          <CircularProgress color="secondary" />
+        </LoaderContainer>
+      )}
+      </>
 
       {displayAll ? (
         <>
