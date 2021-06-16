@@ -94,8 +94,6 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
 export const TezosProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
-  console.log(state.tezos.wallet)
-
   return (
     <TezosContext.Provider value={{ state, dispatch }}>
       {children}

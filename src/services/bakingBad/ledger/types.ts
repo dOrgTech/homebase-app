@@ -1,19 +1,15 @@
-import { UnnamedMapValue } from "services/bakingBad/types";
-
 export interface LedgerDTOItem {
-  data: {
-    key: {
-      prim: string;
-      type: string;
-      children: UnnamedMapValue[];
-    };
-    value: UnnamedMapValue;
-    key_hash: string;
-    key_string: string;
-    level: number;
-    timestamp: string;
+  id: number;
+  active: boolean;
+  hash: string;
+  key: {
+    nat: string;
+    address: string;
   };
-  count: number;
+  value: string;
+  firstLevel: number;
+  lastLevel: number;
+  updates: number;
 }
 
 export type LedgerDTO = LedgerDTOItem[];

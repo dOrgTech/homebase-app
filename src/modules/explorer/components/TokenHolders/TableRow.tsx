@@ -68,7 +68,7 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
               <Grid container direction="row" alignItems="center" wrap="nowrap">
                 <Blockie address={username} size={40} />
                 <Username variant="body1" color="textSecondary">
-                  {toShortAddress(username)}
+                  {isMobileSmall? toShortAddress(username): username}
                 </Username>
               </Grid>
             </Grid>
@@ -84,7 +84,7 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
         </TextContainer>
         <TextContainer item xs={12} md={2} container>
           <Title variant="body1" color="textSecondary">
-            WEIGHT:{" "}
+            STAKED:{" "}
           </Title>
           <Typography variant="body1" color="textSecondary">
             {weight}

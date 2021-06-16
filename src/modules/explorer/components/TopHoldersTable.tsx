@@ -5,9 +5,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+// import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
+// import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
 import { TopHoldersTableRow } from "./TokenHolders";
@@ -28,11 +30,20 @@ const Header = styled(TableHeader)(({ theme }) => ({
   },
 }));
 
+const UnderlineText = styled(Typography)(() => ({
+  textDecoration: "underline",
+  cursor: "pointer",
+  margin: "28px 0",
+}));
+
 export const TopHoldersTable: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [displayAll, setDisplayAll] = useState(false);
   const { data: members } = useTokenHoldersWithVotes(id);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  // const { data: dao } = useDAO(id)
+  // const { data: token } = useTokenMetadata(dao?.storage.governanceToken.address, dao?.storage.governanceToken.tokenId.toString())
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -42,7 +53,7 @@ export const TopHoldersTable: React.FC = () => {
       .map((member) => {
         return {
           username: member.address,
-          weight: member.balances[0].toString(),
+          weight: (member.balances[0]).toString(),
           votes: member.votes.toString(),
           proposals_voted: member.proposalsVoted,
         };
@@ -64,7 +75,7 @@ export const TopHoldersTable: React.FC = () => {
               <ProposalTableHeadText>VOTES</ProposalTableHeadText>
             </Grid>
             <Grid item xs={2}>
-              <ProposalTableHeadText>WEIGHT</ProposalTableHeadText>
+              <ProposalTableHeadText>STAKED</ProposalTableHeadText>
             </Grid>
             <Grid item xs={2}>
               <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
@@ -73,9 +84,39 @@ export const TopHoldersTable: React.FC = () => {
         )}
       </Header>
 
-      {formattedMembers.map((holder, i) => (
-        <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
-      ))}
+      {displayAll ? (
+        <>
+          {formattedMembers.map((holder, i) => (
+            <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
+          ))}
+          <Grid container direction="row" justify="center">
+            <UnderlineText
+              variant="subtitle1"
+              color="secondary"
+              onClick={() => setDisplayAll(false)}
+            >
+              DISPLAY LESS
+            </UnderlineText>
+          </Grid>
+        </>
+      ) : (
+        <>
+          {formattedMembers.slice(0, 10).map((holder, i) => (
+            <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
+          ))}
+          {formattedMembers.length && (
+            <Grid container direction="row" justify="center">
+              <UnderlineText
+                variant="subtitle1"
+                color="secondary"
+                onClick={() => setDisplayAll(true)}
+              >
+                DISPLAY ALL HOLDERS
+              </UnderlineText>
+            </Grid>
+          )}
+        </>
+      )}
     </ResponsiveTableContainer>
   );
 };
