@@ -20,6 +20,7 @@ import baseDAOContractCode from "./michelson/baseDAO";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";
 import { Storage } from "services/bakingBad/storage/types";
 import { xtzToMutez } from "../utils";
+import { getTokenMetadata } from "services/bakingBad/tokens";
 
 interface DeployParams {
   params: MigrationParams;
@@ -155,7 +156,10 @@ export abstract class BaseDAO {
     this.extra = params.extra;
   }
 
-  public flush = async (numerOfProposalsToFlush: number, tezos: TezosToolkit) => {
+  public flush = async (
+    numerOfProposalsToFlush: number,
+    tezos: TezosToolkit
+  ) => {
     const daoContract = await getContract(tezos, this.address);
     const operation = await daoContract.methods.flush(numerOfProposalsToFlush);
 
@@ -175,18 +179,14 @@ export abstract class BaseDAO {
 
     const result = await contract.methods.callCustom("receive_xtz", "").send({
       amount: Number(xtzToMutez(xtzAmount)),
-      mutez: true
+      mutez: true,
     });
     return result;
-    
-  }
+  };
 
   public tokenHolders = async (network: Network) => {
     const storage = await getStorage(this.address, network);
-    const ledger = await getLedgerAddresses(
-      storage.ledgerMapNumber,
-      network
-    );
+    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
     return ledger;
   };
 
@@ -219,11 +219,20 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public freeze = async (amount: number, tezos: TezosToolkit) => {
+  public freeze = async (
+    amount: number,
+    tezos: TezosToolkit,
+    network: Network
+  ) => {
     const daoContract = await getContract(tezos, this.address);
     const govTokenContract = await getContract(
       tezos,
       this.storage.governanceToken.address
+    );
+    const tokenMetadata = await getTokenMetadata(
+      this.storage.governanceToken.address,
+      network,
+      this.storage.governanceToken.tokenId.toString()
     );
     const batch = await tezos.wallet
       .batch()
@@ -238,7 +247,9 @@ export abstract class BaseDAO {
           },
         ])
       )
-      .withContractCall(daoContract.methods.freeze(amount))
+      .withContractCall(
+        daoContract.methods.freeze(amount / 10 ** tokenMetadata.decimals)
+      )
       .withContractCall(
         govTokenContract.methods.update_operators([
           {
@@ -255,10 +266,21 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public unfreeze = async (amount: number, tezos: TezosToolkit) => {
+  public unfreeze = async (
+    amount: number,
+    tezos: TezosToolkit,
+    network: Network
+  ) => {
     const contract = await getContract(tezos, this.address);
+    const tokenMetadata = await getTokenMetadata(
+      this.storage.governanceToken.address,
+      network,
+      this.storage.governanceToken.tokenId.toString()
+    );
 
-    const result = await contract.methods.unfreeze(amount).send();
+    const result = await contract.methods
+      .unfreeze(amount / 10 ** tokenMetadata.decimals)
+      .send();
     return result;
   };
 

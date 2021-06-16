@@ -2,9 +2,9 @@ import { Ledger, LedgerMap, LedgerDTO } from "services/bakingBad/ledger/types";
 
 export const dtoToLedger = (ledgerDTO: LedgerDTO): Ledger => {
   const ledgerMap = ledgerDTO.reduce((prev, dtoItem) => {
-    const tokenId = Number(dtoItem.data.key.children[1].value);
-    const address = dtoItem.data.key.children[0].value.toLowerCase();
-    const balance = Number(dtoItem.data.value.value);
+    const tokenId = Number(dtoItem.key.nat);
+    const address = dtoItem.key.address.toLowerCase();
+    const balance = Number(dtoItem.value);
 
     const existingLedgerItem = prev[address];
 

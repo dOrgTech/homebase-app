@@ -27,7 +27,7 @@ export const useUnfreeze = () => {
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).unfreeze(params.amount, tezos);
+        const data = await (params.dao as BaseDAO).unfreeze(params.amount, tezos, network);
 
         await data.confirmation(1);
 

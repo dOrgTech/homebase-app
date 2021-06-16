@@ -28,7 +28,7 @@ export const useFreeze = () => {
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).freeze(params.amount, tezos);
+        const data = await (params.dao as BaseDAO).freeze(params.amount, tezos, network);
 
         await data.confirmation(1);
 

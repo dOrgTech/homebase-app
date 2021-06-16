@@ -60,6 +60,8 @@ export const useTezos = (): WalletConnectReturn => {
       });
     }, [dispatch, wallet]),
     changeNetwork: async (newNetwork: Network) => {
+      localStorage.setItem("homebase:network", newNetwork);
+      
       if (!("_pkh" in tezos.wallet)) {
         const Tezos = new TezosToolkit(rpcNodes[newNetwork]);
         Tezos.setPackerProvider(new MichelCodecPacker());
