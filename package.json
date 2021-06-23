@@ -6,13 +6,12 @@
     "start": "serve -s build",
     "dev": "react-scripts start",
     "build": "react-scripts build && echo '/* /index.html 200' | cat >build/_redirects ",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint:ci": "eslint --color 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:check": "eslint --quiet 'src/**/*.{js,jsx,ts,tsx}'",
-    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
-    "generate1": "contract-type-generator --g ./contracts1 ./output1",
-    "generate2": "contract-type-generator --json --g ./contracts2 ./output2"
+    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "@airgap/beacon-sdk": "2.2.5",
@@ -26,10 +25,6 @@
     "@taquito/tezbridge-wallet": "^9.0.0",
     "@taquito/tzip12": "^9.0.0",
     "@taquito/tzip16": "^9.0.0",
-    "@thanos-wallet/dapp": "^2.2.2",
-    "@types/lodash": "^4.14.168",
-    "@types/yup": "^0.29.11",
-    "@xendora/react-timer": "^1.1.0",
     "bignumber.js": "^9.0.1",
     "blockies-ts": "^1.0.0",
     "dayjs": "^1.10.4",
@@ -40,7 +35,6 @@
     "jsonschema": "^1.4.0",
     "notistack": "^1.0.3",
     "react": "^17.0.1",
-    "react-compound-timer": "^1.2.0",
     "react-customizable-progressbar": "^1.0.2",
     "react-dom": "^17.0.1",
     "react-query": "^3.13.0",
@@ -50,11 +44,13 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
+    "source-map-explorer": "2.5.2",
     "@types/jest": "^26.0.21",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
     "@types/react-dom": "^17.0.2",
     "@types/react-router-dom": "^5.1.6",
+    "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "eslint": "^7.22.0",

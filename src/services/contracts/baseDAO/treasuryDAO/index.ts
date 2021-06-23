@@ -18,7 +18,6 @@ import {
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
-import { getTokenMetadata } from "services/bakingBad/tokens";
 import { char2Bytes } from "@taquito/tzip16";
 
 const parser = new Parser();
@@ -64,12 +63,6 @@ export class TreasuryDAO extends BaseDAO {
       network
     );
 
-    const tokenMetadata = await getTokenMetadata(
-      this.storage.governanceToken.address,
-      network,
-      this.storage.governanceToken.tokenId.toString()
-    );
-
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
 
     const proposals = proposalsDTO.map((dto) => {
@@ -89,7 +82,7 @@ export class TreasuryDAO extends BaseDAO {
         ...mapProposalBase(
           dto,
           "treasury",
-          tokenMetadata.supply / 10 ** tokenMetadata.decimals
+          this.storage.governanceToken.supply / 10 ** this.storage.governanceToken.decimals
         ),
         agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
         transfers,

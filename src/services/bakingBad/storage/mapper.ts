@@ -1,14 +1,12 @@
 import { Storage, StorageDTO } from "./types";
 
-export const storageDTOToStorage = (dto: StorageDTO): Storage => ({
+export const storageDTOToStorageWithoutGovTkn = (dto: StorageDTO): Omit<Storage, "governanceToken"> & { govTokenAddress: string; govTokenId: string } => ({
   admin: dto.children[0].value,
   extraMapNumber: dto.children[1].value,
   freezeHistoryMapNumber: dto.children[2].value,
   frozenTokenId: Number(dto.children[3].value),
-  governanceToken: {
-    address: dto.children[4].children[0].value,
-    tokenId: Number(dto.children[4].children[1].value),
-  },
+  govTokenAddress: dto.children[4].children[0].value,
+  govTokenId: dto.children[4].children[1].value,
   guardian: dto.children[5].value,
   ledgerMapNumber: dto.children[6].value,
   proposalsToFlush:

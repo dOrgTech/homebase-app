@@ -10,7 +10,6 @@ import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 // import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
-// import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
 import { TopHoldersTableRow } from "./TokenHolders";
@@ -49,7 +48,6 @@ export const TopHoldersTable: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   // const { data: dao } = useDAO(id)
-  // const { data: token } = useTokenMetadata(dao?.storage.governanceToken.address, dao?.storage.governanceToken.tokenId.toString())
 
   const formattedMembers = useMemo(() => {
     if (!members) {
