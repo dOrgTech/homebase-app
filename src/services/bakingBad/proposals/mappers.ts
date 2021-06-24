@@ -29,10 +29,10 @@ export const extractTransfersData = (
       const fa2Transfer = transfer;
 
       return {
-        amount: fa2Transfer.transfer_list[0].txs[0].amount,
-        beneficiary: fa2Transfer.transfer_list[0].txs[0].to_,
-        contractAddress: fa2Transfer.contract_address,
-        tokenId: fa2Transfer.transfer_list[0].txs[0].token_id,
+        amount: fa2Transfer.token_transfer_type.transfer_list[0].txs[0].amount,
+        beneficiary: fa2Transfer.token_transfer_type.transfer_list[0].txs[0].to_,
+        contractAddress: fa2Transfer.token_transfer_type.contract_address,
+        tokenId: fa2Transfer.token_transfer_type.transfer_list[0].txs[0].token_id,
         type: "FA2" as const,
       };
     }
