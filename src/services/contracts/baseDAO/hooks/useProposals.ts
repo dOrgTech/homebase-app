@@ -181,8 +181,6 @@ export const useProposals = (
       };
     });
 
-    console.log(proposalsWithStatus);
-
     if (!status) {
       return proposalsWithStatus;
     }

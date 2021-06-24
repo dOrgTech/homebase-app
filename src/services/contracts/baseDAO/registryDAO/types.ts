@@ -266,7 +266,7 @@ export interface PMTreasuryProposal {
 }
 
 export interface PMRegistryProposal {
-  "0": {
+  "transfer_proposal": {
     agora_post_id: string;
     registry_diff: 
       {

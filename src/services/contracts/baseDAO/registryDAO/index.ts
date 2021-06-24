@@ -190,15 +190,17 @@ export class RegistryDAO extends BaseDAO {
         const proposalMetadataDTO: PMRegistryProposal =
           schema.Execute(michelsonExpr);
 
-        if (!proposalMetadataDTO["0"].transfers) {
+        console.log(proposalMetadataDTO)
+
+        if (!proposalMetadataDTO.transfer_proposal.transfers) {
           return undefined;
         }
 
         const transfers = extractTransfersData(
-          proposalMetadataDTO[0].transfers
+          proposalMetadataDTO.transfer_proposal.transfers
         );
-        const agoraPostId = proposalMetadataDTO[0].agora_post_id;
-        const registryDiff = proposalMetadataDTO[0].registry_diff.map(
+        const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id;
+        const registryDiff = proposalMetadataDTO.transfer_proposal.registry_diff.map(
           (item) => ({
             key: bytes2Char(item[0]),
             value: bytes2Char(item[1]),
