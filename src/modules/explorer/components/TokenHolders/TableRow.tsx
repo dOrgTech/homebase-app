@@ -20,6 +20,7 @@ export interface TokenHoldersRowData {
 
 const Username = styled(Typography)({
   marginLeft: 15,
+  wordBreak: "break-all"
 });
 
 const Title = styled(Typography)(({ theme }) => ({
