@@ -23,7 +23,6 @@ import { RegistryProposal } from "services/bakingBad/proposals/types";
 import { getExtra } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
-import { getTokenMetadata } from "services/bakingBad/tokens";
 
 const parser = new Parser();
 
@@ -177,12 +176,6 @@ export class RegistryDAO extends BaseDAO {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
-    const tokenMetadata = await getTokenMetadata(
-      this.storage.governanceToken.address,
-      network,
-      this.storage.governanceToken.tokenId.toString()
-    );
-
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
 
     const proposals = proposalsDTO
@@ -197,15 +190,17 @@ export class RegistryDAO extends BaseDAO {
         const proposalMetadataDTO: PMRegistryProposal =
           schema.Execute(michelsonExpr);
 
-        if (!proposalMetadataDTO["0"].transfers) {
+        console.log(proposalMetadataDTO)
+
+        if (!proposalMetadataDTO.transfer_proposal.transfers) {
           return undefined;
         }
 
         const transfers = extractTransfersData(
-          proposalMetadataDTO[0].transfers
+          proposalMetadataDTO.transfer_proposal.transfers
         );
-        const agoraPostId = proposalMetadataDTO[0].agora_post_id;
-        const registryDiff = proposalMetadataDTO[0].registry_diff.map(
+        const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id;
+        const registryDiff = proposalMetadataDTO.transfer_proposal.registry_diff.map(
           (item) => ({
             key: bytes2Char(item[0]),
             value: bytes2Char(item[1]),
@@ -216,7 +211,7 @@ export class RegistryDAO extends BaseDAO {
           ...mapProposalBase(
             dto,
             "registry",
-            tokenMetadata.supply / 10 ** tokenMetadata.decimals
+            this.storage.governanceToken.supply / 10 ** this.storage.governanceToken.decimals
           ),
           transfers,
           list: registryDiff,

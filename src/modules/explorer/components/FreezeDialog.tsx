@@ -8,7 +8,7 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  InputAdornment
+  InputAdornment,
 } from "@material-ui/core";
 import { theme } from "theme";
 import { ViewButton } from "./ViewButton";
@@ -18,11 +18,10 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { useUnfreeze } from "services/contracts/baseDAO/hooks/useUnfreeze";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const SendButton = styled(ViewButton)(({ theme }) => ({
@@ -33,8 +32,8 @@ const SendButton = styled(ViewButton)(({ theme }) => ({
   borderRadius: 4,
   color: theme.palette.text.secondary,
   "&:hover": {
-    background: theme.palette.secondary.main
-  }
+    background: theme.palette.secondary.main,
+  },
 }));
 
 const Title = styled(DialogTitle)(({ theme }) => ({
@@ -42,49 +41,49 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   paddingBottom: 0,
   minWidth: 400,
   [theme.breakpoints.down("xs")]: {
-    minWidth: 250
+    minWidth: 250,
   },
   "& .MuiDialogTitle-root": {
-    padding: "67px 47px"
-  }
+    padding: "67px 47px",
+  },
 }));
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthSm": {
-    minHeight: "400px !important"
-  }
+    minHeight: "400px !important",
+  },
 });
 
 const TextHeader = styled(Typography)({
-  marginTop: 33
+  marginTop: 33,
 });
 
 const InputContainer = styled(Grid)({
   borderTop: "2px solid #3D3D3D",
   borderBottom: "2px solid #3D3D3D",
-  padding: "27px 67px"
+  padding: "27px 67px",
 });
 
 const TableHeader = styled(Grid)({
-  padding: "33px 64px"
+  padding: "33px 64px",
 });
 
 const CustomInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     textAlign: "end",
-    color: theme.palette.secondary.main
-  }
+    color: theme.palette.secondary.main,
+  },
 }));
 
 export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
   const { daoSymbol } = useVisitedDAO();
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
+  const { id: daoId } =
+    useParams<{
+      id: string;
+    }>();
   const { mutate } = useFreeze();
-  const { mutate: mutateUnfreeze } = useUnfreeze();
   const { tezos, connect } = useTezos();
 
   const { data: dao } = useDAO(daoId);
@@ -95,26 +94,22 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
   const handleClose = () => {
     setOpen(false);
-    setAmount(0)
+    setAmount(0);
   };
 
   const onSubmit = useCallback(async () => {
     if (dao) {
       await connectIfNotConnected(tezos, connect);
 
-      freeze
-        ? mutate({
-            dao,
-            amount,
-          })
-        : mutateUnfreeze({
-            dao,
-            amount
-          });
+      mutate({
+        dao,
+        amount,
+        freeze,
+      });
 
       handleClose();
     }
-  }, [amount, connect, dao, mutate, tezos, mutateUnfreeze, freeze]);
+  }, [amount, connect, dao, mutate, tezos, freeze]);
 
   return (
     <div>
@@ -162,8 +157,10 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
                   Confirm the {freeze ? "staking" : "unstaking"} of your tokens
                 </Typography>
               </Grid>
-              <TextHeader variant="subtitle1" color="textSecondary">
-              </TextHeader>
+              <TextHeader
+                variant="subtitle1"
+                color="textSecondary"
+              ></TextHeader>
             </TableHeader>
             <InputContainer
               container
@@ -187,7 +184,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
                       <InputAdornment position="end">
                         <Typography color="secondary">{daoSymbol}</Typography>
                       </InputAdornment>
-                    )
+                    ),
                   }}
                 />{" "}
               </Grid>

@@ -8,6 +8,7 @@ import { useVisitedDAO } from "./useVisitedDAO";
 interface Params {
   dao: BaseDAO;
   amount: number;
+  freeze: boolean;
 }
 
 export const useFreeze = () => {
@@ -23,18 +24,18 @@ export const useFreeze = () => {
         key: freezeNotification,
         closeSnackbar: closeFreezeNotification,
       } = openNotification({
-        message: "Stake is being processed...",
+        message: `${params.freeze? "Stake": "Unstake"} is being processed...`,
         persist: true,
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).freeze(params.amount, tezos, network);
+        const data = await (params.dao as BaseDAO)[params.freeze? "freeze": "unfreeze"](params.amount, tezos);
 
         await data.confirmation(1);
 
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "Stake transaction confirmed!",
+          message: `${params.freeze? "Stake": "Unstake"} transaction confirmed!`,
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
@@ -47,7 +48,7 @@ export const useFreeze = () => {
         console.log(e);
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "An error has happened with stake transaction!",
+          message: `An error has happened with ${params.freeze? "stake": "unstake"} transaction!`,
           variant: "error",
           autoHideDuration: 10000,
         });

@@ -1,3 +1,5 @@
+import { TokenMetadata } from "../tokens";
+
 export interface LastPeriodChange {
   timestamp: string;
   periodNumber: number;
@@ -8,10 +10,7 @@ export interface Storage {
   extraMapNumber: number;
   freezeHistoryMapNumber: number;
   frozenTokenId: number;
-  governanceToken: {
-    address: string;
-    tokenId: number;
-  };
+  governanceToken: TokenMetadata;
   guardian: string;
   ledgerMapNumber: number;
   proposalsToFlush: string[];
