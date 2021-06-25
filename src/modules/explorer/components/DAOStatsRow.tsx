@@ -129,7 +129,7 @@ export const DAOStatsRow: React.FC = () => {
             </Box>
             <Box padding="12px 0">
               <Typography variant="h3" color="textSecondary">
-                {amountLocked}
+                {amountLocked.toString()}
               </Typography>
             </Box>
           </Grid>
@@ -157,7 +157,7 @@ export const DAOStatsRow: React.FC = () => {
             VOTING ADDRESSES
           </Typography>
           <Typography variant="h3" color="textSecondary">
-            {addressesWithUnfrozenBalance}
+            {addressesWithUnfrozenBalance.toString()}
           </Typography>
         </Box>
       </VotingAddresses>

@@ -212,7 +212,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
               </Grid>
               <Grid item xs={12}>
                 <TextHeader variant="h3" color="textSecondary">
-                  {proposal? votesSum: "-"}
+                  {proposal? votesSum.toString(): "-"}
                 </TextHeader>
                 <VotersProgress
                   wrapAll={true}
@@ -279,7 +279,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                           color="textSecondary"
                           align="right"
                         >
-                          {proposal? vote.value: "-"}
+                          {proposal? vote.value.toString(): "-"}
                         </Typography>
                       </Grid>
                     </Row>

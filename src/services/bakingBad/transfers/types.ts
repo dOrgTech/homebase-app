@@ -18,7 +18,7 @@ export interface TransferDTO {
   from: string;
   to: string;
   token_id: number;
-  amount: BigNumber;
+  amount: string;
   counter: number;
   token: {
     contract: string;
@@ -31,3 +31,5 @@ export interface TransferDTO {
   alias: string;
   to_alias: string;
 }
+
+export type TransferWithBN = Omit<TransferDTO, "amount"> & { amount: BigNumber }

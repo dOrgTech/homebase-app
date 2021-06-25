@@ -177,7 +177,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       color="textSecondary"
                       align="right"
                     >
-                      {holder.tokens}
+                      {holder.tokens.toString()}
                     </Typography>
                   </Grid>
                 </Row>

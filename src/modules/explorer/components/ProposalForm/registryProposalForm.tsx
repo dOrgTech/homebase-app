@@ -168,7 +168,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                       variant="subtitle1"
                       color="secondary"
                     >
-                      {dao && dao.extra.frozenExtraValue}{" "}
+                      {dao && dao.extra.frozenExtraValue.toString()}{" "}
                       {dao ? dao.metadata.unfrozenToken.symbol : ""}
                     </Typography>
                   </Grid>

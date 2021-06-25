@@ -101,10 +101,10 @@ export const VotersProgress: React.FC<VotersData> = ({
             <GreenDot />
             <StatusTitle color="textSecondary">SUPPORT: </StatusTitle>
             <Typography color="textSecondary">
-              {proposal ? upVotes : "-"} (
+              {proposal ? upVotes.toString() : "-"} (
               {upVotesQuorumPercentage &&
               upVotesQuorumPercentage.isGreaterThan(100)
-                ? new BigNumber(100)
+                ? 100
                 : formatNumber(upVotesQuorumPercentage)}
               %){" "}
             </Typography>
@@ -120,9 +120,9 @@ export const VotersProgress: React.FC<VotersData> = ({
             <RedDot />
             <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
             <Typography color="textSecondary">
-              {proposal ? downVotes : "-"} (
+              {proposal ? downVotes.toString() : "-"} (
               {downVotesQuorumPercentage && downVotesQuorumPercentage.isGreaterThan(100)
-                ? new BigNumber(100)
+                ? 100
                 : formatNumber(downVotesQuorumPercentage)}
               %){" "}
             </Typography>
@@ -138,7 +138,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             <BlueDot />
             <StatusTitle color="textSecondary">THRESHOLD: </StatusTitle>
             <Typography color="textSecondary">
-              {proposal ? quorumThreshold : "-"}
+              {proposal ? quorumThreshold.toString() : "-"}
             </Typography>
           </Grid>
         </Grid>
