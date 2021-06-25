@@ -26,6 +26,7 @@ import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolder
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
 import { Network } from "services/beacon/context";
+import { BigNumber } from "bignumber.js";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -282,13 +283,13 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
 
   const userBalance = useMemo(() => {
     if (!data) {
-      return 0;
+      return new BigNumber(0);
     }
     const balance = data.find(
       ({ address }) => address.toLowerCase() === account.toLowerCase()
     );
-    const frozenBalance = balance ? balance.balances[0] : 0;
-    return frozenBalance || 0;
+    const frozenBalance = balance ? balance.balances[0] : new BigNumber(0);
+    return frozenBalance || new BigNumber(0);
   }, [data, account]);
 
   const history = useHistory();

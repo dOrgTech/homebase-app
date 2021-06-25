@@ -11,6 +11,7 @@ import { BaseDAO } from "..";
 import { useCycleInfo } from "./useCycleInfo";
 import { useDroppedProposalOps } from "./useDroppedProposalOps";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import BigNumber from "bignumber.js";
 
 export const useProposals = (
   contractAddress: string | undefined,
@@ -117,7 +118,7 @@ export const useProposals = (
         };
       }
 
-      if (proposal.upVotes >= Number(proposal.quorumThreshold)) {
+      if (proposal.upVotes.isGreaterThanOrEqualTo(new BigNumber(proposal.quorumThreshold))) {
         statusHistory.push({
           status: ProposalStatus.PASSED,
           timestamp: dayjs(dao.storage.start_time)
@@ -126,7 +127,7 @@ export const useProposals = (
         });
       }
 
-      if (proposal.downVotes >= Number(proposal.quorumThreshold)) {
+      if (proposal.downVotes.isGreaterThanOrEqualTo(new BigNumber(proposal.quorumThreshold))) {
         statusHistory.push({
           status: ProposalStatus.REJECTED,
           timestamp: dayjs(dao.storage.start_time)
@@ -146,11 +147,11 @@ export const useProposals = (
         let status = ProposalStatus.NO_QUORUM;
         let flushable = true;
 
-        if (proposal.upVotes >= Number(proposal.quorumThreshold)) {
+        if (proposal.upVotes.isGreaterThanOrEqualTo(new BigNumber(proposal.quorumThreshold))) {
           status = ProposalStatus.PASSED;
         }
 
-        if (proposal.downVotes >= Number(proposal.quorumThreshold)) {
+        if (proposal.downVotes.isGreaterThanOrEqualTo(new BigNumber(proposal.quorumThreshold))) {
           status = ProposalStatus.REJECTED;
         }
 

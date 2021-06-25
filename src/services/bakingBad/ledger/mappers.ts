@@ -1,10 +1,11 @@
+import BigNumber from "bignumber.js";
 import { Ledger, LedgerMap, LedgerDTO } from "services/bakingBad/ledger/types";
 
 export const dtoToLedger = (ledgerDTO: LedgerDTO): Ledger => {
   const ledgerMap = ledgerDTO.reduce((prev, dtoItem) => {
     const tokenId = Number(dtoItem.key.nat);
     const address = dtoItem.key.address;
-    const balance = Number(dtoItem.value);
+    const balance = new BigNumber(dtoItem.value);
 
     const existingLedgerItem = prev[address];
 

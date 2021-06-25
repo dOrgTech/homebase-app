@@ -10,8 +10,9 @@ import {
   PMXTZTransferType,
 } from "services/contracts/baseDAO/registryDAO/types";
 import { TransferParams } from "services/contracts/baseDAO/types";
-import { xtzToMutez } from "services/contracts/utils";
+import { formatUnits, xtzToMutez } from "services/contracts/utils";
 import { DAOTemplate } from "modules/creator/state";
+import { BigNumber } from "bignumber.js";
 
 export const extractTransfersData = (
   transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]
@@ -50,7 +51,7 @@ export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
 
   return voters.map((voter) => ({
     address: voter.children[2].value,
-    value: Number(voter.children[0].value),
+    value: new BigNumber(voter.children[0].value),
     support: Boolean(voter.children[1].value),
   }));
 };
@@ -58,15 +59,15 @@ export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
 export const mapProposalBase = (
   dto: ProposalDTO[number],
   template: DAOTemplate,
-  govTokenTotalSupplyNoDecimals: number,
+  govTokenTotalSupplyNoDecimals: BigNumber,
 ): Proposal => {
   return {
     id: dto.data.key.value,
-    upVotes: Number(dto.data.value.children[6].value),
-    downVotes: Number(dto.data.value.children[0].value),
+    upVotes: new BigNumber(dto.data.value.children[6].value),
+    downVotes: new BigNumber(dto.data.value.children[0].value),
     proposer: dto.data.value.children[2].value,
     startDate: dto.data.value.children[5].value,
-    quorumThreshold: ((Number(dto.data.value.children[4].value) / 1000000) * (govTokenTotalSupplyNoDecimals)).toString(),
+    quorumThreshold: new BigNumber(dto.data.value.children[4].value).div(1000000).multipliedBy(govTokenTotalSupplyNoDecimals),
     period: Number(dto.data.value.children[8].value) - 1,
     proposerFrozenTokens: dto.data.value.children[3].value,
     type: template,
@@ -79,7 +80,7 @@ export const mapProposalBase = (
 export const mapXTZTransfersArgs = (transfer: TransferParams) => {
   return {
     xtz_transfer_type: {
-      amount: Number(xtzToMutez(transfer.amount.toString())),
+      amount: xtzToMutez(transfer.amount),
       recipient: transfer.recipient,
     },
   };
@@ -99,7 +100,7 @@ export const mapFA2TransfersArgs = (
             {
               to_: transfer.recipient,
               token_id: transfer.asset.token_id,
-              amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
+              amount: formatUnits(transfer.amount, transfer.asset.decimals),
             },
           ],
         },

@@ -13,6 +13,7 @@ import {
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
+import { BigNumber } from "bignumber.js";
 
 interface TokenHolderDialogData {
   address: string;
@@ -90,18 +91,18 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
 
     return data.map((holder) => ({
       address: holder.address,
-      tokens: holder.balances[0] || 0,
+      tokens: holder.balances[0] || new BigNumber(0),
     }));
   }, [data]);
 
   const totalLocked = useMemo(() => {
     if (!data) {
-      return 0;
+      return new BigNumber(0);
     }
 
     return data.reduce((acc, holder) => {
-      return acc + (holder.balances[0] || 0);
-    }, 0);
+      return acc.plus(holder.balances[0] || new BigNumber(0));
+    }, new BigNumber(0));
   }, [data]);
 
   return (
@@ -166,7 +167,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       color="secondary"
                       variant="determinate"
                       value={
-                        totalLocked ? (holder.tokens / totalLocked) * 100 : 0
+                        totalLocked ? holder.tokens.div(totalLocked).multipliedBy(100).toNumber() : 0
                       }
                     />
                   </Grid>

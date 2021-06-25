@@ -15,8 +15,7 @@ import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { useHistory } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 
-import { CreatorContext, ActionTypes } from "modules/creator/state";
-import { VotingSettings } from "services/contracts/baseDAO/types";
+import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state";
 import { InfoOutlined } from "@material-ui/icons";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({

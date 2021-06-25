@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js";
+
 export interface TransfersDTO {
   transfers: TransferDTO[];
   total: number;
@@ -16,7 +18,7 @@ export interface TransferDTO {
   from: string;
   to: string;
   token_id: number;
-  amount: string;
+  amount: BigNumber;
   counter: number;
   token: {
     contract: string;

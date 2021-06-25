@@ -1,3 +1,4 @@
+import { BigNumber } from "bignumber.js";
 import { Extra, TransferParams } from "..";
 
 export interface RegistryItem {
@@ -239,7 +240,7 @@ export type RegistryExtraDTO = [
 
 export interface PMXTZTransferType {
   xtz_transfer_type: {
-    amount: string;
+    amount: BigNumber;
     recipient: string;
   };
 }
@@ -253,7 +254,7 @@ export interface PMFA2TransferType {
         {
           to_: string;
           token_id: string;
-          amount: string;
+          amount: BigNumber;
         }
       ];
     }

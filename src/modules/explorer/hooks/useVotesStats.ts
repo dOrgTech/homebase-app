@@ -1,9 +1,10 @@
+import { BigNumber } from "bignumber.js";
 import { useMemo } from "react";
 
 interface Props {
-  quorumThreshold: number;
-  upVotes: number;
-  downVotes: number;
+  quorumThreshold: BigNumber;
+  upVotes: BigNumber;
+  downVotes: BigNumber;
 }
 
 export const useVotesStats = ({
@@ -12,9 +13,9 @@ export const useVotesStats = ({
   downVotes,
 }: Props) => {
   return useMemo(() => {
-    const support = upVotes >= downVotes;
+    const support = upVotes.isGreaterThanOrEqualTo(downVotes);
 
-    const votesSum = upVotes + downVotes;
+    const votesSum = upVotes.plus(downVotes);
     const votes = support ? upVotes : downVotes;
     const downVotesQuorumPercentage = getRelativeVotePercentage(
       downVotes,
@@ -49,7 +50,7 @@ export const useVotesStats = ({
   }, [quorumThreshold, upVotes, downVotes]);
 };
 
-const getRelativeVotePercentage = (votes: number, quorumOrSum: number) => {
-  const result = quorumOrSum ? (votes * 100) / quorumOrSum : 0;
-  return result > 100? 100: result
+const getRelativeVotePercentage = (votes: BigNumber, quorumOrSum: BigNumber) => {
+  const result = quorumOrSum ? votes.multipliedBy(100).div(quorumOrSum) : new BigNumber(0);
+  return result.isGreaterThan(100) ? new BigNumber(100): result
 }

@@ -5,12 +5,12 @@ import {
   Wallet,
   TransactionWalletOperation,
 } from "@taquito/taquito";
-import { DAOTemplate } from "modules/creator/state";
+import { DAOTemplate, MigrationParams } from "modules/creator/state";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
-import { Extra, fromStateToBaseStorage, getContract, MigrationParams } from ".";
+import { Extra, fromStateToBaseStorage, getContract } from ".";
 import { DAOListMetadata } from "../metadataCarrier/types";
 import { RegistryDAO, TreasuryDAO } from ".";
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
@@ -19,7 +19,8 @@ import { getDAOListMetadata } from "../metadataCarrier";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";
 import { Storage } from "services/bakingBad/storage/types";
-import { xtzToMutez } from "../utils";
+import { parseUnits, xtzToMutez } from "../utils";
+import { BigNumber } from "bignumber.js";
 
 interface DeployParams {
   params: MigrationParams;
@@ -173,11 +174,11 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public sendXtz = async (xtzAmount: string, tezos: TezosToolkit) => {
+  public sendXtz = async (xtzAmount: BigNumber, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.address);
 
     const result = await contract.methods.callCustom("receive_xtz", "").send({
-      amount: Number(xtzToMutez(xtzAmount)),
+      amount: xtzToMutez(xtzAmount).toNumber(),
       mutez: true,
     });
     return result;
@@ -196,7 +197,7 @@ export abstract class BaseDAO {
     tezos,
   }: {
     proposalKey: string;
-    amount: number;
+    amount: BigNumber;
     support: boolean;
     tezos: TezosToolkit;
   }) => {
@@ -216,16 +217,13 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public freeze = async (
-    amount: number,
-    tezos: TezosToolkit
-  ) => {
+  public freeze = async (amount: BigNumber, tezos: TezosToolkit) => {
     const daoContract = await getContract(tezos, this.address);
     const govTokenContract = await getContract(
       tezos,
       this.storage.governanceToken.contract
     );
-    const tokenMetadata = this.storage.governanceToken
+    const tokenMetadata = this.storage.governanceToken;
     const batch = await tezos.wallet
       .batch()
       .withContractCall(
@@ -240,7 +238,7 @@ export abstract class BaseDAO {
         ])
       )
       .withContractCall(
-        daoContract.methods.freeze(amount / 10 ** tokenMetadata.decimals)
+        daoContract.methods.freeze(parseUnits(amount, tokenMetadata.decimals))
       )
       .withContractCall(
         govTokenContract.methods.update_operators([
@@ -258,15 +256,12 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public unfreeze = async (
-    amount: number,
-    tezos: TezosToolkit
-  ) => {
+  public unfreeze = async (amount: BigNumber, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.address);
-    const tokenMetadata = this.storage.governanceToken
+    const tokenMetadata = this.storage.governanceToken;
 
     const result = await contract.methods
-      .unfreeze(amount / 10 ** tokenMetadata.decimals)
+      .unfreeze(parseUnits(amount, tokenMetadata.decimals).toString())
       .send();
     return result;
   };

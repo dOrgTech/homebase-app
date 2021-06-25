@@ -18,6 +18,7 @@ import { TextField } from "formik-material-ui";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
+import BigNumber from "bignumber.js";
 
 interface Props {
   open: boolean;
@@ -64,6 +65,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
           args: {
             transfers: values.transferForm.transfers.map((transfer) => ({
               ...transfer,
+              amount: new BigNumber(transfer.amount),
               asset: daoHoldings.find(
                 (balance) => balance.contract === transfer.asset?.contract
               ) as DAOHolding,

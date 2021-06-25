@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import dayjs from "dayjs";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { BigNumber } from "bignumber.js";
 
 const Container = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
@@ -40,7 +41,7 @@ const Cursor = styled(Typography)({
 
 export const TreasuryHistoryRow: React.FC<{
   name: string;
-  amount: string;
+  amount: BigNumber;
   recipient: string;
   date: string;
   hash: string;
@@ -128,7 +129,7 @@ export const TreasuryHistoryRow: React.FC<{
           justify={isMobileSmall ? "center" : "flex-end"}
         >
           <Cursor variant="subtitle1" color="textSecondary" align="right">
-            {isMobileSmall ? "AMOUNT " : null} {Number(Number(amount).toFixed(2))}
+            {isMobileSmall ? "AMOUNT " : null} {(amount).toFixed(2)}
           </Cursor>
         </Grid>
       </Container>

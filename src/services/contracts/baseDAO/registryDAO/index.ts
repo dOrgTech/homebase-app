@@ -23,6 +23,8 @@ import { RegistryProposal } from "services/bakingBad/proposals/types";
 import { getExtra } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
+import BigNumber from "bignumber.js";
+import { parseUnits } from "services/contracts/utils";
 
 const parser = new Parser();
 
@@ -106,12 +108,12 @@ export class RegistryDAO extends BaseDAO {
 
     const extra: RegistryExtra = {
       registry: mapStorageRegistryList(extraDto[0].data.value.value),
-      frozenExtraValue: Number(char2Bytes(extraDto[4].data.value.value)),
-      slashExtraValue: Number(char2Bytes(extraDto[5].data.value.value)),
-      minXtzAmount: Number(char2Bytes(extraDto[6].data.value.value)),
-      maxXtzAmount: Number(char2Bytes(extraDto[7].data.value.value)),
-      frozenScaleValue: Number(char2Bytes(extraDto[8].data.value.value)),
-      slashDivisionScale: Number(char2Bytes(extraDto[9].data.value.value)),
+      frozenExtraValue: new BigNumber(char2Bytes(extraDto[4].data.value.value)),
+      slashExtraValue: new BigNumber(char2Bytes(extraDto[5].data.value.value)),
+      minXtzAmount: new BigNumber(char2Bytes(extraDto[6].data.value.value)),
+      maxXtzAmount: new BigNumber(char2Bytes(extraDto[7].data.value.value)),
+      frozenScaleValue: new BigNumber(char2Bytes(extraDto[8].data.value.value)),
+      slashDivisionScale: new BigNumber(char2Bytes(extraDto[9].data.value.value)),
       registryAffected: mapStorageRegistryAffectedList(
         extraDto[3].data.value.value
       ),
@@ -211,7 +213,7 @@ export class RegistryDAO extends BaseDAO {
           ...mapProposalBase(
             dto,
             "registry",
-            this.storage.governanceToken.supply / 10 ** this.storage.governanceToken.decimals
+            parseUnits(this.storage.governanceToken.supply, this.storage.governanceToken.decimals)
           ),
           transfers,
           list: registryDiff,

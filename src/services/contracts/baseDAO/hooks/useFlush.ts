@@ -42,7 +42,7 @@ export const useFlush = () => {
           variant: "error",
           autoHideDuration: 5000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

@@ -1,3 +1,4 @@
+import { BigNumber } from "bignumber.js";
 import { useMemo } from "react";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
@@ -22,7 +23,7 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
 
     return ledgerData.map((tokenHolder) => {
       let proposalsVoted = 0;
-      let votes = 0;
+      let votes = new BigNumber(0);
 
       proposals.forEach((proposal) => {
         const voter = proposal.voters.find(
@@ -31,7 +32,7 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
         );
 
         if (voter) {
-          votes += voter.value;
+          votes = votes.plus(voter.value);
           proposalsVoted += 1;
         }
       });

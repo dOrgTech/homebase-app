@@ -18,6 +18,7 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import BigNumber from "bignumber.js";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -103,7 +104,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
       mutate({
         dao,
-        amount,
+        amount: new BigNumber(amount),
         freeze,
       });
 

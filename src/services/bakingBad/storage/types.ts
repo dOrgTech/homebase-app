@@ -1,3 +1,4 @@
+import { BigNumber } from "bignumber.js";
 import { TokenMetadata } from "../tokens";
 
 export interface LastPeriodChange {
@@ -17,7 +18,7 @@ export interface Storage {
   proposalsMapNumber: number;
   quorumThresholdAtCycle: {
     lastUpdatedCycle: number;
-    quorumThreshold: string;
+    quorumThreshold: BigNumber;
     staked: string;
   };
   start_time: string;

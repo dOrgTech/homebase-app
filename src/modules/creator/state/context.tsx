@@ -1,11 +1,11 @@
 import React, { createContext, useReducer, Dispatch, useMemo } from "react";
 
-import { MigrationParams } from "services/contracts/baseDAO/types";
 import useLocalStorage from "modules/common/hooks/useLocalStorage";
 import {
   CreatorAction,
   CreatorState,
   ActionTypes,
+  MigrationParams,
 } from "modules/creator/state/types";
 
 const deploymentStatus = {

@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js";
+
 export interface LedgerDTOItem {
   id: number;
   active: boolean;
@@ -15,7 +17,7 @@ export interface LedgerDTOItem {
 export type LedgerDTO = LedgerDTOItem[];
 
 interface LedgerBalances {
-  [tokenId: number]: number;
+  [tokenId: number]: BigNumber;
 }
 
 export interface LedgerMap {

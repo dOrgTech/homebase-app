@@ -1,71 +1,19 @@
-import { DAOTemplate } from "./../../../modules/creator/state/types";
 import { ContractAbstraction, TezosToolkit, Wallet } from "@taquito/taquito";
 
 import { MetadataCarrierDeploymentData, MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
-import { TokenMetadata } from "services/bakingBad/tokens";
+import { BigNumber } from "bignumber.js";
+import { MigrationParams } from "modules/creator/state";
 
 export type Contract = ContractAbstraction<Wallet> | undefined;
-
-export interface MigrationParams {
-  template: DAOTemplate;
-  orgSettings: OrgSettings;
-  votingSettings: VotingSettings;
-  quorumSettings: QuorumSettings;
-}
 
 export interface TokenHolder {
   address: string;
   balance: number;
 }
 
-export type OrgSettings = {
-  name: string;
-  symbol: string;
-  description: string;
-  administrator: string;
-  guardian: string;
-  governanceToken: {
-    address: string;
-    tokenId: string;
-    tokenMetadata?: TokenMetadata
-  }
-};
-
-export type QuorumSettings = {
-  quorumThreshold: number;
-  minQuorumAmount: number;
-  maxQuorumAmount: number;
-  quorumChange: number;
-  quorumMaxChange: number;
-};
-
-export type VotingSettings = {
-  votingDays: number;
-  votingHours: number;
-  votingMinutes: number;
-  proposeStakeRequired: number;
-  proposeStakePercentage: number;
-  frozenScaleValue: number;
-  frozenDivisionValue: number;
-  minXtzAmount: number;
-  maxXtzAmount: number;
-
-  proposalFlushDays: number;
-  proposalFlushHours: number;
-  proposalFlushMinutes: number;
-
-  proposalExpiryDays: number;
-  proposalExpiryHours: number;
-  proposalExpiryMinutes: number;
-};
-
-export type Settings = OrgSettings | VotingSettings | QuorumSettings;
-
-export type ErrorValues<T> = Partial<Record<keyof T, string>>;
-
 export interface TransferParams {
-  amount: number;
+  amount: BigNumber;
   recipient: string;
   type: "XTZ" | "FA2";
   asset: DAOHolding
@@ -80,7 +28,7 @@ export interface ProposeParams {
   contractAddress: string;
   tezos: TezosToolkit;
   contractParams: {
-    tokensToFreeze: number;
+    tokensToFreeze: BigNumber;
     agoraPostId: number;
     transfers: TransferParams[];
   };
@@ -93,7 +41,7 @@ export interface OriginateParams {
 
 export interface VoteParams {
   proposalKey: string;
-  amount: number;
+  amount: BigNumber;
   tezos: TezosToolkit;
   contractAddress: string;
   support: boolean;
@@ -112,11 +60,11 @@ export interface MemberTokenAllocation {
 }
 
 export interface BaseExtraState {
-  frozenExtraValue: number;
-  slashScaleValue: number;
-  slashDivisionValue: number;
-  maxXtzAmount: number;
-  minXtzAmount: number;
+  frozenExtraValue: BigNumber;
+  slashScaleValue: BigNumber;
+  slashDivisionValue: BigNumber;
+  maxXtzAmount: BigNumber;
+  minXtzAmount: BigNumber;
 }
 
 export interface BaseStorageParams {
@@ -125,12 +73,12 @@ export interface BaseStorageParams {
     address: string;
     tokenId: string;
   }
-  quorumThreshold: number;
+  quorumThreshold: BigNumber;
   votingPeriod: number;
   extra: BaseExtraState;
 
-  minQuorumAmount: number;
-  maxQuorumAmount: number;
+  minQuorumAmount: BigNumber;
+  maxQuorumAmount: BigNumber;
   guardian: string
   quorumChange: number;
   quorumMaxChange: number;
@@ -163,10 +111,10 @@ export type ParamsWithoutMetadata = Omit<
 >;
 
 export interface Extra {
-  frozenExtraValue: number;
-  slashExtraValue: number;
-  minXtzAmount: number;
-  maxXtzAmount: number;
-  frozenScaleValue: number;
-  slashDivisionScale: number;
+  frozenExtraValue: BigNumber;
+  slashExtraValue: BigNumber;
+  minXtzAmount: BigNumber;
+  maxXtzAmount: BigNumber;
+  frozenScaleValue: BigNumber;
+  slashDivisionScale: BigNumber;
 }

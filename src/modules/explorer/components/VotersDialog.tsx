@@ -21,6 +21,7 @@ import { useVotesStats } from "../hooks/useVotesStats";
 import { VotersProgress } from "./VotersProgress";
 import { AppTabBar } from "./AppTabBar";
 import { TabPanel } from "./TabPanel";
+import { BigNumber } from "bignumber.js";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -130,12 +131,12 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   const { data: votesData, isLoading } = useVotes(proposalAddress, daoAddress);
   const [selectedTab, setSelectedTab] = React.useState(0);
   const style = styles();
-  const quorumThreshold =  Number(Number(proposal?.quorumThreshold).toFixed(2)) || 0
+  const quorumThreshold =  proposal?.quorumThreshold || new BigNumber(0)
 
   const { votesSum } = useVotesStats({
     quorumThreshold,
-    upVotes: proposal?.upVotes || 0,
-    downVotes: proposal?.downVotes || 0
+    upVotes: proposal?.upVotes || new BigNumber(0),
+    downVotes: proposal?.downVotes || new BigNumber(0)
   });
 
   const votes = useMemo(() => {
@@ -269,7 +270,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                           color="secondary"
                           variant="determinate"
                           favor={vote.support}
-                          value={votesSum ? (vote.value / votesSum) * 100 : 0}
+                          value={votesSum ? vote.value.div(votesSum).multipliedBy(100).toNumber() : 0}
                         />
                       </Grid>
                       <Grid item xs={6}>

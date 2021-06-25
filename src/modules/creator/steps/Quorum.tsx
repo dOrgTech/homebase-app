@@ -5,8 +5,7 @@ import { Field, Form, Formik, FormikErrors } from "formik";
 import { useHistory } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 
-import { CreatorContext, ActionTypes } from "modules/creator/state";
-import { QuorumSettings } from "services/contracts/baseDAO/types";
+import { CreatorContext, ActionTypes, QuorumSettings } from "modules/creator/state";
 import { InfoOutlined } from "@material-ui/icons";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({

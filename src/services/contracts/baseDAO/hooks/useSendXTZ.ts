@@ -1,4 +1,5 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
+import { BigNumber } from "bignumber.js";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -7,7 +8,7 @@ import { useCacheDAOs } from "./useCacheDAOs";
 
 interface Params {
   dao: BaseDAO;
-  amount: number;
+  amount: BigNumber;
 }
 
 export const useSendXTZ = () => {
@@ -27,7 +28,7 @@ export const useSendXTZ = () => {
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).sendXtz(params.amount.toString(), tezos);
+        const data = await (params.dao as BaseDAO).sendXtz(params.amount, tezos);
 
         await data.confirmation(1);
 
@@ -48,7 +49,7 @@ export const useSendXTZ = () => {
           variant: "error",
           autoHideDuration: 10000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

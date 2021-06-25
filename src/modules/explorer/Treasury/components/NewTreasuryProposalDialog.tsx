@@ -28,6 +28,7 @@ import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
 import { useParams } from "react-router-dom";
 import * as Yup from "yup";
+import BigNumber from "bignumber.js";
 
 const AmountItem = styled(Grid)(({ theme }) => ({
   minHeight: 137,
@@ -204,7 +205,7 @@ export const EMPTY_TRANSFER: FormTransferParams = {
     symbol: "XTZ",
     name: "XTZ",
     decimals: 6,
-    balance: "0",
+    balance: new BigNumber("0"),
   },
 };
 
@@ -279,7 +280,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         if (currentTransfer.asset.symbol === "XTZ") {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           return daoHoldings.find((balance) => balance.symbol === "XTZ")!
-            .balance;
+            .balance.toString();
         }
 
         const fa2Token = daoHoldings.find(
@@ -287,7 +288,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         );
 
         if (fa2Token) {
-          return fa2Token.balance;
+          return fa2Token.balance.toString();
         }
 
         return "-";
