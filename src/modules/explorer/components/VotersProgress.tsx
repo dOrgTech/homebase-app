@@ -12,13 +12,21 @@ import { UpVotesDialog } from "./VotersDialog";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
-import { ProgressBar as CustomBar } from "modules/explorer/components";
+import { MultiColorBar as CustomBar } from "modules/explorer/components";
 
 interface VotersData {
   showButton: boolean;
   daoId: string;
   proposalId: string;
+  wrapAll?: boolean;
 }
+
+const BlueDot = styled(Paper)(() => ({
+  width: 9,
+  height: 9,
+  marginRight: 9,
+  background: "#3866F9"
+}));
 
 const GreenDot = styled(Paper)(({ theme }) => ({
   width: 9,
@@ -42,7 +50,8 @@ const StatusTitle = styled(Typography)({
 export const VotersProgress: React.FC<VotersData> = ({
   showButton,
   daoId,
-  proposalId
+  proposalId,
+  wrapAll
 }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -53,47 +62,53 @@ export const VotersProgress: React.FC<VotersData> = ({
 
   const upVotes = proposal ? proposal.upVotes : 0;
   const downVotes = proposal ? proposal.downVotes : 0;
-  const upVotesPercentage = dao && (upVotes * 100) / quorumThreshold || 0;
-  const downVotesPercentage =
+  const upVotesQuorumPercentage = dao && (upVotes * 100) / quorumThreshold || 0;
+  const downVotesQuorumPercentage =
     dao && (downVotes * 100) / quorumThreshold;
+  const totalVotes = upVotes + downVotes;
+  const upVotesPercentage = dao && (totalVotes > 0? (upVotes * 100) / totalVotes : 0);
 
   return (
     <>
       <Grid item xs={12} container direction="row" alignItems="center" spacing={1}>
-        <Grid item xs={showButton ? 8 : 12} container direction="row" alignItems="baseline" >
+        <Grid item xs container direction="row" alignItems="baseline" justify="flex-start" >
           <Grid
             item
-            md={isMobileSmall ? 12 : showButton ? 4 : 6}
+            md={isMobileSmall || wrapAll ? 12 : true}
             container
             direction="row"
             alignItems="baseline"
+            wrap="nowrap"
           >
             <GreenDot />
             <StatusTitle color="textSecondary">SUPPORT: </StatusTitle>
             <Typography color="textSecondary">
-              {proposal? upVotes: "-"} ({ upVotesPercentage && upVotesPercentage > 100 ? 100 : formatNumber(Number(upVotesPercentage))}%){" "}
+              {proposal? upVotes: "-"} ({ upVotesQuorumPercentage && upVotesQuorumPercentage > 100 ? 100 : formatNumber(Number(upVotesQuorumPercentage))}%){" "}
             </Typography>
           </Grid>
 
           <Grid
-            md={isMobileSmall ? 12 : showButton ? 3 : 6}
+            md={isMobileSmall || wrapAll ? 12 : true}
             container
             direction="row"
             alignItems="center"
+            wrap="nowrap"
           >
             <RedDot />
             <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
             <Typography color="textSecondary">
-              {proposal? downVotes: "-"} ({downVotesPercentage && downVotesPercentage > 100 ? 100 : formatNumber(Number(downVotesPercentage))}%){" "}
+              {proposal? downVotes: "-"} ({downVotesQuorumPercentage && downVotesQuorumPercentage > 100 ? 100 : formatNumber(Number(downVotesQuorumPercentage))}%){" "}
             </Typography>
           </Grid>
 
           <Grid
-            md={isMobileSmall ? 12 : showButton ? 3 : 6}
+            md={isMobileSmall || wrapAll ? 12 : true}
             container
             direction="row"
             alignItems="center"
+            wrap="nowrap"
           >
+            <BlueDot/>
             <StatusTitle color="textSecondary">THRESHOLD: </StatusTitle>
             <Typography color="textSecondary">
               {proposal? quorumThreshold: "-"}
@@ -103,7 +118,7 @@ export const VotersProgress: React.FC<VotersData> = ({
 
         {showButton ? (
           <Grid
-            xs={4}
+            xs={2}
             container
             direction="row"
             alignItems="center"
@@ -119,7 +134,6 @@ export const VotersProgress: React.FC<VotersData> = ({
       </Grid>
       <Grid item xs={12}>
         <CustomBar
-          favor={true}
           variant="determinate"
           value={upVotesPercentage}
           color="secondary"
