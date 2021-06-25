@@ -214,6 +214,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                   {proposal? votesSum: "-"}
                 </TextHeader>
                 <VotersProgress
+                  wrapAll={true}
                   showButton={false}
                   daoId={daoAddress}
                   proposalId={proposalAddress}
@@ -247,7 +248,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                   </Grid>
                   <Grid item xs={6} container justify="flex-end">
                     <Typography variant="subtitle1" color="textSecondary">
-                      % of Votes
+                      Votes
                     </Typography>
                   </Grid>
                 </Header>
