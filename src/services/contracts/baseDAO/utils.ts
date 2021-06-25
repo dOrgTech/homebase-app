@@ -7,6 +7,7 @@ import { CycleType } from ".";
 import {
   BaseStorageParams,
 } from "./types";
+import { unpackDataBytes } from "@taquito/michel-codec";
 
 const SECONDS_IN_MINUTE = 60;
 const SECONDS_IN_HOUR = 60 * 60;
@@ -74,4 +75,8 @@ export const calculateCycleInfo = (originationTime: string, votingPeriod: number
     current: currentPeriodNumber,
     type: currentPeriodNumber % 2 === 0? "voting" : "proposing" as CycleType
   };
+}
+
+export const unpackExtraNumValue = (bytes: string): BigNumber => {
+  return new BigNumber((unpackDataBytes({ bytes }) as { int: string }).int)
 }

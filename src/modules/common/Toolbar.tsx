@@ -22,7 +22,6 @@ import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 import { AccountBalanceWallet } from "@material-ui/icons";
-import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
 import { Network } from "services/beacon/context";
@@ -248,7 +247,6 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       id: string;
     }>();
   const { data: dao } = useDAO(daoId);
-  const { data } = useTokenHolders(daoId);
 
   const [networkAnchorEl, setNetworkAnchorEl] =
     React.useState<HTMLButtonElement | null>(null);
@@ -282,15 +280,15 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   };
 
   const userBalance = useMemo(() => {
-    if (!data) {
+    if (!dao) {
       return new BigNumber(0);
     }
-    const balance = data.find(
+    const balance = dao.ledger.find(
       ({ address }) => address.toLowerCase() === account.toLowerCase()
     );
     const frozenBalance = balance ? balance.balances[0] : new BigNumber(0);
     return frozenBalance || new BigNumber(0);
-  }, [data, account]);
+  }, [dao, account]);
 
   const history = useHistory();
 
@@ -321,7 +319,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   alignItems="center"
                   justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
                 >
-                  {!isMobileSmall && data && data.length > 0 && dao ? (
+                  {!isMobileSmall && dao && dao.ledger.length > 0 ? (
                     <>
                       <Grid
                         item

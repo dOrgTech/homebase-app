@@ -80,7 +80,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                 .filter((item) => !!item.recipient)
                 .map((transfer) => ({
                   ...transfer,
-                  amount: new BigNumber(transfer.amount),
+                  amount: transfer.amount,
                   asset: daoHoldings.find(
                     (balance) => balance.contract === transfer.asset?.contract
                   ) as DAOHolding,

@@ -6,9 +6,7 @@ import {
   TransactionWalletOperation,
 } from "@taquito/taquito";
 import { DAOTemplate, MigrationParams } from "modules/creator/state";
-import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { Ledger } from "services/bakingBad/ledger/types";
-import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
 import { Extra, fromStateToBaseStorage, getContract } from ".";
 import { DAOListMetadata } from "../metadataCarrier/types";
@@ -19,7 +17,7 @@ import { getDAOListMetadata } from "../metadataCarrier";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";
 import { Storage } from "services/bakingBad/storage/types";
-import { parseUnits, xtzToMutez } from "../utils";
+import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
 
 interface DeployParams {
@@ -184,12 +182,6 @@ export abstract class BaseDAO {
     return result;
   };
 
-  public tokenHolders = async (network: Network) => {
-    const storage = await getStorage(this.address, network);
-    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
-    return ledger;
-  };
-
   public vote = async ({
     proposalKey,
     amount,
@@ -238,7 +230,7 @@ export abstract class BaseDAO {
         ])
       )
       .withContractCall(
-        daoContract.methods.freeze(parseUnits(amount, tokenMetadata.decimals))
+        daoContract.methods.freeze(formatUnits(amount, tokenMetadata.decimals).toString())
       )
       .withContractCall(
         govTokenContract.methods.update_operators([
@@ -261,7 +253,7 @@ export abstract class BaseDAO {
     const tokenMetadata = this.storage.governanceToken;
 
     const result = await contract.methods
-      .unfreeze(parseUnits(amount, tokenMetadata.decimals).toString())
+      .unfreeze(formatUnits(amount, tokenMetadata.decimals).toString())
       .send();
     return result;
   };

@@ -7,7 +7,7 @@ import { Network } from "services/beacon/context";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { Schema } from "@taquito/michelson-encoder";
 import { Parser, Expr } from "@taquito/michel-codec";
-import { BaseDAO, getContract } from "..";
+import { BaseDAO, getContract, unpackExtraNumValue } from "..";
 import { TreasuryProposal } from "services/bakingBad/proposals/types";
 import { TreasuryExtraDTO, TreasuryProposeArgs } from "./types";
 import { getExtra } from "services/bakingBad/extra";
@@ -18,8 +18,6 @@ import {
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
-import { char2Bytes } from "@taquito/tzip16";
-import { BigNumber } from "bignumber.js";
 import { parseUnits } from "services/contracts/utils";
 
 const parser = new Parser();
@@ -37,14 +35,14 @@ export class TreasuryDAO extends BaseDAO {
       network
     );
     const extra = {
-      frozenExtraValue: new BigNumber(char2Bytes(extraDTO[1].data.value.value)),
-      slashExtraValue: new BigNumber(char2Bytes(extraDTO[2].data.value.value)),
-      minXtzAmount: new BigNumber(char2Bytes(extraDTO[3].data.value.value)),
-      maxXtzAmount: new BigNumber(char2Bytes(extraDTO[4].data.value.value)),
-      frozenScaleValue: new BigNumber(char2Bytes(extraDTO[5].data.value.value)),
-      slashDivisionScale: new BigNumber(char2Bytes(extraDTO[6].data.value.value)),
+      frozenExtraValue: unpackExtraNumValue(extraDTO[5].value),
+      slashExtraValue: unpackExtraNumValue(extraDTO[0].value),
+      minXtzAmount: unpackExtraNumValue(extraDTO[3].value),
+      maxXtzAmount: unpackExtraNumValue(extraDTO[2].value),
+      frozenScaleValue: unpackExtraNumValue(extraDTO[1].value),
+      slashDivisionScale: unpackExtraNumValue(extraDTO[4].value),
     };
-    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
+    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, storage.governanceToken.decimals, network);
 
     return new TreasuryDAO({
       address: contractAddress,

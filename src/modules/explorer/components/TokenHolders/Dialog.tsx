@@ -10,10 +10,10 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 
-import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
 import { BigNumber } from "bignumber.js";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 interface TokenHolderDialogData {
   address: string;
@@ -82,14 +82,14 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
     setOpen(false);
   };
 
-  const { data } = useTokenHolders(address);
+  const { data } = useDAO(address);
 
   const tokenHolders = useMemo(() => {
     if (!data) {
       return [];
     }
 
-    return data.map((holder) => ({
+    return data.ledger.map((holder) => ({
       address: holder.address,
       tokens: holder.balances[0] || new BigNumber(0),
     }));
@@ -100,7 +100,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
       return new BigNumber(0);
     }
 
-    return data.reduce((acc, holder) => {
+    return data.ledger.reduce((acc, holder) => {
       return acc.plus(holder.balances[0] || new BigNumber(0));
     }, new BigNumber(0));
   }, [data]);

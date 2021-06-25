@@ -80,7 +80,7 @@ export const mapProposalBase = (
 export const mapXTZTransfersArgs = (transfer: TransferParams) => {
   return {
     xtz_transfer_type: {
-      amount: xtzToMutez(transfer.amount),
+      amount: xtzToMutez(new BigNumber(transfer.amount)).toNumber(),
       recipient: transfer.recipient,
     },
   };
@@ -100,7 +100,7 @@ export const mapFA2TransfersArgs = (
             {
               to_: transfer.recipient,
               token_id: transfer.asset.token_id,
-              amount: formatUnits(transfer.amount, transfer.asset.decimals),
+              amount: formatUnits(new BigNumber(transfer.amount), transfer.asset.decimals).toNumber(),
             },
           ],
         },

@@ -13,7 +13,7 @@ export interface TokenHolder {
 }
 
 export interface TransferParams {
-  amount: BigNumber;
+  amount: number;
   recipient: string;
   type: "XTZ" | "FA2";
   asset: DAOHolding

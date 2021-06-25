@@ -65,7 +65,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
           args: {
             transfers: values.transferForm.transfers.map((transfer) => ({
               ...transfer,
-              amount: new BigNumber(transfer.amount),
+              amount: transfer.amount,
               asset: daoHoldings.find(
                 (balance) => balance.contract === transfer.asset?.contract
               ) as DAOHolding,
