@@ -221,10 +221,8 @@ export class RegistryDAO extends BaseDAO {
           ...mapProposalBase(
             dto,
             "registry",
-            parseUnits(
               this.storage.governanceToken.supply,
               this.storage.governanceToken.decimals
-            )
           ),
           transfers,
           list: registryDiff,

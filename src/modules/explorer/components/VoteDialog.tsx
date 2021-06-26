@@ -16,6 +16,7 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { PrimaryButton } from "./styled/PrimaryButton";
+import BigNumber from "bignumber.js";
 
 const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -102,7 +103,7 @@ const ArrowIcon = styled("img")(({ theme }) => ({
 export const VoteDialog: React.FC = () => {
   const [support, setSupport] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState<any>();
+  const [amount, setAmount] = React.useState<number>(0);
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
@@ -130,7 +131,7 @@ export const VoteDialog: React.FC = () => {
       mutate({
         proposalKey: proposalId,
         dao,
-        amount,
+        amount: new BigNumber(amount),
         support,
       });
 

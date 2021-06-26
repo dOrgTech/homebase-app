@@ -42,7 +42,11 @@ export class TreasuryDAO extends BaseDAO {
       frozenScaleValue: unpackExtraNumValue(extraDTO[1].value),
       slashDivisionScale: unpackExtraNumValue(extraDTO[4].value),
     };
-    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, storage.governanceToken.decimals, network);
+    const ledger = await getLedgerAddresses(
+      storage.ledgerMapNumber,
+      storage.governanceToken.decimals,
+      network
+    );
 
     return new TreasuryDAO({
       address: contractAddress,
@@ -58,10 +62,7 @@ export class TreasuryDAO extends BaseDAO {
 
   public proposals = async (network: Network): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
-    const proposalsDTO = await getProposalsDTO(
-      proposalsMapNumber,
-      network
-    );
+    const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
 
@@ -82,7 +83,8 @@ export class TreasuryDAO extends BaseDAO {
         ...mapProposalBase(
           dto,
           "treasury",
-          parseUnits(this.storage.governanceToken.supply, this.storage.governanceToken.decimals)
+          this.storage.governanceToken.supply,
+          this.storage.governanceToken.decimals
         ),
         agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
         transfers,
@@ -92,7 +94,10 @@ export class TreasuryDAO extends BaseDAO {
     return proposals;
   };
 
-  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs, tezos: TezosToolkit) => {
+  public propose = async (
+    { agoraPostId, transfers }: TreasuryProposeArgs,
+    tezos: TezosToolkit
+  ) => {
     const contract = await getContract(tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);

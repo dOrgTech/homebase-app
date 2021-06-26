@@ -200,7 +200,7 @@ export abstract class BaseDAO {
           argument: {
             proposal_key: proposalKey,
             vote_type: support,
-            vote_amount: amount,
+            vote_amount: formatUnits(amount, this.storage.governanceToken.decimals).toString(),
           },
         },
       ])
