@@ -9,6 +9,7 @@ import {
   withTheme,
 } from "@material-ui/core";
 import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
+import { BigNumber } from "bignumber.js";
 
 const TokenName = styled(withTheme(Paper))((props) => ({
   border: "2px solid rgba(255, 255, 255, 0.2)",
@@ -29,7 +30,7 @@ const Cursor = styled(Typography)({
 
 export const TreasuryTableRow: React.FC<{
   symbol: string;
-  balance: string;
+  balance: BigNumber;
   decimals: number;
 }> = ({ symbol, balance }) => {
   const theme = useTheme();
@@ -63,7 +64,7 @@ export const TreasuryTableRow: React.FC<{
           </Typography>
         ) : null}
         <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {balance}
+          {balance.toFixed(2)}
         </Cursor>
       </Grid>
     </TemplateTableRowContainer>

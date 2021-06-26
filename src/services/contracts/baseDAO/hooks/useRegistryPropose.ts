@@ -43,7 +43,7 @@ export const useRegistryPropose = () => {
           variant: "error",
           autoHideDuration: 10000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

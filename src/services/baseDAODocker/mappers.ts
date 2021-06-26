@@ -4,6 +4,7 @@ import { GeneratorArgs } from "./types";
 import { char2Bytes } from '@taquito/tzip16';
 import { MetadataDeploymentResult } from 'services/contracts/metadataCarrier/deploy';
 import { TokenMetadata } from "services/bakingBad/tokens";
+import { BigNumber } from "bignumber.js";
 
 export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult, tokenMetadata: TokenMetadata): GeneratorArgs => ({
   admin_address: storage.adminAddress,
@@ -26,8 +27,8 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   governance_total_supply: `${tokenMetadata.supply}n`,
   period: `${storage.votingPeriod}n`,
   max_votes: `${tokenMetadata.supply}n`,
-  min_xtz_amount: `${xtzToMutez(storage.extra.minXtzAmount.toString())}mutez`,
-  max_xtz_amount: `${xtzToMutez(storage.extra.maxXtzAmount.toString())}mutez`,
+  min_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.minXtzAmount))}mutez`,
+  max_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.maxXtzAmount))}mutez`,
 })
 
 const formatMetadata = ({ deployAddress, keyName }: MetadataDeploymentResult) => {

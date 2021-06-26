@@ -8,6 +8,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import ArrowForward from "@material-ui/icons/ArrowForward";
+import { BigNumber } from "bignumber.js";
 import { Blockie } from "modules/common/Blockie";
 import { ExternalLink } from "modules/common/ExternalLink";
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
@@ -30,7 +31,7 @@ const linkStyle = makeStyles({
 
 interface Props extends GridProps {
   address: string;
-  amount: string;
+  amount: BigNumber;
   currency?: string;
   contract?: string;
   tokenId?: string;
@@ -61,7 +62,7 @@ export const TransferBadge: React.FC<Props> = ({
     >
       <Grid item>
         <Typography variant="body1" color="textSecondary">
-          {amount} {contract && tokenId? <FA2Symbol contractAddress={contract} tokenId={tokenId} /> : currency}
+          {amount.toString()} {contract && tokenId? <FA2Symbol contractAddress={contract} tokenId={tokenId} /> : currency}
         </Typography>
       </Grid>
       <ArrowContainer item>

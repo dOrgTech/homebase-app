@@ -3,6 +3,7 @@ import { Network } from "services/beacon/context";
 import { StorageDTO, Storage } from "services/bakingBad/storage/types";
 import { storageDTOToStorageWithoutGovTkn } from "./mapper";
 import { getTokenMetadata } from "../tokens";
+import { parseUnits } from "services/contracts/utils";
 
 export const getStorage = async (
   contractAddress: string,
@@ -22,6 +23,10 @@ export const getStorage = async (
 
   return {
     ...storage,
+    quorumThresholdAtCycle: {
+      ...storage.quorumThresholdAtCycle,
+      quorumThreshold: parseUnits(storage.quorumThresholdAtCycle.quorumThreshold, govTokenMetadata.decimals)
+    },
     governanceToken: govTokenMetadata
   };
 };

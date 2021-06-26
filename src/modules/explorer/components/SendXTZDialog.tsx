@@ -17,6 +17,7 @@ import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { connectIfNotConnected } from "services/contracts/utils";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useSendXTZ } from "services/contracts/baseDAO/hooks/useSendXTZ";
+import BigNumber from "bignumber.js";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -100,7 +101,7 @@ export const SendXTZDialog: React.FC = () => {
 
       mutate({
         dao,
-        amount,
+        amount: new BigNumber(amount),
       })
 
       handleClose();

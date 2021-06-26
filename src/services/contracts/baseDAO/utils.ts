@@ -1,11 +1,13 @@
 import { TezosToolkit } from "@taquito/taquito";
 import { tzip16 } from "@taquito/tzip16";
+import { BigNumber } from "bignumber.js";
 import dayjs from "dayjs";
+import { MigrationParams } from "modules/creator/state";
 import { CycleType } from ".";
 import {
   BaseStorageParams,
-  MigrationParams,
 } from "./types";
+import { unpackDataBytes } from "@taquito/michel-codec";
 
 const SECONDS_IN_MINUTE = 60;
 const SECONDS_IN_HOUR = 60 * 60;
@@ -23,21 +25,21 @@ export const fromStateToBaseStorage = (
     },
     guardian: info.orgSettings.guardian,
     extra: {
-      frozenScaleValue: info.votingSettings.proposeStakePercentage,
-      frozenExtraValue: info.votingSettings.proposeStakeRequired,
-      slashScaleValue: info.votingSettings.frozenScaleValue,
-      slashDivisionValue: 100,
+      frozenScaleValue: new BigNumber(info.votingSettings.proposeStakePercentage),
+      frozenExtraValue: new BigNumber(info.votingSettings.proposeStakeRequired),
+      slashScaleValue: new BigNumber(info.votingSettings.frozenScaleValue),
+      slashDivisionValue: new BigNumber(100),
 
-      minXtzAmount: info.votingSettings.minXtzAmount,
-      maxXtzAmount: info.votingSettings.maxXtzAmount || 0,
+      minXtzAmount: new BigNumber(info.votingSettings.minXtzAmount),
+      maxXtzAmount: new BigNumber(info.votingSettings.maxXtzAmount || 0),
     },
-    quorumThreshold: info.quorumSettings.quorumThreshold,
+    quorumThreshold: new BigNumber(info.quorumSettings.quorumThreshold),
     votingPeriod:
       (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
       (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
       (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
-    minQuorumAmount: info.quorumSettings.minQuorumAmount,
-    maxQuorumAmount: info.quorumSettings.maxQuorumAmount,
+    minQuorumAmount: new BigNumber(info.quorumSettings.minQuorumAmount),
+    maxQuorumAmount: new BigNumber(info.quorumSettings.maxQuorumAmount),
     quorumChange: info.quorumSettings.quorumChange,
     quorumMaxChange: info.quorumSettings.quorumMaxChange,
     
@@ -73,4 +75,8 @@ export const calculateCycleInfo = (originationTime: string, votingPeriod: number
     current: currentPeriodNumber,
     type: currentPeriodNumber % 2 === 0? "voting" : "proposing" as CycleType
   };
+}
+
+export const unpackExtraNumValue = (bytes: string): BigNumber => {
+  return new BigNumber((unpackDataBytes({ bytes }) as { int: string }).int)
 }

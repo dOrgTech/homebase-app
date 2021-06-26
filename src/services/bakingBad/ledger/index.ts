@@ -4,6 +4,7 @@ import { Ledger, LedgerDTO } from "services/bakingBad/ledger/types";
 
 export const getLedgerAddresses = async (
   ledgerMapNumber: number,
+  tokenDecimals: number,
   network: Network
 ): Promise<Ledger> => {
   const url = `https://api.${network}.tzkt.io/v1/bigmaps/${ledgerMapNumber}/keys?limit=10000`;
@@ -16,5 +17,5 @@ export const getLedgerAddresses = async (
 
   const result: LedgerDTO = await response.json();
 
-  return dtoToLedger(result);
+  return dtoToLedger(result, tokenDecimals);
 };

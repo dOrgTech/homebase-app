@@ -5,6 +5,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import BigNumber from "bignumber.js";
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
 import { TransferBadge } from "modules/explorer/Treasury/components/TransferBadge";
 import React, { useMemo } from "react";
@@ -68,7 +69,7 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
 
       return {
         ...transfer,
-        amount: (Number(transfer.amount) / 10 ** decimal).toString(),
+        amount: new BigNumber(transfer.amount, decimal),
       };
     });
   }, [holdings, proposal]);

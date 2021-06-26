@@ -79,6 +79,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                 .filter((item) => !!item.recipient)
                 .map((transfer) => ({
                   ...transfer,
+                  amount: transfer.amount,
                   asset: daoHoldings.find(
                     (balance) => balance.contract === transfer.asset?.contract
                   ) as DAOHolding,
@@ -166,7 +167,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                       variant="subtitle1"
                       color="secondary"
                     >
-                      {dao && dao.extra.frozenExtraValue}{" "}
+                      {dao && dao.extra.frozenExtraValue.toString()}{" "}
                       {dao ? dao.metadata.unfrozenToken.symbol : ""}
                     </Typography>
                   </Grid>

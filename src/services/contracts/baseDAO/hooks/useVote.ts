@@ -1,4 +1,5 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
+import { BigNumber } from "bignumber.js";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -8,7 +9,7 @@ import { useCacheDAOs } from "./useCacheDAOs";
 interface Params {
   dao: BaseDAO;
   proposalKey: string;
-  amount: number;
+  amount: BigNumber;
   support: boolean;
 }
 
@@ -55,7 +56,7 @@ export const useVote = () => {
           variant: "error",
           autoHideDuration: 10000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

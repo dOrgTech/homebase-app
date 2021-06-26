@@ -64,6 +64,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
           args: {
             transfers: values.transferForm.transfers.map((transfer) => ({
               ...transfer,
+              amount: transfer.amount,
               asset: daoHoldings.find(
                 (balance) => balance.contract === transfer.asset?.contract
               ) as DAOHolding,
@@ -84,6 +85,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
 
   const initialValues = {
     ...INITIAL_TRANSFER_FORM_VALUES,
+    agoraPostId: "0"
   };
 
   return (
@@ -137,7 +139,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
                       variant="subtitle1"
                       color="secondary"
                     >
-                      {dao && dao.extra.frozenExtraValue}{" "}
+                      {dao && dao.extra.frozenExtraValue.toString()}{" "}
                       {dao ? dao.metadata.unfrozenToken.symbol : ""}
                     </Typography>
                   </Grid>

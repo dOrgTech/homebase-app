@@ -1,3 +1,5 @@
+import BigNumber from "bignumber.js";
+
 export interface TransfersDTO {
   transfers: TransferDTO[];
   total: number;
@@ -29,3 +31,5 @@ export interface TransferDTO {
   alias: string;
   to_alias: string;
 }
+
+export type TransferWithBN = Omit<TransferDTO, "amount"> & { amount: BigNumber }

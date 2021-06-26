@@ -9,7 +9,7 @@ export const useDroppedProposalOps = (contractAddress: string | undefined) => {
   const { network } = useTezos()
 
   const result = useQuery<DroppedProposal[], Error>(
-    ["operations", contractAddress],
+    ["dropOperations", contractAddress],
     () => getDroppedProposals((dao as BaseDAO).address, network),
     {
       enabled: !!dao,

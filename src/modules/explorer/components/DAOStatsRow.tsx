@@ -7,6 +7,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@material-ui/core";
+import { BigNumber } from "bignumber.js";
 import React, { useMemo } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
@@ -70,42 +71,42 @@ export const DAOStatsRow: React.FC = () => {
 
   const amountLocked = useMemo(() => {
     if (!data) {
-      return 0;
+      return new BigNumber(0);
     }
 
     return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[0] || 0;
-      return acc + frozenBalance;
-    }, 0);
+      const frozenBalance = current.balances[0] || new BigNumber(0);
+      return acc.plus(frozenBalance);
+    }, new BigNumber(0));
   }, [data]);
 
   const amountNotLocked = useMemo(() => {
     if (!data) {
-      return 0;
+      return new BigNumber(0);
     }
 
     return data.storage.governanceToken.supply
   }, [data]);
 
-  const totalTokens = amountLocked + amountNotLocked;
+  const totalTokens = amountLocked.plus(amountNotLocked);
 
   const amountLockedPercentage = totalTokens
-    ? (amountLocked / totalTokens) * 100
-    : 0;
+    ? amountLocked.div(totalTokens).multipliedBy(100)
+    : new BigNumber(0);
 
   const addressesWithUnfrozenBalance = useMemo(() => {
     if (!data) {
-      return 0;
+      return new BigNumber(0);
     }
 
     return data.ledger.reduce((acc, current) => {
       const frozenBalance = current.balances[0];
       if (frozenBalance) {
-        return acc + 1;
+        return acc.plus(1);
       }
 
       return acc;
-    }, 0);
+    }, new BigNumber(0));
   }, [data]);
 
   return (
@@ -128,7 +129,7 @@ export const DAOStatsRow: React.FC = () => {
             </Box>
             <Box padding="12px 0">
               <Typography variant="h3" color="textSecondary">
-                {amountLocked}
+                {amountLocked.toString()}
               </Typography>
             </Box>
           </Grid>
@@ -138,7 +139,7 @@ export const DAOStatsRow: React.FC = () => {
         </Grid>
         <LockedTokensBar
           variant="determinate"
-          value={amountLockedPercentage}
+          value={amountLockedPercentage.toNumber()}
           color="secondary"
         />
       </TokensLocked>
@@ -156,7 +157,7 @@ export const DAOStatsRow: React.FC = () => {
             VOTING ADDRESSES
           </Typography>
           <Typography variant="h3" color="textSecondary">
-            {addressesWithUnfrozenBalance}
+            {addressesWithUnfrozenBalance.toString()}
           </Typography>
         </Box>
       </VotingAddresses>

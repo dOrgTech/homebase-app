@@ -1,8 +1,8 @@
 import {
   MetadataStorageState,
-  MigrationParams,
   Token,
 } from "services/contracts/baseDAO/types";
+import { MigrationParams } from ".";
 
 export const getTokensInfo = (
   state: MigrationParams

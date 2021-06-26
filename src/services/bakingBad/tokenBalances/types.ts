@@ -1,3 +1,5 @@
+import { BigNumber } from "bignumber.js";
+
 export interface TokenBalancesDTO {
   balances: DAOHolding[];
   total: number;
@@ -10,5 +12,5 @@ export interface DAOHolding {
   symbol: string;
   name: string;
   decimals: number;
-  balance: string;
+  balance: BigNumber;
 }

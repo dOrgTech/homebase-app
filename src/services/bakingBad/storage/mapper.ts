@@ -1,6 +1,12 @@
+import { BigNumber } from "bignumber.js";
 import { Storage, StorageDTO } from "./types";
 
-export const storageDTOToStorageWithoutGovTkn = (dto: StorageDTO): Omit<Storage, "governanceToken"> & { govTokenAddress: string; govTokenId: string } => ({
+export const storageDTOToStorageWithoutGovTkn = (
+  dto: StorageDTO
+): Omit<Storage, "governanceToken"> & {
+  govTokenAddress: string;
+  govTokenId: string;
+} => ({
   admin: dto.children[0].value,
   extraMapNumber: dto.children[1].value,
   freezeHistoryMapNumber: dto.children[2].value,
@@ -14,7 +20,9 @@ export const storageDTOToStorageWithoutGovTkn = (dto: StorageDTO): Omit<Storage,
   proposalsMapNumber: dto.children[12].value,
   quorumThresholdAtCycle: {
     lastUpdatedCycle: Number(dto.children[13].children[0].value),
-    quorumThreshold: ((Number(dto.children[13].children[1].value) / 1000000) * Number(dto.children[19].value)).toString(),
+    quorumThreshold: new BigNumber(dto.children[13].children[1].value)
+      .div(1000000)
+      .multipliedBy(new BigNumber(dto.children[19].value)),
     staked: dto.children[13].children[2].value,
   },
   start_time: dto.children[14].value,

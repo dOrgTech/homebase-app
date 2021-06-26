@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { DAOTemplate } from "modules/creator/state";
 
 export type MutezTransfer = {
@@ -137,16 +138,16 @@ export type VotersDTO = {
 
 export interface Voter {
   address: string;
-  value: number;
+  value: BigNumber;
   support: boolean;
 }
 export interface Proposal {
   id: string;
-  upVotes: number;
-  downVotes: number;
+  upVotes: BigNumber;
+  downVotes: BigNumber;
   startDate: string;
   
-  quorumThreshold: string;
+  quorumThreshold: BigNumber;
   proposer: string;
   period: number;
   proposerFrozenTokens: string;
@@ -154,7 +155,7 @@ export interface Proposal {
   voters: {
     address: string;
     support: boolean;
-    value: number;
+    value: BigNumber;
   }[];
 }
 
@@ -248,7 +249,7 @@ export interface RegistryItemDTO {
 }
 
 export interface Transfer {
-  amount: string;
+  amount: BigNumber;
   beneficiary: string;
   type: "XTZ" | "FA2";
 }

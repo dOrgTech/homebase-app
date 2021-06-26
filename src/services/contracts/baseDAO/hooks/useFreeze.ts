@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -7,7 +8,7 @@ import { useVisitedDAO } from "./useVisitedDAO";
 
 interface Params {
   dao: BaseDAO;
-  amount: number;
+  amount: BigNumber;
   freeze: boolean;
 }
 
@@ -52,7 +53,7 @@ export const useFreeze = () => {
           variant: "error",
           autoHideDuration: 10000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { Network } from "services/beacon/context";
 import { API_URL } from "..";
 
@@ -12,7 +13,7 @@ export interface TokenMetadata {
   token_info: {
     icon: string;
   };
-  supply: number;
+  supply: BigNumber;
   transfered: number;
 }
 
@@ -29,5 +30,8 @@ export const getTokenMetadata = async (
 
   const result: TokenMetadata[] = await response.json();
 
-  return result[0];
+  return {
+    ...result[0],
+    supply: new BigNumber(result[0].supply)
+  };
 };
