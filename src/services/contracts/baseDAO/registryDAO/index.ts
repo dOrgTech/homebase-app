@@ -1,4 +1,4 @@
-import { Parser, Expr, unpackData } from "@taquito/michel-codec";
+import { Parser, Expr } from "@taquito/michel-codec";
 import {
   extractTransfersData,
   mapProposalBase,
@@ -23,7 +23,6 @@ import { RegistryProposal } from "services/bakingBad/proposals/types";
 import { getExtra, getExtraRegistryValues } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
-import { parseUnits } from "services/contracts/utils";
 
 const parser = new Parser();
 

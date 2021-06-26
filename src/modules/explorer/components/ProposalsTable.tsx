@@ -53,6 +53,8 @@ export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
     dao && dao.address,
     status
   );
+
+  console.log(isLoading)
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 

@@ -18,7 +18,6 @@ import {
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
-import { parseUnits } from "services/contracts/utils";
 
 const parser = new Parser();
 
