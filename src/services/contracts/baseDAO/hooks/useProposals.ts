@@ -46,7 +46,12 @@ export const useProposals = (
             (dao as BaseDAO).storage.proposalExpiredTime;
 
           const statusHistory: { status: ProposalStatus; timestamp: string }[] =
-            [];
+            [
+              {
+                status: ProposalStatus.PENDING,
+                timestamp: dayjs(proposal.startDate).format("LLL")
+              }
+            ];
 
           const isInNonFlushedProposalArray = (dao as BaseDAO).storage.proposalsToFlush.find(
             (id) => id.toLowerCase() === proposal.id.toLowerCase()
@@ -68,7 +73,10 @@ export const useProposals = (
                 ...proposal,
                 status: ProposalStatus.DROPPED,
                 flushable: false,
-                statusHistory,
+                statusHistory: [...statusHistory, {
+                  status: ProposalStatus.DROPPED,
+                  timestamp: dayjs(droppedProposalOp.timestamp).format("LLL")
+                }],
               };
             }
 
@@ -92,7 +100,7 @@ export const useProposals = (
               endOfFlushablePeriod.unix() * 1000
             );
 
-            const flushOpsInProposalFlushablePeriod = flushOperations.some(
+            const flushOpsInProposalFlushablePeriod = flushOperations.find(
               (op) => {
                 const condition = dayjs(op.timestamp).isBetween(
                   startOfFlushablePeriod,
@@ -110,12 +118,15 @@ export const useProposals = (
 
             // If both conditions are true, then it is executed, else it was flushed as an expired proposal
 
-            if (isPassed && flushOpsInProposalFlushablePeriod) {
+            if (isPassed && !!flushOpsInProposalFlushablePeriod) {
               return {
                 ...proposal,
                 status: ProposalStatus.EXECUTED,
                 flushable: false,
-                statusHistory,
+                statusHistory: [...statusHistory, {
+                  status: ProposalStatus.EXECUTED,
+                  timestamp: dayjs(flushOpsInProposalFlushablePeriod.timestamp).format("LLL")
+                }],
               };
             }
 
@@ -123,7 +134,10 @@ export const useProposals = (
               ...proposal,
               status: ProposalStatus.EXPIRED,
               flushable: false,
-              statusHistory,
+              statusHistory: [...statusHistory, {
+                status: ProposalStatus.EXPIRED,
+                timestamp: endOfFlushablePeriod.format("LLL")
+              }],
             };
           }
 
