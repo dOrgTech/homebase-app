@@ -13,7 +13,6 @@ import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy
 import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
-import { connectIfNotConnected } from "services/contracts/utils";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";
 
 const INITIAL_STATES = [
@@ -62,7 +61,7 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES);
 
   const [activeState, setActiveState] = useState<number>();
-  const { tezos, connect, network } = useTezos();
+  const { tezos, connect, network, account } = useTezos();
 
   const result = useMutation<
     ContractAbstraction<ContractProvider | Wallet>,
@@ -80,11 +79,15 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(0);
       setStates(updatedStates);
 
-      await connectIfNotConnected(tezos, connect);
+      let tezosToolkit = tezos;
+
+        if(!account) {
+          tezosToolkit = await connect()
+        }
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
-        tezos,
+        tezos: tezosToolkit,
         connect,
       });
 
@@ -108,7 +111,7 @@ export const useOriginate = (template: DAOTemplate) => {
       setStates(updatedStates);
 
       const contract = await BaseDAO.baseDeploy(template, {
-        tezos,
+        tezos: tezosToolkit,
         metadata,
         params,
         network,

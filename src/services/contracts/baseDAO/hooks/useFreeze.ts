@@ -17,7 +17,7 @@ export const useFreeze = () => {
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
   const { saveDaoId } = useVisitedDAO();
-  const { network, tezos } = useTezos()
+  const { network, tezos, account, connect } = useTezos()
 
   return useMutation<any | Error, Error, Params>(
     async (params) => {
@@ -30,7 +30,13 @@ export const useFreeze = () => {
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO)[params.freeze? "freeze": "unfreeze"](params.amount, tezos);
+        let tezosToolkit = tezos;
+
+        if(!account) {
+          tezosToolkit = await connect()
+        }
+
+        const data = await (params.dao as BaseDAO)[params.freeze? "freeze": "unfreeze"](params.amount, tezosToolkit);
 
         await data.confirmation(1);
 

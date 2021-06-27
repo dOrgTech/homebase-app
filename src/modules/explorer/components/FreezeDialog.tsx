@@ -16,8 +16,6 @@ import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
-import { connectIfNotConnected } from "services/contracts/utils";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import BigNumber from "bignumber.js";
 
 const CloseButton = styled(Typography)({
@@ -85,8 +83,6 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
       id: string;
     }>();
   const { mutate } = useFreeze();
-  const { tezos, connect } = useTezos();
-
   const { data: dao } = useDAO(daoId);
 
   const handleClickOpen = () => {
@@ -100,8 +96,6 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
   const onSubmit = useCallback(async () => {
     if (dao) {
-      await connectIfNotConnected(tezos, connect);
-
       mutate({
         dao,
         amount: new BigNumber(amount),
@@ -110,7 +104,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
       handleClose();
     }
-  }, [amount, connect, dao, mutate, tezos, freeze]);
+  }, [amount, dao, mutate, freeze]);
 
   return (
     <div>

@@ -27,12 +27,10 @@ import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposa
 import { ViewButton } from "./ViewButton";
 import { BaseDAO } from "services/contracts/baseDAO";
 import {
-  connectIfNotConnected,
-  toShortAddress,
+  toShortAddress
 } from "services/contracts/utils";
 import { useCanDropProposal } from "../hooks/useCanDropProposal";
 import { useCallback } from "react";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { InfoIcon } from "./styled/InfoIcon";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
@@ -102,7 +100,6 @@ export const ProposalDetails: React.FC = () => {
     proposalId: string;
     id: string;
   }>();
-  const { tezos, connect } = useTezos();
   const theme = useTheme();
   const { data: proposalData } = useProposal(daoId, proposalId);
   const proposal = proposalData as
@@ -115,12 +112,11 @@ export const ProposalDetails: React.FC = () => {
   const canDropProposal = useCanDropProposal(dao, proposal);
 
   const onDropProposal = useCallback(async () => {
-    await connectIfNotConnected(tezos, connect);
     await dropProposal({
       dao: dao as BaseDAO,
       proposalId,
     });
-  }, [connect, dao, dropProposal, proposalId, tezos]);
+  }, [dao, dropProposal, proposalId]);
 
   const proposalCycle = proposal ? proposal.period : "-";
   const daoName = dao ? dao.metadata.unfrozenToken.name : "";
