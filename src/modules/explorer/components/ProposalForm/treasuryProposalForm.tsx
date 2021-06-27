@@ -8,10 +8,8 @@ import {
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef } from "react";
 import { useParams } from "react-router";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { TreasuryDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { connectIfNotConnected } from "services/contracts/utils";
 import { SendButton } from "../ProposalFormSendButton";
 import { ProposalFormListItem } from "../styled/ProposalFormListItem";
 import { TextField } from "formik-material-ui";
@@ -47,7 +45,6 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
   const { data: daoHoldings } = useDAOHoldings(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const { mutate } = useTreasuryPropose();
-  const { tezos, connect } = useTezos();
   const valuesRef = useRef<any>();
 
   const onSubmit = useCallback(
@@ -55,8 +52,6 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
       values: TreasuryProposalFormValues,
       { setSubmitting }: { setSubmitting: (b: boolean) => void }
     ) => {
-      await connectIfNotConnected(tezos, connect);
-
       if (dao && daoHoldings && valuesRef.current) {
         setSubmitting(true);
         mutate({
@@ -80,7 +75,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
         handleClose();
       }
     },
-    [connect, dao, handleClose, mutate, tezos, daoHoldings]
+    [dao, handleClose, mutate, daoHoldings]
   );
 
   const initialValues = {

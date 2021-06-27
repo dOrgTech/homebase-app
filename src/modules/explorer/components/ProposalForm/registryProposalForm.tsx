@@ -12,11 +12,9 @@ import {
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef, useState } from "react";
 import { useParams } from "react-router";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { RegistryDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
-import { connectIfNotConnected } from "services/contracts/utils";
 import { AppTabBar } from "../AppTabBar";
 import { SendButton } from "../ProposalFormSendButton";
 import { ProposalFormListItem } from "../styled/ProposalFormListItem";
@@ -57,7 +55,6 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
   const { data: daoHoldings } = useDAOHoldings(daoId);
   const [selectedTab, setSelectedTab] = useState(0);
   const { mutate } = useRegistryPropose();
-  const { tezos, connect } = useTezos();
   const formikRef = useRef<FormikProps<Values>>();
 
   const onSubmit = useCallback(
@@ -65,8 +62,6 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
       values: Values,
       { setSubmitting }: { setSubmitting: (b: boolean) => void }
     ) => {
-      await connectIfNotConnected(tezos, connect);
-
       if (dao && daoHoldings && formikRef?.current) {
         setSubmitting(true);
         mutate({
@@ -98,7 +93,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
         handleClose();
       }
     },
-    [connect, dao, daoHoldings, handleClose, mutate, tezos]
+    [dao, daoHoldings, handleClose, mutate]
   );
 
   const initialValues = {

@@ -17,7 +17,7 @@ export const useVote = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
-  const { network, tezos } = useTezos()
+  const { network, tezos, account, connect } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -30,11 +30,17 @@ export const useVote = () => {
         variant: "info",
       });
       try {
+        let tezosToolkit = tezos;
+
+        if(!account) {
+          tezosToolkit = await connect()
+        }
+
         const data = await (params.dao as BaseDAO).vote({
           proposalKey: params.proposalKey,
           amount: params.amount,
           support: params.support,
-          tezos
+          tezos: tezosToolkit
         });
 
         await data.confirmation(1);

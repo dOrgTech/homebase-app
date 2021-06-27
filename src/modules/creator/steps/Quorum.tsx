@@ -78,8 +78,8 @@ const validateForm = (values: QuorumSettings) => {
   }
 
   if (
-    values.quorumThreshold > values.maxQuorumAmount ||
-    values.quorumThreshold < values.minQuorumAmount
+    values.quorumThreshold >= values.maxQuorumAmount ||
+    values.quorumThreshold <= values.minQuorumAmount
   ) {
     errors.quorumThreshold = "Must be between Min and Max Quorum amounts";
   }

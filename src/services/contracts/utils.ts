@@ -1,15 +1,5 @@
-import { TezosToolkit } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import blockies from "blockies-ts";
-
-export const connectIfNotConnected = async (
-  tezos: TezosToolkit,
-  connect: () => Promise<TezosToolkit>
-): Promise<void> => {
-  if (!("_pkh" in tezos.wallet)) {
-    await connect();
-  }
-};
 
 export const stringToHex = (value: string): string => {
   let result = "";
