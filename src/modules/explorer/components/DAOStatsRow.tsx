@@ -14,7 +14,6 @@ import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { StatsBox } from "./StatsBox";
-import { TokenHoldersDialog } from "./TokenHolders";
 
 const StatsContainer = styled(Grid)(({ theme }) => ({
   minHeight: 175,
@@ -129,13 +128,13 @@ export const DAOStatsRow: React.FC = () => {
             </Box>
             <Box padding="12px 0">
               <Typography variant="h3" color="textSecondary">
-                {amountLocked.toString()}
+                {amountLocked.dp(10).toString()}
               </Typography>
             </Box>
           </Grid>
-          <Grid item>
+          {/* <Grid item>
             <TokenHoldersDialog address={id} />
-          </Grid>
+          </Grid> */}
         </Grid>
         <LockedTokensBar
           variant="determinate"

@@ -129,7 +129,7 @@ export const TreasuryHistoryRow: React.FC<{
           justify={isMobileSmall ? "center" : "flex-end"}
         >
           <Cursor variant="subtitle1" color="textSecondary" align="right">
-            {isMobileSmall ? "AMOUNT " : null} {(amount).toFixed(2)}
+            {isMobileSmall ? "AMOUNT " : null} {(amount).dp(10).toString()}
           </Cursor>
         </Grid>
       </Container>

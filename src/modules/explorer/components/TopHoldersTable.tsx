@@ -57,8 +57,8 @@ export const TopHoldersTable: React.FC = () => {
       .map((member) => {
         return {
           username: member.address,
-          weight: (member.balances[0]).toString(),
-          votes: member.votes.toString(),
+          weight: (member.balances[0]).dp(10).toString(),
+          votes: member.votes.dp(10).toString(),
           proposals_voted: member.proposalsVoted,
         };
       })
@@ -70,7 +70,7 @@ export const TopHoldersTable: React.FC = () => {
       <Header container wrap="nowrap">
         <Grid item xs={12} md={5}>
           <ProposalTableHeadText>
-            TOP TOKEN HOLDERS BY ADDRESS
+            TOKEN HOLDERS BY STAKED TOKENS
           </ProposalTableHeadText>
         </Grid>
         {!isMobileSmall && (

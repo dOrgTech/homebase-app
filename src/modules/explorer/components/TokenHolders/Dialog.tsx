@@ -152,7 +152,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
               </Grid>
             </TableHeader>
 
-            {tokenHolders.slice(0, 5).map((holder, index) => {
+            {tokenHolders.map((holder, index) => {
               return (
                 <Row container direction="row" alignItems="center" key={index}>
                   <Grid item xs={6}>

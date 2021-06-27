@@ -124,7 +124,6 @@ export const DAO: React.FC = () => {
         days: 0,
         hours: 0,
         minutes: 0,
-        seconds: 0,
       };
     }
 
@@ -138,14 +137,10 @@ export const DAO: React.FC = () => {
     n %= 3600;
     const minutes = Math.floor(n / 60);
 
-    n %= 60;
-    const seconds = Math.floor(n);
-
     return {
       days,
       hours,
       minutes,
-      seconds,
     };
   }, [time]);
 
@@ -309,7 +304,7 @@ export const DAO: React.FC = () => {
                         >
                           <Box>
                             {timerInfo.days}d {timerInfo.hours}h{" "}
-                            {timerInfo.minutes}m {timerInfo.seconds}s
+                            {timerInfo.minutes}m
                           </Box>
                         </Typography>
                       </Box>

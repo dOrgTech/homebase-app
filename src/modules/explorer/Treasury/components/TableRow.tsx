@@ -64,7 +64,7 @@ export const TreasuryTableRow: React.FC<{
           </Typography>
         ) : null}
         <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {balance.toFixed(2)}
+          {balance.dp(10).toString()}
         </Cursor>
       </Grid>
     </TemplateTableRowContainer>
