@@ -1,17 +1,12 @@
-import {
-  Proposal,
-  ProposalDTO,
-  Transfer,
-  Voter,
-  VotersDTO,
-} from "./types";
+import { Proposal, ProposalDTO, Transfer, Voter, VotersDTO } from "./types";
 import {
   PMFA2TransferType,
   PMXTZTransferType,
 } from "services/contracts/baseDAO/registryDAO/types";
 import { TransferParams } from "services/contracts/baseDAO/types";
-import { xtzToMutez } from "services/contracts/utils";
+import { formatUnits, parseUnits, xtzToMutez } from "services/contracts/utils";
 import { DAOTemplate } from "modules/creator/state";
+import { BigNumber } from "bignumber.js";
 
 export const extractTransfersData = (
   transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]
@@ -29,19 +24,24 @@ export const extractTransfersData = (
       const fa2Transfer = transfer;
 
       return {
-        amount: fa2Transfer.transfer_list[0].txs[0].amount,
-        beneficiary: fa2Transfer.transfer_list[0].txs[0].to_,
-        contractAddress: fa2Transfer.contract_address,
-        tokenId: fa2Transfer.transfer_list[0].txs[0].token_id,
+        amount: fa2Transfer.token_transfer_type.transfer_list[0].txs[0].amount,
+        beneficiary:
+          fa2Transfer.token_transfer_type.transfer_list[0].txs[0].to_,
+        contractAddress: fa2Transfer.token_transfer_type.contract_address,
+        tokenId:
+          fa2Transfer.token_transfer_type.transfer_list[0].txs[0].token_id,
         type: "FA2" as const,
       };
     }
   });
 
-  return transfers
+  return transfers;
 };
 
-export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
+export const dtoToVoters = (
+  votersDTO: VotersDTO,
+  tokenDecimals: number
+): Voter[] => {
   const voters = votersDTO.children;
 
   if (!voters) {
@@ -50,7 +50,7 @@ export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
 
   return voters.map((voter) => ({
     address: voter.children[2].value,
-    value: Number(voter.children[0].value),
+    value: parseUnits(new BigNumber(voter.children[0].value), tokenDecimals),
     support: Boolean(voter.children[1].value),
   }));
 };
@@ -58,19 +58,28 @@ export const dtoToVoters = (votersDTO: VotersDTO): Voter[] => {
 export const mapProposalBase = (
   dto: ProposalDTO[number],
   template: DAOTemplate,
-  govTokenTotalSupplyNoDecimals: number,
+  tokenSupply: BigNumber,
+  tokenDecimals: number
 ): Proposal => {
   return {
     id: dto.data.key.value,
-    upVotes: Number(dto.data.value.children[6].value),
-    downVotes: Number(dto.data.value.children[0].value),
+    upVotes: parseUnits(
+      new BigNumber(dto.data.value.children[6].value),
+      tokenDecimals
+    ),
+    downVotes: parseUnits(
+      new BigNumber(dto.data.value.children[0].value),
+      tokenDecimals
+    ),
     proposer: dto.data.value.children[2].value,
     startDate: dto.data.value.children[5].value,
-    quorumThreshold: ((Number(dto.data.value.children[4].value) / 1000000) * (govTokenTotalSupplyNoDecimals)).toString(),
+    quorumThreshold: new BigNumber(dto.data.value.children[4].value)
+      .div(1000000)
+      .multipliedBy(parseUnits(tokenSupply, tokenDecimals)),
     period: Number(dto.data.value.children[8].value) - 1,
     proposerFrozenTokens: dto.data.value.children[3].value,
     type: template,
-    voters: dtoToVoters(dto.data.value.children[7]),
+    voters: dtoToVoters(dto.data.value.children[7], tokenDecimals),
   };
 };
 
@@ -79,7 +88,7 @@ export const mapProposalBase = (
 export const mapXTZTransfersArgs = (transfer: TransferParams) => {
   return {
     xtz_transfer_type: {
-      amount: Number(xtzToMutez(transfer.amount.toString())),
+      amount: xtzToMutez(new BigNumber(transfer.amount)).toNumber(),
       recipient: transfer.recipient,
     },
   };
@@ -99,7 +108,10 @@ export const mapFA2TransfersArgs = (
             {
               to_: transfer.recipient,
               token_id: transfer.asset.token_id,
-              amount: transfer.amount * Math.pow(10, transfer.asset.decimals),
+              amount: formatUnits(
+                new BigNumber(transfer.amount),
+                transfer.asset.decimals
+              ).toNumber(),
             },
           ],
         },

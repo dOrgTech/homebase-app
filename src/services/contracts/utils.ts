@@ -1,15 +1,5 @@
-import { TezosToolkit } from "@taquito/taquito";
 import { BigNumber } from "bignumber.js";
 import blockies from "blockies-ts";
-
-export const connectIfNotConnected = async (
-  tezos: TezosToolkit,
-  connect: () => Promise<TezosToolkit>
-): Promise<void> => {
-  if (!("_pkh" in tezos.wallet)) {
-    await connect();
-  }
-};
 
 export const stringToHex = (value: string): string => {
   let result = "";
@@ -28,13 +18,21 @@ export const toShortAddress = (address: string, limit = 4): string => {
     .concat(address.slice(address.length - limit, address.length));
 };
 
-export const mutezToXtz = (mutez: string) => {
-  return Number((Number(mutez) / 10 ** 6).toFixed(6)).toString();
+export const mutezToXtz = (mutez: BigNumber) => {
+  return parseUnits(mutez, 6);
 };
 
-export const xtzToMutez = (xtz: string) => {
-  return (Number(xtz) * 10 ** 6).toString();
+export const xtzToMutez = (xtz: BigNumber) => {
+  return formatUnits(xtz, 6);
 };
+
+export const parseUnits = (amount: BigNumber, decimals: number | string) => {
+  return amount.dividedBy(new BigNumber(10).pow(decimals))
+}
+
+export const formatUnits = (amount: BigNumber, decimals: number | string) => {
+  return amount.multipliedBy(new BigNumber(10).pow(decimals))
+}
 
 const b582int = (val: string): string => {
   let rv = new BigNumber(0);
@@ -62,4 +60,3 @@ export const getBlockie = (address: string): string => {
 
   return blockies.create({ seed: address }).toDataURL();
 };
-

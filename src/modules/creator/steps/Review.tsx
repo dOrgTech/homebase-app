@@ -8,9 +8,9 @@ import {
   getTokensInfo,
   CreatorContext,
   ActionTypes,
+  MigrationParams,
 } from "modules/creator/state";
 import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
-import { MigrationParams } from "services/contracts/baseDAO/types";
 import { DeploymentLoader } from "../components/DeploymentLoader";
 import { useCreatorRouteValidation } from "modules/creator/components/ProtectedRoute";
 import { useTezos } from "services/beacon/hooks/useTezos";

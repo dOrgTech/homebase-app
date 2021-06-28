@@ -1,7 +1,9 @@
 import { API_URL } from "services/bakingBad";
 import { Network } from "services/beacon/context";
 import { StorageDTO, Storage } from "services/bakingBad/storage/types";
-import { storageDTOToStorage } from "./mapper";
+import { storageDTOToStorageWithoutGovTkn } from "./mapper";
+import { getTokenMetadata } from "../tokens";
+import { parseUnits } from "services/contracts/utils";
 
 export const getStorage = async (
   contractAddress: string,
@@ -16,7 +18,15 @@ export const getStorage = async (
   }
 
   const result = await response.json();
-  const storage = storageDTOToStorage(result[0] as StorageDTO);
+  const storage = storageDTOToStorageWithoutGovTkn(result[0] as StorageDTO);
+  const govTokenMetadata = await getTokenMetadata(storage.govTokenAddress, network, storage.govTokenId)
 
-  return storage;
+  return {
+    ...storage,
+    quorumThresholdAtCycle: {
+      ...storage.quorumThresholdAtCycle,
+      quorumThreshold: parseUnits(storage.quorumThresholdAtCycle.quorumThreshold, govTokenMetadata.decimals)
+    },
+    governanceToken: govTokenMetadata
+  };
 };

@@ -14,9 +14,8 @@ import { theme } from "theme";
 import { ViewButton } from "./ViewButton";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { connectIfNotConnected } from "services/contracts/utils";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { useSendXTZ } from "services/contracts/baseDAO/hooks/useSendXTZ";
+import BigNumber from "bignumber.js";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -81,8 +80,6 @@ export const SendXTZDialog: React.FC = () => {
     id: string;
   }>();
   const { mutate } = useSendXTZ();
-  const { tezos, connect } = useTezos();
-
   const { data: dao } = useDAO(daoId);
 
   const handleClickOpen = () => {
@@ -96,16 +93,14 @@ export const SendXTZDialog: React.FC = () => {
 
   const onSubmit = useCallback(async () => {
     if (dao) {
-      await connectIfNotConnected(tezos, connect);
-
       mutate({
         dao,
-        amount,
+        amount: new BigNumber(amount),
       })
 
       handleClose();
     }
-  }, [amount, connect, dao, mutate, tezos]);
+  }, [amount, dao, mutate]);
 
   return (
     <div>

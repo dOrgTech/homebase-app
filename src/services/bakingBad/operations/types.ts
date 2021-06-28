@@ -65,3 +65,34 @@ export interface DropOperationDTO {
   ];
   last_id: "1621908277843121";
 }
+
+export interface FlushOperationDTO {
+  id: number;
+  level: 294511;
+  fee: 11771;
+  counter: 4600;
+  gas_limit: 114701;
+  content_index: 0;
+  consumed_gas: 113174;
+  storage_size: 23955;
+  parameters: [
+    {
+      prim: "nat";
+      type: "nat";
+      name: "flush";
+      value: "6";
+    }
+  ];
+  timestamp: string;
+  protocol: "PsFLorenaUUuikDWvMDr6fGBRG8kt3e3D3fHoXK1j1BFRxeSH4i";
+  hash: "ooqtdPmiuJh2k9tojF9HY3GsF6tzsknjP7vCSwQSpEKu9Tg3BRq";
+  network: "florencenet";
+  kind: "transaction";
+  source: "tz1RKPcdraL3D3SQitGbvUZmBoqefepxRW1x";
+  destination: "KT1ERUQ1biQTsQ1ShyEZmsDWnkqkXpumhz3k";
+  destination_alias: "DecimalDAO";
+  status: "applied";
+  entrypoint: "flush";
+  internal: false;
+  mempool: false;
+}

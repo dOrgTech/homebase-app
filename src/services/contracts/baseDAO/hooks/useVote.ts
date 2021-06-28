@@ -1,4 +1,5 @@
 import { TransactionWalletOperation } from "@taquito/taquito";
+import { BigNumber } from "bignumber.js";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -8,7 +9,7 @@ import { useCacheDAOs } from "./useCacheDAOs";
 interface Params {
   dao: BaseDAO;
   proposalKey: string;
-  amount: number;
+  amount: BigNumber;
   support: boolean;
 }
 
@@ -16,7 +17,7 @@ export const useVote = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
-  const { network, tezos } = useTezos()
+  const { network, tezos, account, connect } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
@@ -29,11 +30,17 @@ export const useVote = () => {
         variant: "info",
       });
       try {
+        let tezosToolkit = tezos;
+
+        if(!account) {
+          tezosToolkit = await connect()
+        }
+
         const data = await (params.dao as BaseDAO).vote({
           proposalKey: params.proposalKey,
           amount: params.amount,
           support: params.support,
-          tezos
+          tezos: tezosToolkit
         });
 
         await data.confirmation(1);
@@ -55,7 +62,7 @@ export const useVote = () => {
           variant: "error",
           autoHideDuration: 10000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

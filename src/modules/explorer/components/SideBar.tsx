@@ -14,7 +14,21 @@ import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import debounce from "lodash/debounce";
+
+export const debounce = <T extends (...args: any[]) => any>(
+  callback: T,
+  waitFor: number
+) => {
+  let timeout = 0;
+  return (...args: Parameters<T>): ReturnType<T> => {
+    let result: any;
+    clearTimeout(timeout);
+    timeout = (setTimeout(() => {
+      result = callback(...args);
+    }, waitFor) as unknown) as number;
+    return result;
+  };
+};
 
 const Bar = styled(Grid)(({ theme }) => ({
   minWidth: 102,

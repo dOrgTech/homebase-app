@@ -18,8 +18,7 @@ import { useRouteMatch } from "react-router-dom";
 import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 
-import { CreatorContext, ActionTypes } from "modules/creator/state";
-import { OrgSettings } from "services/contracts/baseDAO/types";
+import { CreatorContext, ActionTypes, OrgSettings } from "modules/creator/state";
 import { InfoOutlined } from "@material-ui/icons";
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 

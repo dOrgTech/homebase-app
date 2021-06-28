@@ -7,7 +7,7 @@ import { Network } from "services/beacon/context";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { Schema } from "@taquito/michelson-encoder";
 import { Parser, Expr } from "@taquito/michel-codec";
-import { BaseDAO, getContract } from "..";
+import { BaseDAO, getContract, unpackExtraNumValue } from "..";
 import { TreasuryProposal } from "services/bakingBad/proposals/types";
 import { TreasuryExtraDTO, TreasuryProposeArgs } from "./types";
 import { getExtra } from "services/bakingBad/extra";
@@ -18,8 +18,6 @@ import {
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
-import { getTokenMetadata } from "services/bakingBad/tokens";
-import { char2Bytes } from "@taquito/tzip16";
 
 const parser = new Parser();
 
@@ -36,14 +34,18 @@ export class TreasuryDAO extends BaseDAO {
       network
     );
     const extra = {
-      frozenExtraValue: Number(char2Bytes(extraDTO[1].data.value.value)),
-      slashExtraValue: Number(char2Bytes(extraDTO[2].data.value.value)),
-      minXtzAmount: Number(char2Bytes(extraDTO[3].data.value.value)),
-      maxXtzAmount: Number(char2Bytes(extraDTO[4].data.value.value)),
-      frozenScaleValue: Number(char2Bytes(extraDTO[5].data.value.value)),
-      slashDivisionScale: Number(char2Bytes(extraDTO[6].data.value.value)),
+      frozenExtraValue: unpackExtraNumValue(extraDTO[5].value),
+      slashExtraValue: unpackExtraNumValue(extraDTO[0].value),
+      minXtzAmount: unpackExtraNumValue(extraDTO[3].value),
+      maxXtzAmount: unpackExtraNumValue(extraDTO[2].value),
+      frozenScaleValue: unpackExtraNumValue(extraDTO[1].value),
+      slashDivisionScale: unpackExtraNumValue(extraDTO[4].value),
     };
-    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
+    const ledger = await getLedgerAddresses(
+      storage.ledgerMapNumber,
+      storage.governanceToken.decimals,
+      network
+    );
 
     return new TreasuryDAO({
       address: contractAddress,
@@ -59,16 +61,7 @@ export class TreasuryDAO extends BaseDAO {
 
   public proposals = async (network: Network): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
-    const proposalsDTO = await getProposalsDTO(
-      proposalsMapNumber,
-      network
-    );
-
-    const tokenMetadata = await getTokenMetadata(
-      this.storage.governanceToken.address,
-      network,
-      this.storage.governanceToken.tokenId.toString()
-    );
+    const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
 
@@ -89,7 +82,8 @@ export class TreasuryDAO extends BaseDAO {
         ...mapProposalBase(
           dto,
           "treasury",
-          tokenMetadata.supply / 10 ** tokenMetadata.decimals
+          this.storage.governanceToken.supply,
+          this.storage.governanceToken.decimals
         ),
         agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
         transfers,
@@ -99,7 +93,10 @@ export class TreasuryDAO extends BaseDAO {
     return proposals;
   };
 
-  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs, tezos: TezosToolkit) => {
+  public propose = async (
+    { agoraPostId, transfers }: TreasuryProposeArgs,
+    tezos: TezosToolkit
+  ) => {
     const contract = await getContract(tezos, this.address);
 
     const michelsonType = parser.parseData(proposeCode);

@@ -1,9 +1,56 @@
-import {
-  MigrationParams,
-  OrgSettings,
-  QuorumSettings,
-  VotingSettings,
-} from "services/contracts/baseDAO/types";
+import { TokenMetadata } from "services/bakingBad/tokens";
+
+export type OrgSettings = {
+  name: string;
+  symbol: string;
+  description: string;
+  administrator: string;
+  guardian: string;
+  governanceToken: {
+    address: string;
+    tokenId: string;
+    tokenMetadata?: TokenMetadata
+  }
+};
+
+export type QuorumSettings = {
+  quorumThreshold: number;
+  minQuorumAmount: number;
+  maxQuorumAmount: number;
+  quorumChange: number;
+  quorumMaxChange: number;
+};
+
+export type VotingSettings = {
+  votingDays: number;
+  votingHours: number;
+  votingMinutes: number;
+  proposeStakeRequired: number;
+  proposeStakePercentage: number;
+  frozenScaleValue: number;
+  frozenDivisionValue: number;
+  minXtzAmount: number;
+  maxXtzAmount: number;
+
+  proposalFlushDays: number;
+  proposalFlushHours: number;
+  proposalFlushMinutes: number;
+
+  proposalExpiryDays: number;
+  proposalExpiryHours: number;
+  proposalExpiryMinutes: number;
+};
+
+export interface MigrationParams {
+  template: DAOTemplate;
+  orgSettings: OrgSettings;
+  votingSettings: VotingSettings;
+  quorumSettings: QuorumSettings;
+}
+
+export type Settings = OrgSettings | VotingSettings | QuorumSettings;
+
+export type ErrorValues<T> = Partial<Record<keyof T, string>>;
 
 export interface NavigationBarProps {
   back?: {

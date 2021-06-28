@@ -15,9 +15,7 @@ import ProgressBar from "react-customizable-progressbar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
-import { connectIfNotConnected } from "services/contracts/utils";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { TopHoldersTable } from "../components/TopHoldersTable";
@@ -96,7 +94,6 @@ export const DAO: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading: isDaoLoading } = useDAO(id);
   const { mutate } = useFlush();
-  const { tezos, connect } = useTezos();
 
   const name = data && data.metadata.unfrozenToken.name;
   const description = data && data.metadata.description;
@@ -127,7 +124,6 @@ export const DAO: React.FC = () => {
         days: 0,
         hours: 0,
         minutes: 0,
-        seconds: 0,
       };
     }
 
@@ -141,21 +137,14 @@ export const DAO: React.FC = () => {
     n %= 3600;
     const minutes = Math.floor(n / 60);
 
-    n %= 60;
-    const seconds = Math.floor(n);
-
     return {
       days,
       hours,
       minutes,
-      seconds,
     };
   }, [time]);
 
   const onFlush = useCallback(async () => {
-    await connectIfNotConnected(tezos, connect);
-    // @TODO: we need to add an atribute to the proposals
-    // type in order to know if it was flushed or not
     if (proposals && proposals.length && data) {
       mutate({
         dao: data,
@@ -163,7 +152,7 @@ export const DAO: React.FC = () => {
       });
       return;
     }
-  }, [connect, data, mutate, proposals, tezos]);
+  }, [data, mutate, proposals]);
 
   return (
     <>
@@ -315,7 +304,7 @@ export const DAO: React.FC = () => {
                         >
                           <Box>
                             {timerInfo.days}d {timerInfo.hours}h{" "}
-                            {timerInfo.minutes}m {timerInfo.seconds}s
+                            {timerInfo.minutes}m
                           </Box>
                         </Typography>
                       </Box>

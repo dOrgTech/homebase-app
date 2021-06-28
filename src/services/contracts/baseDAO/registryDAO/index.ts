@@ -10,7 +10,7 @@ import { getLedgerAddresses } from "services/bakingBad/ledger";
 import { getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
-import { ConstructorParams, getContract } from "..";
+import { ConstructorParams, getContract, unpackExtraNumValue } from "..";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { BaseDAO } from "..";
 import {
@@ -20,10 +20,9 @@ import {
   RegistryProposeArgs,
 } from "./types";
 import { RegistryProposal } from "services/bakingBad/proposals/types";
-import { getExtra } from "services/bakingBad/extra";
+import { getExtra, getExtraRegistryValues } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
-import { getTokenMetadata } from "services/bakingBad/tokens";
 
 const parser = new Parser();
 
@@ -105,19 +104,29 @@ export class RegistryDAO extends BaseDAO {
       network
     );
 
+    const { registry, registryAffected } = await getExtraRegistryValues(
+      storage.extraMapNumber,
+      network
+    );
+
     const extra: RegistryExtra = {
-      registry: mapStorageRegistryList(extraDto[0].data.value.value),
-      frozenExtraValue: Number(char2Bytes(extraDto[4].data.value.value)),
-      slashExtraValue: Number(char2Bytes(extraDto[5].data.value.value)),
-      minXtzAmount: Number(char2Bytes(extraDto[6].data.value.value)),
-      maxXtzAmount: Number(char2Bytes(extraDto[7].data.value.value)),
-      frozenScaleValue: Number(char2Bytes(extraDto[8].data.value.value)),
-      slashDivisionScale: Number(char2Bytes(extraDto[9].data.value.value)),
+      registry: mapStorageRegistryList(registry),
+      frozenExtraValue: unpackExtraNumValue(extraDto[5].value),
+      slashExtraValue: unpackExtraNumValue(extraDto[0].value),
+      minXtzAmount: unpackExtraNumValue(extraDto[3].value),
+      maxXtzAmount: unpackExtraNumValue(extraDto[2].value),
+      frozenScaleValue: unpackExtraNumValue(extraDto[1].value),
+      slashDivisionScale: unpackExtraNumValue(extraDto[4].value),
       registryAffected: mapStorageRegistryAffectedList(
-        extraDto[3].data.value.value
+        registryAffected
       ),
     };
-    const ledger = await getLedgerAddresses(storage.ledgerMapNumber, network);
+
+    const ledger = await getLedgerAddresses(
+      storage.ledgerMapNumber,
+      storage.governanceToken.decimals,
+      network
+    );
 
     return new RegistryDAO({
       address: contractAddress,
@@ -177,12 +186,6 @@ export class RegistryDAO extends BaseDAO {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
-    const tokenMetadata = await getTokenMetadata(
-      this.storage.governanceToken.address,
-      network,
-      this.storage.governanceToken.tokenId.toString()
-    );
-
     const schema = new Schema(parser.parseData(proposeCode) as Expr);
 
     const proposals = proposalsDTO
@@ -197,26 +200,28 @@ export class RegistryDAO extends BaseDAO {
         const proposalMetadataDTO: PMRegistryProposal =
           schema.Execute(michelsonExpr);
 
-        if (!proposalMetadataDTO["0"].transfers) {
+        console.log(proposalMetadataDTO);
+
+        if (!proposalMetadataDTO.transfer_proposal.transfers) {
           return undefined;
         }
 
         const transfers = extractTransfersData(
-          proposalMetadataDTO[0].transfers
+          proposalMetadataDTO.transfer_proposal.transfers
         );
-        const agoraPostId = proposalMetadataDTO[0].agora_post_id;
-        const registryDiff = proposalMetadataDTO[0].registry_diff.map(
-          (item) => ({
+        const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id;
+        const registryDiff =
+          proposalMetadataDTO.transfer_proposal.registry_diff.map((item) => ({
             key: bytes2Char(item[0]),
             value: bytes2Char(item[1]),
-          })
-        );
+          }));
 
         return {
           ...mapProposalBase(
             dto,
             "registry",
-            tokenMetadata.supply / 10 ** tokenMetadata.decimals
+              this.storage.governanceToken.supply,
+              this.storage.governanceToken.decimals
           ),
           transfers,
           list: registryDiff,

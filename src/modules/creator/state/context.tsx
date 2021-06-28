@@ -1,11 +1,11 @@
 import React, { createContext, useReducer, Dispatch, useMemo } from "react";
 
-import { MigrationParams } from "services/contracts/baseDAO/types";
 import useLocalStorage from "modules/common/hooks/useLocalStorage";
 import {
   CreatorAction,
   CreatorState,
   ActionTypes,
+  MigrationParams,
 } from "modules/creator/state/types";
 
 const deploymentStatus = {
@@ -46,7 +46,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     proposalExpiryMinutes: 0,
   },
   quorumSettings: {
-    quorumThreshold: 0,
+    quorumThreshold: 2,
     minQuorumAmount: 1,
     maxQuorumAmount: 99,
     quorumChange: 5,

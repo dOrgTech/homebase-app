@@ -16,6 +16,7 @@ import { formatNumber } from "../utils/FormatNumber";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { InfoIcon } from "./styled/InfoIcon";
+import { BigNumber } from "bignumber.js";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24
@@ -66,11 +67,11 @@ export const ProposalStatusHistory: React.FC = () => {
   const { data: dao } = useDAO(daoId);
   const { data: proposal } = useProposal(daoId, proposalId);
 
-  const quorumThreshold = Number(Number(proposal?.quorumThreshold).toFixed(2)) || 0
+  const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { votesQuorumPercentage, votes } = useVotesStats({
-    upVotes: proposal?.upVotes || 0,
-    downVotes: proposal?.downVotes || 0,
+    upVotes: proposal?.upVotes || new BigNumber(0),
+    downVotes: proposal?.downVotes || new BigNumber(0),
     quorumThreshold,
   });
 
@@ -95,7 +96,7 @@ export const ProposalStatusHistory: React.FC = () => {
         </HistoryContent>
         <HistoryContent item xs={12}>
           <ProgressBar
-            progress={proposal? votesQuorumPercentage: 0}
+            progress={proposal? votesQuorumPercentage.toNumber(): 0}
             radius={50}
             strokeWidth={7}
             strokeColor="#3866F9"

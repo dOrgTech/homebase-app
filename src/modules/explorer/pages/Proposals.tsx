@@ -11,8 +11,6 @@ import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-import { connectIfNotConnected } from "services/contracts/utils";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
@@ -42,7 +40,6 @@ export const Proposals: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
-  const { tezos, connect } = useTezos();
   const name = dao && dao.metadata.unfrozenToken.name;
   const shouldDisable = useIsProposalButtonDisabled(id);
   const [open, setOpen] = useState(false);
@@ -50,7 +47,6 @@ export const Proposals: React.FC = () => {
   const { data: proposalsData } = useProposals(dao && dao.address);
 
   const onFlush = useCallback(async () => {
-    await connectIfNotConnected(tezos, connect);
     if (proposalsData && proposalsData.length && data) {
       mutate({
         dao: data,
@@ -58,7 +54,7 @@ export const Proposals: React.FC = () => {
       });
       return;
     }
-  }, [connect, data, mutate, proposalsData, tezos]);
+  }, [data, mutate, proposalsData]);
 
   const handleNewProposal = () => {
     setOpen(true);

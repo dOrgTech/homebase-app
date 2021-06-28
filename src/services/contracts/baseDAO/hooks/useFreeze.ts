@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -7,7 +8,8 @@ import { useVisitedDAO } from "./useVisitedDAO";
 
 interface Params {
   dao: BaseDAO;
-  amount: number;
+  amount: BigNumber;
+  freeze: boolean;
 }
 
 export const useFreeze = () => {
@@ -15,7 +17,7 @@ export const useFreeze = () => {
   const openNotification = useNotification();
   const { setDAO } = useCacheDAOs();
   const { saveDaoId } = useVisitedDAO();
-  const { network, tezos } = useTezos()
+  const { network, tezos, account, connect } = useTezos()
 
   return useMutation<any | Error, Error, Params>(
     async (params) => {
@@ -23,18 +25,24 @@ export const useFreeze = () => {
         key: freezeNotification,
         closeSnackbar: closeFreezeNotification,
       } = openNotification({
-        message: "Stake is being processed...",
+        message: `${params.freeze? "Stake": "Unstake"} is being processed...`,
         persist: true,
         variant: "info",
       });
       try {
-        const data = await (params.dao as BaseDAO).freeze(params.amount, tezos, network);
+        let tezosToolkit = tezos;
+
+        if(!account) {
+          tezosToolkit = await connect()
+        }
+
+        const data = await (params.dao as BaseDAO)[params.freeze? "freeze": "unfreeze"](params.amount, tezosToolkit);
 
         await data.confirmation(1);
 
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "Stake transaction confirmed!",
+          message: `${params.freeze? "Stake": "Unstake"} transaction confirmed!`,
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
@@ -47,11 +55,11 @@ export const useFreeze = () => {
         console.log(e);
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: "An error has happened with stake transaction!",
+          message: `An error has happened with ${params.freeze? "stake": "unstake"} transaction!`,
           variant: "error",
           autoHideDuration: 10000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

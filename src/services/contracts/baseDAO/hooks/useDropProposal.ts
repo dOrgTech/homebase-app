@@ -7,7 +7,7 @@ import { BaseDAO } from "..";
 export const useDropProposal = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network, tezos } = useTezos()
+  const { network, tezos, connect, account } = useTezos()
 
   return useMutation<
     TransactionWalletOperation | Error,
@@ -24,7 +24,14 @@ export const useDropProposal = () => {
         variant: "info",
       });
       try {
-        const data = await params.dao.dropProposal(params.proposalId, tezos);
+
+        let tezosToolkit = tezos;
+
+        if(!account) {
+          tezosToolkit = await connect()
+        }
+
+        const data = await params.dao.dropProposal(params.proposalId, tezosToolkit);
         closeDropProposal(dropProposal);
 
         await data.confirmation(1);
@@ -43,7 +50,7 @@ export const useDropProposal = () => {
           variant: "error",
           autoHideDuration: 5000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

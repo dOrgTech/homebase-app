@@ -10,9 +10,10 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 
-import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
+import { BigNumber } from "bignumber.js";
+import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 
 interface TokenHolderDialogData {
   address: string;
@@ -81,27 +82,27 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
     setOpen(false);
   };
 
-  const { data } = useTokenHolders(address);
+  const { data } = useDAO(address);
 
   const tokenHolders = useMemo(() => {
     if (!data) {
       return [];
     }
 
-    return data.map((holder) => ({
+    return data.ledger.map((holder) => ({
       address: holder.address,
-      tokens: holder.balances[0] || 0,
+      tokens: holder.balances[0] || new BigNumber(0),
     }));
   }, [data]);
 
   const totalLocked = useMemo(() => {
     if (!data) {
-      return 0;
+      return new BigNumber(0);
     }
 
-    return data.reduce((acc, holder) => {
-      return acc + (holder.balances[0] || 0);
-    }, 0);
+    return data.ledger.reduce((acc, holder) => {
+      return acc.plus(holder.balances[0] || new BigNumber(0));
+    }, new BigNumber(0));
   }, [data]);
 
   return (
@@ -151,7 +152,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
               </Grid>
             </TableHeader>
 
-            {tokenHolders.slice(0, 5).map((holder, index) => {
+            {tokenHolders.map((holder, index) => {
               return (
                 <Row container direction="row" alignItems="center" key={index}>
                   <Grid item xs={6}>
@@ -166,7 +167,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       color="secondary"
                       variant="determinate"
                       value={
-                        totalLocked ? (holder.tokens / totalLocked) * 100 : 0
+                        totalLocked ? holder.tokens.div(totalLocked).multipliedBy(100).toNumber() : 0
                       }
                     />
                   </Grid>
@@ -176,7 +177,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       color="textSecondary"
                       align="right"
                     >
-                      {holder.tokens}
+                      {holder.tokens.toString()}
                     </Typography>
                   </Grid>
                 </Row>

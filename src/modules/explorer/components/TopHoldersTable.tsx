@@ -10,7 +10,6 @@ import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 // import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
-// import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
 import { TopHoldersTableRow } from "./TokenHolders";
@@ -49,7 +48,6 @@ export const TopHoldersTable: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   // const { data: dao } = useDAO(id)
-  // const { data: token } = useTokenMetadata(dao?.storage.governanceToken.address, dao?.storage.governanceToken.tokenId.toString())
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -59,8 +57,8 @@ export const TopHoldersTable: React.FC = () => {
       .map((member) => {
         return {
           username: member.address,
-          weight: (member.balances[0]).toString(),
-          votes: member.votes.toString(),
+          weight: (member.balances[0]).dp(10).toString(),
+          votes: member.votes.dp(10).toString(),
           proposals_voted: member.proposalsVoted,
         };
       })
@@ -72,7 +70,7 @@ export const TopHoldersTable: React.FC = () => {
       <Header container wrap="nowrap">
         <Grid item xs={12} md={5}>
           <ProposalTableHeadText>
-            TOP TOKEN HOLDERS BY ADDRESS
+            TOKEN HOLDERS BY STAKED TOKENS
           </ProposalTableHeadText>
         </Grid>
         {!isMobileSmall && (

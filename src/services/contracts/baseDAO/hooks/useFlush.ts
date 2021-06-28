@@ -6,7 +6,7 @@ import { BaseDAO } from "..";
 export const useFlush = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network, tezos } = useTezos()
+  const { network, tezos, account, connect } = useTezos()
 
   return useMutation<
     any | Error,
@@ -23,7 +23,13 @@ export const useFlush = () => {
         variant: "info",
       });
       try {
-        const data = await params.dao.flush(params.numOfProposalsToFlush, tezos);
+        let tezosToolkit = tezos;
+
+        if(!account) {
+          tezosToolkit = await connect()
+        }
+
+        const data = await params.dao.flush(params.numOfProposalsToFlush, tezosToolkit);
         closeFlushNotification(flushNotification);
 
         await data.confirmation(1);
@@ -42,7 +48,7 @@ export const useFlush = () => {
           variant: "error",
           autoHideDuration: 5000,
         });
-        return new Error(e.message);
+        return new Error((e as Error).message);
       }
     },
     {

@@ -1,13 +1,14 @@
+import { BigNumber } from "bignumber.js";
 import { useMemo } from "react";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { useTokenHolders } from "services/contracts/baseDAO/hooks/useTokenHolders";
+import { useDAO } from "./useDAO";
 
 export const useTokenHoldersWithVotes = (contractAddress: string) => {
   const {
-    data: ledgerData,
-    isLoading: ledgerIsLoading,
-    error: ledgerError,
-  } = useTokenHolders(contractAddress);
+    data: daoData,
+    isLoading: daoIsLoading,
+    error: daoError,
+  } = useDAO(contractAddress);
 
   const {
     data: proposals,
@@ -16,13 +17,13 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
   } = useProposals(contractAddress);
 
   const tokenHoldersWithVotes = useMemo(() => {
-    if (!proposals || !ledgerData) {
+    if (!proposals || !daoData) {
       return [];
     }
 
-    return ledgerData.map((tokenHolder) => {
+    return daoData.ledger.map((tokenHolder) => {
       let proposalsVoted = 0;
-      let votes = 0;
+      let votes = new BigNumber(0);
 
       proposals.forEach((proposal) => {
         const voter = proposal.voters.find(
@@ -31,7 +32,7 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
         );
 
         if (voter) {
-          votes += voter.value;
+          votes = votes.plus(voter.value);
           proposalsVoted += 1;
         }
       });
@@ -42,11 +43,11 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
         proposalsVoted,
       };
     });
-  }, [proposals, ledgerData]);
+  }, [proposals, daoData]);
 
   return {
     data: tokenHoldersWithVotes,
-    isLoading: proposalsIsLoading || ledgerIsLoading,
-    error: proposalsError || ledgerError,
+    isLoading: proposalsIsLoading || daoIsLoading,
+    error: proposalsError || daoError,
   };
 };

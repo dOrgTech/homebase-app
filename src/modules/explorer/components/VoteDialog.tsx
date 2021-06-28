@@ -13,9 +13,8 @@ import { useVote } from "services/contracts/baseDAO/hooks/useVote";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { connectIfNotConnected } from "services/contracts/utils";
-import { useTezos } from "services/beacon/hooks/useTezos";
 import { PrimaryButton } from "./styled/PrimaryButton";
+import BigNumber from "bignumber.js";
 
 const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -102,7 +101,7 @@ const ArrowIcon = styled("img")(({ theme }) => ({
 export const VoteDialog: React.FC = () => {
   const [support, setSupport] = React.useState(true);
   const [open, setOpen] = React.useState(false);
-  const [amount, setAmount] = React.useState<any>();
+  const [amount, setAmount] = React.useState<number>(0);
   const { proposalId, id: daoId } = useParams<{
     proposalId: string;
     id: string;
@@ -110,7 +109,6 @@ export const VoteDialog: React.FC = () => {
 
   const { data: proposal } = useProposal(daoId, proposalId);
   const { data: dao } = useDAO(daoId);
-  const { tezos, connect } = useTezos();
 
   const { mutate } = useVote();
 
@@ -125,18 +123,16 @@ export const VoteDialog: React.FC = () => {
 
   const onSubmit = useCallback(async () => {
     if (dao) {
-      await connectIfNotConnected(tezos, connect);
-
       mutate({
         proposalKey: proposalId,
         dao,
-        amount,
+        amount: new BigNumber(amount),
         support,
       });
 
       handleClose();
     }
-  }, [amount, connect, dao, mutate, proposalId, support, tezos]);
+  }, [amount, dao, mutate, proposalId, support]);
 
   return (
     <>

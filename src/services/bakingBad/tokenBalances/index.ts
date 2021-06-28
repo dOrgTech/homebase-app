@@ -1,4 +1,6 @@
+import { BigNumber } from "bignumber.js";
 import { Network } from "services/beacon/context";
+import { parseUnits } from "services/contracts/utils";
 import { API_URL } from "..";
 import { DAOHolding, TokenBalancesDTO } from "./types";
 
@@ -19,6 +21,6 @@ export const getDAOHoldings = async (
   return result.balances.map((balance) => ({
     ...balance,
     id: balance.contract,
-    balance: (Number(balance.balance) / 10 ** balance.decimals).toString(),
+    balance: parseUnits(new BigNumber(balance.balance), balance.decimals),
   }));
 };

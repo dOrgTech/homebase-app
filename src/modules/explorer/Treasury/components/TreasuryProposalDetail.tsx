@@ -1,4 +1,5 @@
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
+import BigNumber from "bignumber.js";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -50,7 +51,7 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
 
       return {
         ...transfer,
-        amount: (Number(transfer.amount) / 10 ** decimal).toString(),
+        amount: new BigNumber(transfer.amount, decimal),
       };
     });
   }, [holdings, proposal]);
