@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
@@ -49,7 +49,7 @@ const LoaderContainer = styled(Grid)({
 export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
-  const { data: proposalsData, isLoading } = useProposals(
+  const { data: proposalsData, isLoading } = useProposalsWithStatus(
     dao && dao.address,
     status
   );

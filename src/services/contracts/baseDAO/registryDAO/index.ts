@@ -1,4 +1,4 @@
-import { Parser, Expr } from "@taquito/michel-codec";
+import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
 import {
   extractTransfersData,
   mapProposalBase,
@@ -117,9 +117,7 @@ export class RegistryDAO extends BaseDAO {
       maxXtzAmount: unpackExtraNumValue(extraDto[2].value),
       frozenScaleValue: unpackExtraNumValue(extraDto[1].value),
       slashDivisionScale: unpackExtraNumValue(extraDto[4].value),
-      registryAffected: mapStorageRegistryAffectedList(
-        registryAffected
-      ),
+      registryAffected: mapStorageRegistryAffectedList(registryAffected),
     };
 
     const ledger = await getLedgerAddresses(
@@ -186,21 +184,16 @@ export class RegistryDAO extends BaseDAO {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
-    const schema = new Schema(parser.parseData(proposeCode) as Expr);
+    const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
+    const schema = new Schema(micheline as Expr);
 
     const proposals = proposalsDTO
       .map((dto) => {
-        const proposalMetadata = dto.data.value.children[1].value;
-
-        const proposalMetadataNoBraces = proposalMetadata.substr(
-          2,
-          proposalMetadata.length - 4
-        );
-        const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-        const proposalMetadataDTO: PMRegistryProposal =
-          schema.Execute(michelsonExpr);
-
-        console.log(proposalMetadataDTO);
+        const unpackedMetadata = unpackDataBytes(
+          { bytes: dto.value.metadata },
+          micheline as any
+        ) as any;
+        const proposalMetadataDTO: PMRegistryProposal = schema.Execute(unpackedMetadata)
 
         if (!proposalMetadataDTO.transfer_proposal.transfers) {
           return undefined;

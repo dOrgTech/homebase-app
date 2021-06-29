@@ -6,7 +6,7 @@ import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { Schema } from "@taquito/michelson-encoder";
-import { Parser, Expr } from "@taquito/michel-codec";
+import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
 import { BaseDAO, getContract, unpackExtraNumValue } from "..";
 import { TreasuryProposal } from "services/bakingBad/proposals/types";
 import { TreasuryExtraDTO, TreasuryProposeArgs } from "./types";
@@ -15,6 +15,7 @@ import proposeCode from "./michelson/propose";
 import {
   extractTransfersData,
   mapProposalBase,
+  // mapProposalBase,
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
@@ -63,18 +64,15 @@ export class TreasuryDAO extends BaseDAO {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
-    const schema = new Schema(parser.parseData(proposeCode) as Expr);
+    const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
+    const schema = new Schema(micheline as Expr);
 
     const proposals = proposalsDTO.map((dto) => {
-      const proposalMetadata = dto.data.value.children[1].value;
-
-      const proposalMetadataNoBraces = proposalMetadata.substr(
-        2,
-        proposalMetadata.length - 4
-      );
-      const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-      const proposalMetadataDTO: PMTreasuryProposal =
-        schema.Execute(michelsonExpr);
+      const unpackedMetadata = unpackDataBytes(
+        { bytes: dto.value.metadata },
+        micheline as any
+      ) as any;
+      const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(unpackedMetadata)
 
       const transfers = extractTransfersData(proposalMetadataDTO.transfers);
 

@@ -9,7 +9,7 @@ import {
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
@@ -44,7 +44,7 @@ export const Proposals: React.FC = () => {
   const shouldDisable = useIsProposalButtonDisabled(id);
   const [open, setOpen] = useState(false);
 
-  const { data: proposalsData } = useProposals(dao && dao.address);
+  const { data: proposalsData } = useProposalsWithStatus(dao && dao.address);
 
   const onFlush = useCallback(async () => {
     if (proposalsData && proposalsData.length && data) {

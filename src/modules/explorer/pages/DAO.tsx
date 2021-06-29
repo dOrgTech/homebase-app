@@ -13,7 +13,7 @@ import { useHistory, useParams } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
 import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { CopyAddress } from "modules/common/CopyAddress";
@@ -103,10 +103,10 @@ export const DAO: React.FC = () => {
   const time = cycleInfo && cycleInfo.time;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  const { data: proposals, isLoading: isProposalsLoading } = useProposals(
+  const { data: proposals, isLoading: isProposalsLoading } = useProposalsWithStatus(
     data ? data.address : ""
   );
-  const { data: activeProposals } = useProposals(
+  const { data: activeProposals } = useProposalsWithStatus(
     data ? data.address : "",
     ProposalStatus.ACTIVE
   );

@@ -29,81 +29,29 @@ export type MutezTransfer = {
 };
 
 export type ProposalDTO = {
-  data: {
-    key: {
-      prim: "bytes";
-      type: "bytes";
-      name: "@bytes_55";
-      value: string;
-    };
-    value: {
-      prim: "pair";
-      type: "namedtuple";
-      name: "@pair_56";
-      children: [
-        {
-          prim: "nat";
-          type: "nat";
-          name: "downvotes";
-          value: string;
-        },
-        {
-          prim: "map";
-          type: "map";
-          name: "metadata";
-          value: string;
-        },
-        {
-          prim: "address";
-          type: "address";
-          name: "proposer";
-          value: string;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "proposer_frozen_token";
-          value: string;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "quorum_threshold";
-          value: string;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "start_date";
-          value: string;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "upvotes";
-          value: string;
-        },
-        {
-          prim: "list";
-          type: "list";
-          name: "voters";
-          value: any;
-        },
-        {
-          prim: "nat";
-          type: "nat";
-          name: "voting_stage_num";
-          value: string;
-        },
-      ];
-    };
-    key_hash: "exprtZqjgqRrZr2h8Hd43wFQqnBxtNHH2UCuwaD1oEpYnJjg1DJmBH";
-    key_string: "26725b294531fe0261008394d72e79828e4595bf8ee63a5f46e7d669f2d6ef21";
-    level: 191891;
-    timestamp: "2021-04-21T11:42:59Z";
+  id: number;
+  active: true;
+  hash: string;
+  key: string;
+  value: {
+    voters: {
+      vote_type: true;
+      vote_amount: string;
+      voter_address: string;
+    }[];
+    upvotes: string;
+    metadata: string;
+    proposer: string;
+    downvotes: string;
+    start_date: string;
+    quorum_threshold: string;
+    voting_stage_num: string;
+    proposer_frozen_token: string;
   };
-  count: 1;
-}[];
+  firstLevel: 294491;
+  lastLevel: 294501;
+  updates: 2;
+};
 
 export type VotersDTO = {
   prim: "list";
@@ -146,7 +94,7 @@ export interface Proposal {
   upVotes: BigNumber;
   downVotes: BigNumber;
   startDate: string;
-  
+
   quorumThreshold: BigNumber;
   proposer: string;
   period: number;
@@ -175,19 +123,19 @@ export interface RegistryProposal extends Proposal {
 export interface ProposalWithStatus extends Proposal {
   status: ProposalStatus;
   flushable: boolean;
-  statusHistory: { status: ProposalStatus, timestamp: string }[]
+  statusHistory: { status: ProposalStatus; timestamp: string }[];
 }
 
 export interface RegistryProposalWithStatus extends RegistryProposal {
   status: ProposalStatus;
   flushable: boolean;
-  statusHistory: { status: ProposalStatus, timestamp: string }[]
+  statusHistory: { status: ProposalStatus; timestamp: string }[];
 }
 
 export interface TreasuryProposalWithStatus extends TreasuryProposal {
   status: ProposalStatus;
   flushable: boolean;
-  statusHistory: { status: ProposalStatus, timestamp: string }[]
+  statusHistory: { status: ProposalStatus; timestamp: string }[];
 }
 
 export enum ProposalStatus {

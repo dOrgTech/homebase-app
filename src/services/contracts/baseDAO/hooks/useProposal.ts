@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 
 import { ProposalWithStatus } from "services/bakingBad/proposals/types";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useProposalsWithStatus } from "./useProposalsWithStatus";
 
 export const useProposal = (
   daoAddress: string | undefined,
   proposalKey: string
 ) => {
   const [proposal, setProposal] = useState<ProposalWithStatus>();
-  const { data, ...rest } = useProposals(daoAddress);
+  const { data, ...rest } = useProposalsWithStatus(daoAddress);
 
   useEffect(() => {
     if (data && data.length) {
