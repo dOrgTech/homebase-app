@@ -22,13 +22,15 @@ export const getOperationTimestampsByEntrypoint = async (
   }));
 };
 
+export interface DroppedProposalOp {
+  proposalId: string;
+  timestamp: string;
+}
+
 export const getDroppedProposals = async (
   contractAddress: string,
   network: Network
-): Promise<{
-  proposalId: string;
-  timestamp: string;
-}[]> => {
+): Promise<DroppedProposalOp[]> => {
   const url = `https://api.${network}.tzkt.io/v1/operations/transactions?target=${contractAddress}&entrypoint=drop_proposal&status=applied&limit=10000&select=id,timestamp,parameter`;
 
   const response = await fetch(url);

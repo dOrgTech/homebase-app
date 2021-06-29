@@ -1,26 +1,50 @@
 import { TezosToolkit } from "@taquito/taquito";
 
 import { getLedgerAddresses } from "services/bakingBad/ledger";
-import { getProposalsDTO } from "services/bakingBad/proposals";
+import { getProposalDTO, getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
 import { Network } from "services/beacon/context";
 import { DAOListMetadata } from "../../metadataCarrier/types";
 import { Schema } from "@taquito/michelson-encoder";
+import { Storage } from "services/bakingBad/storage/types";
 import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
 import { BaseDAO, getContract, unpackExtraNumValue } from "..";
-import { TreasuryProposal } from "services/bakingBad/proposals/types";
+import { ProposalDTO, TreasuryProposal } from "services/bakingBad/proposals/types";
 import { TreasuryExtraDTO, TreasuryProposeArgs } from "./types";
 import { getExtra } from "services/bakingBad/extra";
 import proposeCode from "./michelson/propose";
 import {
   extractTransfersData,
   mapProposalBase,
-  // mapProposalBase,
   mapTransfersArgs,
 } from "services/bakingBad/proposals/mappers";
 import { PMTreasuryProposal } from "../registryDAO/types";
 
 const parser = new Parser();
+
+const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
+const schema = new Schema(micheline as Expr);
+
+const mapProposal = (dto: ProposalDTO, storage: Storage) => {
+  const unpackedMetadata = unpackDataBytes(
+    { bytes: dto.value.metadata },
+    micheline as any
+  ) as any;
+  const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(unpackedMetadata)
+
+  const transfers = extractTransfersData(proposalMetadataDTO.transfers);
+
+  return {
+    ...mapProposalBase(
+      dto,
+      "treasury",
+      storage.governanceToken.supply,
+      storage.governanceToken.decimals
+    ),
+    agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
+    transfers,
+  };
+}
 
 export class TreasuryDAO extends BaseDAO {
   public static create = async (
@@ -63,32 +87,17 @@ export class TreasuryDAO extends BaseDAO {
   public proposals = async (network: Network): Promise<TreasuryProposal[]> => {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
-
-    const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
-    const schema = new Schema(micheline as Expr);
-
-    const proposals = proposalsDTO.map((dto) => {
-      const unpackedMetadata = unpackDataBytes(
-        { bytes: dto.value.metadata },
-        micheline as any
-      ) as any;
-      const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(unpackedMetadata)
-
-      const transfers = extractTransfersData(proposalMetadataDTO.transfers);
-
-      return {
-        ...mapProposalBase(
-          dto,
-          "treasury",
-          this.storage.governanceToken.supply,
-          this.storage.governanceToken.decimals
-        ),
-        agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
-        transfers,
-      };
-    });
+    const proposals = proposalsDTO.map((dto) => mapProposal(dto, this.storage));
 
     return proposals;
+  };
+
+  public proposal = async (proposalId: string, network: Network): Promise<TreasuryProposal> => {
+    const { proposalsMapNumber } = this.storage;
+    const proposalDTO = await getProposalDTO(proposalsMapNumber, proposalId, network);
+    const proposal = mapProposal(proposalDTO, this.storage);
+
+    return proposal;
   };
 
   public propose = async (
