@@ -55,6 +55,7 @@ export abstract class BaseDAO {
   public extra;
 
   abstract proposals: (network: Network) => Promise<Proposal[]>;
+  abstract proposal: (proposalKey: string, network: Network) => Promise<Proposal>;
 
   public static getDAO = async (params: {
     address: string;

@@ -1,4 +1,4 @@
-import { Parser, Expr } from "@taquito/michel-codec";
+import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
 import {
   extractTransfersData,
   mapProposalBase,
@@ -7,8 +7,9 @@ import {
 import { TezosToolkit } from "@taquito/taquito";
 import { Schema } from "@taquito/michelson-encoder";
 import { getLedgerAddresses } from "services/bakingBad/ledger";
-import { getProposalsDTO } from "services/bakingBad/proposals";
+import { getProposalDTO, getProposalsDTO } from "services/bakingBad/proposals";
 import { getStorage } from "services/bakingBad/storage";
+import { Storage } from "services/bakingBad/storage/types";
 import { Network } from "services/beacon/context";
 import { ConstructorParams, getContract, unpackExtraNumValue } from "..";
 import { DAOListMetadata } from "../../metadataCarrier/types";
@@ -19,7 +20,7 @@ import {
   RegistryExtraDTO,
   RegistryProposeArgs,
 } from "./types";
-import { RegistryProposal } from "services/bakingBad/proposals/types";
+import { ProposalDTO, RegistryProposal, Transfer } from "services/bakingBad/proposals/types";
 import { getExtra, getExtraRegistryValues } from "services/bakingBad/extra";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
@@ -89,6 +90,44 @@ const mapStorageRegistryAffectedList = (
   });
 };
 
+const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
+const schema = new Schema(micheline as Expr);
+
+const mapProposal = (dto: ProposalDTO, storage: Storage) => {
+  const unpackedMetadata = unpackDataBytes(
+    { bytes: dto.value.metadata },
+    micheline as any
+  ) as any;
+  const proposalMetadataDTO: PMRegistryProposal = schema.Execute(unpackedMetadata)
+
+  let transfers: Transfer[] = [];
+
+  if (proposalMetadataDTO.transfer_proposal.transfers) {
+    transfers = extractTransfersData(
+      proposalMetadataDTO.transfer_proposal.transfers
+    );
+  }
+
+  const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id;
+  const registryDiff =
+    proposalMetadataDTO.transfer_proposal.registry_diff.map((item) => ({
+      key: bytes2Char(item[0]),
+      value: bytes2Char(item[1]),
+    }));
+
+  return {
+    ...mapProposalBase(
+      dto,
+      "registry",
+        storage.governanceToken.supply,
+        storage.governanceToken.decimals
+    ),
+    transfers,
+    list: registryDiff,
+    agoraPostId,
+  };
+}
+
 export class RegistryDAO extends BaseDAO {
   public extra: RegistryExtra;
 
@@ -117,9 +156,7 @@ export class RegistryDAO extends BaseDAO {
       maxXtzAmount: unpackExtraNumValue(extraDto[2].value),
       frozenScaleValue: unpackExtraNumValue(extraDto[1].value),
       slashDivisionScale: unpackExtraNumValue(extraDto[4].value),
-      registryAffected: mapStorageRegistryAffectedList(
-        registryAffected
-      ),
+      registryAffected: mapStorageRegistryAffectedList(registryAffected),
     };
 
     const ledger = await getLedgerAddresses(
@@ -186,51 +223,19 @@ export class RegistryDAO extends BaseDAO {
     const { proposalsMapNumber } = this.storage;
     const proposalsDTO = await getProposalsDTO(proposalsMapNumber, network);
 
-    const schema = new Schema(parser.parseData(proposeCode) as Expr);
-
     const proposals = proposalsDTO
-      .map((dto) => {
-        const proposalMetadata = dto.data.value.children[1].value;
-
-        const proposalMetadataNoBraces = proposalMetadata.substr(
-          2,
-          proposalMetadata.length - 4
-        );
-        const michelsonExpr = parser.parseData(proposalMetadataNoBraces);
-        const proposalMetadataDTO: PMRegistryProposal =
-          schema.Execute(michelsonExpr);
-
-        console.log(proposalMetadataDTO);
-
-        if (!proposalMetadataDTO.transfer_proposal.transfers) {
-          return undefined;
-        }
-
-        const transfers = extractTransfersData(
-          proposalMetadataDTO.transfer_proposal.transfers
-        );
-        const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id;
-        const registryDiff =
-          proposalMetadataDTO.transfer_proposal.registry_diff.map((item) => ({
-            key: bytes2Char(item[0]),
-            value: bytes2Char(item[1]),
-          }));
-
-        return {
-          ...mapProposalBase(
-            dto,
-            "registry",
-              this.storage.governanceToken.supply,
-              this.storage.governanceToken.decimals
-          ),
-          transfers,
-          list: registryDiff,
-          agoraPostId,
-        };
-      })
+      .map((dto) => mapProposal(dto, this.storage))
       //TODO: fix these types
       .filter((p) => !!p);
 
     return proposals as any[];
+  };
+
+  public proposal = async (proposalId: string, network: Network): Promise<RegistryProposal> => {
+    const { proposalsMapNumber } = this.storage;
+    const proposalDTO = await getProposalDTO(proposalsMapNumber, proposalId, network);
+    const proposal = mapProposal(proposalDTO, this.storage);
+
+    return proposal;
   };
 }

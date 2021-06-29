@@ -1,4 +1,4 @@
-import { Proposal, ProposalDTO, Transfer, Voter, VotersDTO } from "./types";
+import { Proposal, ProposalDTO, Transfer } from "./types";
 import {
   PMFA2TransferType,
   PMXTZTransferType,
@@ -38,48 +38,29 @@ export const extractTransfersData = (
   return transfers;
 };
 
-export const dtoToVoters = (
-  votersDTO: VotersDTO,
-  tokenDecimals: number
-): Voter[] => {
-  const voters = votersDTO.children;
-
-  if (!voters) {
-    return [];
-  }
-
-  return voters.map((voter) => ({
-    address: voter.children[2].value,
-    value: parseUnits(new BigNumber(voter.children[0].value), tokenDecimals),
-    support: Boolean(voter.children[1].value),
-  }));
-};
-
 export const mapProposalBase = (
-  dto: ProposalDTO[number],
+  dto: ProposalDTO,
   template: DAOTemplate,
   tokenSupply: BigNumber,
   tokenDecimals: number
 ): Proposal => {
   return {
-    id: dto.data.key.value,
-    upVotes: parseUnits(
-      new BigNumber(dto.data.value.children[6].value),
-      tokenDecimals
-    ),
-    downVotes: parseUnits(
-      new BigNumber(dto.data.value.children[0].value),
-      tokenDecimals
-    ),
-    proposer: dto.data.value.children[2].value,
-    startDate: dto.data.value.children[5].value,
-    quorumThreshold: new BigNumber(dto.data.value.children[4].value)
+    id: dto.key,
+    upVotes: parseUnits(new BigNumber(dto.value.upvotes), tokenDecimals),
+    downVotes: parseUnits(new BigNumber(dto.value.downvotes), tokenDecimals),
+    proposer: dto.value.proposer,
+    startDate: dto.value.start_date,
+    quorumThreshold: new BigNumber(dto.value.quorum_threshold)
       .div(1000000)
       .multipliedBy(parseUnits(tokenSupply, tokenDecimals)),
-    period: Number(dto.data.value.children[8].value) - 1,
-    proposerFrozenTokens: dto.data.value.children[3].value,
+    period: Number(dto.value.voting_stage_num) - 1,
+    proposerFrozenTokens: dto.value.proposer_frozen_token,
     type: template,
-    voters: dtoToVoters(dto.data.value.children[7], tokenDecimals),
+    voters: dto.value.voters.map((voter) => ({
+      address: voter.voter_address,
+      value: parseUnits(new BigNumber(voter.vote_amount), tokenDecimals),
+      support: Boolean(voter.vote_type),
+    })),
   };
 };
 
