@@ -48,7 +48,7 @@ The following third party services are being used by Homebase:
 
 ## Creating a DAO
 
-1. Go to https://tezos-homebase.herokuapp.com/
+1. Go to https://tezos-homebase.netlify.app/
 2. Click on the `Create a DAO` button
 
 You will be taken to the DAO Creator, from which you will be asked to choose on the currently supported DAO templates.
