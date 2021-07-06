@@ -5,6 +5,7 @@ import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { HistoryTable } from "../Treasury/components/HistoryTable";
 import { TokenTable } from "../Treasury/components/TokenBalancesTable";
+import { NFTTable } from "../Treasury/components/NFTBalancesTable";
 
 export const Holdings: React.FC = () => {
   const theme = useTheme();
@@ -21,18 +22,22 @@ export const Holdings: React.FC = () => {
             <AppTabBar
               value={selectedTab}
               setValue={setSelectedTab}
-              labels={["TOKEN BALANCES", "TRANSFER HISTORY"]}
+              labels={["TOKEN BALANCES", "NFTs", "TRANSFER HISTORY"]}
             />
             <TabPanel value={selectedTab} index={0}>
               <TokenTable />
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
+              <NFTTable />
+            </TabPanel>
+            <TabPanel value={selectedTab} index={2}>
               <HistoryTable />
             </TabPanel>
           </>
         ) : (
           <>
             <TokenTable />
+            <NFTTable />
             <HistoryTable />
           </>
         )}

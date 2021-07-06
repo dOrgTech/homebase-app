@@ -24,6 +24,7 @@ export const useTezosBalances = (contractAddress: string | undefined) => {
         symbol: "XTZ",
         name: "XTZ",
         decimals: 6,
+        type: "TOKEN",
         balance: mutezToXtz(balance),
       }
     },
