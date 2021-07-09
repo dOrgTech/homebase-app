@@ -42,9 +42,10 @@ export const getPinnedMetadata = async (): Promise<
       headers: getAuthHeader(),
     });
     const result: PinnedDataFromPinataDTO = await response.json();
+    console.log(result)
     if ("rows" in result && result.rows.length) {
       console.log("Found it! Here's your data: ", result.rows);
-      return result.rows.slice(-2)[0];
+      return result.rows.slice(-1)[0];
     }
     return undefined;
   } catch (e) {
