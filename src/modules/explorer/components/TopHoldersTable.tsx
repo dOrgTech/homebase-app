@@ -6,9 +6,9 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import BigNumber from "bignumber.js";
 import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-// import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
@@ -47,7 +47,6 @@ export const TopHoldersTable: React.FC = () => {
   const { data: members, isLoading } = useTokenHoldersWithVotes(id);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  // const { data: dao } = useDAO(id)
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -56,8 +55,8 @@ export const TopHoldersTable: React.FC = () => {
     return members
       .map((member) => {
         return {
-          username: member.address,
-          weight: (member.balances[0]).dp(10).toString(),
+          username: member.holder.address,
+          weight: new BigNumber(member.balance).dp(10).toString(),
           votes: member.votes.dp(10).toString(),
           proposals_voted: member.proposalsVoted,
         };

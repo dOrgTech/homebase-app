@@ -10,11 +10,7 @@ export interface TokenMetadata {
   symbol: string;
   name: string;
   decimals: number;
-  token_info: {
-    icon: string;
-  };
   supply: BigNumber;
-  transfered: number;
 }
 
 export const getTokenMetadata = async (

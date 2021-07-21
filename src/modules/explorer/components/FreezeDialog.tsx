@@ -14,9 +14,9 @@ import { theme } from "theme";
 import { ViewButton } from "./ViewButton";
 import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
+import { useDAO } from "services/indexer/dao";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,

@@ -3,9 +3,9 @@ import { getDroppedProposals, getOperationTimestampsByEntrypoint } from "service
 
 import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { useDAO } from "services/indexer/dao";
 import { addStatusToProposal, BaseDAO, CycleInfo } from "..";
 import { useCycleInfo } from "./useCycleInfo";
-import { useDAO } from "./useDAO";
 
 export const useProposal = (
   daoAddress: string | undefined,
@@ -22,11 +22,11 @@ export const useProposal = (
       const proposal = await (dao as BaseDAO).proposal(proposalKey, network)
 
       const dropProposalOps = await getDroppedProposals(
-        (dao as BaseDAO).address,
+        (dao as BaseDAO).data.address,
         network
       );
       const flushOps = await getOperationTimestampsByEntrypoint(
-        (dao as BaseDAO).address,
+        (dao as BaseDAO).data.address,
         "flush",
         network
       );

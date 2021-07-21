@@ -13,10 +13,10 @@ import { UserBadge } from "./UserBadge";
 import { useParams } from "react-router-dom";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { formatNumber } from "../utils/FormatNumber";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { InfoIcon } from "./styled/InfoIcon";
 import { BigNumber } from "bignumber.js";
+import { useDAO } from "services/indexer/dao";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24
@@ -88,7 +88,7 @@ export const ProposalStatusHistory: React.FC = () => {
               QUORUM THRESHOLD %
             </Typography>
             <Tooltip placement="bottom"   
-              title={`Amount of ${dao?.metadata.unfrozenToken.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumThreshold} votes.`}
+              title={`Amount of ${dao?.data.token.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumThreshold} votes.`}
             >
               <InfoIcon color="secondary" />
             </Tooltip>

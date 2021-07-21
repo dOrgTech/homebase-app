@@ -3,7 +3,6 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
-import { useCacheDAOs } from "./useCacheDAOs";
 import { useVisitedDAO } from "./useVisitedDAO";
 
 interface Params {
@@ -15,7 +14,6 @@ interface Params {
 export const useFreeze = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { setDAO } = useCacheDAOs();
   const { saveDaoId } = useVisitedDAO();
   const { network, tezos, account, connect } = useTezos()
 
@@ -47,9 +45,8 @@ export const useFreeze = () => {
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        setDAO(params.dao);
         localStorage.removeItem('daoId');
-        saveDaoId(params.dao.address);
+        saveDaoId(params.dao.data.address);
         return data;
       } catch (e) {
         console.log(e);

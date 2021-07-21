@@ -12,7 +12,7 @@ import VoteAgainstDisabled from "../../../assets/img/down_gray.svg";
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
 import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 import { PrimaryButton } from "./styled/PrimaryButton";
 import BigNumber from "bignumber.js";
 

@@ -1,7 +1,7 @@
 import { calculateCycleInfo } from "./../utils";
 import { useEffect, useMemo, useState } from "react";
-import { useDAO } from "./useDAO";
 import { CycleInfo } from "..";
+import { useDAO } from "services/indexer/dao";
 
 export const useCycleInfo = (daoAddress?: string) => {
   const { data: dao } = useDAO(daoAddress);
@@ -10,15 +10,15 @@ export const useCycleInfo = (daoAddress?: string) => {
   useEffect(() => {
     if (dao) {
       const result = calculateCycleInfo(
-        dao.storage.start_time,
-        dao.storage.votingPeriod
+        dao.data.start_time,
+        Number(dao.data.period)
       );
       setTimeLeft(result);
 
       const interval = setInterval(() => {
         const result = calculateCycleInfo(
-          dao.storage.start_time,
-          dao.storage.votingPeriod
+          dao.data.start_time,
+          Number(dao.data.period)
         );
         setTimeLeft(result);
       }, 30000);

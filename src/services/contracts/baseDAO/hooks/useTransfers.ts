@@ -1,6 +1,6 @@
 import { BaseDAO } from '..';
 import { useQuery } from "react-query";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 import { useTezos } from 'services/beacon/hooks/useTezos';
 import { getDAOTransfers } from 'services/bakingBad/transfers';
 import { TransferWithBN } from 'services/bakingBad/transfers/types';
@@ -14,7 +14,7 @@ export const useTransfers = (contractAddress: string | undefined) => {
   const result = useQuery<TransferWithBN[], Error>(
     ["transfers", contractAddress],
     async () => {
-      const transfers = await getDAOTransfers((dao as BaseDAO).address, network);
+      const transfers = await getDAOTransfers((dao as BaseDAO).data.address, network);
       return transfers.map(t => ({
         ...t,
         amount:  parseUnits(new BigNumber(t.amount), t.token.decimals)

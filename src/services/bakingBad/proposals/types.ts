@@ -94,7 +94,6 @@ export interface Proposal {
   upVotes: BigNumber;
   downVotes: BigNumber;
   startDate: string;
-
   quorumThreshold: BigNumber;
   proposer: string;
   period: number;

@@ -1,4 +1,4 @@
-import { Proposal, ProposalDTO, Transfer } from "./types";
+import { Proposal, Transfer } from "./types";
 import {
   PMFA2TransferType,
   PMXTZTransferType,
@@ -7,6 +7,7 @@ import { TransferParams } from "services/contracts/baseDAO/types";
 import { formatUnits, parseUnits, xtzToMutez } from "services/contracts/utils";
 import { DAOTemplate } from "modules/creator/state";
 import { BigNumber } from "bignumber.js";
+import { ProposalDTO } from "services/indexer/types";
 
 export const extractTransfersData = (
   transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]
@@ -46,20 +47,20 @@ export const mapProposalBase = (
 ): Proposal => {
   return {
     id: dto.key,
-    upVotes: parseUnits(new BigNumber(dto.value.upvotes), tokenDecimals),
-    downVotes: parseUnits(new BigNumber(dto.value.downvotes), tokenDecimals),
-    proposer: dto.value.proposer,
-    startDate: dto.value.start_date,
-    quorumThreshold: new BigNumber(dto.value.quorum_threshold)
+    upVotes: parseUnits(new BigNumber(dto.upvotes), tokenDecimals),
+    downVotes: parseUnits(new BigNumber(dto.downvotes), tokenDecimals),
+    proposer: dto.holder.address,
+    startDate: dto.start_date,
+    quorumThreshold: new BigNumber(dto.quorum_threshold)
       .div(1000000)
       .multipliedBy(parseUnits(tokenSupply, tokenDecimals)),
-    period: Number(dto.value.voting_stage_num) - 1,
-    proposerFrozenTokens: dto.value.proposer_frozen_token,
+    period: Number(dto.voting_stage_num) - 1,
+    proposerFrozenTokens: dto.proposer_frozen_token,
     type: template,
-    voters: dto.value.voters.map((voter) => ({
-      address: voter.voter_address,
-      value: parseUnits(new BigNumber(voter.vote_amount), tokenDecimals),
-      support: Boolean(voter.vote_type),
+    voters: dto.votes.map((vote) => ({
+      address: vote.holder.address,
+      value: parseUnits(new BigNumber(vote.amount), tokenDecimals),
+      support: Boolean(vote.support),
     })),
   };
 };

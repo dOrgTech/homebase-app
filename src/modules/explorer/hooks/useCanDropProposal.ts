@@ -23,11 +23,13 @@ export const useCanDropProposal = (
     const hasExpired = proposal.status === ProposalStatus.EXPIRED;
 
     const isGuardian =
-      dao.storage.guardian.toLowerCase() === account.toLowerCase();
+      dao.data.guardian.toLowerCase() === account.toLowerCase();
 
-    const isNotExecutedOrDropped = dao.storage.proposalsToFlush.find(
-      (id) => id.toLowerCase() === proposal.id.toLowerCase()
-    );
+    const isNotExecutedOrDropped = true
+    
+    // dao.data.proposalsToFlush.find(
+    //   (id) => id.toLowerCase() === proposal.id.toLowerCase()
+    // );
 
     return isNotExecutedOrDropped && (isProposer || hasExpired || isGuardian);
   }, [account, dao, proposal]);

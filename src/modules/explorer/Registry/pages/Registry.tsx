@@ -3,7 +3,7 @@ import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 
 import { TemplateHeader } from "modules/explorer/components/TemplateHeader";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 import { RegistryDAO } from "services/contracts/baseDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import dayjs from "dayjs";
@@ -25,7 +25,7 @@ export const Registry: React.FC = () => {
 
   const { data: daoData } = useDAO(id);
   const dao = daoData as RegistryDAO | undefined;
-  const { data: proposalsData } = useProposals(dao?.address);
+  const { data: proposalsData } = useProposals(dao?.data.address);
   const registryProposalsData = proposalsData as
     | RegistryProposalWithStatus[]
     | undefined;
@@ -35,7 +35,7 @@ export const Registry: React.FC = () => {
       return [];
     }
 
-    const registryAffectedKeysProposalIds = dao.extra.registryAffected.map(r => r.proposalId)
+    const registryAffectedKeysProposalIds = dao.decoded.decodedRegistryAffected.map(r => r.proposalId)
 
     return registryProposalsData
       .filter((proposal) =>  registryAffectedKeysProposalIds.includes(proposal.id))
@@ -59,7 +59,7 @@ export const Registry: React.FC = () => {
       return [];
     }
 
-    return dao.extra.registry.map((d) => ({
+    return dao.decoded.decodedRegistry.map((d) => ({
       ...d,
       name: d.key,
     }));

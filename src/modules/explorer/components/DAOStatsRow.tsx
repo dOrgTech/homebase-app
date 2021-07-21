@@ -11,8 +11,8 @@ import { BigNumber } from "bignumber.js";
 import React, { useMemo } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useDAO } from "services/indexer/dao";
 import { StatsBox } from "./StatsBox";
 
 const StatsContainer = styled(Grid)(({ theme }) => ({
@@ -63,7 +63,7 @@ export const DAOStatsRow: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data } = useDAO(id);
   const theme = useTheme();
-  const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
+  const symbol = data && data.data.token.symbol.toUpperCase();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const history = useHistory();
   const { data: activeProposals } = useProposals(id, ProposalStatus.ACTIVE);
@@ -73,8 +73,8 @@ export const DAOStatsRow: React.FC = () => {
       return new BigNumber(0);
     }
 
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[0] || new BigNumber(0);
+    return data.data.ledger.reduce((acc, current) => {
+      const frozenBalance = new BigNumber(current.balance) || new BigNumber(0);
       return acc.plus(frozenBalance);
     }, new BigNumber(0));
   }, [data]);
@@ -84,7 +84,7 @@ export const DAOStatsRow: React.FC = () => {
       return new BigNumber(0);
     }
 
-    return data.storage.governanceToken.supply
+    return data.data.token.supply
   }, [data]);
 
   const totalTokens = amountLocked.plus(amountNotLocked);
@@ -98,8 +98,8 @@ export const DAOStatsRow: React.FC = () => {
       return new BigNumber(0);
     }
 
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[0];
+    return data.data.ledger.reduce((acc, current) => {
+      const frozenBalance = current.balance;
       if (frozenBalance) {
         return acc.plus(1);
       }

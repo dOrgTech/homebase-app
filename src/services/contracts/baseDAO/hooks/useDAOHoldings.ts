@@ -2,7 +2,7 @@ import { BaseDAO } from "..";
 import { useQuery } from "react-query";
 import { getDAOHoldings } from "services/bakingBad/tokenBalances";
 import { DAOHolding, DAOHoldingNFT, DAOHoldingToken } from "services/bakingBad/tokenBalances/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useTezosBalances } from "./useTezosBalance";
 import { useMemo } from "react";
@@ -20,7 +20,7 @@ export const useDAOHoldings = (contractAddress: string | undefined) => {
     ["balances", contractAddress],
     async () => {
       const daoHoldings = await getDAOHoldings(
-        (dao as BaseDAO).address,
+        (dao as BaseDAO).data.address,
         network
       );
 

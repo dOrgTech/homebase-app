@@ -1,10 +1,13 @@
-export interface DAOType {
+import { DAOTemplate } from "modules/creator/state";
+import { Network } from "services/beacon/context";
+
+export interface DAOTypeDTO {
     id: number;
-    name: string;
-    daos?: DAO[]
+    name: DAOTemplate;
+    daos?: DAODTO[]
 }
 
-export interface Token {
+export interface TokenDTO {
     id: number;
     contract: string;
     network: string;
@@ -17,17 +20,18 @@ export interface Token {
     is_transferable: boolean;
     should_prefer_symbol: boolean;
     supply: string;
-    daos?: DAO[]
+    daos?: DAODTO[]
 }
 
-export interface DAO {
+export interface DAODTO {
     id: number;
     address: string;
+    admin: string;
     frozen_token_id: number;
-    token: Token;
+    token: TokenDTO;
     guardian: string;
-    ledger?: Ledger[]
-    proposals?: Proposal[]
+    ledger?: LedgerDTO[]
+    proposals?: ProposalDTO[]
     max_proposals: string;
     max_quorum_change: string;
     max_quorum_threshold: string;
@@ -43,13 +47,13 @@ export interface DAO {
     start_time: string;
     name: string;
     description: string;
-    dao_type: DAOType
-    network: string;
-    treasury_extras: [TreasuryExtra] | [];
-    registry_extras: [RegistryExtra] | [];
+    dao_type: DAOTypeDTO;
+    network: Network;
+    treasury_extras: [TreasuryExtraDTO] | [];
+    registry_extras: [RegistryExtraDTO] | [];
 }
 
-export interface RegistryExtra {
+export interface RegistryExtraDTO {
     id: number;
     registry: string;
     registry_affected: string;
@@ -61,7 +65,7 @@ export interface RegistryExtra {
     slash_scale_value: string;
 }
 
-export interface TreasuryExtra {
+export interface TreasuryExtraDTO {
     id: number;
     frozen_extra_value: string;
     frozen_scale_value: string;
@@ -71,26 +75,27 @@ export interface TreasuryExtra {
     slash_scale_value: string;
 }
 
-export interface Holder {
+export interface HolderDTO {
     id: number;
     address: string;
-    ledger?: Ledger[]
-    proposals?: Proposal[]
-    votes?: Vote[]
+    ledger?: LedgerDTO[]
+    proposals?: ProposalDTO[]
+    votes?: VoteDTO[]
 }
 
-export interface Ledger {
+export interface LedgerDTO {
     id: number;
     balance: string;
+    holder: HolderDTO
 }
 
-export interface ProposalStatus {
+export interface ProposalStatusDTO {
     id: number;
     description: string;
-    proposals: Proposal[];
+    proposals?: ProposalDTO[];
 }
 
-export interface Proposal {
+export interface ProposalDTO {
     id: number;
     hash: string;
     key: string;
@@ -98,18 +103,19 @@ export interface Proposal {
     downvotes: string;
     start_date: string;
     metadata: string;
-    holder: Holder;
+    holder: HolderDTO;
+    proposal_status: ProposalStatusDTO;
     voting_stage_num: string;
     proposer_frozen_token: string;
     quorum_threshold: string;
-    votes?: Vote[]
+    votes: VoteDTO[]
 }
 
-export interface Vote {
+export interface VoteDTO {
     id: number;
     hash: string;
     key: string;
     amount: string;
     support: boolean;
-    holder: Holder;
+    holder: HolderDTO;
 }

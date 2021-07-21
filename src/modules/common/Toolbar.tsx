@@ -22,10 +22,10 @@ import { toShortAddress } from "services/contracts/utils";
 import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 import { AccountBalanceWallet } from "@material-ui/icons";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
 import { Network } from "services/beacon/context";
 import { BigNumber } from "bignumber.js";
+import { useDAO } from "services/indexer/dao";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -236,16 +236,16 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   mode,
 }) => {
   const { connect, account, reset, changeNetwork, network } = useTezos();
-  const [anchorEl, setAnchorEl] =
-    React.useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
   const [popperOpen, setPopperOpen] = useState(false);
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { id: daoId } =
-    useParams<{
-      id: string;
-    }>();
+  const { id: daoId } = useParams<{
+    id: string;
+  }>();
   const { data: dao } = useDAO(daoId);
 
   const [networkAnchorEl, setNetworkAnchorEl] =
@@ -283,10 +283,13 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     if (!dao) {
       return new BigNumber(0);
     }
-    const balance = dao.ledger.find(
-      ({ address }) => address.toLowerCase() === account.toLowerCase()
+    const balance = dao.data.ledger.find(
+      ({ holder: { address } }) =>
+        address.toLowerCase() === account.toLowerCase()
     );
-    const frozenBalance = balance ? balance.balances[0] : new BigNumber(0);
+    const frozenBalance = balance
+      ? new BigNumber(balance.balance)
+      : new BigNumber(0);
     return frozenBalance || new BigNumber(0);
   }, [dao, account]);
 
@@ -319,7 +322,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   alignItems="center"
                   justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
                 >
-                  {!isMobileSmall && dao && dao.ledger.length > 0 ? (
+                  {!isMobileSmall && dao && dao.data.ledger.length > 0 ? (
                     <>
                       <Grid
                         item
@@ -340,7 +343,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                             {userBalance}
                           </Typography>
                           <Symbol color="textSecondary">
-                            {dao.metadata.unfrozenToken.symbol}
+                            {dao.data.token.symbol}
                           </Symbol>
                         </BalanceContainer>
                       </Grid>

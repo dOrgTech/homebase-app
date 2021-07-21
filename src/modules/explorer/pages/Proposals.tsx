@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { DAOStatsRow } from "../components/DAOStatsRow";
@@ -40,11 +40,11 @@ export const Proposals: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
-  const name = dao && dao.metadata.unfrozenToken.name;
+  const name = dao && dao.data.token.name;
   const shouldDisable = useIsProposalButtonDisabled(id);
   const [open, setOpen] = useState(false);
 
-  const { data: proposalsData } = useProposalsWithStatus(dao && dao.address);
+  const { data: proposalsData } = useProposalsWithStatus(dao && dao.data.address);
 
   const onFlush = useCallback(async () => {
     if (proposalsData && proposalsData.length && data) {
@@ -96,7 +96,7 @@ export const Proposals: React.FC = () => {
                   <ViewButton
                     variant="outlined"
                     onClick={onFlush}
-                    disabled={!dao?.storage.proposalsToFlush}
+                    // disabled={!dao?.storage.proposalsToFlush}
                   >
                     EXECUTE
                   </ViewButton>
@@ -187,7 +187,7 @@ export const Proposals: React.FC = () => {
           </ProposalsContainer> */}
       </Grid>
       {dao ? (
-        dao.template === "registry" ? (
+        dao.data.type === "registry" ? (
           <RegistryProposalFormContainer
             open={open}
             handleClose={handleCloseModal}

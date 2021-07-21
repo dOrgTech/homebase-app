@@ -12,7 +12,7 @@ import {
 import { useHistory, useParams } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
@@ -95,19 +95,19 @@ export const DAO: React.FC = () => {
   const { data, isLoading: isDaoLoading } = useDAO(id);
   const { mutate } = useFlush();
 
-  const name = data && data.metadata.unfrozenToken.name;
-  const description = data && data.metadata.description;
-  const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
+  const name = data && data.data.token.name;
+  const description = data && data.data.description;
+  const symbol = data && data.data.token.symbol.toUpperCase();
 
   const cycleInfo = useCycleInfo(id);
   const time = cycleInfo && cycleInfo.time;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { data: proposals, isLoading: isProposalsLoading } = useProposalsWithStatus(
-    data ? data.address : ""
+    data ? data.data.address : ""
   );
   const { data: activeProposals } = useProposalsWithStatus(
-    data ? data.address : "",
+    data ? data.data.address : "",
     ProposalStatus.ACTIVE
   );
   const isLoading = isDaoLoading || isProposalsLoading;
@@ -190,7 +190,7 @@ export const DAO: React.FC = () => {
                         <ViewButton
                           variant="outlined"
                           onClick={onFlush}
-                          disabled={!data?.storage.proposalsToFlush}
+                          // disabled={!data?.storage.proposalsToFlush}
                         >
                           EXECUTE
                         </ViewButton>
@@ -228,7 +228,7 @@ export const DAO: React.FC = () => {
                   </DescriptionContainer>
 
                   {data && !isMobileSmall && (
-                    <CopyAddress address={data.address} />
+                    <CopyAddress address={data.data.address} />
                   )}
                 </Grid>
               </Grid>
@@ -237,7 +237,7 @@ export const DAO: React.FC = () => {
               <Box paddingBottom="28px" width="100%">
                 <Grid container wrap="nowrap">
                   <Grid item>
-                    {data && <PeriodLabel daoId={data.address} />}
+                    {data && <PeriodLabel daoId={data.data.address} />}
                   </Grid>
                 </Grid>
               </Box>
@@ -279,7 +279,7 @@ export const DAO: React.FC = () => {
                       <ProgressBar
                         progress={
                           data
-                            ? ((time || 0) / data.storage.votingPeriod) * 100
+                            ? ((time || 0) / Number(data.data.period)) * 100
                             : 100
                         }
                         radius={35}

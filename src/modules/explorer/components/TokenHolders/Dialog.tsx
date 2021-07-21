@@ -13,7 +13,7 @@ import {
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
 import { BigNumber } from "bignumber.js";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 
 interface TokenHolderDialogData {
   address: string;
@@ -89,9 +89,9 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
       return [];
     }
 
-    return data.ledger.map((holder) => ({
-      address: holder.address,
-      tokens: holder.balances[0] || new BigNumber(0),
+    return data.data.ledger.map((holder) => ({
+      address: holder.holder.address,
+      tokens:  new BigNumber(holder.balance) || new BigNumber(0),
     }));
   }, [data]);
 
@@ -100,8 +100,8 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
       return new BigNumber(0);
     }
 
-    return data.ledger.reduce((acc, holder) => {
-      return acc.plus(holder.balances[0] || new BigNumber(0));
+    return data.data.ledger.reduce((acc, holder) => {
+      return acc.plus(new BigNumber(holder.balance) || new BigNumber(0));
     }, new BigNumber(0));
   }, [data]);
 

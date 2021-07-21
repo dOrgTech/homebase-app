@@ -103,17 +103,17 @@ export const addStatusToProposal = ({
   flushOps: OperationTimestampDTO[];
 }) => {
   const secondsPassed =
-    (cycleInfo as CycleInfo).current * (dao as BaseDAO).storage.votingPeriod;
+    (cycleInfo as CycleInfo).current * Number((dao as BaseDAO).data.period);
   const activeThresholdInSeconds =
-    (proposal.period + 1) * (dao as BaseDAO).storage.votingPeriod;
+    (proposal.period + 1) * Number((dao as BaseDAO).data.period);
   const passedOrRejectedThresholdInSeconds =
-    (proposal.period + 2) * (dao as BaseDAO).storage.votingPeriod;
+    (proposal.period + 2) * Number((dao as BaseDAO).data.period);
   const flushThresholdInSeconds =
-    proposal.period * (dao as BaseDAO).storage.votingPeriod +
-    (dao as BaseDAO).storage.proposalFlushTime;
+    proposal.period * Number((dao as BaseDAO).data.period) +
+    Number((dao as BaseDAO).data.proposal_flush_time);
   const expiredThresholdInSeconds =
-    proposal.period * (dao as BaseDAO).storage.votingPeriod +
-    (dao as BaseDAO).storage.proposalExpiredTime;
+    proposal.period * Number((dao as BaseDAO).data.period) +
+    Number((dao as BaseDAO).data.proposal_expired_time);
 
   const statusHistory: { status: ProposalStatus; timestamp: string }[] = [
     {
@@ -122,13 +122,13 @@ export const addStatusToProposal = ({
     },
   ];
 
-  const isInNonFlushedProposalArray = (
-    dao as BaseDAO
-  ).storage.proposalsToFlush.find(
-    (id) => id.toLowerCase() === proposal.id.toLowerCase()
-  );
+  // const isInNonFlushedProposalArray = (
+  //   dao as BaseDAO
+  // ).data.proposalsToFlush.find(
+  //   (id) => id.toLowerCase() === proposal.id.toLowerCase()
+  // );
 
-  const isExecutedDroppedOrExpired = !isInNonFlushedProposalArray;
+  const isExecutedDroppedOrExpired = false;
 
   if (isExecutedDroppedOrExpired) {
     // Verify if dropped
@@ -159,11 +159,11 @@ export const addStatusToProposal = ({
     // 1. Search if flush was called in proposal's flushable period
     const proposalCreationTimestamp = dayjs(proposal.startDate);
     const startOfFlushablePeriod = proposalCreationTimestamp.add(
-      (dao as BaseDAO).storage.proposalFlushTime,
+      Number((dao as BaseDAO).data.proposal_flush_time),
       "seconds"
     );
     const endOfFlushablePeriod = proposalCreationTimestamp.add(
-      (dao as BaseDAO).storage.proposalExpiredTime,
+      Number((dao as BaseDAO).data.proposal_expired_time),
       "seconds"
     );
 

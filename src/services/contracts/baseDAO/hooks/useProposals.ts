@@ -3,7 +3,7 @@ import {
   Proposal,
   ProposalStatus,
 } from "services/bakingBad/proposals/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao";
 import { BaseDAO } from "..";
 import { useCycleInfo } from "./useCycleInfo";
 import { useTezos } from "services/beacon/hooks/useTezos";
