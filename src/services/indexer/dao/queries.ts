@@ -39,7 +39,6 @@ export const GET_DAOS_QUERY = gql`
 
 export const GET_DAO_QUERY = gql`
   query getDao($address: String!) {
-    {
       daos(where: {address: {_eq: $address}}) {
         dao_type {
           id
@@ -143,6 +142,5 @@ export const GET_DAO_QUERY = gql`
           }
         }
       }
-    }
   }
 `;

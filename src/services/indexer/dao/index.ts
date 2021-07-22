@@ -4,13 +4,13 @@ import { useQuery } from "react-query";
 import { TokenMetadata } from "services/bakingBad/tokens";
 import { Network } from "services/beacon/context";
 import { RegistryDAO, TreasuryDAO } from "services/contracts/baseDAO";
+import { parseUnits } from "services/contracts/utils";
 import { client } from "../graphql";
 import {
   DAODTO,
   LedgerDTO,
   ProposalDTO,
   RegistryExtraDTO,
-  TreasuryExtraDTO,
   VoteDTO,
 } from "../types";
 import { GET_DAOS_QUERY, GET_DAO_QUERY } from "./queries";
@@ -41,7 +41,7 @@ interface GetAllDAOsDTO {
 }
 
 export type FetchedDAO = DAODTO & {
-  ledger: LedgerDTO[];
+  ledgers: LedgerDTO[];
   proposals: (ProposalDTO & { votes: VoteDTO[] })[];
 };
 
@@ -73,28 +73,26 @@ export const useDAO = (address: string | undefined) => {
       });
 
       const dao = response.daos[0];
+      const base = {
+        ...dao,
+        token: {
+          ...dao.token,
+          supply: new BigNumber(dao.token.supply),
+        },
+        ledger: dao.ledgers.map(ledger => ({
+          ...ledger,
+          balance: parseUnits(new BigNumber(ledger.balance), dao.token.decimals)
+        })),
+        type: dao.dao_type.name,
+        extra: dao.registry_extras[0] as RegistryExtraDTO,
+        quorum_threshold: parseUnits(new BigNumber(dao.quorum_threshold), dao.token.decimals)
+      }
 
       switch (dao.dao_type.name) {
         case "treasury":
-          return new TreasuryDAO({
-            ...dao,
-            token: {
-              ...dao.token,
-              supply: new BigNumber(dao.token.supply),
-            },
-            type: dao.dao_type.name,
-            extra: dao.treasury_extras[0] as TreasuryExtraDTO,
-          });
+          return new TreasuryDAO(base);
         case "registry":
-          return new RegistryDAO({
-            ...dao,
-            token: {
-              ...dao.token,
-              supply: new BigNumber(dao.token.supply),
-            },
-            type: dao.dao_type.name,
-            extra: dao.registry_extras[0] as RegistryExtraDTO,
-          })
+          return new RegistryDAO(base);
         default:
           throw new Error(
             `DAO with address '${dao.address}' has an unrecognized type '${dao.dao_type.name}'`

@@ -37,22 +37,21 @@ const mapStorageRegistryList = (
   key: string;
   value: string;
 }[] => {
-  if (listMichelsonString === "{ {} }") {
-    return [];
-  }
+  const data = unpackDataBytes({
+    bytes: listMichelsonString
+  }) as RegistryItemDTO[]
 
-  const listStringNoBraces = listMichelsonString.substr(
-    3,
-    listMichelsonString.length - 6
-  );
-  return listStringNoBraces.split(" ; ").map((listString) => {
-    const list = parser.parseData(listString) as RegistryItemDTO;
+  console.log(listMichelsonString, data)
 
-    return {
-      key: bytes2Char(list.args[0].string),
-      value: bytes2Char(list.args[1].string),
-    };
-  });
+  console.log(data.map(item => ({
+    key: bytes2Char(item.args[0].string),
+    value: bytes2Char(item.args[1].string)
+  })))
+
+  return data.map(item => ({
+    key: bytes2Char(item.args[0].string),
+    value: bytes2Char(item.args[1].string)
+  }))
 };
 
 const mapStorageRegistryAffectedList = (
@@ -61,32 +60,28 @@ const mapStorageRegistryAffectedList = (
   key: string;
   proposalId: string;
 }[] => {
-  if (listMichelsonString === "{ {} }") {
-    return [];
-  }
+  const data = unpackDataBytes({
+    bytes: listMichelsonString
+  }) as RegistryAffectedDTO[]
 
-  const listStringNoBraces = listMichelsonString.substr(
-    3,
-    listMichelsonString.length - 6
-  );
+  console.log(data.map(item => ({
+    key: bytes2Char(item.args[0].string),
+    proposalId: item.args[1].bytes
+  })))
 
-  return listStringNoBraces.split(" ; ").map((listString) => {
-    const list = parser.parseData(listString) as RegistryAffectedDTO;
-
-    return {
-      key: bytes2Char(list.args[0].string),
-      proposalId: list.args[1].bytes,
-    };
-  });
+  return data.map(item => ({
+    key: bytes2Char(item.args[0].string),
+    proposalId: item.args[1].bytes
+  }))
 };
-
-const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
-const schema = new Schema(micheline as Expr);
 
 const mapProposal = (
   dto: ProposalDTO,
   governanceToken: TokenMetadata
 ): RegistryProposal => {
+  const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
+  const schema = new Schema(micheline as Expr);
+
   const unpackedMetadata = unpackDataBytes(
     { bytes: dto.metadata },
     micheline as any

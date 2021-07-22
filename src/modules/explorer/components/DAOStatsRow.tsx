@@ -73,6 +73,8 @@ export const DAOStatsRow: React.FC = () => {
       return new BigNumber(0);
     }
 
+    console.log(data.data)
+
     return data.data.ledger.reduce((acc, current) => {
       const frozenBalance = new BigNumber(current.balance) || new BigNumber(0);
       return acc.plus(frozenBalance);

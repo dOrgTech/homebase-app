@@ -50,7 +50,7 @@ export interface BaseDAOData {
   proposal_flush_time: string;
   quorum_change: string;
   last_updated_cycle: string;
-  quorum_threshold: string;
+  quorum_threshold: BigNumber;
   staked: string;
   start_time: string;
   name: string;

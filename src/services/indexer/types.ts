@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { DAOTemplate } from "modules/creator/state";
 import { Network } from "services/beacon/context";
 
@@ -30,7 +31,7 @@ export interface DAODTO {
     frozen_token_id: number;
     token: TokenDTO;
     guardian: string;
-    ledger?: LedgerDTO[]
+    ledgers?: LedgerDTO[]
     proposals?: ProposalDTO[]
     max_proposals: string;
     max_quorum_change: string;
@@ -78,14 +79,14 @@ export interface TreasuryExtraDTO {
 export interface HolderDTO {
     id: number;
     address: string;
-    ledger?: LedgerDTO[]
+    ledgers?: LedgerDTO[]
     proposals?: ProposalDTO[]
     votes?: VoteDTO[]
 }
 
 export interface LedgerDTO {
     id: number;
-    balance: string;
+    balance: BigNumber;
     holder: HolderDTO
 }
 
