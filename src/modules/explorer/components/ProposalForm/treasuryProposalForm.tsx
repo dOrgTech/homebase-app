@@ -9,7 +9,7 @@ import {
 import React, { useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { TreasuryDAO } from "services/contracts/baseDAO";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { SendButton } from "../ProposalFormSendButton";
 import { ProposalFormListItem } from "../styled/ProposalFormListItem";
 import { TextField } from "formik-material-ui";

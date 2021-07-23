@@ -10,13 +10,10 @@ import { HighlightedBadge } from "modules/explorer/components/styled/Highlighted
 import { TransferBadge } from "modules/explorer/Treasury/components/TransferBadge";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import {
-  FA2Transfer,
-  RegistryProposalWithStatus,
-} from "services/bakingBad/proposals/types";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { mutezToXtz } from "services/contracts/utils";
+import { RegistryProposalWithStatus, FA2Transfer } from "services/indexer/dao/mappers/proposal/types";
 
 const Container = styled(Grid)({
   paddingTop: 21,

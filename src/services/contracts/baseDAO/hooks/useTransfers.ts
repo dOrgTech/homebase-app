@@ -1,6 +1,6 @@
 import { BaseDAO } from '..';
 import { useQuery } from "react-query";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from 'services/beacon/hooks/useTezos';
 import { getDAOTransfers } from 'services/bakingBad/transfers';
 import { TransferWithBN } from 'services/bakingBad/transfers/types';

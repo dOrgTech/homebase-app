@@ -118,16 +118,19 @@ export const GET_DAO_QUERY = gql`
           proposer_id
           quorum_threshold
           start_date
-          status_id
           upvotes
           voting_stage_num
           holder {
             address
             id
           }
-          proposal_status {
-            description
+          status_updates(order_by: {timestamp: asc}) {
+            timestamp
             id
+            proposal_status {
+              id
+              description
+            }
           }
           votes {
             amount

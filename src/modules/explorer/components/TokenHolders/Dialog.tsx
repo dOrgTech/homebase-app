@@ -13,7 +13,7 @@ import {
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
 import { BigNumber } from "bignumber.js";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 interface TokenHolderDialogData {
   address: string;

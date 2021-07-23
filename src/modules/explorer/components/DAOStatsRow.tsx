@@ -10,9 +10,9 @@ import {
 import { BigNumber } from "bignumber.js";
 import React, { useMemo } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { StatsBox } from "./StatsBox";
 
 const StatsContainer = styled(Grid)(({ theme }) => ({

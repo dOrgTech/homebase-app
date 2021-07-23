@@ -11,12 +11,12 @@ import React from "react";
 import { StatusBadge } from "./StatusBadge";
 import { UserBadge } from "./UserBadge";
 import { useParams } from "react-router-dom";
-import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
 import { formatNumber } from "../utils/FormatNumber";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { InfoIcon } from "./styled/InfoIcon";
 import { BigNumber } from "bignumber.js";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24

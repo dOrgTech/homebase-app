@@ -1,7 +1,7 @@
 import { calculateCycleInfo } from "./../utils";
 import { useEffect, useMemo, useState } from "react";
 import { CycleInfo } from "..";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 export const useCycleInfo = (daoAddress?: string) => {
   const { data: dao } = useDAO(daoAddress);

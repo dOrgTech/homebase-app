@@ -2,13 +2,10 @@ import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import BigNumber from "bignumber.js";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import {
-  FA2Transfer,
-  TreasuryProposalWithStatus,
-} from "services/bakingBad/proposals/types";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { mutezToXtz } from "services/contracts/utils";
+import { TreasuryProposalWithStatus, FA2Transfer } from "services/indexer/dao/mappers/proposal/types";
 import { TransferBadge } from "./TransferBadge";
 
 interface Props {

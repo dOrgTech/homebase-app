@@ -15,7 +15,7 @@ import { ViewButton } from "./ViewButton";
 import { useParams } from "react-router-dom";
 import { useSendXTZ } from "services/contracts/baseDAO/hooks/useSendXTZ";
 import BigNumber from "bignumber.js";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,

@@ -12,8 +12,6 @@ import {
 import { useHistory, useParams } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
-import { useDAO } from "services/indexer/dao";
-import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { CopyAddress } from "modules/common/CopyAddress";
@@ -21,7 +19,6 @@ import { DAOStatsRow } from "../components/DAOStatsRow";
 import { TopHoldersTable } from "../components/TopHoldersTable";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { ProposalsTable } from "../components/ProposalsTable";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
 import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
@@ -29,6 +26,9 @@ import { FreezeDialog } from "../components/FreezeDialog";
 import { useMemo } from "react";
 import { InfoIcon } from "../components/styled/InfoIcon";
 import { PeriodLabel } from "../components/styled/VotingLabel";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -95,7 +95,7 @@ export const DAO: React.FC = () => {
   const { data, isLoading: isDaoLoading } = useDAO(id);
   const { mutate } = useFlush();
 
-  const name = data && data.data.token.name;
+  const name = data && data.data.name;
   const description = data && data.data.description;
   const symbol = data && data.data.token.symbol.toUpperCase();
 
@@ -103,10 +103,10 @@ export const DAO: React.FC = () => {
   const time = cycleInfo && cycleInfo.time;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  const { data: proposals, isLoading: isProposalsLoading } = useProposalsWithStatus(
+  const { data: proposals, isLoading: isProposalsLoading } = useProposals(
     data ? data.data.address : ""
   );
-  const { data: activeProposals } = useProposalsWithStatus(
+  const { data: activeProposals } = useProposals(
     data ? data.data.address : "",
     ProposalStatus.ACTIVE
   );

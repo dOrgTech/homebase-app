@@ -13,7 +13,7 @@ import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
 import { useHistory, useLocation, useParams } from "react-router-dom";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,

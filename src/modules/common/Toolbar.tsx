@@ -25,7 +25,7 @@ import { AccountBalanceWallet } from "@material-ui/icons";
 import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
 import { Network } from "services/beacon/context";
 import { BigNumber } from "bignumber.js";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",

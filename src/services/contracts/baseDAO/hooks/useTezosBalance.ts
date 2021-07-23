@@ -1,7 +1,7 @@
 import { BaseDAO } from '..';
 import { useQuery } from "react-query";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from 'services/beacon/hooks/useTezos';
 import { mutezToXtz } from 'services/contracts/utils';
 

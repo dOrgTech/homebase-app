@@ -13,8 +13,8 @@ import baseDAOContractCode from "./michelson/baseDAO";
 import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
 import { TokenMetadata } from "services/bakingBad/tokens";
-import { LedgerDTO, ProposalDTO } from "services/indexer/types";
-import { Proposal } from "services/bakingBad/proposals/types";
+import { LedgerDTO } from "services/indexer/types";
+import { Proposal } from "services/indexer/dao/mappers/proposal/types";
 
 interface DeployParams {
   params: MigrationParams;
@@ -39,7 +39,7 @@ export interface BaseDAOData {
   token: TokenMetadata;
   guardian: string;
   ledger: LedgerDTO[]
-  proposals: ProposalDTO[]
+  proposals: Proposal[]
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
@@ -60,9 +60,6 @@ export interface BaseDAOData {
 }
 
 export abstract class BaseDAO {
-  abstract proposals: (network: Network) => Promise<Proposal[]>;
-  abstract proposal: (proposalKey: string, network: Network) => Promise<Proposal>;
-
   public static baseDeploy = async (
     template: DAOTemplate,
     { params, metadata, tezos, network }: DeployParams

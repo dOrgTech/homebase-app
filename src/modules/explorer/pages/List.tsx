@@ -17,8 +17,8 @@ import { SearchInput } from "modules/explorer/components/SearchInput";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
-import { useAllDAOs } from "services/indexer/dao";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs";
 
 const GridContainer = styled(Grid)({
   background: "inherit",

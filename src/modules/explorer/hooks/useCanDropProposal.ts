@@ -1,10 +1,7 @@
 import { useMemo } from "react";
-import {
-  ProposalStatus,
-  ProposalWithStatus,
-} from "services/bakingBad/proposals/types";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "services/contracts/baseDAO";
+import { ProposalStatus, ProposalWithStatus } from "services/indexer/dao/mappers/proposal/types";
 
 export const useCanDropProposal = (
   dao?: BaseDAO,

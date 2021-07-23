@@ -15,7 +15,7 @@ import { Form, Field, FieldArray, useFormikContext } from "formik";
 import { TextField, Switch } from "formik-material-ui";
 import { Autocomplete } from "formik-material-ui-lab";
 
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { TreasuryDAO } from "services/contracts/baseDAO";
 import {
   fromMigrationParamsFile,

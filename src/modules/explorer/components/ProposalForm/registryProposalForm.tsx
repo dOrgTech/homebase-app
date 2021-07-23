@@ -13,7 +13,7 @@ import {
 import React, { useCallback, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { RegistryDAO } from "services/contracts/baseDAO";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 import { AppTabBar } from "../AppTabBar";
 import { SendButton } from "../ProposalFormSendButton";
@@ -101,6 +101,8 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
     ...INITIAL_REGISTRY_FORM_VALUES,
     agoraPostId: "0",
   };
+
+  console.log(dao?.data.extra)
 
   return (
     <Dialog

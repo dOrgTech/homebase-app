@@ -11,13 +11,12 @@ import {
 import dayjs from "dayjs";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
-import { ProposalWithStatus } from "services/bakingBad/proposals/types";
 import { RowContainer } from "./tables/RowContainer";
 import { TableStatusBadge } from "./ProposalTableRowStatusBadge";
 import { CheckCircleOutlined, CancelOutlined, PauseCircleOutline, RemoveCircleOutline, PlayCircleOutlineOutlined } from '@material-ui/icons';
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { ProposalWithStatus, ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 
 export interface ProposalTableRowData {
   daoId?: string;

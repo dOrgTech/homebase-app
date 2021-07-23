@@ -1,7 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import { useMemo } from "react";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { useDAO } from "services/indexer/dao";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
 
 export const useTokenHoldersWithVotes = (contractAddress: string) => {
   const {

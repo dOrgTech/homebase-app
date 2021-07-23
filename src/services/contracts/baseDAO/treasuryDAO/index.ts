@@ -1,75 +1,24 @@
 import { TezosToolkit } from "@taquito/taquito";
 import { Schema } from "@taquito/michelson-encoder";
-import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
+import { Parser, Expr } from "@taquito/michel-codec";
 import { BaseDAO, BaseDAOData, getContract } from "..";
-import { TreasuryProposal } from "services/bakingBad/proposals/types";
 import { TreasuryProposeArgs } from "./types";
 import proposeCode from "./michelson/propose";
-import {
-  extractTransfersData,
-  mapProposalBase,
-  mapTransfersArgs,
-} from "services/bakingBad/proposals/mappers";
-import { PMTreasuryProposal } from "../registryDAO/types";
-import { ProposalDTO, TreasuryExtraDTO } from "services/indexer/types";
-import { TokenMetadata } from "services/bakingBad/tokens";
+import { TreasuryExtraDTO } from "services/indexer/types";
+import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import { TreasuryProposal } from "services/indexer/dao/mappers/proposal/types";
 
 const parser = new Parser();
 
-const micheline = parser.parseMichelineExpression(proposeCode) as Expr;
-const schema = new Schema(micheline as Expr);
-
-const mapProposal = (dto: ProposalDTO, governanceToken: TokenMetadata) => {
-  const unpackedMetadata = unpackDataBytes(
-    { bytes: dto.metadata },
-    micheline as any
-  ) as any;
-  const proposalMetadataDTO: PMTreasuryProposal =
-    schema.Execute(unpackedMetadata);
-
-  const transfers = extractTransfersData(proposalMetadataDTO.transfers);
-
-  return {
-    ...mapProposalBase(
-      dto,
-      "treasury",
-      governanceToken.supply,
-      governanceToken.decimals
-    ),
-    agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
-    transfers,
-  };
-};
-
 interface TreasuryDAOData extends BaseDAOData {
   extra: TreasuryExtraDTO;
+  proposals: TreasuryProposal[]
 }
 
 export class TreasuryDAO extends BaseDAO {
   constructor(public data: TreasuryDAOData) {
     super(data);
   }
-
-  public proposals = async (): Promise<TreasuryProposal[]> => {
-    const proposalsDTO = this.data.proposals;
-    const proposals = proposalsDTO.map((dto) =>
-      mapProposal(dto, this.data.token)
-    );
-
-    return proposals;
-  };
-
-  public proposal = async (proposalId: string): Promise<TreasuryProposal> => {
-    const proposalDTO = this.data.proposals.find(
-      (p) => p.key.toLowerCase() === proposalId.toLowerCase()
-    );
-
-    if(!proposalDTO) {
-      throw new Error(`No proposal found with key: '${proposalId}'`)
-    }
-
-    return mapProposal(proposalDTO, this.data.token);
-  };
 
   public propose = async (
     { agoraPostId, transfers }: TreasuryProposeArgs,
