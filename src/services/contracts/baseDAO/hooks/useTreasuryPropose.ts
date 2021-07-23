@@ -4,12 +4,10 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { TreasuryProposeArgs } from "../treasuryDAO/types";
-import { useCacheDAOs } from "./useCacheDAOs";
 
 export const useTreasuryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { setDAO } = useCacheDAOs();
   const { network, tezos, connect, account } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, { dao: TreasuryDAO, args: TreasuryProposeArgs }>(
@@ -42,7 +40,6 @@ export const useTreasuryPropose = () => {
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        setDAO(dao);
         return data;
 
       } catch (e) {

@@ -8,14 +8,11 @@ import {
 } from "@material-ui/core";
 import React, { useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { ProposalsTable } from "../components/ProposalsTable";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
@@ -24,6 +21,9 @@ import { RegistryProposalFormContainer } from "../components/ProposalForm/regist
 import { useState } from "react";
 import { TreasuryProposalFormContainer } from "../components/ProposalForm/treasuryProposalForm";
 import { InfoIcon } from "../components/styled/InfoIcon";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
 
 const ButtonsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -35,26 +35,25 @@ const ButtonsContainer = styled(Grid)(({ theme }) => ({
 export const Proposals: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: dao } = useDAO(id);
-  const { data } = useDAO(id);
   const { mutate } = useFlush();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
-  const name = dao && dao.metadata.unfrozenToken.name;
+  const name = dao && dao.data.name;
   const shouldDisable = useIsProposalButtonDisabled(id);
   const [open, setOpen] = useState(false);
 
-  const { data: proposalsData } = useProposalsWithStatus(dao && dao.address);
+  const { data: proposalsData } = useProposals(dao && dao.data.address);
 
   const onFlush = useCallback(async () => {
-    if (proposalsData && proposalsData.length && data) {
+    if (proposalsData && proposalsData.length && dao) {
       mutate({
-        dao: data,
+        dao,
         numOfProposalsToFlush: proposalsData.length + 1,
       });
       return;
     }
-  }, [data, mutate, proposalsData]);
+  }, [dao, mutate, proposalsData]);
 
   const handleNewProposal = () => {
     setOpen(true);
@@ -96,7 +95,7 @@ export const Proposals: React.FC = () => {
                   <ViewButton
                     variant="outlined"
                     onClick={onFlush}
-                    disabled={!dao?.storage.proposalsToFlush}
+                    // disabled={!dao?.storage.proposalsToFlush}
                   >
                     EXECUTE
                   </ViewButton>
@@ -130,10 +129,7 @@ export const Proposals: React.FC = () => {
                   </PrimaryButton>
                 </Grid>
                 {shouldDisable && (
-                  <Tooltip
-                    placement="bottom"
-                    title="Not on voting period"
-                  >
+                  <Tooltip placement="bottom" title="Not on voting period">
                     <InfoIcon color="secondary" />
                   </Tooltip>
                 )}
@@ -187,7 +183,7 @@ export const Proposals: React.FC = () => {
           </ProposalsContainer> */}
       </Grid>
       {dao ? (
-        dao.template === "registry" ? (
+        dao.data.type === "registry" ? (
           <RegistryProposalFormContainer
             open={open}
             handleClose={handleCloseModal}

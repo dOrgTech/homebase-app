@@ -13,7 +13,7 @@ import {
 import React, { useCallback, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { RegistryDAO } from "services/contracts/baseDAO";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 import { AppTabBar } from "../AppTabBar";
 import { SendButton } from "../ProposalFormSendButton";
@@ -102,6 +102,8 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
     agoraPostId: "0",
   };
 
+  console.log(dao?.data.extra)
+
   return (
     <Dialog
       open={open}
@@ -162,8 +164,8 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                       variant="subtitle1"
                       color="secondary"
                     >
-                      {dao && dao.extra.frozenExtraValue.toString()}{" "}
-                      {dao ? dao.metadata.unfrozenToken.symbol : ""}
+                      {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
+                      {dao ? dao.data.token.symbol : ""}
                     </Typography>
                   </Grid>
                 </ProposalFormListItem>

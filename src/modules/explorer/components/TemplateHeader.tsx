@@ -10,7 +10,7 @@ import { DAOTemplate } from "modules/creator/state";
 import { RectangleContainer } from "./styled/RectangleHeader";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { SendXTZDialog } from "./SendXTZDialog";
 
 const Container = styled(Grid)(({ theme }) => ({
@@ -55,7 +55,7 @@ export const TemplateHeader: React.FC<{
                 color="secondary"
                 align={isMobileSmall ? "center" : "left"}
               >
-                {dao?.metadata.unfrozenToken.name}
+                {dao?.data.name}
               </Typography>
               <Typography
                 variant="h5"
@@ -79,7 +79,7 @@ export const TemplateHeader: React.FC<{
           </Container>
           {dao && !isMobileSmall && (
             <CopyAddress
-              address={dao.address}
+              address={dao.data.address}
               justify={isMobileSmall ? "center" : "flex-start"}
             />
           )}

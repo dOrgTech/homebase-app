@@ -1,7 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import { useMemo } from "react";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { useDAO } from "./useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
 
 export const useTokenHoldersWithVotes = (contractAddress: string) => {
   const {
@@ -21,14 +21,14 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
       return [];
     }
 
-    return daoData.ledger.map((tokenHolder) => {
+    return daoData.data.ledger.map((tokenHolder) => {
       let proposalsVoted = 0;
       let votes = new BigNumber(0);
 
       proposals.forEach((proposal) => {
         const voter = proposal.voters.find(
           (voter) =>
-            voter.address.toLowerCase() === tokenHolder.address.toLowerCase()
+            voter.address.toLowerCase() === tokenHolder.holder.address.toLowerCase()
         );
 
         if (voter) {

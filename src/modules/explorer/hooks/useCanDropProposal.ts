@@ -1,10 +1,7 @@
 import { useMemo } from "react";
-import {
-  ProposalStatus,
-  ProposalWithStatus,
-} from "services/bakingBad/proposals/types";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "services/contracts/baseDAO";
+import { ProposalStatus, ProposalWithStatus } from "services/indexer/dao/mappers/proposal/types";
 
 export const useCanDropProposal = (
   dao?: BaseDAO,
@@ -23,11 +20,13 @@ export const useCanDropProposal = (
     const hasExpired = proposal.status === ProposalStatus.EXPIRED;
 
     const isGuardian =
-      dao.storage.guardian.toLowerCase() === account.toLowerCase();
+      dao.data.guardian.toLowerCase() === account.toLowerCase();
 
-    const isNotExecutedOrDropped = dao.storage.proposalsToFlush.find(
-      (id) => id.toLowerCase() === proposal.id.toLowerCase()
-    );
+    const isNotExecutedOrDropped = true
+    
+    // dao.data.proposalsToFlush.find(
+    //   (id) => id.toLowerCase() === proposal.id.toLowerCase()
+    // );
 
     return isNotExecutedOrDropped && (isProposer || hasExpired || isGuardian);
   }, [account, dao, proposal]);

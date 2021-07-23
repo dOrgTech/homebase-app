@@ -10,7 +10,6 @@ import {
 import { useMutation, useQueryClient } from "react-query";
 
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy";
-import { addNewContractToIPFS } from "services/pinata";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
 import { getMetadataFromAPI } from "services/bakingBad/metadata";
@@ -133,8 +132,6 @@ export const useOriginate = (template: DAOTemplate) => {
 
       setActiveState(2);
       setStates(updatedStates);
-
-      await addNewContractToIPFS(contract.address);
 
       const indexed = await waitForMetadata(contract.address, network);
 

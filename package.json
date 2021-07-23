@@ -31,6 +31,8 @@
     "formik": "^2.2.6",
     "formik-material-ui": "^3.0.1",
     "formik-material-ui-lab": "^0.0.8",
+    "graphql": "^15.5.1",
+    "graphql-request": "^3.4.0",
     "hex-to-rgba": "^2.0.1",
     "jsonschema": "^1.4.0",
     "notistack": "^1.0.3",

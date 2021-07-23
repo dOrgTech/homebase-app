@@ -11,13 +11,12 @@ import {
 import dayjs from "dayjs";
 import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
-import { ProposalWithStatus } from "services/bakingBad/proposals/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { RowContainer } from "./tables/RowContainer";
 import { TableStatusBadge } from "./ProposalTableRowStatusBadge";
 import { CheckCircleOutlined, CancelOutlined, PauseCircleOutline, RemoveCircleOutline, PlayCircleOutlineOutlined } from '@material-ui/icons';
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { toShortAddress } from "services/contracts/utils";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { ProposalWithStatus, ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 
 export interface ProposalTableRowData {
   daoId?: string;
@@ -65,7 +64,7 @@ export const ProposalTableRow: React.FC<
   const { data: dao } = useDAO(daoId);
   const onClick = useCallback(() => {
     if (dao) {
-      history.push(`/explorer/dao/${daoId}/proposal/${dao.template}/${id}`);
+      history.push(`/explorer/dao/${daoId}/proposal/${dao.data.type}/${id}`);
     }
   }, [dao, daoId, history, id]);
 

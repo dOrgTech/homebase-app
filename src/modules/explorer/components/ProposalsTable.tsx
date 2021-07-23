@@ -8,12 +8,12 @@ import {
   useTheme,
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
 import { ProposalTableRow } from "./ProposalTableRow";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
 
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <ProposalTableHeadItem variant="subtitle1" color="textSecondary">
@@ -48,13 +48,12 @@ const LoaderContainer = styled(Grid)({
 
 export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
   const { id } = useParams<{ id: string }>();
-  const { data: dao } = useDAO(id);
-  const { data: proposalsData, isLoading } = useProposalsWithStatus(
-    dao && dao.address,
+  const { data: dao, isLoading } = useDAO(id);
+  const { data: proposalsData } = useProposals(
+    dao && dao.data.address,
     status
   );
 
-  console.log(isLoading)
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -84,7 +83,7 @@ export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
           <ProposalTableRow
             key={`proposal-${i}`}
             {...proposal}
-            daoId={dao?.address}
+            daoId={dao?.data.address}
           />
         ))}
 

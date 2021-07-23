@@ -9,7 +9,7 @@ import {
 import React, { useCallback, useRef } from "react";
 import { useParams } from "react-router";
 import { TreasuryDAO } from "services/contracts/baseDAO";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { SendButton } from "../ProposalFormSendButton";
 import { ProposalFormListItem } from "../styled/ProposalFormListItem";
 import { TextField } from "formik-material-ui";
@@ -134,8 +134,8 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
                       variant="subtitle1"
                       color="secondary"
                     >
-                      {dao && dao.extra.frozenExtraValue.toString()}{" "}
-                      {dao ? dao.metadata.unfrozenToken.symbol : ""}
+                      {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
+                      {dao ? dao.data.token.symbol : ""}
                     </Typography>
                   </Grid>
                 </ProposalFormListItem>

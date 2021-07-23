@@ -15,7 +15,7 @@ import { Form, Field, FieldArray, useFormikContext } from "formik";
 import { TextField, Switch } from "formik-material-ui";
 import { Autocomplete } from "formik-material-ui-lab";
 
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { TreasuryDAO } from "services/contracts/baseDAO";
 import {
   fromMigrationParamsFile,
@@ -487,8 +487,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                               InputProps={{
                                 inputProps: {
                                   step: 0.01,
-                                  min: dao && dao.extra.minXtzAmount,
-                                  max: dao && dao.extra.maxXtzAmount,
+                                  min: dao && dao.data.extra.min_xtz_amount,
+                                  max: dao && dao.data.extra.max_xtz_amount,
                                 },
                                 endAdornment: (
                                   <InputAdornment position="start">

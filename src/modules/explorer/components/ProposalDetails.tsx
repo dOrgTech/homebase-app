@@ -11,12 +11,6 @@ import React from "react";
 import { useParams } from "react-router";
 
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import {
-  RegistryProposalWithStatus,
-  TreasuryProposalWithStatus,
-} from "services/bakingBad/proposals/types";
 import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
 import { RectangleContainer } from "./styled/RectangleHeader";
@@ -32,6 +26,9 @@ import {
 import { useCanDropProposal } from "../hooks/useCanDropProposal";
 import { useCallback } from "react";
 import { InfoIcon } from "./styled/InfoIcon";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { TreasuryProposalWithStatus, RegistryProposalWithStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -119,7 +116,7 @@ export const ProposalDetails: React.FC = () => {
   }, [dao, dropProposal, proposalId]);
 
   const proposalCycle = proposal ? proposal.period : "-";
-  const daoName = dao ? dao.metadata.unfrozenToken.name : "";
+  const daoName = dao ? dao.data.name : "";
 
   return (
     <>

@@ -4,7 +4,6 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
-import { useCacheDAOs } from "./useCacheDAOs";
 
 interface Params {
   dao: BaseDAO;
@@ -16,7 +15,6 @@ interface Params {
 export const useVote = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { setDAO } = useCacheDAOs();
   const { network, tezos, account, connect } = useTezos()
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
@@ -52,7 +50,6 @@ export const useVote = () => {
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        setDAO(params.dao);
         return data;
       } catch (e) {
         console.log(e);

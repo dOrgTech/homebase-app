@@ -13,8 +13,6 @@ import {
 } from "@material-ui/core";
 
 import { ProgressBar } from "modules/explorer/components";
-import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { useVotes } from "services/contracts/baseDAO/hooks/useVotes";
 import { toShortAddress } from "services/contracts/utils";
 import { ViewButton } from "./ViewButton";
 import { useVotesStats } from "../hooks/useVotesStats";
@@ -22,6 +20,7 @@ import { VotersProgress } from "./VotersProgress";
 import { AppTabBar } from "./AppTabBar";
 import { TabPanel } from "./TabPanel";
 import { BigNumber } from "bignumber.js";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -126,12 +125,12 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
 }) => {
   const [open, setOpen] = React.useState(false);
 
-  const { data: proposal } = useProposal(daoAddress, proposalAddress);
+  const { data: proposal, isLoading } = useProposal(daoAddress, proposalAddress);
   const theme = useTheme();
-  const { data: votesData, isLoading } = useVotes(proposalAddress, daoAddress);
   const [selectedTab, setSelectedTab] = React.useState(0);
   const style = styles();
   const quorumThreshold =  proposal?.quorumThreshold || new BigNumber(0)
+  const votesData = proposal?.voters
 
   const { votesSum } = useVotesStats({
     quorumThreshold,

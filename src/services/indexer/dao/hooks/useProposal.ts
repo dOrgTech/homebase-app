@@ -1,0 +1,43 @@
+import { useQuery } from "react-query";
+import { BaseDAO } from "services/contracts/baseDAO";
+import { addStatusToProposal } from "../mappers/proposal";
+import { useDAO } from "./useDAO";
+
+export const useProposal = (
+  contractAddress: string | undefined,
+  proposalId: string
+) => {
+  const { data: dao, isLoading, error } = useDAO(contractAddress);
+
+  const queryResults = useQuery(
+    ["proposalWithStatus", contractAddress, proposalId],
+    () => {
+      const proposal = (dao as BaseDAO).data.proposals.find(
+        (proposal) => proposal.id.toLowerCase() === proposalId.toLowerCase()
+      );
+
+      if (!proposal) {
+        throw new Error(
+          `Proposal with id '${proposalId}' not found in DAO with address '${
+            (dao as BaseDAO).data.address
+          }'`
+        );
+      }
+
+      return addStatusToProposal({
+        dao: dao as BaseDAO,
+        proposal,
+      });
+    },
+    {
+      refetchInterval: 30000,
+      enabled: !!dao && !!proposalId,
+    }
+  );
+
+  return {
+    data: queryResults.data,
+    isLoading: queryResults.isLoading || isLoading,
+    error: error || queryResults.error,
+  };
+};

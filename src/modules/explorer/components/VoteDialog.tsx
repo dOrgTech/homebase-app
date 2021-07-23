@@ -10,11 +10,11 @@ import VoteFor from "../../../assets/img/up_green.svg";
 import VoteAgainst from "../../../assets/img/down_red.svg";
 import VoteAgainstDisabled from "../../../assets/img/down_gray.svg";
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
-import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { PrimaryButton } from "./styled/PrimaryButton";
 import BigNumber from "bignumber.js";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 
 const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({

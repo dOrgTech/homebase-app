@@ -1,6 +1,6 @@
 import React from "react";
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 
 const statusColors = (status: ProposalStatus, theme: Theme) => {
   switch (status) {
@@ -19,6 +19,11 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: theme.palette.secondary.main,
         color: theme.palette.primary.main,
       };
+    case ProposalStatus.EXECUTABLE:
+      return {
+        background: theme.palette.secondary.main,
+        color: "#232F2E",
+      };
     case ProposalStatus.REJECTED:
       return {
         background: theme.palette.error.main,
@@ -29,11 +34,11 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: theme.palette.primary.light,
         color: "white",
       };
-      case ProposalStatus.DROPPED:
-        return {
-          background: theme.palette.primary.light,
-          color: "white",
-        };
+    case ProposalStatus.DROPPED:
+      return {
+        background: theme.palette.primary.light,
+        color: "white",
+      };
     case ProposalStatus.NO_QUORUM:
       return {
         background: theme.palette.primary.light,
