@@ -23,12 +23,21 @@ import {
 } from "modules/explorer/Treasury/utils";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
 import { useParams } from "react-router-dom";
 import * as Yup from "yup";
 import BigNumber from "bignumber.js";
+
+interface Asset {
+  contract: string,
+  level: number,
+  token_id: number,
+  symbol: string,
+  name: string,
+  decimals: number,
+  balance: BigNumber
+}
 
 const AmountItem = styled(Grid)(({ theme }) => ({
   minHeight: 137,
@@ -185,7 +194,7 @@ const AmountSmallText = styled(Typography)(({ theme }) => ({
 export interface FormTransferParams {
   recipient: string;
   amount: number;
-  asset: DAOHolding;
+  asset: Asset;
 }
 
 export interface TreasuryProposalFormValues {
@@ -253,13 +262,13 @@ export const NewTreasuryProposalDialog: React.FC = () => {
         return "-";
       }
 
-      if ((currentTransfer.asset as DAOHolding).symbol === "XTZ") {
+      if ((currentTransfer.asset as Asset).symbol === "XTZ") {
         return "XTZ";
       }
 
-      const currentAsset = (daoHoldings as DAOHolding[]).find(
+      const currentAsset = daoHoldings.find(
         (balance) =>
-          balance.contract === (currentTransfer.asset as DAOHolding).contract
+          balance.contract === (currentTransfer.asset as Asset).contract
       );
 
       return currentAsset ? currentAsset.symbol : "-";
@@ -444,7 +453,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 ? daoHoldings.map((option) => option)
                                 : []
                             }
-                            getOptionLabel={(option: DAOHolding) =>
+                            getOptionLabel={(option: Asset) =>
                               option.symbol
                             }
                             renderInput={(params: any) => (

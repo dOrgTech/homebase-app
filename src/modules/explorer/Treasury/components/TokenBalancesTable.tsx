@@ -10,9 +10,10 @@ import { ProposalTableHeadText } from "./TableHeader";
 
 export const TokenTable: React.FC = () => {
   const { id: daoId } = useParams<{ id: string }>()
-  const { data: daoHoldings } = useDAOHoldings(daoId)
+  const { tokenHoldings } = useDAOHoldings(daoId)
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
@@ -29,8 +30,8 @@ export const TokenTable: React.FC = () => {
           </Grid>
         </TableHeader>
       )}
-      {daoHoldings && daoHoldings.length
-        ? daoHoldings.map((holding, i) => (
+      {tokenHoldings && tokenHoldings.length
+        ? tokenHoldings.map((holding, i) => (
             <GenericTableContainer key={`holding-${i}`}>
               <TreasuryTableRow {...holding} />
             </GenericTableContainer>
