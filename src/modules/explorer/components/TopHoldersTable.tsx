@@ -56,7 +56,7 @@ export const TopHoldersTable: React.FC = () => {
       .map((member) => {
         return {
           username: member.holder.address,
-          weight: new BigNumber(member.balance).dp(10).toString(),
+          weight: new BigNumber(member.current_unstaked).dp(10).toString(),
           votes: member.votes.dp(10).toString(),
           proposals_voted: member.proposalsVoted,
         };

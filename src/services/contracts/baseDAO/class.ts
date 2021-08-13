@@ -26,8 +26,9 @@ interface DeployParams {
 export type CycleType = "voting" | "proposing";
 
 export interface CycleInfo {
-  time: number;
-  current: number;
+  blocksLeft: number;
+  currentCycle: number;
+  currentLevel: number;
   type: CycleType;
 }
 
@@ -43,16 +44,16 @@ export interface BaseDAOData {
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
-  max_votes: string;
+  max_voters: string;
   min_quorum_threshold: string;
   period: string;
-  proposal_expired_time: string;
-  proposal_flush_time: string;
+  proposal_expired_level: string;
+  proposal_flush_level: string;
   quorum_change: string;
   last_updated_cycle: string;
   quorum_threshold: BigNumber;
   staked: string;
-  start_time: string;
+  start_level: number;
   name: string;
   description: string;
   type: DAOTemplate

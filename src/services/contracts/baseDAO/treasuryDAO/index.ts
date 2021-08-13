@@ -29,8 +29,10 @@ export class TreasuryDAO extends BaseDAO {
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
     const data = schema.Encode({
-      agora_post_id: agoraPostId,
-      transfers: mapTransfersArgs(transfers, this.data.address),
+      transfer_proposal: {
+        agora_post_id: agoraPostId,
+        transfers: mapTransfersArgs(transfers, this.data.address),
+      }
     });
 
     const { packed: proposalMetadata } = await tezos.rpc.packData({
@@ -39,9 +41,13 @@ export class TreasuryDAO extends BaseDAO {
     });
 
     const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
       this.data.extra.frozen_extra_value,
       proposalMetadata
     );
+
+    console.log(contractMethod)
+    console.log(contract)
 
     const result = await contractMethod.send();
     return result;

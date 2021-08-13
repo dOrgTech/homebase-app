@@ -18,6 +18,7 @@ import { theme } from "theme";
 
 import "App.css";
 import { WarningDialog } from "modules/explorer/components/WarningDialog";
+import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -96,8 +97,10 @@ const App: React.FC = () => {
                   </CreatorProvider>
                 </Route>
                 <Route path="/explorer">
-                  <Navbar mode="explorer" />
-                  <DAOExplorerRouter />
+                  <TZKTSubscriptionsProvider>
+                    <Navbar mode="explorer" />
+                    <DAOExplorerRouter />
+                  </TZKTSubscriptionsProvider>
                 </Route>
                 <Redirect to="/explorer" />
               </Switch>

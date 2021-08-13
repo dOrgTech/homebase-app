@@ -91,7 +91,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
 
     return data.data.ledger.map((holder) => ({
       address: holder.holder.address,
-      tokens:  new BigNumber(holder.balance) || new BigNumber(0),
+      tokens:  new BigNumber(holder.current_unstaked) || new BigNumber(0),
     }));
   }, [data]);
 
@@ -101,7 +101,7 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
     }
 
     return data.data.ledger.reduce((acc, holder) => {
-      return acc.plus(new BigNumber(holder.balance) || new BigNumber(0));
+      return acc.plus(new BigNumber(holder.current_unstaked) || new BigNumber(0));
     }, new BigNumber(0));
   }, [data]);
 

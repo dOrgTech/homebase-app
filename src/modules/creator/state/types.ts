@@ -22,9 +22,6 @@ export type QuorumSettings = {
 };
 
 export type VotingSettings = {
-  votingDays: number;
-  votingHours: number;
-  votingMinutes: number;
   proposeStakeRequired: number;
   proposeStakePercentage: number;
   frozenScaleValue: number;
@@ -32,13 +29,9 @@ export type VotingSettings = {
   minXtzAmount: number;
   maxXtzAmount: number;
 
-  proposalFlushDays: number;
-  proposalFlushHours: number;
-  proposalFlushMinutes: number;
-
-  proposalExpiryDays: number;
-  proposalExpiryHours: number;
-  proposalExpiryMinutes: number;
+  votingBlocks: number;
+  proposalFlushBlocks: number;
+  proposalExpiryBlocks: number;
 };
 
 export interface MigrationParams {

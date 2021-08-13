@@ -76,7 +76,7 @@ export const DAOStatsRow: React.FC = () => {
     console.log(data.data)
 
     return data.data.ledger.reduce((acc, current) => {
-      const frozenBalance = new BigNumber(current.balance) || new BigNumber(0);
+      const frozenBalance = new BigNumber(current.current_unstaked) || new BigNumber(0);
       return acc.plus(frozenBalance);
     }, new BigNumber(0));
   }, [data]);
@@ -101,7 +101,7 @@ export const DAOStatsRow: React.FC = () => {
     }
 
     return data.data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balance;
+      const frozenBalance = current.current_unstaked;
       if (frozenBalance) {
         return acc.plus(1);
       }

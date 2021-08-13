@@ -288,7 +288,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
         address.toLowerCase() === account.toLowerCase()
     );
     const frozenBalance = balance
-      ? new BigNumber(balance.balance)
+      ? new BigNumber(balance.current_unstaked)
       : new BigNumber(0);
     return frozenBalance || new BigNumber(0);
   }, [dao, account]);

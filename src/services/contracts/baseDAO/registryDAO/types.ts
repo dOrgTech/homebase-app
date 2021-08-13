@@ -365,8 +365,10 @@ export interface PMFA2TransferType {
 }
 
 export interface PMTreasuryProposal {
-  agora_post_id: "0";
-  transfers: (PMXTZTransferType | PMFA2TransferType)[];
+  transfer_proposal: {
+    agora_post_id: "0";
+    transfers: (PMXTZTransferType | PMFA2TransferType)[];
+  }
 }
 
 export interface PMRegistryProposal {

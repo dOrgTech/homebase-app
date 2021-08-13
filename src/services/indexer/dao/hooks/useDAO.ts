@@ -32,8 +32,17 @@ export const useDAO = (address: string | undefined) => {
         },
         ledger: dao.ledgers.map((ledger) => ({
           ...ledger,
-          balance: parseUnits(
-            new BigNumber(ledger.balance),
+          current_stage_num: ledger.current_stage_num,
+          current_unstaked: parseUnits(
+            new BigNumber(ledger.current_unstaked),
+            dao.token.decimals
+          ),
+          past_unstaked: parseUnits(
+            new BigNumber(ledger.past_unstaked),
+            dao.token.decimals
+          ),
+          staked: parseUnits(
+            new BigNumber(ledger.staked),
             dao.token.decimals
           ),
         })),

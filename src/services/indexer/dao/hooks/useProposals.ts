@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { useQuery } from "react-query";
-import { BaseDAO } from "services/contracts/baseDAO";
+import { BaseDAO, CycleInfo } from "services/contracts/baseDAO";
+import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { addStatusToProposal } from "../mappers/proposal";
 import { ProposalStatus } from "../mappers/proposal/types";
 import { useDAO } from "./useDAO";
@@ -10,6 +11,7 @@ export const useProposals = (
   status?: ProposalStatus
 ) => {
   const { data: dao, isLoading, error } = useDAO(contractAddress);
+  const cycleInfo = useCycleInfo(dao?.data.address)
 
   const queryResults = useQuery(
     ["proposalsWithStatus", contractAddress, status],
@@ -19,6 +21,7 @@ export const useProposals = (
           addStatusToProposal({
             dao: dao as BaseDAO,
             proposal,
+            currentLevel: (cycleInfo as CycleInfo).currentLevel
           })
         )
         .sort((a, b) =>
@@ -35,7 +38,7 @@ export const useProposals = (
     },
     {
       refetchInterval: 30000,
-      enabled: !!dao,
+      enabled: !!dao && !!cycleInfo,
     }
   );
 
