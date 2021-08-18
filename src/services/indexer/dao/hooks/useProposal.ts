@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { BaseDAO } from "services/contracts/baseDAO";
+import { BaseDAO, CycleInfo } from "services/contracts/baseDAO";
 import { addStatusToProposal } from "../mappers/proposal";
 import { useDAO } from "./useDAO";
 
@@ -7,7 +7,7 @@ export const useProposal = (
   contractAddress: string | undefined,
   proposalId: string
 ) => {
-  const { data: dao, isLoading, error } = useDAO(contractAddress);
+  const { data: dao, isLoading, error, cycleInfo } = useDAO(contractAddress);
 
   const queryResults = useQuery(
     ["proposalWithStatus", contractAddress, proposalId],
@@ -27,11 +27,12 @@ export const useProposal = (
       return addStatusToProposal({
         dao: dao as BaseDAO,
         proposal,
+        currentLevel: (cycleInfo as CycleInfo).currentLevel,
       });
     },
     {
       refetchInterval: 30000,
-      enabled: !!dao && !!proposalId,
+      enabled: !!dao && !!proposalId && !!cycleInfo,
     }
   );
 

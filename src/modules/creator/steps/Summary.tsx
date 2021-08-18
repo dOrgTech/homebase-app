@@ -240,9 +240,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.votingDays}d{" "}
-                  {state.data.votingSettings.votingHours}h{" "}
-                  {state.data.votingSettings.votingMinutes}m
+                  {state.data.votingSettings.votingBlocks} levels
                 </Typography>
               </Grid>
             </UnderlinedGrid>
@@ -261,9 +259,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.proposalFlushDays}d{" "}
-                  {state.data.votingSettings.proposalFlushHours}h{" "}
-                  {state.data.votingSettings.proposalFlushMinutes}m
+                  {state.data.votingSettings.proposalFlushBlocks} levels
                 </Typography>
               </Grid>
             </UnderlinedGrid>
@@ -273,7 +269,7 @@ export const Summary = (): JSX.Element => {
             <UnderlinedGrid item container direction="row" alignItems="center">
               <Grid item xs={6}>
                 <Typography variant="body2" color="textSecondary">
-                  Proposal time to expire
+                  Proposal levels to expire
                 </Typography>
               </Grid>
               <Grid item xs={6}>
@@ -282,9 +278,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.proposalExpiryDays}d{" "}
-                  {state.data.votingSettings.proposalExpiryHours}h{" "}
-                  {state.data.votingSettings.proposalExpiryMinutes}m
+                  {state.data.votingSettings.proposalExpiryBlocks} levels
                 </Typography>
               </Grid>
             </UnderlinedGrid>

@@ -38,16 +38,16 @@ export interface DAODTO {
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
-  max_votes: string;
+  max_voters: string;
   min_quorum_threshold: string;
   period: string;
-  proposal_expired_time: string;
-  proposal_flush_time: string;
+  proposal_expired_level: string;
+  proposal_flush_level: string;
   quorum_change: string;
   last_updated_cycle: string;
   quorum_threshold: string;
   staked: string;
-  start_time: string;
+  start_level: number;
   name: string;
   description: string;
   dao_type: DAOTypeDTO;
@@ -88,8 +88,15 @@ export interface HolderDTO {
 
 export interface LedgerDTO {
   id: number;
-  balance: BigNumber;
+  current_stage_num: number;
+  current_unstaked: BigNumber;
+  past_unstaked: BigNumber;
+  staked: BigNumber;
   holder: HolderDTO;
+}
+
+export interface Ledger extends LedgerDTO {
+  available_balance: BigNumber;
 }
 
 export interface ProposalStatusDTO {
@@ -99,9 +106,9 @@ export interface ProposalStatusDTO {
 }
 
 export interface ProposalStatusUpdateDTO {
-    id: number;
-    timestamp: string;
-    proposal_status: ProposalStatusDTO;
+  id: number;
+  timestamp: string;
+  proposal_status: ProposalStatusDTO;
 }
 
 export interface ProposalDTO {
@@ -111,6 +118,7 @@ export interface ProposalDTO {
   upvotes: string;
   downvotes: string;
   start_date: string;
+  start_level: number;
   metadata: string;
   holder: HolderDTO;
   status_updates: ProposalStatusUpdateDTO[];
@@ -146,7 +154,7 @@ export interface DAOListItem {
   network: Network;
   period: string;
   staked: string;
-  start_time: string;
+  start_level: number;
   token: TokenMetadata;
 }
 

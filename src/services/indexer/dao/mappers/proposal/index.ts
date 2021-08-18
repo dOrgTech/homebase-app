@@ -83,11 +83,13 @@ export const mapTreasuryProposal = (
   const proposalMetadataDTO: PMTreasuryProposal =
     schema.Execute(unpackedMetadata);
 
-  const transfers = extractTransfersData(proposalMetadataDTO.transfers);
+  const transfers = extractTransfersData(
+    proposalMetadataDTO.transfer_proposal.transfers
+  );
 
   return {
     ...mapProposalBase(dto, "treasury", governanceToken.decimals),
-    agoraPostId: proposalMetadataDTO.agora_post_id.toString(),
+    agoraPostId: proposalMetadataDTO.transfer_proposal.agora_post_id.toString(),
     transfers,
   };
 };
@@ -133,13 +135,14 @@ export const mapProposalBase = (
     downVotes: parseUnits(new BigNumber(dto.downvotes), tokenDecimals),
     proposer: dto.holder.address,
     startDate: dto.start_date,
+    startLevel: dto.start_level,
     quorumThreshold: parseUnits(
       new BigNumber(dto.quorum_threshold),
       tokenDecimals
     ),
     period: Number(dto.voting_stage_num) - 1,
     indexer_status_history: dto.status_updates.map((update) => ({
-      timestamp: dayjs(update.timestamp).format("LLL"),
+      timestamp: `Level ${dto.start_level} (${dayjs(update.timestamp).format("LLL")})`,
       description: update.proposal_status.description,
     })),
     proposerFrozenTokens: dto.proposer_frozen_token,
@@ -211,27 +214,19 @@ const INDEXER_TO_PROPOSAL_STATUS_MAP: Record<IndexerStatus, ProposalStatus> = {
 export const addStatusToProposal = ({
   dao,
   proposal,
+  currentLevel,
 }: {
   dao: BaseDAO;
   proposal: Proposal;
+  currentLevel: number;
 }): ProposalWithStatus => {
-  const now = dayjs();
-  const activeThreshold = dayjs(proposal.startDate).add(
-    Number((dao as BaseDAO).data.period),
-    "s"
-  );
-  const passedOrRejectedThreshold = activeThreshold.add(
-    Number((dao as BaseDAO).data.period),
-    "s"
-  );
-  const flushThreshold = dayjs(proposal.startDate).add(
-    Number((dao as BaseDAO).data.proposal_flush_time),
-    "s"
-  );
-  const expiredThreshold = dayjs(proposal.startDate).add(
-    Number((dao as BaseDAO).data.proposal_expired_time),
-    "s"
-  );
+
+  const activeThreshold = proposal.startLevel + Number(dao.data.period);
+  const passedOrRejectedThreshold = activeThreshold + Number(dao.data.period);
+  const flushThreshold =
+    proposal.startLevel + Number(dao.data.proposal_flush_level);
+  const expiredThreshold =
+    proposal.startLevel + Number(dao.data.proposal_expired_level);
 
   const statusHistory: { status: ProposalStatus; timestamp: string }[] =
     proposal.indexer_status_history.map((update) => ({
@@ -239,55 +234,47 @@ export const addStatusToProposal = ({
       status: INDEXER_TO_PROPOSAL_STATUS_MAP[update.description],
     }));
 
-  if (now.isAfter(activeThreshold)) {
+  if (currentLevel > activeThreshold) {
     statusHistory.push({
       status: ProposalStatus.ACTIVE,
-      timestamp: dayjs(proposal.startDate)
-        .add(Number(dao.data.period), "seconds")
-        .format("LLL"),
+      timestamp: `Level ${proposal.startLevel}`,
     });
   }
 
   if (
-    now.isAfter(passedOrRejectedThreshold) &&
+    currentLevel > passedOrRejectedThreshold &&
     !statusHistory.some((s) => s.status === ProposalStatus.PASSED) &&
     !statusHistory.some((s) => s.status === ProposalStatus.REJECTED)
   ) {
     statusHistory.push({
       status: ProposalStatus.NO_QUORUM,
-      timestamp: dayjs(proposal.startDate)
-        .add(Number(dao.data.period) * 2, "seconds")
-        .format("LLL"),
+      timestamp: `Level ${proposal.startLevel + Number(dao.data.period) * 2}`,
     });
   }
 
-  console.log(now, " ", flushThreshold, " ", expiredThreshold);
-
   if (
-    now.isAfter(flushThreshold) &&
+    currentLevel > flushThreshold &&
     statusHistory.some((s) => s.status === ProposalStatus.PASSED)
   ) {
     statusHistory.push({
       status: ProposalStatus.EXECUTABLE,
-      timestamp: dayjs(proposal.startDate)
-        .add(Number(dao.data.proposal_flush_time), "seconds")
-        .format("LLL"),
+      timestamp: `Level ${proposal.startLevel + dao.data.proposal_flush_level}`,
     });
   }
 
-  console.log(statusHistory);
-
-  if (now.isAfter(expiredThreshold)) {
+  if (currentLevel > expiredThreshold) {
     statusHistory.push({
       status: ProposalStatus.EXPIRED,
-      timestamp: dayjs(proposal.startDate)
-        .add(Number(dao.data.proposal_expired_time), "seconds")
-        .format("LLL"),
+      timestamp: `Level ${
+        proposal.startLevel + dao.data.proposal_expired_level
+      }`,
     });
   }
 
-  const orderedStatusHistory = statusHistory.sort((a, b) =>
-    dayjs(a.timestamp).isAfter(dayjs(b.timestamp)) ? 1 : -1
+  const orderedStatusHistory = statusHistory.sort(
+    (a, b) =>
+      Number((a.timestamp.match(/(\d+)/) as RegExpMatchArray)[0]) -
+      Number((b.timestamp.match(/(\d+)/) as RegExpMatchArray)[0])
   );
 
   orderedStatusHistory.forEach((s, i) => {

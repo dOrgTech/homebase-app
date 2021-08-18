@@ -26,8 +26,9 @@ interface DeployParams {
 export type CycleType = "voting" | "proposing";
 
 export interface CycleInfo {
-  time: number;
-  current: number;
+  blocksLeft: number;
+  currentCycle: number;
+  currentLevel: number;
   type: CycleType;
 }
 
@@ -38,24 +39,24 @@ export interface BaseDAOData {
   frozen_token_id: number;
   token: TokenMetadata;
   guardian: string;
-  ledger: LedgerDTO[]
-  proposals: Proposal[]
+  ledger: LedgerDTO[];
+  proposals: Proposal[];
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
-  max_votes: string;
+  max_voters: string;
   min_quorum_threshold: string;
   period: string;
-  proposal_expired_time: string;
-  proposal_flush_time: string;
+  proposal_expired_level: string;
+  proposal_flush_level: string;
   quorum_change: string;
   last_updated_cycle: string;
   quorum_threshold: BigNumber;
   staked: string;
-  start_time: string;
+  start_level: number;
   name: string;
   description: string;
-  type: DAOTemplate
+  type: DAOTemplate;
   network: Network;
 }
 
@@ -101,7 +102,7 @@ export abstract class BaseDAO {
     }
   };
 
-  protected constructor(public data: BaseDAOData) { }
+  protected constructor(public data: BaseDAOData) {}
 
   public flush = async (
     numerOfProposalsToFlush: number,
@@ -149,7 +150,10 @@ export abstract class BaseDAO {
           argument: {
             proposal_key: proposalKey,
             vote_type: support,
-            vote_amount: formatUnits(amount, this.data.token.decimals).toString(),
+            vote_amount: formatUnits(
+              amount,
+              this.data.token.decimals
+            ).toString(),
           },
         },
       ])
@@ -160,10 +164,7 @@ export abstract class BaseDAO {
 
   public freeze = async (amount: BigNumber, tezos: TezosToolkit) => {
     const daoContract = await getContract(tezos, this.data.address);
-    const govTokenContract = await getContract(
-      tezos,
-      this.data.token.contract
-    );
+    const govTokenContract = await getContract(tezos, this.data.token.contract);
     const tokenMetadata = this.data.token;
     const batch = await tezos.wallet
       .batch()
@@ -179,7 +180,9 @@ export abstract class BaseDAO {
         ])
       )
       .withContractCall(
-        daoContract.methods.freeze(formatUnits(amount, tokenMetadata.decimals).toString())
+        daoContract.methods.freeze(
+          formatUnits(amount, tokenMetadata.decimals).toString()
+        )
       )
       .withContractCall(
         govTokenContract.methods.update_operators([

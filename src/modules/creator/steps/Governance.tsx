@@ -15,7 +15,11 @@ import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { useHistory } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 
-import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state";
+import {
+  CreatorContext,
+  ActionTypes,
+  VotingSettings,
+} from "modules/creator/state";
 import { InfoOutlined } from "@material-ui/icons";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
@@ -145,59 +149,30 @@ const validateForm = (values: VotingSettings) => {
     }
   });
 
-  if (!values.votingDays && !values.votingHours && !values.votingMinutes) {
-    errors.votingMinutes = "Voting Period Duration cannot be 0";
+  if (!values.votingBlocks) {
+    errors.votingBlocks = "Voting Period levels cannot be 0";
+  }
+
+  if (!values.proposalFlushBlocks) {
+    errors.proposalFlushBlocks = "Proposal Flush Delay levels cannot be 0";
+  }
+
+  if (!values.proposalExpiryBlocks) {
+    errors.proposalExpiryBlocks = "Proposal levels to expire cannot be 0";
   }
 
   if (
-    !values.proposalFlushDays &&
-    !values.proposalFlushHours &&
-    !values.proposalFlushMinutes
+    values.votingBlocks !== undefined &&
+    values.proposalFlushBlocks !== undefined &&
+    values.proposalExpiryBlocks !== undefined
   ) {
-    errors.proposalFlushMinutes = "Proposal Flush Delay Duration cannot be 0";
-  }
-
-  if (
-    !values.proposalExpiryDays &&
-    !values.proposalExpiryHours &&
-    !values.proposalExpiryMinutes
-  ) {
-    errors.proposalExpiryMinutes = "Proposal time to expire cannot be 0";
-  }
-
-  if (
-    values.votingDays !== undefined &&
-    values.votingHours !== undefined &&
-    values.votingMinutes !== undefined &&
-    values.proposalFlushDays !== undefined &&
-    values.proposalFlushHours !== undefined &&
-    values.proposalFlushMinutes !== undefined &&
-    values.proposalExpiryDays !== undefined &&
-    values.proposalExpiryHours !== undefined &&
-    values.proposalExpiryMinutes !== undefined
-  ) {
-    const votingPeriodTime =
-      values.votingDays * 24 * 60 +
-      values.votingHours * 60 +
-      values.votingMinutes;
-
-    const proposalFlushTime =
-      values.proposalFlushDays * 24 * 60 +
-      values.proposalFlushHours * 60 +
-      values.proposalFlushMinutes;
-
-    const proposalExpiryTime =
-      values.proposalExpiryDays * 24 * 60 +
-      values.proposalExpiryHours * 60 +
-      values.proposalExpiryMinutes;
-
-    if (proposalFlushTime <= votingPeriodTime * 2) {
-      errors.proposalFlushMinutes =
+    if (values.proposalFlushBlocks <= values.votingBlocks * 2) {
+      errors.proposalFlushBlocks =
         "Must be more than double the Voting Period Duration";
     }
 
-    if (proposalExpiryTime <= proposalFlushTime) {
-      errors.proposalExpiryMinutes =
+    if (values.proposalExpiryBlocks <= values.proposalFlushBlocks) {
+      errors.proposalExpiryBlocks =
         "Must be greater than Proposal Flush Delay Duration";
     }
   }
@@ -274,7 +249,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="votingDays"
+                name="votingBlocks"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -282,62 +257,17 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">days</Typography>
+              <Typography color="textSecondary">levels</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.votingDays && touched.votingDays ? (
-            <ErrorText>{errors.votingDays}</ErrorText>
+          {errors.votingBlocks && touched.votingBlocks ? (
+            <ErrorText>{errors.votingBlocks}</ErrorText>
           ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="votingHours"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">hours</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.votingHours && touched.votingHours ? (
-            <ErrorText>{errors.votingHours}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="votingMinutes"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">minutes</Typography>
-            </GridItemCenter>
-          </ItemContainer>
         </CustomInputContainer>
       </Grid>
 
-      {errors.votingMinutes && touched.votingMinutes ? (
-        <ErrorText>{errors.votingMinutes}</ErrorText>
+      {errors.votingBlocks && touched.votingBlocks ? (
+        <ErrorText>{errors.votingBlocks}</ErrorText>
       ) : null}
 
       <SecondContainer container direction="row">
@@ -360,7 +290,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="proposalFlushDays"
+                name="proposalFlushBlocks"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -368,62 +298,17 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">days</Typography>
+              <Typography color="textSecondary">levels</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposalFlushDays && touched.proposalFlushDays ? (
-            <ErrorText>{errors.proposalFlushDays}</ErrorText>
+          {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
+            <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
           ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalFlushHours"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">hours</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.proposalFlushHours && touched.proposalFlushHours ? (
-            <ErrorText>{errors.proposalFlushHours}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalFlushMinutes"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">minutes</Typography>
-            </GridItemCenter>
-          </ItemContainer>
         </CustomInputContainer>
       </Grid>
 
-      {errors.proposalFlushMinutes && touched.proposalFlushMinutes ? (
-        <ErrorText>{errors.proposalFlushMinutes}</ErrorText>
+      {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
+        <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
       ) : null}
 
       <SecondContainer container direction="row">
@@ -446,7 +331,7 @@ const GovernanceForm = ({
           >
             <GridItemCenter item xs={6}>
               <Field
-                name="proposalExpiryDays"
+                name="proposalExpiryBlocks"
                 type="number"
                 placeholder="00"
                 component={TextField}
@@ -454,62 +339,17 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">days</Typography>
+              <Typography color="textSecondary">levels</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.proposalExpiryDays && touched.proposalExpiryDays ? (
-            <ErrorText>{errors.proposalExpiryDays}</ErrorText>
+          {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
+            <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
           ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalExpiryHours"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">hours</Typography>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.proposalExpiryHours && touched.proposalExpiryHours ? (
-            <ErrorText>{errors.proposalExpiryHours}</ErrorText>
-          ) : null}
-        </CustomInputContainer>
-        <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
-            <GridItemCenter item xs={6}>
-              <Field
-                name="proposalExpiryMinutes"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
-            </GridItemCenter>
-            <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">minutes</Typography>
-            </GridItemCenter>
-          </ItemContainer>
         </CustomInputContainer>
       </Grid>
 
-      {errors.proposalExpiryMinutes && touched.proposalExpiryMinutes ? (
-        <ErrorText>{errors.proposalExpiryMinutes}</ErrorText>
+      {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
+        <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
       ) : null}
 
       <SecondContainer container direction="row">

@@ -246,7 +246,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const { id: daoId } = useParams<{
     id: string;
   }>();
-  const { data: dao } = useDAO(daoId);
+  const { data: dao, ledger } = useDAO(daoId);
 
   const [networkAnchorEl, setNetworkAnchorEl] =
     React.useState<HTMLButtonElement | null>(null);
@@ -280,18 +280,18 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   };
 
   const userBalance = useMemo(() => {
-    if (!dao) {
+    if (!ledger) {
       return new BigNumber(0);
     }
-    const balance = dao.data.ledger.find(
+    const balance = ledger.find(
       ({ holder: { address } }) =>
         address.toLowerCase() === account.toLowerCase()
     );
     const frozenBalance = balance
-      ? new BigNumber(balance.balance)
+      ? new BigNumber(balance.current_unstaked)
       : new BigNumber(0);
     return frozenBalance || new BigNumber(0);
-  }, [dao, account]);
+  }, [ledger, account]);
 
   const history = useHistory();
 
@@ -322,7 +322,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   alignItems="center"
                   justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
                 >
-                  {!isMobileSmall && dao && dao.data.ledger.length > 0 ? (
+                  {!isMobileSmall && dao && ledger && ledger.length > 0 ? (
                     <>
                       <Grid
                         item

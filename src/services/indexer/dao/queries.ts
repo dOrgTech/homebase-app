@@ -19,7 +19,7 @@ export const GET_DAOS_QUERY = gql`
       network
       period
       staked
-      start_time
+      start_level
       token {
         contract
         decimals
@@ -57,22 +57,25 @@ export const GET_DAO_QUERY = gql`
             id
             address
           }
-          balance
+          current_stage_num
+          current_unstaked
+          past_unstaked
+          staked
         }
         max_proposals
         max_quorum_change
         max_quorum_threshold
-        max_votes
+        max_voters
         min_quorum_threshold
         name
         network
         period
-        proposal_expired_time
-        proposal_flush_time
+        proposal_expired_level
+        proposal_flush_level
         quorum_change
         quorum_threshold
         staked
-        start_time
+        start_level
         registry_extras {
           id
           frozen_extra_value
@@ -117,7 +120,7 @@ export const GET_DAO_QUERY = gql`
           proposer_frozen_token
           proposer_id
           quorum_threshold
-          start_date
+          start_level
           upvotes
           voting_stage_num
           holder {

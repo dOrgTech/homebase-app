@@ -82,28 +82,28 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
     setOpen(false);
   };
 
-  const { data } = useDAO(address);
+  const { ledger } = useDAO(address);
 
   const tokenHolders = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return [];
     }
 
-    return data.data.ledger.map((holder) => ({
+    return ledger.map((holder) => ({
       address: holder.holder.address,
-      tokens:  new BigNumber(holder.balance) || new BigNumber(0),
+      tokens: new BigNumber(holder.total_balance) || new BigNumber(0),
     }));
-  }, [data]);
+  }, [ledger]);
 
   const totalLocked = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return new BigNumber(0);
     }
 
-    return data.data.ledger.reduce((acc, holder) => {
-      return acc.plus(new BigNumber(holder.balance) || new BigNumber(0));
+    return ledger.reduce((acc, holder) => {
+      return acc.plus(new BigNumber(holder.total_balance) || new BigNumber(0));
     }, new BigNumber(0));
-  }, [data]);
+  }, [ledger]);
 
   return (
     <div>
@@ -167,7 +167,12 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       color="secondary"
                       variant="determinate"
                       value={
-                        totalLocked ? holder.tokens.div(totalLocked).multipliedBy(100).toNumber() : 0
+                        totalLocked
+                          ? holder.tokens
+                              .div(totalLocked)
+                              .multipliedBy(100)
+                              .toNumber()
+                          : 0
                       }
                     />
                   </Grid>

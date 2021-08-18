@@ -1,27 +1,27 @@
 import BigNumber from "bignumber.js";
+import { useState, useContext, useEffect, useMemo } from "react";
 import { useQuery } from "react-query";
+import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions";
 import {
   TreasuryDAO,
   RegistryDAO,
   unpackExtraNumValue,
+  CycleInfo,
 } from "services/contracts/baseDAO";
 import { parseUnits } from "services/contracts/utils";
-import { client } from "services/indexer/graphql";
-import { FetchedDAO } from "services/indexer/types";
 import { mapTreasuryProposal, mapRegistryProposal } from "../mappers/proposal";
-import { GET_DAO_QUERY } from "../queries";
-
-interface GetDAODTO {
-  daos: [FetchedDAO];
-}
+import { getDAO } from "../services";
 
 export const useDAO = (address: string | undefined) => {
-  return useQuery(
+  const [cycleInfo, setCycleInfo] = useState<CycleInfo>();
+  const {
+    state: { block },
+  } = useContext(TZKTSubscriptionsContext);
+
+  const { data, ...rest } = useQuery(
     ["dao", address],
     async () => {
-      const response = await client.request<GetDAODTO>(GET_DAO_QUERY, {
-        address,
-      });
+      const response = await getDAO(address as string);
 
       const dao = response.daos[0];
       const base = {
@@ -30,13 +30,32 @@ export const useDAO = (address: string | undefined) => {
           ...dao.token,
           supply: new BigNumber(dao.token.supply),
         },
-        ledger: dao.ledgers.map((ledger) => ({
-          ...ledger,
-          balance: parseUnits(
-            new BigNumber(ledger.balance),
+        ledger: dao.ledgers.map((ledger) => {
+          const current_unstaked = parseUnits(
+            new BigNumber(ledger.current_unstaked),
             dao.token.decimals
-          ),
-        })),
+          );
+
+          const past_unstaked = parseUnits(
+            new BigNumber(ledger.past_unstaked),
+            dao.token.decimals
+          );
+
+          const staked = parseUnits(
+            new BigNumber(ledger.staked),
+            dao.token.decimals
+          );
+
+          const current_stage_num = ledger.current_stage_num;
+
+          return {
+            ...ledger,
+            current_stage_num,
+            current_unstaked,
+            past_unstaked,
+            staked,
+          };
+        }),
         type: dao.dao_type.name,
         extra:
           dao.dao_type.name === "registry"
@@ -113,4 +132,43 @@ export const useDAO = (address: string | undefined) => {
       enabled: !!address,
     }
   );
+
+  useEffect(() => {
+    if (data) {
+      const blocksFromStart = block - data.data.start_level;
+      const periodsFromStart = Math.floor(
+        blocksFromStart / Number(data.data.period)
+      );
+      const type = periodsFromStart % 2 == 0 ? "voting" : "proposing";
+      const blocksLeft =
+        Number(data.data.period) - (blocksFromStart % Number(data.data.period));
+
+      setCycleInfo({
+        blocksLeft,
+        type,
+        currentCycle: periodsFromStart,
+        currentLevel: block,
+      });
+    }
+  }, [data, block]);
+
+  const ledgerWithBalances = useMemo(() => {
+    if (data && cycleInfo) {
+      return data.data.ledger.map((l) => ({
+        ...l,
+        available_balance:
+          cycleInfo.currentCycle > l.current_stage_num
+            ? l.current_unstaked.plus(l.past_unstaked)
+            : l.past_unstaked,
+        total_balance: l.current_unstaked.plus(l.past_unstaked),
+      }));
+    }
+  }, [data, cycleInfo]);
+
+  return {
+    data,
+    cycleInfo,
+    ledger: ledgerWithBalances,
+    ...rest,
+  };
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { styled, Paper, Typography } from "@material-ui/core";
-import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 const Container = styled(Paper)({
   background: "rgba(129, 254, 183, 0.07)",
@@ -13,7 +13,7 @@ const Container = styled(Paper)({
 });
 
 export const PeriodLabel: React.FC<{ daoId: string }> = ({ daoId }) => {
-  const cycleInfo = useCycleInfo(daoId);
+  const { cycleInfo } = useDAO(daoId);
   const isVotingPeriod = cycleInfo && cycleInfo.type;
 
   return (

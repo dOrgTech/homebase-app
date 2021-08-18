@@ -8,10 +8,6 @@ import { BaseStorageParams } from "./types";
 import { unpackDataBytes } from "@taquito/michel-codec";
 import isBetween from "dayjs/plugin/isBetween";
 
-const SECONDS_IN_MINUTE = 60;
-const SECONDS_IN_HOUR = 60 * 60;
-const SECONDS_IN_DAY = 60 * 60 * 24;
-
 dayjs.extend(isBetween);
 
 export const fromStateToBaseStorage = (
@@ -36,23 +32,14 @@ export const fromStateToBaseStorage = (
       maxXtzAmount: new BigNumber(info.votingSettings.maxXtzAmount || 0),
     },
     quorumThreshold: new BigNumber(info.quorumSettings.quorumThreshold),
-    votingPeriod:
-      (info.votingSettings.votingHours || 0) * SECONDS_IN_HOUR +
-      (info.votingSettings.votingDays || 0) * SECONDS_IN_DAY +
-      (info.votingSettings.votingMinutes || 0) * SECONDS_IN_MINUTE,
+    votingPeriod: info.votingSettings.votingBlocks || 0,
     minQuorumAmount: new BigNumber(info.quorumSettings.minQuorumAmount),
     maxQuorumAmount: new BigNumber(info.quorumSettings.maxQuorumAmount),
     quorumChange: info.quorumSettings.quorumChange,
     quorumMaxChange: info.quorumSettings.quorumMaxChange,
 
-    proposalFlushPeriod:
-      (info.votingSettings.proposalFlushHours || 0) * SECONDS_IN_HOUR +
-      (info.votingSettings.proposalFlushDays || 0) * SECONDS_IN_DAY +
-      (info.votingSettings.proposalFlushMinutes || 0) * SECONDS_IN_MINUTE,
-    proposalExpiryPeriod:
-      (info.votingSettings.proposalExpiryHours || 0) * SECONDS_IN_HOUR +
-      (info.votingSettings.proposalExpiryDays || 0) * SECONDS_IN_DAY +
-      (info.votingSettings.proposalExpiryMinutes || 0) * SECONDS_IN_MINUTE,
+    proposalFlushPeriod: info.votingSettings.proposalFlushBlocks || 0,
+    proposalExpiryPeriod: info.votingSettings.proposalExpiryBlocks || 0,
   };
 
   return storageData;

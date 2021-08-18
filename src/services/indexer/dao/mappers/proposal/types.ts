@@ -18,6 +18,7 @@ export enum IndexerStatus {
     id: string;
     upVotes: BigNumber;
     downVotes: BigNumber;
+    startLevel: number;
     startDate: string;
     quorumThreshold: BigNumber;
     proposer: string;

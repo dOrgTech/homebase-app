@@ -61,7 +61,7 @@ const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
 
 export const DAOStatsRow: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { data } = useDAO(id);
+  const { data, ledger } = useDAO(id);
   const theme = useTheme();
   const symbol = data && data.data.token.symbol.toUpperCase();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -69,24 +69,23 @@ export const DAOStatsRow: React.FC = () => {
   const { data: activeProposals } = useProposals(id, ProposalStatus.ACTIVE);
 
   const amountLocked = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return new BigNumber(0);
     }
 
-    console.log(data.data)
-
-    return data.data.ledger.reduce((acc, current) => {
-      const frozenBalance = new BigNumber(current.balance) || new BigNumber(0);
+    return ledger.reduce((acc, current) => {
+      const frozenBalance =
+        new BigNumber(current.total_balance) || new BigNumber(0);
       return acc.plus(frozenBalance);
     }, new BigNumber(0));
-  }, [data]);
+  }, [ledger]);
 
   const amountNotLocked = useMemo(() => {
     if (!data) {
       return new BigNumber(0);
     }
 
-    return data.data.token.supply
+    return data.data.token.supply;
   }, [data]);
 
   const totalTokens = amountLocked.plus(amountNotLocked);
@@ -96,19 +95,19 @@ export const DAOStatsRow: React.FC = () => {
     : new BigNumber(0);
 
   const addressesWithUnfrozenBalance = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return new BigNumber(0);
     }
 
-    return data.data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balance;
+    return ledger.reduce((acc, current) => {
+      const frozenBalance = current.total_balance;
       if (frozenBalance) {
         return acc.plus(1);
       }
 
       return acc;
     }, new BigNumber(0));
-  }, [data]);
+  }, [ledger]);
 
   return (
     <StatsContainer container>

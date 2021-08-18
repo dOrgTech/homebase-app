@@ -1,4 +1,3 @@
-import { Network } from "services/beacon/context";
 import { OriginateParams } from "../types";
 import { DAOTemplate } from "../../../../modules/creator/state/types";
 import { useState } from "react";
@@ -12,7 +11,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
-import { getMetadataFromAPI } from "services/bakingBad/metadata";
+import { getDAO } from "services/indexer/dao/services";
 
 const INITIAL_STATES = [
   {
@@ -29,29 +28,30 @@ const INITIAL_STATES = [
   },
 ];
 
-const waitForMetadata = async (contractAddress: string, network: Network) => {
+const waitForIndexation = async (contractAddress: string) => {
   return new Promise(async (resolve, reject) => {
     let tries = 0;
 
-    const tryMetadata = async () => {
-      try {
-        await getMetadataFromAPI(contractAddress, network);
+    const tryDAOIndexation = async () => {
+      const response = await getDAO(contractAddress);
+
+      if (response.daos.length > 0) {
         resolve(true);
-      } catch (e) {
+      } else {
         if (tries > 12) {
-          console.log(`Metadata indexation timed out: ${e}`);
+          console.log(`DAO indexation timed out`);
           reject(false);
         }
 
-        console.log(`Verifying metadata indexation, trial #${tries + 1}`);
+        console.log(`Verifying DAO indexation, trial #${tries + 1}`);
 
         tries++;
 
-        setTimeout(async () => await tryMetadata(), 10000);
+        setTimeout(async () => await tryDAOIndexation(), 10000);
       }
     };
 
-    await tryMetadata();
+    await tryDAOIndexation();
   });
 };
 
@@ -80,9 +80,9 @@ export const useOriginate = (template: DAOTemplate) => {
 
       let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
-        }
+      if (!account) {
+        tezosToolkit = await connect();
+      }
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
@@ -126,14 +126,14 @@ export const useOriginate = (template: DAOTemplate) => {
       };
 
       updatedStates[2] = {
-        activeText: `Waiting for metadata to be indexed`,
+        activeText: `Waiting for DAO to be indexed`,
         completedText: "",
       };
 
       setActiveState(2);
       setStates(updatedStates);
 
-      const indexed = await waitForMetadata(contract.address, network);
+      const indexed = await waitForIndexation(contract.address);
 
       updatedStates[2] = {
         ...updatedStates[2],

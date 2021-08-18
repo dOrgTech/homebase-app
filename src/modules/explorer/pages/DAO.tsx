@@ -12,7 +12,6 @@ import {
 import { useHistory, useParams } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
-import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { DAOStatsRow } from "../components/DAOStatsRow";
@@ -23,7 +22,6 @@ import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
 import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { FreezeDialog } from "../components/FreezeDialog";
-import { useMemo } from "react";
 import { InfoIcon } from "../components/styled/InfoIcon";
 import { PeriodLabel } from "../components/styled/VotingLabel";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
@@ -92,15 +90,13 @@ export const DAO: React.FC = () => {
   const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading: isDaoLoading } = useDAO(id);
+  const { data, isLoading: isDaoLoading, cycleInfo } = useDAO(id);
   const { mutate } = useFlush();
 
   const name = data && data.data.name;
   const description = data && data.data.description;
   const symbol = data && data.data.token.symbol.toUpperCase();
-
-  const cycleInfo = useCycleInfo(id);
-  const time = cycleInfo && cycleInfo.time;
+  const blocksLeft = cycleInfo && cycleInfo.blocksLeft;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { data: proposals, isLoading: isProposalsLoading } = useProposals(
@@ -117,32 +113,6 @@ export const DAO: React.FC = () => {
     saveDaoId(id);
     saveDaoSymbol(symbol || "");
   }, [id, symbol, saveDaoId, saveDaoSymbol]);
-
-  const timerInfo = useMemo(() => {
-    if (!time) {
-      return {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-      };
-    }
-
-    let n = time;
-
-    const days = Math.floor(n / (24 * 3600));
-
-    n = n % (24 * 3600);
-    const hours = Math.floor(n / 3600);
-
-    n %= 3600;
-    const minutes = Math.floor(n / 60);
-
-    return {
-      days,
-      hours,
-      minutes,
-    };
-  }, [time]);
 
   const onFlush = useCallback(async () => {
     if (proposals && proposals.length && data) {
@@ -261,7 +231,7 @@ export const DAO: React.FC = () => {
                           variant={isMobileSmall ? "h2" : "h3"}
                           color="textSecondary"
                         >
-                          {cycleInfo?.current}
+                          {cycleInfo?.currentCycle}
                         </Typography>
                       </Box>
                     </Box>
@@ -279,7 +249,8 @@ export const DAO: React.FC = () => {
                       <ProgressBar
                         progress={
                           data
-                            ? ((time || 0) / Number(data.data.period)) * 100
+                            ? ((blocksLeft || 0) / Number(data.data.period)) *
+                              100
                             : 100
                         }
                         radius={35}
@@ -294,7 +265,7 @@ export const DAO: React.FC = () => {
                     <Box paddingLeft={!isMobileSmall ? "35px" : 0}>
                       <Box>
                         <Typography variant="subtitle2" color="secondary">
-                          TIME LEFT TO VOTE
+                          LEVELS LEFT TO VOTE
                         </Typography>
                       </Box>
                       <Box>
@@ -302,10 +273,7 @@ export const DAO: React.FC = () => {
                           variant={isMobileSmall ? "h2" : "h3"}
                           color="textSecondary"
                         >
-                          <Box>
-                            {timerInfo.days}d {timerInfo.hours}h{" "}
-                            {timerInfo.minutes}m
-                          </Box>
+                          <Box>{blocksLeft} levels</Box>
                         </Typography>
                       </Box>
                     </Box>

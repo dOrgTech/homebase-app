@@ -11,6 +11,7 @@ export default `(or (or (pair %configuration_proposal
             (list %transfer_list
                (pair (address %from_)
                      (list %txs (pair (address %to_) (pair (nat %token_id) (nat %amount)))))))))))
+(or (address %update_guardian)
 (or %update_receivers_proposal
-(list %add_receivers address)
-(list %remove_receivers address)))`
+  (list %add_receivers address)
+  (list %remove_receivers address))))`
