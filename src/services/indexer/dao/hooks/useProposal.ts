@@ -1,6 +1,5 @@
 import { useQuery } from "react-query";
 import { BaseDAO, CycleInfo } from "services/contracts/baseDAO";
-import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { addStatusToProposal } from "../mappers/proposal";
 import { useDAO } from "./useDAO";
 
@@ -8,8 +7,7 @@ export const useProposal = (
   contractAddress: string | undefined,
   proposalId: string
 ) => {
-  const { data: dao, isLoading, error } = useDAO(contractAddress);
-  const cycleInfo = useCycleInfo(dao?.data.address)
+  const { data: dao, isLoading, error, cycleInfo } = useDAO(contractAddress);
 
   const queryResults = useQuery(
     ["proposalWithStatus", contractAddress, proposalId],
@@ -29,7 +27,7 @@ export const useProposal = (
       return addStatusToProposal({
         dao: dao as BaseDAO,
         proposal,
-        currentLevel: (cycleInfo as CycleInfo).currentLevel
+        currentLevel: (cycleInfo as CycleInfo).currentLevel,
       });
     },
     {

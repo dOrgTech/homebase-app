@@ -13,10 +13,19 @@ import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
 import { useHistory } from "react-router-dom";
 import { RowContainer } from "./tables/RowContainer";
 import { TableStatusBadge } from "./ProposalTableRowStatusBadge";
-import { CheckCircleOutlined, CancelOutlined, PauseCircleOutline, RemoveCircleOutline, PlayCircleOutlineOutlined } from '@material-ui/icons';
+import {
+  CheckCircleOutlined,
+  CancelOutlined,
+  PauseCircleOutline,
+  RemoveCircleOutline,
+  PlayCircleOutlineOutlined,
+} from "@material-ui/icons";
 import { toShortAddress } from "services/contracts/utils";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { ProposalWithStatus, ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import {
+  ProposalWithStatus,
+  ProposalStatus,
+} from "services/indexer/dao/mappers/proposal/types";
 
 export interface ProposalTableRowData {
   daoId?: string;
@@ -42,9 +51,9 @@ const StatusText = styled(Typography)({
 
 const RowContent = styled(Box)(({ theme }) => ({
   marginTop: 25,
-  [theme.breakpoints.down("sm")] : {
+  [theme.breakpoints.down("sm")]: {
     marginTop: 15,
-  }
+  },
 }));
 
 const ArrowInfo = styled(Typography)(({ theme }) => ({
@@ -68,7 +77,6 @@ export const ProposalTableRow: React.FC<
     }
   }, [dao, daoId, history, id]);
 
-
   return (
     <RowContainer item container alignItems="center" onClick={onClick}>
       <Grid item xs={12} lg={9} md={6}>
@@ -82,23 +90,58 @@ export const ProposalTableRow: React.FC<
           </Typography>
         </Box>
         <RowContent>
-          <Grid container direction={isMobileSmall ? "column" : "row"} alignItems={isMobileSmall ? "center" : "flex-start"}>
-            <TableStatusBadge  status={status} />
+          <Grid
+            container
+            direction={isMobileSmall ? "column" : "row"}
+            alignItems={isMobileSmall ? "center" : "flex-start"}
+            wrap="nowrap"
+          >
+            <TableStatusBadge status={status} />
             <ArrowInfo color="textSecondary">Created {formattedDate}</ArrowInfo>
           </Grid>
         </RowContent>
       </Grid>
-      <ArrowContainer item lg={3} md={6} container direction="row" alignItems="center" justify="flex-end">
+      <ArrowContainer
+        item
+        lg={3}
+        md={6}
+        container
+        direction="row"
+        alignItems="center"
+        justify="flex-end"
+      >
         <>
-        {status === ProposalStatus.ACTIVE ? <PlayCircleOutlineOutlined htmlColor="#FFC839" fontSize={"large"} /> : null} 
-        {status === ProposalStatus.PENDING ? <PauseCircleOutline htmlColor="rgba(56, 102, 249)" fontSize={"large"} /> : null} 
-        {status === ProposalStatus.PASSED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null}
-        {status === ProposalStatus.NO_QUORUM ? <RemoveCircleOutline fontSize={"large"} htmlColor="rgb(61, 61, 61)" /> : null}
-        {status === ProposalStatus.EXECUTED ? <CheckCircleOutlined fontSize={"large"} color="secondary" /> : null} 
-        {status === ProposalStatus.EXPIRED ? <CancelOutlined fontSize={"large"} htmlColor="rgb(61, 61, 61)" /> : null} 
-        {status === ProposalStatus.REJECTED ? <CancelOutlined fontSize={"large"} color="error" /> : null}
-        {status === ProposalStatus.DROPPED ? <CancelOutlined fontSize={"large"} color="error" /> : null}
-        <StatusText color="textSecondary">{status}</StatusText>
+          {status === ProposalStatus.ACTIVE ? (
+            <PlayCircleOutlineOutlined htmlColor="#FFC839" fontSize={"large"} />
+          ) : null}
+          {status === ProposalStatus.PENDING ? (
+            <PauseCircleOutline
+              htmlColor="rgba(56, 102, 249)"
+              fontSize={"large"}
+            />
+          ) : null}
+          {status === ProposalStatus.PASSED ? (
+            <CheckCircleOutlined fontSize={"large"} color="secondary" />
+          ) : null}
+          {status === ProposalStatus.NO_QUORUM ? (
+            <RemoveCircleOutline
+              fontSize={"large"}
+              htmlColor="rgb(61, 61, 61)"
+            />
+          ) : null}
+          {status === ProposalStatus.EXECUTED ? (
+            <CheckCircleOutlined fontSize={"large"} color="secondary" />
+          ) : null}
+          {status === ProposalStatus.EXPIRED ? (
+            <CancelOutlined fontSize={"large"} htmlColor="rgb(61, 61, 61)" />
+          ) : null}
+          {status === ProposalStatus.REJECTED ? (
+            <CancelOutlined fontSize={"large"} color="error" />
+          ) : null}
+          {status === ProposalStatus.DROPPED ? (
+            <CancelOutlined fontSize={"large"} color="error" />
+          ) : null}
+          <StatusText color="textSecondary">{status}</StatusText>
         </>
         <ArrowButton>
           <ArrowForwardIcon fontSize={"large"} color="inherit" />

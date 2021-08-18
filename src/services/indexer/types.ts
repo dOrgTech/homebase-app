@@ -95,6 +95,10 @@ export interface LedgerDTO {
   holder: HolderDTO;
 }
 
+export interface Ledger extends LedgerDTO {
+  available_balance: BigNumber;
+}
+
 export interface ProposalStatusDTO {
   id: number;
   description: IndexerStatus;
@@ -102,9 +106,9 @@ export interface ProposalStatusDTO {
 }
 
 export interface ProposalStatusUpdateDTO {
-    id: number;
-    timestamp: string;
-    proposal_status: ProposalStatusDTO;
+  id: number;
+  timestamp: string;
+  proposal_status: ProposalStatusDTO;
 }
 
 export interface ProposalDTO {

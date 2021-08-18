@@ -12,7 +12,6 @@ import {
 import { useHistory, useParams } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
-import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { DAOStatsRow } from "../components/DAOStatsRow";
@@ -91,14 +90,12 @@ export const DAO: React.FC = () => {
   const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
-  const { data, isLoading: isDaoLoading } = useDAO(id);
+  const { data, isLoading: isDaoLoading, cycleInfo } = useDAO(id);
   const { mutate } = useFlush();
 
   const name = data && data.data.name;
   const description = data && data.data.description;
   const symbol = data && data.data.token.symbol.toUpperCase();
-
-  const cycleInfo = useCycleInfo(id);
   const blocksLeft = cycleInfo && cycleInfo.blocksLeft;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
@@ -252,7 +249,8 @@ export const DAO: React.FC = () => {
                       <ProgressBar
                         progress={
                           data
-                            ? ((blocksLeft || 0) / Number(data.data.period)) * 100
+                            ? ((blocksLeft || 0) / Number(data.data.period)) *
+                              100
                             : 100
                         }
                         radius={35}
@@ -275,9 +273,7 @@ export const DAO: React.FC = () => {
                           variant={isMobileSmall ? "h2" : "h3"}
                           color="textSecondary"
                         >
-                          <Box>
-                            {blocksLeft} levels
-                          </Box>
+                          <Box>{blocksLeft} levels</Box>
                         </Typography>
                       </Box>
                     </Box>
