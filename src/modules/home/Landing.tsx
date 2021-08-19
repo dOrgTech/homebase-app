@@ -2,9 +2,12 @@ import {
   Box,
   Button,
   Grid,
+  Link,
   styled,
   Theme,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@material-ui/core";
 import React from "react";
 import { Header } from "./Header";
@@ -19,17 +22,35 @@ const Background = styled(Box)({
   backgroundRepeat: "no-repeat",
 });
 
-const MainContainer = styled(Box)({
+const MainContainer = styled(Grid)(({ theme }) => ({
   position: "fixed",
   top: "50%",
   left: "50%",
   "-webkit-transform": "translate(-50%, -50%)",
   transform: "translate(-50%, -50%)",
-});
+  maxWidth: 970,
+  padding: 30,
+  boxSizing: "border-box",
+  width: "100%",
+
+  [theme.breakpoints.down("xs")]: {
+    height: "100vh",
+  },
+}));
+
+const LogoContainer = styled(Box)(({ theme }) => ({
+  width: 408,
+  height: 370,
+
+  [theme.breakpoints.down("xs")]: {
+    width: 290,
+    height: 265,
+  },
+}));
 
 const BigLogo = styled("img")({
-  width: 460,
-  height: 417,
+  width: "100%",
+  height: "100%",
 });
 
 const TitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
@@ -64,50 +85,69 @@ const OutlinedButton = styled(Button)(({ theme }: { theme: Theme }) => ({
 }));
 
 export const Landing: React.FC = () => {
+  const theme = useTheme();
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+
   return (
-    <>
-      <Background height="100vh" width="100vw">
-        <Header />
-        <MainContainer>
-          <Grid container spacing={5}>
-            <Grid item xs={12} md={7}>
-              <Grid
-                container
-                direction="column"
-                spacing={4}
-                justifyContent="center"
-              >
-                <Grid item>
-                  <TitleText>Homebase</TitleText>
-                </Grid>
-                <Grid item>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    The TezDAO was founded as a partnership between some of the
-                    most known Tezos Influencers. The purpose of this DAO is to
-                    manage a treasury of funds to further the organization’s
-                    goals.
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Grid container spacing={2}>
-                    <Grid item>
+    <Background height="100vh" width="100vw">
+      {!isExtraSmall && <Header />}
+      <MainContainer>
+        <Grid
+          container
+          justify="space-between"
+          direction={isExtraSmall ? "column" : "row"}
+          style={isExtraSmall ? { height: "100%" } : {}}
+        >
+          <Grid item xs>
+            <Grid
+              container
+              direction="column"
+              spacing={4}
+              justifyContent="center"
+            >
+              <Grid item>
+                <TitleText>Homebase</TitleText>
+              </Grid>
+              <Grid item>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Homebase is a web application that enables users to create and
+                  manage/use DAOs on the Tezos blockchain. This application aims
+                  to help empower community members and developers to launch and
+                  participate in Tezos-based DAOs
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Grid container spacing={2}>
+                  <Grid item>
+                    <Link href="/explorer" underline="none">
                       <FullButton>Enter App</FullButton>
-                    </Grid>
-                    <Grid item>
+                    </Link>
+                  </Grid>
+                  <Grid item>
+                    <Link
+                      href="https://github.com/tezos-commons/baseDAO"
+                      underline="none"
+                    >
                       <OutlinedButton variant="outlined">
                         Learn More
                       </OutlinedButton>
-                    </Grid>
+                    </Link>
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={12} md={5}>
-              <BigLogo src={HomebaseLogo} />
+          </Grid>
+          <Grid item xs>
+            <Grid container justify="center">
+              <Grid item>
+                <LogoContainer>
+                  <BigLogo src={HomebaseLogo} />
+                </LogoContainer>
+              </Grid>
             </Grid>
           </Grid>
-        </MainContainer>
-      </Background>
-    </>
+        </Grid>
+      </MainContainer>
+    </Background>
   );
 };

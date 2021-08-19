@@ -7,9 +7,8 @@ import {
   Theme,
   Toolbar,
   Typography,
-  useMediaQuery,
 } from "@material-ui/core";
-import { styled, useTheme } from "@material-ui/styles";
+import { styled } from "@material-ui/styles";
 import HomeButton from "assets/logos/homebase_logo.svg";
 import hexToRgba from "hex-to-rgba";
 import React from "react";
@@ -50,9 +49,6 @@ const HeaderButton = styled(Button)(({ theme }: { theme: Theme }) => ({
 }));
 
 export const Header: React.FC = () => {
-  const theme = useTheme<Theme>();
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
-
   return (
     <StyledAppBar position="sticky" color="transparent">
       <StyledToolbar>
@@ -61,9 +57,10 @@ export const Header: React.FC = () => {
           direction="row"
           alignItems="center"
           wrap="wrap"
-          justify={isMobileExtraSmall ? "center" : "space-between"}
+          spacing={4}
+          justify="space-between"
         >
-          <Grid item xs={11} sm={3}>
+          <Grid item>
             <Link href="/landing">
               <Grid container alignItems="center" wrap="nowrap">
                 <Grid item>

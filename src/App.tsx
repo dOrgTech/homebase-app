@@ -103,10 +103,10 @@ const App: React.FC = () => {
                     <DAOExplorerRouter />
                   </TZKTSubscriptionsProvider>
                 </Route>
-                <Route path="/landing">
+                <Route path="/">
                   <Landing />
                 </Route>
-                <Redirect to="/landing" />
+                <Redirect to="/" />
               </Switch>
             </Router>
           </Box>
