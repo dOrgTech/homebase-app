@@ -108,6 +108,7 @@ export interface ProposalStatusDTO {
 export interface ProposalStatusUpdateDTO {
   id: number;
   timestamp: string;
+  level: number;
   proposal_status: ProposalStatusDTO;
 }
 
@@ -125,6 +126,10 @@ export interface ProposalDTO {
   voting_stage_num: string;
   proposer_frozen_token: string;
   quorum_threshold: string;
+  votes: VoteDTO[];
+}
+
+export interface ProposalDTOWithVotes extends ProposalDTO {
   votes: VoteDTO[];
 }
 
@@ -160,5 +165,13 @@ export interface DAOListItem {
 
 export type FetchedDAO = DAODTO & {
   ledgers: LedgerDTO[];
-  proposals: (ProposalDTO & { votes: VoteDTO[] })[];
+  proposals: ProposalDTO[];
 };
+
+export interface FetchedProposals {
+  proposals: ProposalDTOWithVotes[];
+}
+
+export interface FetchedProposal {
+  proposals: ProposalDTOWithVotes[];
+}

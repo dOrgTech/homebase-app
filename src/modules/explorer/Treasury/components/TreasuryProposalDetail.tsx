@@ -5,11 +5,14 @@ import { useParams } from "react-router-dom";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { mutezToXtz } from "services/contracts/utils";
-import { TreasuryProposalWithStatus, FA2Transfer } from "services/indexer/dao/mappers/proposal/types";
+import {
+  TreasuryProposal,
+  FA2Transfer,
+} from "services/indexer/dao/mappers/proposal/types";
 import { TransferBadge } from "./TransferBadge";
 
 interface Props {
-  proposal: TreasuryProposalWithStatus;
+  proposal: TreasuryProposal;
 }
 
 const Container = styled(Grid)({
@@ -26,11 +29,11 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
   const { data: holdings } = useDAOHoldings(daoId);
 
   const transfers = useMemo(() => {
-    if (!holdings || !proposal || !proposal.transfers) {
+    if (!holdings || !proposal || !proposal.metadata.transfers) {
       return [];
     }
 
-    return proposal.transfers.map((transfer) => {
+    return proposal.metadata.transfers.map((transfer) => {
       if (transfer.type === "XTZ") {
         return {
           ...transfer,
@@ -40,11 +43,13 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
 
       const fa2Transfer = transfer as FA2Transfer;
 
-      const decimal = (holdings.find(
-        (holding) =>
-          holding.contract.toLowerCase() ===
-          fa2Transfer.contractAddress.toLowerCase()
-      ) as DAOHolding).decimals;
+      const decimal = (
+        holdings.find(
+          (holding) =>
+            holding.contract.toLowerCase() ===
+            fa2Transfer.contractAddress.toLowerCase()
+        ) as DAOHolding
+      ).decimals;
 
       return {
         ...transfer,

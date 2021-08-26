@@ -1,4 +1,4 @@
-import { TreasuryDAO } from 'services/contracts/baseDAO';
+import { TreasuryDAO } from "services/contracts/baseDAO";
 import { TransactionWalletOperation } from "@taquito/taquito";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
@@ -8,9 +8,13 @@ import { TreasuryProposeArgs } from "../treasuryDAO/types";
 export const useTreasuryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network, tezos, connect, account } = useTezos()
+  const { network, tezos, connect, account } = useTezos();
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: TreasuryDAO, args: TreasuryProposeArgs }>(
+  return useMutation<
+    TransactionWalletOperation | Error,
+    Error,
+    { dao: TreasuryDAO; args: TreasuryProposeArgs }
+  >(
     async ({ dao, args }) => {
       const {
         key: proposalNotification,
@@ -22,13 +26,12 @@ export const useTreasuryPropose = () => {
       });
 
       try {
-
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
-        
+
         const data = await dao.propose(args, tezosToolkit);
 
         await data.confirmation(1);
@@ -41,7 +44,6 @@ export const useTreasuryPropose = () => {
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
         return data;
-
       } catch (e) {
         console.log(e);
         closeProposalNotification(proposalNotification);
@@ -55,7 +57,7 @@ export const useTreasuryPropose = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("proposals");
+        queryClient.resetQueries();
       },
     }
   );

@@ -4,7 +4,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  Tooltip
+  Tooltip,
 } from "@material-ui/core";
 import ProgressBar from "react-customizable-progressbar";
 import React from "react";
@@ -19,7 +19,7 @@ import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 
 const HistoryContent = styled(Grid)({
-  paddingBottom: 24
+  paddingBottom: 24,
 });
 
 const HistoryItem = styled(Grid)(({ theme }) => ({
@@ -28,8 +28,8 @@ const HistoryItem = styled(Grid)(({ theme }) => ({
   display: "flex",
   height: "auto",
   [theme.breakpoints.down("sm")]: {
-    width: "unset"
-  }
+    width: "unset",
+  },
 }));
 
 const ProgressText = styled(Typography)(
@@ -46,15 +46,15 @@ const ProgressText = styled(Typography)(
     background: "inherit",
     fontFamily: "Roboto Mono",
     justifyContent: "center",
-    top: 0
+    top: 0,
   })
 );
 
 const HistoryContainer = styled(Grid)(({ theme }) => ({
   paddingLeft: 53,
   [theme.breakpoints.down("sm")]: {
-    padding: "0 20px"
-  }
+    padding: "0 20px",
+  },
 }));
 
 export const ProposalStatusHistory: React.FC = () => {
@@ -64,10 +64,10 @@ export const ProposalStatusHistory: React.FC = () => {
     proposalId: string;
     id: string;
   }>();
-  const { data: dao } = useDAO(daoId);
+  const { data: dao, cycleInfo } = useDAO(daoId);
   const { data: proposal } = useProposal(daoId, proposalId);
 
-  const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
+  const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { votesQuorumPercentage, votes } = useVotesStats({
     upVotes: proposal?.upVotes || new BigNumber(0),
@@ -87,7 +87,8 @@ export const ProposalStatusHistory: React.FC = () => {
             <Typography variant="subtitle1" color="textSecondary">
               QUORUM THRESHOLD %
             </Typography>
-            <Tooltip placement="bottom"   
+            <Tooltip
+              placement="bottom"
               title={`Amount of ${dao?.data.token.symbol} required to be locked through voting for a proposal to be passed/rejected. ${votes}/${quorumThreshold} votes.`}
             >
               <InfoIcon color="secondary" />
@@ -96,7 +97,7 @@ export const ProposalStatusHistory: React.FC = () => {
         </HistoryContent>
         <HistoryContent item xs={12}>
           <ProgressBar
-            progress={proposal? votesQuorumPercentage.toNumber(): 0}
+            progress={proposal ? votesQuorumPercentage.toNumber() : 0}
             radius={50}
             strokeWidth={7}
             strokeColor="#3866F9"
@@ -105,7 +106,7 @@ export const ProposalStatusHistory: React.FC = () => {
           >
             <div className="indicator">
               <ProgressText textColor="#3866F9">
-                {proposal? `${formatNumber(votesQuorumPercentage)}%`: "-"}
+                {proposal ? `${formatNumber(votesQuorumPercentage)}%` : "-"}
               </ProgressText>
             </div>
           </ProgressBar>
@@ -131,23 +132,28 @@ export const ProposalStatusHistory: React.FC = () => {
             HISTORY
           </Typography>
         </HistoryContent>
-        {proposal?.statusHistory.map((item, index) => {
-          return (
-            <HistoryItem
-              container
-              direction="row"
-              key={index}
-              alignItems="baseline"
-              wrap="nowrap"
-              xs={12}
-            >
-              <StatusBadge item xs={3} status={item.status} />
-              <Grid item xs={9}>
-                <Typography color="textSecondary">{item.timestamp}</Typography>
-              </Grid>
-            </HistoryItem>
-          );
-        })}
+        {cycleInfo &&
+          proposal
+            ?.getStatus(cycleInfo.currentLevel)
+            .statusHistory.map((item, index) => {
+              return (
+                <HistoryItem
+                  container
+                  direction="row"
+                  key={index}
+                  alignItems="baseline"
+                  wrap="nowrap"
+                  xs={12}
+                >
+                  <StatusBadge item xs={3} status={item.status} />
+                  <Grid item xs={9}>
+                    <Typography color="textSecondary">
+                      {item.timestamp}
+                    </Typography>
+                  </Grid>
+                </HistoryItem>
+              );
+            })}
       </Grid>
     </HistoryContainer>
   );

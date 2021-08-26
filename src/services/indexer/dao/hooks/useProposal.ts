@@ -1,44 +1,62 @@
 import { useQuery } from "react-query";
-import { BaseDAO, CycleInfo } from "services/contracts/baseDAO";
-import { addStatusToProposal } from "../mappers/proposal";
+import { BaseDAO } from "services/contracts/baseDAO";
+import {
+  Proposal,
+  RegistryProposal,
+  TreasuryProposal,
+} from "../mappers/proposal/types";
+import { getProposal } from "../services";
 import { useDAO } from "./useDAO";
 
 export const useProposal = (
   contractAddress: string | undefined,
-  proposalId: string
+  proposalKey: string
 ) => {
-  const { data: dao, isLoading, error, cycleInfo } = useDAO(contractAddress);
+  const {
+    data: daoData,
+    isLoading,
+    error,
+    cycleInfo,
+  } = useDAO(contractAddress);
 
   const queryResults = useQuery(
-    ["proposalWithStatus", contractAddress, proposalId],
-    () => {
-      const proposal = (dao as BaseDAO).data.proposals.find(
-        (proposal) => proposal.id.toLowerCase() === proposalId.toLowerCase()
+    ["proposal", contractAddress, proposalKey],
+    async () => {
+      const dao = daoData as BaseDAO;
+      const response = await getProposal(
+        contractAddress as string,
+        proposalKey
       );
 
-      if (!proposal) {
-        throw new Error(
-          `Proposal with id '${proposalId}' not found in DAO with address '${
-            (dao as BaseDAO).data.address
-          }'`
-        );
+      const fetched = response.daos[0];
+      let proposal: Proposal;
+
+      switch (dao.data.type) {
+        case "treasury":
+          proposal = new TreasuryProposal(fetched.proposals[0], dao);
+
+          break;
+        case "registry":
+          proposal = new RegistryProposal(fetched.proposals[0], dao);
+
+          break;
+        default:
+          throw new Error(
+            `DAO with address '${dao.data.address}' has an unrecognized type '${dao.data.type}'`
+          );
       }
 
-      return addStatusToProposal({
-        dao: dao as BaseDAO,
-        proposal,
-        currentLevel: (cycleInfo as CycleInfo).currentLevel,
-      });
+      return proposal;
     },
     {
       refetchInterval: 30000,
-      enabled: !!dao && !!proposalId && !!cycleInfo,
+      enabled: !!daoData && !!cycleInfo,
     }
   );
 
   return {
     data: queryResults.data,
-    isLoading: queryResults.isLoading || isLoading,
+    isLoading: isLoading || queryResults.isLoading,
     error: error || queryResults.error,
   };
 };

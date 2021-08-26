@@ -21,11 +21,12 @@ import {
   PlayCircleOutlineOutlined,
 } from "@material-ui/icons";
 import { toShortAddress } from "services/contracts/utils";
-import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import {
-  ProposalWithStatus,
+  Proposal,
   ProposalStatus,
 } from "services/indexer/dao/mappers/proposal/types";
+import { useAgoraTopic } from "services/agora/hooks/useTopic";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 export interface ProposalTableRowData {
   daoId?: string;
@@ -62,31 +63,37 @@ const ArrowInfo = styled(Typography)(({ theme }) => ({
   },
 }));
 
-export const ProposalTableRow: React.FC<
-  ProposalWithStatus & { daoId: string | undefined }
-> = ({ daoId, id, startDate, status }) => {
+export const ProposalTableRow: React.FC<{ proposal: Proposal }> = ({
+  proposal,
+}) => {
   const history = useHistory();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const { cycleInfo } = useDAO(proposal.dao.data.address);
 
-  const formattedDate = dayjs(startDate).format("LLL");
-  const { data: dao } = useDAO(daoId);
+  const formattedDate = dayjs(proposal.startDate).format("LLL");
+  const { data: agoraPost } = useAgoraTopic(
+    Number(proposal.metadata.agoraPostId)
+  );
+
   const onClick = useCallback(() => {
-    if (dao) {
-      history.push(`/explorer/dao/${daoId}/proposal/${dao.data.type}/${id}`);
-    }
-  }, [dao, daoId, history, id]);
+    history.push(
+      `/explorer/dao/${proposal.dao.data.address}/proposal/${proposal.dao.data.type}/${proposal.id}`
+    );
+  }, [history, proposal.dao.data.address, proposal.dao.data.type, proposal.id]);
 
   return (
     <RowContainer item container alignItems="center" onClick={onClick}>
-      <Grid item xs={12} lg={9} md={6}>
+      <Grid item xs={12} md={9}>
         <Box>
           <Typography
             variant="h4"
             color="textSecondary"
             align={isMobileSmall ? "center" : "left"}
           >
-            Proposal {toShortAddress(id)}
+            {agoraPost
+              ? agoraPost.title
+              : `Proposal ${toShortAddress(proposal.id)}`}
           </Typography>
         </Box>
         <RowContent>
@@ -96,15 +103,19 @@ export const ProposalTableRow: React.FC<
             alignItems={isMobileSmall ? "center" : "flex-start"}
             wrap="nowrap"
           >
-            <TableStatusBadge status={status} />
+            {cycleInfo && (
+              <TableStatusBadge
+                status={proposal.getStatus(cycleInfo.currentLevel).status}
+              />
+            )}
+
             <ArrowInfo color="textSecondary">Created {formattedDate}</ArrowInfo>
           </Grid>
         </RowContent>
       </Grid>
       <ArrowContainer
         item
-        lg={3}
-        md={6}
+        md={3}
         container
         direction="row"
         alignItems="center"

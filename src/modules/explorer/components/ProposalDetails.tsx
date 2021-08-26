@@ -7,8 +7,9 @@ import {
   useTheme,
   withTheme,
 } from "@material-ui/core";
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router";
+import ReactHtmlParser from "react-html-parser";
 
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { StatusBadge } from "./StatusBadge";
@@ -20,15 +21,17 @@ import { RegistryProposalDetail } from "../Registry/components/RegistryProposalD
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal";
 import { ViewButton } from "./ViewButton";
 import { BaseDAO } from "services/contracts/baseDAO";
-import {
-  toShortAddress
-} from "services/contracts/utils";
+import { toShortAddress } from "services/contracts/utils";
 import { useCanDropProposal } from "../hooks/useCanDropProposal";
 import { useCallback } from "react";
 import { InfoIcon } from "./styled/InfoIcon";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { TreasuryProposalWithStatus, RegistryProposalWithStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import {
+  RegistryProposal,
+  TreasuryProposal,
+} from "services/indexer/dao/mappers/proposal/types";
+import { useAgoraTopic } from "services/agora/hooks/useTopic";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -98,15 +101,14 @@ export const ProposalDetails: React.FC = () => {
     id: string;
   }>();
   const theme = useTheme();
-  const { data: proposalData } = useProposal(daoId, proposalId);
-  const proposal = proposalData as
-    | TreasuryProposalWithStatus
-    | RegistryProposalWithStatus
-    | undefined;
-  const { data: dao } = useDAO(daoId);
+  const { data: proposal } = useProposal(daoId, proposalId);
+  const { data: dao, cycleInfo } = useDAO(daoId);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { mutate: dropProposal } = useDropProposal();
   const canDropProposal = useCanDropProposal(dao, proposal);
+  const { data: agoraPost } = useAgoraTopic(
+    Number(proposal?.metadata.agoraPostId)
+  );
 
   const onDropProposal = useCallback(async () => {
     await dropProposal({
@@ -137,7 +139,11 @@ export const ProposalDetails: React.FC = () => {
               </Typography>
             </Grid>
             <Grid item>
-              {proposal && <ProposalStatusBadge status={proposal.status} />}
+              {proposal && cycleInfo && (
+                <ProposalStatusBadge
+                  status={proposal.getStatus(cycleInfo.currentLevel).status}
+                />
+              )}
             </Grid>
             <Grid item xs={12}>
               <StyledContainer container direction="row">
@@ -147,7 +153,9 @@ export const ProposalDetails: React.FC = () => {
                     color="textSecondary"
                     align={isMobileSmall ? "center" : "left"}
                   >
-                    Proposal {toShortAddress(proposal?.id || "")}
+                    {agoraPost
+                      ? agoraPost.title
+                      : `Proposal ${toShortAddress(proposal?.id || "")}`}
                   </Subtitle>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -173,7 +181,10 @@ export const ProposalDetails: React.FC = () => {
                     </DropButton>
                   </Grid>
                   <Grid item>
-                    <Tooltip placement="bottom" title="Guardian and proposer may drop proposal at anytime. Anyone may drop proposal if proposal expired">
+                    <Tooltip
+                      placement="bottom"
+                      title="Guardian and proposer may drop proposal at anytime. Anyone may drop proposal if proposal expired"
+                    >
                       <InfoIcon color="secondary" />
                     </Tooltip>
                   </Grid>
@@ -208,22 +219,24 @@ export const ProposalDetails: React.FC = () => {
                 >
                   PROPOSAL DETAILS
                 </Typography>
-                {/* <DescriptionText
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align={isMobileSmall ? "center" : "left"}
-                >
-                  Proposal Description
-                </DescriptionText> */}
+                {agoraPost && (
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align={isMobileSmall ? "center" : "left"}
+                  >
+                    {ReactHtmlParser(agoraPost.post_stream.posts[0].cooked)}
+                  </Typography>
+                )}
               </Grid>
               {proposal ? (
-                proposal.type === "treasury" ? (
+                proposal.dao.data.type === "treasury" ? (
                   <TreasuryProposalDetail
-                    proposal={proposal as TreasuryProposalWithStatus}
+                    proposal={proposal as TreasuryProposal}
                   />
                 ) : (
                   <RegistryProposalDetail
-                    proposal={proposal as RegistryProposalWithStatus}
+                    proposal={proposal as RegistryProposal}
                   />
                 )
               ) : null}

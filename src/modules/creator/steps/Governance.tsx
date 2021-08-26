@@ -235,7 +235,7 @@ const GovernanceForm = ({
           variant="subtitle1"
           color="textSecondary"
         >
-          Voting Period Duration
+          Voting Cycle Duration
         </Typography>
       </SecondContainer>
 
@@ -276,7 +276,7 @@ const GovernanceForm = ({
           variant="subtitle1"
           color="textSecondary"
         >
-          Proposal Flush Delay Duration
+          Proposal Execution Delay
         </Typography>
       </SecondContainer>
 
@@ -317,7 +317,7 @@ const GovernanceForm = ({
           variant="subtitle1"
           color="textSecondary"
         >
-          Proposal time to expire
+          Proposal Expiration Threshold
         </Typography>
       </SecondContainer>
 
@@ -449,7 +449,7 @@ const GovernanceForm = ({
 
       <SpacingContainer direction="row" container alignItems="center">
         <Typography variant="subtitle1" color="textSecondary">
-          Transfer Amounts
+          Min & Max Transfer Amounts
         </Typography>
       </SpacingContainer>
       <Grid

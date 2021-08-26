@@ -6,7 +6,7 @@ import { BaseDAO } from "..";
 export const useFlush = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network, tezos, account, connect } = useTezos()
+  const { network, tezos, account, connect } = useTezos();
 
   return useMutation<
     any | Error,
@@ -14,22 +14,23 @@ export const useFlush = () => {
     { dao: BaseDAO; numOfProposalsToFlush: number }
   >(
     async (params) => {
-      const {
-        key: flushNotification,
-        closeSnackbar: closeFlushNotification,
-      } = openNotification({
-        message: "Please sign the transaction to flush",
-        persist: true,
-        variant: "info",
-      });
+      const { key: flushNotification, closeSnackbar: closeFlushNotification } =
+        openNotification({
+          message: "Please sign the transaction to flush",
+          persist: true,
+          variant: "info",
+        });
       try {
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
 
-        const data = await params.dao.flush(params.numOfProposalsToFlush, tezosToolkit);
+        const data = await params.dao.flush(
+          params.numOfProposalsToFlush,
+          tezosToolkit
+        );
         closeFlushNotification(flushNotification);
 
         await data.confirmation(1);
@@ -53,9 +54,7 @@ export const useFlush = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("dao");
-        queryClient.resetQueries("daos");
-        queryClient.resetQueries("proposals");
+        queryClient.resetQueries();
       },
     }
   );

@@ -9,7 +9,6 @@ import {
   CycleInfo,
 } from "services/contracts/baseDAO";
 import { parseUnits } from "services/contracts/utils";
-import { mapTreasuryProposal, mapRegistryProposal } from "../mappers/proposal";
 import { getDAO } from "../services";
 
 export const useDAO = (address: string | undefined) => {
@@ -109,19 +108,9 @@ export const useDAO = (address: string | undefined) => {
 
       switch (dao.dao_type.name) {
         case "treasury":
-          return new TreasuryDAO({
-            ...base,
-            proposals: base.proposals.map((proposal) =>
-              mapTreasuryProposal(proposal, base.token)
-            ),
-          });
+          return new TreasuryDAO(base);
         case "registry":
-          return new RegistryDAO({
-            ...base,
-            proposals: base.proposals.map((proposal) =>
-              mapRegistryProposal(proposal, base.token)
-            ),
-          });
+          return new RegistryDAO(base);
         default:
           throw new Error(
             `DAO with address '${dao.address}' has an unrecognized type '${dao.dao_type.name}'`
@@ -130,6 +119,7 @@ export const useDAO = (address: string | undefined) => {
     },
     {
       enabled: !!address,
+      refetchInterval: 30000,
     }
   );
 

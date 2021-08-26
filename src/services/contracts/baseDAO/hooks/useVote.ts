@@ -15,30 +15,28 @@ interface Params {
 export const useVote = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network, tezos, account, connect } = useTezos()
+  const { network, tezos, account, connect } = useTezos();
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
-      const {
-        key: voteNotification,
-        closeSnackbar: closeVoteNotification,
-      } = openNotification({
-        message: "Vote is being created...",
-        persist: true,
-        variant: "info",
-      });
+      const { key: voteNotification, closeSnackbar: closeVoteNotification } =
+        openNotification({
+          message: "Vote is being created...",
+          persist: true,
+          variant: "info",
+        });
       try {
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
 
         const data = await (params.dao as BaseDAO).vote({
           proposalKey: params.proposalKey,
           amount: params.amount,
           support: params.support,
-          tezos: tezosToolkit
+          tezos: tezosToolkit,
         });
 
         await data.confirmation(1);
@@ -64,8 +62,7 @@ export const useVote = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("votes");
-        queryClient.resetQueries("proposals");
+        queryClient.resetQueries();
       },
     }
   );

@@ -6,13 +6,11 @@ import { TreasuryProposeArgs } from "./types";
 import proposeCode from "./michelson/propose";
 import { TreasuryExtraDTO } from "services/indexer/types";
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
-import { TreasuryProposal } from "services/indexer/dao/mappers/proposal/types";
 
 const parser = new Parser();
 
 interface TreasuryDAOData extends BaseDAOData {
   extra: TreasuryExtraDTO;
-  proposals: TreasuryProposal[]
 }
 
 export class TreasuryDAO extends BaseDAO {
@@ -32,7 +30,7 @@ export class TreasuryDAO extends BaseDAO {
       transfer_proposal: {
         agora_post_id: agoraPostId,
         transfers: mapTransfersArgs(transfers, this.data.address),
-      }
+      },
     });
 
     const { packed: proposalMetadata } = await tezos.rpc.packData({
@@ -46,8 +44,8 @@ export class TreasuryDAO extends BaseDAO {
       proposalMetadata
     );
 
-    console.log(contractMethod)
-    console.log(contract)
+    console.log(contractMethod);
+    console.log(contract);
 
     const result = await contractMethod.send();
     return result;

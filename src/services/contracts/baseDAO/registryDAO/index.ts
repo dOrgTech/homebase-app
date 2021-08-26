@@ -8,13 +8,11 @@ import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
 import { RegistryExtraDTO } from "services/indexer/types";
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
-import { RegistryProposal } from "services/indexer/dao/mappers/proposal/types";
 
 const parser = new Parser();
 
 interface RegistryDAOData extends BaseDAOData {
   extra: RegistryExtraDTO;
-  proposals: RegistryProposal[]
 }
 
 interface RegistryItemDTO {

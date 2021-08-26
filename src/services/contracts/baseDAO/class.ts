@@ -14,7 +14,6 @@ import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
 import { TokenMetadata } from "services/bakingBad/tokens";
 import { LedgerDTO } from "services/indexer/types";
-import { Proposal } from "services/indexer/dao/mappers/proposal/types";
 
 interface DeployParams {
   params: MigrationParams;
@@ -40,7 +39,6 @@ export interface BaseDAOData {
   token: TokenMetadata;
   guardian: string;
   ledger: LedgerDTO[];
-  proposals: Proposal[];
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
@@ -148,6 +146,7 @@ export abstract class BaseDAO {
       .vote([
         {
           argument: {
+            from: await tezos.wallet.pkh(),
             proposal_key: proposalKey,
             vote_type: support,
             vote_amount: formatUnits(

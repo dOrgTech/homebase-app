@@ -102,12 +102,9 @@ export const DAO: React.FC = () => {
   const { data: proposals, isLoading: isProposalsLoading } = useProposals(
     data ? data.data.address : ""
   );
-  const { data: activeProposals } = useProposals(
-    data ? data.data.address : "",
-    ProposalStatus.ACTIVE
-  );
+  const { data: activeProposals, isLoading: isActiveProposalsLoading } =
+    useProposals(data ? data.data.address : "", ProposalStatus.ACTIVE);
   const isLoading = isDaoLoading || isProposalsLoading;
-  // const tiRef = React.createRef();
 
   useEffect(() => {
     saveDaoId(id);
@@ -286,14 +283,15 @@ export const DAO: React.FC = () => {
           {isMobileSmall && activeProposals && activeProposals.length > 0 && (
             <MobileHeader container justify="space-between" alignItems="center">
               <Typography variant="body1" color="textSecondary">
-                ALL PROPOSALS
+                ACTIVE PROPOSALS
               </Typography>
             </MobileHeader>
           )}
 
           <ProposalsTable
-            headerText="All Proposals"
-            // status={ProposalStatus.ACTIVE}
+            status={ProposalStatus.ACTIVE}
+            proposals={activeProposals || []}
+            isLoading={isActiveProposalsLoading}
           />
           <Grid container direction="row" justify="center">
             <UnderlineText
