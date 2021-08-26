@@ -43,17 +43,22 @@ export const Proposals: React.FC = () => {
   const shouldDisable = useIsProposalButtonDisabled(id);
   const [open, setOpen] = useState(false);
 
-  const { data: proposalsData } = useProposals(dao && dao.data.address);
+  const { data: allProposalsData, isLoading: isAllLoading } = useProposals(
+    dao && dao.data.address
+  );
+  const { data: activeProposalsData, isLoading: isActiveLoading } =
+    useProposals(dao && dao.data.address, ProposalStatus.ACTIVE);
+  const { data: executedProposalsData, isLoading: isExecutedLoading } =
+    useProposals(dao && dao.data.address, ProposalStatus.EXECUTED);
 
   const onFlush = useCallback(async () => {
-    if (proposalsData && proposalsData.length && dao) {
+    if (dao && allProposalsData) {
       mutate({
         dao,
-        numOfProposalsToFlush: proposalsData.length + 1,
+        numOfProposalsToFlush: allProposalsData.length + 1,
       });
-      return;
     }
-  }, [dao, mutate, proposalsData]);
+  }, [dao, mutate, allProposalsData]);
 
   const handleNewProposal = () => {
     setOpen(true);
@@ -123,7 +128,7 @@ export const Proposals: React.FC = () => {
                   <PrimaryButton
                     variant="outlined"
                     onClick={handleNewProposal}
-                    disabled={shouldDisable}
+                    // disabled={shouldDisable}
                   >
                     NEW PROPOSAL
                   </PrimaryButton>
@@ -143,27 +148,39 @@ export const Proposals: React.FC = () => {
             <AppTabBar
               value={selectedTab}
               setValue={setSelectedTab}
-              labels={["ACTIVE PROPOSALS", "PASSED PROPOSALS", "ALL PROPOSALS"]}
+              labels={[
+                "ACTIVE PROPOSALS",
+                "EXECUTED PROPOSALS",
+                "ALL PROPOSALS",
+              ]}
             />
             <TabPanel value={selectedTab} index={0}>
               <ProposalsTable
-                headerText="Active Proposals"
                 status={ProposalStatus.ACTIVE}
+                proposals={activeProposalsData || []}
+                isLoading={isActiveLoading}
               />
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
               <ProposalsTable
-                headerText="Passed Proposals"
-                status={ProposalStatus.PASSED}
+                status={ProposalStatus.EXECUTED}
+                proposals={executedProposalsData || []}
+                isLoading={isExecutedLoading}
               />
             </TabPanel>
             <TabPanel value={selectedTab} index={2}>
-              <ProposalsTable headerText="All Proposals" />
+              <ProposalsTable
+                proposals={allProposalsData || []}
+                isLoading={isAllLoading}
+              />
             </TabPanel>
           </>
         ) : (
           <>
-            <ProposalsTable headerText="All Proposals" />
+            <ProposalsTable
+              proposals={allProposalsData || []}
+              isLoading={isAllLoading}
+            />
           </>
         )}
 

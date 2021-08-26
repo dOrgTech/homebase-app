@@ -149,7 +149,7 @@ export const useOriginate = (template: DAOTemplate) => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("daos");
+        queryClient.resetQueries();
       },
     }
   );

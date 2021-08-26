@@ -108,7 +108,7 @@ export const VoteDialog: React.FC = () => {
   }>();
 
   const { data: proposal } = useProposal(daoId, proposalId);
-  const { data: dao } = useDAO(daoId);
+  const { data: dao, cycleInfo } = useDAO(daoId);
 
   const { mutate } = useVote();
 
@@ -140,11 +140,13 @@ export const VoteDialog: React.FC = () => {
         variant="outlined"
         onClick={() => handleClickOpen(true)}
         support={true}
-        disabled={proposal?.status !== ProposalStatus.ACTIVE}
+        // disabled={proposal?.status !== ProposalStatus.ACTIVE}
       >
         VOTE FOR
       </StyledButton>
-      {proposal?.status !== ProposalStatus.ACTIVE ? (
+      {cycleInfo &&
+      proposal?.getStatus(cycleInfo.currentLevel).status !==
+        ProposalStatus.ACTIVE ? (
         <ArrowIcon src={VoteForDisabled} alt="up_disabled" />
       ) : (
         <ArrowIcon src={VoteFor} alt="up" />
@@ -153,12 +155,18 @@ export const VoteDialog: React.FC = () => {
         variant="outlined"
         onClick={() => handleClickOpen(false)}
         support={false}
-        disabled={proposal?.status !== ProposalStatus.ACTIVE}
+        disabled={
+          cycleInfo &&
+          proposal?.getStatus(cycleInfo.currentLevel).status !==
+            ProposalStatus.ACTIVE
+        }
         style={{ marginLeft: 15 }}
       >
         VOTE AGAINST
       </StyledButton>
-      {proposal?.status !== ProposalStatus.ACTIVE ? (
+      {cycleInfo &&
+      proposal?.getStatus(cycleInfo.currentLevel).status !==
+        ProposalStatus.ACTIVE ? (
         <ArrowIcon src={VoteAgainstDisabled} alt="down_disabled" />
       ) : (
         <ArrowIcon src={VoteAgainst} alt="down" />

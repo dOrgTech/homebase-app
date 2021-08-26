@@ -20,6 +20,7 @@ import "App.css";
 import { WarningDialog } from "modules/explorer/components/WarningDialog";
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions";
 import { Landing } from "modules/home/Landing";
+import { WarningFooter } from "modules/common/WarningFooter";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +31,7 @@ const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchOnWindowFocus: true,
       staleTime: 5000,
+      cacheTime: 30000,
     },
   },
 });
@@ -96,12 +98,22 @@ const App: React.FC = () => {
                   <CreatorProvider>
                     <DAOCreate />
                   </CreatorProvider>
+                  <WarningFooter
+                    text={
+                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you ceated will not be deprecated."
+                    }
+                  />
                 </Route>
                 <Route path="/explorer">
                   <TZKTSubscriptionsProvider>
                     <Navbar mode="explorer" />
                     <DAOExplorerRouter />
                   </TZKTSubscriptionsProvider>
+                  <WarningFooter
+                    text={
+                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you ceated will not be deprecated."
+                    }
+                  />
                 </Route>
                 <Route path="/">
                   <Landing />

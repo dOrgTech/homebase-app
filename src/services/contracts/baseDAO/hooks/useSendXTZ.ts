@@ -13,27 +13,27 @@ interface Params {
 export const useSendXTZ = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network, tezos, account, connect } = useTezos()
+  const { network, tezos, account, connect } = useTezos();
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
-      const {
-        key: notification,
-        closeSnackbar: closeNotification,
-      } = openNotification({
-        message: "XTZ transfer is being processed...",
-        persist: true,
-        variant: "info",
-      });
+      const { key: notification, closeSnackbar: closeNotification } =
+        openNotification({
+          message: "XTZ transfer is being processed...",
+          persist: true,
+          variant: "info",
+        });
       try {
-
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
-        
-        const data = await (params.dao as BaseDAO).sendXtz(params.amount, tezosToolkit);
+
+        const data = await (params.dao as BaseDAO).sendXtz(
+          params.amount,
+          tezosToolkit
+        );
 
         await data.confirmation(1);
 
@@ -58,8 +58,7 @@ export const useSendXTZ = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("dao");
-        queryClient.resetQueries("tezosBalance");
+        queryClient.resetQueries();
       },
     }
   );

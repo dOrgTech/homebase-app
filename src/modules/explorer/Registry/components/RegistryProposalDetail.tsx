@@ -13,23 +13,25 @@ import { useParams } from "react-router-dom";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { mutezToXtz } from "services/contracts/utils";
-import { RegistryProposalWithStatus, FA2Transfer } from "services/indexer/dao/mappers/proposal/types";
+import {
+  FA2Transfer,
+  RegistryProposal,
+} from "services/indexer/dao/mappers/proposal/types";
 
 const Container = styled(Grid)({
   paddingTop: 21,
 });
 
 interface Props {
-  proposal: RegistryProposalWithStatus;
+  proposal: RegistryProposal;
 }
 
 export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
   const theme = useTheme();
-  const { id: daoId } =
-    useParams<{
-      proposalId: string;
-      id: string;
-    }>();
+  const { id: daoId } = useParams<{
+    proposalId: string;
+    id: string;
+  }>();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: holdings } = useDAOHoldings(daoId);
 
@@ -38,15 +40,15 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
       return [];
     }
 
-    return proposal.list;
+    return proposal.metadata.list;
   }, [proposal]);
 
   const transfers = useMemo(() => {
-    if (!holdings || !proposal || !proposal.transfers) {
+    if (!holdings || !proposal || !proposal.metadata.transfers) {
       return [];
     }
 
-    return proposal.transfers.map((transfer) => {
+    return proposal.metadata.transfers.map((transfer) => {
       if (transfer.type === "XTZ") {
         return {
           ...transfer,

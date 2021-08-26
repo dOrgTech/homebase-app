@@ -62,11 +62,13 @@ export const Review: React.FC = () => {
   // TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
-      if (!validDAOData && info && metadataCarrierParams)
+      if (!validDAOData && info && metadataCarrierParams) {
+        await connect();
         mutate({
           metadataParams: metadataCarrierParams,
           params: info,
         });
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

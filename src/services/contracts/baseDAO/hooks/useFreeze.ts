@@ -15,7 +15,7 @@ export const useFreeze = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { saveDaoId } = useVisitedDAO();
-  const { network, tezos, account, connect } = useTezos()
+  const { network, tezos, account, connect } = useTezos();
 
   return useMutation<any | Error, Error, Params>(
     async (params) => {
@@ -23,36 +23,42 @@ export const useFreeze = () => {
         key: freezeNotification,
         closeSnackbar: closeFreezeNotification,
       } = openNotification({
-        message: `${params.freeze? "Stake": "Unstake"} is being processed...`,
+        message: `${params.freeze ? "Stake" : "Unstake"} is being processed...`,
         persist: true,
         variant: "info",
       });
       try {
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
 
-        const data = await (params.dao as BaseDAO)[params.freeze? "freeze": "unfreeze"](params.amount, tezosToolkit);
+        const data = await (params.dao as BaseDAO)[
+          params.freeze ? "freeze" : "unfreeze"
+        ](params.amount, tezosToolkit);
 
         await data.confirmation(1);
 
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: `${params.freeze? "Stake": "Unstake"} transaction confirmed!`,
+          message: `${
+            params.freeze ? "Stake" : "Unstake"
+          } transaction confirmed!`,
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        localStorage.removeItem('daoId');
+        localStorage.removeItem("daoId");
         saveDaoId(params.dao.data.address);
         return data;
       } catch (e) {
         console.log(e);
         closeFreezeNotification(freezeNotification);
         openNotification({
-          message: `An error has happened with ${params.freeze? "stake": "unstake"} transaction!`,
+          message: `An error has happened with ${
+            params.freeze ? "stake" : "unstake"
+          } transaction!`,
           variant: "error",
           autoHideDuration: 10000,
         });
@@ -61,9 +67,8 @@ export const useFreeze = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("ledger");
-        queryClient.resetQueries("dao");
-    },
+        queryClient.resetQueries();
+      },
     }
   );
 };

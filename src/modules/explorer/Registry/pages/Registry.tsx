@@ -12,7 +12,7 @@ import { AppTabBar } from "modules/explorer/components/AppTabBar";
 import { TabPanel } from "modules/explorer/components/TabPanel";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
-import { RegistryProposalWithStatus } from "services/indexer/dao/mappers/proposal/types";
+import { RegistryProposal } from "services/indexer/dao/mappers/proposal/types";
 
 export const Registry: React.FC = () => {
   const { id } = useParams<{
@@ -25,19 +25,20 @@ export const Registry: React.FC = () => {
   const { data: daoData } = useDAO(id);
   const dao = daoData as RegistryDAO | undefined;
   const { data: proposalsData } = useProposals(dao?.data.address);
-  const registryProposalsData = proposalsData as
-    | RegistryProposalWithStatus[]
-    | undefined;
+  const registryProposalsData = proposalsData as RegistryProposal[] | undefined;
 
   const proposals = useMemo(() => {
     if (!registryProposalsData || !dao) {
       return [];
     }
 
-    const registryAffectedKeysProposalIds = dao.decoded.decodedRegistryAffected.map(r => r.proposalId)
+    const registryAffectedKeysProposalIds =
+      dao.decoded.decodedRegistryAffected.map((r) => r.proposalId);
 
     return registryProposalsData
-      .filter((proposal) =>  registryAffectedKeysProposalIds.includes(proposal.id))
+      .filter((proposal) =>
+        registryAffectedKeysProposalIds.includes(proposal.id)
+      )
       .sort(
         (a, b) =>
           new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -47,7 +48,7 @@ export const Registry: React.FC = () => {
         date: dayjs(proposal.startDate).format("L"),
         description: "Proposal description",
         address: proposal.id,
-        name: proposal.list.map((item, i) =>
+        name: proposal.metadata.list.map((item, i) =>
           i === 0 ? item.key : `, ${item.key}`
         ),
       }));

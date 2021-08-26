@@ -7,7 +7,7 @@ import { BaseDAO } from "..";
 export const useDropProposal = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { network, tezos, connect, account } = useTezos()
+  const { network, tezos, connect, account } = useTezos();
 
   return useMutation<
     TransactionWalletOperation | Error,
@@ -15,23 +15,23 @@ export const useDropProposal = () => {
     { dao: BaseDAO; proposalId: string }
   >(
     async (params) => {
-      const {
-        key: dropProposal,
-        closeSnackbar: closeDropProposal,
-      } = openNotification({
-        message: "Please sign the transaction to drop proposal",
-        persist: true,
-        variant: "info",
-      });
+      const { key: dropProposal, closeSnackbar: closeDropProposal } =
+        openNotification({
+          message: "Please sign the transaction to drop proposal",
+          persist: true,
+          variant: "info",
+        });
       try {
-
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
 
-        const data = await params.dao.dropProposal(params.proposalId, tezosToolkit);
+        const data = await params.dao.dropProposal(
+          params.proposalId,
+          tezosToolkit
+        );
         closeDropProposal(dropProposal);
 
         await data.confirmation(1);
@@ -55,9 +55,7 @@ export const useDropProposal = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("dao");
-        queryClient.resetQueries("daos");
-        queryClient.resetQueries("proposals");
+        queryClient.resetQueries();
       },
     }
   );
