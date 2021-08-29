@@ -9,11 +9,10 @@ import {
   DialogContentText,
   DialogTitle,
   CircularProgress,
-  makeStyles
+  makeStyles,
 } from "@material-ui/core";
 
 import { ProgressBar } from "modules/explorer/components";
-import { toShortAddress } from "services/contracts/utils";
 import { ViewButton } from "./ViewButton";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { VotersProgress } from "./VotersProgress";
@@ -21,6 +20,7 @@ import { AppTabBar } from "./AppTabBar";
 import { TabPanel } from "./TabPanel";
 import { BigNumber } from "bignumber.js";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import { UserBadge } from "./UserBadge";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -30,29 +30,29 @@ interface UpVotesDialogData {
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const Title = styled(DialogTitle)({
   height: 30,
   paddingBottom: 0,
-  minWidth: 250
+  minWidth: 250,
 });
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthSm": {
     minHeight: "400px !important",
-    maxHeight: 600
-  }
+    maxHeight: 600,
+  },
 });
 
 const StyledViewButton = styled(ViewButton)({
-  marginTop: -30
+  marginTop: -30,
 });
 
 const TextHeader = styled(Typography)({
   marginTop: 10,
-  marginBottom: 10
+  marginBottom: 10,
 });
 
 const Row = styled(Grid)(({ theme }) => ({
@@ -63,23 +63,23 @@ const Row = styled(Grid)(({ theme }) => ({
   alignItems: "end",
   "&:last-child": {
     marginBottom: 30,
-    borderBottom: `2px solid ${theme.palette.primary.light}`
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
   [theme.breakpoints.down("sm")]: {
     padding: "20px 34px",
-  }
+  },
 }));
 
 const TableHeader = styled(Grid)(({ theme }) => ({
   padding: "23px 64px",
   [theme.breakpoints.down("sm")]: {
     padding: "23px 24px",
-  }
+  },
 }));
 
 const LinearBar = styled(ProgressBar)({
   marginBottom: "-3px",
-  marginTop: 30
+  marginTop: 30,
 });
 
 const NoTokens = styled(Grid)(({ theme }) => ({
@@ -90,7 +90,7 @@ const NoTokens = styled(Grid)(({ theme }) => ({
   alignItems: "end",
   [theme.breakpoints.down("sm")]: {
     padding: "20px 34px",
-  }
+  },
 }));
 
 const styles = makeStyles({
@@ -100,42 +100,45 @@ const styles = makeStyles({
     marginRight: 10,
     background: "#3D3D3D",
     "&:before": {
-      opacity: 0.5
-    }
+      opacity: 0.5,
+    },
   },
   selected: {
     background: "rgba(124, 255, 181, 0.15)",
     "&:before": {
-      opacity: 0.15
-    }
-  }
+      opacity: 0.15,
+    },
+  },
 });
 
 const Header = styled(Grid)(({ theme }) => ({
   padding: "20px 64px",
   [theme.breakpoints.down("sm")]: {
     padding: "20px 34px",
-  }
+  },
 }));
 
 export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   daoAddress,
   proposalAddress,
-  favor
+  favor,
 }) => {
   const [open, setOpen] = React.useState(false);
 
-  const { data: proposal, isLoading } = useProposal(daoAddress, proposalAddress);
+  const { data: proposal, isLoading } = useProposal(
+    daoAddress,
+    proposalAddress
+  );
   const theme = useTheme();
   const [selectedTab, setSelectedTab] = React.useState(0);
   const style = styles();
-  const quorumThreshold =  proposal?.quorumThreshold || new BigNumber(0)
-  const votesData = proposal?.voters
+  const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
+  const votesData = proposal?.voters;
 
   const { votesSum } = useVotesStats({
     quorumThreshold,
     upVotes: proposal?.upVotes || new BigNumber(0),
-    downVotes: proposal?.downVotes || new BigNumber(0)
+    downVotes: proposal?.downVotes || new BigNumber(0),
   });
 
   const votes = useMemo(() => {
@@ -148,11 +151,11 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
     }
 
     if (selectedTab === 1) {
-      return votesData.filter(voteData => voteData.support);
+      return votesData.filter((voteData) => voteData.support);
     }
 
     if (selectedTab === 2) {
-      return votesData.filter(voteData => !voteData.support);
+      return votesData.filter((voteData) => !voteData.support);
     }
   }, [votesData, selectedTab]);
 
@@ -203,7 +206,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                   style={{
                     color: favor
                       ? theme.palette.secondary.main
-                      : theme.palette.error.main
+                      : theme.palette.error.main,
                   }}
                 >
                   VOTES{" "}
@@ -211,7 +214,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
               </Grid>
               <Grid item xs={12}>
                 <TextHeader variant="h3" color="textSecondary">
-                  {proposal? votesSum.toString(): "-"}
+                  {proposal ? votesSum.toString() : "-"}
                 </TextHeader>
                 <VotersProgress
                   wrapAll={true}
@@ -243,7 +246,8 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                 <Header container direction="row" alignItems="center">
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
-                      {votes.length} {votes.length !== 1 ? " addresses" : " address" }
+                      {votes.length}{" "}
+                      {votes.length !== 1 ? " addresses" : " address"}
                     </Typography>
                   </Grid>
                   <Grid item xs={6} container justify="flex-end">
@@ -263,13 +267,20 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                     >
                       <Grid item xs={6}>
                         <Typography variant="subtitle1" color="textSecondary">
-                          {toShortAddress(vote.address)}
+                          <UserBadge address={vote.address} />
                         </Typography>
                         <LinearBar
                           color="secondary"
                           variant="determinate"
                           favor={vote.support}
-                          value={votesSum ? vote.value.div(votesSum).multipliedBy(100).toNumber() : 0}
+                          value={
+                            votesSum
+                              ? vote.value
+                                  .div(votesSum)
+                                  .multipliedBy(100)
+                                  .toNumber()
+                              : 0
+                          }
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -278,7 +289,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                           color="textSecondary"
                           align="right"
                         >
-                          {proposal? vote.value.toString(): "-"}
+                          {proposal ? vote.value.toString() : "-"}
                         </Typography>
                       </Grid>
                     </Row>

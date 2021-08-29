@@ -17,6 +17,7 @@ import { InfoIcon } from "./styled/InfoIcon";
 import { BigNumber } from "bignumber.js";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import { HighlightedBadge } from "./styled/HighlightedBadge";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
@@ -124,7 +125,9 @@ export const ProposalStatusHistory: React.FC = () => {
         </HistoryContent>
         {proposal && (
           <HistoryContent item xs={12}>
-            <UserBadge address={proposal.proposer} full={true} />
+            <HighlightedBadge>
+              <UserBadge address={proposal.proposer} />
+            </HighlightedBadge>
           </HistoryContent>
         )}
         <HistoryContent item xs={12}>

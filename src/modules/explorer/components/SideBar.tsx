@@ -23,9 +23,9 @@ export const debounce = <T extends (...args: any[]) => any>(
   return (...args: Parameters<T>): ReturnType<T> => {
     let result: any;
     clearTimeout(timeout);
-    timeout = (setTimeout(() => {
+    timeout = setTimeout(() => {
       result = callback(...args);
-    }, waitFor) as unknown) as number;
+    }, waitFor) as unknown as number;
     return result;
   };
 };
@@ -152,19 +152,24 @@ export const SideBar: React.FC = () => {
         handler: () => history.push(`/explorer/dao/${daoId}/treasury`),
         name: "treasury",
       },
+      {
+        Icon: HouseIcon,
+        handler: () => history.push(`/explorer/dao/${daoId}/user`),
+        name: "user",
+      },
     ];
 
     if (dao.data.type === "registry") {
-        return [
-          ...commonButons,
-          {
-            Icon: RegistryIcon,
-            handler: () => history.push(`/explorer/dao/${daoId}/registry`),
-            name: "registry",
-          },
-        ];
+      return [
+        ...commonButons,
+        {
+          Icon: RegistryIcon,
+          handler: () => history.push(`/explorer/dao/${daoId}/registry`),
+          name: "registry",
+        },
+      ];
     } else {
-      return commonButons
+      return commonButons;
     }
   }, [dao, daoId, history]);
 
@@ -172,14 +177,15 @@ export const SideBar: React.FC = () => {
     <SideNavBar>
       {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => {
         return (
-        <Grid item key={name}>
-          <ButtonIcon
-            Icon={Icon}
-            handler={handler}
-            isSelected={pathname.includes(name)}
-          />
-        </Grid>
-      )})}
+          <Grid item key={name}>
+            <ButtonIcon
+              Icon={Icon}
+              handler={handler}
+              isSelected={pathname.includes(name)}
+            />
+          </Grid>
+        );
+      })}
     </SideNavBar>
   ) : (
     <BottomNavBar>

@@ -18,7 +18,7 @@ export const theme = createMuiTheme({
     },
     info: {
       main: "#FFC839",
-    }
+    },
   },
   typography: {
     fontFamily: "Roboto Mono",
@@ -51,7 +51,6 @@ export const theme = createMuiTheme({
     },
     h5: {
       fontSize: 35,
-      lineHeight: "146.3%",
     },
     body1: {
       fontSize: 16,
@@ -78,7 +77,7 @@ export const theme = createMuiTheme({
       tooltip: {
         backgroundColor: "#4BCF93",
         fontSize: 14,
-        padding: "10px 15px"
+        padding: "10px 15px",
       },
     },
     MuiStepLabel: {
@@ -184,6 +183,8 @@ export const theme = createMuiTheme({
         "&$disabled": {
           border: "1px solid #3d3d3d",
         },
+        borderWidth: "2px",
+        padding: "11px 30px",
       },
     },
     MuiInputBase: {

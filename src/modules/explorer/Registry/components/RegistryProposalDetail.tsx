@@ -89,7 +89,6 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 amount={transfer.amount}
                 address={transfer.beneficiary}
                 currency={"XTZ"}
-                long={true}
               />
             ) : (
               <TransferBadge
@@ -97,7 +96,6 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 address={transfer.beneficiary}
                 contract={(transfer as FA2Transfer).contractAddress}
                 tokenId={(transfer as FA2Transfer).tokenId}
-                long={true}
               />
             )}
           </Container>

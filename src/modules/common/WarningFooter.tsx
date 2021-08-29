@@ -8,13 +8,13 @@ import hexToRgba from "hex-to-rgba";
 const Container = styled(Box)({
   position: "fixed",
   width: "100%",
-  height: 92,
+  minHeight: 92,
   bottom: 0,
   background: hexToRgba("#FFC839", 0.4),
   boxSizing: "border-box",
   padding: "25px 50px",
   color: "#FFC839",
-  zIndex: 20,
+  zIndex: 10000,
 });
 
 const ContainerText = styled(Typography)({

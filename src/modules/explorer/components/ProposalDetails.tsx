@@ -7,7 +7,7 @@ import {
   useTheme,
   withTheme,
 } from "@material-ui/core";
-import React, { useMemo } from "react";
+import React from "react";
 import { useParams } from "react-router";
 import ReactHtmlParser from "react-html-parser";
 

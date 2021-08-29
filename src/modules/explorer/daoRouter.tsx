@@ -19,6 +19,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { NotFound } from "./components/NotFound";
 import { NotIndexed } from "./components/NotIndexed";
+import { User } from "./pages/User";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -106,6 +107,10 @@ export const DAORouter = (): JSX.Element => {
         <DAORoute path={`${match.url}/:id/registry`}>
           <SideBar />
           <Registry />
+        </DAORoute>
+        <DAORoute path={`${match.url}/:id/user`}>
+          <SideBar />
+          <User />
         </DAORoute>
         <DAORoute path={`${match.url}/:id/overview`}>
           <SideBar />

@@ -39,11 +39,11 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
         background: "rgba(61, 61, 61, 0.4)",
         color: theme.palette.text.secondary,
       };
-      case ProposalStatus.DROPPED:
-        return {
-          background: "rgba(237, 37, 78, 0.4)",
-          color: theme.palette.error.main,
-        };
+    case ProposalStatus.DROPPED:
+      return {
+        background: "rgba(237, 37, 78, 0.4)",
+        color: theme.palette.error.main,
+      };
     case ProposalStatus.EXECUTED:
       return {
         background: "rgba(75, 207, 147, 0.4)",
@@ -55,11 +55,10 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
 const Badge = styled(Grid)(
   ({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
     borderRadius: 4,
-    padding: 4,
+    padding: "5px 7px",
+    boxSizing: "border-box",
+    width: 101,
     textAlign: "center",
-    maxWidth: 87,
-    marginRight: 32,
-    marginLeft: 10,
 
     background: statusColors(status, theme).background,
     color: statusColors(status, theme).color,
