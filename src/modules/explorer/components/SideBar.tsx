@@ -14,6 +14,7 @@ import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,
@@ -126,6 +127,7 @@ const SideNavBar: React.FC = ({ children }) => {
 
 export const SideBar: React.FC = () => {
   const history = useHistory();
+  const { account } = useTezos();
   const { pathname } = useLocation();
   const { id: daoId } = useParams<{ id: string }>();
   const { data: dao } = useDAO(daoId);
@@ -152,12 +154,15 @@ export const SideBar: React.FC = () => {
         handler: () => history.push(`/explorer/dao/${daoId}/treasury`),
         name: "treasury",
       },
-      {
+    ];
+
+    if (account) {
+      commonButons.push({
         Icon: HouseIcon,
         handler: () => history.push(`/explorer/dao/${daoId}/user`),
         name: "user",
-      },
-    ];
+      });
+    }
 
     if (dao.data.type === "registry") {
       return [
@@ -171,7 +176,7 @@ export const SideBar: React.FC = () => {
     } else {
       return commonButons;
     }
-  }, [dao, daoId, history]);
+  }, [account, dao, daoId, history]);
 
   return !isMobileExtraSmall ? (
     <SideNavBar>

@@ -6,14 +6,15 @@ import {
   Button,
   Grid,
   GridProps,
+  Theme,
   Typography,
 } from "@material-ui/core";
 import { CheckCircleOutlined } from "@material-ui/icons";
 import { styled } from "@material-ui/styles";
 import dayjs from "dayjs";
 import hexToRgba from "hex-to-rgba";
-import React from "react";
-import { useParams } from "react-router";
+import React, { useEffect, useMemo } from "react";
+import { useHistory, useParams } from "react-router";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
@@ -24,27 +25,32 @@ import {
   ProposalStatus,
 } from "services/indexer/dao/mappers/proposal/types";
 import { TableStatusBadge } from "../components/ProposalTableRowStatusBadge";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import RemoveIcon from "@material-ui/icons/Remove";
 import { ProfileAvatar } from "../components/styled/ProfileAvatar";
 import { UserProfileName } from "../components/UserProfileName";
 
-const ContentBlockBase = styled(Grid)({});
-
-const ContentBlockHeader = styled(AccordionSummary)({
-  padding: "12px 54px",
-  "&.Mui-expanded": {
-    padding: "4px 54px",
-  },
-});
+const ContentBlockHeader = styled(AccordionSummary)(
+  ({ theme }: { theme: Theme }) => ({
+    padding: "12px 54px",
+    "&.Mui-expanded": {
+      padding: "4px 54px",
+    },
+    color: theme.palette.text.secondary,
+  })
+);
 
 const ContentBlockItem = styled(Grid)({
-  padding: "41px 58px",
+  padding: "35px 52px",
   borderTop: `0.3px solid ${hexToRgba("#7D8C8B", 0.65)}`,
 });
 
-const BalancesHeader = styled(ContentBlockBase)({
+const BalancesHeader = styled(Grid)({
   minHeight: "178px",
   padding: "46px 55px",
+  background: "#24282B",
+  boxSizing: "border-box",
+  borderRadius: 8,
+  boxShadow: "none",
 });
 
 const UsernameHeader = styled(Grid)({
@@ -111,9 +117,12 @@ const ContentBlock: React.FC<ContentBlockProps> = ({
   ...props
 }) => {
   return (
-    <StyledAccordion>
+    <StyledAccordion defaultExpanded>
       <ContentBlockHeader
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={<RemoveIcon />}
+        IconButtonProps={{
+          color: "inherit",
+        }}
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
@@ -124,7 +133,7 @@ const ContentBlock: React.FC<ContentBlockProps> = ({
         </Grid>
       </ContentBlockHeader>
       <StyledAccordionDetails>
-        <ContentBlockBase {...props}>{children}</ContentBlockBase>
+        <Grid {...props}>{children}</Grid>
       </StyledAccordionDetails>
     </StyledAccordion>
   );
@@ -141,7 +150,7 @@ const ProposalItem: React.FC<{ proposal: Proposal; status: ProposalStatus }> =
     return (
       <ContentBlockItem container justify="space-between" alignItems="center">
         <Grid item sm={6}>
-          <Grid container direction="column" spacing={4}>
+          <Grid container direction="column" style={{ gap: 20 }}>
             <Grid item>
               <ProposalTitle color="textSecondary" variant="h4">
                 {agoraPost
@@ -150,7 +159,7 @@ const ProposalItem: React.FC<{ proposal: Proposal; status: ProposalStatus }> =
               </ProposalTitle>
             </Grid>
             <Grid item>
-              <Grid container spacing={4} alignItems="center">
+              <Grid container style={{ gap: 35 }} alignItems="center">
                 <Grid item>
                   <TableStatusBadge status={status} />
                 </Grid>
@@ -168,31 +177,110 @@ const ProposalItem: React.FC<{ proposal: Proposal; status: ProposalStatus }> =
     );
   };
 
+interface Balances {
+  available: {
+    displayName: string;
+    balance?: string;
+  };
+  pending: {
+    displayName: string;
+    balance?: string;
+  };
+  staked: {
+    displayName: string;
+    balance?: string;
+  };
+}
+
 export const User: React.FC = () => {
   const { id: daoId } = useParams<{
     id: string;
   }>();
   const { account } = useTezos();
-  const { data: dao, cycleInfo } = useDAO(daoId);
+  const { data: dao, cycleInfo, ledger } = useDAO(daoId);
   const { data: proposals } = useProposals(daoId);
-  const balances = [
-    {
-      header: "Available Balance",
-      balance: 1000,
-    },
-    {
-      header: "Pending Balance",
-      balance: 1000,
-    },
-    {
-      header: "Staked Balance",
-      balance: 1000,
-    },
-  ];
+  const history = useHistory();
+
+  const balances = useMemo(() => {
+    const initialBalances: Balances = {
+      available: {
+        displayName: "Available Balance",
+      },
+      pending: {
+        displayName: "Pending Balance",
+      },
+      staked: {
+        displayName: "Staked Balance",
+      },
+    };
+
+    if (!ledger || !cycleInfo) {
+      return initialBalances;
+    }
+
+    const userLedger = ledger.find(
+      (l) => l.holder.address.toLowerCase() === account.toLowerCase()
+    );
+
+    if (!userLedger) {
+      initialBalances.available.balance = "0";
+      initialBalances.pending.balance = "0";
+      initialBalances.staked.balance = "0";
+
+      return initialBalances;
+    }
+
+    initialBalances.available.balance = userLedger.available_balance.toString();
+    initialBalances.pending.balance =
+      cycleInfo.currentCycle.toString() === userLedger.current_stage_num
+        ? userLedger.current_unstaked.toString()
+        : "0";
+    initialBalances.staked.balance = userLedger.staked.toString();
+
+    return initialBalances;
+  }, [account, cycleInfo, ledger]);
+
+  const balancesList = Object.keys(balances).map(
+    (key) => balances[key as keyof Balances]
+  );
+
+  useEffect(() => {
+    if (!account) {
+      history.push(`../${daoId}`);
+    }
+  }, [account, daoId, history]);
+
+  const proposalsCreated = useMemo(() => {
+    if (!proposals) {
+      return [];
+    }
+
+    return proposals.filter(
+      (p) => p.proposer.toLowerCase() === account.toLowerCase()
+    );
+  }, [account, proposals]);
+
+  const proposalsVoted = useMemo(() => {
+    if (!proposals) {
+      return [];
+    }
+
+    return proposals
+      .filter((p) =>
+        p.voters
+          .map((voter) => voter.address.toLowerCase())
+          .includes(account.toLowerCase())
+      )
+      .map((p) => ({
+        proposal: p,
+        voteDecision: p.voters.find((voter) => voter.address.toLowerCase())
+          ?.support as boolean,
+      }));
+  }, [account, proposals]);
 
   return (
     <MainContainer>
-      <Grid container direction="column" spacing={5}>
+      <Grid container direction="column" style={{ gap: 40 }}>
         <UsernameHeader item>
           <Grid container alignItems="center" justify="space-between">
             <Grid item>
@@ -226,10 +314,10 @@ export const User: React.FC = () => {
         <Grid item>
           <BalancesHeader container justify="space-between" alignItems="center">
             {dao &&
-              balances.map(({ header, balance }, i) => (
+              balancesList.map(({ displayName, balance }, i) => (
                 <Grid item key={`balance-${i}`}>
                   <BalanceHeaderText color="secondary">
-                    {header}
+                    {displayName}
                   </BalanceHeaderText>
                   <Grid container alignItems="baseline" spacing={2}>
                     <Grid item>
@@ -248,13 +336,13 @@ export const User: React.FC = () => {
           </BalancesHeader>
         </Grid>
         <Grid item>
-          {proposals && cycleInfo && (
+          {proposalsCreated && cycleInfo && (
             <ContentBlock
               container
               direction="column"
               headerText="Proposals Posted"
             >
-              {proposals.map((proposal, i) => (
+              {proposalsCreated.map((proposal, i) => (
                 <ProposalItem
                   key={`posted-proposal-${i}`}
                   proposal={proposal}
@@ -279,13 +367,13 @@ export const User: React.FC = () => {
           )}
         </Grid>
         <Grid item>
-          {proposals && cycleInfo && (
+          {proposalsVoted && cycleInfo && (
             <ContentBlock
               container
               direction="column"
               headerText="Proposals Posted"
             >
-              {proposals.map((proposal, i) => (
+              {proposalsVoted.map(({ proposal, voteDecision }, i) => (
                 <ProposalItem
                   key={`posted-proposal-${i}`}
                   proposal={proposal}
@@ -296,7 +384,9 @@ export const User: React.FC = () => {
                       <VotedText color="textSecondary">Voted</VotedText>
                     </Grid>
                     <Grid item>
-                      <StatusText color="secondary">YES</StatusText>
+                      <StatusText color={voteDecision ? "secondary" : "error"}>
+                        {voteDecision ? "YES" : "NO"}
+                      </StatusText>
                     </Grid>
                   </Grid>
                 </ProposalItem>

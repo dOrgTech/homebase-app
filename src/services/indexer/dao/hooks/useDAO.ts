@@ -146,10 +146,10 @@ export const useDAO = (address: string | undefined) => {
     if (data && cycleInfo) {
       return data.data.ledger.map((l) => ({
         ...l,
-        available_balance:
-          cycleInfo.currentCycle > l.current_stage_num
-            ? l.current_unstaked.plus(l.past_unstaked)
-            : l.past_unstaked,
+        available_balance: (cycleInfo.currentCycle > Number(l.current_stage_num)
+          ? l.current_unstaked.plus(l.past_unstaked)
+          : l.past_unstaked
+        ).minus(l.staked),
         total_balance: l.current_unstaked.plus(l.past_unstaked),
       }));
     }
