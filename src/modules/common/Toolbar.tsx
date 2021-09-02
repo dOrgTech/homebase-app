@@ -24,7 +24,6 @@ import { Network } from "services/beacon/context";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
-import { UserBalancesWidget } from "modules/explorer/components/UserBalancesWidget";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -183,22 +182,25 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
           direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
           wrap="wrap"
-          justify="space-between"
+          justify={mode === "explorer" ? "space-between" : "flex-end"}
         >
-          <Grid item>
-            <Box onClick={() => history.push("/explorer")}>
-              <ToolbarContainer container alignItems="center" wrap="nowrap">
-                <Grid item>
-                  <LogoItem src={HomeButton} />
-                </Grid>
-                <Grid item>
-                  <Box paddingLeft="10px">
-                    <LogoText color="textSecondary">Homebase</LogoText>
-                  </Box>
-                </Grid>
-              </ToolbarContainer>
-            </Box>
-          </Grid>
+          {mode === "explorer" && (
+            <Grid item>
+              <Box onClick={() => history.push("/explorer")}>
+                <ToolbarContainer container alignItems="center" wrap="nowrap">
+                  <Grid item>
+                    <LogoItem src={HomeButton} />
+                  </Grid>
+                  <Grid item>
+                    <Box paddingLeft="10px">
+                      <LogoText color="textSecondary">Homebase</LogoText>
+                    </Box>
+                  </Grid>
+                </ToolbarContainer>
+              </Box>
+            </Grid>
+          )}
+
           <Grid item>
             <Grid
               container
