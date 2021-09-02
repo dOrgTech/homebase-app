@@ -14,7 +14,7 @@ import { styled } from "@material-ui/styles";
 import dayjs from "dayjs";
 import hexToRgba from "hex-to-rgba";
 import React, { useEffect, useMemo } from "react";
-import { useHistory, useParams } from "react-router";
+import { useHistory } from "react-router";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
@@ -28,6 +28,7 @@ import { TableStatusBadge } from "../components/ProposalTableRowStatusBadge";
 import RemoveIcon from "@material-ui/icons/Remove";
 import { ProfileAvatar } from "../components/styled/ProfileAvatar";
 import { UserProfileName } from "../components/UserProfileName";
+import { useDAOID } from "../daoRouter";
 
 const ContentBlockHeader = styled(AccordionSummary)(
   ({ theme }: { theme: Theme }) => ({
@@ -193,16 +194,14 @@ interface Balances {
 }
 
 export const User: React.FC = () => {
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
   const { account } = useTezos();
+  const daoId = useDAOID();
   const { data: dao, cycleInfo, ledger } = useDAO(daoId);
   const { data: proposals } = useProposals(daoId);
   const history = useHistory();
 
   const balances = useMemo(() => {
-    const initialBalances: Balances = {
+    const userBalances: Balances = {
       available: {
         displayName: "Available Balance",
       },
@@ -214,8 +213,8 @@ export const User: React.FC = () => {
       },
     };
 
-    if (!ledger || !cycleInfo) {
-      return initialBalances;
+    if (!ledger) {
+      return userBalances;
     }
 
     const userLedger = ledger.find(
@@ -223,22 +222,19 @@ export const User: React.FC = () => {
     );
 
     if (!userLedger) {
-      initialBalances.available.balance = "0";
-      initialBalances.pending.balance = "0";
-      initialBalances.staked.balance = "0";
+      userBalances.available.balance = "0";
+      userBalances.pending.balance = "0";
+      userBalances.staked.balance = "0";
 
-      return initialBalances;
+      return userBalances;
     }
 
-    initialBalances.available.balance = userLedger.available_balance.toString();
-    initialBalances.pending.balance =
-      cycleInfo.currentCycle.toString() === userLedger.current_stage_num
-        ? userLedger.current_unstaked.toString()
-        : "0";
-    initialBalances.staked.balance = userLedger.staked.toString();
+    userBalances.available.balance = userLedger.available_balance.toString();
+    userBalances.pending.balance = userLedger.pending_balance.toString();
+    userBalances.staked.balance = userLedger.staked.toString();
 
-    return initialBalances;
-  }, [account, cycleInfo, ledger]);
+    return userBalances;
+  }, [account, ledger]);
 
   const balancesList = Object.keys(balances).map(
     (key) => balances[key as keyof Balances]

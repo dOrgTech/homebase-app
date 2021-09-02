@@ -106,7 +106,6 @@ const App: React.FC = () => {
                 </Route>
                 <Route path="/explorer">
                   <TZKTSubscriptionsProvider>
-                    <Navbar mode="explorer" />
                     <DAOExplorerRouter />
                   </TZKTSubscriptionsProvider>
                   <WarningFooter

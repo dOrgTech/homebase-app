@@ -24,6 +24,7 @@ import { Network } from "services/beacon/context";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
+import { UserBalancesWidget } from "modules/explorer/components/UserBalancesWidget";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -126,6 +127,7 @@ export const ConnectWalletButton = ({
 
 export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   mode,
+  children,
 }) => {
   const { connect, account, reset, changeNetwork, network } = useTezos();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -209,6 +211,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                     alignItems="center"
                     justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
                   >
+                    {children}
                     <AddressBarWrapper item>
                       <AddressContainer
                         container

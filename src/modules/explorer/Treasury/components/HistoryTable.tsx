@@ -12,7 +12,7 @@ import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 import { TreasuryHistoryRow } from "./HistoryRow";
 import { ProposalTableHeadText } from "./TableHeader";
 import { useTransfers } from "services/contracts/baseDAO/hooks/useTransfers";
-import { useParams } from "react-router-dom";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 const NoProposals = styled(Typography)({
   marginTop: 20,
@@ -22,11 +22,8 @@ const NoProposals = styled(Typography)({
 export const HistoryTable: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { id } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
-  const { data: transfers } = useTransfers(id);
+  const daoId = useDAOID();
+  const { data: transfers } = useTransfers(daoId);
 
   return (
     <ResponsiveGenericTable>

@@ -15,6 +15,7 @@ import BigNumber from "bignumber.js";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useDAOID } from "../daoRouter";
 
 const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -102,10 +103,10 @@ export const VoteDialog: React.FC = () => {
   const [support, setSupport] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
-  const { proposalId, id: daoId } = useParams<{
+  const { proposalId } = useParams<{
     proposalId: string;
-    id: string;
   }>();
+  const daoId = useDAOID();
 
   const { data: proposal } = useProposal(daoId, proposalId);
   const { data: dao, cycleInfo } = useDAO(daoId);

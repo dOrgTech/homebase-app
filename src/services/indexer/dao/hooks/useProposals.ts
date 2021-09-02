@@ -1,17 +1,17 @@
 import dayjs from "dayjs";
 import { useQuery } from "react-query";
 import { BaseDAO, CycleInfo } from "services/contracts/baseDAO";
+import { getProposals } from "services/indexer/dao/services";
 import {
   Proposal,
   ProposalStatus,
   RegistryProposal,
   TreasuryProposal,
-} from "../mappers/proposal/types";
-import { getProposals } from "../services";
+} from "services/indexer/dao/mappers/proposal/types";
 import { useDAO } from "./useDAO";
 
 export const useProposals = (
-  contractAddress: string | undefined,
+  contractAddress: string,
   status?: ProposalStatus
 ) => {
   const {

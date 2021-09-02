@@ -7,7 +7,6 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React, { useCallback } from "react";
-import { useParams } from "react-router-dom";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
@@ -24,6 +23,7 @@ import { InfoIcon } from "../components/styled/InfoIcon";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
+import { useDAOID } from "../daoRouter";
 
 const ButtonsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -33,23 +33,22 @@ const ButtonsContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const Proposals: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data: dao } = useDAO(id);
+  const daoId = useDAOID();
+  const { data: dao } = useDAO(daoId);
   const { mutate } = useFlush();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
   const name = dao && dao.data.name;
-  const shouldDisable = useIsProposalButtonDisabled(id);
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
   const [open, setOpen] = useState(false);
 
-  const { data: allProposalsData, isLoading: isAllLoading } = useProposals(
-    dao && dao.data.address
-  );
+  const { data: allProposalsData, isLoading: isAllLoading } =
+    useProposals(daoId);
   const { data: activeProposalsData, isLoading: isActiveLoading } =
-    useProposals(dao && dao.data.address, ProposalStatus.ACTIVE);
+    useProposals(daoId, ProposalStatus.ACTIVE);
   const { data: executedProposalsData, isLoading: isExecutedLoading } =
-    useProposals(dao && dao.data.address, ProposalStatus.EXECUTED);
+    useProposals(daoId, ProposalStatus.EXECUTED);
 
   const onFlush = useCallback(async () => {
     if (dao && allProposalsData) {

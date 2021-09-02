@@ -8,10 +8,7 @@ import {
 import { getProposal } from "../services";
 import { useDAO } from "./useDAO";
 
-export const useProposal = (
-  contractAddress: string | undefined,
-  proposalKey: string
-) => {
+export const useProposal = (contractAddress: string, proposalKey: string) => {
   const {
     data: daoData,
     isLoading,

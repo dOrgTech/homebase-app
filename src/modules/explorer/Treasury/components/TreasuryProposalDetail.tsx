@@ -1,7 +1,7 @@
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import BigNumber from "bignumber.js";
+import { useDAOID } from "modules/explorer/daoRouter";
 import React, { useMemo } from "react";
-import { useParams } from "react-router-dom";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { mutezToXtz } from "services/contracts/utils";
@@ -21,10 +21,7 @@ const Container = styled(Grid)({
 
 export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
   const theme = useTheme();
-  const { id: daoId } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: holdings } = useDAOHoldings(daoId);
 

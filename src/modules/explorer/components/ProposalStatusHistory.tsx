@@ -18,6 +18,7 @@ import { BigNumber } from "bignumber.js";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 import { HighlightedBadge } from "./styled/HighlightedBadge";
+import { useDAOID } from "../daoRouter";
 
 const HistoryContent = styled(Grid)({
   paddingBottom: 24,
@@ -61,10 +62,10 @@ const HistoryContainer = styled(Grid)(({ theme }) => ({
 export const ProposalStatusHistory: React.FC = () => {
   const theme = useTheme();
 
-  const { proposalId, id: daoId } = useParams<{
+  const { proposalId } = useParams<{
     proposalId: string;
-    id: string;
   }>();
+  const daoId = useDAOID();
   const { data: dao, cycleInfo } = useDAO(daoId);
   const { data: proposal } = useProposal(daoId, proposalId);
 

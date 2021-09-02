@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import {
   Box,
   CircularProgress,
@@ -9,7 +9,7 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@material-ui/core";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
@@ -20,13 +20,13 @@ import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { ProposalsTable } from "../components/ProposalsTable";
 import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
-import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { FreezeDialog } from "../components/FreezeDialog";
 import { InfoIcon } from "../components/styled/InfoIcon";
 import { PeriodLabel } from "../components/styled/VotingLabel";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
+import { useDAOID } from "../daoRouter";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -87,10 +87,9 @@ const StyledFreezeButtons = styled(Grid)(() => ({
 }));
 
 export const DAO: React.FC = () => {
-  const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
   const history = useHistory();
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading: isDaoLoading, cycleInfo } = useDAO(id);
+  const daoId = useDAOID();
+  const { data, isLoading: isDaoLoading, cycleInfo } = useDAO(daoId);
   const { mutate } = useFlush();
 
   const name = data && data.data.name;
@@ -99,17 +98,11 @@ export const DAO: React.FC = () => {
   const blocksLeft = cycleInfo && cycleInfo.blocksLeft;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  const { data: proposals, isLoading: isProposalsLoading } = useProposals(
-    data ? data.data.address : ""
-  );
+  const { data: proposals, isLoading: isProposalsLoading } =
+    useProposals(daoId);
   const { data: activeProposals, isLoading: isActiveProposalsLoading } =
-    useProposals(data ? data.data.address : "", ProposalStatus.ACTIVE);
+    useProposals(daoId, ProposalStatus.ACTIVE);
   const isLoading = isDaoLoading || isProposalsLoading;
-
-  useEffect(() => {
-    saveDaoId(id);
-    saveDaoSymbol(symbol || "");
-  }, [id, symbol, saveDaoId, saveDaoSymbol]);
 
   const onFlush = useCallback(async () => {
     if (proposals && proposals.length && data) {
@@ -297,7 +290,7 @@ export const DAO: React.FC = () => {
             <UnderlineText
               variant="subtitle1"
               color="secondary"
-              onClick={() => history.push(`/explorer/dao/${id}/proposals`)}
+              onClick={() => history.push(`/explorer/dao/${daoId}/proposals`)}
             >
               VIEW ALL PROPOSALS
             </UnderlineText>

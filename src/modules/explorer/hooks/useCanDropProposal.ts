@@ -1,15 +1,13 @@
 import { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { BaseDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import {
-  Proposal,
-  ProposalStatus,
-} from "services/indexer/dao/mappers/proposal/types";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 
-export const useCanDropProposal = (dao?: BaseDAO, proposal?: Proposal) => {
+export const useCanDropProposal = (daoId: string, proposalId: string) => {
   const { account } = useTezos();
-  const { cycleInfo } = useDAO(dao?.data.address);
+  const { data: dao, cycleInfo } = useDAO(daoId);
+  const { data: proposal } = useProposal(daoId, proposalId);
 
   return useMemo(() => {
     if (!proposal || !dao) {

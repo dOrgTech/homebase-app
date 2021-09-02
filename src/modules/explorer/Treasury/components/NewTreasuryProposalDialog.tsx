@@ -25,18 +25,18 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
-import { useParams } from "react-router-dom";
 import * as Yup from "yup";
 import BigNumber from "bignumber.js";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 interface Asset {
-  contract: string,
-  level: number,
-  token_id: number,
-  symbol: string,
-  name: string,
-  decimals: number,
-  balance: BigNumber
+  contract: string;
+  level: number;
+  token_id: number;
+  symbol: string;
+  name: string;
+  decimals: number;
+  balance: BigNumber;
 }
 
 const AmountItem = styled(Grid)(({ theme }) => ({
@@ -229,7 +229,9 @@ export const treasuryValidationSchema = Yup.object().shape({
   transferForm: Yup.object().shape({
     transfers: Yup.array().of(
       Yup.object().shape({
-        amount: Yup.number().required("Required").positive("Should be positive"),
+        amount: Yup.number()
+          .required("Required")
+          .positive("Should be positive"),
         recipient: Yup.string().required("Required"),
       })
     ),
@@ -237,18 +239,12 @@ export const treasuryValidationSchema = Yup.object().shape({
 });
 
 export const NewTreasuryProposalDialog: React.FC = () => {
-  const {
-    values,
-    errors,
-    touched,
-    setFieldValue,
-  } = useFormikContext<TreasuryProposalFormValues>();
+  const { values, errors, touched, setFieldValue } =
+    useFormikContext<TreasuryProposalFormValues>();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTransfer, setActiveTransfer] = React.useState(1);
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const openNotification = useNotification();
@@ -288,7 +284,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
 
         if (currentTransfer.asset.symbol === "XTZ") {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return daoHoldings.find((balance) => balance.symbol === "XTZ")!
+          return daoHoldings
+            .find((balance) => balance.symbol === "XTZ")!
             .balance.toString();
         }
 
@@ -308,12 +305,12 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     [activeTransfer, daoHoldings]
   );
 
-  const recipientError = (errors.transferForm?.transfers?.[
-    activeTransfer - 1
-  ] as any)?.recipient;
-  const amountError = (errors.transferForm?.transfers?.[
-    activeTransfer - 1
-  ] as any)?.amount;
+  const recipientError = (
+    errors.transferForm?.transfers?.[activeTransfer - 1] as any
+  )?.recipient;
+  const amountError = (
+    errors.transferForm?.transfers?.[activeTransfer - 1] as any
+  )?.amount;
 
   const importTransactions = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -453,9 +450,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 ? daoHoldings.map((option) => option)
                                 : []
                             }
-                            getOptionLabel={(option: Asset) =>
-                              option.symbol
-                            }
+                            getOptionLabel={(option: Asset) => option.symbol}
                             renderInput={(params: any) => (
                               <MaterialTextField
                                 {...params}

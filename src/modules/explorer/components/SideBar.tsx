@@ -12,9 +12,10 @@ import { ReactComponent as HouseIcon } from "assets/logos/home.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
-import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { useDAOID } from "../daoRouter";
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,
@@ -129,7 +130,7 @@ export const SideBar: React.FC = () => {
   const history = useHistory();
   const { account } = useTezos();
   const { pathname } = useLocation();
-  const { id: daoId } = useParams<{ id: string }>();
+  const daoId = useDAOID();
   const { data: dao } = useDAO(daoId);
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));

@@ -9,9 +9,9 @@ import {
 import { DAOTemplate } from "modules/creator/state";
 import { RectangleContainer } from "./styled/RectangleHeader";
 import { CopyAddress } from "modules/common/CopyAddress";
-import { useParams } from "react-router-dom";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { SendXTZDialog } from "./SendXTZDialog";
+import { useDAOID } from "../daoRouter";
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -37,12 +37,8 @@ export const TemplateHeader: React.FC<{
 }> = ({ template, children }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { id } =
-    useParams<{
-      proposalId: string;
-      id: string;
-    }>();
-  const { data: dao } = useDAO(id);
+  const daoId = useDAOID();
+  const { data: dao } = useDAO(daoId);
 
   return (
     <Grid item xs={12}>
@@ -83,7 +79,10 @@ export const TemplateHeader: React.FC<{
               justify={isMobileSmall ? "center" : "flex-start"}
             />
           )}
-          <StyledSendXTZContainer container justify={isMobileSmall? "center": "flex-start"}>
+          <StyledSendXTZContainer
+            container
+            justify={isMobileSmall ? "center" : "flex-start"}
+          >
             <Grid item>
               <SendXTZDialog />
             </Grid>

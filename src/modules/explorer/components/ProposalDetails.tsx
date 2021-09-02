@@ -32,6 +32,7 @@ import {
   TreasuryProposal,
 } from "services/indexer/dao/mappers/proposal/types";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
+import { useDAOID } from "../daoRouter";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -96,16 +97,16 @@ const DropButton = styled(ViewButton)({
 });
 
 export const ProposalDetails: React.FC = () => {
-  const { proposalId, id: daoId } = useParams<{
+  const { proposalId } = useParams<{
     proposalId: string;
-    id: string;
   }>();
+  const daoId = useDAOID();
   const theme = useTheme();
   const { data: proposal } = useProposal(daoId, proposalId);
   const { data: dao, cycleInfo } = useDAO(daoId);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { mutate: dropProposal } = useDropProposal();
-  const canDropProposal = useCanDropProposal(dao, proposal);
+  const canDropProposal = useCanDropProposal(daoId, proposalId);
   const { data: agoraPost } = useAgoraTopic(
     Number(proposal?.metadata.agoraPostId)
   );

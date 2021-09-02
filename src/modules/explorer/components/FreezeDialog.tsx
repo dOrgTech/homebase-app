@@ -12,11 +12,10 @@ import {
 } from "@material-ui/core";
 import { theme } from "theme";
 import { ViewButton } from "./ViewButton";
-import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
-import { useParams } from "react-router-dom";
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useDAOID } from "../daoRouter";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -77,11 +76,7 @@ const CustomInput = styled(TextField)(({ theme }) => ({
 export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
-  const { daoSymbol } = useVisitedDAO();
-  const { id: daoId } =
-    useParams<{
-      id: string;
-    }>();
+  const daoId = useDAOID();
   const { mutate } = useFreeze();
   const { data: dao } = useDAO(daoId);
 
@@ -177,7 +172,9 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <Typography color="secondary">{daoSymbol}</Typography>
+                        <Typography color="secondary">
+                          {dao?.data.token.symbol}
+                        </Typography>
                       </InputAdornment>
                     ),
                   }}
