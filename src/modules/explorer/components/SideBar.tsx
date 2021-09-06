@@ -12,6 +12,7 @@ import { ReactComponent as HouseIcon } from "assets/logos/home.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
+import { ReactComponent as UserIcon } from "assets/logos/user.svg";
 import { useHistory, useLocation } from "react-router-dom";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -50,18 +51,27 @@ const SidebarButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+const IconContainer = styled("span")(({ theme }: { theme: Theme }) => ({
+  "& > svg > *": {
+    fill: ({ isSelected }: { isSelected: boolean }) =>
+      isSelected ? theme.palette.secondary.main : theme.palette.text.secondary,
+  },
+}));
+
 const ButtonIcon = ({
   Icon,
   isSelected,
   handler,
 }: {
-  Icon: React.FC<{ stroke?: string }>;
+  Icon: React.FC;
   isSelected: boolean;
   handler: () => void;
 }): JSX.Element => {
   return (
     <SidebarButton onClick={handler}>
-      <Icon stroke={isSelected ? "#4BCF93" : "white"} />
+      <IconContainer isSelected={isSelected}>
+        <Icon />
+      </IconContainer>
     </SidebarButton>
   );
 };
@@ -159,7 +169,7 @@ export const SideBar: React.FC = () => {
 
     if (account) {
       commonButons.push({
-        Icon: HouseIcon,
+        Icon: UserIcon,
         handler: () => history.push(`/explorer/dao/${daoId}/user`),
         name: "user",
       });

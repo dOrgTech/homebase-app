@@ -28,24 +28,28 @@ export const HistoryTable: React.FC = () => {
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
-        <TableHeader item container wrap="nowrap" id="demo">
-          <Grid item xs={6}>
+        <TableHeader
+          item
+          container
+          wrap="nowrap"
+          id="demo"
+          justifyContent="space-between"
+        >
+          <Grid item xs={3}>
             <ProposalTableHeadText align={"left"}>
               TOKEN TRANSFER HISTORY
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"right"}>DATE</ProposalTableHeadText>
+          <Grid item xs={3}>
+            <ProposalTableHeadText align={"left"}>DATE</ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"right"}>
+          <Grid item xs={3}>
+            <ProposalTableHeadText align={"left"}>
               RECIPIENT
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"right"}>
-              AMOUNT
-            </ProposalTableHeadText>
+          <Grid item xs={1}>
+            <ProposalTableHeadText align={"left"}>AMOUNT</ProposalTableHeadText>
           </Grid>
         </TableHeader>
       )}

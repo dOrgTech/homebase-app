@@ -3,7 +3,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Grid,
   GridProps,
   Theme,
@@ -29,6 +28,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import { ProfileAvatar } from "../components/styled/ProfileAvatar";
 import { UserProfileName } from "../components/UserProfileName";
 import { useDAOID } from "../daoRouter";
+import { FreezeDialog } from "../components/FreezeDialog";
 
 const ContentBlockHeader = styled(AccordionSummary)(
   ({ theme }: { theme: Theme }) => ({
@@ -160,7 +160,7 @@ const ProposalItem: React.FC<{ proposal: Proposal; status: ProposalStatus }> =
               </ProposalTitle>
             </Grid>
             <Grid item>
-              <Grid container style={{ gap: 35 }} alignItems="center">
+              <Grid container style={{ gap: 20 }} alignItems="center">
                 <Grid item>
                   <TableStatusBadge status={status} />
                 </Grid>
@@ -294,14 +294,10 @@ export const User: React.FC = () => {
             <Grid item>
               <Grid container spacing={2} alignItems="center">
                 <Grid item>
-                  <Button variant="outlined" color="secondary">
-                    Withdraw
-                  </Button>
+                  <FreezeDialog freeze={true} />
                 </Grid>
                 <Grid item>
-                  <Button variant="outlined" color="secondary">
-                    Deposit
-                  </Button>
+                  <FreezeDialog freeze={false} />
                 </Grid>
               </Grid>
             </Grid>
@@ -367,7 +363,7 @@ export const User: React.FC = () => {
             <ContentBlock
               container
               direction="column"
-              headerText="Proposals Posted"
+              headerText="Voting History"
             >
               {proposalsVoted.map(({ proposal, voteDecision }, i) => (
                 <ProposalItem

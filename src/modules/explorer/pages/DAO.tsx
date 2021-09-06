@@ -8,6 +8,7 @@ import {
   useTheme,
   Tooltip,
   useMediaQuery,
+  Button,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
@@ -18,7 +19,6 @@ import { DAOStatsRow } from "../components/DAOStatsRow";
 import { TopHoldersTable } from "../components/TopHoldersTable";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { ProposalsTable } from "../components/ProposalsTable";
-import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
 import { FreezeDialog } from "../components/FreezeDialog";
 import { InfoIcon } from "../components/styled/InfoIcon";
@@ -147,13 +147,14 @@ export const DAO: React.FC = () => {
                         </CustomH1>
                       </Grid>
                       <Grid item>
-                        <ViewButton
+                        <Button
+                          color="secondary"
                           variant="outlined"
                           onClick={onFlush}
                           // disabled={!data?.storage.proposalsToFlush}
                         >
                           EXECUTE
-                        </ViewButton>
+                        </Button>
                         <Tooltip
                           placement="bottom"
                           title="Execute all passed proposals and drop all expired or rejected"

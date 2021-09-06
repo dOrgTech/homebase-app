@@ -9,6 +9,7 @@ import {
   DialogTitle,
   TextField,
   InputAdornment,
+  Button,
 } from "@material-ui/core";
 import { theme } from "theme";
 import { ViewButton } from "./ViewButton";
@@ -102,13 +103,9 @@ export const SendXTZDialog: React.FC = () => {
 
   return (
     <div>
-      <ViewButton
-        customColor={theme.palette.secondary.main}
-        onClick={handleClickOpen}
-        variant="outlined"
-      >
+      <Button color="secondary" onClick={handleClickOpen} variant="outlined">
         Send XTZ
-      </ViewButton>
+      </Button>
       <CustomDialog
         open={open}
         onClose={handleClose}

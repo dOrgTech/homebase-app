@@ -67,7 +67,7 @@ export const TreasuryHistoryRow: React.FC<{
       >
         <Grid
           item
-          xs={isMobileSmall ? 12 : 6}
+          xs={isMobileSmall ? 12 : 3}
           container
           justify={isMobileSmall ? "center" : "flex-start"}
         >
@@ -80,14 +80,14 @@ export const TreasuryHistoryRow: React.FC<{
         </Grid>
         <Grid
           item
-          xs={isMobileSmall ? 12 : 2}
+          xs={isMobileSmall ? 12 : 3}
           container
-          justify={isMobileSmall ? "center" : "flex-end"}
+          justify={isMobileSmall ? "center" : "flex-start"}
         >
           <Typography
             variant="subtitle1"
             color="textSecondary"
-            align={isMobileSmall ? "center" : "right"}
+            align={isMobileSmall ? "left" : "right"}
           >
             {isMobileSmall ? "DATE " : null} {dayjs(date).format("ll")}
           </Typography>
@@ -96,19 +96,14 @@ export const TreasuryHistoryRow: React.FC<{
           xs={isMobileSmall ? 12 : 3}
           item
           container
-          justify={isMobileSmall ? "center" : "flex-end"}
+          justify={isMobileSmall ? "center" : "flex-start"}
         >
-          <Grid
-            container
-            direction="row"
-            justify={"center"}
-            alignItems="center"
-          >
+          <Grid container direction="row" alignItems="center">
             {isMobileSmall ? (
               <Typography
                 variant="subtitle1"
                 color="textSecondary"
-                align={isMobileSmall ? "center" : "right"}
+                align={isMobileSmall ? "center" : "left"}
               >
                 RECIPIENT{" "}
               </Typography>
@@ -126,10 +121,10 @@ export const TreasuryHistoryRow: React.FC<{
           item
           xs={isMobileSmall ? 12 : 1}
           container
-          justify={isMobileSmall ? "center" : "flex-end"}
+          justify={isMobileSmall ? "center" : "flex-start"}
         >
-          <Cursor variant="subtitle1" color="textSecondary" align="right">
-            {isMobileSmall ? "AMOUNT " : null} {(amount).dp(10).toString()}
+          <Cursor variant="subtitle1" color="textSecondary" align="left">
+            {isMobileSmall ? "AMOUNT " : null} {amount.dp(10).toString()}
           </Cursor>
         </Grid>
       </Container>

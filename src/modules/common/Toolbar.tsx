@@ -91,6 +91,7 @@ const explorerBorder = (theme: Theme) => ({
 });
 
 const LogoItem = styled("img")({
+  height: "30px",
   cursor: "pointer",
   paddingTop: 8,
 });

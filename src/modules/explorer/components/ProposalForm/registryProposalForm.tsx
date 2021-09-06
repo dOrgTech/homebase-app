@@ -100,8 +100,6 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
     agoraPostId: "0",
   };
 
-  console.log(dao?.data.extra);
-
   return (
     <Dialog
       open={open}

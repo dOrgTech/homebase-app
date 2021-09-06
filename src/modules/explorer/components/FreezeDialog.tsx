@@ -9,9 +9,8 @@ import {
   DialogTitle,
   TextField,
   InputAdornment,
+  Button,
 } from "@material-ui/core";
-import { theme } from "theme";
-import { ViewButton } from "./ViewButton";
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -22,7 +21,7 @@ const CloseButton = styled(Typography)({
   cursor: "pointer",
 });
 
-const SendButton = styled(ViewButton)(({ theme }) => ({
+const SendButton = styled(Button)(({ theme }) => ({
   width: 229,
   border: "none",
   margin: 23,
@@ -103,13 +102,9 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
   return (
     <div>
-      <ViewButton
-        customColor={theme.palette.secondary.main}
-        onClick={handleClickOpen}
-        variant="outlined"
-      >
-        {freeze ? "Stake" : "Unstake"}
-      </ViewButton>
+      <Button onClick={handleClickOpen} variant="outlined" color="secondary">
+        {freeze ? "Deposit" : "Withdraw"}
+      </Button>
       <CustomDialog
         open={open}
         onClose={handleClose}
@@ -125,7 +120,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
           >
             <Grid item xs={6}>
               <Typography variant="subtitle1" color="secondary">
-                {freeze ? "STAKE" : "UNSTAKE"}{" "}
+                {freeze ? "DEPOSIT" : "WITHDRAW"}{" "}
               </Typography>
             </Grid>
             <Grid item xs={6}>
@@ -144,7 +139,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
             <TableHeader container direction="row" alignItems="center">
               <Grid item xs={12}>
                 <Typography variant="h5" color="textSecondary">
-                  Confirm the {freeze ? "staking" : "unstaking"} of your tokens
+                  Confirm the {freeze ? "deposit" : "withdrawal"} of your tokens
                 </Typography>
               </Grid>
               <TextHeader
@@ -188,12 +183,11 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
               justify="center"
             >
               <SendButton
-                customColor={theme.palette.secondary.main}
                 variant="outlined"
                 disabled={!amount}
                 onClick={onSubmit}
               >
-                {freeze ? "STAKE" : "UNSTAKE"} TOKENS
+                {freeze ? "DEPOSIT" : "WITHDRAW"} TOKENS
               </SendButton>
             </Grid>
           </DialogContentText>

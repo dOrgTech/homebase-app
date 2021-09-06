@@ -7,12 +7,7 @@ import {
   DialogContent,
   DialogContentText,
 } from "@material-ui/core";
-import {
-  Form,
-  Field,
-  FieldArray,
-  useFormikContext,
-} from "formik";
+import { Form, Field, FieldArray, useFormikContext } from "formik";
 import { TextField, Switch } from "formik-material-ui";
 import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
 import { useNotification } from "modules/common/hooks/useNotification";
@@ -132,12 +127,8 @@ export const registryValidationSchema = Yup.object().shape({
 });
 
 export const UpdateRegistryDialog: React.FC = () => {
-  const {
-    values,
-    setFieldValue,
-    errors,
-    touched,
-  } = useFormikContext<UpdateRegistryDialogValues>();
+  const { values, setFieldValue, errors, touched } =
+    useFormikContext<UpdateRegistryDialogValues>();
   const [activeItem, setActiveItem] = React.useState(1);
   const openNotification = useNotification();
 

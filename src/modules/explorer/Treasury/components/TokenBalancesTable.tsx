@@ -17,17 +17,25 @@ export const TokenTable: React.FC = () => {
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
-        <TableHeader item container wrap="nowrap" id="demo">
-          <Grid item xs={5}>
+        <TableHeader
+          item
+          container
+          wrap="nowrap"
+          id="demo"
+          justify="space-between"
+        >
+          <Grid item xs={3}>
             <ProposalTableHeadText align={"left"}>
               TOKEN BALANCES
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={7}>
-            <ProposalTableHeadText align={"right"}>
+          <Grid item xs={3} />
+          <Grid item xs={3}>
+            <ProposalTableHeadText align={"left"}>
               BALANCE
             </ProposalTableHeadText>
           </Grid>
+          <Grid item xs={1} />
         </TableHeader>
       )}
       {tokenHoldings && tokenHoldings.length

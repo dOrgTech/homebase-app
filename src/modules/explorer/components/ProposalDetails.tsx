@@ -1,5 +1,7 @@
 import {
+  Button,
   Grid,
+  Link,
   styled,
   Tooltip,
   Typography,
@@ -10,6 +12,7 @@ import {
 import React from "react";
 import { useParams } from "react-router";
 import ReactHtmlParser from "react-html-parser";
+import { ReactComponent as ClipIcon } from "assets/logos/clip.svg";
 
 import { VoteDialog } from "modules/explorer/components/VoteDialog";
 import { StatusBadge } from "./StatusBadge";
@@ -19,7 +22,6 @@ import { VotersProgress } from "./VotersProgress";
 import { TreasuryProposalDetail } from "../Treasury/components/TreasuryProposalDetail";
 import { RegistryProposalDetail } from "../Registry/components/RegistryProposalDetail";
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal";
-import { ViewButton } from "./ViewButton";
 import { BaseDAO } from "services/contracts/baseDAO";
 import { toShortAddress } from "services/contracts/utils";
 import { useCanDropProposal } from "../hooks/useCanDropProposal";
@@ -66,7 +68,7 @@ const DetailsContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 0,
   padding: "40px 8%",
   [theme.breakpoints.down("sm")]: {
-    padding: "40px 0",
+    padding: "40px 16px",
   },
 }));
 
@@ -92,7 +94,7 @@ const ProposalStatusBadge = styled(StatusBadge)(({ theme }) => ({
   },
 }));
 
-const DropButton = styled(ViewButton)({
+const DropButton = styled(Button)({
   marginTop: "12px",
 });
 
@@ -175,6 +177,7 @@ export const ProposalDetails: React.FC = () => {
                   <Grid item>
                     <DropButton
                       variant="outlined"
+                      color="secondary"
                       onClick={onDropProposal}
                       disabled={!canDropProposal}
                     >
@@ -230,6 +233,27 @@ export const ProposalDetails: React.FC = () => {
                   </Typography>
                 )}
               </Grid>
+              {agoraPost && (
+                <Grid item xs={12}>
+                  <Link
+                    href={`https://forum.tezosagora.org/t/${proposal?.metadata.agoraPostId}`}
+                    underline="hover"
+                    target="_blank"
+                  >
+                    <Grid container style={{ gap: 5 }} wrap="nowrap">
+                      <Grid item>
+                        <ClipIcon />
+                      </Grid>
+                      <Grid item>
+                        <Typography color="secondary">
+                          https://forum.tezosagora.org/t/
+                          {proposal?.metadata.agoraPostId}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Link>
+                </Grid>
+              )}
               {proposal ? (
                 proposal.dao.data.type === "treasury" ? (
                   <TreasuryProposalDetail

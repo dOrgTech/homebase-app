@@ -5,6 +5,7 @@ import {
   Tooltip,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@material-ui/core";
 import React, { useCallback } from "react";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
@@ -12,7 +13,6 @@ import { DAOStatsRow } from "../components/DAOStatsRow";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { ProposalsTable } from "../components/ProposalsTable";
-import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
@@ -96,13 +96,14 @@ export const Proposals: React.FC = () => {
               </Grid>
               <Grid item>
                 <Grid item>
-                  <ViewButton
+                  <Button
                     variant="outlined"
                     onClick={onFlush}
+                    color="secondary"
                     // disabled={!dao?.storage.proposalsToFlush}
                   >
                     EXECUTE
-                  </ViewButton>
+                  </Button>
                   <Tooltip
                     placement="bottom"
                     title="Execute all passed proposals and drop all expired or rejected"

@@ -121,7 +121,7 @@ export const TopHoldersTable: React.FC = () => {
           {formattedMembers.slice(0, 10).map((holder, i) => (
             <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
           ))}
-          {formattedMembers.length && (
+          {formattedMembers.length > 10 && (
             <Grid container direction="row" justify="center">
               <UnderlineText
                 variant="subtitle1"

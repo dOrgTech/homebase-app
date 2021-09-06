@@ -1,10 +1,9 @@
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
-import BigNumber from "bignumber.js";
 import { useDAOID } from "modules/explorer/daoRouter";
 import React, { useMemo } from "react";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { mutezToXtz } from "services/contracts/utils";
+import { mutezToXtz, parseUnits } from "services/contracts/utils";
 import {
   TreasuryProposal,
   FA2Transfer,
@@ -50,7 +49,7 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
 
       return {
         ...transfer,
-        amount: new BigNumber(transfer.amount, decimal),
+        amount: parseUnits(transfer.amount, decimal),
       };
     });
   }, [holdings, proposal]);

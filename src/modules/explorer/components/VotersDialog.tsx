@@ -10,10 +10,10 @@ import {
   DialogTitle,
   CircularProgress,
   makeStyles,
+  Button,
 } from "@material-ui/core";
 
 import { ProgressBar } from "modules/explorer/components";
-import { ViewButton } from "./ViewButton";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { VotersProgress } from "./VotersProgress";
 import { AppTabBar } from "./AppTabBar";
@@ -46,7 +46,7 @@ const CustomDialog = styled(Dialog)({
   },
 });
 
-const StyledViewButton = styled(ViewButton)({
+const StyledViewButton = styled(Button)({
   marginTop: -30,
 });
 
@@ -171,9 +171,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
     <div>
       <StyledViewButton
         variant="outlined"
-        customColor={
-          favor ? theme.palette.secondary.main : theme.palette.error.main
-        }
+        color="secondary"
         onClick={handleClickOpen}
       >
         VIEW
