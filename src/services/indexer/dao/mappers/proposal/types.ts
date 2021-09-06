@@ -18,8 +18,7 @@ export enum IndexerStatus {
   CREATED = "created",
   DROPPED = "dropped",
   EXECUTED = "executed",
-  PASSED = "passed",
-  REJECTED = "rejected",
+  REJECTED_AND_FLUSHED = "rejected_and_flushed",
 }
 
 export interface Voter {
@@ -46,8 +45,7 @@ export enum ProposalStatus {
 
 const INDEXER_TO_PROPOSAL_STATUS_MAP: Record<IndexerStatus, ProposalStatus> = {
   created: ProposalStatus.PENDING,
-  passed: ProposalStatus.PASSED,
-  rejected: ProposalStatus.REJECTED,
+  rejected_and_flushed: ProposalStatus.DROPPED,
   dropped: ProposalStatus.DROPPED,
   executed: ProposalStatus.EXECUTED,
 };
@@ -198,11 +196,7 @@ export abstract class Proposal {
         });
       }
 
-      if (
-        currentLevel >= expiredThreshold &&
-        !statusHistory.some((s) => s.status === ProposalStatus.EXECUTED) &&
-        !statusHistory.some((s) => s.status === ProposalStatus.DROPPED)
-      ) {
+      if (currentLevel >= expiredThreshold) {
         statusHistory.push({
           status: ProposalStatus.EXPIRED,
           timestamp: `Level ${
@@ -213,14 +207,21 @@ export abstract class Proposal {
       }
 
       const orderedStatusHistory = statusHistory.sort(
-        (a, b) =>
-          Number((a.timestamp.match(/(\d+)/) as RegExpMatchArray)[0]) -
-          Number((b.timestamp.match(/(\d+)/) as RegExpMatchArray)[0])
+        (a, b) => a.level - b.level
       );
 
+      const finalStatuses = [ProposalStatus.DROPPED, ProposalStatus.EXECUTED];
+      const finalStatusIndex = statusHistory.findIndex((a) =>
+        finalStatuses.includes(a.status)
+      );
+      const filteredStatusHistory =
+        finalStatusIndex > -1
+          ? orderedStatusHistory.splice(0, finalStatusIndex + 1)
+          : orderedStatusHistory;
+
       this.cachedStatus = {
-        status: orderedStatusHistory.slice(-1)[0].status,
-        statusHistory: orderedStatusHistory,
+        status: filteredStatusHistory.slice(-1)[0].status,
+        statusHistory: filteredStatusHistory,
         level: currentLevel,
       };
     }
