@@ -8,6 +8,8 @@ export const useAgoraTopic = (topicId?: number) => {
     () => getTopicById(topicId as number),
     {
       enabled: !!topicId,
+      cacheTime: Infinity,
+      refetchOnWindowFocus: false,
     }
   );
 

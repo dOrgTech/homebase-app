@@ -8,18 +8,19 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Button,
 } from "@material-ui/core";
 import { theme } from "theme";
 import { ViewButton } from "./ViewButton";
-import { useParams } from "react-router-dom";
 import { useSendXTZ } from "services/contracts/baseDAO/hooks/useSendXTZ";
 import BigNumber from "bignumber.js";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useDAOID } from "../daoRouter";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 const SendButton = styled(ViewButton)(({ theme }) => ({
@@ -30,8 +31,8 @@ const SendButton = styled(ViewButton)(({ theme }) => ({
   borderRadius: 4,
   color: theme.palette.text.secondary,
   "&:hover": {
-    background: theme.palette.secondary.main
-  }
+    background: theme.palette.secondary.main,
+  },
 }));
 
 const Title = styled(DialogTitle)(({ theme }) => ({
@@ -39,46 +40,44 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   paddingBottom: 0,
   minWidth: 400,
   [theme.breakpoints.down("xs")]: {
-    minWidth: 250
+    minWidth: 250,
   },
   "& .MuiDialogTitle-root": {
-    padding: "67px 47px"
-  }
+    padding: "67px 47px",
+  },
 }));
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthSm": {
-    minHeight: "400px !important"
-  }
+    minHeight: "400px !important",
+  },
 });
 
 const TextHeader = styled(Typography)({
-  marginTop: 33
+  marginTop: 33,
 });
 
 const InputContainer = styled(Grid)({
   borderTop: "2px solid #3D3D3D",
   borderBottom: "2px solid #3D3D3D",
-  padding: "27px 67px"
+  padding: "27px 67px",
 });
 
 const TableHeader = styled(Grid)({
-  padding: "33px 64px"
+  padding: "33px 64px",
 });
 
 const CustomInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     textAlign: "end",
-    color: theme.palette.secondary.main
-  }
+    color: theme.palette.secondary.main,
+  },
 }));
 
 export const SendXTZDialog: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const { mutate } = useSendXTZ();
   const { data: dao } = useDAO(daoId);
 
@@ -88,7 +87,7 @@ export const SendXTZDialog: React.FC = () => {
 
   const handleClose = () => {
     setOpen(false);
-    setAmount(0)
+    setAmount(0);
   };
 
   const onSubmit = useCallback(async () => {
@@ -96,7 +95,7 @@ export const SendXTZDialog: React.FC = () => {
       mutate({
         dao,
         amount: new BigNumber(amount),
-      })
+      });
 
       handleClose();
     }
@@ -104,13 +103,9 @@ export const SendXTZDialog: React.FC = () => {
 
   return (
     <div>
-      <ViewButton
-        customColor={theme.palette.secondary.main}
-        onClick={handleClickOpen}
-        variant="outlined"
-      >
+      <Button color="secondary" onClick={handleClickOpen} variant="outlined">
         Send XTZ
-      </ViewButton>
+      </Button>
       <CustomDialog
         open={open}
         onClose={handleClose}
@@ -174,7 +169,7 @@ export const SendXTZDialog: React.FC = () => {
                       <InputAdornment position="end">
                         <Typography color="secondary">XTZ</Typography>
                       </InputAdornment>
-                    )
+                    ),
                   }}
                 />{" "}
               </Grid>

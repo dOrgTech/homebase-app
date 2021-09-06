@@ -9,9 +9,9 @@ import {
   CycleInfo,
 } from "services/contracts/baseDAO";
 import { parseUnits } from "services/contracts/utils";
-import { getDAO } from "../services";
+import { getDAO } from "services/indexer/dao/services";
 
-export const useDAO = (address: string | undefined) => {
+export const useDAO = (address: string) => {
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>();
   const {
     state: { block },
@@ -144,14 +144,21 @@ export const useDAO = (address: string | undefined) => {
 
   const ledgerWithBalances = useMemo(() => {
     if (data && cycleInfo) {
-      return data.data.ledger.map((l) => ({
-        ...l,
-        available_balance:
-          cycleInfo.currentCycle > l.current_stage_num
+      return data.data.ledger.map((l) => {
+        const available_balance =
+          cycleInfo.currentCycle > Number(l.current_stage_num)
             ? l.current_unstaked.plus(l.past_unstaked)
-            : l.past_unstaked,
-        total_balance: l.current_unstaked.plus(l.past_unstaked),
-      }));
+            : l.past_unstaked;
+
+        const total_balance = l.current_unstaked.plus(l.past_unstaked);
+
+        return {
+          ...l,
+          available_balance,
+          pending_balance: total_balance.minus(available_balance),
+          total_balance,
+        };
+      });
     }
   }, [data, cycleInfo]);
 

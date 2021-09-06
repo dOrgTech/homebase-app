@@ -7,7 +7,6 @@ import {
   treasuryValidationSchema,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef } from "react";
-import { useParams } from "react-router";
 import { TreasuryDAO } from "services/contracts/baseDAO";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { SendButton } from "../ProposalFormSendButton";
@@ -16,6 +15,7 @@ import { TextField } from "formik-material-ui";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 interface Props {
   open: boolean;
@@ -38,9 +38,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
   open,
   handleClose,
 }) => {
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const { data: daoData } = useDAO(daoId);
   const { data: daoHoldings } = useDAOHoldings(daoId);
   const dao = daoData as TreasuryDAO | undefined;
@@ -80,7 +78,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
 
   const initialValues = {
     ...INITIAL_TRANSFER_FORM_VALUES,
-    agoraPostId: "0"
+    agoraPostId: "0",
   };
 
   return (

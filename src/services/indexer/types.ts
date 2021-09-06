@@ -88,7 +88,7 @@ export interface HolderDTO {
 
 export interface LedgerDTO {
   id: number;
-  current_stage_num: number;
+  current_stage_num: string;
   current_unstaked: BigNumber;
   past_unstaked: BigNumber;
   staked: BigNumber;

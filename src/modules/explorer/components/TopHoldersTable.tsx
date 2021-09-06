@@ -8,8 +8,8 @@ import {
 } from "@material-ui/core";
 import BigNumber from "bignumber.js";
 import React, { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
+import { useDAOID } from "../daoRouter";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
 import { TopHoldersTableRow } from "./TokenHolders";
@@ -42,9 +42,9 @@ const LoaderContainer = styled(Grid)({
 });
 
 export const TopHoldersTable: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const daoId = useDAOID();
   const [displayAll, setDisplayAll] = useState(false);
-  const { data: members, isLoading } = useTokenHoldersWithVotes(id);
+  const { data: members, isLoading } = useTokenHoldersWithVotes(daoId);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -121,7 +121,7 @@ export const TopHoldersTable: React.FC = () => {
           {formattedMembers.slice(0, 10).map((holder, i) => (
             <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
           ))}
-          {formattedMembers.length && (
+          {formattedMembers.length > 10 && (
             <Grid container direction="row" justify="center">
               <UnderlineText
                 variant="subtitle1"

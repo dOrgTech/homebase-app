@@ -8,7 +8,7 @@ const StyledBox = styled(Box)(
     height: size || 23,
     minWidth: size || 23,
     maxHeight: size || 23,
-    borderRadius: "3px",
+    borderRadius: "50%",
     background: `url(${address})`,
     backgroundSize: "contain",
   })

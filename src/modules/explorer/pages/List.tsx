@@ -19,6 +19,7 @@ import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs";
+import { Navbar } from "modules/common/Toolbar";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
@@ -185,90 +186,93 @@ export const DAOsList: React.FC = () => {
   };
 
   return (
-    <Box bgcolor="primary.main" width="100%" height="100%">
-      <GridContainer
-        container
-        direction="row"
-        alignItems="center"
-        justify="center"
-      >
-        <Grid item xs={12} md={6}>
-          <SearchInput search={filterDAOs} />
-        </Grid>
-        <Grid
+    <>
+      <Navbar mode="explorer" />
+      <Box bgcolor="primary.main" width="100%" height="100%">
+        <GridContainer
           container
-          item
           direction="row"
-          justify={isMobileSmall ? "center" : "flex-end"}
           alignItems="center"
-          alignContent="center"
-          xs={12}
-          md={6}
+          justify="center"
         >
-          <DaoTotalContainer item>
-            <TotalDao color="textSecondary" variant="subtitle1" align="right">
-              {currentDAOs.length} DAOs
-            </TotalDao>
-          </DaoTotalContainer>
-          <CreateDaoContainer item>
-            <PrimaryButton
-              color="secondary"
-              variant="outlined"
-              onClick={() => history.push("/creator")}
-              fullWidth={isMobileExtraSmall}
-            >
-              Create DAO
-            </PrimaryButton>
-          </CreateDaoContainer>
-        </Grid>
-      </GridContainer>
+          <Grid item xs={12} md={6}>
+            <SearchInput search={filterDAOs} />
+          </Grid>
+          <Grid
+            container
+            item
+            direction="row"
+            justify={isMobileSmall ? "center" : "flex-end"}
+            alignItems="center"
+            alignContent="center"
+            xs={12}
+            md={6}
+          >
+            <DaoTotalContainer item>
+              <TotalDao color="textSecondary" variant="subtitle1" align="right">
+                {currentDAOs.length} DAOs
+              </TotalDao>
+            </DaoTotalContainer>
+            <CreateDaoContainer item>
+              <PrimaryButton
+                color="secondary"
+                variant="outlined"
+                onClick={() => history.push("/creator")}
+                fullWidth={isMobileExtraSmall}
+              >
+                Create DAO
+              </PrimaryButton>
+            </CreateDaoContainer>
+          </Grid>
+        </GridContainer>
 
-      <>
-        <AppTabBar
-          class1={style}
-          value={selectedTab}
-          setValue={setSelectedTab}
-          labels={["ALL", "MY DAOS"]}
-        />
-        <TabPanel value={selectedTab} index={0}>
-          <GridBackground container direction="row">
-            {currentDAOs.map((dao, i) => (
-              <DAOItem key={`current-${i}`} dao={dao} />
-            ))}
-            {isLoading ? (
-              <LoaderContainer container direction="row" justify="center">
-                <CircularProgress color="secondary" />
-              </LoaderContainer>
-            ) : null}
-          </GridBackground>
-        </TabPanel>
-        <TabPanel value={selectedTab} index={1}>
-          <GridBackground container direction="row">
-            {!account ? (
-              <Box width="100%" padding="50px">
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align={"center"}
-                >
-                  <Link
-                    color="secondary"
-                    onClick={() => connect()}
-                    style={{ cursor: "pointer" }}
+        <>
+          <AppTabBar
+            class1={style}
+            value={selectedTab}
+            setValue={setSelectedTab}
+            labels={["ALL", "MY DAOS"]}
+          />
+          <TabPanel value={selectedTab} index={0}>
+            <GridBackground container direction="row">
+              {currentDAOs.map((dao, i) => (
+                <DAOItem key={`current-${i}`} dao={dao} />
+              ))}
+              {isLoading ? (
+                <LoaderContainer container direction="row" justify="center">
+                  <CircularProgress color="secondary" />
+                </LoaderContainer>
+              ) : null}
+            </GridBackground>
+          </TabPanel>
+          <TabPanel value={selectedTab} index={1}>
+            <GridBackground container direction="row">
+              {!account ? (
+                <Box width="100%" padding="50px">
+                  <Typography
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align={"center"}
                   >
-                    Connect your wallet
-                  </Link>{" "}
-                  to see which DAOs you hold a stake in
-                </Typography>
-              </Box>
-            ) : (
-              currentDAOs
-                .filter((dao) => dao.votingAddresses.includes(account))
-                .map((dao, i) => <DAOItem key={`mine-${i}`} dao={dao} />)
-            )}
-          </GridBackground>
-        </TabPanel>
-      </>
-    </Box>
+                    <Link
+                      color="secondary"
+                      onClick={() => connect()}
+                      style={{ cursor: "pointer" }}
+                    >
+                      Connect your wallet
+                    </Link>{" "}
+                    to see which DAOs you hold a stake in
+                  </Typography>
+                </Box>
+              ) : (
+                currentDAOs
+                  .filter((dao) => dao.votingAddresses.includes(account))
+                  .map((dao, i) => <DAOItem key={`mine-${i}`} dao={dao} />)
+              )}
+            </GridBackground>
+          </TabPanel>
+        </>
+      </Box>
+    </>
   );
 };

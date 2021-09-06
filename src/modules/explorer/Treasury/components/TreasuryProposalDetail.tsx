@@ -1,10 +1,9 @@
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
-import BigNumber from "bignumber.js";
+import { useDAOID } from "modules/explorer/daoRouter";
 import React, { useMemo } from "react";
-import { useParams } from "react-router-dom";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { mutezToXtz } from "services/contracts/utils";
+import { mutezToXtz, parseUnits } from "services/contracts/utils";
 import {
   TreasuryProposal,
   FA2Transfer,
@@ -21,10 +20,7 @@ const Container = styled(Grid)({
 
 export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
   const theme = useTheme();
-  const { id: daoId } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: holdings } = useDAOHoldings(daoId);
 
@@ -53,7 +49,7 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
 
       return {
         ...transfer,
-        amount: new BigNumber(transfer.amount, decimal),
+        amount: parseUnits(transfer.amount, decimal),
       };
     });
   }, [holdings, proposal]);
@@ -74,7 +70,6 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 amount={transfer.amount}
                 address={transfer.beneficiary}
                 currency={"XTZ"}
-                long={true}
               />
             ) : (
               <TransferBadge
@@ -82,7 +77,6 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 address={transfer.beneficiary}
                 contract={(transfer as FA2Transfer).contractAddress}
                 tokenId={(transfer as FA2Transfer).tokenId}
-                long={true}
               />
             )}
           </Container>

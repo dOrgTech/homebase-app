@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
-import { useParams } from "react-router-dom";
 
 import { TemplateHeader } from "modules/explorer/components/TemplateHeader";
 import { RegistryDAO } from "services/contracts/baseDAO";
@@ -13,18 +12,16 @@ import { TabPanel } from "modules/explorer/components/TabPanel";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
 import { RegistryProposal } from "services/indexer/dao/mappers/proposal/types";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 export const Registry: React.FC = () => {
-  const { id } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const { data: daoData } = useDAO(id);
+  const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
-  const { data: proposalsData } = useProposals(dao?.data.address);
+  const { data: proposalsData } = useProposals(daoId);
   const registryProposalsData = proposalsData as RegistryProposal[] | undefined;
 
   const proposals = useMemo(() => {

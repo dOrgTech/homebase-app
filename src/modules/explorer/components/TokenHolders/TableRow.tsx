@@ -6,9 +6,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import { Blockie } from "modules/common/Blockie";
 import { toShortAddress } from "services/contracts/utils";
 import { RowContainer } from "../tables/RowContainer";
+import { useProfileClaim } from "services/tzprofiles/hooks/useProfileClaim";
+import { ProfileAvatar } from "../styled/ProfileAvatar";
 
 export interface TokenHoldersRowData {
   username: string;
@@ -53,6 +54,21 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
 }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const { data: profile } = useProfileClaim(username);
+
+  const getDisplayName = () => {
+    if (!profile) {
+      if (isMobileSmall) {
+        return toShortAddress(username);
+      }
+
+      return username;
+    }
+
+    return profile.credentialSubject.alias;
+  };
+
+  const displayName = getDisplayName();
 
   return (
     <RowContainer item container alignItems="center" justify="center">
@@ -69,9 +85,9 @@ export const TopHoldersTableRow: React.FC<TokenHoldersRowData> = ({
 
             <Grid item md={10}>
               <Grid container direction="row" alignItems="center" wrap="nowrap">
-                <Blockie address={username} size={40} />
+                <ProfileAvatar address={username} size={40} />
                 <Username variant="body1" color="textSecondary">
-                  {isMobileSmall ? toShortAddress(username) : username}
+                  {displayName}
                 </Username>
               </Grid>
             </Grid>

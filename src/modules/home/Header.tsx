@@ -20,6 +20,7 @@ const StyledAppBar = styled(AppBar)({
 const LogoItem = styled("img")({
   cursor: "pointer",
   paddingTop: 8,
+  height: "30px",
 });
 
 const LogoText = styled(Typography)({
@@ -74,7 +75,7 @@ export const Header: React.FC = () => {
               </Grid>
             </Link>
           </Grid>
-          <Grid>
+          <Grid item>
             <Link href="/explorer" underline="none">
               <HeaderButton>ENTER APP</HeaderButton>
             </Link>

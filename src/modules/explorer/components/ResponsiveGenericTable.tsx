@@ -4,7 +4,7 @@ import { ResponsiveTableContainer } from "./ResponsiveTable";
 export const ResponsiveGenericTable = styled(ResponsiveTableContainer)(
   ({ theme }) => ({
     width: "100%",
-    padding: "72px 0%",
+    padding: "72px 0",
     boxSizing: "border-box",
     paddingBottom: "24px",
     [theme.breakpoints.down("sm")]: {

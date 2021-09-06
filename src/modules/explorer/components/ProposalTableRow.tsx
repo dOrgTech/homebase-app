@@ -102,6 +102,7 @@ export const ProposalTableRow: React.FC<{ proposal: Proposal }> = ({
             direction={isMobileSmall ? "column" : "row"}
             alignItems={isMobileSmall ? "center" : "flex-start"}
             wrap="nowrap"
+            style={{ gap: 32 }}
           >
             {cycleInfo && (
               <TableStatusBadge

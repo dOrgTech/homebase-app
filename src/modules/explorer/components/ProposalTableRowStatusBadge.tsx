@@ -1,68 +1,38 @@
 import React from "react";
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import hexToRgba from "hex-to-rgba";
 
-const statusColors = (status: ProposalStatus, theme: Theme) => {
-  switch (status) {
-    case ProposalStatus.ACTIVE:
-      return {
-        background: "rgba(255, 200, 57, 0.4)",
-        color: "#FFC839",
-      };
-    case ProposalStatus.PENDING:
-      return {
-        background: "rgba(56, 102, 249, 0.4)",
-        color: "#3866F9",
-      };
-    case ProposalStatus.PASSED:
-      return {
-        background: "rgba(75, 207, 147, 0.4)",
-        color: theme.palette.secondary.main,
-      };
-    case ProposalStatus.EXECUTABLE:
-      return {
-        background: "rgba(35, 47, 46, 0.4)",
-        color: theme.palette.text.secondary,
-      };
-    case ProposalStatus.REJECTED:
-      return {
-        background: "rgba(237, 37, 78, 0.4)",
-        color: theme.palette.error.main,
-      };
-    case ProposalStatus.NO_QUORUM:
-      return {
-        background: "rgba(61, 61, 61, 0.4)",
-        color: theme.palette.text.secondary,
-      };
-    case ProposalStatus.EXPIRED:
-      return {
-        background: "rgba(61, 61, 61, 0.4)",
-        color: theme.palette.text.secondary,
-      };
-      case ProposalStatus.DROPPED:
-        return {
-          background: "rgba(237, 37, 78, 0.4)",
-          color: theme.palette.error.main,
-        };
-    case ProposalStatus.EXECUTED:
-      return {
-        background: "rgba(75, 207, 147, 0.4)",
-        color: theme.palette.secondary.main,
-      };
-  }
+const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
+  const statusToColor = {
+    [ProposalStatus.ACTIVE]: theme.palette.warning.main,
+    [ProposalStatus.PENDING]: theme.palette.info.main,
+    [ProposalStatus.PASSED]: theme.palette.secondary.main,
+    [ProposalStatus.EXECUTABLE]: theme.palette.text.secondary,
+    [ProposalStatus.REJECTED]: theme.palette.error.main,
+    [ProposalStatus.NO_QUORUM]: theme.palette.text.secondary,
+    [ProposalStatus.EXPIRED]: theme.palette.text.secondary,
+    [ProposalStatus.DROPPED]: theme.palette.error.main,
+    [ProposalStatus.EXECUTED]: theme.palette.secondary.main,
+  };
+
+  return statusToColor[status];
 };
 
 const Badge = styled(Grid)(
   ({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
     borderRadius: 4,
-    padding: 4,
+    height: 27,
+    boxSizing: "border-box",
+    width: 101,
     textAlign: "center",
-    maxWidth: 87,
-    marginRight: 32,
-    marginLeft: 10,
+    padding: "0 7px",
 
-    background: statusColors(status, theme).background,
-    color: statusColors(status, theme).color,
+    background: hexToRgba(getStatusColor(status, theme), 0.4),
+    color: getStatusColor(status, theme),
+    "& > div": {
+      height: "100%",
+    },
   })
 );
 
@@ -70,6 +40,10 @@ export const TableStatusBadge: React.FC<
   { status: ProposalStatus } & GridProps
 > = ({ status, ...props }) => (
   <Badge status={status} {...props}>
-    <Typography> {status.toUpperCase()} </Typography>
+    <Grid container alignItems="center" justify="center">
+      <Grid item>
+        <Typography> {status.toUpperCase()} </Typography>
+      </Grid>
+    </Grid>
   </Badge>
 );
