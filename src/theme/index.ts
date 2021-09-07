@@ -184,10 +184,12 @@ export const theme = createMuiTheme({
       },
       outlined: {
         "&$disabled": {
-          border: "1px solid #3d3d3d",
+          border: "2px solid #3d3d3d",
         },
-        borderWidth: "2px",
-        padding: "11px 30px",
+        borderWidth: "2px !important",
+        borderRadius: "4px",
+        padding: "1px 8px",
+        fontSize: "1rem",
       },
     },
     MuiInputBase: {

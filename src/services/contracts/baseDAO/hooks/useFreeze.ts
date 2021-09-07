@@ -21,7 +21,9 @@ export const useFreeze = () => {
         key: freezeNotification,
         closeSnackbar: closeFreezeNotification,
       } = openNotification({
-        message: `${params.freeze ? "Stake" : "Unstake"} is being processed...`,
+        message: `${
+          params.freeze ? "Deposit" : "Withdrawal"
+        } is being processed...`,
         persist: true,
         variant: "info",
       });
@@ -41,7 +43,7 @@ export const useFreeze = () => {
         closeFreezeNotification(freezeNotification);
         openNotification({
           message: `${
-            params.freeze ? "Stake" : "Unstake"
+            params.freeze ? "Deposit" : "Withdrawal"
           } transaction confirmed!`,
           autoHideDuration: 10000,
           variant: "success",
@@ -53,7 +55,7 @@ export const useFreeze = () => {
         closeFreezeNotification(freezeNotification);
         openNotification({
           message: `An error has happened with ${
-            params.freeze ? "stake" : "unstake"
+            params.freeze ? "deposit" : "withdrawal"
           } transaction!`,
           variant: "error",
           autoHideDuration: 10000,

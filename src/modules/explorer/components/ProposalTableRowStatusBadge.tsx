@@ -8,7 +8,7 @@ const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
     [ProposalStatus.ACTIVE]: theme.palette.warning.main,
     [ProposalStatus.PENDING]: theme.palette.info.main,
     [ProposalStatus.PASSED]: theme.palette.secondary.main,
-    [ProposalStatus.EXECUTABLE]: theme.palette.text.secondary,
+    [ProposalStatus.EXECUTABLE]: theme.palette.warning.main,
     [ProposalStatus.REJECTED]: theme.palette.error.main,
     [ProposalStatus.NO_QUORUM]: theme.palette.text.secondary,
     [ProposalStatus.EXPIRED]: theme.palette.text.secondary,
@@ -24,7 +24,7 @@ const Badge = styled(Grid)(
     borderRadius: 4,
     height: 27,
     boxSizing: "border-box",
-    width: 101,
+    width: 105,
     textAlign: "center",
     padding: "0 7px",
 

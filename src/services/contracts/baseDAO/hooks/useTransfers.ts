@@ -18,10 +18,14 @@ export const useTransfers = (contractAddress: string) => {
         (dao as BaseDAO).data.address,
         network
       );
-      return transfers.map((t) => ({
-        ...t,
-        amount: parseUnits(new BigNumber(t.amount), t.token.decimals),
-      }));
+
+      console.log(transfers);
+      return transfers
+        .filter((t) => t.from.toLowerCase() === contractAddress.toLowerCase())
+        .map((t) => ({
+          ...t,
+          amount: parseUnits(new BigNumber(t.amount), t.token.decimals),
+        }));
     },
     {
       enabled: !!dao,

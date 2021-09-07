@@ -23,7 +23,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     description: "",
     governanceToken: {
       address: "",
-      tokenId: ""
+      tokenId: "0",
     },
     administrator: "",
     guardian: "",
@@ -45,7 +45,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     maxQuorumAmount: 99,
     quorumChange: 5,
     quorumMaxChange: 19,
-  }
+  },
 };
 
 export const INITIAL_STATE: CreatorState = {

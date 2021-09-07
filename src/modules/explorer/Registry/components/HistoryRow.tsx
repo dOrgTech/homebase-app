@@ -37,6 +37,12 @@ const TokenName = styled(withTheme(Paper))((props) => ({
   background: props.theme.palette.primary.main,
   color: props.theme.palette.text.secondary,
   padding: 6,
+  "& > *": {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: 145,
+  },
 }));
 
 const Cursor = styled(Typography)({
@@ -51,7 +57,12 @@ const DescriptionText = styled(Typography)({
   whiteSpace: "nowrap",
 });
 
-export const RegistryHistoryRow: React.FC<any> = ({ name, address, date, id }) => {
+export const RegistryHistoryRow: React.FC<any> = ({
+  name,
+  address,
+  date,
+  id,
+}) => {
   const localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
   const theme = useTheme();

@@ -31,11 +31,11 @@ export const TokenTable: React.FC = () => {
           </Grid>
           <Grid item xs={3} />
           <Grid item xs={3}>
-            <ProposalTableHeadText align={"left"}>
+            <ProposalTableHeadText align={"right"}>
               BALANCE
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={1} />
+          {/* <Grid item xs={1} /> */}
         </TableHeader>
       )}
       {tokenHoldings && tokenHoldings.length

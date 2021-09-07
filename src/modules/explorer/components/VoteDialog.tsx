@@ -16,6 +16,8 @@ import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useDAOID } from "../daoRouter";
+import { SendButton } from "./ProposalFormSendButton";
+import { useTheme } from "@material-ui/styles";
 
 const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -68,16 +70,6 @@ const FeeContainer = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
-const SubmitContainer = styled(Grid)({
-  height: 80,
-  display: "flex",
-  cursor: "pointer",
-  borderTop: "1px solid #4BCF93",
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-  },
-});
-
 const SupportText = styled(Typography)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
     color: support ? theme.palette.secondary.main : "#FF5555",
@@ -103,6 +95,7 @@ export const VoteDialog: React.FC = () => {
   const [support, setSupport] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
+  const theme = useTheme<Theme>();
   const { proposalId } = useParams<{
     proposalId: string;
   }>();
@@ -141,7 +134,12 @@ export const VoteDialog: React.FC = () => {
         variant="outlined"
         onClick={() => handleClickOpen(true)}
         support={true}
-        // disabled={proposal?.status !== ProposalStatus.ACTIVE}
+        disabled={
+          !proposal ||
+          !cycleInfo ||
+          proposal.getStatus(cycleInfo.currentLevel).status !==
+            ProposalStatus.ACTIVE
+        }
       >
         VOTE FOR
       </StyledButton>
@@ -228,17 +226,26 @@ export const VoteDialog: React.FC = () => {
                 />
               </Grid>
             </FeeContainer>
-            <SubmitContainer
+
+            <Grid
               container
               direction="row"
               alignItems="center"
               justify="center"
-              onClick={onSubmit}
             >
-              <Typography color="secondary" variant="subtitle1">
+              <SendButton
+                customColor={
+                  support
+                    ? theme.palette.secondary.main
+                    : theme.palette.error.main
+                }
+                variant="outlined"
+                disabled={!amount}
+                onClick={onSubmit}
+              >
                 SUBMIT VOTE
-              </Typography>
-            </SubmitContainer>
+              </SendButton>
+            </Grid>
           </DialogContentText>
         </DialogContent>
       </CustomDialog>

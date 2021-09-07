@@ -22,6 +22,10 @@ const Container = styled(Grid)({
   paddingTop: 21,
 });
 
+const DetailsText = styled(Typography)({
+  wordBreak: "break-all",
+});
+
 interface Props {
   proposal: RegistryProposal;
 }
@@ -113,9 +117,9 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
             container
           >
             <Grid item>
-              <Typography variant="body1" color="textSecondary">
+              <DetailsText variant="body1" color="textSecondary">
                 Set &quot;{key}&quot; to &quot;{value}&quot;
-              </Typography>
+              </DetailsText>
             </Grid>
           </HighlightedBadge>
         </Container>

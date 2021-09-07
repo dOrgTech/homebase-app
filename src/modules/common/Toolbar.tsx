@@ -212,7 +212,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   <Grid
                     container
                     alignItems="center"
-                    justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
+                    justify={isMobileExtraSmall ? "center" : "flex-end"}
                   >
                     {children}
                     <AddressBarWrapper item>

@@ -24,6 +24,7 @@ import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
 import { useDAOID } from "../daoRouter";
+import { PeriodLabel } from "../components/styled/VotingLabel";
 
 const ButtonsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -120,21 +121,32 @@ export const Proposals: React.FC = () => {
             xs={12}
             sm={6}
             justify={isMobileSmall ? "center" : "flex-end"}
-            spacing={2}
+            style={{ gap: 35 }}
           >
             <Grid item>
-              <Grid container>
+              <Grid container alignItems="baseline">
+                <Grid item>
+                  <PeriodLabel daoId={daoId} item />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item>
+              <Grid container alignItems="baseline">
                 <Grid item>
                   <PrimaryButton
                     variant="outlined"
                     onClick={handleNewProposal}
-                    // disabled={shouldDisable}
+                    disabled={shouldDisable}
                   >
                     NEW PROPOSAL
                   </PrimaryButton>
                 </Grid>
                 {shouldDisable && (
-                  <Tooltip placement="bottom" title="Not on voting period">
+                  <Tooltip
+                    placement="bottom"
+                    title="Not on proposal creation period"
+                  >
                     <InfoIcon color="secondary" />
                   </Tooltip>
                 )}

@@ -21,8 +21,8 @@ const statusColors = (status: ProposalStatus, theme: Theme) => {
       };
     case ProposalStatus.EXECUTABLE:
       return {
-        background: theme.palette.secondary.main,
-        color: "#232F2E",
+        background: "#DBDE39",
+        color: theme.palette.primary.main,
       };
     case ProposalStatus.REJECTED:
       return {

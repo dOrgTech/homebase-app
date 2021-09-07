@@ -10,6 +10,7 @@ import {
   useTheme,
   InputAdornment,
   Tooltip,
+  Link,
 } from "@material-ui/core";
 import { validateContractAddress, validateAddress } from "@taquito/utils";
 import React, { useContext, useEffect } from "react";
@@ -18,7 +19,11 @@ import { useRouteMatch } from "react-router-dom";
 import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
 
-import { CreatorContext, ActionTypes, OrgSettings } from "modules/creator/state";
+import {
+  CreatorContext,
+  ActionTypes,
+  OrgSettings,
+} from "modules/creator/state";
 import { InfoOutlined } from "@material-ui/icons";
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 
@@ -114,7 +119,11 @@ const DaoSettingsForm = withRouter(
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-    const { data: tokenMetadata, isLoading: loading } = useTokenMetadata(
+    const {
+      data: tokenMetadata,
+      isLoading: loading,
+      error,
+    } = useTokenMetadata(
       values?.governanceToken?.address,
       values?.governanceToken?.tokenId
     );
@@ -123,7 +132,11 @@ const DaoSettingsForm = withRouter(
       if (tokenMetadata) {
         setFieldValue("governanceToken.tokenMetadata", tokenMetadata);
       }
-    }, [setFieldValue, tokenMetadata]);
+
+      if (error) {
+        setFieldValue("governanceToken.tokenMetadata", undefined);
+      }
+    }, [error, setFieldValue, tokenMetadata]);
 
     const { dispatch } = useContext(CreatorContext);
     const match = useRouteMatch();
@@ -193,6 +206,7 @@ const DaoSettingsForm = withRouter(
               </Typography>
             </MetadataContainer>
           )}
+
           <Grid item xs={isMobile ? 12 : 9}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
@@ -403,6 +417,15 @@ const validateForm = (values: OrgSettings) => {
     };
   }
 
+  console.log(values.governanceToken);
+
+  if (!values.governanceToken.tokenMetadata) {
+    errors.governanceToken = {
+      ...errors.governanceToken,
+      address: "Could not find token",
+    };
+  }
+
   return errors;
 };
 
@@ -441,9 +464,20 @@ export const DaoSettings = (): JSX.Element => {
         <Grid item xs={12}>
           <CustomTypography variant="subtitle1" color="textSecondary">
             These settings will define the name, symbol, and initial
-            distribution of your token.
+            distribution of your token. You will need a pre-existing FA2 token
+            to use as governance token. To deploy your own governance token you
+            can go{" "}
+            <Link
+              target="_blank"
+              href="https://fa2-bakery.netlify.app/"
+              color="secondary"
+            >
+              here
+            </Link>{" "}
+            and then come back.
           </CustomTypography>
         </Grid>
+        <Grid item xs={12}></Grid>
       </Grid>
 
       <Formik

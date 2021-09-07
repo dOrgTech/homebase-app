@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Button,
+  // Button,
   Grid,
   Paper,
   styled,
@@ -44,9 +44,9 @@ export const TreasuryTableRow: React.FC<{
   const { data: dao } = useDAO(daoId);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleNewProposal = () => {
-    setOpen(true);
-  };
+  // const handleNewProposal = () => {
+  //   setOpen(true);
+  // };
   const handleCloseModal = () => {
     setOpen(false);
   };
@@ -74,19 +74,19 @@ export const TreasuryTableRow: React.FC<{
           container
           direction="row"
           alignItems="center"
-          justify={isMobileSmall ? "space-evenly" : "flex-start"}
+          justify={isMobileSmall ? "space-evenly" : "flex-end"}
         >
           {isMobileSmall ? (
             <Typography variant="subtitle1" color="textSecondary">
               BALANCE{" "}
             </Typography>
           ) : null}
-          <Cursor variant="subtitle1" color="textSecondary" align="left">
+          <Cursor variant="subtitle1" color="textSecondary" align="right">
             {balance.dp(10).toString()}
           </Cursor>
         </Grid>
 
-        <Grid
+        {/* <Grid
           item
           sm={1}
           container
@@ -101,7 +101,7 @@ export const TreasuryTableRow: React.FC<{
           >
             TRANSFER
           </Button>
-        </Grid>
+        </Grid> */}
       </TemplateTableRowContainer>
       {dao ? (
         dao.data.type === "registry" ? (

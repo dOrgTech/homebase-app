@@ -111,6 +111,7 @@ export class RegistryDAO extends BaseDAO {
     });
 
     const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
       this.data.extra.frozen_extra_value,
       proposalMetadata
     );

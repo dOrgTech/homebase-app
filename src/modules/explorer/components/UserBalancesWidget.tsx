@@ -72,10 +72,8 @@ export const UserBalancesWidget: React.FC = () => {
     );
   }, [account, ledger]);
 
-  console.log(userLedger, ledger, dao);
-
   return (
-    <Grid container>
+    <Grid container justifyContent="center">
       {userLedger && dao && (
         <>
           <BalanceBox

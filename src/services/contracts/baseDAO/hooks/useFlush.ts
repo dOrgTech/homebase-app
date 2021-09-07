@@ -35,7 +35,7 @@ export const useFlush = () => {
 
         await data.confirmation(1);
         openNotification({
-          message: "Flush transaction confirmed!",
+          message: "Execute transaction confirmed!",
           autoHideDuration: 5000,
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
@@ -45,7 +45,7 @@ export const useFlush = () => {
       } catch (e) {
         closeFlushNotification(flushNotification);
         openNotification({
-          message: "An error has happened with flush transaction!",
+          message: "An error has happened with execute transaction!",
           variant: "error",
           autoHideDuration: 5000,
         });

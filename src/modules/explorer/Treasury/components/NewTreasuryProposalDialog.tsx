@@ -17,11 +17,11 @@ import { Autocomplete } from "formik-material-ui-lab";
 
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { TreasuryDAO } from "services/contracts/baseDAO";
-import {
-  fromMigrationParamsFile,
-  validateTransactionsJSON,
-} from "modules/explorer/Treasury/utils";
-import { useNotification } from "modules/common/hooks/useNotification";
+// import {
+//   fromMigrationParamsFile,
+//   validateTransactionsJSON,
+// } from "modules/explorer/Treasury/utils";
+// import { useNotification } from "modules/common/hooks/useNotification";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
@@ -52,20 +52,20 @@ const AmountItem = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const UploadButtonContainer = styled(Grid)(({ theme }) => ({
-  minHeight: 70,
-  display: "flex",
-  alignItems: "center",
-  padding: "0px 65px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  [theme.breakpoints.down("sm")]: {
-    padding: "24px 24px",
-  },
-}));
+// const UploadButtonContainer = styled(Grid)(({ theme }) => ({
+//   minHeight: 70,
+//   display: "flex",
+//   alignItems: "center",
+//   padding: "0px 65px",
+//   borderBottom: `2px solid ${theme.palette.primary.light}`,
+//   [theme.breakpoints.down("sm")]: {
+//     padding: "24px 24px",
+//   },
+// }));
 
-const FileInput = styled("input")({
-  display: "none",
-});
+// const FileInput = styled("input")({
+//   display: "none",
+// });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
   height: 60,
@@ -114,14 +114,14 @@ const styles = {
   },
 };
 
-const UploadFileLabel = styled("label")(({ theme }) => ({
-  color: theme.palette.secondary.main,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-  cursor: "pointer",
-  margin: "auto",
-  display: "block",
-}));
+// const UploadFileLabel = styled("label")(({ theme }) => ({
+//   color: theme.palette.secondary.main,
+//   borderColor: theme.palette.secondary.main,
+//   minWidth: 171,
+//   cursor: "pointer",
+//   margin: "auto",
+//   display: "block",
+// }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -239,7 +239,7 @@ export const treasuryValidationSchema = Yup.object().shape({
 });
 
 export const NewTreasuryProposalDialog: React.FC = () => {
-  const { values, errors, touched, setFieldValue } =
+  const { values, errors, touched } =
     useFormikContext<TreasuryProposalFormValues>();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -247,7 +247,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const daoId = useDAOID();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
-  const openNotification = useNotification();
+  // const openNotification = useNotification();
   const { data: daoHoldings } = useDAOHoldings(daoId);
 
   const currentAssetSymbol = useCallback(
@@ -312,37 +312,37 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     errors.transferForm?.transfers?.[activeTransfer - 1] as any
   )?.amount;
 
-  const importTransactions = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.currentTarget.files) {
-        try {
-          const file = event.currentTarget.files[0];
-          const transactionsParsed = await fromMigrationParamsFile(file);
-          const errors = validateTransactionsJSON(transactionsParsed);
-          console.log(errors);
+  // const importTransactions = useCallback(
+  //   async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     if (event.currentTarget.files) {
+  //       try {
+  //         const file = event.currentTarget.files[0];
+  //         const transactionsParsed = await fromMigrationParamsFile(file);
+  //         const errors = validateTransactionsJSON(transactionsParsed);
+  //         console.log(errors);
 
-          if (errors.length) {
-            openNotification({
-              message: "Error while parsing JSON",
-              persist: true,
-              variant: "error",
-            });
-            return;
-          }
+  //         if (errors.length) {
+  //           openNotification({
+  //             message: "Error while parsing JSON",
+  //             persist: true,
+  //             variant: "error",
+  //           });
+  //           return;
+  //         }
 
-          setFieldValue("transferForm.isBatch", true);
-          values.transferForm.transfers = transactionsParsed;
-        } catch (e) {
-          openNotification({
-            message: "Error while parsing JSON",
-            persist: true,
-            variant: "error",
-          });
-        }
-      }
-    },
-    [openNotification, setFieldValue, values.transferForm]
-  );
+  //         setFieldValue("transferForm.isBatch", true);
+  //         values.transferForm.transfers = transactionsParsed;
+  //       } catch (e) {
+  //         openNotification({
+  //           message: "Error while parsing JSON",
+  //           persist: true,
+  //           variant: "error",
+  //         });
+  //       }
+  //     }
+  //   },
+  //   [openNotification, setFieldValue, values.transferForm]
+  // );
 
   return (
     <>
@@ -544,7 +544,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                 )}
               />
 
-              <UploadButtonContainer container direction="row">
+              {/* <UploadButtonContainer container direction="row">
                 <UploadFileLabel>
                   -OR- UPLOAD JSON FILE
                   <FileInput
@@ -553,7 +553,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                     onChange={importTransactions}
                   />
                 </UploadFileLabel>
-              </UploadButtonContainer>
+              </UploadButtonContainer> */}
             </>
           </Form>
         </DialogContentText>
