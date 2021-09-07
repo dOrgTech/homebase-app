@@ -84,7 +84,7 @@ const App: React.FC = () => {
                   </CreatorProvider>
                   <WarningFooter
                     text={
-                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you ceated will not be deprecated."
+                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
                     }
                   />
                 </Route>
@@ -94,7 +94,7 @@ const App: React.FC = () => {
                   </TZKTSubscriptionsProvider>
                   <WarningFooter
                     text={
-                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you ceated will not be deprecated."
+                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
                     }
                   />
                 </Route>
