@@ -88,7 +88,7 @@ const TitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
 }));
 
 const FullButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-  minHeight: 39,
+  minHeight: 44,
   minWidth: 139,
   background: theme.palette.secondary.main,
   color: theme.palette.text.secondary,
@@ -225,14 +225,17 @@ export const Landing: React.FC = () => {
           style={{ gap: 25 }}
         >
           <Grid item>
-            <Link href="/landing">
+            <Link
+              target="_blank"
+              href="https://github.com/dOrgTech/homebase-app"
+            >
               <IconContainer>
                 <GitHubIcon color="secondary" />
               </IconContainer>
             </Link>
           </Grid>
           <Grid item>
-            <Link href="/explorer" underline="none">
+            <Link target="_blank" href="https://discord.gg/Rgf72KEH">
               <IconContainer>
                 <SvgIcon>
                   <DiscordIcon />
