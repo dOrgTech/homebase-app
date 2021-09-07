@@ -12,8 +12,11 @@ import { ReactComponent as HouseIcon } from "assets/logos/home.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
-import { useHistory, useLocation, useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { ReactComponent as UserIcon } from "assets/logos/user.svg";
+import { useHistory, useLocation } from "react-router-dom";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { useDAOID } from "../daoRouter";
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,
@@ -23,9 +26,9 @@ export const debounce = <T extends (...args: any[]) => any>(
   return (...args: Parameters<T>): ReturnType<T> => {
     let result: any;
     clearTimeout(timeout);
-    timeout = (setTimeout(() => {
+    timeout = setTimeout(() => {
       result = callback(...args);
-    }, waitFor) as unknown) as number;
+    }, waitFor) as unknown as number;
     return result;
   };
 };
@@ -48,18 +51,27 @@ const SidebarButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+const IconContainer = styled("span")(({ theme }: { theme: Theme }) => ({
+  "& > svg > *": {
+    fill: ({ isSelected }: { isSelected: boolean }) =>
+      isSelected ? theme.palette.secondary.main : theme.palette.text.secondary,
+  },
+}));
+
 const ButtonIcon = ({
   Icon,
   isSelected,
   handler,
 }: {
-  Icon: React.FC<{ stroke?: string }>;
+  Icon: React.FC;
   isSelected: boolean;
   handler: () => void;
 }): JSX.Element => {
   return (
     <SidebarButton onClick={handler}>
-      <Icon stroke={isSelected ? "#4BCF93" : "white"} />
+      <IconContainer isSelected={isSelected}>
+        <Icon />
+      </IconContainer>
     </SidebarButton>
   );
 };
@@ -126,8 +138,9 @@ const SideNavBar: React.FC = ({ children }) => {
 
 export const SideBar: React.FC = () => {
   const history = useHistory();
+  const { account } = useTezos();
   const { pathname } = useLocation();
-  const { id: daoId } = useParams<{ id: string }>();
+  const daoId = useDAOID();
   const { data: dao } = useDAO(daoId);
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
@@ -154,32 +167,41 @@ export const SideBar: React.FC = () => {
       },
     ];
 
-    if (dao.metadata.template === "registry") {
-        return [
-          ...commonButons,
-          {
-            Icon: RegistryIcon,
-            handler: () => history.push(`/explorer/dao/${daoId}/registry`),
-            name: "registry",
-          },
-        ];
-    } else {
-      return commonButons
+    if (account) {
+      commonButons.push({
+        Icon: UserIcon,
+        handler: () => history.push(`/explorer/dao/${daoId}/user`),
+        name: "user",
+      });
     }
-  }, [dao, daoId, history]);
+
+    if (dao.data.type === "registry") {
+      return [
+        ...commonButons,
+        {
+          Icon: RegistryIcon,
+          handler: () => history.push(`/explorer/dao/${daoId}/registry`),
+          name: "registry",
+        },
+      ];
+    } else {
+      return commonButons;
+    }
+  }, [account, dao, daoId, history]);
 
   return !isMobileExtraSmall ? (
     <SideNavBar>
       {SIDE_BAR_ICONS.map(({ Icon, handler, name }) => {
         return (
-        <Grid item key={name}>
-          <ButtonIcon
-            Icon={Icon}
-            handler={handler}
-            isSelected={pathname.includes(name)}
-          />
-        </Grid>
-      )})}
+          <Grid item key={name}>
+            <ButtonIcon
+              Icon={Icon}
+              handler={handler}
+              isSelected={pathname.includes(name)}
+            />
+          </Grid>
+        );
+      })}
     </SideNavBar>
   ) : (
     <BottomNavBar>

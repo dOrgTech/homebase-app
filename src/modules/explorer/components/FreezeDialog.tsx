@@ -9,21 +9,19 @@ import {
   DialogTitle,
   TextField,
   InputAdornment,
+  Button,
 } from "@material-ui/core";
-import { theme } from "theme";
-import { ViewButton } from "./ViewButton";
-import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
-import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useDAOID } from "../daoRouter";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
   cursor: "pointer",
 });
 
-const SendButton = styled(ViewButton)(({ theme }) => ({
+const SendButton = styled(Button)(({ theme }) => ({
   width: 229,
   border: "none",
   margin: 23,
@@ -77,11 +75,7 @@ const CustomInput = styled(TextField)(({ theme }) => ({
 export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
-  const { daoSymbol } = useVisitedDAO();
-  const { id: daoId } =
-    useParams<{
-      id: string;
-    }>();
+  const daoId = useDAOID();
   const { mutate } = useFreeze();
   const { data: dao } = useDAO(daoId);
 
@@ -108,13 +102,9 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
   return (
     <div>
-      <ViewButton
-        customColor={theme.palette.secondary.main}
-        onClick={handleClickOpen}
-        variant="outlined"
-      >
-        {freeze ? "Stake" : "Unstake"}
-      </ViewButton>
+      <Button onClick={handleClickOpen} variant="outlined" color="secondary">
+        {freeze ? "Deposit" : "Withdraw"}
+      </Button>
       <CustomDialog
         open={open}
         onClose={handleClose}
@@ -130,7 +120,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
           >
             <Grid item xs={6}>
               <Typography variant="subtitle1" color="secondary">
-                {freeze ? "STAKE" : "UNSTAKE"}{" "}
+                {freeze ? "DEPOSIT" : "WITHDRAW"}{" "}
               </Typography>
             </Grid>
             <Grid item xs={6}>
@@ -149,7 +139,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
             <TableHeader container direction="row" alignItems="center">
               <Grid item xs={12}>
                 <Typography variant="h5" color="textSecondary">
-                  Confirm the {freeze ? "staking" : "unstaking"} of your tokens
+                  Confirm the {freeze ? "deposit" : "withdrawal"} of your tokens
                 </Typography>
               </Grid>
               <TextHeader
@@ -177,7 +167,9 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <Typography color="secondary">{daoSymbol}</Typography>
+                        <Typography color="secondary">
+                          {dao?.data.token.symbol}
+                        </Typography>
                       </InputAdornment>
                     ),
                   }}
@@ -191,12 +183,11 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
               justify="center"
             >
               <SendButton
-                customColor={theme.palette.secondary.main}
                 variant="outlined"
                 disabled={!amount}
                 onClick={onSubmit}
               >
-                {freeze ? "STAKE" : "UNSTAKE"} TOKENS
+                {freeze ? "DEPOSIT" : "WITHDRAW"} TOKENS
               </SendButton>
             </Grid>
           </DialogContentText>

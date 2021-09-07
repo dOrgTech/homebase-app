@@ -11,9 +11,8 @@ import {
   TreasuryProposalFormValues,
 } from "modules/explorer/Treasury";
 import React, { useCallback, useRef, useState } from "react";
-import { useParams } from "react-router";
 import { RegistryDAO } from "services/contracts/baseDAO";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
 import { AppTabBar } from "../AppTabBar";
 import { SendButton } from "../ProposalFormSendButton";
@@ -22,6 +21,7 @@ import { TabPanel } from "../TabPanel";
 import { TextField } from "formik-material-ui";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 interface Props {
   open: boolean;
@@ -47,9 +47,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
   open,
   handleClose,
 }) => {
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
   const { data: daoHoldings } = useDAOHoldings(daoId);
@@ -162,8 +160,8 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                       variant="subtitle1"
                       color="secondary"
                     >
-                      {dao && dao.extra.frozenExtraValue.toString()}{" "}
-                      {dao ? dao.metadata.unfrozenToken.symbol : ""}
+                      {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
+                      {dao ? dao.data.token.symbol : ""}
                     </Typography>
                   </Grid>
                 </ProposalFormListItem>

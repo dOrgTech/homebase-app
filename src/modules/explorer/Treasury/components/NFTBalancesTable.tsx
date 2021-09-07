@@ -1,10 +1,20 @@
-import { Box, Grid, Link, Paper, styled, Typography, useMediaQuery, useTheme, withTheme } from "@material-ui/core";
+import {
+  Box,
+  Grid,
+  Link,
+  Paper,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  withTheme,
+} from "@material-ui/core";
 import { GenericTableContainer } from "modules/explorer/components/GenericTableContainer";
 import { ResponsiveGenericTable } from "modules/explorer/components/ResponsiveGenericTable";
 import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
+import { useDAOID } from "modules/explorer/daoRouter";
 import React from "react";
-import { useParams } from "react-router-dom";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { IPFS_GATEWAY_URI } from "services/ipfs";
 import { ProposalTableHeadText } from "./TableHeader";
@@ -23,7 +33,7 @@ const TokenName = styled(withTheme(Paper))((props) => ({
 
 const Cursor = styled(Typography)({
   cursor: "default",
-  wordBreak: "break-all"
+  wordBreak: "break-all",
 });
 
 const Thumbnail = styled(Box)({
@@ -31,13 +41,13 @@ const Thumbnail = styled(Box)({
   height: 150,
   "& > img": {
     width: "100%",
-    height: "100%"
-  }
-})
+    height: "100%",
+  },
+});
 
 export const NFTTable: React.FC = () => {
-  const { id: daoId } = useParams<{ id: string }>()
-  const { nftHoldings } = useDAOHoldings(daoId)
+  const daoId = useDAOID();
+  const { nftHoldings } = useDAOHoldings(daoId);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -46,9 +56,7 @@ export const NFTTable: React.FC = () => {
       {!isMobileSmall && (
         <TableHeader item container wrap="nowrap" id="demo">
           <Grid item xs={2}>
-            <ProposalTableHeadText align={"left"}>
-              NFTs
-            </ProposalTableHeadText>
+            <ProposalTableHeadText align={"left"}>NFTs</ProposalTableHeadText>
           </Grid>
           <Grid item xs={2}>
             <ProposalTableHeadText align={"center"}>
@@ -71,65 +79,82 @@ export const NFTTable: React.FC = () => {
         ? nftHoldings.map((holding, i) => (
             <GenericTableContainer key={`holding-${i}`}>
               <TemplateTableRowContainer
-      container
-      direction={isMobileSmall ? "column" : "row"}
-      alignItems="center"
-    >
-      <Grid item sm={2}>
-        <TokenName>
-          {" "}
-          <Cursor variant="subtitle1" color="textSecondary">
-            {holding.name}
-          </Cursor>
-        </TokenName>
-      </Grid>
-      <Grid item sm={2}
-        container
-        direction="row"
-        alignItems="center"
-        justify={isMobileSmall ? "space-evenly" : "center"}
-      >
-        <Link href={`${IPFS_GATEWAY_URI}/${holding.artifact_hash}`} rel="noopener" target="_blank">
-          <Thumbnail>
-            <img src={`${IPFS_GATEWAY_URI}/${holding.artifact_hash}`} alt={`${holding.name}-thumbnail`}/>
-          </Thumbnail>
-        </Link>
-      </Grid>
-      <Grid
-        item
-        sm={4}
-        container
-        direction="row"
-        alignItems="center"
-        justify={isMobileSmall ? "space-evenly" : "center"}
-      >
-        {isMobileSmall ? (
-          <Typography variant="subtitle1" color="textSecondary">
-            DESCRIPTION{" "}
-          </Typography>
-        ) : null}
-        <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {holding.description || " - "}
-        </Cursor>
-      </Grid>
-      <Grid
-        item
-        sm={4}
-        container
-        direction="row"
-        alignItems="center"
-        justify={isMobileSmall ? "space-evenly" : "center"}
-      >
-        {isMobileSmall ? (
-          <Typography variant="subtitle1" color="textSecondary">
-            CREATORS{" "}
-          </Typography>
-        ) : null}
-        <Cursor variant="subtitle1" color="textSecondary" align="right">
-          {holding.creators.join(", ")}
-        </Cursor>
-      </Grid>
-    </TemplateTableRowContainer>
+                container
+                direction={isMobileSmall ? "column" : "row"}
+                alignItems="center"
+              >
+                <Grid item sm={2}>
+                  <TokenName>
+                    {" "}
+                    <Cursor variant="subtitle1" color="textSecondary">
+                      {holding.name}
+                    </Cursor>
+                  </TokenName>
+                </Grid>
+                <Grid
+                  item
+                  sm={2}
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify={isMobileSmall ? "space-evenly" : "center"}
+                >
+                  <Link
+                    href={`${IPFS_GATEWAY_URI}/${holding.artifact_hash}`}
+                    rel="noopener"
+                    target="_blank"
+                  >
+                    <Thumbnail>
+                      <img
+                        src={`${IPFS_GATEWAY_URI}/${holding.artifact_hash}`}
+                        alt={`${holding.name}-thumbnail`}
+                      />
+                    </Thumbnail>
+                  </Link>
+                </Grid>
+                <Grid
+                  item
+                  sm={4}
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify={isMobileSmall ? "space-evenly" : "center"}
+                >
+                  {isMobileSmall ? (
+                    <Typography variant="subtitle1" color="textSecondary">
+                      DESCRIPTION{" "}
+                    </Typography>
+                  ) : null}
+                  <Cursor
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {holding.description || " - "}
+                  </Cursor>
+                </Grid>
+                <Grid
+                  item
+                  sm={4}
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify={isMobileSmall ? "space-evenly" : "center"}
+                >
+                  {isMobileSmall ? (
+                    <Typography variant="subtitle1" color="textSecondary">
+                      CREATORS{" "}
+                    </Typography>
+                  ) : null}
+                  <Cursor
+                    variant="subtitle1"
+                    color="textSecondary"
+                    align="right"
+                  >
+                    {holding.creators.join(", ")}
+                  </Cursor>
+                </Grid>
+              </TemplateTableRowContainer>
             </GenericTableContainer>
           ))
         : null}

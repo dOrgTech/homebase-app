@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import {
   Grid,
   styled,
@@ -7,15 +7,10 @@ import {
   DialogContent,
   DialogContentText,
 } from "@material-ui/core";
-import {
-  Form,
-  Field,
-  FieldArray,
-  useFormikContext,
-} from "formik";
+import { Form, Field, FieldArray, useFormikContext } from "formik";
 import { TextField, Switch } from "formik-material-ui";
-import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
-import { useNotification } from "modules/common/hooks/useNotification";
+// import { fromRegistryListFile, validateRegistryListJSON } from "../pages/utils";
+// import { useNotification } from "modules/common/hooks/useNotification";
 import {
   CustomTextarea,
   DescriptionContainer,
@@ -25,17 +20,17 @@ import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { Registry } from "services/contracts/baseDAO";
 import * as Yup from "yup";
 
-const UploadButtonContainer = styled(Grid)(({ theme }) => ({
-  height: 70,
-  display: "flex",
-  alignItems: "center",
-  padding: "0px 24px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-}));
+// const UploadButtonContainer = styled(Grid)(({ theme }) => ({
+//   height: 70,
+//   display: "flex",
+//   alignItems: "center",
+//   padding: "0px 24px",
+//   borderBottom: `2px solid ${theme.palette.primary.light}`,
+// }));
 
-const FileInput = styled("input")({
-  display: "none",
-});
+// const FileInput = styled("input")({
+//   display: "none",
+// });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
   height: 60,
@@ -87,15 +82,15 @@ const styles = {
   },
 };
 
-const UploadFileLabel = styled("label")(({ theme }) => ({
-  height: 53,
-  color: theme.palette.secondary.main,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-  cursor: "pointer",
-  margin: "auto",
-  display: "block",
-}));
+// const UploadFileLabel = styled("label")(({ theme }) => ({
+//   height: 53,
+//   color: theme.palette.secondary.main,
+//   borderColor: theme.palette.secondary.main,
+//   minWidth: 171,
+//   cursor: "pointer",
+//   margin: "auto",
+//   display: "block",
+// }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -132,48 +127,44 @@ export const registryValidationSchema = Yup.object().shape({
 });
 
 export const UpdateRegistryDialog: React.FC = () => {
-  const {
-    values,
-    setFieldValue,
-    errors,
-    touched,
-  } = useFormikContext<UpdateRegistryDialogValues>();
+  const { values, errors, touched } =
+    useFormikContext<UpdateRegistryDialogValues>();
   const [activeItem, setActiveItem] = React.useState(1);
-  const openNotification = useNotification();
+  // const openNotification = useNotification();
 
   const keyError = (errors.registryForm?.list?.[activeItem - 1] as any)?.key;
   const valueError = (errors.registryForm?.list?.[activeItem - 1] as any)
     ?.value;
 
-  const importList = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.currentTarget.files) {
-        try {
-          const file = event.currentTarget.files[0];
-          const registryListParsed = await fromRegistryListFile(file);
-          const errors = validateRegistryListJSON(registryListParsed);
+  // const importList = useCallback(
+  //   async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     if (event.currentTarget.files) {
+  //       try {
+  //         const file = event.currentTarget.files[0];
+  //         const registryListParsed = await fromRegistryListFile(file);
+  //         const errors = validateRegistryListJSON(registryListParsed);
 
-          if (errors.length) {
-            openNotification({
-              message: "Error while parsing JSON",
-              persist: true,
-              variant: "error",
-            });
-            return;
-          }
-          setFieldValue("registryForm.isBatch", true);
-          values.registryForm.list = registryListParsed;
-        } catch (e) {
-          openNotification({
-            message: "Error while parsing JSON",
-            persist: true,
-            variant: "error",
-          });
-        }
-      }
-    },
-    [openNotification, setFieldValue, values.registryForm]
-  );
+  //         if (errors.length) {
+  //           openNotification({
+  //             message: "Error while parsing JSON",
+  //             persist: true,
+  //             variant: "error",
+  //           });
+  //           return;
+  //         }
+  //         setFieldValue("registryForm.isBatch", true);
+  //         values.registryForm.list = registryListParsed;
+  //       } catch (e) {
+  //         openNotification({
+  //           message: "Error while parsing JSON",
+  //           persist: true,
+  //           variant: "error",
+  //         });
+  //       }
+  //     }
+  //   },
+  //   [openNotification, setFieldValue, values.registryForm]
+  // );
 
   return (
     <>
@@ -299,12 +290,12 @@ export const UpdateRegistryDialog: React.FC = () => {
                 )}
               />
 
-              <UploadButtonContainer container direction="row">
+              {/* <UploadButtonContainer container direction="row">
                 <UploadFileLabel>
                   -OR- UPLOAD JSON FILE
                   <FileInput type="file" accept=".json" onChange={importList} />
                 </UploadFileLabel>
-              </UploadButtonContainer>
+              </UploadButtonContainer> */}
             </>
           </Form>
         </DialogContentText>

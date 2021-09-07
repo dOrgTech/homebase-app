@@ -7,13 +7,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
 import { ProposalTableRow } from "./ProposalTableRow";
+import {
+  Proposal,
+  ProposalStatus,
+} from "services/indexer/dao/mappers/proposal/types";
 
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <ProposalTableHeadItem variant="subtitle1" color="textSecondary">
@@ -30,6 +30,8 @@ const ProposalTableHeadItem = styled(Typography)({
 const NoProposals = styled(Typography)(({ theme }) => ({
   marginTop: 20,
   marginBottom: 20,
+  paddingLeft: 20,
+  boxSizing: "border-box",
 
   [theme.breakpoints.down("sm")]: {
     textAlign: "center",
@@ -37,8 +39,9 @@ const NoProposals = styled(Typography)(({ theme }) => ({
 }));
 
 interface Props {
-  headerText: string;
   status?: ProposalStatus;
+  proposals: Proposal[];
+  isLoading: boolean;
 }
 
 const LoaderContainer = styled(Grid)({
@@ -46,15 +49,11 @@ const LoaderContainer = styled(Grid)({
   paddingBottom: 40,
 });
 
-export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
-  const { id } = useParams<{ id: string }>();
-  const { data: dao } = useDAO(id);
-  const { data: proposalsData, isLoading } = useProposalsWithStatus(
-    dao && dao.address,
-    status
-  );
-
-  console.log(isLoading)
+export const ProposalsTable: React.FC<Props> = ({
+  status,
+  proposals,
+  isLoading,
+}) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -64,31 +63,17 @@ export const ProposalsTable: React.FC<Props> = ({ headerText, status }) => {
         <TableHeader container direction="row">
           <Grid item xs={3}>
             <ProposalTableHeadText>
-              {headerText.toUpperCase()}
+              {`${status || "All"} proposals`.toUpperCase()}
             </ProposalTableHeadText>
           </Grid>
-          {/* <Grid item xs={2}>
-            <ProposalTableHeadItem color="textSecondary" align="center">
-              CYCLE
-            </ProposalTableHeadItem>
-          </Grid>
-          <Grid item xs={4}></Grid>
-          <Grid item xs={3}>
-            <ProposalTableHeadText>THRESHOLD %</ProposalTableHeadText>
-          </Grid> */}
         </TableHeader>
       ) : null}
 
-      {proposalsData &&
-        proposalsData.map((proposal, i) => (
-          <ProposalTableRow
-            key={`proposal-${i}`}
-            {...proposal}
-            daoId={dao?.address}
-          />
-        ))}
+      {proposals.map((proposal, i) => (
+        <ProposalTableRow key={`proposal-${i}`} proposal={proposal} />
+      ))}
 
-      {proposalsData && proposalsData.length === 0 ? (
+      {proposals.length === 0 ? (
         <NoProposals variant="subtitle1" color="textSecondary">
           No {status ? status : ""} proposals
         </NoProposals>

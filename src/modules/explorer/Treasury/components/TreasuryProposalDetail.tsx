@@ -1,18 +1,17 @@
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
-import BigNumber from "bignumber.js";
+import { useDAOID } from "modules/explorer/daoRouter";
 import React, { useMemo } from "react";
-import { useParams } from "react-router-dom";
-import {
-  FA2Transfer,
-  TreasuryProposalWithStatus,
-} from "services/bakingBad/proposals/types";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { mutezToXtz } from "services/contracts/utils";
+import { mutezToXtz, parseUnits } from "services/contracts/utils";
+import {
+  TreasuryProposal,
+  FA2Transfer,
+} from "services/indexer/dao/mappers/proposal/types";
 import { TransferBadge } from "./TransferBadge";
 
 interface Props {
-  proposal: TreasuryProposalWithStatus;
+  proposal: TreasuryProposal;
 }
 
 const Container = styled(Grid)({
@@ -21,19 +20,16 @@ const Container = styled(Grid)({
 
 export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
   const theme = useTheme();
-  const { id: daoId } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: holdings } = useDAOHoldings(daoId);
 
   const transfers = useMemo(() => {
-    if (!holdings || !proposal || !proposal.transfers) {
+    if (!holdings || !proposal || !proposal.metadata.transfers) {
       return [];
     }
 
-    return proposal.transfers.map((transfer) => {
+    return proposal.metadata.transfers.map((transfer) => {
       if (transfer.type === "XTZ") {
         return {
           ...transfer,
@@ -43,15 +39,17 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
 
       const fa2Transfer = transfer as FA2Transfer;
 
-      const decimal = (holdings.find(
-        (holding) =>
-          holding.contract.toLowerCase() ===
-          fa2Transfer.contractAddress.toLowerCase()
-      ) as DAOHolding).decimals;
+      const decimal = (
+        holdings.find(
+          (holding) =>
+            holding.contract.toLowerCase() ===
+            fa2Transfer.contractAddress.toLowerCase()
+        ) as DAOHolding
+      ).decimals;
 
       return {
         ...transfer,
-        amount: new BigNumber(transfer.amount, decimal),
+        amount: parseUnits(transfer.amount, decimal),
       };
     });
   }, [holdings, proposal]);
@@ -72,7 +70,6 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 amount={transfer.amount}
                 address={transfer.beneficiary}
                 currency={"XTZ"}
-                long={true}
               />
             ) : (
               <TransferBadge
@@ -80,7 +77,6 @@ export const TreasuryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 address={transfer.beneficiary}
                 contract={(transfer as FA2Transfer).contractAddress}
                 tokenId={(transfer as FA2Transfer).tokenId}
-                long={true}
               />
             )}
           </Container>

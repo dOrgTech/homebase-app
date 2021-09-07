@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import {
   Box,
   CircularProgress,
@@ -8,27 +8,25 @@ import {
   useTheme,
   Tooltip,
   useMediaQuery,
+  Button,
 } from "@material-ui/core";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import VotingPeriodIcon from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
-import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { TopHoldersTable } from "../components/TopHoldersTable";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { ProposalsTable } from "../components/ProposalsTable";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { ViewButton } from "../components/ViewButton";
 import { MobileHeader } from "../components/styled/MobileHeader";
-import { useVisitedDAO } from "services/contracts/baseDAO/hooks/useVisitedDAO";
 import { FreezeDialog } from "../components/FreezeDialog";
-import { useMemo } from "react";
 import { InfoIcon } from "../components/styled/InfoIcon";
 import { PeriodLabel } from "../components/styled/VotingLabel";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
+import { useDAOID } from "../daoRouter";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -89,60 +87,22 @@ const StyledFreezeButtons = styled(Grid)(() => ({
 }));
 
 export const DAO: React.FC = () => {
-  const { saveDaoId, saveDaoSymbol } = useVisitedDAO();
   const history = useHistory();
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading: isDaoLoading } = useDAO(id);
+  const daoId = useDAOID();
+  const { data, isLoading: isDaoLoading, cycleInfo } = useDAO(daoId);
   const { mutate } = useFlush();
 
-  const name = data && data.metadata.unfrozenToken.name;
-  const description = data && data.metadata.description;
-  const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
-
-  const cycleInfo = useCycleInfo(id);
-  const time = cycleInfo && cycleInfo.time;
+  const name = data && data.data.name;
+  const description = data && data.data.description;
+  const symbol = data && data.data.token.symbol.toUpperCase();
+  const blocksLeft = cycleInfo && cycleInfo.blocksLeft;
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  const { data: proposals, isLoading: isProposalsLoading } = useProposalsWithStatus(
-    data ? data.address : ""
-  );
-  const { data: activeProposals } = useProposalsWithStatus(
-    data ? data.address : "",
-    ProposalStatus.ACTIVE
-  );
+  const { data: proposals, isLoading: isProposalsLoading } =
+    useProposals(daoId);
+  const { data: activeProposals, isLoading: isActiveProposalsLoading } =
+    useProposals(daoId, ProposalStatus.ACTIVE);
   const isLoading = isDaoLoading || isProposalsLoading;
-  // const tiRef = React.createRef();
-
-  useEffect(() => {
-    saveDaoId(id);
-    saveDaoSymbol(symbol || "");
-  }, [id, symbol, saveDaoId, saveDaoSymbol]);
-
-  const timerInfo = useMemo(() => {
-    if (!time) {
-      return {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-      };
-    }
-
-    let n = time;
-
-    const days = Math.floor(n / (24 * 3600));
-
-    n = n % (24 * 3600);
-    const hours = Math.floor(n / 3600);
-
-    n %= 3600;
-    const minutes = Math.floor(n / 60);
-
-    return {
-      days,
-      hours,
-      minutes,
-    };
-  }, [time]);
 
   const onFlush = useCallback(async () => {
     if (proposals && proposals.length && data) {
@@ -187,13 +147,14 @@ export const DAO: React.FC = () => {
                         </CustomH1>
                       </Grid>
                       <Grid item>
-                        <ViewButton
+                        <Button
+                          color="secondary"
                           variant="outlined"
                           onClick={onFlush}
-                          disabled={!data?.storage.proposalsToFlush}
+                          // disabled={!data?.storage.proposalsToFlush}
                         >
                           EXECUTE
-                        </ViewButton>
+                        </Button>
                         <Tooltip
                           placement="bottom"
                           title="Execute all passed proposals and drop all expired or rejected"
@@ -228,7 +189,7 @@ export const DAO: React.FC = () => {
                   </DescriptionContainer>
 
                   {data && !isMobileSmall && (
-                    <CopyAddress address={data.address} />
+                    <CopyAddress address={data.data.address} />
                   )}
                 </Grid>
               </Grid>
@@ -237,7 +198,7 @@ export const DAO: React.FC = () => {
               <Box paddingBottom="28px" width="100%">
                 <Grid container wrap="nowrap">
                   <Grid item>
-                    {data && <PeriodLabel daoId={data.address} />}
+                    {data && <PeriodLabel daoId={data.data.address} />}
                   </Grid>
                 </Grid>
               </Box>
@@ -261,7 +222,7 @@ export const DAO: React.FC = () => {
                           variant={isMobileSmall ? "h2" : "h3"}
                           color="textSecondary"
                         >
-                          {cycleInfo?.current}
+                          {cycleInfo?.currentCycle}
                         </Typography>
                       </Box>
                     </Box>
@@ -279,7 +240,8 @@ export const DAO: React.FC = () => {
                       <ProgressBar
                         progress={
                           data
-                            ? ((time || 0) / data.storage.votingPeriod) * 100
+                            ? ((blocksLeft || 0) / Number(data.data.period)) *
+                              100
                             : 100
                         }
                         radius={35}
@@ -294,7 +256,7 @@ export const DAO: React.FC = () => {
                     <Box paddingLeft={!isMobileSmall ? "35px" : 0}>
                       <Box>
                         <Typography variant="subtitle2" color="secondary">
-                          TIME LEFT TO VOTE
+                          LEVELS LEFT TO VOTE
                         </Typography>
                       </Box>
                       <Box>
@@ -302,10 +264,7 @@ export const DAO: React.FC = () => {
                           variant={isMobileSmall ? "h2" : "h3"}
                           color="textSecondary"
                         >
-                          <Box>
-                            {timerInfo.days}d {timerInfo.hours}h{" "}
-                            {timerInfo.minutes}m
-                          </Box>
+                          <Box>{blocksLeft} levels</Box>
                         </Typography>
                       </Box>
                     </Box>
@@ -318,20 +277,21 @@ export const DAO: React.FC = () => {
           {isMobileSmall && activeProposals && activeProposals.length > 0 && (
             <MobileHeader container justify="space-between" alignItems="center">
               <Typography variant="body1" color="textSecondary">
-                ALL PROPOSALS
+                ACTIVE PROPOSALS
               </Typography>
             </MobileHeader>
           )}
 
           <ProposalsTable
-            headerText="All Proposals"
-            // status={ProposalStatus.ACTIVE}
+            status={ProposalStatus.ACTIVE}
+            proposals={activeProposals || []}
+            isLoading={isActiveProposalsLoading}
           />
           <Grid container direction="row" justify="center">
             <UnderlineText
               variant="subtitle1"
               color="secondary"
-              onClick={() => history.push(`/explorer/dao/${id}/proposals`)}
+              onClick={() => history.push(`/explorer/dao/${daoId}/proposals`)}
             >
               VIEW ALL PROPOSALS
             </UnderlineText>

@@ -13,7 +13,7 @@ import {
 import { ViewButton } from "../ViewButton";
 import { theme } from "theme";
 import { BigNumber } from "bignumber.js";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 interface TokenHolderDialogData {
   address: string;
@@ -82,28 +82,28 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
     setOpen(false);
   };
 
-  const { data } = useDAO(address);
+  const { ledger } = useDAO(address);
 
   const tokenHolders = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return [];
     }
 
-    return data.ledger.map((holder) => ({
-      address: holder.address,
-      tokens: holder.balances[0] || new BigNumber(0),
+    return ledger.map((holder) => ({
+      address: holder.holder.address,
+      tokens: new BigNumber(holder.total_balance) || new BigNumber(0),
     }));
-  }, [data]);
+  }, [ledger]);
 
   const totalLocked = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return new BigNumber(0);
     }
 
-    return data.ledger.reduce((acc, holder) => {
-      return acc.plus(holder.balances[0] || new BigNumber(0));
+    return ledger.reduce((acc, holder) => {
+      return acc.plus(new BigNumber(holder.total_balance) || new BigNumber(0));
     }, new BigNumber(0));
-  }, [data]);
+  }, [ledger]);
 
   return (
     <div>
@@ -167,7 +167,12 @@ export const TokenHoldersDialog: React.FC<TokenHolderDialogData> = ({
                       color="secondary"
                       variant="determinate"
                       value={
-                        totalLocked ? holder.tokens.div(totalLocked).multipliedBy(100).toNumber() : 0
+                        totalLocked
+                          ? holder.tokens
+                              .div(totalLocked)
+                              .multipliedBy(100)
+                              .toNumber()
+                          : 0
                       }
                     />
                   </Grid>

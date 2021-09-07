@@ -4,7 +4,6 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
-import { useCacheDAOs } from "./useCacheDAOs";
 
 interface Params {
   dao: BaseDAO;
@@ -14,28 +13,27 @@ interface Params {
 export const useSendXTZ = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { setDAO } = useCacheDAOs();
-  const { network, tezos, account, connect } = useTezos()
+  const { network, tezos, account, connect } = useTezos();
 
   return useMutation<TransactionWalletOperation | Error, Error, Params>(
     async (params) => {
-      const {
-        key: notification,
-        closeSnackbar: closeNotification,
-      } = openNotification({
-        message: "XTZ transfer is being processed...",
-        persist: true,
-        variant: "info",
-      });
+      const { key: notification, closeSnackbar: closeNotification } =
+        openNotification({
+          message: "XTZ transfer is being processed...",
+          persist: true,
+          variant: "info",
+        });
       try {
-
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
-        
-        const data = await (params.dao as BaseDAO).sendXtz(params.amount, tezosToolkit);
+
+        const data = await (params.dao as BaseDAO).sendXtz(
+          params.amount,
+          tezosToolkit
+        );
 
         await data.confirmation(1);
 
@@ -46,7 +44,6 @@ export const useSendXTZ = () => {
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        setDAO(params.dao);
         return data;
       } catch (e) {
         console.log(e);
@@ -61,8 +58,7 @@ export const useSendXTZ = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("dao");
-        queryClient.resetQueries("tezosBalance");
+        queryClient.resetQueries();
       },
     }
   );

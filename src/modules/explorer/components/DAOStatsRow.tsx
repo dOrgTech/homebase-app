@@ -9,10 +9,11 @@ import {
 } from "@material-ui/core";
 import { BigNumber } from "bignumber.js";
 import React, { useMemo } from "react";
-import { useHistory, useParams } from "react-router-dom";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
+import { useHistory } from "react-router-dom";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useDAOID } from "../daoRouter";
 import { StatsBox } from "./StatsBox";
 
 const StatsContainer = styled(Grid)(({ theme }) => ({
@@ -60,31 +61,32 @@ const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
 }));
 
 export const DAOStatsRow: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data } = useDAO(id);
+  const daoId = useDAOID();
+  const { data, ledger } = useDAO(daoId);
   const theme = useTheme();
-  const symbol = data && data.metadata.unfrozenToken.symbol.toUpperCase();
+  const symbol = data && data.data.token.symbol.toUpperCase();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const history = useHistory();
-  const { data: activeProposals } = useProposals(id, ProposalStatus.ACTIVE);
+  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
 
   const amountLocked = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return new BigNumber(0);
     }
 
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[0] || new BigNumber(0);
+    return ledger.reduce((acc, current) => {
+      const frozenBalance =
+        new BigNumber(current.total_balance) || new BigNumber(0);
       return acc.plus(frozenBalance);
     }, new BigNumber(0));
-  }, [data]);
+  }, [ledger]);
 
   const amountNotLocked = useMemo(() => {
     if (!data) {
       return new BigNumber(0);
     }
 
-    return data.storage.governanceToken.supply
+    return data.data.token.supply;
   }, [data]);
 
   const totalTokens = amountLocked.plus(amountNotLocked);
@@ -94,19 +96,19 @@ export const DAOStatsRow: React.FC = () => {
     : new BigNumber(0);
 
   const addressesWithUnfrozenBalance = useMemo(() => {
-    if (!data) {
+    if (!ledger) {
       return new BigNumber(0);
     }
 
-    return data.ledger.reduce((acc, current) => {
-      const frozenBalance = current.balances[0];
+    return ledger.reduce((acc, current) => {
+      const frozenBalance = current.total_balance;
       if (frozenBalance) {
         return acc.plus(1);
       }
 
       return acc;
     }, new BigNumber(0));
-  }, [data]);
+  }, [ledger]);
 
   return (
     <StatsContainer container>
@@ -166,7 +168,7 @@ export const DAOStatsRow: React.FC = () => {
         container
         direction="column"
         justify="center"
-        onClick={() => history.push(`/explorer/dao/${id}/proposals`)}
+        onClick={() => history.push(`/explorer/dao/${daoId}/proposals`)}
       >
         <Box>
           <Typography variant="subtitle2" color="secondary">

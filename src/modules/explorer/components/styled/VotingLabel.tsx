@@ -1,8 +1,8 @@
 import React from "react";
-import { styled, Paper, Typography } from "@material-ui/core";
-import { useCycleInfo } from "services/contracts/baseDAO/hooks/useCycleInfo";
+import { styled, Typography, Grid, GridProps } from "@material-ui/core";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
-const Container = styled(Paper)({
+const Container = styled(Grid)({
   background: "rgba(129, 254, 183, 0.07)",
   borderRadius: 4,
   padding: "8px 23px",
@@ -12,12 +12,16 @@ const Container = styled(Paper)({
   maxWidth: 279,
 });
 
-export const PeriodLabel: React.FC<{ daoId: string }> = ({ daoId }) => {
-  const cycleInfo = useCycleInfo(daoId);
+interface Props extends GridProps {
+  daoId: string;
+}
+
+export const PeriodLabel: React.FC<Props> = ({ daoId, ...props }) => {
+  const { cycleInfo } = useDAO(daoId);
   const isVotingPeriod = cycleInfo && cycleInfo.type;
 
   return (
-    <Container>
+    <Container {...props}>
       <Typography color="textSecondary">
         {isVotingPeriod === "voting"
           ? "VOTING ON PROPOSALS"

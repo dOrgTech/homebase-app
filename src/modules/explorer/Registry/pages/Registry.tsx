@@ -1,44 +1,41 @@
 import React, { useMemo } from "react";
 import { Grid, useMediaQuery, useTheme } from "@material-ui/core";
-import { useParams } from "react-router-dom";
 
 import { TemplateHeader } from "modules/explorer/components/TemplateHeader";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { RegistryDAO } from "services/contracts/baseDAO";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
 import dayjs from "dayjs";
-import {
-  RegistryProposalWithStatus,
-} from "services/bakingBad/proposals/types";
+
 import { RegistryItemsTable } from "../components/RegistryItemsTable";
 import { HistoryTable } from "../components/HistoryTable";
 import { AppTabBar } from "modules/explorer/components/AppTabBar";
 import { TabPanel } from "modules/explorer/components/TabPanel";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
+import { RegistryProposal } from "services/indexer/dao/mappers/proposal/types";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 export const Registry: React.FC = () => {
-  const { id } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const { data: daoData } = useDAO(id);
+  const { data: daoData } = useDAO(daoId);
   const dao = daoData as RegistryDAO | undefined;
-  const { data: proposalsData } = useProposals(dao?.address);
-  const registryProposalsData = proposalsData as
-    | RegistryProposalWithStatus[]
-    | undefined;
+  const { data: proposalsData } = useProposals(daoId);
+  const registryProposalsData = proposalsData as RegistryProposal[] | undefined;
 
   const proposals = useMemo(() => {
     if (!registryProposalsData || !dao) {
       return [];
     }
 
-    const registryAffectedKeysProposalIds = dao.extra.registryAffected.map(r => r.proposalId)
+    const registryAffectedKeysProposalIds =
+      dao.decoded.decodedRegistryAffected.map((r) => r.proposalId);
 
     return registryProposalsData
-      .filter((proposal) =>  registryAffectedKeysProposalIds.includes(proposal.id))
+      .filter((proposal) =>
+        registryAffectedKeysProposalIds.includes(proposal.id)
+      )
       .sort(
         (a, b) =>
           new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
@@ -48,7 +45,7 @@ export const Registry: React.FC = () => {
         date: dayjs(proposal.startDate).format("L"),
         description: "Proposal description",
         address: proposal.id,
-        name: proposal.list.map((item, i) =>
+        name: proposal.metadata.list.map((item, i) =>
           i === 0 ? item.key : `, ${item.key}`
         ),
       }));
@@ -59,7 +56,7 @@ export const Registry: React.FC = () => {
       return [];
     }
 
-    return dao.extra.registry.map((d) => ({
+    return dao.decoded.decodedRegistry.map((d) => ({
       ...d,
       name: d.key,
     }));

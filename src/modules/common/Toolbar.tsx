@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -11,21 +11,19 @@ import {
   useTheme,
   Popover,
   useMediaQuery,
-  Link,
 } from "@material-ui/core";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
 import HomeButton from "assets/logos/homebase_logo.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
-import { Blockie } from "./Blockie";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
-import { AccountBalanceWallet } from "@material-ui/icons";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
 import { Network } from "services/beacon/context";
-import { BigNumber } from "bignumber.js";
+import { UserProfileName } from "modules/explorer/components/UserProfileName";
+import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
+import { ViewButton } from "modules/explorer/components/ViewButton";
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
@@ -39,22 +37,9 @@ const StyledToolbar = styled(Toolbar)({
   flexWrap: "wrap",
 });
 
-const StatusDot = styled(Box)({
-  borderRadius: "100%",
-  width: 8,
-  height: 8,
-  background: "#4BCF93",
-  marginLeft: 8,
-});
-
-const AddressContainer = styled(Grid)(({ theme }) => ({
-  width: "min-content",
-  paddingRight: 24,
+const AddressContainer = styled(Grid)({
   cursor: "pointer",
-  [theme.breakpoints.down("sm")]: {
-    paddingRight: 0,
-  },
-}));
+});
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
@@ -90,21 +75,14 @@ const AddressMenuIcon = styled(Grid)({
   marginBottom: "-4px",
 });
 
-const AddressBarWrapper = styled(Grid)(({ theme }) => ({
-  padding: "15px",
-  marginRight: 10,
+const AddressBarWrapper = styled(Grid)({
+  boxSizing: "border-box",
+  padding: "8px 16px",
   borderRadius: 4,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
   },
-  [theme.breakpoints.down("xs")]: {
-    marginLeft: 15,
-    padding: "0px",
-  },
-  [theme.breakpoints.down("md")]: {
-    marginRight: -30,
-  },
-}));
+});
 
 const explorerBorder = (theme: Theme) => ({
   appBorder: {
@@ -113,6 +91,7 @@ const explorerBorder = (theme: Theme) => ({
 });
 
 const LogoItem = styled("img")({
+  height: "30px",
   cursor: "pointer",
   paddingTop: 8,
 });
@@ -122,13 +101,6 @@ const StyledPopover = styled(Popover)({
     borderRadius: 4,
   },
 });
-
-const LogIn = styled(AccountBalanceWallet)(({ theme }) => ({
-  color: theme.palette.secondary.main,
-  height: 28,
-  width: 28,
-  marginLeft: 15,
-}));
 
 const ToolbarContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
@@ -143,19 +115,6 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const BalanceContainer = styled(Grid)({
-  background: "rgb(75, 207, 147)",
-  borderRadius: 4,
-  padding: 4,
-  "&:hover": {
-    background: "#608871",
-  },
-});
-
-const Symbol = styled(Typography)({
-  marginLeft: 4,
-});
-
 export const ConnectWalletButton = ({
   connect,
 }: {
@@ -166,87 +125,18 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
-interface ToolbarWrapperProps {
-  children: any;
-  mode: "creator" | "explorer";
-  isMobileSmall: boolean;
-  isMobileExtraSmall: boolean;
-}
-
-const ToolbarWrapper = ({
-  children,
-  mode,
-  isMobileSmall,
-  isMobileExtraSmall,
-}: ToolbarWrapperProps): JSX.Element => {
-  const xsValue = useMemo(() => {
-    if (mode === "creator") {
-      if (!isMobileSmall) {
-        return 12;
-      }
-    }
-
-    if (isMobileExtraSmall) {
-      return 1;
-    }
-
-    return 9;
-  }, [isMobileExtraSmall, isMobileSmall, mode]);
-
-  return (
-    <Grid
-      item
-      xs={xsValue}
-      container
-      justify={
-        isMobileExtraSmall && mode === "explorer" ? "flex-start" : "flex-end"
-      }
-    >
-      {children}
-    </Grid>
-  );
-};
-
-interface ExplorerLogoProps {
-  history: any;
-}
-
-const ExplorerLogo = ({ history }: ExplorerLogoProps): JSX.Element => {
-  return (
-    <>
-      <Grid item xs={11} sm={3}>
-        <Box onClick={() => history.push("/explorer")}>
-          <ToolbarContainer container alignItems="center" wrap="nowrap">
-            <Grid item>
-              <LogoItem src={HomeButton} />
-            </Grid>
-            <Grid item>
-              <Box paddingLeft="10px">
-                <LogoText color="textSecondary">Homebase</LogoText>
-              </Box>
-            </Grid>
-          </ToolbarContainer>
-        </Box>
-      </Grid>
-    </>
-  );
-};
-
 export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   mode,
+  children,
 }) => {
   const { connect, account, reset, changeNetwork, network } = useTezos();
-  const [anchorEl, setAnchorEl] =
-    React.useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
   const [popperOpen, setPopperOpen] = useState(false);
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { id: daoId } =
-    useParams<{
-      id: string;
-    }>();
-  const { data: dao } = useDAO(daoId);
 
   const [networkAnchorEl, setNetworkAnchorEl] =
     React.useState<HTMLButtonElement | null>(null);
@@ -279,17 +169,6 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     setPopperOpen(false);
   };
 
-  const userBalance = useMemo(() => {
-    if (!dao) {
-      return new BigNumber(0);
-    }
-    const balance = dao.ledger.find(
-      ({ address }) => address.toLowerCase() === account.toLowerCase()
-    );
-    const frozenBalance = balance ? balance.balances[0] : new BigNumber(0);
-    return frozenBalance || new BigNumber(0);
-  }, [dao, account]);
-
   const history = useHistory();
 
   return (
@@ -301,191 +180,149 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
       <StyledToolbar>
         <Grid
           container
-          direction="row"
+          direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
           wrap="wrap"
-          justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
+          justify={mode === "explorer" ? "space-between" : "flex-end"}
         >
-          {mode === "explorer" ? <ExplorerLogo history={history} /> : null}
-          <ToolbarWrapper
-            mode={mode}
-            isMobileSmall={isMobileSmall}
-            isMobileExtraSmall={isMobileExtraSmall}
-          >
-            {account ? (
-              <>
-                <Grid
-                  container
-                  alignItems="center"
-                  justify={isMobileExtraSmall ? "flex-start" : "flex-end"}
-                >
-                  {!isMobileSmall && dao && dao.ledger.length > 0 ? (
-                    <>
-                      <Grid
-                        item
-                        xs={7}
-                        container
-                        justify="flex-end"
-                        direction="row"
-                      >
-                        <BalanceContainer
-                          container
-                          item
-                          justify="center"
-                          direction="row"
-                          xs={3}
-                          sm={4}
-                        >
-                          <Typography color="textSecondary">
-                            {userBalance}
-                          </Typography>
-                          <Symbol color="textSecondary">
-                            {dao.metadata.unfrozenToken.symbol}
-                          </Symbol>
-                        </BalanceContainer>
-                      </Grid>
-                      <Grid item>
-                        <ChangeNetworkButton />
-                      </Grid>
-                    </>
-                  ) : null}
-
-                  {!isMobileExtraSmall ? (
-                    <Grid item>
-                      <Link
-                        href="https://github.com/dOrgTech/homebase-app/issues/new"
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        style={{ textDecoration: "none" }}
-                      >
-                        <Button color="secondary" variant="outlined">
-                          Submit an issue
-                        </Button>
-                      </Link>
-                    </Grid>
-                  ) : null}
-
-                  <AddressBarWrapper item>
-                    <AddressContainer
-                      container
-                      alignItems="center"
-                      wrap="nowrap"
-                      justify="flex-end"
-                      onClick={handleClick}
-                    >
-                      <Grid item>
-                        <Blockie address={account} marginRight={"8px"} />
-                      </Grid>
-                      {!isMobileSmall || !isMobileExtraSmall ? (
-                        <>
-                          <Grid item>
-                            <Typography variant="subtitle1">
-                              {toShortAddress(account)}
-                            </Typography>
-                          </Grid>
-                          <Grid item>
-                            <StatusDot />
-                          </Grid>
-                        </>
-                      ) : null}
-                    </AddressContainer>
-                  </AddressBarWrapper>
-                </Grid>
-
-                <StyledPopover
-                  id={"wallet-Popper"}
-                  open={popperOpen}
-                  anchorEl={anchorEl}
-                  style={{ zIndex: 1500, borderRadius: 4 }}
-                  onClose={() => {
-                    setPopperOpen(false);
-                  }}
-                  PaperProps={{
-                    style: { borderRadius: 4, backgroundColor: "transparent" },
-                  }}
-                >
-                  <AddressMenu>
-                    <AddressMenuItem
-                      container
-                      alignItems="center"
-                      onClick={() => handleCopy(account)}
-                    >
-                      <AddressMenuIcon item>
-                        <FileCopyOutlined color="inherit" fontSize="inherit" />
-                      </AddressMenuIcon>
-                      <Grid item>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          {toShortAddress(account)}
-                        </Typography>
-                      </Grid>
-                    </AddressMenuItem>
-                    <AddressMenuItem
-                      container
-                      alignItems="center"
-                      onClick={handleNetworkClick}
-                    >
-                      <Grid item>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Change network ({network})
-                        </Typography>
-                      </Grid>
-                    </AddressMenuItem>
-                    <AddressMenuItem
-                      style={{
-                        borderTop: "2px solid rgba(255, 255, 255, 0.2)",
-                      }}
-                      container
-                      alignItems="center"
-                      onClick={handleLogout}
-                    >
-                      <AddressMenuIcon item>
-                        <ExitToAppOutlined color="inherit" fontSize="inherit" />
-                      </AddressMenuIcon>
-                      <Grid item>
-                        <Typography variant="subtitle2" color="textSecondary">
-                          Log out
-                        </Typography>
-                      </Grid>
-                    </AddressMenuItem>
-                  </AddressMenu>
-                </StyledPopover>
-              </>
-            ) : !isMobileSmall ? (
-              <Grid container justify="flex-end" wrap="nowrap" spacing={1}>
-                <Grid item>
-                  <Link
-                    href="https://github.com/dOrgTech/homebase-app/issues/new"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    style={{ textDecoration: "none" }}
-                  >
-                    <Button color="secondary" variant="outlined">
-                      Submit an issue
-                    </Button>
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <ChangeNetworkButton />
-                </Grid>
-                <Grid item>
-                  <ConnectWalletButton connect={() => connect()} />
-                </Grid>
-              </Grid>
-            ) : (
-              <Grid container justify="flex-end" wrap="nowrap">
-                <Grid item>
-                  <LogIn onClick={() => connect()} />
-                </Grid>
-              </Grid>
-            )}
-          </ToolbarWrapper>
-          {isMobileExtraSmall && (
-            <Grid container justify="center" wrap="nowrap">
-              <Grid item>
-                <ChangeNetworkButton />
-              </Grid>
+          {mode === "explorer" && (
+            <Grid item>
+              <Box onClick={() => history.push("/explorer")}>
+                <ToolbarContainer container alignItems="center" wrap="nowrap">
+                  <Grid item>
+                    <LogoItem src={HomeButton} />
+                  </Grid>
+                  <Grid item>
+                    <Box paddingLeft="10px">
+                      <LogoText color="textSecondary">Homebase</LogoText>
+                    </Box>
+                  </Grid>
+                </ToolbarContainer>
+              </Box>
             </Grid>
           )}
+
+          <Grid item>
+            <Grid
+              container
+              justify={isMobileExtraSmall ? "center" : "flex-end"}
+            >
+              {account ? (
+                <>
+                  <Grid
+                    container
+                    alignItems="center"
+                    justify={isMobileExtraSmall ? "center" : "flex-end"}
+                  >
+                    {children}
+                    <AddressBarWrapper item>
+                      <AddressContainer
+                        container
+                        alignItems="center"
+                        wrap="nowrap"
+                        justify="flex-end"
+                        onClick={handleClick}
+                        style={{ gap: 8 }}
+                      >
+                        <Grid item>
+                          <ProfileAvatar size={22} address={account} />
+                        </Grid>
+                        <Grid item>
+                          <Typography variant="subtitle1">
+                            <UserProfileName address={account} short={true} />
+                          </Typography>
+                        </Grid>
+                      </AddressContainer>
+                    </AddressBarWrapper>
+                  </Grid>
+
+                  <StyledPopover
+                    id={"wallet-Popper"}
+                    open={popperOpen}
+                    anchorEl={anchorEl}
+                    style={{ zIndex: 1500, borderRadius: 4 }}
+                    onClose={() => {
+                      setPopperOpen(false);
+                    }}
+                    PaperProps={{
+                      style: {
+                        borderRadius: 4,
+                        backgroundColor: "transparent",
+                      },
+                    }}
+                  >
+                    <AddressMenu>
+                      <AddressMenuItem
+                        container
+                        alignItems="center"
+                        onClick={() => handleCopy(account)}
+                      >
+                        <AddressMenuIcon item>
+                          <FileCopyOutlined
+                            color="inherit"
+                            fontSize="inherit"
+                          />
+                        </AddressMenuIcon>
+                        <Grid item>
+                          <Typography variant="subtitle2" color="textSecondary">
+                            {toShortAddress(account)}
+                          </Typography>
+                        </Grid>
+                      </AddressMenuItem>
+                      <AddressMenuItem
+                        container
+                        alignItems="center"
+                        onClick={handleNetworkClick}
+                      >
+                        <Grid item>
+                          <Typography variant="subtitle2" color="textSecondary">
+                            Change network ({network})
+                          </Typography>
+                        </Grid>
+                      </AddressMenuItem>
+                      <AddressMenuItem
+                        style={{
+                          borderTop: "2px solid rgba(255, 255, 255, 0.2)",
+                        }}
+                        container
+                        alignItems="center"
+                        onClick={handleLogout}
+                      >
+                        <AddressMenuIcon item>
+                          <ExitToAppOutlined
+                            color="inherit"
+                            fontSize="inherit"
+                          />
+                        </AddressMenuIcon>
+                        <Grid item>
+                          <Typography variant="subtitle2" color="textSecondary">
+                            Log out
+                          </Typography>
+                        </Grid>
+                      </AddressMenuItem>
+                    </AddressMenu>
+                  </StyledPopover>
+                </>
+              ) : !isMobileSmall ? (
+                <Grid container justify="flex-end" wrap="nowrap" spacing={1}>
+                  <Grid item>
+                    <ChangeNetworkButton />
+                  </Grid>
+                  <Grid item>
+                    <ConnectWalletButton connect={() => connect()} />
+                  </Grid>
+                </Grid>
+              ) : (
+                <Grid container>
+                  <Grid item>
+                    <ViewButton variant="outlined" onClick={() => connect()}>
+                      CONNECT
+                    </ViewButton>
+                  </Grid>
+                </Grid>
+              )}
+            </Grid>
+          </Grid>
         </Grid>
       </StyledToolbar>
       <NetworkMenu

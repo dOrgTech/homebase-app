@@ -2,17 +2,19 @@ import { TransactionWalletOperation } from "@taquito/taquito";
 import { useMutation, useQueryClient } from "react-query";
 import { RegistryProposeArgs } from "../registryDAO/types";
 import { useNotification } from "modules/common/hooks/useNotification";
-import { useCacheDAOs } from "./useCacheDAOs";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { RegistryDAO } from '../registryDAO';
+import { RegistryDAO } from "../registryDAO";
 
 export const useRegistryPropose = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
-  const { setDAO } = useCacheDAOs();
-  const { network, tezos, account, connect } = useTezos()
+  const { network, tezos, account, connect } = useTezos();
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: RegistryDAO, args: RegistryProposeArgs }>(
+  return useMutation<
+    TransactionWalletOperation | Error,
+    Error,
+    { dao: RegistryDAO; args: RegistryProposeArgs }
+  >(
     async ({ dao, args }) => {
       const {
         key: proposalNotification,
@@ -25,8 +27,8 @@ export const useRegistryPropose = () => {
       try {
         let tezosToolkit = tezos;
 
-        if(!account) {
-          tezosToolkit = await connect()
+        if (!account) {
+          tezosToolkit = await connect();
         }
 
         const data = await dao.propose(args, tezosToolkit);
@@ -39,7 +41,6 @@ export const useRegistryPropose = () => {
           variant: "success",
           detailsLink: `https://${network}.tzkt.io/` + data.opHash,
         });
-        setDAO(dao);
         return data;
       } catch (e) {
         console.log(e);
@@ -54,7 +55,7 @@ export const useRegistryPropose = () => {
     },
     {
       onSuccess: () => {
-        queryClient.resetQueries("proposals");
+        queryClient.resetQueries();
       },
     }
   );

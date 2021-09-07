@@ -10,11 +10,14 @@ import VoteFor from "../../../assets/img/up_green.svg";
 import VoteAgainst from "../../../assets/img/down_red.svg";
 import VoteAgainstDisabled from "../../../assets/img/down_gray.svg";
 import { useVote } from "services/contracts/baseDAO/hooks/useVote";
-import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { PrimaryButton } from "./styled/PrimaryButton";
 import BigNumber from "bignumber.js";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useDAOID } from "../daoRouter";
+import { SendButton } from "./ProposalFormSendButton";
+import { useTheme } from "@material-ui/styles";
 
 const StyledButton = styled(PrimaryButton)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
@@ -67,16 +70,6 @@ const FeeContainer = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
 }));
 
-const SubmitContainer = styled(Grid)({
-  height: 80,
-  display: "flex",
-  cursor: "pointer",
-  borderTop: "1px solid #4BCF93",
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-  },
-});
-
 const SupportText = styled(Typography)(
   ({ theme, support }: { theme: Theme; support: boolean }) => ({
     color: support ? theme.palette.secondary.main : "#FF5555",
@@ -102,13 +95,14 @@ export const VoteDialog: React.FC = () => {
   const [support, setSupport] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
-  const { proposalId, id: daoId } = useParams<{
+  const theme = useTheme<Theme>();
+  const { proposalId } = useParams<{
     proposalId: string;
-    id: string;
   }>();
+  const daoId = useDAOID();
 
   const { data: proposal } = useProposal(daoId, proposalId);
-  const { data: dao } = useDAO(daoId);
+  const { data: dao, cycleInfo } = useDAO(daoId);
 
   const { mutate } = useVote();
 
@@ -140,11 +134,18 @@ export const VoteDialog: React.FC = () => {
         variant="outlined"
         onClick={() => handleClickOpen(true)}
         support={true}
-        disabled={proposal?.status !== ProposalStatus.ACTIVE}
+        disabled={
+          !proposal ||
+          !cycleInfo ||
+          proposal.getStatus(cycleInfo.currentLevel).status !==
+            ProposalStatus.ACTIVE
+        }
       >
         VOTE FOR
       </StyledButton>
-      {proposal?.status !== ProposalStatus.ACTIVE ? (
+      {cycleInfo &&
+      proposal?.getStatus(cycleInfo.currentLevel).status !==
+        ProposalStatus.ACTIVE ? (
         <ArrowIcon src={VoteForDisabled} alt="up_disabled" />
       ) : (
         <ArrowIcon src={VoteFor} alt="up" />
@@ -153,12 +154,18 @@ export const VoteDialog: React.FC = () => {
         variant="outlined"
         onClick={() => handleClickOpen(false)}
         support={false}
-        disabled={proposal?.status !== ProposalStatus.ACTIVE}
+        disabled={
+          cycleInfo &&
+          proposal?.getStatus(cycleInfo.currentLevel).status !==
+            ProposalStatus.ACTIVE
+        }
         style={{ marginLeft: 15 }}
       >
         VOTE AGAINST
       </StyledButton>
-      {proposal?.status !== ProposalStatus.ACTIVE ? (
+      {cycleInfo &&
+      proposal?.getStatus(cycleInfo.currentLevel).status !==
+        ProposalStatus.ACTIVE ? (
         <ArrowIcon src={VoteAgainstDisabled} alt="down_disabled" />
       ) : (
         <ArrowIcon src={VoteAgainst} alt="down" />
@@ -219,17 +226,26 @@ export const VoteDialog: React.FC = () => {
                 />
               </Grid>
             </FeeContainer>
-            <SubmitContainer
+
+            <Grid
               container
               direction="row"
               alignItems="center"
               justify="center"
-              onClick={onSubmit}
             >
-              <Typography color="secondary" variant="subtitle1">
+              <SendButton
+                customColor={
+                  support
+                    ? theme.palette.secondary.main
+                    : theme.palette.error.main
+                }
+                variant="outlined"
+                disabled={!amount}
+                onClick={onSubmit}
+              >
                 SUBMIT VOTE
-              </Typography>
-            </SubmitContainer>
+              </SendButton>
+            </Grid>
           </DialogContentText>
         </DialogContent>
       </CustomDialog>

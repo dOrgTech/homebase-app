@@ -22,6 +22,12 @@ const TokenName = styled(withTheme(Paper))((props) => ({
   background: props.theme.palette.primary.main,
   color: props.theme.palette.text.secondary,
   padding: 6,
+  "& > *": {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: 145,
+  },
 }));
 
 const Cursor = styled(Typography)({
@@ -29,17 +35,20 @@ const Cursor = styled(Typography)({
   textTransform: "uppercase",
 });
 
-const ValueContainer = styled(Grid)({
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
+const ValueContainer = styled("div")({
+  "& > *": {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: 300,
+  },
 });
 
 export const RegistryTableRow: React.FC<{
   name: string;
   value: string;
   lastUpdated: string;
-  onClickRow?: React.MouseEventHandler<HTMLDivElement> | undefined
+  onClickRow?: React.MouseEventHandler<HTMLDivElement> | undefined;
 }> = ({ name, value, lastUpdated, onClickRow }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -74,25 +83,29 @@ export const RegistryTableRow: React.FC<{
         alignItems="center"
         justify={isMobileSmall ? "space-evenly" : "flex-start"}
       >
-        <ValueContainer
+        <Grid
           container
           direction="row"
           alignItems="center"
           justify={isMobileSmall ? "space-evenly" : "flex-start"}
         >
-          {isMobileSmall ? (
-            <Typography
-              variant="subtitle1"
-              color="textSecondary"
-              style={{ fontWeight: "bold" }}
-            >
-              VALUE:
-            </Typography>
-          ) : null}
-          <Cursor variant="subtitle1" color="textSecondary">
-            {value}
-          </Cursor>
-        </ValueContainer>
+          <Grid item>
+            <ValueContainer>
+              {isMobileSmall ? (
+                <Typography
+                  variant="subtitle1"
+                  color="textSecondary"
+                  style={{ fontWeight: "bold" }}
+                >
+                  VALUE:
+                </Typography>
+              ) : null}
+              <Cursor variant="subtitle1" color="textSecondary">
+                {value}
+              </Cursor>
+            </ValueContainer>
+          </Grid>
+        </Grid>
       </Grid>
       <Grid
         item

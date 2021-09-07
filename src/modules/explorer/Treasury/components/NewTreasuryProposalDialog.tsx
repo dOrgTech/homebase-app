@@ -15,28 +15,28 @@ import { Form, Field, FieldArray, useFormikContext } from "formik";
 import { TextField, Switch } from "formik-material-ui";
 import { Autocomplete } from "formik-material-ui-lab";
 
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { TreasuryDAO } from "services/contracts/baseDAO";
-import {
-  fromMigrationParamsFile,
-  validateTransactionsJSON,
-} from "modules/explorer/Treasury/utils";
-import { useNotification } from "modules/common/hooks/useNotification";
+// import {
+//   fromMigrationParamsFile,
+//   validateTransactionsJSON,
+// } from "modules/explorer/Treasury/utils";
+// import { useNotification } from "modules/common/hooks/useNotification";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
-import { useParams } from "react-router-dom";
 import * as Yup from "yup";
 import BigNumber from "bignumber.js";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 interface Asset {
-  contract: string,
-  level: number,
-  token_id: number,
-  symbol: string,
-  name: string,
-  decimals: number,
-  balance: BigNumber
+  contract: string;
+  level: number;
+  token_id: number;
+  symbol: string;
+  name: string;
+  decimals: number;
+  balance: BigNumber;
 }
 
 const AmountItem = styled(Grid)(({ theme }) => ({
@@ -52,20 +52,20 @@ const AmountItem = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const UploadButtonContainer = styled(Grid)(({ theme }) => ({
-  minHeight: 70,
-  display: "flex",
-  alignItems: "center",
-  padding: "0px 65px",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  [theme.breakpoints.down("sm")]: {
-    padding: "24px 24px",
-  },
-}));
+// const UploadButtonContainer = styled(Grid)(({ theme }) => ({
+//   minHeight: 70,
+//   display: "flex",
+//   alignItems: "center",
+//   padding: "0px 65px",
+//   borderBottom: `2px solid ${theme.palette.primary.light}`,
+//   [theme.breakpoints.down("sm")]: {
+//     padding: "24px 24px",
+//   },
+// }));
 
-const FileInput = styled("input")({
-  display: "none",
-});
+// const FileInput = styled("input")({
+//   display: "none",
+// });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
   height: 60,
@@ -114,14 +114,14 @@ const styles = {
   },
 };
 
-const UploadFileLabel = styled("label")(({ theme }) => ({
-  color: theme.palette.secondary.main,
-  borderColor: theme.palette.secondary.main,
-  minWidth: 171,
-  cursor: "pointer",
-  margin: "auto",
-  display: "block",
-}));
+// const UploadFileLabel = styled("label")(({ theme }) => ({
+//   color: theme.palette.secondary.main,
+//   borderColor: theme.palette.secondary.main,
+//   minWidth: 171,
+//   cursor: "pointer",
+//   margin: "auto",
+//   display: "block",
+// }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -229,7 +229,9 @@ export const treasuryValidationSchema = Yup.object().shape({
   transferForm: Yup.object().shape({
     transfers: Yup.array().of(
       Yup.object().shape({
-        amount: Yup.number().required("Required").positive("Should be positive"),
+        amount: Yup.number()
+          .required("Required")
+          .positive("Should be positive"),
         recipient: Yup.string().required("Required"),
       })
     ),
@@ -237,21 +239,15 @@ export const treasuryValidationSchema = Yup.object().shape({
 });
 
 export const NewTreasuryProposalDialog: React.FC = () => {
-  const {
-    values,
-    errors,
-    touched,
-    setFieldValue,
-  } = useFormikContext<TreasuryProposalFormValues>();
+  const { values, errors, touched } =
+    useFormikContext<TreasuryProposalFormValues>();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTransfer, setActiveTransfer] = React.useState(1);
-  const { id: daoId } = useParams<{
-    id: string;
-  }>();
+  const daoId = useDAOID();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
-  const openNotification = useNotification();
+  // const openNotification = useNotification();
   const { data: daoHoldings } = useDAOHoldings(daoId);
 
   const currentAssetSymbol = useCallback(
@@ -288,7 +284,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
 
         if (currentTransfer.asset.symbol === "XTZ") {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return daoHoldings.find((balance) => balance.symbol === "XTZ")!
+          return daoHoldings
+            .find((balance) => balance.symbol === "XTZ")!
             .balance.toString();
         }
 
@@ -308,44 +305,44 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     [activeTransfer, daoHoldings]
   );
 
-  const recipientError = (errors.transferForm?.transfers?.[
-    activeTransfer - 1
-  ] as any)?.recipient;
-  const amountError = (errors.transferForm?.transfers?.[
-    activeTransfer - 1
-  ] as any)?.amount;
+  const recipientError = (
+    errors.transferForm?.transfers?.[activeTransfer - 1] as any
+  )?.recipient;
+  const amountError = (
+    errors.transferForm?.transfers?.[activeTransfer - 1] as any
+  )?.amount;
 
-  const importTransactions = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.currentTarget.files) {
-        try {
-          const file = event.currentTarget.files[0];
-          const transactionsParsed = await fromMigrationParamsFile(file);
-          const errors = validateTransactionsJSON(transactionsParsed);
-          console.log(errors);
+  // const importTransactions = useCallback(
+  //   async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     if (event.currentTarget.files) {
+  //       try {
+  //         const file = event.currentTarget.files[0];
+  //         const transactionsParsed = await fromMigrationParamsFile(file);
+  //         const errors = validateTransactionsJSON(transactionsParsed);
+  //         console.log(errors);
 
-          if (errors.length) {
-            openNotification({
-              message: "Error while parsing JSON",
-              persist: true,
-              variant: "error",
-            });
-            return;
-          }
+  //         if (errors.length) {
+  //           openNotification({
+  //             message: "Error while parsing JSON",
+  //             persist: true,
+  //             variant: "error",
+  //           });
+  //           return;
+  //         }
 
-          setFieldValue("transferForm.isBatch", true);
-          values.transferForm.transfers = transactionsParsed;
-        } catch (e) {
-          openNotification({
-            message: "Error while parsing JSON",
-            persist: true,
-            variant: "error",
-          });
-        }
-      }
-    },
-    [openNotification, setFieldValue, values.transferForm]
-  );
+  //         setFieldValue("transferForm.isBatch", true);
+  //         values.transferForm.transfers = transactionsParsed;
+  //       } catch (e) {
+  //         openNotification({
+  //           message: "Error while parsing JSON",
+  //           persist: true,
+  //           variant: "error",
+  //         });
+  //       }
+  //     }
+  //   },
+  //   [openNotification, setFieldValue, values.transferForm]
+  // );
 
   return (
     <>
@@ -453,9 +450,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 ? daoHoldings.map((option) => option)
                                 : []
                             }
-                            getOptionLabel={(option: Asset) =>
-                              option.symbol
-                            }
+                            getOptionLabel={(option: Asset) => option.symbol}
                             renderInput={(params: any) => (
                               <MaterialTextField
                                 {...params}
@@ -487,8 +482,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                               InputProps={{
                                 inputProps: {
                                   step: 0.01,
-                                  min: dao && dao.extra.minXtzAmount,
-                                  max: dao && dao.extra.maxXtzAmount,
+                                  min: dao && dao.data.extra.min_xtz_amount,
+                                  max: dao && dao.data.extra.max_xtz_amount,
                                 },
                                 endAdornment: (
                                   <InputAdornment position="start">
@@ -549,7 +544,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                 )}
               />
 
-              <UploadButtonContainer container direction="row">
+              {/* <UploadButtonContainer container direction="row">
                 <UploadFileLabel>
                   -OR- UPLOAD JSON FILE
                   <FileInput
@@ -558,7 +553,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                     onChange={importTransactions}
                   />
                 </UploadFileLabel>
-              </UploadButtonContainer>
+              </UploadButtonContainer> */}
             </>
           </Form>
         </DialogContentText>

@@ -1,13 +1,13 @@
 import { BigNumber } from "bignumber.js";
 import { useMemo } from "react";
-import { useProposals } from "services/contracts/baseDAO/hooks/useProposals";
-import { useDAO } from "./useDAO";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
 
 export const useTokenHoldersWithVotes = (contractAddress: string) => {
   const {
-    data: daoData,
     isLoading: daoIsLoading,
     error: daoError,
+    ledger,
   } = useDAO(contractAddress);
 
   const {
@@ -17,18 +17,19 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
   } = useProposals(contractAddress);
 
   const tokenHoldersWithVotes = useMemo(() => {
-    if (!proposals || !daoData) {
+    if (!proposals || !ledger) {
       return [];
     }
 
-    return daoData.ledger.map((tokenHolder) => {
+    return ledger.map((tokenHolder) => {
       let proposalsVoted = 0;
       let votes = new BigNumber(0);
 
       proposals.forEach((proposal) => {
         const voter = proposal.voters.find(
           (voter) =>
-            voter.address.toLowerCase() === tokenHolder.address.toLowerCase()
+            voter.address.toLowerCase() ===
+            tokenHolder.holder.address.toLowerCase()
         );
 
         if (voter) {
@@ -43,7 +44,7 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
         proposalsVoted,
       };
     });
-  }, [proposals, daoData]);
+  }, [proposals, ledger]);
 
   return {
     data: tokenHoldersWithVotes,

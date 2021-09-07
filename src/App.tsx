@@ -10,7 +10,6 @@ import { Box, makeStyles, ThemeProvider } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
 
 import { DAOExplorerRouter } from "modules/explorer/router";
-import { Navbar } from "modules/common/Toolbar";
 import { DAOCreate } from "modules/creator";
 import { CreatorProvider } from "modules/creator/state";
 import ScrollToTop from "modules/common/ScrollToTop";
@@ -18,16 +17,20 @@ import { theme } from "theme";
 
 import "App.css";
 import { WarningDialog } from "modules/explorer/components/WarningDialog";
+import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions";
+import { Landing } from "modules/home/Landing";
+import { WarningFooter } from "modules/common/WarningFooter";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 60000),
       retry: false,
-			retryOnMount: false,
-			refetchOnMount: false,
-			refetchOnWindowFocus: true,
-      staleTime: 5000
+      retryOnMount: false,
+      refetchOnMount: false,
+      refetchOnWindowFocus: true,
+      staleTime: 5000,
+      cacheTime: 30000,
     },
   },
 });
@@ -73,8 +76,8 @@ const App: React.FC = () => {
 
   const handleClose = () => {
     window.localStorage.setItem("homebase:visited", "true");
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -94,12 +97,26 @@ const App: React.FC = () => {
                   <CreatorProvider>
                     <DAOCreate />
                   </CreatorProvider>
+                  <WarningFooter
+                    text={
+                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you ceated will not be deprecated."
+                    }
+                  />
                 </Route>
                 <Route path="/explorer">
-                  <Navbar mode="explorer" />
-                  <DAOExplorerRouter />
+                  <TZKTSubscriptionsProvider>
+                    <DAOExplorerRouter />
+                  </TZKTSubscriptionsProvider>
+                  <WarningFooter
+                    text={
+                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you ceated will not be deprecated."
+                    }
+                  />
                 </Route>
-                <Redirect to="/explorer" />
+                <Route path="/">
+                  <Landing />
+                </Route>
+                <Redirect to="/" />
               </Switch>
             </Router>
           </Box>

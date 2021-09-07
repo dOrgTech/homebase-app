@@ -5,18 +5,14 @@ import {
   Tooltip,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@material-ui/core";
 import React, { useCallback } from "react";
-import { useParams } from "react-router-dom";
-import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
-import { useProposalsWithStatus } from "services/contracts/baseDAO/hooks/useProposalsWithStatus";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { DAOStatsRow } from "../components/DAOStatsRow";
 import { RectangleContainer } from "../components/styled/RectangleHeader";
 import { PrimaryButton } from "../components/styled/PrimaryButton";
 import { ProposalsTable } from "../components/ProposalsTable";
-import { ProposalStatus } from "services/bakingBad/proposals/types";
-import { ViewButton } from "../components/ViewButton";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
@@ -24,6 +20,11 @@ import { RegistryProposalFormContainer } from "../components/ProposalForm/regist
 import { useState } from "react";
 import { TreasuryProposalFormContainer } from "../components/ProposalForm/treasuryProposalForm";
 import { InfoIcon } from "../components/styled/InfoIcon";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { useProposals } from "services/indexer/dao/hooks/useProposals";
+import { useDAOID } from "../daoRouter";
+import { PeriodLabel } from "../components/styled/VotingLabel";
 
 const ButtonsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -33,28 +34,31 @@ const ButtonsContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const Proposals: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data: dao } = useDAO(id);
-  const { data } = useDAO(id);
+  const daoId = useDAOID();
+  const { data: dao } = useDAO(daoId);
   const { mutate } = useFlush();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [selectedTab, setSelectedTab] = React.useState(0);
-  const name = dao && dao.metadata.unfrozenToken.name;
-  const shouldDisable = useIsProposalButtonDisabled(id);
+  const name = dao && dao.data.name;
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
   const [open, setOpen] = useState(false);
 
-  const { data: proposalsData } = useProposalsWithStatus(dao && dao.address);
+  const { data: allProposalsData, isLoading: isAllLoading } =
+    useProposals(daoId);
+  const { data: activeProposalsData, isLoading: isActiveLoading } =
+    useProposals(daoId, ProposalStatus.ACTIVE);
+  const { data: executedProposalsData, isLoading: isExecutedLoading } =
+    useProposals(daoId, ProposalStatus.EXECUTED);
 
   const onFlush = useCallback(async () => {
-    if (proposalsData && proposalsData.length && data) {
+    if (dao && allProposalsData) {
       mutate({
-        dao: data,
-        numOfProposalsToFlush: proposalsData.length + 1,
+        dao,
+        numOfProposalsToFlush: allProposalsData.length + 1,
       });
-      return;
     }
-  }, [data, mutate, proposalsData]);
+  }, [dao, mutate, allProposalsData]);
 
   const handleNewProposal = () => {
     setOpen(true);
@@ -93,13 +97,14 @@ export const Proposals: React.FC = () => {
               </Grid>
               <Grid item>
                 <Grid item>
-                  <ViewButton
+                  <Button
                     variant="outlined"
                     onClick={onFlush}
-                    disabled={!dao?.storage.proposalsToFlush}
+                    color="secondary"
+                    // disabled={!dao?.storage.proposalsToFlush}
                   >
                     EXECUTE
-                  </ViewButton>
+                  </Button>
                   <Tooltip
                     placement="bottom"
                     title="Execute all passed proposals and drop all expired or rejected"
@@ -116,10 +121,18 @@ export const Proposals: React.FC = () => {
             xs={12}
             sm={6}
             justify={isMobileSmall ? "center" : "flex-end"}
-            spacing={2}
+            style={{ gap: 35 }}
           >
             <Grid item>
-              <Grid container>
+              <Grid container alignItems="baseline">
+                <Grid item>
+                  <PeriodLabel daoId={daoId} item />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item>
+              <Grid container alignItems="baseline">
                 <Grid item>
                   <PrimaryButton
                     variant="outlined"
@@ -132,7 +145,7 @@ export const Proposals: React.FC = () => {
                 {shouldDisable && (
                   <Tooltip
                     placement="bottom"
-                    title="Not on voting period"
+                    title="Not on proposal creation period"
                   >
                     <InfoIcon color="secondary" />
                   </Tooltip>
@@ -147,27 +160,39 @@ export const Proposals: React.FC = () => {
             <AppTabBar
               value={selectedTab}
               setValue={setSelectedTab}
-              labels={["ACTIVE PROPOSALS", "PASSED PROPOSALS", "ALL PROPOSALS"]}
+              labels={[
+                "ACTIVE PROPOSALS",
+                "EXECUTED PROPOSALS",
+                "ALL PROPOSALS",
+              ]}
             />
             <TabPanel value={selectedTab} index={0}>
               <ProposalsTable
-                headerText="Active Proposals"
                 status={ProposalStatus.ACTIVE}
+                proposals={activeProposalsData || []}
+                isLoading={isActiveLoading}
               />
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
               <ProposalsTable
-                headerText="Passed Proposals"
-                status={ProposalStatus.PASSED}
+                status={ProposalStatus.EXECUTED}
+                proposals={executedProposalsData || []}
+                isLoading={isExecutedLoading}
               />
             </TabPanel>
             <TabPanel value={selectedTab} index={2}>
-              <ProposalsTable headerText="All Proposals" />
+              <ProposalsTable
+                proposals={allProposalsData || []}
+                isLoading={isAllLoading}
+              />
             </TabPanel>
           </>
         ) : (
           <>
-            <ProposalsTable headerText="All Proposals" />
+            <ProposalsTable
+              proposals={allProposalsData || []}
+              isLoading={isAllLoading}
+            />
           </>
         )}
 
@@ -187,7 +212,7 @@ export const Proposals: React.FC = () => {
           </ProposalsContainer> */}
       </Grid>
       {dao ? (
-        dao.template === "registry" ? (
+        dao.data.type === "registry" ? (
           <RegistryProposalFormContainer
             open={open}
             handleClose={handleCloseModal}

@@ -12,7 +12,7 @@ import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 import { TreasuryHistoryRow } from "./HistoryRow";
 import { ProposalTableHeadText } from "./TableHeader";
 import { useTransfers } from "services/contracts/baseDAO/hooks/useTransfers";
-import { useParams } from "react-router-dom";
+import { useDAOID } from "modules/explorer/daoRouter";
 
 const NoProposals = styled(Typography)({
   marginTop: 20,
@@ -22,33 +22,34 @@ const NoProposals = styled(Typography)({
 export const HistoryTable: React.FC = () => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { id } = useParams<{
-    proposalId: string;
-    id: string;
-  }>();
-  const { data: transfers } = useTransfers(id);
+  const daoId = useDAOID();
+  const { data: transfers } = useTransfers(daoId);
 
   return (
     <ResponsiveGenericTable>
       {!isMobileSmall && (
-        <TableHeader item container wrap="nowrap" id="demo">
-          <Grid item xs={6}>
+        <TableHeader
+          item
+          container
+          wrap="nowrap"
+          id="demo"
+          justifyContent="space-between"
+        >
+          <Grid item xs={3}>
             <ProposalTableHeadText align={"left"}>
               TOKEN TRANSFER HISTORY
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"right"}>DATE</ProposalTableHeadText>
+          <Grid item xs={3}>
+            <ProposalTableHeadText align={"left"}>DATE</ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"right"}>
+          <Grid item xs={3}>
+            <ProposalTableHeadText align={"left"}>
               RECIPIENT
             </ProposalTableHeadText>
           </Grid>
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"right"}>
-              AMOUNT
-            </ProposalTableHeadText>
+          <Grid item xs={1}>
+            <ProposalTableHeadText align={"left"}>AMOUNT</ProposalTableHeadText>
           </Grid>
         </TableHeader>
       )}

@@ -23,27 +23,21 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     description: "",
     governanceToken: {
       address: "",
-      tokenId: ""
+      tokenId: "0",
     },
     administrator: "",
     guardian: "",
   },
   votingSettings: {
-    votingDays: 0,
-    votingHours: 0,
-    votingMinutes: 0,
+    votingBlocks: 0,
     proposeStakeRequired: 0,
     proposeStakePercentage: 0,
     frozenScaleValue: 0,
     frozenDivisionValue: 1,
     minXtzAmount: 0,
     maxXtzAmount: 0,
-    proposalFlushDays: 0,
-    proposalFlushHours: 0,
-    proposalFlushMinutes: 0,
-    proposalExpiryDays: 0,
-    proposalExpiryHours: 0,
-    proposalExpiryMinutes: 0,
+    proposalFlushBlocks: 0,
+    proposalExpiryBlocks: 0,
   },
   quorumSettings: {
     quorumThreshold: 2,
@@ -51,7 +45,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
     maxQuorumAmount: 99,
     quorumChange: 5,
     quorumMaxChange: 19,
-  }
+  },
 };
 
 export const INITIAL_STATE: CreatorState = {

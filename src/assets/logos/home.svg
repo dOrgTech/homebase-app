@@ -1,9 +1,9 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15.5 4.4C15.5 6.55391 13.7539 8.3 11.6 8.3C9.4461 8.3 7.70001 6.55391 7.70001 4.4C7.70001 2.24609 9.4461 0.5 11.6 0.5C13.7539 0.5 15.5 2.24609 15.5 4.4Z" stroke="current"/>
-<circle cx="11.6001" cy="20.8001" r="2.7" stroke="current"/>
-<path d="M11.6 8V18" stroke="current"/>
-<circle cx="3.2" cy="20.8001" r="2.7" stroke="current"/>
-<circle r="2.7" transform="matrix(-1 0 0 1 20 20.8001)" stroke="current"/>
-<path d="M12 12.8H3.29999C3.02384 12.8 2.79999 13.0239 2.79999 13.3V18" stroke="current"/>
-<path d="M12 12.8H19.9C20.1762 12.8 20.4 13.0239 20.4 13.3V18" stroke="current"/>
+<svg width="26" height="25" viewBox="0 0 26 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.5688 4.91868C16.5688 7.07259 14.8227 8.81868 12.6688 8.81868C10.5149 8.81868 8.7688 7.07259 8.7688 4.91868C8.7688 2.76477 10.5149 1.01868 12.6688 1.01868C14.8227 1.01868 16.5688 2.76477 16.5688 4.91868Z" fill="white" stroke="white"/>
+<circle cx="12.6687" cy="21.3187" r="2.7" fill="white" stroke="white"/>
+<path d="M12.6689 8.51868V18.5187" stroke="white"/>
+<circle cx="3.26885" cy="21.3187" r="2.7" fill="white" stroke="white"/>
+<circle r="2.7" transform="matrix(-1 0 0 1 22.0688 21.3187)" fill="white" stroke="white"/>
+<path d="M13.0689 13.3187H3.8501C3.57396 13.3187 3.3501 13.5425 3.3501 13.8187V18.5187" stroke="white"/>
+<path d="M13.0688 13.3187H21.6001C21.8762 13.3187 22.1001 13.5425 22.1001 13.8187V18.5187" stroke="white"/>
 </svg>

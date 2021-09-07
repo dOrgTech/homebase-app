@@ -6,10 +6,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
+import BigNumber from "bignumber.js";
 import React, { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
-// import { useDAO } from "services/contracts/baseDAO/hooks/useDAO";
 import { useTokenHoldersWithVotes } from "services/contracts/baseDAO/hooks/useTokenHoldersWithVotes";
+import { useDAOID } from "../daoRouter";
 import { ResponsiveTableContainer } from "./ResponsiveTable";
 import { TableHeader } from "./styled/TableHeader";
 import { TopHoldersTableRow } from "./TokenHolders";
@@ -42,12 +42,11 @@ const LoaderContainer = styled(Grid)({
 });
 
 export const TopHoldersTable: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const daoId = useDAOID();
   const [displayAll, setDisplayAll] = useState(false);
-  const { data: members, isLoading } = useTokenHoldersWithVotes(id);
+  const { data: members, isLoading } = useTokenHoldersWithVotes(daoId);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  // const { data: dao } = useDAO(id)
 
   const formattedMembers = useMemo(() => {
     if (!members) {
@@ -56,30 +55,36 @@ export const TopHoldersTable: React.FC = () => {
     return members
       .map((member) => {
         return {
-          username: member.address,
-          weight: (member.balances[0]).dp(10).toString(),
+          username: member.holder.address,
+          total_balance: new BigNumber(member.total_balance).dp(10).toString(),
+          available_balance: new BigNumber(member.available_balance)
+            .dp(10)
+            .toString(),
           votes: member.votes.dp(10).toString(),
           proposals_voted: member.proposalsVoted,
         };
       })
-      .sort((a, b) => Number(b.weight) - Number(a.weight));
+      .sort((a, b) => Number(b.total_balance) - Number(a.total_balance));
   }, [members]);
 
   return (
     <ResponsiveTableContainer>
       <Header container wrap="nowrap">
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={4}>
           <ProposalTableHeadText>
             TOKEN HOLDERS BY STAKED TOKENS
           </ProposalTableHeadText>
         </Grid>
         {!isMobileSmall && (
           <>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
               <ProposalTableHeadText>VOTES</ProposalTableHeadText>
             </Grid>
             <Grid item xs={2}>
-              <ProposalTableHeadText>STAKED</ProposalTableHeadText>
+              <ProposalTableHeadText>AVAILABLE STAKED</ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText>TOTAL STAKED</ProposalTableHeadText>
             </Grid>
             <Grid item xs={2}>
               <ProposalTableHeadText>PROPOSALS VOTED</ProposalTableHeadText>
@@ -89,11 +94,11 @@ export const TopHoldersTable: React.FC = () => {
       </Header>
 
       <>
-      {isLoading && (
-        <LoaderContainer container direction="row" justify="center">
-          <CircularProgress color="secondary" />
-        </LoaderContainer>
-      )}
+        {isLoading && (
+          <LoaderContainer container direction="row" justify="center">
+            <CircularProgress color="secondary" />
+          </LoaderContainer>
+        )}
       </>
 
       {displayAll ? (
@@ -116,7 +121,7 @@ export const TopHoldersTable: React.FC = () => {
           {formattedMembers.slice(0, 10).map((holder, i) => (
             <TopHoldersTableRow key={`holder-${i}`} {...holder} index={i} />
           ))}
-          {formattedMembers.length && (
+          {formattedMembers.length > 10 && (
             <Grid container direction="row" justify="center">
               <UnderlineText
                 variant="subtitle1"

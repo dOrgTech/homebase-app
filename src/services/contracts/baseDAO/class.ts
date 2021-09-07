@@ -1,4 +1,3 @@
-import { Proposal } from "../../bakingBad/proposals/types";
 import {
   TezosToolkit,
   ContractAbstraction,
@@ -6,19 +5,15 @@ import {
   TransactionWalletOperation,
 } from "@taquito/taquito";
 import { DAOTemplate, MigrationParams } from "modules/creator/state";
-import { Ledger } from "services/bakingBad/ledger/types";
 import { Network } from "services/beacon/context";
-import { Extra, fromStateToBaseStorage, getContract } from ".";
-import { DAOListMetadata } from "../metadataCarrier/types";
-import { RegistryDAO, TreasuryDAO } from ".";
+import { fromStateToBaseStorage, getContract } from ".";
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
 import { generateStorageContract } from "services/baseDAODocker";
-import { getDAOListMetadata } from "../metadataCarrier";
 import baseDAOContractCode from "./michelson/baseDAO";
-import { getMetadataFromAPI } from "services/bakingBad/metadata";
-import { Storage } from "services/bakingBad/storage/types";
 import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
+import { TokenMetadata } from "services/bakingBad/tokens";
+import { LedgerDTO } from "services/indexer/types";
 
 interface DeployParams {
   params: MigrationParams;
@@ -30,57 +25,40 @@ interface DeployParams {
 export type CycleType = "voting" | "proposing";
 
 export interface CycleInfo {
-  time: number;
-  current: number;
+  blocksLeft: number;
+  currentCycle: number;
+  currentLevel: number;
   type: CycleType;
 }
 
-export interface ConstructorParams {
+export interface BaseDAOData {
+  id: number;
+  admin: string;
   address: string;
+  frozen_token_id: number;
+  token: TokenMetadata;
+  guardian: string;
+  ledger: LedgerDTO[];
+  max_proposals: string;
+  max_quorum_change: string;
+  max_quorum_threshold: string;
+  max_voters: string;
+  min_quorum_threshold: string;
+  period: string;
+  proposal_expired_level: string;
+  proposal_flush_level: string;
+  quorum_change: string;
+  last_updated_cycle: string;
+  quorum_threshold: BigNumber;
+  staked: string;
+  start_level: number;
+  name: string;
+  description: string;
+  type: DAOTemplate;
   network: Network;
-  ledger: Ledger;
-  template: DAOTemplate;
-  storage: Storage;
-  metadata: DAOListMetadata;
-  tezos: TezosToolkit;
-  extra: Extra;
 }
 
 export abstract class BaseDAO {
-  public address;
-  public ledger;
-  public template;
-  public storage;
-  public metadata;
-  public extra;
-
-  abstract proposals: (network: Network) => Promise<Proposal[]>;
-  abstract proposal: (proposalKey: string, network: Network) => Promise<Proposal>;
-
-  public static getDAO = async (params: {
-    address: string;
-    network: Network;
-    tezos: TezosToolkit;
-  }): Promise<BaseDAO> => {
-    const { address, network, tezos } = params;
-    const metadata = await getMetadataFromAPI(address, network);
-
-    let instance: any;
-
-    switch (metadata.template) {
-      case "treasury":
-        instance = await TreasuryDAO.create(address, network, tezos, metadata);
-        break;
-      case "registry":
-        instance = await RegistryDAO.create(address, network, tezos, metadata);
-        break;
-      default:
-        throw new Error("Unrecognized DAO type. This should never happen");
-    }
-
-    return instance;
-  };
-
   public static baseDeploy = async (
     template: DAOTemplate,
     { params, metadata, tezos, network }: DeployParams
@@ -122,44 +100,13 @@ export abstract class BaseDAO {
     }
   };
 
-  public static getDAOs = async (
-    addresses: string[],
-    tezos: TezosToolkit | undefined
-  ): Promise<(DAOListMetadata | false)[]> => {
-    if (!tezos) {
-      return [];
-    }
-
-    const results = await Promise.all(
-      addresses.map(async (address) => {
-        try {
-          const metadata = await getDAOListMetadata(address, tezos);
-
-          return metadata;
-        } catch (e) {
-          console.log(e);
-          return false;
-        }
-      })
-    );
-
-    return results;
-  };
-
-  protected constructor(params: ConstructorParams) {
-    this.address = params.address;
-    this.ledger = params.ledger;
-    this.template = params.template;
-    this.storage = params.storage;
-    this.metadata = params.metadata;
-    this.extra = params.extra;
-  }
+  protected constructor(public data: BaseDAOData) {}
 
   public flush = async (
     numerOfProposalsToFlush: number,
     tezos: TezosToolkit
   ) => {
-    const daoContract = await getContract(tezos, this.address);
+    const daoContract = await getContract(tezos, this.data.address);
     const operation = await daoContract.methods.flush(numerOfProposalsToFlush);
 
     const result = await operation.send();
@@ -167,14 +114,14 @@ export abstract class BaseDAO {
   };
 
   public dropProposal = async (proposalId: string, tezos: TezosToolkit) => {
-    const contract = await getContract(tezos, this.address);
+    const contract = await getContract(tezos, this.data.address);
 
     const result = await contract.methods.drop_proposal(proposalId).send();
     return result;
   };
 
   public sendXtz = async (xtzAmount: BigNumber, tezos: TezosToolkit) => {
-    const contract = await getContract(tezos, this.address);
+    const contract = await getContract(tezos, this.data.address);
 
     const result = await contract.methods.callCustom("receive_xtz", "").send({
       amount: xtzToMutez(xtzAmount).toNumber(),
@@ -194,14 +141,18 @@ export abstract class BaseDAO {
     support: boolean;
     tezos: TezosToolkit;
   }) => {
-    const contract = await getContract(tezos, this.address);
+    const contract = await getContract(tezos, this.data.address);
     const result = await contract.methods
       .vote([
         {
           argument: {
+            from: await tezos.wallet.pkh(),
             proposal_key: proposalKey,
             vote_type: support,
-            vote_amount: formatUnits(amount, this.storage.governanceToken.decimals).toString(),
+            vote_amount: formatUnits(
+              amount,
+              this.data.token.decimals
+            ).toString(),
           },
         },
       ])
@@ -211,12 +162,9 @@ export abstract class BaseDAO {
   };
 
   public freeze = async (amount: BigNumber, tezos: TezosToolkit) => {
-    const daoContract = await getContract(tezos, this.address);
-    const govTokenContract = await getContract(
-      tezos,
-      this.storage.governanceToken.contract
-    );
-    const tokenMetadata = this.storage.governanceToken;
+    const daoContract = await getContract(tezos, this.data.address);
+    const govTokenContract = await getContract(tezos, this.data.token.contract);
+    const tokenMetadata = this.data.token;
     const batch = await tezos.wallet
       .batch()
       .withContractCall(
@@ -224,22 +172,24 @@ export abstract class BaseDAO {
           {
             add_operator: {
               owner: await tezos.wallet.pkh(),
-              operator: this.address,
-              token_id: this.storage.governanceToken.token_id,
+              operator: this.data.address,
+              token_id: this.data.token.token_id,
             },
           },
         ])
       )
       .withContractCall(
-        daoContract.methods.freeze(formatUnits(amount, tokenMetadata.decimals).toString())
+        daoContract.methods.freeze(
+          formatUnits(amount, tokenMetadata.decimals).toString()
+        )
       )
       .withContractCall(
         govTokenContract.methods.update_operators([
           {
             remove_operator: {
               owner: await tezos.wallet.pkh(),
-              operator: this.address,
-              token_id: this.storage.governanceToken.token_id,
+              operator: this.data.address,
+              token_id: this.data.token.token_id,
             },
           },
         ])
@@ -250,11 +200,10 @@ export abstract class BaseDAO {
   };
 
   public unfreeze = async (amount: BigNumber, tezos: TezosToolkit) => {
-    const contract = await getContract(tezos, this.address);
-    const tokenMetadata = this.storage.governanceToken;
+    const contract = await getContract(tezos, this.data.address);
 
     const result = await contract.methods
-      .unfreeze(formatUnits(amount, tokenMetadata.decimals).toString())
+      .unfreeze(formatUnits(amount, this.data.token.decimals).toString())
       .send();
     return result;
   };

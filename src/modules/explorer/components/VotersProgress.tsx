@@ -9,11 +9,11 @@ import {
 } from "@material-ui/core";
 import { formatNumber } from "../utils/FormatNumber";
 import { UpVotesDialog } from "./VotersDialog";
-import { useProposal } from "services/contracts/baseDAO/hooks/useProposal";
-import { TreasuryProposalWithStatus } from "services/bakingBad/proposals/types";
 import { MultiColorBar as CustomBar } from "modules/explorer/components";
 import { useVotesStats } from "../hooks/useVotesStats";
 import BigNumber from "bignumber.js";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import { Proposal } from "services/indexer/dao/mappers/proposal/types";
 
 interface VotersData {
   showButton: boolean;
@@ -57,7 +57,7 @@ export const VotersProgress: React.FC<VotersData> = ({
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: proposalData } = useProposal(daoId, proposalId);
-  const proposal = proposalData as TreasuryProposalWithStatus | undefined;
+  const proposal = proposalData as Proposal | undefined;
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
   const upVotes = proposal ? proposal.upVotes : new BigNumber(0);
   const downVotes = proposal ? proposal.downVotes : new BigNumber(0);
@@ -121,7 +121,8 @@ export const VotersProgress: React.FC<VotersData> = ({
             <StatusTitle color="textSecondary">OPPOSE: </StatusTitle>
             <Typography color="textSecondary">
               {proposal ? downVotes.toString() : "-"} (
-              {downVotesQuorumPercentage && downVotesQuorumPercentage.isGreaterThan(100)
+              {downVotesQuorumPercentage &&
+              downVotesQuorumPercentage.isGreaterThan(100)
                 ? 100
                 : formatNumber(downVotesQuorumPercentage)}
               %){" "}

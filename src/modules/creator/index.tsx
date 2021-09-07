@@ -96,6 +96,7 @@ const custom = (theme: Theme) => ({
 
 const LogoItem = styled("img")({
   cursor: "pointer",
+  width: "36px",
 });
 
 export const DAOCreate: React.FC = () => {

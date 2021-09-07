@@ -7,32 +7,32 @@ import {
 } from "@material-ui/core";
 import BigNumber from "bignumber.js";
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
+import { useDAOID } from "modules/explorer/daoRouter";
 import { TransferBadge } from "modules/explorer/Treasury/components/TransferBadge";
 import React, { useMemo } from "react";
-import { useParams } from "react-router-dom";
-import {
-  FA2Transfer,
-  RegistryProposalWithStatus,
-} from "services/bakingBad/proposals/types";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { mutezToXtz } from "services/contracts/utils";
+import {
+  FA2Transfer,
+  RegistryProposal,
+} from "services/indexer/dao/mappers/proposal/types";
 
 const Container = styled(Grid)({
   paddingTop: 21,
 });
 
+const DetailsText = styled(Typography)({
+  wordBreak: "break-all",
+});
+
 interface Props {
-  proposal: RegistryProposalWithStatus;
+  proposal: RegistryProposal;
 }
 
 export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
   const theme = useTheme();
-  const { id: daoId } =
-    useParams<{
-      proposalId: string;
-      id: string;
-    }>();
+  const daoId = useDAOID();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { data: holdings } = useDAOHoldings(daoId);
 
@@ -41,15 +41,15 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
       return [];
     }
 
-    return proposal.list;
+    return proposal.metadata.list;
   }, [proposal]);
 
   const transfers = useMemo(() => {
-    if (!holdings || !proposal || !proposal.transfers) {
+    if (!holdings || !proposal || !proposal.metadata.transfers) {
       return [];
     }
 
-    return proposal.transfers.map((transfer) => {
+    return proposal.metadata.transfers.map((transfer) => {
       if (transfer.type === "XTZ") {
         return {
           ...transfer,
@@ -90,7 +90,6 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 amount={transfer.amount}
                 address={transfer.beneficiary}
                 currency={"XTZ"}
-                long={true}
               />
             ) : (
               <TransferBadge
@@ -98,7 +97,6 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
                 address={transfer.beneficiary}
                 contract={(transfer as FA2Transfer).contractAddress}
                 tokenId={(transfer as FA2Transfer).tokenId}
-                long={true}
               />
             )}
           </Container>
@@ -119,9 +117,9 @@ export const RegistryProposalDetail: React.FC<Props> = ({ proposal }) => {
             container
           >
             <Grid item>
-              <Typography variant="body1" color="textSecondary">
+              <DetailsText variant="body1" color="textSecondary">
                 Set &quot;{key}&quot; to &quot;{value}&quot;
-              </Typography>
+              </DetailsText>
             </Grid>
           </HighlightedBadge>
         </Container>
