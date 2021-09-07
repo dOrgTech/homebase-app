@@ -16,7 +16,6 @@ import ScrollToTop from "modules/common/ScrollToTop";
 import { theme } from "theme";
 
 import "App.css";
-import { WarningDialog } from "modules/explorer/components/WarningDialog";
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions";
 import { Landing } from "modules/home/Landing";
 import { WarningFooter } from "modules/common/WarningFooter";
@@ -63,21 +62,7 @@ const styles = makeStyles({
 });
 
 const App: React.FC = () => {
-  const [open, setOpen] = useState(false);
   const classes = styles();
-
-  useEffect(() => {
-    const visited = window.localStorage.getItem("homebase:visited");
-
-    if (!visited) {
-      setOpen(true);
-    }
-  }, []);
-
-  const handleClose = () => {
-    window.localStorage.setItem("homebase:visited", "true");
-    setOpen(false);
-  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -120,7 +105,6 @@ const App: React.FC = () => {
               </Switch>
             </Router>
           </Box>
-          <WarningDialog open={open} handleClose={handleClose} />
         </QueryClientProvider>
       </SnackbarProvider>
     </ThemeProvider>
