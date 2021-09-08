@@ -7,10 +7,10 @@ import {
   Typography,
   Box,
   Grid,
-  Theme,
   useTheme,
   Popover,
   useMediaQuery,
+  Theme,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -25,13 +25,14 @@ import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 
-const StyledAppBar = styled(AppBar)({
+const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
-});
+  background: theme.palette.primary.dark,
+}));
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
-  padding: "22px 37px",
+  padding: "22px 0",
   boxSizing: "border-box",
   justifyContent: "space-between",
   flexWrap: "wrap",
@@ -81,12 +82,6 @@ const AddressBarWrapper = styled(Grid)({
   borderRadius: 4,
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
-  },
-});
-
-const explorerBorder = (theme: Theme) => ({
-  appBorder: {
-    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
 });
 
@@ -172,11 +167,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const history = useHistory();
 
   return (
-    <StyledAppBar
-      position="sticky"
-      color="primary"
-      style={mode === "explorer" ? explorerBorder(theme).appBorder : undefined}
-    >
+    <StyledAppBar position="sticky">
       <StyledToolbar>
         <Grid
           container
@@ -194,7 +185,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   </Grid>
                   <Grid item>
                     <Box paddingLeft="10px">
-                      <LogoText color="textSecondary">Homebase</LogoText>
+                      <LogoText color="textPrimary">Homebase</LogoText>
                     </Box>
                   </Grid>
                 </ToolbarContainer>
@@ -264,7 +255,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                           />
                         </AddressMenuIcon>
                         <Grid item>
-                          <Typography variant="subtitle2" color="textSecondary">
+                          <Typography variant="subtitle2" color="textPrimary">
                             {toShortAddress(account)}
                           </Typography>
                         </Grid>
@@ -275,7 +266,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                         onClick={handleNetworkClick}
                       >
                         <Grid item>
-                          <Typography variant="subtitle2" color="textSecondary">
+                          <Typography variant="subtitle2" color="textPrimary">
                             Change network ({network})
                           </Typography>
                         </Grid>
@@ -295,7 +286,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                           />
                         </AddressMenuIcon>
                         <Grid item>
-                          <Typography variant="subtitle2" color="textSecondary">
+                          <Typography variant="subtitle2" color="textPrimary">
                             Log out
                           </Typography>
                         </Grid>

@@ -2,16 +2,15 @@ import { createMuiTheme } from "@material-ui/core/styles";
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#1C1F23",
-      light: "#3D3D3D",
+      main: "#24282B",
+      dark: "#1C1F23",
     },
     secondary: {
-      main: "#4BCF93",
-      light: "#81FEB7",
+      main: "#81FEB7",
+      dark: "#273833",
     },
     text: {
-      primary: "#000000",
-      secondary: "#fff",
+      primary: "#FFFFFF",
     },
     error: {
       main: "#ED254E",
@@ -181,6 +180,9 @@ export const theme = createMuiTheme({
         "&$disabled": {
           color: "#3d3d3d",
         },
+        textTransform: "capitalize",
+        fontWeight: 500,
+        fontSize: 18,
       },
       outlined: {
         "&$disabled": {
