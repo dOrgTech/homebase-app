@@ -42,7 +42,7 @@ const ContentBlockHeader = styled(AccordionSummary)(
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
-  borderTop: `0.3px solid ${hexToRgba("#7D8C8B", 0.65)}`,
+  borderTop: `0.3px solid #5E6969`,
 });
 
 const BalancesHeader = styled(Grid)({
@@ -140,43 +140,45 @@ const ContentBlock: React.FC<ContentBlockProps> = ({
   );
 };
 
-const ProposalItem: React.FC<{ proposal: Proposal; status: ProposalStatus }> =
-  ({ proposal, status, children }) => {
-    const { data: agoraPost } = useAgoraTopic(
-      Number(proposal.metadata.agoraPostId)
-    );
+export const ProposalItem: React.FC<{
+  proposal: Proposal;
+  status: ProposalStatus;
+}> = ({ proposal, status, children }) => {
+  const { data: agoraPost } = useAgoraTopic(
+    Number(proposal.metadata.agoraPostId)
+  );
 
-    const formattedDate = dayjs(proposal.startDate).format("LLL");
+  const formattedDate = dayjs(proposal.startDate).format("LLL");
 
-    return (
-      <ContentBlockItem container justify="space-between" alignItems="center">
-        <Grid item sm={6}>
-          <Grid container direction="column" style={{ gap: 20 }}>
-            <Grid item>
-              <ProposalTitle color="textSecondary" variant="h4">
-                {agoraPost
-                  ? agoraPost.title
-                  : `Proposal ${toShortAddress(proposal.id)}`}
-              </ProposalTitle>
-            </Grid>
-            <Grid item>
-              <Grid container style={{ gap: 20 }} alignItems="center">
-                <Grid item>
-                  <TableStatusBadge status={status} />
-                </Grid>
-                <Grid item>
-                  <Typography variant="body1" color="textSecondary">
-                    Created {formattedDate}
-                  </Typography>
-                </Grid>
+  return (
+    <ContentBlockItem container justify="space-between" alignItems="center">
+      <Grid item sm={6}>
+        <Grid container direction="column" style={{ gap: 20 }}>
+          <Grid item>
+            <ProposalTitle color="textPrimary" variant="h4">
+              {agoraPost
+                ? agoraPost.title
+                : `Proposal ${toShortAddress(proposal.id)}`}
+            </ProposalTitle>
+          </Grid>
+          <Grid item>
+            <Grid container style={{ gap: 20 }} alignItems="center">
+              <Grid item>
+                <TableStatusBadge status={status} />
+              </Grid>
+              <Grid item>
+                <Typography variant="body1" color="textPrimary">
+                  Created {formattedDate}
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>{children}</Grid>
-      </ContentBlockItem>
-    );
-  };
+      </Grid>
+      <Grid item>{children}</Grid>
+    </ContentBlockItem>
+  );
+};
 
 interface Balances {
   available: {

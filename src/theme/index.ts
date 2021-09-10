@@ -4,6 +4,7 @@ export const theme = createMuiTheme({
     primary: {
       main: "#24282B",
       dark: "#1C1F23",
+      light: "#424242",
     },
     secondary: {
       main: "#81FEB7",
@@ -26,13 +27,9 @@ export const theme = createMuiTheme({
     fontFamily: "Roboto Mono",
     h1: {
       fontSize: 35,
-      letterSpacing: "-0.01em",
     },
     subtitle1: {
-      fontSize: 16,
-      fontWeight: 400,
-      lineHeight: "146.3%",
-      letterSpacing: "-0.01em",
+      fontSize: 32,
     },
     subtitle2: {
       fontSize: 16,
@@ -55,7 +52,7 @@ export const theme = createMuiTheme({
       fontSize: 35,
     },
     body1: {
-      fontSize: 16,
+      fontSize: 18,
     },
     body2: {
       fontSize: 16,

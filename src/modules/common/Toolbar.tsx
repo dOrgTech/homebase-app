@@ -31,6 +31,7 @@ const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
 }));
 
 const StyledToolbar = styled(Toolbar)({
+  width: "90%",
   display: "flex",
   padding: "22px 0",
   boxSizing: "border-box",
@@ -146,7 +147,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     changeNetwork(network);
     setPopperOpen(!popperOpen);
     setNetworkPopperOpen(!networkPopperOpen);
-    history.push("/explorer/daos");
+    history.push("/explorer");
   };
 
   const handleClick = (event: React.MouseEvent<any>) => {

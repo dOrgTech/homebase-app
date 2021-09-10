@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Grid,
   Link,
   styled,
@@ -159,6 +160,12 @@ export const DAOList: React.FC = () => {
                   <DAOItem dao={dao} />
                 </Grid>
               ))}
+
+              {isLoading ? (
+                <Grid item>
+                  <CircularProgress color="secondary" />
+                </Grid>
+              ) : null}
             </Grid>
           </TabPanel>
           <TabPanel value={selectedTab} index={1}>

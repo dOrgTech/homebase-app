@@ -19,7 +19,7 @@ export const ConnectMessage: React.FC = () => {
   return (
     <Container>
       {" "}
-      <Typography variant="subtitle1" color="textPrimary" align={"center"}>
+      <Typography variant="body1" color="textPrimary" align={"center"}>
         <Link
           color="secondary"
           onClick={() => connect()}
