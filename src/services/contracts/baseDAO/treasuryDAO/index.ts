@@ -19,7 +19,7 @@ export class TreasuryDAO extends BaseDAO {
   }
 
   public propose = async (
-    { agoraPostId, transfers }: TreasuryProposeArgs,
+    { discoursePostId, transfers }: TreasuryProposeArgs,
     tezos: TezosToolkit
   ) => {
     const contract = await getContract(tezos, this.data.address);
@@ -28,7 +28,7 @@ export class TreasuryDAO extends BaseDAO {
     const schema = new Schema(michelsonType as Expr);
     const data = schema.Encode({
       transfer_proposal: {
-        agora_post_id: agoraPostId,
+        agora_post_id: discoursePostId,
         transfers: mapTransfersArgs(transfers, this.data.address),
       },
     });

@@ -123,7 +123,7 @@ export abstract class Proposal {
     this.packedMetadata = dto.metadata;
   }
 
-  abstract get metadata(): { agoraPostId: string };
+  abstract get metadata(): { discoursePostId: string };
 
   public getStatus(currentLevel: number) {
     if (!this.cachedStatus || currentLevel !== this.cachedStatus.level) {
@@ -234,7 +234,7 @@ export class TreasuryProposal extends Proposal {
   private cachedMetadata:
     | {
         transfers: Transfer[];
-        agoraPostId: string;
+        discoursePostId: string;
       }
     | undefined;
 
@@ -257,12 +257,12 @@ export class TreasuryProposal extends Proposal {
         proposalMetadataDTO.transfer_proposal.transfers
       );
 
-      const agoraPostId =
+      const discoursePostId =
         proposalMetadataDTO.transfer_proposal.agora_post_id.toString();
 
       this.cachedMetadata = {
         transfers,
-        agoraPostId,
+        discoursePostId,
       };
     }
 
@@ -274,7 +274,7 @@ export class RegistryProposal extends Proposal {
   private cachedMetadata:
     | {
         transfers: Transfer[];
-        agoraPostId: string;
+        discoursePostId: string;
         list: {
           key: string;
           value: string;
@@ -305,7 +305,8 @@ export class RegistryProposal extends Proposal {
         );
       }
 
-      const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id;
+      const discoursePostId =
+        proposalMetadataDTO.transfer_proposal.agora_post_id;
       const registryDiff =
         proposalMetadataDTO.transfer_proposal.registry_diff.map((item) => ({
           key: bytes2Char(item[0]),
@@ -314,7 +315,7 @@ export class RegistryProposal extends Proposal {
 
       this.cachedMetadata = {
         transfers,
-        agoraPostId,
+        discoursePostId,
         list: registryDiff,
       };
     }

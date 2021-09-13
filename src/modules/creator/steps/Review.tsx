@@ -41,12 +41,14 @@ export const Review: React.FC = () => {
         description: info.orgSettings.description,
         authors: [info.orgSettings.administrator],
         template: state.data.template,
+        discourse: info.orgSettings.discourse,
       },
     }),
     [
       frozenToken,
       info.orgSettings.administrator,
       info.orgSettings.description,
+      info.orgSettings.discourse,
       state.data.template,
       unfrozenToken,
     ]

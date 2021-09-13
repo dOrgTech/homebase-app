@@ -25,7 +25,7 @@ import {
   Proposal,
   ProposalStatus,
 } from "services/indexer/dao/mappers/proposal/types";
-import { useAgoraTopic } from "services/agora/hooks/useTopic";
+import { useDiscourseTopic } from "services/discourse/hooks/useTopic";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 export interface ProposalTableRowData {
@@ -69,12 +69,15 @@ export const ProposalTableRow: React.FC<{ proposal: Proposal }> = ({
   const history = useHistory();
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { cycleInfo } = useDAO(proposal.dao.data.address);
+  const { data: dao, cycleInfo } = useDAO(proposal.dao.data.address);
 
   const formattedDate = dayjs(proposal.startDate).format("LLL");
-  const { data: agoraPost } = useAgoraTopic(
-    Number(proposal.metadata.agoraPostId)
+  const { data: discoursePost } = useDiscourseTopic(
+    dao?.data.discourse,
+    Number(proposal.metadata.discoursePostId)
   );
+
+  console.log(dao?.data.discourse);
 
   const onClick = useCallback(() => {
     history.push(
@@ -91,8 +94,8 @@ export const ProposalTableRow: React.FC<{ proposal: Proposal }> = ({
             color="textSecondary"
             align={isMobileSmall ? "center" : "left"}
           >
-            {agoraPost
-              ? agoraPost.title
+            {discoursePost
+              ? discoursePost.title
               : `Proposal ${toShortAddress(proposal.id)}`}
           </Typography>
         </Box>

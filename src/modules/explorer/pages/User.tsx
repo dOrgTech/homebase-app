@@ -14,7 +14,7 @@ import dayjs from "dayjs";
 import hexToRgba from "hex-to-rgba";
 import React, { useEffect, useMemo } from "react";
 import { useHistory } from "react-router";
-import { useAgoraTopic } from "services/agora/hooks/useTopic";
+import { useDiscourseTopic } from "services/discourse/hooks/useTopic";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -140,43 +140,47 @@ const ContentBlock: React.FC<ContentBlockProps> = ({
   );
 };
 
-const ProposalItem: React.FC<{ proposal: Proposal; status: ProposalStatus }> =
-  ({ proposal, status, children }) => {
-    const { data: agoraPost } = useAgoraTopic(
-      Number(proposal.metadata.agoraPostId)
-    );
+const ProposalItem: React.FC<{
+  proposal: Proposal;
+  status: ProposalStatus;
+  discourseUrl?: string;
+}> = ({ proposal, status, children, discourseUrl }) => {
+  const { data: discoursePost } = useDiscourseTopic(
+    discourseUrl,
+    Number(proposal.metadata.discoursePostId)
+  );
 
-    const formattedDate = dayjs(proposal.startDate).format("LLL");
+  const formattedDate = dayjs(proposal.startDate).format("LLL");
 
-    return (
-      <ContentBlockItem container justify="space-between" alignItems="center">
-        <Grid item sm={6}>
-          <Grid container direction="column" style={{ gap: 20 }}>
-            <Grid item>
-              <ProposalTitle color="textSecondary" variant="h4">
-                {agoraPost
-                  ? agoraPost.title
-                  : `Proposal ${toShortAddress(proposal.id)}`}
-              </ProposalTitle>
-            </Grid>
-            <Grid item>
-              <Grid container style={{ gap: 20 }} alignItems="center">
-                <Grid item>
-                  <TableStatusBadge status={status} />
-                </Grid>
-                <Grid item>
-                  <Typography variant="body1" color="textSecondary">
-                    Created {formattedDate}
-                  </Typography>
-                </Grid>
+  return (
+    <ContentBlockItem container justify="space-between" alignItems="center">
+      <Grid item sm={6}>
+        <Grid container direction="column" style={{ gap: 20 }}>
+          <Grid item>
+            <ProposalTitle color="textSecondary" variant="h4">
+              {discoursePost
+                ? discoursePost.title
+                : `Proposal ${toShortAddress(proposal.id)}`}
+            </ProposalTitle>
+          </Grid>
+          <Grid item>
+            <Grid container style={{ gap: 20 }} alignItems="center">
+              <Grid item>
+                <TableStatusBadge status={status} />
+              </Grid>
+              <Grid item>
+                <Typography variant="body1" color="textSecondary">
+                  Created {formattedDate}
+                </Typography>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>{children}</Grid>
-      </ContentBlockItem>
-    );
-  };
+      </Grid>
+      <Grid item>{children}</Grid>
+    </ContentBlockItem>
+  );
+};
 
 interface Balances {
   available: {
@@ -339,6 +343,7 @@ export const User: React.FC = () => {
                   key={`posted-proposal-${i}`}
                   proposal={proposal}
                   status={proposal.getStatus(cycleInfo.currentLevel).status}
+                  discourseUrl={dao?.data.discourse}
                 >
                   <Grid container>
                     <Grid item>
@@ -370,6 +375,7 @@ export const User: React.FC = () => {
                   key={`posted-proposal-${i}`}
                   proposal={proposal}
                   status={proposal.getStatus(cycleInfo.currentLevel).status}
+                  discourseUrl={dao?.data.discourse}
                 >
                   <Grid container>
                     <Grid item>

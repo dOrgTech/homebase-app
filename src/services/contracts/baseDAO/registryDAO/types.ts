@@ -22,7 +22,7 @@ export interface RegistryProposeArgs {
     transfers: TransferParams[];
     registry_diff: RegistryItem[];
   };
-  agoraPostId: number;
+  discoursePostId: number;
 }
 
 export type RegistryExtraDTOBCD = [
@@ -368,7 +368,7 @@ export interface PMTreasuryProposal {
   transfer_proposal: {
     agora_post_id: "0";
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
-  }
+  };
 }
 
 export interface PMRegistryProposal {

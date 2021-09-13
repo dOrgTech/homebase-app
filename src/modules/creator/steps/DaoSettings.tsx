@@ -354,6 +354,39 @@ const DaoSettingsForm = withRouter(
             ) : null}
           </Grid>
         </SecondContainer>
+        <SecondContainer item container direction="row" alignItems="center">
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Discourse site domain (Optional){" "}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <CustomInputContainer>
+              <Field
+                name="discourse"
+                type="text"
+                placeholder="forum.tezosagora.org"
+                component={CustomFormikTextField}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip
+                        placement="bottom"
+                        title="Your community's discourse domain. Examples: forum.tezosagora.org, https://forum.dorg.tech"
+                      >
+                        <InfoIconInput color="secondary" />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
+              ></Field>
+            </CustomInputContainer>
+            {errors.administrator && touched.administrator ? (
+              <ErrorText>{errors.administrator}</ErrorText>
+            ) : null}
+          </Grid>
+        </SecondContainer>
       </>
     );
   }
@@ -416,8 +449,6 @@ const validateForm = (values: OrgSettings) => {
       tokenId: "Required",
     };
   }
-
-  console.log(values.governanceToken);
 
   if (!values.governanceToken.tokenMetadata) {
     errors.governanceToken = {

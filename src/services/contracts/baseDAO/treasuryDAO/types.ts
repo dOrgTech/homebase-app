@@ -60,10 +60,10 @@ export type TreasuryExtraDTO = [
     firstLevel: 292370;
     lastLevel: 292370;
     updates: 1;
-  },
+  }
 ];
 
 export interface TreasuryProposeArgs {
-  agoraPostId: number;
+  discoursePostId: number;
   transfers: TransferParams[];
 }

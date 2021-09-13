@@ -1,6 +1,9 @@
 import { ContractAbstraction, TezosToolkit, Wallet } from "@taquito/taquito";
 
-import { MetadataCarrierDeploymentData, MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
+import {
+  MetadataCarrierDeploymentData,
+  MetadataCarrierParameters,
+} from "services/contracts/metadataCarrier/types";
 import { DAOHolding } from "services/bakingBad/tokenBalances/types";
 import { BigNumber } from "bignumber.js";
 import { MigrationParams } from "modules/creator/state";
@@ -16,7 +19,7 @@ export interface TransferParams {
   amount: number;
   recipient: string;
   type: "XTZ" | "FA2";
-  asset: DAOHolding
+  asset: DAOHolding;
 }
 
 export interface Registry {
@@ -29,7 +32,7 @@ export interface ProposeParams {
   tezos: TezosToolkit;
   contractParams: {
     tokensToFreeze: BigNumber;
-    agoraPostId: number;
+    discoursePostId: number;
     transfers: TransferParams[];
   };
 }
@@ -72,14 +75,15 @@ export interface BaseStorageParams {
   governanceToken: {
     address: string;
     tokenId: string;
-  }
+  };
+
   quorumThreshold: BigNumber;
   votingPeriod: number;
   extra: BaseExtraState;
 
   minQuorumAmount: BigNumber;
   maxQuorumAmount: BigNumber;
-  guardian: string
+  guardian: string;
   quorumChange: number;
   quorumMaxChange: number;
   proposalFlushPeriod: number;

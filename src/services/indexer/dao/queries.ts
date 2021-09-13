@@ -45,6 +45,7 @@ export const GET_DAO_QUERY = gql`
         name
       }
       description
+      discourse
       address
       frozen_token_id
       governance_token_id

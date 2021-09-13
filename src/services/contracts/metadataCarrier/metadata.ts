@@ -7,12 +7,14 @@ export const setMetadataJSON = ({
   template,
   frozenToken: { name: fName, symbol: fSymbol, decimals: fDecimals },
   unfrozenToken: { name: uName, symbol: uSymbol, decimals: uDecimals },
+  discourse,
 }: MetadataParams): Record<string, any> => ({
   homepage: "https://github.com/tqtezos/baseDAO",
   name: uName,
   description,
   authors,
   template,
+  discourse: discourse || "",
   interfaces: ["TZIP-12", "TZIP-17"],
   views: [
     {

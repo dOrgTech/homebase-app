@@ -66,7 +66,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
                   ? "XTZ"
                   : "FA2",
             })),
-            agoraPostId: valuesRef.current.agoraPostId,
+            discoursePostId: valuesRef.current.discoursePostId,
           },
         });
 
@@ -78,7 +78,7 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
 
   const initialValues = {
     ...INITIAL_TRANSFER_FORM_VALUES,
-    agoraPostId: "0",
+    discoursePostId: "0",
   };
 
   return (
@@ -105,15 +105,15 @@ export const TreasuryProposalFormContainer: React.FC<Props> = ({
                 <ProposalFormListItem container direction="row">
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
-                      Agora Post ID
+                      Discourse Post ID
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <SwitchContainer item xs={12} justify="flex-end">
                       <Field
-                        name={`agoraPostId`}
+                        name={`discoursePostId`}
                         type="number"
-                        placeholder="Type an Agora Post ID"
+                        placeholder="Type an Discourse Post ID"
                         component={CustomTextField}
                       />
                     </SwitchContainer>

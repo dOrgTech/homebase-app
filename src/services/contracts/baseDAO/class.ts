@@ -52,6 +52,7 @@ export interface BaseDAOData {
   quorum_threshold: BigNumber;
   staked: string;
   start_level: number;
+  discourse: string;
   name: string;
   description: string;
   type: DAOTemplate;

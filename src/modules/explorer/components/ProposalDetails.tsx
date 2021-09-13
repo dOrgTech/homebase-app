@@ -33,7 +33,7 @@ import {
   RegistryProposal,
   TreasuryProposal,
 } from "services/indexer/dao/mappers/proposal/types";
-import { useAgoraTopic } from "services/agora/hooks/useTopic";
+import { useDiscourseTopic } from "services/discourse/hooks/useTopic";
 import { useDAOID } from "../daoRouter";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
@@ -109,8 +109,9 @@ export const ProposalDetails: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { mutate: dropProposal } = useDropProposal();
   const canDropProposal = useCanDropProposal(daoId, proposalId);
-  const { data: agoraPost } = useAgoraTopic(
-    Number(proposal?.metadata.agoraPostId)
+  const { data: discoursePost } = useDiscourseTopic(
+    dao?.data.discourse,
+    Number(proposal?.metadata.discoursePostId)
   );
 
   const onDropProposal = useCallback(async () => {
@@ -156,8 +157,8 @@ export const ProposalDetails: React.FC = () => {
                     color="textSecondary"
                     align={isMobileSmall ? "center" : "left"}
                   >
-                    {agoraPost
-                      ? agoraPost.title
+                    {discoursePost
+                      ? discoursePost.title
                       : `Proposal ${toShortAddress(proposal?.id || "")}`}
                   </Subtitle>
                 </Grid>
@@ -223,20 +224,20 @@ export const ProposalDetails: React.FC = () => {
                 >
                   PROPOSAL DETAILS
                 </Typography>
-                {agoraPost && (
+                {discoursePost && (
                   <Typography
                     variant="subtitle1"
                     color="textSecondary"
                     align={isMobileSmall ? "center" : "left"}
                   >
-                    {ReactHtmlParser(agoraPost.post_stream.posts[0].cooked)}
+                    {ReactHtmlParser(discoursePost.post_stream.posts[0].cooked)}
                   </Typography>
                 )}
               </Grid>
-              {agoraPost && (
+              {discoursePost && (
                 <Grid item xs={12}>
                   <Link
-                    href={`https://forum.tezosagora.org/t/${proposal?.metadata.agoraPostId}`}
+                    href={`https://forum.tezosagora.org/t/${proposal?.metadata.discoursePostId}`}
                     underline="hover"
                     target="_blank"
                   >
@@ -246,8 +247,8 @@ export const ProposalDetails: React.FC = () => {
                       </Grid>
                       <Grid item>
                         <Typography color="secondary">
-                          https://forum.tezosagora.org/t/
-                          {proposal?.metadata.agoraPostId}
+                          {dao?.data.discourse}/t/
+                          {proposal?.metadata.discoursePostId}
                         </Typography>
                       </Grid>
                     </Grid>

@@ -9,8 +9,9 @@ export type OrgSettings = {
   governanceToken: {
     address: string;
     tokenId: string;
-    tokenMetadata?: TokenMetadata
-  }
+    tokenMetadata?: TokenMetadata;
+  };
+  discourse?: string;
 };
 
 export type QuorumSettings = {

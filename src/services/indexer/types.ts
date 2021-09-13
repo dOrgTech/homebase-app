@@ -49,6 +49,7 @@ export interface DAODTO {
   staked: string;
   start_level: number;
   name: string;
+  discourse: string;
   description: string;
   dao_type: DAOTypeDTO;
   network: Network;

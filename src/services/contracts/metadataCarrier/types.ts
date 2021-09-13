@@ -13,6 +13,7 @@ export interface FA2MetadataParams {
 export interface DAOMetadataParams {
   description: string;
   template: DAOTemplate;
+  discourse?: string;
   authors: string[];
 }
 

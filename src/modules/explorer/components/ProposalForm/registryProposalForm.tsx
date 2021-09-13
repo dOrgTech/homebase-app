@@ -41,7 +41,7 @@ const CustomTextField = styled(TextField)({
 });
 
 type Values = UpdateRegistryDialogValues &
-  TreasuryProposalFormValues & { agoraPostId: string };
+  TreasuryProposalFormValues & { discoursePostId: string };
 
 export const RegistryProposalFormContainer: React.FC<Props> = ({
   open,
@@ -65,7 +65,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
         mutate({
           dao,
           args: {
-            agoraPostId: Number(formikRef.current.values.agoraPostId),
+            discoursePostId: Number(formikRef.current.values.discoursePostId),
             //TODO: Fix types here:
             transfer_proposal: {
               transfers: values.transferForm.transfers
@@ -97,7 +97,7 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
   const initialValues = {
     ...INITIAL_TRANSFER_FORM_VALUES,
     ...INITIAL_REGISTRY_FORM_VALUES,
-    agoraPostId: "0",
+    discoursePostId: "0",
   };
 
   return (
@@ -133,15 +133,15 @@ export const RegistryProposalFormContainer: React.FC<Props> = ({
                 <ProposalFormListItem container direction="row">
                   <Grid item xs={6}>
                     <Typography variant="subtitle1" color="textSecondary">
-                      Agora Post ID
+                      Discourse Post ID
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <SwitchContainer item xs={12} justify="flex-end">
                       <Field
-                        name={`agoraPostId`}
+                        name={`discoursePostId`}
                         type="number"
-                        placeholder="Type an Agora Post ID"
+                        placeholder="Type a Discourse Post ID"
                         component={CustomTextField}
                       />
                     </SwitchContainer>

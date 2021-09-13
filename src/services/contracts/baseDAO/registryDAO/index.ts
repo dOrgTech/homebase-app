@@ -81,7 +81,7 @@ export class RegistryDAO extends BaseDAO {
   }
 
   public propose = async (
-    { agoraPostId, transfer_proposal }: RegistryProposeArgs,
+    { discoursePostId, transfer_proposal }: RegistryProposeArgs,
     tezos: TezosToolkit
   ) => {
     const contract = await getContract(tezos, this.data.address);
@@ -99,7 +99,7 @@ export class RegistryDAO extends BaseDAO {
           char2Bytes(item.key),
           char2Bytes(item.value),
         ]),
-        agora_post_id: agoraPostId,
+        agora_post_id: discoursePostId,
       },
     };
 
