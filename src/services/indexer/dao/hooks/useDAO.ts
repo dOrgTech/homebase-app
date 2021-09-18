@@ -53,6 +53,11 @@ export const useDAO = (address: string) => {
             current_unstaked,
             past_unstaked,
             staked,
+            holder: {
+              ...ledger.holder,
+              proposals_voted: ledger.holder.proposals_aggregate?.aggregate.count || 0,
+              votes_cast: parseUnits(new BigNumber(ledger.holder.votes_aggregate?.aggregate.sum.amount || 0), dao.token.decimals)
+            }
           };
         }),
         type: dao.dao_type.name,

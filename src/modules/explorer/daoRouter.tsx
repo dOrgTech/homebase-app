@@ -81,10 +81,12 @@ const DAORoute: React.FC<RouteProps> = ({ children, ...props }) => {
 const DAOContext = React.createContext("");
 
 const DAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) => {
+  console.log("PROVIDER: ", daoId)
   return <DAOContext.Provider value={daoId}>{children}</DAOContext.Provider>;
 };
 
 export const useDAOID = () => {
+  console.log("CONTEXT ", useContext(DAOContext))
   return useContext(DAOContext);
 };
 
@@ -93,6 +95,7 @@ export const DAORouter = (): JSX.Element => {
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { id: daoId } = useParams<{ id: string }>();
+  console.log(daoId)
 
   return (
     <DAOProvider daoId={daoId}>

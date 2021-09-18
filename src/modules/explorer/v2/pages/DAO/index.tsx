@@ -5,31 +5,23 @@ import {
   styled,
   Typography,
   useTheme,
-  Tooltip,
-  useMediaQuery,
   Button,
   SvgIcon,
   LinearProgress,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
 import { ReactComponent as VotingPeriodIcon } from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-import { CopyAddress } from "modules/common/CopyAddress";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
 import { useDAOID } from "./router";
-import { FreezeDialog } from "modules/explorer/components/FreezeDialog";
-import { ProposalsTable } from "modules/explorer/components/ProposalsTable";
-import { InfoIcon } from "modules/explorer/components/styled/InfoIcon";
-import { MobileHeader } from "modules/explorer/components/styled/MobileHeader";
-import { RectangleContainer } from "modules/explorer/components/styled/RectangleHeader";
-import { PeriodLabel } from "modules/explorer/components/styled/VotingLabel";
-import { TopHoldersTable } from "modules/explorer/components/TopHoldersTable";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
-import { DAOStatsRow } from "modules/explorer/components/DAOStatsRow";
 import BigNumber from "bignumber.js";
 import { ProposalItem } from "modules/explorer/pages/User";
+import { CycleDescription } from "../../components/CycleDescription";
+import { UserBadge } from "modules/explorer/components/UserBadge";
+import { UserBalancesBox } from "../../components/UserBalances";
+import { Link } from "react-router-dom";
 
 const IconContainer = styled(SvgIcon)({
   width: 58,
@@ -82,23 +74,37 @@ const TableHeader = styled(Grid)({
   padding: "24px 54px",
 });
 
+const HolderTableItem = styled(Grid)({
+  padding: "30px 54px",
+  borderTop: `0.3px solid #5E6969`,
+});
+
+const TableSubHeader = styled(Grid)({
+  padding: "10px 54px",
+  borderTop: `0.3px solid #5E6969`,
+});
+
+const ProposalsFooter = styled(Grid)({
+  borderTop: `0.3px solid #5E6969`,
+  minHeight: 60,
+});
+
 export const DAO: React.FC = () => {
-  const history = useHistory();
   const daoId = useDAOID();
-  const { data, isLoading: isDaoLoading, cycleInfo, ledger } = useDAO(daoId);
+  const { data, cycleInfo, ledger } = useDAO(daoId);
   const { mutate } = useFlush();
+
+  console.log(data?.data.address, ledger);
 
   const name = data && data.data.name;
   const description = data && data.data.description;
   const symbol = data && data.data.token.symbol.toUpperCase();
   const blocksLeft = cycleInfo && cycleInfo.blocksLeft;
   const theme = useTheme();
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  const { data: proposals, isLoading: isProposalsLoading } =
+  const { data: proposals } =
     useProposals(daoId);
-  const { data: activeProposals, isLoading: isActiveProposalsLoading } =
+  const { data: activeProposals } =
     useProposals(daoId, ProposalStatus.ACTIVE);
-  const isLoading = isDaoLoading || isProposalsLoading;
 
   const onFlush = useCallback(async () => {
     if (proposals && proposals.length && data) {
@@ -163,10 +169,14 @@ export const DAO: React.FC = () => {
           </Grid>
         </Grid>
       </HeroContainer>
+      <UserBalancesBox daoId={daoId} />
       <Grid item>
         <Grid container style={{ gap: 47 }}>
           <StatsContainer item>
             <Grid container direction="column" style={{ gap: 32 }}>
+              <Grid item>
+                <CycleDescription daoAddress={daoId} />
+              </Grid>
               <Grid item>
                 <Grid container style={{ gap: 16 }} wrap="nowrap">
                   <Grid item>
@@ -269,49 +279,113 @@ export const DAO: React.FC = () => {
               Active Proposals
             </Typography>
           </TableHeader>
-          <Grid item>
-            <Grid container>
-              {cycleInfo &&
-                proposals?.map((p, i) => (
-                  <Grid item key={`proposal-${i}`} xs={12}>
+          <Grid item container>
+            {cycleInfo &&
+              data &&
+              proposals?.map((p, i) => (
+                <Grid item xs={12} key={`proposal-${i}`}>
+                  <Link to={`proposal/${data.data.type}/${p.id}`}>
                     <ProposalItem
                       proposal={p}
                       status={p.getStatus(cycleInfo.currentLevel).status}
                     />
-                  </Grid>
-                ))}
+                  </Link>
+                </Grid>
+              ))}
+          </Grid>
+          <ProposalsFooter
+            item
+            container
+            direction="column"
+            justifyContent="center"
+          >
+            <Grid item>
+              <Link to="proposals">
+                <Typography color="secondary" align="center">
+                  View All Proposals
+                </Typography>
+              </Link>
             </Grid>
-          </Grid>
-          <Grid item>
-            <TableHeader item>
-              <Typography variant="body1" color="textPrimary">
-                Top Adresses
-              </Typography>
-            </TableHeader>
-          </Grid>
+          </ProposalsFooter>
         </Grid>
       </TableContainer>
-      <TableContainer item>
-        <Grid container direction="column">
+      <TableContainer item container direction="column">
           <TableHeader item>
             <Typography variant="body1" color="textPrimary">
               Top Adresses
             </Typography>
           </TableHeader>
+
+          <TableSubHeader item container justifyContent="space-between">
+            <Grid item sm={4}>
+              <Typography color="textPrimary">Rank</Typography>
+            </Grid>
+            <Grid item sm={2}>
+              <Typography color="textPrimary">Votes</Typography>
+            </Grid>
+            <Grid item sm={2}>
+              <Typography color="textPrimary">Weight</Typography>
+            </Grid>
+            <Grid item sm={4}>
+              <Typography color="textPrimary">Proposals Voted</Typography>
+            </Grid>
+          </TableSubHeader>
+
           <Grid item>
             <Grid container>
               {cycleInfo &&
-                proposals?.map((p, i) => (
-                  <Grid item key={`proposal-${i}`} xs={12}>
-                    <ProposalItem
-                      proposal={p}
-                      status={p.getStatus(cycleInfo.currentLevel).status}
-                    />
-                  </Grid>
-                ))}
+                ledger &&
+                data &&
+                ledger
+                  ?.sort((a, b) =>
+                    b.available_balance.minus(a.available_balance).toNumber()
+                  )
+                  .map((p, i) => (
+                    <Grid item key={`holder-${i}`} xs={12}>
+                      <HolderTableItem container>
+                        <Grid item sm={4}>
+                          <Grid
+                            container
+                            alignItems="center"
+                            style={{ gap: 27 }}
+                          >
+                            <Grid item>
+                              <Typography color="secondary">{i + 1}</Typography>
+                            </Grid>
+                            <Grid item>
+                              <UserBadge
+                                address={p.holder.address}
+                                size={44}
+                                gap={16}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                        <Grid item sm={2}>
+                          <Typography color="textPrimary">
+                            {p.holder.votes_cast.toString()}
+                          </Typography>
+                        </Grid>
+                        <Grid item sm={2}>
+                          <Typography color="textPrimary">
+                            {p.available_balance
+                              .multipliedBy(100)
+                              .div(data.data.token.supply)
+                              .decimalPlaces(2)
+                              .toString()}{" "}
+                            %
+                          </Typography>
+                        </Grid>
+                        <Grid item sm={4}>
+                          <Typography color="textPrimary">
+                            {p.holder.proposals_voted.toString()}
+                          </Typography>
+                        </Grid>
+                      </HolderTableItem>
+                    </Grid>
+                  ))}
             </Grid>
           </Grid>
-        </Grid>
       </TableContainer>
     </Grid>
   );

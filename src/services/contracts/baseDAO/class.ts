@@ -13,7 +13,7 @@ import baseDAOContractCode from "./michelson/baseDAO";
 import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
 import { TokenMetadata } from "services/bakingBad/tokens";
-import { LedgerDTO } from "services/indexer/types";
+import { Ledger, LedgerDTO } from "services/indexer/types";
 
 interface DeployParams {
   params: MigrationParams;
@@ -38,7 +38,7 @@ export interface BaseDAOData {
   frozen_token_id: number;
   token: TokenMetadata;
   guardian: string;
-  ledger: LedgerDTO[];
+  ledger: Ledger[];
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;

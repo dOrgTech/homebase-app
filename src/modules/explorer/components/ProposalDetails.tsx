@@ -34,7 +34,7 @@ import {
   TreasuryProposal,
 } from "services/indexer/dao/mappers/proposal/types";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
-import { useDAOID } from "../daoRouter";
+import { useDAOID } from "modules/explorer/v2/pages/DAO/router";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -103,6 +103,7 @@ export const ProposalDetails: React.FC = () => {
     proposalId: string;
   }>();
   const daoId = useDAOID();
+  console.log(daoId, " ", proposalId)
   const theme = useTheme();
   const { data: proposal } = useProposal(daoId, proposalId);
   const { data: dao, cycleInfo } = useDAO(daoId);

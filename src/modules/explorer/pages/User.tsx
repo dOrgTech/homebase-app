@@ -11,7 +11,6 @@ import {
 import { CheckCircleOutlined } from "@material-ui/icons";
 import { styled } from "@material-ui/styles";
 import dayjs from "dayjs";
-import hexToRgba from "hex-to-rgba";
 import React, { useEffect, useMemo } from "react";
 import { useHistory } from "react-router";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
@@ -27,8 +26,9 @@ import { TableStatusBadge } from "../components/ProposalTableRowStatusBadge";
 import RemoveIcon from "@material-ui/icons/Remove";
 import { ProfileAvatar } from "../components/styled/ProfileAvatar";
 import { UserProfileName } from "../components/UserProfileName";
-import { useDAOID } from "../daoRouter";
+import { useDAOID } from "modules/explorer/v2/pages/DAO/router";
 import { FreezeDialog } from "../components/FreezeDialog";
+import { UserBalances } from "../v2/components/UserBalances";
 
 const ContentBlockHeader = styled(AccordionSummary)(
   ({ theme }: { theme: Theme }) => ({
@@ -60,17 +60,6 @@ const UsernameHeader = styled(Grid)({
 
 const MainContainer = styled(Box)({
   width: "100%",
-  padding: "65px 114px",
-});
-
-const BalanceHeaderText = styled(Typography)({
-  fontSize: 21,
-  letterSpacing: "-0.01em",
-  paddingBottom: 10,
-});
-
-const BalanceTokenText = styled(Typography)({
-  fontSize: 24,
 });
 
 const UsernameText = styled(Typography)({
@@ -129,7 +118,7 @@ const ContentBlock: React.FC<ContentBlockProps> = ({
       >
         <Grid container alignItems="center">
           <Grid item>
-            <HeaderText color="textSecondary">{headerText}</HeaderText>
+            <HeaderText color="textPrimary">{headerText}</HeaderText>
           </Grid>
         </Grid>
       </ContentBlockHeader>
@@ -152,7 +141,7 @@ export const ProposalItem: React.FC<{
 
   return (
     <ContentBlockItem container justify="space-between" alignItems="center">
-      <Grid item sm={6}>
+      <Grid item sm={8}>
         <Grid container direction="column" style={{ gap: 20 }}>
           <Grid item>
             <ProposalTitle color="textPrimary" variant="h4">
@@ -180,71 +169,17 @@ export const ProposalItem: React.FC<{
   );
 };
 
-interface Balances {
-  available: {
-    displayName: string;
-    balance?: string;
-  };
-  pending: {
-    displayName: string;
-    balance?: string;
-  };
-  staked: {
-    displayName: string;
-    balance?: string;
-  };
-}
-
 export const User: React.FC = () => {
   const { account } = useTezos();
+  console.log(account)
   const daoId = useDAOID();
-  const { data: dao, cycleInfo, ledger } = useDAO(daoId);
+  const { cycleInfo } = useDAO(daoId);
   const { data: proposals } = useProposals(daoId);
   const history = useHistory();
 
-  const balances = useMemo(() => {
-    const userBalances: Balances = {
-      available: {
-        displayName: "Available Balance",
-      },
-      pending: {
-        displayName: "Pending Balance",
-      },
-      staked: {
-        displayName: "Staked Balance",
-      },
-    };
-
-    if (!ledger) {
-      return userBalances;
-    }
-
-    const userLedger = ledger.find(
-      (l) => l.holder.address.toLowerCase() === account.toLowerCase()
-    );
-
-    if (!userLedger) {
-      userBalances.available.balance = "0";
-      userBalances.pending.balance = "0";
-      userBalances.staked.balance = "0";
-
-      return userBalances;
-    }
-
-    userBalances.available.balance = userLedger.available_balance.toString();
-    userBalances.pending.balance = userLedger.pending_balance.toString();
-    userBalances.staked.balance = userLedger.staked.toString();
-
-    return userBalances;
-  }, [account, ledger]);
-
-  const balancesList = Object.keys(balances).map(
-    (key) => balances[key as keyof Balances]
-  );
-
   useEffect(() => {
     if (!account) {
-      history.push(`../${daoId}`);
+      /*history.push(`../${daoId}`);*/
     }
   }, [account, daoId, history]);
 
@@ -287,7 +222,7 @@ export const User: React.FC = () => {
                   <ProfileAvatar size={43} address={account} />
                 </Grid>
                 <Grid item>
-                  <UsernameText color="textSecondary">
+                  <UsernameText color="textPrimary">
                     <UserProfileName address={account} />
                   </UsernameText>
                 </Grid>
@@ -305,30 +240,9 @@ export const User: React.FC = () => {
             </Grid>
           </Grid>
         </UsernameHeader>
-        <Grid item>
-          <BalancesHeader container justify="space-between" alignItems="center">
-            {dao &&
-              balancesList.map(({ displayName, balance }, i) => (
-                <Grid item key={`balance-${i}`}>
-                  <BalanceHeaderText color="secondary">
-                    {displayName}
-                  </BalanceHeaderText>
-                  <Grid container alignItems="baseline" spacing={2}>
-                    <Grid item>
-                      <Typography variant="h5" color="textSecondary">
-                        {balance}
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <BalanceTokenText color="textSecondary">
-                        {dao.data.token.symbol}
-                      </BalanceTokenText>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              ))}
-          </BalancesHeader>
-        </Grid>
+        <BalancesHeader item>
+          <UserBalances daoId={daoId} />
+        </BalancesHeader>
         <Grid item>
           {proposalsCreated && cycleInfo && (
             <ContentBlock
@@ -350,7 +264,7 @@ export const User: React.FC = () => {
                       />
                     </Grid>
                     <Grid item>
-                      <StatusText color="textSecondary">
+                      <StatusText color="textPrimary">
                         {proposal.getStatus(cycleInfo.currentLevel).status}
                       </StatusText>
                     </Grid>
@@ -375,7 +289,7 @@ export const User: React.FC = () => {
                 >
                   <Grid container>
                     <Grid item>
-                      <VotedText color="textSecondary">Voted</VotedText>
+                      <VotedText color="textPrimary">Voted</VotedText>
                     </Grid>
                     <Grid item>
                       <StatusText color={voteDecision ? "secondary" : "error"}>

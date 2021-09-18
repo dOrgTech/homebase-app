@@ -26,13 +26,9 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
   width: 1028,
   maxWidth: "100%",
-  margin: "auto",
+  margin: "55px auto 0 auto",
+  paddingBottom: 32,
 }));
-
-const NavbarContainer = styled(Box)({
-  width: 1028,
-  maxWidth: "100%",
-});
 
 enum DAOState {
   NOT_FOUND = 0,
@@ -96,6 +92,8 @@ export const DAORouter = (): JSX.Element => {
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { id: daoId } = useParams<{ id: string }>();
 
+  console.log(daoId)
+
   return (
     <DAOProvider daoId={daoId}>
       <Navbar mode="explorer">
@@ -103,7 +101,6 @@ export const DAORouter = (): JSX.Element => {
           <UserBalancesWidget />
         </Grid>
       </Navbar>
-
       <PageLayout
         container
         wrap="nowrap"

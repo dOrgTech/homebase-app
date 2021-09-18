@@ -24,6 +24,11 @@ import { Network } from "services/beacon/context";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
+import { NavigationMenu } from "modules/explorer/v2/components/NavigationMenu";
+
+const Header = styled(Grid)({
+ padding: "28px 125px"
+})
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
@@ -31,9 +36,9 @@ const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
 }));
 
 const StyledToolbar = styled(Toolbar)({
-  width: "90%",
+  width: "100%",
   display: "flex",
-  padding: "22px 0",
+  padding: 0,
   boxSizing: "border-box",
   justifyContent: "space-between",
   flexWrap: "wrap",
@@ -170,7 +175,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   return (
     <StyledAppBar position="sticky">
       <StyledToolbar>
-        <Grid
+        <Header
           container
           direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
@@ -220,7 +225,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                           <ProfileAvatar size={22} address={account} />
                         </Grid>
                         <Grid item>
-                          <Typography variant="subtitle1">
+                          <Typography>
                             <UserProfileName address={account} short={true} />
                           </Typography>
                         </Grid>
@@ -296,7 +301,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   </StyledPopover>
                 </>
               ) : !isMobileSmall ? (
-                <Grid container justify="flex-end" wrap="nowrap" spacing={1}>
+                <Grid container justify="flex-end" wrap="nowrap" style={{ gap: 8 }}>
                   <Grid item>
                     <ChangeNetworkButton />
                   </Grid>
@@ -315,7 +320,8 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
               )}
             </Grid>
           </Grid>
-        </Grid>
+        </Header>
+        <NavigationMenu/>
       </StyledToolbar>
       <NetworkMenu
         open={networkPopperOpen}
