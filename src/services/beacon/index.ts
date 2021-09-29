@@ -5,7 +5,7 @@ import { Network } from "services/beacon/context";
 export const rpcNodes: Record<Network, string> = {
   edo2net: "https://edonet.smartpy.io",
   delphinet: "https://api.tez.ie/rpc/delphinet",
-  mainnet: "https://mainnet-tezos.giganode.io",
+  mainnet: "https://mainnet.smartpy.io",
   florencenet: "https://florencenet.smartpy.io",
 };
 

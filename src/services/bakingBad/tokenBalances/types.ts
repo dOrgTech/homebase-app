@@ -1,13 +1,13 @@
-import { BigNumber } from "bignumber.js";
+import { Network } from "services/beacon/context";
 
 export interface TokenBalancesDTO {
-  balances: DAOHolding[];
+  balances: (DAOToken & { balance: string })[];
   total: number;
 }
 
-export type DAOHolding = DAOHoldingToken | DAOHoldingNFT
+export type DAOToken = FA2TokenDTO | NFTDTO;
 
-export interface DAOHoldingToken {
+export interface FA2TokenDTO {
   id: string;
   contract: string;
   level: number;
@@ -15,30 +15,28 @@ export interface DAOHoldingToken {
   symbol: string;
   name: string;
   decimals: number;
-  balance: BigNumber;
-  type: "TOKEN";
+  network: Network;
+  supply: string;
 }
 
-export interface DAOHoldingNFT {
-  type: "NFT";
-  "contract": string;
-  "network": string;
-  "token_id": number;
-  "symbol": "OBJKT";
-  "name": string;
-  "decimals": number;
-  "description": string;
-  "artifact_uri": string;
-  "thumbnail_uri": string;
-  "artifact_hash": string;
-  "thumbnail_hash": string;
-  "is_transferable": boolean;
-  "creators": string[];
-  "tags": string[];
-  "formats":
-  {
-    "mimeType": string;
-    "uri": string;
-  }[],
-  "balance": string;
+export interface NFTDTO {
+  id: string;
+  supply: string;
+  contract: string;
+  token_id: number;
+  network: Network;
+  symbol: string;
+  level: number;
+  name: string;
+  decimals: number;
+  description: string;
+  artifact_uri: string;
+  thumbnail_uri: string;
+  is_transferable: boolean;
+  creators: string[];
+  tags: string[];
+  formats: {
+    mimeType: string;
+    uri: string;
+  }[];
 }

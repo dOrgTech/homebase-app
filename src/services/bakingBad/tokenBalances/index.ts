@@ -1,21 +1,23 @@
-import { BigNumber } from "bignumber.js";
+import BigNumber from "bignumber.js";
+import { NFT, Token } from "models/Token";
 import { Network } from "services/beacon/context";
 import { parseUnits } from "services/contracts/utils";
 import { API_URL } from "..";
-import { DAOHolding, DAOHoldingNFT, DAOHoldingToken, TokenBalancesDTO } from "./types";
+import { DAOToken, NFTDTO, TokenBalancesDTO } from "./types";
 
-const extractQmHash = (ipfsUri: string) => {
-  if(!ipfsUri) {
-    return ipfsUri
-  }
+const isNFTDTO = (value: DAOToken): value is NFTDTO =>
+  value.hasOwnProperty("artifact_uri");
 
-  return ipfsUri.startsWith("ipfs://")? ipfsUri.split("ipfs://")[1]: ipfsUri
+export interface DAOHolding {
+  balance: BigNumber;
+  token: Token;
 }
 
-export const getDAOHoldings = async (
-  daoId: string,
-  network: Network
-): Promise<DAOHolding[]> => {
+export interface NFTDAOHolding extends DAOHolding {
+  token: NFT;
+}
+
+export const getDAOBalances = async (daoId: string, network: Network) => {
   const url = `${API_URL}/account/${network}/${daoId}/token_balances`;
 
   const response = await fetch(url);
@@ -26,15 +28,41 @@ export const getDAOHoldings = async (
 
   const result: TokenBalancesDTO = await response.json();
 
-  return result.balances.map((balance) => balance.symbol === "OBJKT"? ({
-    ...balance,
-    thumbnail_hash: extractQmHash((balance as DAOHoldingNFT).thumbnail_uri),
-    artifact_hash: extractQmHash((balance as DAOHoldingNFT).artifact_uri),
-    type: "NFT"
-  }) as DAOHoldingNFT : ({
-    ...balance,
-    id: balance.contract,
-    balance: parseUnits(new BigNumber(balance.balance), balance.decimals),
-    type: "TOKEN"
-  }) as DAOHoldingToken);
+  return result.balances.map((daoTokenDTO) =>
+    isNFTDTO(daoTokenDTO)
+      ? {
+          balance: parseUnits(
+            new BigNumber(daoTokenDTO.balance),
+            daoTokenDTO.decimals
+          ),
+          token: new NFT(daoTokenDTO),
+        }
+      : {
+          balance: parseUnits(
+            new BigNumber(daoTokenDTO.balance),
+            daoTokenDTO.decimals
+          ),
+          token: new Token(daoTokenDTO),
+        }
+  );
+};
+
+export const getTokenMetadata = async (
+  contractAddress: string,
+  network: Network,
+  tokenId: string
+) => {
+  const url = `${API_URL}/tokens/${network}/metadata?contract=${contractAddress}&token_id=${tokenId}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Failed to fetch proposals from BakingBad API");
+  }
+
+  const resultingTokens: DAOToken[] = await response.json();
+  const result = resultingTokens[0]
+
+  return isNFTDTO(result)
+  ? new NFT(result)
+  : 
+  new Token(result)
 };

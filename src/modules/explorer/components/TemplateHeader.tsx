@@ -6,7 +6,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import { DAOTemplate } from "modules/creator/state";
 import { RectangleContainer } from "./styled/RectangleHeader";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -33,8 +32,9 @@ const StyledSendXTZContainer = styled(Grid)({
 });
 
 export const TemplateHeader: React.FC<{
-  template: DAOTemplate;
-}> = ({ template, children }) => {
+  template: string;
+  showSendXtz?: boolean;
+}> = ({ template, showSendXtz, children }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const daoId = useDAOID();
@@ -79,14 +79,16 @@ export const TemplateHeader: React.FC<{
               justify={isMobileSmall ? "center" : "flex-start"}
             />
           )}
-          <StyledSendXTZContainer
-            container
-            justify={isMobileSmall ? "center" : "flex-start"}
-          >
-            <Grid item>
-              <SendXTZDialog />
-            </Grid>
-          </StyledSendXTZContainer>
+          {showSendXtz && (
+            <StyledSendXTZContainer
+              container
+              justify={isMobileSmall ? "center" : "flex-start"}
+            >
+              <Grid item>
+                <SendXTZDialog />
+              </Grid>
+            </StyledSendXTZContainer>
+          )}
         </Grid>
       </CustomRectangleContainer>
     </Grid>

@@ -1,5 +1,6 @@
-import React from "react"
-import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata"
+import { NFT } from "models/Token";
+import React from "react";
+import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
 
 interface Props {
   contractAddress: string;
@@ -7,12 +8,12 @@ interface Props {
 }
 
 export const FA2Symbol: React.FC<Props> = ({ contractAddress, tokenId }) => {
-
   const { data } = useTokenMetadata(contractAddress, tokenId);
 
   return (
     <>
-      {data? data.symbol : contractAddress}
+      {data &&
+        (data instanceof NFT ? `${data.symbol}#${data.token_id}` : data.symbol)}
     </>
-  )
-}
+  );
+};
