@@ -44,9 +44,6 @@ export class TreasuryDAO extends BaseDAO {
       proposalMetadata
     );
 
-    console.log(contractMethod);
-    console.log(contract);
-
     const result = await contractMethod.send();
     return result;
   };

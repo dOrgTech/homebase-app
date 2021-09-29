@@ -1,6 +1,4 @@
-import { styled, Grid, Typography } from "@material-ui/core";
-import { TextField } from "formik-material-ui";
-import { Field } from "formik";
+import { styled, Grid, Typography, TextField, StandardTextFieldProps } from "@material-ui/core";
 import React from "react";
 
 export const CustomTextarea = styled(TextField)({
@@ -14,20 +12,26 @@ export const CustomTextarea = styled(TextField)({
       textAlign: "initial",
     },
   },
-  paddingTop: 24
+  paddingTop: 24,
 });
 
-export const DescriptionContainer = styled(Grid)(({theme}) => ({
+export const DescriptionContainer = styled(Grid)(({ theme }) => ({
   paddingLeft: 65,
   paddingRight: 65,
   paddingTop: 24,
   [theme.breakpoints.down("sm")]: {
     paddingLeft: 24,
     paddingRight: 24,
-  }
+  },
 }));
 
-export const ProposalTextContainer: React.FC<{ title: string, value: string, type: "description" | "title" }> = ({ title, value, type }) => {
+interface Props extends StandardTextFieldProps {
+  title: string;
+  value: string;
+  type: "description" | "title";
+}
+
+export const ProposalTextContainer: React.FC<Props> = ({ title, value, type, ...props }) => {
   return (
     <DescriptionContainer container direction="row">
       <Grid item xs={12}>
@@ -38,36 +42,24 @@ export const ProposalTextContainer: React.FC<{ title: string, value: string, typ
           justify="space-between"
         >
           <Grid item xs={6}>
-            <Typography
-              variant="subtitle1"
-              color="textSecondary"
-            >
+            <Typography variant="subtitle1" color="textSecondary">
               {title}
             </Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography
-              align="right"
-              variant="subtitle1"
-              color="textSecondary"
-            >
-              {value
-                ? value.trim().split(" ")
-                  .length
-                : 0}{" "}
-            Words
-          </Typography>
+            <Typography align="right" variant="subtitle1" color="textSecondary">
+              {value ? value.trim().split(" ").length : 0} Words
+            </Typography>
           </Grid>
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <Field
-          name={type}
+        <CustomTextarea
           type="string"
           multiline
           rows={type === "description" ? 6 : 2}
           placeholder={`Type a ${title}`}
-          component={CustomTextarea}
+          {...props}
         />
       </Grid>
     </DescriptionContainer>

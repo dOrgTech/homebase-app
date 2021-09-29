@@ -52,112 +52,114 @@ export const NFTTable: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <ResponsiveGenericTable>
-      {!isMobileSmall && (
-        <TableHeader item container wrap="nowrap" id="demo">
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"left"}>NFTs</ProposalTableHeadText>
-          </Grid>
-          <Grid item xs={2}>
-            <ProposalTableHeadText align={"center"}>
-              PREVIEW
-            </ProposalTableHeadText>
-          </Grid>
-          <Grid item xs={4}>
-            <ProposalTableHeadText align={"center"}>
-              DESCRIPTION
-            </ProposalTableHeadText>
-          </Grid>
-          <Grid item xs={4}>
-            <ProposalTableHeadText align={"center"}>
-              AUTHORS
-            </ProposalTableHeadText>
-          </Grid>
-        </TableHeader>
-      )}
-      {nftHoldings && nftHoldings.length
-        ? nftHoldings.map((holding, i) => (
-            <GenericTableContainer key={`holding-${i}`}>
-              <TemplateTableRowContainer
-                container
-                direction={isMobileSmall ? "column" : "row"}
-                alignItems="center"
-              >
-                <Grid item sm={2}>
-                  <TokenName>
-                    {" "}
-                    <Cursor variant="subtitle1" color="textSecondary">
-                      {holding.name}
+    <>
+      <ResponsiveGenericTable>
+        {!isMobileSmall && (
+          <TableHeader item container wrap="nowrap" id="demo">
+            <Grid item xs={2}>
+              <ProposalTableHeadText align={"left"}>NFTs</ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={2}>
+              <ProposalTableHeadText align={"center"}>
+                PREVIEW
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={4}>
+              <ProposalTableHeadText align={"center"}>
+                DESCRIPTION
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={4}>
+              <ProposalTableHeadText align={"center"}>
+                AUTHORS
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
+        )}
+        {nftHoldings && nftHoldings.length
+          ? nftHoldings.map((holding, i) => (
+              <GenericTableContainer key={`holding-${i}`}>
+                <TemplateTableRowContainer
+                  container
+                  direction={isMobileSmall ? "column" : "row"}
+                  alignItems="center"
+                >
+                  <Grid item sm={2}>
+                    <TokenName>
+                      {" "}
+                      <Cursor variant="subtitle1" color="textSecondary">
+                        {holding.token.name}
+                      </Cursor>
+                    </TokenName>
+                  </Grid>
+                  <Grid
+                    item
+                    sm={2}
+                    container
+                    direction="row"
+                    alignItems="center"
+                    justify={isMobileSmall ? "space-evenly" : "center"}
+                  >
+                    <Link
+                      href={`${IPFS_GATEWAY_URI}/${holding.token.artifact_hash}`}
+                      rel="noopener"
+                      target="_blank"
+                    >
+                      <Thumbnail>
+                        <img
+                          src={`${IPFS_GATEWAY_URI}/${holding.token.artifact_hash}`}
+                          alt={`${holding.token.name}-thumbnail`}
+                        />
+                      </Thumbnail>
+                    </Link>
+                  </Grid>
+                  <Grid
+                    item
+                    sm={4}
+                    container
+                    direction="row"
+                    alignItems="center"
+                    justify={isMobileSmall ? "space-evenly" : "center"}
+                  >
+                    {isMobileSmall ? (
+                      <Typography variant="subtitle1" color="textSecondary">
+                        DESCRIPTION{" "}
+                      </Typography>
+                    ) : null}
+                    <Cursor
+                      variant="subtitle1"
+                      color="textSecondary"
+                      align="right"
+                    >
+                      {holding.token.description || " - "}
                     </Cursor>
-                  </TokenName>
-                </Grid>
-                <Grid
-                  item
-                  sm={2}
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify={isMobileSmall ? "space-evenly" : "center"}
-                >
-                  <Link
-                    href={`${IPFS_GATEWAY_URI}/${holding.artifact_hash}`}
-                    rel="noopener"
-                    target="_blank"
+                  </Grid>
+                  <Grid
+                    item
+                    sm={4}
+                    container
+                    direction="row"
+                    alignItems="center"
+                    justify={isMobileSmall ? "space-evenly" : "center"}
                   >
-                    <Thumbnail>
-                      <img
-                        src={`${IPFS_GATEWAY_URI}/${holding.artifact_hash}`}
-                        alt={`${holding.name}-thumbnail`}
-                      />
-                    </Thumbnail>
-                  </Link>
-                </Grid>
-                <Grid
-                  item
-                  sm={4}
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify={isMobileSmall ? "space-evenly" : "center"}
-                >
-                  {isMobileSmall ? (
-                    <Typography variant="subtitle1" color="textSecondary">
-                      DESCRIPTION{" "}
-                    </Typography>
-                  ) : null}
-                  <Cursor
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
-                    {holding.description || " - "}
-                  </Cursor>
-                </Grid>
-                <Grid
-                  item
-                  sm={4}
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify={isMobileSmall ? "space-evenly" : "center"}
-                >
-                  {isMobileSmall ? (
-                    <Typography variant="subtitle1" color="textSecondary">
-                      CREATORS{" "}
-                    </Typography>
-                  ) : null}
-                  <Cursor
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
-                    {holding.creators.join(", ")}
-                  </Cursor>
-                </Grid>
-              </TemplateTableRowContainer>
-            </GenericTableContainer>
-          ))
-        : null}
-    </ResponsiveGenericTable>
+                    {isMobileSmall ? (
+                      <Typography variant="subtitle1" color="textSecondary">
+                        CREATORS{" "}
+                      </Typography>
+                    ) : null}
+                    <Cursor
+                      variant="subtitle1"
+                      color="textSecondary"
+                      align="right"
+                    >
+                      {holding.token.creators.join(", ")}
+                    </Cursor>
+                  </Grid>
+                </TemplateTableRowContainer>
+              </GenericTableContainer>
+            ))
+          : null}
+      </ResponsiveGenericTable>
+    </>
   );
 };

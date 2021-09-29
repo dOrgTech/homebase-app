@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useState } from "react";
 import {
   Grid,
   styled,
@@ -6,38 +6,27 @@ import {
   Paper,
   DialogContent,
   DialogContentText,
-  TextField as MaterialTextField,
+  TextField,
   InputAdornment,
   useTheme,
   useMediaQuery,
+  Switch,
 } from "@material-ui/core";
-import { Form, Field, FieldArray, useFormikContext } from "formik";
-import { TextField, Switch } from "formik-material-ui";
-import { Autocomplete } from "formik-material-ui-lab";
-
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { TreasuryDAO } from "services/contracts/baseDAO";
-// import {
-//   fromMigrationParamsFile,
-//   validateTransactionsJSON,
-// } from "modules/explorer/Treasury/utils";
-// import { useNotification } from "modules/common/hooks/useNotification";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { ErrorText } from "modules/explorer/components/styled/ErrorText";
 import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
 import * as Yup from "yup";
 import BigNumber from "bignumber.js";
 import { useDAOID } from "modules/explorer/daoRouter";
+import { Autocomplete } from "@material-ui/lab";
 
-interface Asset {
-  contract: string;
-  level: number;
-  token_id: number;
-  symbol: string;
-  name: string;
-  decimals: number;
-  balance: BigNumber;
-}
+import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
+import { Token } from "models/Token";
+
+export type Asset = Token | { symbol: "XTZ" };
 
 const AmountItem = styled(Grid)(({ theme }) => ({
   minHeight: 137,
@@ -51,21 +40,6 @@ const AmountItem = styled(Grid)(({ theme }) => ({
     padding: "24px 24px",
   },
 }));
-
-// const UploadButtonContainer = styled(Grid)(({ theme }) => ({
-//   minHeight: 70,
-//   display: "flex",
-//   alignItems: "center",
-//   padding: "0px 65px",
-//   borderBottom: `2px solid ${theme.palette.primary.light}`,
-//   [theme.breakpoints.down("sm")]: {
-//     padding: "24px 24px",
-//   },
-// }));
-
-// const FileInput = styled("input")({
-//   display: "none",
-// });
 
 const BatchBar = styled(Grid)(({ theme }) => ({
   height: 60,
@@ -113,15 +87,6 @@ const styles = {
     background: "#3866F9",
   },
 };
-
-// const UploadFileLabel = styled("label")(({ theme }) => ({
-//   color: theme.palette.secondary.main,
-//   borderColor: theme.palette.secondary.main,
-//   minWidth: 171,
-//   cursor: "pointer",
-//   margin: "auto",
-//   display: "block",
-// }));
 
 const CustomTextField = styled(TextField)({
   textAlign: "end",
@@ -194,7 +159,7 @@ const AmountSmallText = styled(Typography)(({ theme }) => ({
 export interface FormTransferParams {
   recipient: string;
   amount: number;
-  asset: Asset;
+  asset?: Asset;
 }
 
 export interface TreasuryProposalFormValues {
@@ -204,28 +169,7 @@ export interface TreasuryProposalFormValues {
   };
 }
 
-export const EMPTY_TRANSFER: FormTransferParams = {
-  recipient: "",
-  amount: 0,
-  asset: {
-    contract: "",
-    level: 0,
-    token_id: -1,
-    symbol: "XTZ",
-    name: "XTZ",
-    decimals: 6,
-    balance: new BigNumber("0"),
-  },
-};
-
-export const INITIAL_TRANSFER_FORM_VALUES: TreasuryProposalFormValues = {
-  transferForm: {
-    transfers: [EMPTY_TRANSFER],
-    isBatch: false,
-  },
-};
-
-export const treasuryValidationSchema = Yup.object().shape({
+export const treasuryProposalFormSchema = Yup.object().shape({
   transferForm: Yup.object().shape({
     transfers: Yup.array().of(
       Yup.object().shape({
@@ -238,72 +182,48 @@ export const treasuryValidationSchema = Yup.object().shape({
   }),
 });
 
+const emptyTransfer = {
+  recipient: "",
+  amount: 0,
+};
+
+export const treasuryProposalFormInitialState: TreasuryProposalFormValues = {
+  transferForm: {
+    transfers: [emptyTransfer],
+    isBatch: false,
+  },
+};
+
 export const NewTreasuryProposalDialog: React.FC = () => {
-  const { values, errors, touched } =
-    useFormikContext<TreasuryProposalFormValues>();
+  const {
+    control,
+    getValues,
+    setValue,
+    watch,
+    formState: { errors, touchedFields: touched },
+  } = useFormContext<TreasuryProposalFormValues>();
+
+  const { fields, append } = useFieldArray({
+    control,
+    name: "transferForm.transfers",
+  });
+  const values = getValues();
+  const [isBatch, setIsBatch] = useState(values.transferForm.isBatch);
+
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const daoId = useDAOID();
   const { data: daoData } = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
-  // const openNotification = useNotification();
-  const { data: daoHoldings } = useDAOHoldings(daoId);
+  const { tokenHoldings: daoHoldings } = useDAOHoldings(daoId);
+  const { data: tezosBalance } = useTezosBalance(daoId);
 
-  const currentAssetSymbol = useCallback(
-    (transfers: FormTransferParams[]) => {
-      const currentTransfer = transfers[activeTransfer - 1];
-
-      if (!daoHoldings || !currentTransfer.asset) {
-        return "-";
-      }
-
-      if ((currentTransfer.asset as Asset).symbol === "XTZ") {
-        return "XTZ";
-      }
-
-      const currentAsset = daoHoldings.find(
-        (balance) =>
-          balance.contract === (currentTransfer.asset as Asset).contract
-      );
-
-      return currentAsset ? currentAsset.symbol : "-";
-    },
-    [activeTransfer, daoHoldings]
-  );
-
-  const getBalance = useCallback(
-    (values: TreasuryProposalFormValues): string => {
-      if (daoHoldings) {
-        const currentTransfer =
-          values.transferForm.transfers[activeTransfer - 1];
-
-        if (!currentTransfer.asset) {
-          return "-";
-        }
-
-        if (currentTransfer.asset.symbol === "XTZ") {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return daoHoldings
-            .find((balance) => balance.symbol === "XTZ")!
-            .balance.toString();
-        }
-
-        const fa2Token = daoHoldings.find(
-          (balance) => balance.contract === currentTransfer.asset?.contract
-        );
-
-        if (fa2Token) {
-          return fa2Token.balance.toString();
-        }
-
-        return "-";
-      }
-
-      return "-";
-    },
-    [activeTransfer, daoHoldings]
-  );
+  const handleIsBatchChange = () => {
+    setIsBatch(!isBatch);
+    setValue("transferForm.isBatch", !isBatch);
+    setActiveTransfer(1);
+  };
 
   const recipientError = (
     errors.transferForm?.transfers?.[activeTransfer - 1] as any
@@ -312,173 +232,158 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     errors.transferForm?.transfers?.[activeTransfer - 1] as any
   )?.amount;
 
-  // const importTransactions = useCallback(
-  //   async (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     if (event.currentTarget.files) {
-  //       try {
-  //         const file = event.currentTarget.files[0];
-  //         const transactionsParsed = await fromMigrationParamsFile(file);
-  //         const errors = validateTransactionsJSON(transactionsParsed);
-  //         console.log(errors);
+  const { transfers } = watch("transferForm");
 
-  //         if (errors.length) {
-  //           openNotification({
-  //             message: "Error while parsing JSON",
-  //             persist: true,
-  //             variant: "error",
-  //           });
-  //           return;
-  //         }
+  const currentTransfer = transfers[activeTransfer - 1];
 
-  //         setFieldValue("transferForm.isBatch", true);
-  //         values.transferForm.transfers = transactionsParsed;
-  //       } catch (e) {
-  //         openNotification({
-  //           message: "Error while parsing JSON",
-  //           persist: true,
-  //           variant: "error",
-  //         });
-  //       }
-  //     }
-  //   },
-  //   [openNotification, setFieldValue, values.transferForm]
-  // );
+  const daoAssets = daoHoldings
+    ? [
+        ...daoHoldings,
+        { balance: tezosBalance || new BigNumber(0), token: { symbol: "XTZ" } },
+      ]
+    : [];
+
+  const assetOptions = daoAssets.map((a) => a.token);
+  const currentAssetBalance = daoAssets.find(asset => asset.token.symbol === currentTransfer.asset?.symbol)
 
   return (
-    <>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          <ProposalFormListItem container direction="row">
-            <Grid item xs={6}>
-              <Typography variant="subtitle1" color="textSecondary">
-                Batch Transfer?
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <SwitchContainer item xs={12} justify="flex-end">
-                <Field
-                  component={Switch}
-                  type="checkbox"
-                  name="transferForm.isBatch"
-                />
-              </SwitchContainer>
-            </Grid>
-          </ProposalFormListItem>
+    <DialogContent>
+      <DialogContentText id="alert-dialog-description">
+        <ProposalFormListItem container direction="row">
+          <Grid item xs={6}>
+            <Typography variant="subtitle1" color="textSecondary">
+              Batch Transfer?
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <SwitchContainer item xs={12} justify="flex-end">
+              <Switch
+                type="checkbox"
+                onChange={handleIsBatchChange}
+                checked={isBatch}
+              />
+            </SwitchContainer>
+          </Grid>
+        </ProposalFormListItem>
 
-          <Form autoComplete="off">
-            <>
-              <FieldArray
-                name="transferForm.transfers"
-                render={(arrayHelpers) => (
-                  <>
-                    {values.transferForm.isBatch ? (
-                      <BatchBar container direction="row" wrap="nowrap">
-                        {values.transferForm.transfers.map((_, index) => {
-                          return (
-                            <TransferActive
-                              item
-                              key={index}
-                              onClick={() => setActiveTransfer(index + 1)}
-                              style={
-                                Number(index + 1) === activeTransfer
-                                  ? styles.active
-                                  : undefined
-                              }
-                            >
-                              <Typography
-                                variant="subtitle1"
-                                color="textSecondary"
-                              >
-                                #{index + 1}
-                              </Typography>
-                            </TransferActive>
-                          );
-                        })}
+        {values.transferForm.isBatch ? (
+          <BatchBar container direction="row" wrap="nowrap">
+            {values.transferForm.transfers.map((_, index) => {
+              return (
+                <TransferActive
+                  item
+                  key={index}
+                  onClick={() => setActiveTransfer(index + 1)}
+                  style={
+                    Number(index + 1) === activeTransfer
+                      ? styles.active
+                      : undefined
+                  }
+                >
+                  <Typography variant="subtitle1" color="textSecondary">
+                    #{index + 1}
+                  </Typography>
+                </TransferActive>
+              );
+            })}
 
-                        <AddButton
-                          onClick={() => {
-                            arrayHelpers.insert(
-                              values.transferForm.transfers.length + 1,
-                              EMPTY_TRANSFER
-                            );
-                            setActiveTransfer(activeTransfer + 1);
-                          }}
-                        >
-                          +
-                        </AddButton>
-                      </BatchBar>
-                    ) : null}
+            <AddButton
+              onClick={() => {
+                append(emptyTransfer);
+                setActiveTransfer(activeTransfer + 1);
+              }}
+            >
+              +
+            </AddButton>
+          </BatchBar>
+        ) : null}
 
-                    <ProposalFormListItem container direction="row">
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          Recipient
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <SwitchContainer item xs={12} justify="flex-end">
-                          <Field
-                            name={`transferForm.transfers.${
-                              activeTransfer - 1
-                            }.recipient`}
+        {fields.map(
+          (field, index) =>
+            index === activeTransfer - 1 && (
+              <>
+                <ProposalFormListItem container direction="row">
+                  <Grid item xs={6}>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Recipient
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <SwitchContainer item xs={12} justify="flex-end">
+                      <Controller
+                        key={field.id}
+                        name={`transferForm.transfers.${index}.recipient`}
+                        control={control}
+                        render={({ field }) => (
+                          <CustomTextField
+                            {...field}
                             type="string"
                             placeholder="Type an Address Here"
-                            component={CustomTextField}
                           />
-                          {recipientError &&
-                          touched.transferForm?.transfers?.[activeTransfer - 1]
-                            ?.recipient ? (
-                            <ErrorText>{recipientError}</ErrorText>
-                          ) : null}
-                        </SwitchContainer>
-                      </Grid>
-                    </ProposalFormListItem>
+                        )}
+                      />
 
-                    <AmountItem container direction="row" alignItems="center">
-                      <Grid item xs={isMobileSmall ? 12 : 5}>
-                        <Grid container direction="column">
-                          <Typography variant="subtitle1" color="textSecondary">
-                            Asset
-                          </Typography>
-                          <Field
-                            component={AutoCompleteField}
-                            name={`transferForm.transfers.${
-                              activeTransfer - 1
-                            }.asset`}
-                            options={
-                              daoHoldings
-                                ? daoHoldings.map((option) => option)
-                                : []
+                      {recipientError &&
+                      touched.transferForm?.transfers?.[activeTransfer - 1]
+                        ?.recipient ? (
+                        <ErrorText>{recipientError}</ErrorText>
+                      ) : null}
+                    </SwitchContainer>
+                  </Grid>
+                </ProposalFormListItem>
+                <AmountItem container direction="row" alignItems="center">
+                  <Grid item xs={isMobileSmall ? 12 : 5}>
+                    <Grid container direction="column">
+                      <Typography variant="subtitle1" color="textSecondary">
+                        Asset
+                      </Typography>
+                      <Controller
+                        key={field.id}
+                        name={`transferForm.transfers.${index}.asset`}
+                        control={control}
+                        render={({ field: { onChange, ...props } }) => (
+                          <AutoCompleteField
+                            options={assetOptions || []}
+                            getOptionLabel={(option) =>
+                              (
+                                option as
+                                  | Token
+                                  | {
+                                      symbol: string;
+                                    }
+                              ).symbol
                             }
-                            getOptionLabel={(option: Asset) => option.symbol}
-                            renderInput={(params: any) => (
-                              <MaterialTextField
-                                {...params}
-                                label="Select asset"
-                              />
+                            renderInput={(params) => (
+                              <TextField {...params} label="Select asset" />
                             )}
+                            onChange={(e, data) => onChange(data)}
+                            {...props}
                           />
-                        </Grid>
-                      </Grid>
-                      <Grid item xs={isMobileSmall ? 12 : 2}></Grid>
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={isMobileSmall ? 12 : 2}></Grid>
 
-                      <Grid item xs={isMobileSmall ? 12 : 5}>
-                        <Grid container direction="column">
-                          <AmountSmallText
-                            variant="subtitle1"
-                            color="textSecondary"
-                          >
-                            Amount
-                          </AmountSmallText>
+                  <Grid item xs={isMobileSmall ? 12 : 5}>
+                    <Grid container direction="column">
+                      <AmountSmallText
+                        variant="subtitle1"
+                        color="textSecondary"
+                      >
+                        Amount
+                      </AmountSmallText>
 
-                          <SwitchContainer item xs={12} justify="flex-end">
-                            <Field
-                              name={`transferForm.transfers.${
-                                activeTransfer - 1
-                              }.amount`}
+                      <SwitchContainer item xs={12} justify="flex-end">
+                        <Controller
+                          key={field.id}
+                          name={`transferForm.transfers.${index}.amount`}
+                          control={control}
+                          render={({ field }) => (
+                            <CustomTextFieldAmount
+                              {...field}
                               type="tel"
                               placeholder="0"
-                              component={CustomTextFieldAmount}
                               InputProps={{
                                 inputProps: {
                                   step: 0.01,
@@ -492,72 +397,58 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                       variant="subtitle1"
                                     >
                                       {" "}
-                                      {currentAssetSymbol(
-                                        values.transferForm.transfers
-                                      )}
+                                      {values.transferForm.transfers[
+                                        activeTransfer - 1
+                                      ].asset?.symbol || "-"}
                                     </CurrentAsset>
                                   </InputAdornment>
                                 ),
                               }}
                             />
-                            {amountError &&
-                            touched.transferForm?.transfers?.[
-                              activeTransfer - 1
-                            ]?.amount ? (
-                              <ErrorText>{amountError}</ErrorText>
-                            ) : null}
-                          </SwitchContainer>
-                        </Grid>
-                      </Grid>
+                          )}
+                        />
 
-                      {values.transferForm.transfers[activeTransfer - 1] ? (
-                        <DaoBalance
+                        {amountError &&
+                        touched.transferForm?.transfers?.[activeTransfer - 1]
+                          ?.amount ? (
+                          <ErrorText>{amountError}</ErrorText>
+                        ) : null}
+                      </SwitchContainer>
+                    </Grid>
+                  </Grid>
+
+                  <DaoBalance
+                    container
+                    direction="row"
+                    alignItems="center"
+                    justify="space-between"
+                  >
+                    <Grid item xs={6}>
+                      <AmountText>DAO Balance</AmountText>
+                    </Grid>
+                    <Grid item xs={6}>
+                      {daoAssets ? (
+                        <AmountContainer
+                          item
                           container
                           direction="row"
-                          alignItems="center"
-                          justify="space-between"
+                          justify="flex-end"
                         >
-                          <Grid item xs={6}>
-                            <AmountText>DAO Balance</AmountText>
-                          </Grid>
-                          <Grid item xs={6}>
-                            {daoHoldings ? (
-                              <AmountContainer
-                                item
-                                container
-                                direction="row"
-                                justify="flex-end"
-                              >
-                                <AmountText>{getBalance(values)}</AmountText>
-                                <AmountText>
-                                  {currentAssetSymbol(
-                                    values.transferForm.transfers
-                                  )}
-                                </AmountText>
-                              </AmountContainer>
-                            ) : null}
-                          </Grid>
-                        </DaoBalance>
+                          <AmountText>
+                            {currentAssetBalance?.balance.toString() || "-"}
+                          </AmountText>
+                          <AmountText>
+                            {currentTransfer.asset?.symbol.toString() || "-"}
+                          </AmountText>
+                        </AmountContainer>
                       ) : null}
-                    </AmountItem>
-                  </>
-                )}
-              />
-
-              {/* <UploadButtonContainer container direction="row">
-                <UploadFileLabel>
-                  -OR- UPLOAD JSON FILE
-                  <FileInput
-                    type="file"
-                    accept=".json"
-                    onChange={importTransactions}
-                  />
-                </UploadFileLabel>
-              </UploadButtonContainer> */}
-            </>
-          </Form>
-        </DialogContentText>
-      </DialogContent>
-    </>
+                    </Grid>
+                  </DaoBalance>
+                </AmountItem>
+              </>
+            )
+        )}
+      </DialogContentText>
+    </DialogContent>
   );
 };

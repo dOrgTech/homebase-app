@@ -1,66 +1,45 @@
 import { BaseDAO } from "..";
 import { useQuery } from "react-query";
-import { getDAOHoldings } from "services/bakingBad/tokenBalances";
-import {
-  DAOHolding,
-  DAOHoldingNFT,
-  DAOHoldingToken,
-} from "services/bakingBad/tokenBalances/types";
+import { DAOHolding, getDAOBalances, NFTDAOHolding } from "services/bakingBad/tokenBalances";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { useTezosBalances } from "./useTezosBalance";
 import { useMemo } from "react";
+import { NFT } from "models/Token";
 
 export const useDAOHoldings = (contractAddress: string) => {
   const { data: dao } = useDAO(contractAddress);
   const { network } = useTezos();
-  const {
-    data: tezosBalance,
-    error: tezosBalanceError,
-    isLoading: tezosBalanceIsLoading,
-  } = useTezosBalances(contractAddress);
 
-  const { error, isLoading, data, ...rest } = useQuery<DAOHolding[], Error>(
+  const { data, ...rest } = useQuery<DAOHolding[], Error>(
     ["balances", contractAddress],
     async () => {
-      const daoHoldings = await getDAOHoldings(
-        (dao as BaseDAO).data.address,
-        network
-      );
-
-      return [...daoHoldings, tezosBalance as DAOHolding];
+      return await getDAOBalances((dao as BaseDAO).data.address, network);
     },
     {
-      enabled: !!dao && !!tezosBalance,
+      enabled: !!dao,
     }
   );
 
-  const nftHoldings = useMemo(() => {
+  const nfts = useMemo(() => {
     if (!data) {
       return [];
     }
 
-    return data.filter(
-      (holding) => holding.symbol === "OBJKT"
-    ) as DAOHoldingNFT[];
+    return data.filter((holding) => holding.token instanceof NFT && holding.balance.isGreaterThan(0)) as NFTDAOHolding[];
   }, [data]);
 
-  const tokenHoldings = useMemo(() => {
+  const tokens = useMemo(() => {
     if (!data) {
       return [];
     }
 
-    return data.filter(
-      (holding) => holding.symbol !== "OBJKT"
-    ) as DAOHoldingToken[];
+    return data.filter((holding) => !(holding.token instanceof NFT));
   }, [data]);
 
   return {
-    tokenHoldings,
-    nftHoldings,
+    tokenHoldings: tokens,
+    nftHoldings: nfts,
     data,
-    error: error || tezosBalanceError,
-    isLoading: isLoading || tezosBalanceIsLoading,
     ...rest,
   };
 };
