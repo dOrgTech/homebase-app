@@ -25,7 +25,7 @@ export const useDAOHoldings = (contractAddress: string) => {
       return [];
     }
 
-    return data.filter((holding) => holding.token instanceof NFT) as NFTDAOHolding[];
+    return data.filter((holding) => holding.token instanceof NFT && holding.balance.isGreaterThan(0)) as NFTDAOHolding[];
   }, [data]);
 
   const tokens = useMemo(() => {

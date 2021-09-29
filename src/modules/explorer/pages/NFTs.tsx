@@ -15,8 +15,12 @@ import { UserBadge } from "../components/UserBadge";
 import { NFT } from "../components/NFT";
 import { NFTDialog } from "../components/NFTDialog";
 import { NFTDAOHolding } from "services/bakingBad/tokenBalances";
-import { ProposalFormContainer, ProposalFormDefaultValues } from "../components/ProposalForm";
+import {
+  ProposalFormContainer,
+  ProposalFormDefaultValues,
+} from "../components/ProposalForm";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { NFT as NFTModel } from "models/Token";
 
 const Card = styled(Grid)({
   boxSizing: "border-box",
@@ -53,9 +57,10 @@ export const NFTs: React.FC = () => {
   const theme = useTheme();
   const daoId = useDAOID();
   const { nftHoldings } = useDAOHoldings(daoId);
-  const [openTransfer, setOpenTransfer] = useState(false)
-  const { account } = useTezos()
-  const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
+  const [openTransfer, setOpenTransfer] = useState(false);
+  const { account } = useTezos();
+  const [defaultValues, setDefaultValues] =
+    useState<ProposalFormDefaultValues>();
   const [selectedNFT, setSelectedNFT] = useState<NFTDAOHolding>();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -67,27 +72,29 @@ export const NFTs: React.FC = () => {
     setSelectedNFT(undefined);
   };
 
-  const onOpenTransferModal = (nftDaoHolding: NFTDAOHolding) => {
+  const onOpenTransferModal = (nft: NFTModel) => {
     setDefaultValues({
       nftTransferForm: {
-        transfers: [{
-          recipient: account,
-          amount: 1,
-          asset: nftDaoHolding.token
-        }]
-      }
-    })
-    setOpenTransfer(true)
-  }
+        transfers: [
+          {
+            recipient: account,
+            amount: 1,
+            asset: nft,
+          },
+        ],
+      },
+    });
+    setOpenTransfer(true);
+  };
 
-  const onClick = (e: any, nftDaoHolding: NFTDAOHolding) => {
-    e.stopPropagation()
-    onOpenTransferModal(nftDaoHolding)
-  }
+  const onClick = (e: any, nft: NFTModel) => {
+    e.stopPropagation();
+    onOpenTransferModal(nft);
+  };
 
   const onCloseTransfer = () => {
-    setOpenTransfer(false)
-  }
+    setOpenTransfer(false);
+  };
 
   return (
     <>
@@ -145,7 +152,11 @@ export const NFTs: React.FC = () => {
                     </NFTTitle>
                   </Grid>
                   <Grid item>
-                    <Button variant="outlined" color="secondary" onClick={(e) => onClick(e, nft)}>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={(e) => onClick(e, nft.token)}
+                    >
                       Propose Transfer
                     </Button>
                   </Grid>
@@ -160,7 +171,12 @@ export const NFTs: React.FC = () => {
         onClose={onCloseDialog}
         nft={(selectedNFT as NFTDAOHolding)?.token}
       />
-      <ProposalFormContainer open={openTransfer} handleClose={onCloseTransfer} defaultValues={defaultValues} defaultTab={1} />
+      <ProposalFormContainer
+        open={openTransfer}
+        handleClose={onCloseTransfer}
+        defaultValues={defaultValues}
+        defaultTab={1}
+      />
     </>
   );
 };
