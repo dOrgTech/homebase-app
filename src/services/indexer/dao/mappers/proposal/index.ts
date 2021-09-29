@@ -10,7 +10,6 @@ import { FA2TransferParams, TransferParams, XTZTransferParams } from "services/c
 export const extractTransfersData = (
   transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]
 ): Transfer[] => {
-  console.log(transfersDTO)
   const transfers = transfersDTO.map((transfer: any) => {
     if (transfer.hasOwnProperty("xtz_transfer_type")) {
       const xtzTransfer = transfer;

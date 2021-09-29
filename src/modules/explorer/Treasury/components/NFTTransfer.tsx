@@ -174,8 +174,6 @@ export const NFTTransferForm: React.FC = () => {
 
   const { transfers } = watch("nftTransferForm");
 
-  console.log(transfers);
-
   const activeAsset = transfers[activeTransfer - 1].asset;
   const takenNFTs = transfers.map(
     (t) => `${t.asset?.contract}-${t.asset?.token_id}`
