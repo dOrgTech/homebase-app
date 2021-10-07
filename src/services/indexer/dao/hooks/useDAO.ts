@@ -1,7 +1,9 @@
 import BigNumber from "bignumber.js";
+import { Token } from "models/Token";
 import { useState, useContext, useEffect, useMemo } from "react";
 import { useQuery } from "react-query";
 import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions";
+import { Network } from "services/beacon/context";
 import {
   TreasuryDAO,
   RegistryDAO,
@@ -25,10 +27,11 @@ export const useDAO = (address: string) => {
       const dao = response.daos[0];
       const base = {
         ...dao,
-        token: {
+        token: new Token({
           ...dao.token,
-          supply: new BigNumber(dao.token.supply),
-        },
+          id: dao.token.id.toString(),
+          network: dao.token.network as Network,
+        }),
         ledger: dao.ledgers.map((ledger) => {
           const current_unstaked = parseUnits(
             new BigNumber(ledger.current_unstaked),

@@ -16,9 +16,8 @@ import { ProposalsTable } from "../components/ProposalsTable";
 import { AppTabBar } from "../components/AppTabBar";
 import { TabPanel } from "../components/TabPanel";
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo";
-import { RegistryProposalFormContainer } from "../components/ProposalForm/registryProposalForm";
+import { ProposalFormContainer } from "../components/ProposalForm";
 import { useState } from "react";
-import { TreasuryProposalFormContainer } from "../components/ProposalForm/treasuryProposalForm";
 import { InfoIcon } from "../components/styled/InfoIcon";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
@@ -137,7 +136,7 @@ export const Proposals: React.FC = () => {
                   <PrimaryButton
                     variant="outlined"
                     onClick={handleNewProposal}
-                    disabled={shouldDisable}
+                    // disabled={shouldDisable}
                   >
                     NEW PROPOSAL
                   </PrimaryButton>
@@ -212,17 +211,7 @@ export const Proposals: React.FC = () => {
           </ProposalsContainer> */}
       </Grid>
       {dao ? (
-        dao.data.type === "registry" ? (
-          <RegistryProposalFormContainer
-            open={open}
-            handleClose={handleCloseModal}
-          />
-        ) : (
-          <TreasuryProposalFormContainer
-            open={open}
-            handleClose={handleCloseModal}
-          />
-        )
+        <ProposalFormContainer open={open} handleClose={handleCloseModal}/>
       ) : null}
     </>
   );

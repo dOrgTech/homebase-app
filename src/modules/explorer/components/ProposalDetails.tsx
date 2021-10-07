@@ -9,7 +9,7 @@ import {
   useTheme,
   withTheme,
 } from "@material-ui/core";
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import ReactHtmlParser from "react-html-parser";
 import { ReactComponent as ClipIcon } from "assets/logos/clip.svg";
@@ -19,22 +19,29 @@ import { StatusBadge } from "./StatusBadge";
 import { ProposalStatusHistory } from "./ProposalStatusHistory";
 import { RectangleContainer } from "./styled/RectangleHeader";
 import { VotersProgress } from "./VotersProgress";
-import { TreasuryProposalDetail } from "../Treasury/components/TreasuryProposalDetail";
-import { RegistryProposalDetail } from "../Registry/components/RegistryProposalDetail";
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal";
 import { BaseDAO } from "services/contracts/baseDAO";
-import { toShortAddress } from "services/contracts/utils";
+import {
+  mutezToXtz,
+  parseUnits,
+  toShortAddress,
+} from "services/contracts/utils";
 import { useCanDropProposal } from "../hooks/useCanDropProposal";
 import { useCallback } from "react";
 import { InfoIcon } from "./styled/InfoIcon";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 import {
+  FA2Transfer,
   RegistryProposal,
   TreasuryProposal,
 } from "services/indexer/dao/mappers/proposal/types";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
-import { useDAOID } from "modules/explorer/v2/pages/DAO/router";
+import { useDAOID } from "../daoRouter";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { TransferBadge } from "../Treasury/components/TransferBadge";
+import { HighlightedBadge } from "./styled/HighlightedBadge";
+import { DAOHolding } from "services/bakingBad/tokenBalances";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -98,6 +105,14 @@ const DropButton = styled(Button)({
   marginTop: "12px",
 });
 
+const Container = styled(Grid)({
+  paddingTop: 21,
+});
+
+const DetailsText = styled(Typography)({
+  wordBreak: "break-all",
+});
+
 export const ProposalDetails: React.FC = () => {
   const { proposalId } = useParams<{
     proposalId: string;
@@ -113,6 +128,7 @@ export const ProposalDetails: React.FC = () => {
   const { data: agoraPost } = useAgoraTopic(
     Number(proposal?.metadata.agoraPostId)
   );
+  const { data: holdings } = useDAOHoldings(daoId);
 
   const onDropProposal = useCallback(async () => {
     await dropProposal({
@@ -120,6 +136,46 @@ export const ProposalDetails: React.FC = () => {
       proposalId,
     });
   }, [dao, dropProposal, proposalId]);
+
+  const list = useMemo(() => {
+    if (!proposal || !(proposal instanceof RegistryProposal)) {
+      return [];
+    }
+
+    return proposal.metadata.list;
+  }, [proposal]);
+
+  const transfers = useMemo(() => {
+    if (!holdings || !proposal) {
+      return [];
+    }
+
+    return (
+      proposal as TreasuryProposal | RegistryProposal
+    ).metadata.transfers.map((transfer) => {
+      if (transfer.type === "XTZ") {
+        return {
+          ...transfer,
+          amount: mutezToXtz(transfer.amount),
+        };
+      }
+
+      const fa2Transfer = transfer as FA2Transfer;
+
+      const decimals = (
+        holdings.find(
+          (holding) =>
+            holding.token.contract.toLowerCase() ===
+            fa2Transfer.contractAddress.toLowerCase()
+        ) as DAOHolding
+      ).token.decimals;
+
+      return {
+        ...transfer,
+        amount: parseUnits(transfer.amount, decimals),
+      };
+    });
+  }, [holdings, proposal]);
 
   const proposalCycle = proposal ? proposal.period : "-";
   const daoName = dao ? dao.data.name : "";
@@ -256,15 +312,56 @@ export const ProposalDetails: React.FC = () => {
                 </Grid>
               )}
               {proposal ? (
-                proposal.dao.data.type === "treasury" ? (
-                  <TreasuryProposalDetail
-                    proposal={proposal as TreasuryProposal}
-                  />
-                ) : (
-                  <RegistryProposalDetail
-                    proposal={proposal as RegistryProposal}
-                  />
-                )
+                <>
+                  {transfers.map((transfer, index) => {
+                    return (
+                      <Container
+                        key={index}
+                        item
+                        container
+                        alignItems="center"
+                        direction={isMobileSmall ? "column" : "row"}
+                      >
+                        {transfer.type === "XTZ" ? (
+                          <TransferBadge
+                            amount={transfer.amount}
+                            address={transfer.beneficiary}
+                            currency={"XTZ"}
+                          />
+                        ) : (
+                          <TransferBadge
+                            amount={transfer.amount}
+                            address={transfer.beneficiary}
+                            contract={(transfer as FA2Transfer).contractAddress}
+                            tokenId={(transfer as FA2Transfer).tokenId}
+                          />
+                        )}
+                      </Container>
+                    );
+                  })}
+                  {list.map(({ key, value }, index) => (
+                    <Container
+                      key={index}
+                      item
+                      container
+                      alignItems="center"
+                      direction={isMobileSmall ? "column" : "row"}
+                    >
+                      <HighlightedBadge
+                        justify="center"
+                        alignItems="center"
+                        direction="row"
+                        container
+                      >
+                        <Grid item>
+                          <DetailsText variant="body1" color="textSecondary">
+                            Set &quot;{key}&quot; to &quot;{value}&quot;
+                          </DetailsText>
+                        </Grid>
+                      </HighlightedBadge>
+                    </Container>
+                  ))}
+                </>
               ) : null}
             </Grid>
           </Grid>

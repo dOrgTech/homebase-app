@@ -26,7 +26,7 @@ export const UserBadge: React.FC<{ address: string, size?: number, gap?: number 
           <Typography variant="body1" color="textPrimary">
             <UserProfileName
               address={address}
-              short={isMobileSmall || isMediumSmall}
+              short={short || isMobileSmall || isMediumSmall}
             />
           </Typography>
         </Link>

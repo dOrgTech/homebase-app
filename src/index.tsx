@@ -5,6 +5,9 @@ import App from "App";
 import { TezosProvider } from "services/beacon/context";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import dayjs from "dayjs";
+import BigNumber from "bignumber.js";
+
+BigNumber.config({ DECIMAL_PLACES: 2 })
 
 dayjs.extend(localizedFormat);
 

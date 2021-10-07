@@ -12,8 +12,8 @@ import { generateStorageContract } from "services/baseDAODocker";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
-import { TokenMetadata } from "services/bakingBad/tokens";
-import { Ledger, LedgerDTO } from "services/indexer/types";
+import { LedgerDTO } from "services/indexer/types";
+import { Token } from "models/Token";
 
 interface DeployParams {
   params: MigrationParams;
@@ -36,7 +36,7 @@ export interface BaseDAOData {
   admin: string;
   address: string;
   frozen_token_id: number;
-  token: TokenMetadata;
+  token: Token;
   guardian: string;
   ledger: Ledger[];
   max_proposals: string;

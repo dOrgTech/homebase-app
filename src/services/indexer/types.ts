@@ -1,6 +1,5 @@
 import BigNumber from "bignumber.js";
 import { DAOTemplate } from "modules/creator/state";
-import { TokenMetadata } from "services/bakingBad/tokens";
 import { Network } from "services/beacon/context";
 import { IndexerStatus } from "./dao/mappers/proposal/types";
 
@@ -186,7 +185,7 @@ export interface DAOListItem {
   period: string;
   staked: string;
   start_level: number;
-  token: TokenMetadata;
+  token: TokenDTO;
 }
 
 export type FetchedDAO = DAODTO & {

@@ -78,9 +78,9 @@ export const ProposalTableRow: React.FC<{ proposal: Proposal }> = ({
 
   const onClick = useCallback(() => {
     history.push(
-      `/explorer/dao/${proposal.dao.data.address}/proposal/${proposal.dao.data.type}/${proposal.id}`
+      `/explorer/dao/${proposal.dao.data.address}/proposal/${proposal.id}`
     );
-  }, [history, proposal.dao.data.address, proposal.dao.data.type, proposal.id]);
+  }, [history, proposal.dao.data.address, proposal.id]);
 
   return (
     <RowContainer item container alignItems="center" onClick={onClick}>

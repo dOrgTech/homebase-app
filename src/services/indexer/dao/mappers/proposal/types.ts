@@ -13,6 +13,7 @@ import {
 import { extractTransfersData } from ".";
 import { bytes2Char } from "@taquito/tzip16";
 import { BaseDAO } from "services/contracts/baseDAO";
+import { DAOTemplate } from "modules/creator/state";
 
 export enum IndexerStatus {
   CREATED = "created",
@@ -72,6 +73,7 @@ export abstract class Proposal {
     value: BigNumber;
     support: boolean;
   }[];
+  type: DAOTemplate
 
   private cachedStatus:
     | {
@@ -86,6 +88,7 @@ export abstract class Proposal {
     | undefined;
 
   constructor(dto: ProposalDTO, dao: BaseDAO) {
+    this.type = dao.data.type;
     this.id = dto.key;
     this.dao = dao;
     this.voters = dto.votes.map((vote) => ({

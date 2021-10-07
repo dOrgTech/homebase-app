@@ -1,10 +1,10 @@
 import { Network } from '../beacon/context';
 import { DAOTemplate } from "modules/creator/state"
-import { getTokenMetadata } from "services/bakingBad/tokens"
 import { BaseStorageParams } from "services/contracts/baseDAO"
 import { MetadataDeploymentResult } from "services/contracts/metadataCarrier/deploy"
 import { storageParamsToBaseDAODockerArgs } from "./mappers"
 import { GeneratorArgs, BaseDAODockerContractsDTO } from "./types"
+import { getTokenMetadata } from 'services/bakingBad/tokenBalances';
 
 export const API_URL = "https://basedao-dockerized.herokuapp.com/steps"
 

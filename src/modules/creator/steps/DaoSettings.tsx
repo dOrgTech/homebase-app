@@ -417,8 +417,6 @@ const validateForm = (values: OrgSettings) => {
     };
   }
 
-  console.log(values.governanceToken);
-
   if (!values.governanceToken.tokenMetadata) {
     errors.governanceToken = {
       ...errors.governanceToken,
