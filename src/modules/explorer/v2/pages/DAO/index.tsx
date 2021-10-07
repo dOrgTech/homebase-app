@@ -22,6 +22,7 @@ import { CycleDescription } from "../../components/CycleDescription";
 import { UserBadge } from "modules/explorer/components/UserBadge";
 import { UserBalancesBox } from "../../components/UserBalances";
 import { Link } from "react-router-dom";
+import { ContentContainer } from "../../components/ContentContainer";
 
 const IconContainer = styled(SvgIcon)({
   width: 58,
@@ -32,12 +33,7 @@ const ProgressContainer = styled(Box)({
   marginLeft: "-18px",
 });
 
-const Container = styled(Grid)(({ theme }) => ({
-  borderRadius: 8,
-  background: theme.palette.primary.main,
-}));
-
-const HeroContainer = styled(Container)({
+const HeroContainer = styled(ContentContainer)({
   padding: "38px 55px",
 });
 
@@ -54,7 +50,7 @@ const ExecuteButton = styled(Button)({
   marginTop: "-35px",
 });
 
-const StatsContainer = styled(Container)({
+const StatsContainer = styled(ContentContainer)({
   padding: "42px 55px",
 });
 
@@ -65,7 +61,7 @@ const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-const TableContainer = styled(Container)({
+const TableContainer = styled(ContentContainer)({
   width: "100%",
 });
 
