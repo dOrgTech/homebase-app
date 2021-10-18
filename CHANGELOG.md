@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - NFT page
 - NFT details modal
 - NFT transfer dialog and proposal details
-- New visual identity for the whole application
 
 ## [1.0.0] - 2021-09-07
 ### Added
