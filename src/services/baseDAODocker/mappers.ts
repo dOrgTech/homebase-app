@@ -3,10 +3,10 @@ import { xtzToMutez } from "services/contracts/utils";
 import { GeneratorArgs } from "./types";
 import { char2Bytes } from '@taquito/tzip16';
 import { MetadataDeploymentResult } from 'services/contracts/metadataCarrier/deploy';
-import { TokenMetadata } from "services/bakingBad/tokens";
 import { BigNumber } from "bignumber.js";
+import { Token } from "models/Token";
 
-export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult, tokenMetadata: TokenMetadata): GeneratorArgs => ({
+export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, metadata: MetadataDeploymentResult, token: Token): GeneratorArgs => ({
   admin_address: storage.adminAddress,
   guardian_address: storage.guardian,
   governance_token_address: `"${storage.governanceToken.address}"`,
@@ -24,9 +24,9 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   max_quorum_change: `${storage.maxQuorumAmount}n`,
   proposal_flush_level: `${storage.proposalFlushPeriod}n`,
   proposal_expired_level: `${storage.proposalExpiryPeriod}n`,
-  governance_total_supply: `${tokenMetadata.supply}n`,
+  governance_total_supply: `${token.supply}n`,
   period: `${storage.votingPeriod}n`,
-  max_voters: `${tokenMetadata.supply}n`,
+  max_voters: `${token.supply}n`,
   start_level: '100n',
   min_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.minXtzAmount))}mutez`,
   max_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.maxXtzAmount))}mutez`,

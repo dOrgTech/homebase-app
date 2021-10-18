@@ -13,6 +13,7 @@ import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg";
 import { ReactComponent as UserIcon } from "assets/logos/user.svg";
+import { ReactComponent as NFTIcon } from "assets/logos/nft.svg";
 import { useHistory, useLocation } from "react-router-dom";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -165,17 +166,30 @@ export const SideBar: React.FC = () => {
         handler: () => history.push(`/explorer/dao/${daoId}/treasury`),
         name: "treasury",
       },
+      {
+        Icon: NFTIcon,
+        handler: () => history.push(`/explorer/dao/${daoId}/nft`),
+        name: "nft",
+      },
     ];
 
-    if (account) {
-      commonButons.push({
-        Icon: UserIcon,
-        handler: () => history.push(`/explorer/dao/${daoId}/user`),
-        name: "user",
-      });
-    }
-
     if (dao.data.type === "registry") {
+      if (account) {
+        return [
+          ...commonButons,
+          {
+            Icon: RegistryIcon,
+            handler: () => history.push(`/explorer/dao/${daoId}/registry`),
+            name: "registry",
+          },
+          {
+            Icon: UserIcon,
+            handler: () => history.push(`/explorer/dao/${daoId}/user`),
+            name: "user",
+          }
+        ];
+      }
+
       return [
         ...commonButons,
         {
@@ -184,7 +198,16 @@ export const SideBar: React.FC = () => {
           name: "registry",
         },
       ];
+      
     } else {
+      if (account) {
+        commonButons.push({
+          Icon: UserIcon,
+          handler: () => history.push(`/explorer/dao/${daoId}/user`),
+          name: "user",
+        })
+      }
+
       return commonButons;
     }
   }, [account, dao, daoId, history]);

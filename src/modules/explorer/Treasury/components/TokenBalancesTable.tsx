@@ -41,7 +41,9 @@ export const TokenTable: React.FC = () => {
       {tokenHoldings && tokenHoldings.length
         ? tokenHoldings.map((holding, i) => (
             <GenericTableContainer key={`holding-${i}`}>
-              <TreasuryTableRow {...holding} />
+              <TreasuryTableRow
+                {...{ ...holding.token, balance: holding.balance }}
+              />
             </GenericTableContainer>
           ))
         : null}

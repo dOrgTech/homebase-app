@@ -22,6 +22,7 @@ import { User } from "./pages/User";
 import { SideBar } from "./components";
 import { Navbar } from "modules/common/Toolbar";
 import { UserBalancesWidget } from "./components/UserBalancesWidget";
+import { NFTs } from "./pages/NFTs";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -108,10 +109,7 @@ export const DAORouter = (): JSX.Element => {
       >
         <SideBar />
         <Switch>
-          <DAORoute path={`${match.url}/proposal/treasury/:proposalId`}>
-            <ProposalDetails />
-          </DAORoute>
-          <DAORoute path={`${match.url}/proposal/registry/:proposalId`}>
+          <DAORoute path={`${match.url}/proposal/:proposalId`}>
             <ProposalDetails />
           </DAORoute>
           <DAORoute path={`${match.url}/proposals`}>
@@ -119,6 +117,9 @@ export const DAORouter = (): JSX.Element => {
           </DAORoute>
           <DAORoute path={`${match.url}/treasury`}>
             <Holdings />
+          </DAORoute>
+          <DAORoute path={`${match.url}/nft`}>
+            <NFTs/>
           </DAORoute>
           <DAORoute path={`${match.url}/registry`}>
             <Registry />

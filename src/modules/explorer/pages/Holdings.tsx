@@ -15,7 +15,7 @@ export const Holdings: React.FC = () => {
   return (
     <>
       <Grid item xs>
-        <TemplateHeader template="treasury" />
+        <TemplateHeader template="treasury" showSendXtz />
         {isMobileSmall ? (
           <>
             <AppTabBar

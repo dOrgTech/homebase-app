@@ -1,5 +1,6 @@
 import { Grid, styled, Theme, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/styles";
+import BigNumber from "bignumber.js";
 import hexToRgba from "hex-to-rgba";
 import React, { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -65,9 +66,9 @@ export const UserBalancesWidget: React.FC = () => {
 
     return (
       found || {
-        available_balance: "0",
-        pending_balance: "0",
-        staked: "0",
+        available_balance: new BigNumber(0),
+        pending_balance: new BigNumber(0),
+        staked: new BigNumber(0),
       }
     );
   }, [account, ledger]);

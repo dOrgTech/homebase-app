@@ -11,8 +11,7 @@ import {
 } from "@material-ui/core";
 import { TemplateTableRowContainer } from "modules/explorer/components/TemplateTableRowContainer";
 import { BigNumber } from "bignumber.js";
-import { RegistryProposalFormContainer } from "modules/explorer/components/ProposalForm/registryProposalForm";
-import { TreasuryProposalFormContainer } from "modules/explorer/components/ProposalForm/treasuryProposalForm";
+import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
 import { useDAOID } from "modules/explorer/daoRouter";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
@@ -104,17 +103,7 @@ export const TreasuryTableRow: React.FC<{
         </Grid> */}
       </TemplateTableRowContainer>
       {dao ? (
-        dao.data.type === "registry" ? (
-          <RegistryProposalFormContainer
-            open={open}
-            handleClose={handleCloseModal}
-          />
-        ) : (
-          <TreasuryProposalFormContainer
-            open={open}
-            handleClose={handleCloseModal}
-          />
-        )
+        <ProposalFormContainer open={open} handleClose={handleCloseModal}/>
       ) : null}
     </>
   );

@@ -5,7 +5,7 @@ import {
 } from "services/contracts/baseDAO/registryDAO/types";
 import { formatUnits, xtzToMutez } from "services/contracts/utils";
 import BigNumber from "bignumber.js";
-import { TransferParams } from "services/contracts/baseDAO";
+import { FA2TransferParams, TransferParams, XTZTransferParams } from "services/contracts/baseDAO";
 
 export const extractTransfersData = (
   transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]
@@ -37,7 +37,7 @@ export const extractTransfersData = (
   return transfers;
 };
 
-const mapXTZTransfersArgs = (transfer: TransferParams) => {
+const mapXTZTransfersArgs = (transfer: XTZTransferParams) => {
   return {
     xtz_transfer_type: {
       amount: xtzToMutez(new BigNumber(transfer.amount)).toNumber(),
@@ -46,7 +46,7 @@ const mapXTZTransfersArgs = (transfer: TransferParams) => {
   };
 };
 
-const mapFA2TransfersArgs = (transfer: TransferParams, daoAddress: string) => {
+const mapFA2TransfersArgs = (transfer: FA2TransferParams, daoAddress: string) => {
   return {
     token_transfer_type: {
       contract_address: transfer.asset.contract,

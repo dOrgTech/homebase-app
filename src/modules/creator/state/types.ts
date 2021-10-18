@@ -1,4 +1,4 @@
-import { TokenMetadata } from "services/bakingBad/tokens";
+import { Token } from "models/Token";
 
 export type OrgSettings = {
   name: string;
@@ -9,7 +9,7 @@ export type OrgSettings = {
   governanceToken: {
     address: string;
     tokenId: string;
-    tokenMetadata?: TokenMetadata
+    tokenMetadata?: Token
   }
 };
 
