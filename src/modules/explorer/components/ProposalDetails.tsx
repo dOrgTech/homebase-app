@@ -37,11 +37,11 @@ import {
   TreasuryProposal,
 } from "services/indexer/dao/mappers/proposal/types";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
-import { useDAOID } from "../daoRouter";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { TransferBadge } from "../Treasury/components/TransferBadge";
 import { HighlightedBadge } from "./styled/HighlightedBadge";
 import { DAOHolding } from "services/bakingBad/tokenBalances";
+import { useDAOID } from "../v2/pages/DAO/router";
 
 const StyledContainer = styled(withTheme(Grid))((props) => ({
   background: props.theme.palette.primary.main,
@@ -118,7 +118,7 @@ export const ProposalDetails: React.FC = () => {
     proposalId: string;
   }>();
   const daoId = useDAOID();
-  console.log(daoId, " ", proposalId)
+  console.log("DAOID: " + daoId, " ", proposalId)
   const theme = useTheme();
   const { data: proposal } = useProposal(daoId, proposalId);
   const { data: dao, cycleInfo } = useDAO(daoId);
@@ -179,6 +179,8 @@ export const ProposalDetails: React.FC = () => {
 
   const proposalCycle = proposal ? proposal.period : "-";
   const daoName = dao ? dao.data.name : "";
+
+  console.log("HEYHIKLN " + proposal)
 
   return (
     <>

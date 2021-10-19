@@ -12,8 +12,8 @@ import { generateStorageContract } from "services/baseDAODocker";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
-import { LedgerDTO } from "services/indexer/types";
 import { Token } from "models/Token";
+import { Ledger } from "services/indexer/types";
 
 interface DeployParams {
   params: MigrationParams;

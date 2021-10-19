@@ -280,7 +280,7 @@ export const DAO: React.FC = () => {
               data &&
               proposals?.map((p, i) => (
                 <Grid item xs={12} key={`proposal-${i}`}>
-                  <Link to={`proposal/${data.data.type}/${p.id}`}>
+                  <Link to={`proposal/${p.id}`}>
                     <ProposalItem
                       proposal={p}
                       status={p.getStatus(cycleInfo.currentLevel).status}
@@ -343,7 +343,8 @@ export const DAO: React.FC = () => {
                           <Grid
                             container
                             alignItems="center"
-                            style={{ gap: 27 }}
+                            style={{ gap: 21 }}
+                            wrap="nowrap"
                           >
                             <Grid item>
                               <Typography color="secondary">{i + 1}</Typography>

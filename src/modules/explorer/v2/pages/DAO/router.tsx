@@ -9,18 +9,18 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 
 import { DAO } from "modules/explorer/v2/pages/DAO";
-import { Holdings } from "modules/explorer/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
-import { Box, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
+import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { Navbar } from "modules/common/Toolbar";
 import { NotFound } from "modules/explorer/components/NotFound";
 import { NotIndexed } from "modules/explorer/components/NotIndexed";
-import { ProposalDetails } from "modules/explorer/components/ProposalDetails";
 import { UserBalancesWidget } from "modules/explorer/components/UserBalancesWidget";
 import { User } from "modules/explorer/pages/User";
 import { Registry } from "modules/explorer/Registry/pages/Registry";
+import { ProposalDetails } from "../ProposalDetails";
+import { Treasury } from "../Treasury";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -92,8 +92,6 @@ export const DAORouter = (): JSX.Element => {
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { id: daoId } = useParams<{ id: string }>();
 
-  console.log(daoId)
-
   return (
     <DAOProvider daoId={daoId}>
       <Navbar mode="explorer">
@@ -107,17 +105,14 @@ export const DAORouter = (): JSX.Element => {
         direction={isMobileExtraSmall ? "column" : "row"}
       >
         <Switch>
-          <DAORoute path={`${match.url}/proposal/treasury/:proposalId`}>
-            <ProposalDetails />
-          </DAORoute>
-          <DAORoute path={`${match.url}/proposal/registry/:proposalId`}>
+          <DAORoute path={`${match.url}/proposal/:proposalId`}>
             <ProposalDetails />
           </DAORoute>
           <DAORoute path={`${match.url}/proposals`}>
             <Proposals />
           </DAORoute>
           <DAORoute path={`${match.url}/treasury`}>
-            <Holdings />
+            <Treasury />
           </DAORoute>
           <DAORoute path={`${match.url}/registry`}>
             <Registry />

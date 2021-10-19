@@ -39,6 +39,9 @@ const Cursor = styled(Typography)({
   textTransform: "uppercase",
 });
 
+const localizedFormat = require("dayjs/plugin/localizedFormat");
+dayjs.extend(localizedFormat);
+
 export const TreasuryHistoryRow: React.FC<{
   name: string;
   amount: BigNumber;
@@ -46,8 +49,7 @@ export const TreasuryHistoryRow: React.FC<{
   date: string;
   hash: string;
 }> = ({ name, amount, recipient, date, hash }) => {
-  const localizedFormat = require("dayjs/plugin/localizedFormat");
-  dayjs.extend(localizedFormat);
+
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const { network } = useTezos();

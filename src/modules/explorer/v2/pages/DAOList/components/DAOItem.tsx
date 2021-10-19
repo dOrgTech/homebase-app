@@ -1,4 +1,5 @@
 import { styled, Grid, Theme, Typography, Link } from "@material-ui/core";
+import { ReactFitty } from "react-fitty";
 import React from "react";
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
@@ -22,9 +23,13 @@ const SymbolText = styled(Typography)({
   letterSpacing: "-0.01em",
 });
 
-const NameText = styled(Typography)({
-  fontSize: "35px",
-});
+const NameText = styled(Typography)(({ theme }) => ({
+  whiteSpace: "nowrap",
+  textOverflow: "ellipsis",
+  color: theme.palette.text.primary,
+  overflow: "hidden",
+  fontSize: 35
+}));
 
 const NumberText = styled(Typography)({
   fontSize: "28px",
@@ -47,11 +52,11 @@ export const DAOItem: React.FC<{
   return (
     <Link underline="none" href={`dao/${dao.id}`}>
       <Container container justifyContent="space-between" style={{ gap: 16 }}>
-        <Grid item>
+        <Grid item xs={7}>
           <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
           <NameText color="textPrimary">{dao.name}</NameText>
         </Grid>
-        <Grid item>
+        <Grid item xs>
           <NumberText color="textPrimary">
             {dao.votingAddresses.length}
           </NumberText>

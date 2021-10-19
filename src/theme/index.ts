@@ -286,5 +286,53 @@ export const theme = createMuiTheme({
         display: "none",
       },
     },
+    MuiTable: {
+      root: {
+        borderRadius: "8px",
+        backgroundColor: "#24282B"
+      }
+    },
+    MuiTableHead: {
+      root: {
+        minHeight: 58,
+        fontSize: 16,
+        fontWeight: 400,
+        letterSpacing: "-0.01em",
+        color: "#FFFFFF"
+      }
+    },
+    MuiTableFooter: {
+      root: {
+        minHeight: 60,
+        fontSize: 16,
+        fontWeight: 400,
+        letterSpacing: "-0.01em",
+        color: "##81FEB7",
+        borderTop: "0.3px solid #7D8C8B"
+      }
+    },
+    MuiTableBody: {
+      "root": {
+        "& > *": {
+          borderTop: "0.3px solid #7D8C8B",
+          minHeight: 90,
+        }
+      }
+    },
+    MuiTableCell: {
+      "root": {
+        borderBottom: "unset"
+      }
+    },
+    MuiTableRow: {
+      root: {
+          '& th:first-child, & td:first-child': {
+            paddingLeft: 46,
+          },
+          '& th:last-child, & td:last-child': {
+            paddingRight: 46,
+          },
+      }
+    }
   },
 });

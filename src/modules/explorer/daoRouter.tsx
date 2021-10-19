@@ -9,7 +9,6 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 
 import { DAO } from "modules/explorer/pages/DAO";
-import { Holdings } from "modules/explorer/pages/Holdings";
 import { Proposals } from "modules/explorer/pages/Proposals";
 import { Registry } from "./Registry/pages/Registry";
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
@@ -23,6 +22,7 @@ import { SideBar } from "./components";
 import { Navbar } from "modules/common/Toolbar";
 import { UserBalancesWidget } from "./components/UserBalancesWidget";
 import { NFTs } from "./pages/NFTs";
+import { Treasury } from "./v2/pages/Treasury";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -96,7 +96,6 @@ export const DAORouter = (): JSX.Element => {
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { id: daoId } = useParams<{ id: string }>();
-  console.log(daoId)
 
   return (
     <DAOProvider daoId={daoId}>
@@ -119,7 +118,7 @@ export const DAORouter = (): JSX.Element => {
             <Proposals />
           </DAORoute>
           <DAORoute path={`${match.url}/treasury`}>
-            <Holdings />
+            <Treasury />
           </DAORoute>
           <DAORoute path={`${match.url}/nft`}>
             <NFTs/>
