@@ -18,9 +18,9 @@ import { NotFound } from "modules/explorer/components/NotFound";
 import { NotIndexed } from "modules/explorer/components/NotIndexed";
 import { UserBalancesWidget } from "modules/explorer/components/UserBalancesWidget";
 import { User } from "modules/explorer/pages/User";
-import { Registry } from "modules/explorer/Registry/pages/Registry";
 import { ProposalDetails } from "../ProposalDetails";
 import { Treasury } from "../Treasury";
+import { Registry } from "../Registry";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,

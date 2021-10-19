@@ -38,7 +38,7 @@ const createData = (transfer: TransferWithBN) => {
   };
 };
 
-const titles = ["Token", "Date", "Recipient", "Amount"];
+const titles = ["Transfer History", "Date", "Recipient", "Amount"];
 
 export const TransfersTable: React.FC = () => {
   const daoId = useDAOID();

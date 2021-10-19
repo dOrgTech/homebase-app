@@ -29,7 +29,7 @@ const createData = (daoHolding: DAOHolding) => {
   return { symbol: daoHolding.token.symbol, address: daoHolding.token.contract, amount: daoHolding.balance.dp(10).toString() };
 };
 
-const titles = ["Symbol", "Address", "Balance"];
+const titles = ["Token Balances", "Address", "Balance"];
 
 export const BalancesTable: React.FC = () => {
   const daoId = useDAOID();
@@ -107,7 +107,7 @@ export const BalancesTable: React.FC = () => {
           </TableCell>
           <TableCell>N/A</TableCell>
           <TableCell>{tezosBalance.toString()}</TableCell>
-          <TableCell>
+          <TableCell align="right">
             <Button
               variant="contained"
               color="secondary"
@@ -126,7 +126,7 @@ export const BalancesTable: React.FC = () => {
           </TableCell>
           <TableCell>{row.address}</TableCell>
           <TableCell>{row.amount}</TableCell>
-          <TableCell>
+          <TableCell align="right">
             {" "}
             <Button
               variant="contained"
