@@ -1,4 +1,4 @@
-import { Grid, styled, Theme, Typography } from "@material-ui/core";
+import { Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core";
 import { ReactComponent as HouseIcon } from "assets/logos/home.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
@@ -11,6 +11,7 @@ import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
+import { debounce } from "../utils/debounce";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -82,6 +83,49 @@ const getPages = (daoId: string): Page[] => [
   },
 ];
 
+const StyledBottomBar = styled(Grid)(
+  ({ theme, visible }: { theme: Theme; visible: boolean }) => ({
+    position: "fixed",
+    height: 55,
+    bottom: visible ? 0 : -55,
+    backgroundColor: theme.palette.primary.main,
+    borderTop: `2px solid ${theme.palette.primary.light}`,
+    zIndex: 10000,
+    width: "100%",
+    transition: "bottom 0.5s",
+  })
+);
+
+const BottomNavBar: React.FC = ({ children }) => {
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = debounce(() => {
+      const currentScrollPos = window.pageYOffset;
+
+      setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+
+      setPrevScrollPos(currentScrollPos);
+    }, 100);
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [prevScrollPos, visible]);
+
+  return (
+    <StyledBottomBar
+      container
+      direction={"row"}
+      justify={"space-evenly"}
+      visible={visible}
+    >
+      {children}
+    </StyledBottomBar>
+  );
+};
+
 export const NavigationMenu: React.FC = () => {
   const [pages, setPages] = useState<Page[]>([]);
   const { account } = useTezos();
@@ -89,7 +133,8 @@ export const NavigationMenu: React.FC = () => {
   const { data: dao } = useDAO(daoId);
   const path = useLocation();
   const pathId = path.pathname.split("/").slice(-1)[0];
-  console.log(pathId);
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     if (dao) {
@@ -110,6 +155,7 @@ export const NavigationMenu: React.FC = () => {
   }, [account, dao, daoId]);
 
   return (
+    !isMobileSmall ?
     <Container container justifyContent="center" style={{ gap: 92 }}>
       {pages.map((page, i) => (
         <PageItem key={`page-${i}`} item alignItems="center">
@@ -136,6 +182,22 @@ export const NavigationMenu: React.FC = () => {
           </Link>
         </PageItem>
       ))}
-    </Container>
+    </Container>: <BottomNavBar>{pages.map((page, i) => (
+        <PageItem key={`page-${i}`} item alignItems="center">
+          <Link to={page.href}>
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Grid item>
+                <IconContainer isSelected={pathId === page.pathId}>
+                  <page.icon />
+                </IconContainer>
+              </Grid>
+            </Grid>
+          </Link>
+        </PageItem>
+      ))}</BottomNavBar>
   );
 };
