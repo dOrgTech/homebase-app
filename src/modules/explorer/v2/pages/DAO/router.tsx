@@ -9,7 +9,6 @@ import {
 import React, { useContext, useEffect, useState } from "react";
 
 import { DAO } from "modules/explorer/v2/pages/DAO";
-import { Proposals } from "modules/explorer/pages/Proposals";
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -21,6 +20,7 @@ import { User } from "modules/explorer/pages/User";
 import { ProposalDetails } from "../ProposalDetails";
 import { Treasury } from "../Treasury";
 import { Registry } from "../Registry";
+import { Proposals } from "../Proposals";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
