@@ -69,6 +69,7 @@ export const Registry: React.FC = () => {
   const onClickItem = (item: { key: string; value: string }) => {
     setDefaultData({
       registryUpdateForm: {
+        isBatch: false,
         list: [item],
       },
     });

@@ -19,7 +19,6 @@ import { SendButton } from "./ProposalFormSendButton";
 import { ProposalFormListItem } from "./styled/ProposalFormListItem";
 import { TabPanel } from "./TabPanel";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { useDAOID } from "modules/explorer/daoRouter";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { DAOTemplate } from "modules/creator/state";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
@@ -31,6 +30,7 @@ import {
   NFTTransferFormValues,
 } from "../Treasury/components/NFTTransfer";
 import { Token } from "models/Token";
+import { useDAOID } from "../v2/pages/DAO/router";
 
 const SwitchContainer = styled(Grid)({
   textAlign: "end",

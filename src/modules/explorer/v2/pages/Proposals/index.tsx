@@ -26,8 +26,6 @@ export const Proposals: React.FC = () => {
   const { data, cycleInfo } = useDAO(daoId);
   const { mutate } = useFlush();
 
-  console.log(cycleInfo)
-
   const { data: proposals } = useProposals(daoId);
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
 
@@ -66,7 +64,7 @@ export const Proposals: React.FC = () => {
             <Button
               variant="contained"
               color="secondary"
-              onClick={onFlush}
+              onClick={handleNewProposal}
             >
               New Proposal
             </Button>

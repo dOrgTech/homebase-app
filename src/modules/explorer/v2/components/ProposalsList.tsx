@@ -27,6 +27,7 @@ interface Props {
   proposals: Proposal[];
   title: string;
   showFooter?: boolean;
+  rightItem?: (proposal: Proposal) => React.ReactElement;
 }
 
 export const ProposalsList: React.FC<Props> = ({
@@ -34,6 +35,7 @@ export const ProposalsList: React.FC<Props> = ({
   proposals,
   title,
   showFooter,
+  rightItem,
 }) => {
   const [open, setopen] = useState(true);
 
@@ -63,25 +65,28 @@ export const ProposalsList: React.FC<Props> = ({
           ) : null}
         </TableHeader>
         {proposals.length ? (
-          <Grid
-            item
-            container
-            component={Collapse}
-            in={open}
-            timeout="auto"
-            unmountOnExit
-            direction="column"
-          >
-            {proposals.map((p, i) => (
-              <Grid item xs={12} key={`proposal-${i}`}>
-                <Link to={`proposal/${p.id}`}>
-                  <ProposalItem
-                    proposal={p}
-                    status={p.getStatus(currentLevel).status}
-                  />
-                </Link>
-              </Grid>
-            ))}
+          <Grid item>
+            <Grid
+              container
+              component={Collapse}
+              in={open}
+              timeout="auto"
+              unmountOnExit
+              direction="column"
+            >
+              {proposals.map((p, i) => (
+                <Grid item key={`proposal-${i}`}>
+                  <Link to={`proposal/${p.id}`}>
+                    <ProposalItem
+                      proposal={p}
+                      status={p.getStatus(currentLevel).status}
+                    >
+                      {rightItem ? rightItem(p) : null}
+                    </ProposalItem>
+                  </Link>
+                </Grid>
+              ))}
+            </Grid>
           </Grid>
         ) : (
           <ProposalsFooter

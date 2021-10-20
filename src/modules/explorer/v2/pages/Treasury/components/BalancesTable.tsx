@@ -47,6 +47,7 @@ export const BalancesTable: React.FC = () => {
   const onOpenXTZTransferModal = () => {
     setDefaultValues({
       transferForm: {
+        isBatch: false,
         transfers: [
           {
             recipient: "",
@@ -143,6 +144,6 @@ export const BalancesTable: React.FC = () => {
       open={openTransfer}
       handleClose={onCloseTransfer}
       defaultValues={defaultValues}
-      defaultTab={1}
+      defaultTab={0}
     /></>)
 }

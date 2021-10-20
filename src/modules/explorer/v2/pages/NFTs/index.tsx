@@ -72,6 +72,7 @@ export const NFTs: React.FC = () => {
   const onOpenTransferModal = (nft: NFTModel) => {
     setDefaultValues({
       nftTransferForm: {
+        isBatch: false,
         transfers: [
           {
             recipient: account,

@@ -1,11 +1,6 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Grid,
-  GridProps,
-  Theme,
   Typography,
 } from "@material-ui/core";
 import { styled } from "@material-ui/styles";
@@ -21,23 +16,13 @@ import {
   Proposal,
   ProposalStatus,
 } from "services/indexer/dao/mappers/proposal/types";
-import RemoveIcon from "@material-ui/icons/Remove";
 import { ProfileAvatar } from "../components/styled/ProfileAvatar";
 import { UserProfileName } from "../components/UserProfileName";
 import { useDAOID } from "modules/explorer/v2/pages/DAO/router";
 import { FreezeDialog } from "../components/FreezeDialog";
 import { UserBalances } from "../v2/components/UserBalances";
 import { StatusBadge } from "../components/StatusBadge";
-
-const ContentBlockHeader = styled(AccordionSummary)(
-  ({ theme }: { theme: Theme }) => ({
-    padding: "12px 54px",
-    "&.Mui-expanded": {
-      padding: "4px 54px",
-    },
-    color: theme.palette.text.secondary,
-  })
-);
+import { ProposalsList } from "../v2/components/ProposalsList";
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -65,22 +50,6 @@ const ProposalTitle = styled(Typography)({
   fontWeight: "bold",
 });
 
-const HeaderText = styled(Typography)({
-  fontWeight: "bold",
-  fontSize: 18,
-});
-
-const StyledAccordion = styled(Accordion)({
-  background: "#24282B",
-  boxSizing: "border-box",
-  borderRadius: 8,
-  boxShadow: "none",
-});
-
-interface ContentBlockProps extends GridProps {
-  headerText: string;
-}
-
 const StatusText = styled(Typography)({
   textTransform: "uppercase",
   marginLeft: 10,
@@ -91,38 +60,6 @@ const StatusText = styled(Typography)({
 const VotedText = styled(Typography)({
   fontSize: 18,
 });
-
-const StyledAccordionDetails = styled(AccordionDetails)({
-  padding: 0,
-});
-
-const ContentBlock: React.FC<ContentBlockProps> = ({
-  headerText,
-  children,
-  ...props
-}) => {
-  return (
-    <StyledAccordion defaultExpanded>
-      <ContentBlockHeader
-        expandIcon={<RemoveIcon />}
-        IconButtonProps={{
-          color: "inherit",
-        }}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <Grid container alignItems="center">
-          <Grid item>
-            <HeaderText color="textPrimary">{headerText}</HeaderText>
-          </Grid>
-        </Grid>
-      </ContentBlockHeader>
-      <StyledAccordionDetails>
-        <Grid {...props}>{children}</Grid>
-      </StyledAccordionDetails>
-    </StyledAccordion>
-  );
-};
 
 export const ProposalItem: React.FC<{
   proposal: Proposal;
@@ -166,7 +103,6 @@ export const ProposalItem: React.FC<{
 
 export const User: React.FC = () => {
   const { account } = useTezos();
-  console.log(account);
   const daoId = useDAOID();
   const { cycleInfo } = useDAO(daoId);
   const { data: proposals } = useProposals(daoId);
@@ -174,7 +110,7 @@ export const User: React.FC = () => {
 
   useEffect(() => {
     if (!account) {
-      /*history.push(`../${daoId}`);*/
+      history.push(`../${daoId}`);
     }
   }, [account, daoId, history]);
 
@@ -193,18 +129,16 @@ export const User: React.FC = () => {
       return [];
     }
 
-    return proposals
-      .filter((p) =>
-        p.voters
-          .map((voter) => voter.address.toLowerCase())
-          .includes(account.toLowerCase())
-      )
-      .map((p) => ({
-        proposal: p,
-        voteDecision: p.voters.find((voter) => voter.address.toLowerCase())
-          ?.support as boolean,
-      }));
+    return proposals.filter((p) =>
+      p.voters
+        .map((voter) => voter.address.toLowerCase())
+        .includes(account.toLowerCase())
+    );
   }, [account, proposals]);
+
+  const getVoteDecision = (proposal: Proposal) =>
+    proposal.voters.find((voter) => voter.address.toLowerCase())
+      ?.support as boolean;
 
   return (
     <MainContainer>
@@ -241,48 +175,22 @@ export const User: React.FC = () => {
         </BalancesHeader>
         <Grid item>
           {proposalsCreated && cycleInfo && (
-            <ContentBlock
-              container
-              direction="column"
-              headerText="Proposals Posted"
-            >
-              {proposalsCreated.map((proposal, i) => (
-                <ProposalItem
-                  key={`posted-proposal-${i}`}
-                  proposal={proposal}
-                  status={proposal.getStatus(cycleInfo.currentLevel).status}
-                >
-                  {/* <Grid container>
-                    <Grid item>
-                      <CheckCircleOutlined
-                        fontSize={"large"}
-                        color="secondary"
-                      />
-                    </Grid>
-                    <Grid item>
-                      <StatusText color="textPrimary">
-                        {proposal.getStatus(cycleInfo.currentLevel).status}
-                      </StatusText>
-                    </Grid>
-                  </Grid> */}
-                </ProposalItem>
-              ))}
-            </ContentBlock>
+            <ProposalsList
+              currentLevel={cycleInfo.currentLevel}
+              proposals={proposalsCreated}
+              title={"Proposals Posted"}
+            />
           )}
         </Grid>
         <Grid item>
           {proposalsVoted && cycleInfo && (
-            <ContentBlock
-              container
-              direction="column"
-              headerText="Voting History"
-            >
-              {proposalsVoted.map(({ proposal, voteDecision }, i) => (
-                <ProposalItem
-                  key={`posted-proposal-${i}`}
-                  proposal={proposal}
-                  status={proposal.getStatus(cycleInfo.currentLevel).status}
-                >
+            <ProposalsList
+              title={"Voting History"}
+              currentLevel={cycleInfo.currentLevel}
+              proposals={proposalsVoted}
+              rightItem={(proposal) => {
+                const voteDecision = getVoteDecision(proposal);
+                return (
                   <Grid container>
                     <Grid item>
                       <VotedText color="textPrimary">Voted</VotedText>
@@ -293,9 +201,9 @@ export const User: React.FC = () => {
                       </StatusText>
                     </Grid>
                   </Grid>
-                </ProposalItem>
-              ))}
-            </ContentBlock>
+                );
+              }}
+            />
           )}
         </Grid>
       </Grid>
