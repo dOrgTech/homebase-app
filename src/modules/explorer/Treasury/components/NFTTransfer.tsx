@@ -71,6 +71,14 @@ const AddButton = styled(Paper)({
   cursor: "pointer",
 });
 
+const AutoCompletePaper = styled(Paper)({
+  background: "#24282B",
+
+  // "& li:hover": {
+  //   background: "red"
+  // }
+})
+
 const styles = {
   visible: {
     display: "none",
@@ -193,7 +201,7 @@ export const NFTTransferForm: React.FC = () => {
       <DialogContentText id="alert-dialog-description">
         <ProposalFormListItem container direction="row">
           <Grid item xs={6}>
-            <Typography variant="subtitle1" color="textSecondary">
+            <Typography variant="subtitle2" color="textPrimary">
               Batch Transfer?
             </Typography>
           </Grid>
@@ -222,7 +230,7 @@ export const NFTTransferForm: React.FC = () => {
                       : undefined
                   }
                 >
-                  <Typography variant="subtitle1" color="textSecondary">
+                  <Typography variant="subtitle2" color="textPrimary">
                     #{index + 1}
                   </Typography>
                 </TransferActive>
@@ -246,7 +254,7 @@ export const NFTTransferForm: React.FC = () => {
               <>
                 <ProposalFormListItem container direction="row">
                   <Grid item xs={6}>
-                    <Typography variant="subtitle1" color="textSecondary">
+                    <Typography variant="subtitle2" color="textPrimary">
                       Recipient
                     </Typography>
                   </Grid>
@@ -276,7 +284,7 @@ export const NFTTransferForm: React.FC = () => {
                 <AmountItem container direction="row" alignItems="center">
                   <Grid item xs={12}>
                     <Grid container direction="column">
-                      <Typography variant="subtitle1" color="textSecondary">
+                      <Typography variant="subtitle2" color="textPrimary">
                         NFT ID
                       </Typography>
                       <Controller
@@ -285,6 +293,7 @@ export const NFTTransferForm: React.FC = () => {
                         control={control}
                         render={({ field: { onChange, ...props } }) => (
                           <AutoCompleteField
+                            PaperComponent={AutoCompletePaper}
                             options={nftOptions}
                             getOptionLabel={(option) =>
                               `${(option as NFTModel).symbol}#${

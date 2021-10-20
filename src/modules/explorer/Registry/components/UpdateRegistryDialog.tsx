@@ -134,7 +134,7 @@ export const UpdateRegistryDialog: React.FC = () => {
       <DialogContentText>
         <ProposalFormListItem container direction="row">
           <Grid item xs={6}>
-            <Typography variant="subtitle1" color="textSecondary">
+            <Typography variant="subtitle2" color="textPrimary">
               Batch Update?
             </Typography>
           </Grid>
@@ -167,7 +167,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                               : undefined
                           }
                         >
-                          <Typography variant="subtitle1" color="textSecondary">
+                          <Typography variant="subtitle2" color="textPrimary">
                             #{index + 1}
                           </Typography>
                         </TransferActive>
@@ -187,7 +187,7 @@ export const UpdateRegistryDialog: React.FC = () => {
 
                 <ProposalFormListItem container direction="row">
                   <Grid item xs={6}>
-                    <Typography variant="subtitle1" color="textSecondary">
+                    <Typography variant="subtitle2" color="textPrimary">
                       Key
                     </Typography>
                   </Grid>
@@ -224,7 +224,7 @@ export const UpdateRegistryDialog: React.FC = () => {
                       justify="space-between"
                     >
                       <Grid item xs={12}>
-                        <Typography variant="subtitle1" color="textSecondary">
+                        <Typography variant="subtitle2" color="textPrimary">
                           Value
                         </Typography>
                       </Grid>

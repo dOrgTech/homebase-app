@@ -105,7 +105,7 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
               <Grid container justifyContent="flex-end">
                 <Grid item>
                   <CloseButton onClick={() => (onClose as () => void)()}>
-                    <CloseIcon />
+                    <CloseIcon htmlColor="#FFF" />
                   </CloseButton>
                 </Grid>
               </Grid>
@@ -113,7 +113,7 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
             <Content>
               <Grid container direction="column" style={{ gap: 32 }}>
                 <Grid item>
-                  <Grid container style={{ gap: 60 }}>
+                  <Grid container justifyContent="space-between" style={{ gap: 32 }}>
                     <NFTContainer item>
                       <NFT
                         qmHash={nft.artifact_hash}
@@ -124,21 +124,21 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
                     <Grid item>
                       <Grid container direction="column" style={{ gap: 26 }}>
                         <Grid item>
-                          <TitleText color="textSecondary">
+                          <TitleText color="textPrimary">
                             {nft.name}
                           </TitleText>
-                          <Typography color="textSecondary" variant="body1">
+                          <Typography color="textPrimary" variant="body1">
                             {nft.symbol}#{nft.token_id} •{" "}
                             {nft.formats[0].mimeType}
                           </Typography>
                         </Grid>
                         <Grid item>
-                          <Typography color="textSecondary" variant="body1">
+                          <Typography color="textPrimary" variant="body1">
                             {nft.description}
                           </Typography>
                         </Grid>
                         <Grid item>
-                          <Button variant="outlined" color="secondary" onClick={(e) => onClick(e, nft)}>
+                          <Button variant="contained" color="secondary" onClick={(e) => onClick(e, nft)}>
                             PROPOSE TRANSFER
                           </Button>
                         </Grid>
@@ -147,13 +147,13 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
                   </Grid>
                 </Grid>
                 <Grid item>
-                  <SubtitleText color="textSecondary" variant="body1">
+                  <SubtitleText color="textPrimary" variant="body1">
                     Creator
                   </SubtitleText>
                   <UserBadge address={nft.creators[0]} size={35} />
                 </Grid>
                 <Grid item>
-                  <SubtitleText color="textSecondary" variant="body1">
+                  <SubtitleText color="textPrimary" variant="body1">
                     Tags
                   </SubtitleText>
                   <Grid container style={{ gap: 12 }}>

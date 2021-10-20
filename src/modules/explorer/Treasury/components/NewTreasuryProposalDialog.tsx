@@ -126,6 +126,14 @@ const AmountText = styled(Typography)({
   marginRight: 10,
 });
 
+const AutoCompletePaper = styled(Paper)({
+  background: "#24282B",
+
+  // "& li:hover": {
+  //   background: "red"
+  // }
+})
+
 const AmountContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     paddingRight: 0,
@@ -251,7 +259,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
       <DialogContentText id="alert-dialog-description">
         <ProposalFormListItem container direction="row">
           <Grid item xs={6}>
-            <Typography variant="subtitle1" color="textSecondary">
+            <Typography variant="subtitle2" color="textPrimary">
               Batch Transfer?
             </Typography>
           </Grid>
@@ -280,7 +288,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                       : undefined
                   }
                 >
-                  <Typography variant="subtitle1" color="textSecondary">
+                  <Typography variant="subtitle2" color="textPrimary">
                     #{index + 1}
                   </Typography>
                 </TransferActive>
@@ -304,7 +312,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
               <>
                 <ProposalFormListItem container direction="row">
                   <Grid item xs={6}>
-                    <Typography variant="subtitle1" color="textSecondary">
+                    <Typography variant="subtitle2" color="textPrimary">
                       Recipient
                     </Typography>
                   </Grid>
@@ -334,7 +342,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                 <AmountItem container direction="row" alignItems="center">
                   <Grid item xs={isMobileSmall ? 12 : 5}>
                     <Grid container direction="column">
-                      <Typography variant="subtitle1" color="textSecondary">
+                      <Typography variant="subtitle2" color="textPrimary">
                         Asset
                       </Typography>
                       <Controller
@@ -344,6 +352,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                         render={({ field: { onChange, ...props } }) => (
                           <AutoCompleteField
                             options={assetOptions || []}
+                            PaperComponent={AutoCompletePaper}
                             getOptionLabel={(option) =>
                               (
                                 option as
@@ -368,8 +377,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                   <Grid item xs={isMobileSmall ? 12 : 5}>
                     <Grid container direction="column">
                       <AmountSmallText
-                        variant="subtitle1"
-                        color="textSecondary"
+                        variant="subtitle2"
+                        color="textPrimary"
                       >
                         Amount
                       </AmountSmallText>
@@ -393,8 +402,8 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 endAdornment: (
                                   <InputAdornment position="start">
                                     <CurrentAsset
-                                      color="textSecondary"
-                                      variant="subtitle1"
+                                      color="textPrimary"
+                                      variant="subtitle2"
                                     >
                                       {" "}
                                       {values.transferForm.transfers[

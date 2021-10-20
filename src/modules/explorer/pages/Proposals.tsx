@@ -22,7 +22,7 @@ import { InfoIcon } from "../components/styled/InfoIcon";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
-import { useDAOID } from "../daoRouter";
+import { useDAOID } from "modules/explorer/v2/pages/DAO/router";
 import { PeriodLabel } from "../components/styled/VotingLabel";
 
 const ButtonsContainer = styled(Grid)(({ theme }) => ({

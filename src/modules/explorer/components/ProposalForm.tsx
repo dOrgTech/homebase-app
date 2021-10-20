@@ -19,7 +19,6 @@ import { SendButton } from "./ProposalFormSendButton";
 import { ProposalFormListItem } from "./styled/ProposalFormListItem";
 import { TabPanel } from "./TabPanel";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { useDAOID } from "modules/explorer/daoRouter";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { DAOTemplate } from "modules/creator/state";
 import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
@@ -31,6 +30,7 @@ import {
   NFTTransferFormValues,
 } from "../Treasury/components/NFTTransfer";
 import { Token } from "models/Token";
+import { useDAOID } from "../v2/pages/DAO/router";
 
 const SwitchContainer = styled(Grid)({
   textAlign: "end",
@@ -202,7 +202,7 @@ export const ProposalFormContainer: React.FC<Props> = ({
 
             <ProposalFormListItem container direction="row">
               <Grid item xs={6}>
-                <Typography variant="subtitle1" color="textSecondary">
+                <Typography variant="subtitle2" color="textPrimary">
                   Agora Post ID
                 </Typography>
               </Grid>
@@ -225,12 +225,12 @@ export const ProposalFormContainer: React.FC<Props> = ({
 
             <ProposalFormListItem container direction="row">
               <Grid item xs={6}>
-                <Typography variant="subtitle1" color="textSecondary">
+                <Typography variant="subtitle2" color="textPrimary">
                   Proposal Fee
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography align="right" variant="subtitle1" color="secondary">
+                <Typography align="right" variant="subtitle2" color="secondary">
                   {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
                   {dao ? dao.data.token.symbol : ""}
                 </Typography>

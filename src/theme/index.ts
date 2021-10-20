@@ -2,16 +2,16 @@ import { createMuiTheme } from "@material-ui/core/styles";
 export const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#1C1F23",
-      light: "#3D3D3D",
+      main: "#24282B",
+      dark: "#1C1F23",
+      light: "#424242",
     },
     secondary: {
-      main: "#4BCF93",
-      light: "#81FEB7",
+      main: "#81FEB7",
+      dark: "#273833",
     },
     text: {
-      primary: "#000000",
-      secondary: "#fff",
+      primary: "#FFFFFF",
     },
     error: {
       main: "#ED254E",
@@ -27,13 +27,9 @@ export const theme = createMuiTheme({
     fontFamily: "Roboto Mono",
     h1: {
       fontSize: 35,
-      letterSpacing: "-0.01em",
     },
     subtitle1: {
-      fontSize: 16,
-      fontWeight: 400,
-      lineHeight: "146.3%",
-      letterSpacing: "-0.01em",
+      fontSize: 32,
     },
     subtitle2: {
       fontSize: 16,
@@ -56,7 +52,7 @@ export const theme = createMuiTheme({
       fontSize: 35,
     },
     body1: {
-      fontSize: 16,
+      fontSize: 18,
     },
     body2: {
       fontSize: 16,
@@ -181,6 +177,9 @@ export const theme = createMuiTheme({
         "&$disabled": {
           color: "#3d3d3d",
         },
+        textTransform: "capitalize",
+        fontWeight: 500,
+        fontSize: 18,
       },
       outlined: {
         "&$disabled": {
@@ -287,5 +286,53 @@ export const theme = createMuiTheme({
         display: "none",
       },
     },
+    MuiTable: {
+      root: {
+        borderRadius: "8px",
+        backgroundColor: "#24282B"
+      }
+    },
+    MuiTableHead: {
+      root: {
+        minHeight: 58,
+        fontSize: 16,
+        fontWeight: 400,
+        letterSpacing: "-0.01em",
+        color: "#FFFFFF"
+      }
+    },
+    MuiTableFooter: {
+      root: {
+        minHeight: 60,
+        fontSize: 16,
+        fontWeight: 400,
+        letterSpacing: "-0.01em",
+        color: "##81FEB7",
+        borderTop: "0.3px solid #7D8C8B"
+      }
+    },
+    MuiTableBody: {
+      "root": {
+        "& > *": {
+          borderTop: "0.3px solid #7D8C8B",
+          minHeight: 90,
+        }
+      }
+    },
+    MuiTableCell: {
+      "root": {
+        borderBottom: "unset"
+      }
+    },
+    MuiTableRow: {
+      root: {
+          '& th:first-child, & td:first-child': {
+            paddingLeft: 46,
+          },
+          '& th:last-child, & td:last-child': {
+            paddingRight: 46,
+          },
+      }
+    }
   },
 });

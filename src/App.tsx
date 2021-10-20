@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { Box, makeStyles, ThemeProvider } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
 
-import { DAOExplorerRouter } from "modules/explorer/router";
+import { DAOExplorerRouter } from "modules/explorer/v2/router";
 import { DAOCreate } from "modules/creator";
 import { CreatorProvider } from "modules/creator/state";
 import ScrollToTop from "modules/common/ScrollToTop";
@@ -74,7 +74,7 @@ const App: React.FC = () => {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Box bgcolor="primary.main" position="absolute" width="100%">
+          <Box bgcolor="primary.dark" position="absolute" width="100%">
             <Router>
               <ScrollToTop />
               <Switch>

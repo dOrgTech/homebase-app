@@ -83,6 +83,20 @@ export interface HolderDTO {
   ledgers?: LedgerDTO[];
   proposals?: ProposalDTO[];
   votes?: VoteDTO[];
+
+  proposals_aggregate: {
+    aggregate: {
+      count: number | null
+    }
+  } | null
+  
+  votes_aggregate: {
+    aggregate: {
+      sum: {
+        amount: number | null
+      }
+    }
+  } | null
 }
 
 export interface LedgerDTO {
@@ -94,8 +108,20 @@ export interface LedgerDTO {
   holder: HolderDTO;
 }
 
-export interface Ledger extends LedgerDTO {
-  available_balance: BigNumber;
+export interface Holder {
+  id: number;
+  address: string;
+  votes_cast: BigNumber;
+  proposals_voted: number
+}
+
+export interface Ledger {
+  id: number;
+  current_stage_num: string;
+  current_unstaked: BigNumber;
+  past_unstaked: BigNumber;
+  staked: BigNumber;
+  holder: Holder;
 }
 
 export interface ProposalStatusDTO {

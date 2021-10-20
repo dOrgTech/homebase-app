@@ -69,7 +69,7 @@ export const Header: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <Box paddingLeft="10px">
-                    <LogoText color="textSecondary">Homebase</LogoText>
+                    <LogoText color="textPrimary">Homebase</LogoText>
                   </Box>
                 </Grid>
               </Grid>
