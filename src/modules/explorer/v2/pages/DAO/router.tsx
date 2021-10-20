@@ -21,6 +21,7 @@ import { ProposalDetails } from "../ProposalDetails";
 import { Treasury } from "../Treasury";
 import { Registry } from "../Registry";
 import { Proposals } from "../Proposals";
+import { NFTs } from "../NFTs";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -28,6 +29,10 @@ const PageLayout = styled(Grid)(({ theme }) => ({
   maxWidth: "100%",
   margin: "55px auto 0 auto",
   paddingBottom: 32,
+
+  [theme.breakpoints.down("xs")]: {
+    margin: "25px auto 0 auto",
+  }
 }));
 
 enum DAOState {
@@ -116,6 +121,9 @@ export const DAORouter = (): JSX.Element => {
           </DAORoute>
           <DAORoute path={`${match.url}/registry`}>
             <Registry />
+          </DAORoute>
+          <DAORoute path={`${match.url}/nfts`}>
+            <NFTs />
           </DAORoute>
           <DAORoute path={`${match.url}/user`}>
             <User />
