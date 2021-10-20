@@ -102,7 +102,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
   return (
     <div>
-      <Button onClick={handleClickOpen} variant="outlined" color="secondary">
+      <Button onClick={handleClickOpen} variant="contained" color="secondary">
         {freeze ? "Deposit" : "Withdraw"}
       </Button>
       <CustomDialog

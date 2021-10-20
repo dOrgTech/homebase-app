@@ -8,7 +8,6 @@ import {
   Theme,
   Typography,
 } from "@material-ui/core";
-import { CheckCircleOutlined } from "@material-ui/icons";
 import { styled } from "@material-ui/styles";
 import dayjs from "dayjs";
 import React, { useEffect, useMemo } from "react";
@@ -22,13 +21,13 @@ import {
   Proposal,
   ProposalStatus,
 } from "services/indexer/dao/mappers/proposal/types";
-import { TableStatusBadge } from "../components/ProposalTableRowStatusBadge";
 import RemoveIcon from "@material-ui/icons/Remove";
 import { ProfileAvatar } from "../components/styled/ProfileAvatar";
 import { UserProfileName } from "../components/UserProfileName";
 import { useDAOID } from "modules/explorer/v2/pages/DAO/router";
 import { FreezeDialog } from "../components/FreezeDialog";
 import { UserBalances } from "../v2/components/UserBalances";
+import { StatusBadge } from "../components/StatusBadge";
 
 const ContentBlockHeader = styled(AccordionSummary)(
   ({ theme }: { theme: Theme }) => ({
@@ -52,10 +51,6 @@ const BalancesHeader = styled(Grid)({
   boxSizing: "border-box",
   borderRadius: 8,
   boxShadow: "none",
-});
-
-const UsernameHeader = styled(Grid)({
-  marginBottom: 20,
 });
 
 const MainContainer = styled(Box)({
@@ -153,7 +148,7 @@ export const ProposalItem: React.FC<{
           <Grid item>
             <Grid container style={{ gap: 20 }} alignItems="center">
               <Grid item>
-                <TableStatusBadge status={status} />
+                <StatusBadge status={status} />
               </Grid>
               <Grid item>
                 <Typography variant="body1" color="textPrimary">
@@ -171,7 +166,7 @@ export const ProposalItem: React.FC<{
 
 export const User: React.FC = () => {
   const { account } = useTezos();
-  console.log(account)
+  console.log(account);
   const daoId = useDAOID();
   const { cycleInfo } = useDAO(daoId);
   const { data: proposals } = useProposals(daoId);
@@ -214,34 +209,35 @@ export const User: React.FC = () => {
   return (
     <MainContainer>
       <Grid container direction="column" style={{ gap: 40 }}>
-        <UsernameHeader item>
-          <Grid container alignItems="center" justify="space-between">
-            <Grid item>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <ProfileAvatar size={43} address={account} />
-                </Grid>
-                <Grid item>
-                  <UsernameText color="textPrimary">
-                    <UserProfileName address={account} />
-                  </UsernameText>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <FreezeDialog freeze={true} />
-                </Grid>
-                <Grid item>
-                  <FreezeDialog freeze={false} />
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </UsernameHeader>
         <BalancesHeader item>
-          <UserBalances daoId={daoId} />
+          <UserBalances daoId={daoId}>
+            <Grid item>
+              <Grid container alignItems="center" justify="space-between">
+                <Grid item>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item>
+                      <ProfileAvatar size={43} address={account} />
+                    </Grid>
+                    <Grid item>
+                      <UsernameText color="textPrimary">
+                        <UserProfileName address={account} />
+                      </UsernameText>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item>
+                      <FreezeDialog freeze={true} />
+                    </Grid>
+                    <Grid item>
+                      <FreezeDialog freeze={false} />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </UserBalances>
         </BalancesHeader>
         <Grid item>
           {proposalsCreated && cycleInfo && (
@@ -256,7 +252,7 @@ export const User: React.FC = () => {
                   proposal={proposal}
                   status={proposal.getStatus(cycleInfo.currentLevel).status}
                 >
-                  <Grid container>
+                  {/* <Grid container>
                     <Grid item>
                       <CheckCircleOutlined
                         fontSize={"large"}
@@ -268,7 +264,7 @@ export const User: React.FC = () => {
                         {proposal.getStatus(cycleInfo.currentLevel).status}
                       </StatusText>
                     </Grid>
-                  </Grid>
+                  </Grid> */}
                 </ProposalItem>
               ))}
             </ContentBlock>
