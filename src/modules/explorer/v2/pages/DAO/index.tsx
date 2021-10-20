@@ -16,6 +16,7 @@ import { UserBalancesBox } from "../../components/UserBalances";
 import { ContentContainer } from "../../components/ContentContainer";
 import { ProposalsList } from "../../components/ProposalsList";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
+import { DAOStatsRow } from "../../components/DAOStatsRow";
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 55px",
@@ -102,6 +103,7 @@ export const DAO: React.FC = () => {
         </Grid>
       </HeroContainer>
       <UserBalancesBox daoId={daoId} />
+      <DAOStatsRow/>
       
       { data && cycleInfo && proposals && (<ProposalsList showFooter title="Active Proposals" currentLevel={cycleInfo.currentLevel} proposals={proposals} />)}
       <TableContainer item container direction="column">
