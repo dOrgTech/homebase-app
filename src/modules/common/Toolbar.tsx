@@ -126,9 +126,10 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
-export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
+export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?: boolean }> = ({
   mode,
   children,
+  disableMobileMenu
 }) => {
   const { connect, account, reset, changeNetwork, network } = useTezos();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -321,7 +322,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
             </Grid>
           </Grid>
         </Header>
-        <NavigationMenu/>
+        <NavigationMenu disableMobileMenu={disableMobileMenu}/>
       </StyledToolbar>
       <NetworkMenu
         open={networkPopperOpen}

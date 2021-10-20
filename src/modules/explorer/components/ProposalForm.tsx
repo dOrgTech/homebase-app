@@ -202,7 +202,7 @@ export const ProposalFormContainer: React.FC<Props> = ({
 
             <ProposalFormListItem container direction="row">
               <Grid item xs={6}>
-                <Typography variant="subtitle1" color="textSecondary">
+                <Typography variant="subtitle2" color="textPrimary">
                   Agora Post ID
                 </Typography>
               </Grid>
@@ -225,12 +225,12 @@ export const ProposalFormContainer: React.FC<Props> = ({
 
             <ProposalFormListItem container direction="row">
               <Grid item xs={6}>
-                <Typography variant="subtitle1" color="textSecondary">
+                <Typography variant="subtitle2" color="textPrimary">
                   Proposal Fee
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography align="right" variant="subtitle1" color="secondary">
+                <Typography align="right" variant="subtitle2" color="secondary">
                   {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
                   {dao ? dao.data.token.symbol : ""}
                 </Typography>

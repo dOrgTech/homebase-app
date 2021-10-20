@@ -99,7 +99,7 @@ export const DAORouter = (): JSX.Element => {
 
   return (
     <DAOProvider daoId={daoId}>
-      <Navbar mode="explorer">
+      <Navbar mode="explorer" disableMobileMenu>
         <Grid item>
           <UserBalancesWidget />
         </Grid>

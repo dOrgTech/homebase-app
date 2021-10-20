@@ -1,4 +1,11 @@
-import { Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Theme,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import { ReactComponent as HouseIcon } from "assets/logos/home.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg";
@@ -126,7 +133,9 @@ const BottomNavBar: React.FC = ({ children }) => {
   );
 };
 
-export const NavigationMenu: React.FC = () => {
+export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
+  disableMobileMenu,
+}) => {
   const [pages, setPages] = useState<Page[]>([]);
   const { account } = useTezos();
   const daoId = useDAOID();
@@ -154,8 +163,7 @@ export const NavigationMenu: React.FC = () => {
     }
   }, [account, dao, daoId]);
 
-  return (
-    !isMobileSmall ?
+  return !isMobileSmall || disableMobileMenu ? (
     <Container container justifyContent="center" style={{ gap: 92 }}>
       {pages.map((page, i) => (
         <PageItem key={`page-${i}`} item alignItems="center">
@@ -182,14 +190,13 @@ export const NavigationMenu: React.FC = () => {
           </Link>
         </PageItem>
       ))}
-    </Container>: <BottomNavBar>{pages.map((page, i) => (
+    </Container>
+  ) : (
+    <BottomNavBar>
+      {pages.map((page, i) => (
         <PageItem key={`page-${i}`} item alignItems="center">
           <Link to={page.href}>
-            <Grid
-              container
-              alignItems="center"
-              justifyContent="center"
-            >
+            <Grid container alignItems="center" justifyContent="center">
               <Grid item>
                 <IconContainer isSelected={pathId === page.pathId}>
                   <page.icon />
@@ -198,6 +205,7 @@ export const NavigationMenu: React.FC = () => {
             </Grid>
           </Link>
         </PageItem>
-      ))}</BottomNavBar>
+      ))}
+    </BottomNavBar>
   );
 };

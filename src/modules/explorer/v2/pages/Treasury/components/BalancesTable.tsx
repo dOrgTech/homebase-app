@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useMemo, useState } from "react";
 import {
   Button,
   styled,
@@ -10,7 +10,10 @@ import {
   Typography,
 } from "@material-ui/core";
 import hexToRgba from "hex-to-rgba";
-import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm";
+import {
+  ProposalFormContainer,
+  ProposalFormDefaultValues,
+} from "modules/explorer/components/ProposalForm";
 import { DAOHolding } from "services/bakingBad/tokenBalances";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
@@ -26,7 +29,11 @@ const TokenSymbol = styled(Typography)(({ theme }) => ({
 }));
 
 const createData = (daoHolding: DAOHolding) => {
-  return { symbol: daoHolding.token.symbol, address: daoHolding.token.contract, amount: daoHolding.balance.dp(10).toString() };
+  return {
+    symbol: daoHolding.token.symbol,
+    address: daoHolding.token.contract,
+    amount: daoHolding.balance.dp(10).toString(),
+  };
 };
 
 const titles = ["Token Balances", "Address", "Balance"];
@@ -92,58 +99,63 @@ export const BalancesTable: React.FC = () => {
     return tokenHoldings.map(createData);
   }, [tokenHoldings]);
 
-  return (<><Table>
-    <TableHead>
-      <TableRow>
-        {titles.map((title, i) => (
-          <TableCell key={`tokentitle-${i}`}>{title}</TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {tezosBalance && (
-        <TableRow>
-          <TableCell>
-            <TokenSymbol>XTZ</TokenSymbol>
-          </TableCell>
-          <TableCell>N/A</TableCell>
-          <TableCell>{tezosBalance.toString()}</TableCell>
-          <TableCell align="right">
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => onOpenXTZTransferModal()}
-            >
-              Transfer
-            </Button>
-          </TableCell>
-        </TableRow>
-      )}
+  return (
+    <>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {titles.map((title, i) => (
+              <TableCell key={`tokentitle-${i}`}>{title}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {tezosBalance && (
+            <TableRow>
+              <TableCell>
+                <TokenSymbol>XTZ</TokenSymbol>
+              </TableCell>
+              <TableCell>N/A</TableCell>
+              <TableCell>{tezosBalance.toString()}</TableCell>
+              <TableCell align="right">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => onOpenXTZTransferModal()}
+                >
+                  Transfer
+                </Button>
+              </TableCell>
+            </TableRow>
+          )}
 
-      {rows.map((row, i) => (
-        <TableRow key={`tokenrow-${i}`}>
-          <TableCell>
-            <TokenSymbol>{row.symbol}</TokenSymbol>
-          </TableCell>
-          <TableCell>{row.address}</TableCell>
-          <TableCell>{row.amount}</TableCell>
-          <TableCell align="right">
-            {" "}
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => onOpenTokenTransferModal(row.address)}
-            >
-              Transfer
-            </Button>
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table><ProposalFormContainer
-      open={openTransfer}
-      handleClose={onCloseTransfer}
-      defaultValues={defaultValues}
-      defaultTab={0}
-    /></>)
-}
+          {rows.map((row, i) => (
+            <TableRow key={`tokenrow-${i}`}>
+              <TableCell>
+                <TokenSymbol>{row.symbol}</TokenSymbol>
+              </TableCell>
+              <TableCell>{row.address}</TableCell>
+              <TableCell>{row.amount}</TableCell>
+              <TableCell align="right">
+                {" "}
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => onOpenTokenTransferModal(row.address)}
+                >
+                  Transfer
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <ProposalFormContainer
+        open={openTransfer}
+        handleClose={onCloseTransfer}
+        defaultValues={defaultValues}
+        defaultTab={0}
+      />
+    </>
+  );
+};
