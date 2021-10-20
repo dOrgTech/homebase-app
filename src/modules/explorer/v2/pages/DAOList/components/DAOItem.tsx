@@ -1,5 +1,4 @@
 import { styled, Grid, Theme, Typography, Link } from "@material-ui/core";
-import { ReactFitty } from "react-fitty";
 import React from "react";
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({

@@ -37,7 +37,10 @@ const BalanceTokenText = styled(Typography)({
   fontSize: 24,
 });
 
-export const UserBalances: React.FC<{ daoId: string }> = ({ daoId }) => {
+export const UserBalances: React.FC<{ daoId: string }> = ({
+  daoId,
+  children,
+}) => {
   const { account } = useTezos();
   const { data: dao, ledger } = useDAO(daoId);
 
@@ -82,27 +85,30 @@ export const UserBalances: React.FC<{ daoId: string }> = ({ daoId }) => {
   );
 
   return (
-    <Grid container justify="space-between" alignItems="center">
-      {dao &&
-        balancesList.map(({ displayName, balance }, i) => (
-          <Grid item key={`balance-${i}`}>
-            <BalanceHeaderText color="secondary">
-              {displayName}
-            </BalanceHeaderText>
-            <Grid container alignItems="baseline" spacing={2}>
-              <Grid item>
-                <Typography variant="h5" color="textPrimary">
-                  {balance}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <BalanceTokenText color="textPrimary">
-                  {balance !== "-" ? dao.data.token.symbol : ""}
-                </BalanceTokenText>
+    <Grid container direction="column" style={{ gap: 40 }}>
+      {children}
+      <Grid item container justifyContent="space-between">
+        {dao &&
+          balancesList.map(({ displayName, balance }, i) => (
+            <Grid item key={`balance-${i}`}>
+              <BalanceHeaderText color="secondary">
+                {displayName}
+              </BalanceHeaderText>
+              <Grid container alignItems="baseline" spacing={2}>
+                <Grid item>
+                  <Typography variant="h5" color="textPrimary">
+                    {balance}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <BalanceTokenText color="textPrimary">
+                    {balance !== "-" ? dao.data.token.symbol : ""}
+                  </BalanceTokenText>
+                </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        ))}
+          ))}
+      </Grid>
     </Grid>
   );
 };

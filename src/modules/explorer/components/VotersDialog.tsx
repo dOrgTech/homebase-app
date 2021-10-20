@@ -170,7 +170,8 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   return (
     <div>
       <StyledViewButton
-        variant="outlined"
+        variant="contained"
+        size="small"
         color="secondary"
         onClick={handleClickOpen}
       >

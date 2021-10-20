@@ -22,13 +22,6 @@ interface VotersData {
   wrapAll?: boolean;
 }
 
-const BlueDot = styled(Paper)(() => ({
-  width: 9,
-  height: 9,
-  marginRight: 9,
-  background: "#3866F9",
-}));
-
 const GreenDot = styled(Paper)(({ theme }) => ({
   width: 9,
   height: 9,

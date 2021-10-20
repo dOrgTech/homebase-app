@@ -18,9 +18,7 @@ import { useParams } from "react-router";
 import { useAgoraTopic } from "services/agora/hooks/useTopic";
 import { BaseDAO } from "services/contracts/baseDAO";
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal";
-import {
-  toShortAddress,
-} from "services/contracts/utils";
+import { toShortAddress } from "services/contracts/utils";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 import { ContentContainer } from "../../components/ContentContainer";
@@ -33,6 +31,7 @@ import {
   RegistryProposal,
   TreasuryProposal,
   FA2Transfer,
+  ProposalStatus,
 } from "services/indexer/dao/mappers/proposal/types";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 
@@ -45,6 +44,7 @@ const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   paddingBottom: 12,
   display: "flex",
   height: "auto",
+
   [theme.breakpoints.down("sm")]: {
     width: "unset",
   },
@@ -77,8 +77,8 @@ const DetailsText = styled(Typography)({
 });
 
 const VoteButton = styled(Button)(({ favor }: { favor: boolean }) => ({
-  backgroundColor: favor? "#3FE888": "#FF486E",
-}))
+  backgroundColor: favor ? "#3FE888" : "#FF486E",
+}));
 
 export const ProposalDetails: React.FC = () => {
   const { proposalId } = useParams<{
@@ -129,21 +129,38 @@ export const ProposalDetails: React.FC = () => {
     return (proposal as TreasuryProposal | RegistryProposal).metadata.transfers;
   }, [holdings, proposal]);
 
+  const canVote =
+    cycleInfo &&
+    proposal?.getStatus(cycleInfo.currentLevel).status ===
+      ProposalStatus.ACTIVE;
+
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
         <Container item>
           <Grid container direction="column" style={{ gap: 18 }}>
-            <Grid item>
-              <Typography
-                variant="h3"
-                color="textPrimary"
-                align={isMobileSmall ? "center" : "left"}
-              >
-                {agoraPost
-                  ? agoraPost.title
-                  : `Proposal ${toShortAddress(proposal?.id || "")}`}
-              </Typography>
+            <Grid item container style={{ gap: 21 }}>
+              <Grid item>
+                <Typography
+                  variant="h3"
+                  color="textPrimary"
+                  align={isMobileSmall ? "center" : "left"}
+                >
+                  {agoraPost
+                    ? agoraPost.title
+                    : `Proposal ${toShortAddress(proposal?.id || "")}`}
+                </Typography>
+              </Grid>
+              <Grid>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  disabled={!canDropProposal}
+                  onClick={onDropProposal}
+                >
+                  Drop Proposal
+                </Button>
+              </Grid>
             </Grid>
             <Grid item>
               <Grid
@@ -175,12 +192,12 @@ export const ProposalDetails: React.FC = () => {
                 <Grid item>
                   <Grid container style={{ gap: 28 }}>
                     <Grid item>
-                      <VoteButton variant="contained" favor={true}>
+                      <VoteButton disabled={!canVote} variant="contained" favor={true}>
                         Vote For
                       </VoteButton>
                     </Grid>
                     <Grid item>
-                      <VoteButton variant="contained" favor={false}>
+                      <VoteButton disabled={!canVote} variant="contained" favor={false}>
                         Vote Against
                       </VoteButton>
                     </Grid>
@@ -351,8 +368,11 @@ export const ProposalDetails: React.FC = () => {
                         alignItems="baseline"
                         wrap="nowrap"
                         xs={12}
+                        style={{ gap: 32 }}
                       >
-                        <StatusBadge item status={item.status} />
+                        <Grid item>
+                          <StatusBadge item status={item.status} />
+                        </Grid>
                         <Grid item>
                           <Typography color="textPrimary" variant="subtitle2">
                             {item.timestamp}
