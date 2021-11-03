@@ -45,6 +45,14 @@ export interface ProposeParams {
   };
 }
 
+export interface ConfigProposalParams {
+  frozen_extra_value?: number
+  frozen_scale_value?: number
+  max_proposal_size?: number
+  slash_division_value?: number
+  slash_scale_value?: number
+}
+
 export interface OriginateParams {
   metadataParams: MetadataCarrierParameters;
   params: MigrationParams;
