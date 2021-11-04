@@ -1,14 +1,9 @@
-import {
-  TezosToolkit,
-  ContractAbstraction,
-  Wallet,
-  TransactionWalletOperation,
-} from "@taquito/taquito";
-import { DAOTemplate, MigrationParams } from "modules/creator/state";
-import { Network } from "services/beacon/context";
-import { fromStateToBaseStorage, getContract } from ".";
-import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
-import { generateStorageContract } from "services/baseDAODocker";
+import {ContractAbstraction, TezosToolkit, TransactionWalletOperation, Wallet,} from "@taquito/taquito";
+import {DAOTemplate, MigrationParams} from "modules/creator/state";
+import {Network} from "services/beacon/context";
+import {ConfigProposalParams, fromStateToBaseStorage, getContract} from ".";
+import {MetadataDeploymentResult} from "../metadataCarrier/deploy";
+import {generateStorageContract} from "services/baseDAODocker";
 import baseDAOContractCode from "./michelson/baseDAO";
 import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
@@ -56,6 +51,9 @@ export interface BaseDAOData {
   description: string;
   type: DAOTemplate;
   network: Network;
+  extra: {
+    frozen_extra_value: string;
+  }
 }
 
 export abstract class BaseDAO {
@@ -207,6 +205,58 @@ export abstract class BaseDAO {
       .send();
     return result;
   };
+
+  static async encodeProposalMetadata(dataToEncode: any, michelsonSchemaString: string, tezos: TezosToolkit) {
+    const parser = new Parser();
+
+    const michelsonType = parser.parseData(michelsonSchemaString);
+    const schema = new Schema(michelsonType as Expr);
+    const data = schema.Encode(dataToEncode);
+
+    const { packed } = await tezos.rpc.packData({
+      data,
+      type: michelsonType as Expr,
+    });
+
+    return packed;
+  }
+
+  public async proposeConfigChange (configParams: ConfigProposalParams, tezos: TezosToolkit) {
+    const contract = await getContract(tezos, this.data.address);
+    const proposalMetadata = await BaseDAO.encodeProposalMetadata({
+      configuration_proposal: {
+        frozen_extra_value: configParams.frozen_extra_value,
+        frozen_scale_value: configParams.frozen_scale_value,
+        max_proposal_size: configParams.max_proposal_size,
+        slash_division_value: configParams.slash_division_value,
+        slash_scale_value: configParams.slash_scale_value
+      },
+    }, proposeCode, tezos)
+
+    const contractMethod = contract.methods.propose(
+        await tezos.wallet.pkh(),
+        this.data.extra.frozen_extra_value,
+        proposalMetadata
+    );
+
+    return await contractMethod.send();
+  }
+
+  public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {
+    const contract = await getContract(tezos, this.data.address);
+
+    const proposalMetadata = await BaseDAO.encodeProposalMetadata({
+      update_guardian: newGuardianAddress,
+    }, proposeCode, tezos)
+
+    const contractMethod = contract.methods.propose(
+        await tezos.wallet.pkh(),
+        this.data.extra.frozen_extra_value,
+        proposalMetadata
+    );
+
+    return await contractMethod.send();
+  }
 
   public abstract propose(...args: any[]): Promise<TransactionWalletOperation>;
 }
