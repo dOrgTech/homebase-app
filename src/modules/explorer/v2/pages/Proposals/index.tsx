@@ -12,6 +12,7 @@ import { ProposalsList } from "../../components/ProposalsList";
 import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
+import {ProposalSelectionMenu} from "../../../components/ProposalSelectionMenu";
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 45px",
@@ -23,7 +24,7 @@ const TitleText = styled(Typography)({
 });
 
 export const Proposals: React.FC = () => {
-  const [openTransfer, setOpenTransfer] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const daoId = useDAOID();
   const { data, cycleInfo } = useDAO(daoId);
   const { mutate } = useFlush();
@@ -41,12 +42,12 @@ export const Proposals: React.FC = () => {
     }
   }, [data, mutate, proposals]);
 
-  const onCloseTransfer = () => {
-    setOpenTransfer(false);
+  const onCloseModal = () => {
+    setOpenModal(false);
   };
 
   const handleProposalModal = () => {
-    setOpenTransfer(true);
+    setOpenModal(true);
   };
 
   return (
@@ -101,12 +102,7 @@ export const Proposals: React.FC = () => {
           />
         )}
       </Grid>
-
-      <ProposalFormContainer
-        open={openTransfer}
-        handleClose={onCloseTransfer}
-        defaultTab={0}
-      />
+     <ProposalSelectionMenu open={openModal} handleClose={onCloseModal}/>
     </>
   );
 };

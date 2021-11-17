@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
-import { Dialog, Grid, styled, Typography, TextField } from "@material-ui/core";
-// import { yupResolver } from "@hookform/resolvers/yup";
+import {Dialog, Grid, styled, Typography, TextField} from "@material-ui/core";
 import {
   registryProposalFormInitialState,
   RegistryProposalFormValues,
@@ -12,37 +11,25 @@ import {
   treasuryProposalFormInitialState,
   TreasuryProposalFormValues,
 } from "modules/explorer/Treasury";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { AppTabBar } from "./AppTabBar";
-import { SendButton } from "./ProposalFormSendButton";
-import { ProposalFormListItem } from "./styled/ProposalFormListItem";
-import { TabPanel } from "./TabPanel";
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { DAOTemplate } from "modules/creator/state";
-import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose";
-import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose";
-import { BaseDAO, RegistryDAO, TreasuryDAO } from "services/contracts/baseDAO";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {useDAO} from "services/indexer/dao/hooks/useDAO";
+import {AppTabBar} from "./AppTabBar";
+import {SendButton} from "./ProposalFormSendButton";
+import {TabPanel} from "./TabPanel";
+import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import {Controller, FormProvider, useForm} from "react-hook-form";
+import {DAOTemplate} from "modules/creator/state";
+import {useTreasuryPropose} from "services/contracts/baseDAO/hooks/useTreasuryPropose";
+import {useRegistryPropose} from "services/contracts/baseDAO/hooks/useRegistryPropose";
+import {BaseDAO, RegistryDAO, TreasuryDAO} from "services/contracts/baseDAO";
 import {
   NFTTransferForm,
   nftTransferFormInitialState,
   NFTTransferFormValues,
 } from "../Treasury/components/NFTTransfer";
-import { Token } from "models/Token";
-import { useDAOID } from "../v2/pages/DAO/router";
-
-const SwitchContainer = styled(Grid)({
-  textAlign: "end",
-});
-
-const CustomTextField = styled(TextField)({
-  textAlign: "end",
-  "& .MuiInputBase-input": {
-    textAlign: "end",
-    paddingRight: 12,
-  },
-});
+import {Token} from "models/Token";
+import {useDAOID} from "../v2/pages/DAO/router";
+import {ProposalFormInput} from "./ProposalFormInput";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -63,48 +50,50 @@ interface Props {
   defaultTab?: number;
 }
 
-const enabledForms: Record<
-  DAOTemplate,
+const enabledForms: Record<DAOTemplate,
   {
     label: string;
     component: React.FC;
-  }[]
-> = {
+  }[]> = {
   treasury: [
     {
       label: "TRANSFER FUNDS",
-      component: () => <NewTreasuryProposalDialog />,
+      component: () => <NewTreasuryProposalDialog/>,
     },
     {
       label: "TRANSFER NFTs",
-      component: () => <NFTTransferForm />,
+      component: () => <NFTTransferForm/>,
     },
   ],
   registry: [
     {
       label: "TRANSFER FUNDS",
-      component: () => <NewTreasuryProposalDialog />,
+      component: () => <NewTreasuryProposalDialog/>,
     },
     {
       label: "TRANSFER NFTs",
-      component: () => <NFTTransferForm />,
+      component: () => <NFTTransferForm/>,
     },
     {
       label: "UPDATE REGISTRY",
-      component: () => <UpdateRegistryDialog />,
+      component: () => <UpdateRegistryDialog/>,
     },
   ],
 };
 
+const Content = styled(Grid)({
+  padding: "0 54px"
+})
+
 export const ProposalFormContainer: React.FC<Props> = ({
-  open,
-  handleClose,
-  defaultValues,
-  defaultTab,
-}) => {
+                                                         open,
+                                                         handleClose,
+                                                         defaultValues,
+                                                         defaultTab,
+                                                       }) => {
   const daoId = useDAOID();
-  const { data: dao } = useDAO(daoId);
-  const { data: daoHoldings } = useDAOHoldings(daoId);
+  const {data: dao} = useDAO(daoId);
+  const {data: daoHoldings} = useDAOHoldings(daoId);
   const [selectedTab, setSelectedTab] = useState(defaultTab || 0);
 
   const methods = useForm<Values>({
@@ -123,8 +112,8 @@ export const ProposalFormContainer: React.FC<Props> = ({
   }, [defaultValues, methods])
 
   const forms = enabledForms[dao?.data.type || "treasury"];
-  const { mutate: treasuryMutate } = useTreasuryPropose();
-  const { mutate: registryMutate } = useRegistryPropose();
+  const {mutate: treasuryMutate} = useTreasuryPropose();
+  const {mutate: registryMutate} = useRegistryPropose();
 
   const onSubmit = useCallback(
     (values: Values) => {
@@ -140,13 +129,13 @@ export const ProposalFormContainer: React.FC<Props> = ({
         )
         .map((transfer) =>
           (transfer.asset as Asset).symbol === "XTZ"
-            ? { ...transfer, amount: transfer.amount, type: "XTZ" as const }
+            ? {...transfer, amount: transfer.amount, type: "XTZ" as const}
             : {
-                ...transfer,
-                amount: transfer.amount,
-                asset: transfer.asset as Token,
-                type: "FA2" as const,
-              }
+              ...transfer,
+              amount: transfer.amount,
+              asset: transfer.asset as Token,
+              type: "FA2" as const,
+            }
         );
 
       const mappedList = values.registryUpdateForm.list.filter(
@@ -196,53 +185,44 @@ export const ProposalFormContainer: React.FC<Props> = ({
             />
             {forms.map((form, i) => (
               <TabPanel key={`tab-${i}`} value={selectedTab} index={i}>
-                <form.component />
+                <form.component/>
               </TabPanel>
             ))}
 
-            <ProposalFormListItem container direction="row">
-              <Grid item xs={6}>
-                <Typography variant="subtitle2" color="textPrimary">
-                  Agora Post ID
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <SwitchContainer item xs={12} justify="flex-end">
+            <Content container direction={"column"} style={{gap: 18}}>
+              <Grid item>
+                <ProposalFormInput label={"Agora Post ID"}>
                   <Controller
                     control={methods.control}
                     name={`agoraPostId`}
-                    render={({ field }) => (
-                      <CustomTextField
+                    render={({field}) => (
+                      <TextField
                         {...field}
                         type="number"
                         placeholder="Type an Agora Post ID"
+                        InputProps={{disableUnderline: true}}
                       />
                     )}
                   />
-                </SwitchContainer>
+                </ProposalFormInput>
               </Grid>
-            </ProposalFormListItem>
-
-            <ProposalFormListItem container direction="row">
-              <Grid item xs={6}>
-                <Typography variant="subtitle2" color="textPrimary">
-                  Proposal Fee
-                </Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography align="right" variant="subtitle2" color="secondary">
+              <Grid item>
+                <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>Proposal Fee: </Typography>
+                <Typography
+                  align="left" variant="subtitle2" color="secondary" display={"inline"}>
                   {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
                   {dao ? dao.data.token.symbol : ""}
                 </Typography>
               </Grid>
-            </ProposalFormListItem>
 
-            <SendButton
-              onClick={methods.handleSubmit(onSubmit as any)}
-              disabled={!dao || !daoHoldings}
-            >
-              SEND
-            </SendButton>
+              <SendButton
+                onClick={methods.handleSubmit(onSubmit as any)}
+                disabled={!dao || !daoHoldings}
+              >
+                Submit
+              </SendButton>
+            </Content>
+
           </>
         )}
       </Dialog>
