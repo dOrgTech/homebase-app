@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Route, Switch, useLocation } from "react-router";
 import { Redirect, useRouteMatch } from "react-router-dom";
 
@@ -13,6 +13,7 @@ import {
 
 import { ProtectedRoute } from "modules/creator/components/ProtectedRoute";
 import { Quorum } from "./Quorum";
+import mixpanel from "mixpanel-browser";
 
 export const STEPS: StepInfo[] = [
   { title: "Select template", index: 0 },
@@ -31,6 +32,21 @@ const urlToStepMap: Record<string, number> = {
   review: 5,
 };
 
+const AnalyticsWrappedStep: React.FC<{ name: string; index: number }> = ({
+  name,
+  index,
+  children,
+}) => {
+  useEffect(() => {
+    mixpanel.track("Visited Creator Step", {
+      stepName: name,
+      stepIndex: index,
+    });
+  }, [index, name]);
+
+  return <>{children}</>;
+};
+
 export const StepRouter: React.FC = () => {
   const match = useRouteMatch();
 
@@ -38,22 +54,34 @@ export const StepRouter: React.FC = () => {
     <ProtectedRoute>
       <Switch>
         <Route path={`${match.url}/templates`}>
-          <SelectTemplate />
+          <AnalyticsWrappedStep name="Select Template" index={1}>
+            <SelectTemplate />
+          </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/dao`}>
-          <DaoSettings />
+          <AnalyticsWrappedStep name="DAO Settings" index={2}>
+            <DaoSettings />
+          </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/voting`}>
-          <Governance />
+          <AnalyticsWrappedStep name="Governance" index={3}>
+            <Governance />
+          </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/quorum`}>
-          <Quorum />
+          <AnalyticsWrappedStep name="Quorum" index={4}>
+            <Quorum />
+          </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/summary`}>
-          <Summary />
+          <AnalyticsWrappedStep name="Summary" index={5}>
+            <Summary />
+          </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/review`}>
-          <Review />
+          <AnalyticsWrappedStep name="Deployment" index={6}>
+            <Review />
+          </AnalyticsWrappedStep>
         </Route>
         <Redirect to={`${match.url}/templates`} />
       </Switch>

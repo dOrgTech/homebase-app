@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+import mixpanel from "mixpanel-browser";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -37,6 +38,11 @@ export const useFreeze = () => {
         const data = await (params.dao as BaseDAO)[
           params.freeze ? "freeze" : "unfreeze"
         ](params.amount, tezosToolkit);
+
+        mixpanel.track(`Tokens ${params.freeze? "Deposited": "Withdrawn"}`, {
+          dao: params.dao.data.address,
+          amount: params.amount
+        })
 
         await data.confirmation(1);
 
