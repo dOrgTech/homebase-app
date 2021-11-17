@@ -1,10 +1,11 @@
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
-import React, { createContext, useReducer } from "react";
+import mixpanel from "mixpanel-browser";
+import React, { createContext, useEffect, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
 
-export type Network = "delphinet" | "mainnet" | "edo2net" | "florencenet"
+export type Network = "mainnet"  | "florencenet" | "granadanet"
 
 interface TezosState {
   network: Network;
@@ -93,6 +94,10 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
 
 export const TezosProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
+  useEffect(() => {
+    mixpanel.register({'Network': INITIAL_STATE.network });
+  }, [])
 
   return (
     <TezosContext.Provider value={{ state, dispatch }}>

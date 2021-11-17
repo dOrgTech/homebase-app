@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Box,
   CircularProgress,
@@ -27,6 +27,7 @@ import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useProposals } from "services/indexer/dao/hooks/useProposals";
 import { useDAOID } from "../daoRouter";
+import mixpanel from "mixpanel-browser";
 
 const LoaderContainer = styled(Grid)({
   paddingTop: 40,
@@ -113,6 +114,17 @@ export const DAO: React.FC = () => {
       return;
     }
   }, [data, mutate, proposals]);
+
+  useEffect(() => {
+    if(data) {
+      mixpanel.register({
+        daoAddress: daoId,
+        daoType: data.data.type
+      });
+      
+      mixpanel.track('Visited DAO');
+    }
+  }, [daoId, data])
 
   return (
     <>

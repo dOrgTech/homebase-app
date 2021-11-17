@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -20,6 +20,7 @@ import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps";
 import HomeButton from "assets/logos/homebase_logo.svg";
 import { NavigationBar } from "modules/creator/components/NavigationBar";
 import { Navbar } from "modules/common/Toolbar";
+import mixpanel from "mixpanel-browser";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -108,6 +109,13 @@ export const DAOCreate: React.FC = () => {
   const history = useHistory();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  useEffect(() => {
+    mixpanel.unregister("daoAddress")
+    mixpanel.unregister("daoType")
+    
+    mixpanel.track("Visited Creator")
+  }, [])
 
   return (
     <PageContainer container direction="row">

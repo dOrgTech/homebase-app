@@ -4,6 +4,7 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { TreasuryProposeArgs } from "../treasuryDAO/types";
+import mixpanel from "mixpanel-browser";
 
 export const useTreasuryPropose = () => {
   const queryClient = useQueryClient();
@@ -34,6 +35,11 @@ export const useTreasuryPropose = () => {
 
         const data = await dao.propose(args, tezosToolkit);
 
+        mixpanel.track("Proposal Created", {
+          dao: dao.data.address,
+          daoType: "Treasury"
+        })
+        
         await data.confirmation(1);
         closeProposalNotification(proposalNotification);
 

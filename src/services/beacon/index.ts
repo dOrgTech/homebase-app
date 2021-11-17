@@ -3,10 +3,9 @@ import { BeaconWallet } from "@taquito/beacon-wallet";
 import { Network } from "services/beacon/context";
 
 export const rpcNodes: Record<Network, string> = {
-  edo2net: "https://edonet.smartpy.io",
-  delphinet: "https://api.tez.ie/rpc/delphinet",
   mainnet: "https://mainnet.smartpy.io",
   florencenet: "https://florencenet.smartpy.io",
+  granadanet: "https://granadanet.smartpy.io"
 };
 
 export const connectWithBeacon = async (
@@ -23,12 +22,8 @@ export const connectWithBeacon = async (
   });
 
   switch (envNetwork) {
-    case "edo2net":
-      networkType = NetworkType.EDONET;
-      break;
-
-    case "delphinet":
-      networkType = NetworkType.DELPHINET;
+    case "granadanet":
+      networkType = NetworkType.GRANADANET;
       break;
 
     case "florencenet":
@@ -40,7 +35,7 @@ export const connectWithBeacon = async (
       break;
 
     default:
-      networkType = NetworkType.FLORENCENET;
+      networkType = NetworkType.GRANADANET;
       break;
   }
 
