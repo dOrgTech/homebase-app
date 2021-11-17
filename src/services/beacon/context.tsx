@@ -4,7 +4,7 @@ import { Tzip16Module } from "@taquito/tzip16";
 import React, { createContext, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
 
-export type Network = "delphinet" | "mainnet" | "edo2net" | "florencenet"
+export type Network = "mainnet"  | "florencenet" | "granadanet"
 
 interface TezosState {
   network: Network;
