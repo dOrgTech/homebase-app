@@ -4,6 +4,7 @@ import { RegistryProposeArgs } from "../registryDAO/types";
 import { useNotification } from "modules/common/hooks/useNotification";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { RegistryDAO } from "../registryDAO";
+import mixpanel from "mixpanel-browser";
 
 export const useRegistryPropose = () => {
   const queryClient = useQueryClient();
@@ -32,6 +33,12 @@ export const useRegistryPropose = () => {
         }
 
         const data = await dao.propose(args, tezosToolkit);
+
+        mixpanel.track("Proposal Created", {
+          dao: dao.data.address,
+          daoType: "Registry"
+        })
+        
         await data.confirmation(1);
         closeProposalNotification(proposalNotification);
 

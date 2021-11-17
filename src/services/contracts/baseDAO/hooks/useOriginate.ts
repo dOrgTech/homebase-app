@@ -12,6 +12,7 @@ import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
 import { getDAO } from "services/indexer/dao/services";
+import mixpanel from "mixpanel-browser";
 
 const INITIAL_STATES = [
   {
@@ -84,6 +85,11 @@ export const useOriginate = (template: DAOTemplate) => {
         tezosToolkit = await connect();
       }
 
+      mixpanel.track("Started DAO origination", {
+        contract: "MetadataCarrier",
+        daoName: params.orgSettings.name
+      })
+
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
         tezos: tezosToolkit,
@@ -109,6 +115,11 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(1);
       setStates(updatedStates);
 
+      mixpanel.track("Started DAO origination", {
+        contract: "BaseDAO",
+        daoName: params.orgSettings.name
+      })
+
       const contract = await BaseDAO.baseDeploy(template, {
         tezos: tezosToolkit,
         metadata,
@@ -133,6 +144,14 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(2);
       setStates(updatedStates);
 
+      mixpanel.track("Completed DAO creation", {
+        daoName: params.orgSettings.name
+      })
+
+      mixpanel.track("Waiting for DAO indexation", {
+        daoName: params.orgSettings.name
+      })
+
       const indexed = await waitForIndexation(contract.address);
 
       updatedStates[2] = {
@@ -144,6 +163,10 @@ export const useOriginate = (template: DAOTemplate) => {
 
       setActiveState(3);
       setStates(updatedStates);
+
+      mixpanel.track("Completed DAO indexation", {
+        daoName: params.orgSettings.name
+      })
 
       return contract;
     },
