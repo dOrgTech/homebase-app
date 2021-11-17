@@ -87,7 +87,8 @@ export const useOriginate = (template: DAOTemplate) => {
 
       mixpanel.track("Started DAO origination", {
         contract: "MetadataCarrier",
-        daoName: params.orgSettings.name
+        daoName: params.orgSettings.name,
+        daoType: params.template
       })
 
       const metadata = await deployMetadataCarrier({
@@ -145,11 +146,13 @@ export const useOriginate = (template: DAOTemplate) => {
       setStates(updatedStates);
 
       mixpanel.track("Completed DAO creation", {
-        daoName: params.orgSettings.name
+        daoName: params.orgSettings.name,
+        daoType: params.template
       })
 
       mixpanel.track("Waiting for DAO indexation", {
-        daoName: params.orgSettings.name
+        daoName: params.orgSettings.name,
+        daoType: params.template
       })
 
       const indexed = await waitForIndexation(contract.address);
@@ -165,7 +168,8 @@ export const useOriginate = (template: DAOTemplate) => {
       setStates(updatedStates);
 
       mixpanel.track("Completed DAO indexation", {
-        daoName: params.orgSettings.name
+        daoName: params.orgSettings.name,
+        daoType: params.template
       })
 
       return contract;

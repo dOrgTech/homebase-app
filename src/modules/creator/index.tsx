@@ -111,6 +111,9 @@ export const DAOCreate: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
+    mixpanel.unregister("daoAddress")
+    mixpanel.unregister("daoType")
+    
     mixpanel.track("Visited Creator")
   }, [])
 

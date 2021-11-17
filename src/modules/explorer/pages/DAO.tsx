@@ -116,10 +116,15 @@ export const DAO: React.FC = () => {
   }, [data, mutate, proposals]);
 
   useEffect(() => {
-    mixpanel.track('Visited DAO', {
-      daoAddress: daoId
-    }); 
-  }, [daoId])
+    if(data) {
+      mixpanel.register({
+        daoAddress: daoId,
+        daoType: data.data.type
+      });
+      
+      mixpanel.track('Visited DAO');
+    }
+  }, [daoId, data])
 
   return (
     <>

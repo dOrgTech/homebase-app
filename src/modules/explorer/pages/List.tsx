@@ -10,7 +10,7 @@ import {
   useTheme,
   withTheme,
 } from "@material-ui/core";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { SearchInput } from "modules/explorer/components/SearchInput";
@@ -20,6 +20,7 @@ import { TabPanel } from "../components/TabPanel";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs";
 import { Navbar } from "modules/common/Toolbar";
+import mixpanel from "mixpanel-browser";
 
 const GridContainer = styled(Grid)({
   background: "inherit",
@@ -184,6 +185,11 @@ export const DAOsList: React.FC = () => {
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim());
   };
+
+  useEffect(() => {
+    mixpanel.unregister("daoAddress")
+    mixpanel.unregister("daoType")
+  }, [])
 
   return (
     <>
