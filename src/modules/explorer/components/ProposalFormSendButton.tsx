@@ -10,7 +10,7 @@ const SendContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const StyledSendButton = styled(ViewButton)(({ theme }) => ({
-  width: 229,
+  width: 101,
   border: "1px",
   background: theme.palette.secondary.main,
   borderRadius: 4,

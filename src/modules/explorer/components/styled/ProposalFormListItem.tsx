@@ -1,12 +1,13 @@
 import { styled, Grid } from "@material-ui/core";
 
 export const ProposalFormListItem = styled(Grid)(({ theme }) => ({
-  height: 70,
+  minHeight: 54,
   display: "flex",
   alignItems: "center",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 65px",
+  borderRadius: "4px",
+  padding: "0 20px",
   [theme.breakpoints.down("sm")]: {
     padding: "10px 24px",
   },
+  background: theme.palette.primary.main
 }));

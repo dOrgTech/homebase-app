@@ -1,123 +1,31 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
   Grid,
   styled,
   Typography,
   Paper,
   DialogContent,
-  DialogContentText,
   TextField,
   InputAdornment,
   useTheme,
   useMediaQuery,
-  Switch,
 } from "@material-ui/core";
-import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { TreasuryDAO } from "services/contracts/baseDAO";
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { ErrorText } from "modules/explorer/components/styled/ErrorText";
-import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
+import {useDAO} from "services/indexer/dao/hooks/useDAO";
+import {TreasuryDAO} from "services/contracts/baseDAO";
+import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import {ErrorText} from "modules/explorer/components/styled/ErrorText";
 import * as Yup from "yup";
 import BigNumber from "bignumber.js";
-import { useDAOID } from "modules/explorer/daoRouter";
-import { Autocomplete } from "@material-ui/lab";
+import {useDAOID} from "modules/explorer/daoRouter";
+import {Autocomplete} from "@material-ui/lab";
 
-import { Controller, useFieldArray, useFormContext } from "react-hook-form";
-import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
-import { Token } from "models/Token";
+import {Controller, useFieldArray, useFormContext} from "react-hook-form";
+import {useTezosBalance} from "services/contracts/baseDAO/hooks/useTezosBalance";
+import {Token} from "models/Token";
+import {ProposalFormInput} from "../../components/ProposalFormInput";
+import {BatchBar} from "../../components/BatchBar";
 
 export type Asset = Token | { symbol: "XTZ" };
-
-const AmountItem = styled(Grid)(({ theme }) => ({
-  minHeight: 137,
-  display: "flex",
-  alignItems: "center",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  paddingTop: 24,
-  paddingLeft: 65,
-  paddingRight: 65,
-  [theme.breakpoints.down("sm")]: {
-    padding: "24px 24px",
-  },
-}));
-
-const BatchBar = styled(Grid)(({ theme }) => ({
-  height: 60,
-  alignItems: "center",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 65px",
-  cursor: "pointer",
-  overflowX: "auto",
-  [theme.breakpoints.down("sm")]: {
-    padding: "24px 24px",
-  },
-}));
-
-const SwitchContainer = styled(Grid)({
-  textAlign: "end",
-});
-
-const TransferActive = styled(Grid)({
-  height: 53,
-  minWidth: 51,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-});
-
-const AddButton = styled(Paper)({
-  marginLeft: 12,
-  minHeight: 31,
-  minWidth: 31,
-  textAlign: "center",
-  padding: 0,
-  background: "#383939",
-  color: "#fff",
-  alignItems: "center",
-  display: "flex",
-  justifyContent: "center",
-  cursor: "pointer",
-});
-
-const styles = {
-  visible: {
-    display: "none",
-  },
-  active: {
-    background: "#3866F9",
-  },
-};
-
-const CustomTextField = styled(TextField)({
-  textAlign: "end",
-  "& .MuiInputBase-input": {
-    textAlign: "end",
-    paddingRight: 12,
-  },
-});
-
-const CustomTextFieldAmount = styled(TextField)(({ theme }) => ({
-  border: "1px solid #434242",
-  padding: 6,
-  minHeight: 31,
-  marginTop: 16,
-  width: "auto",
-  "& .MuiInputBase-input": {
-    textAlign: "initial",
-    paddingLeft: 40,
-    paddingRight: 10,
-    [theme.breakpoints.down("sm")]: {
-      paddingLeft: 0,
-      paddingRight: 0,
-      textAlign: "center",
-    },
-  },
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "inherit",
-    paddingRight: "inherit",
-    width: "100%",
-  },
-}));
 
 const AmountText = styled(Typography)({
   color: "rgba(255, 255, 255, 0.7)",
@@ -128,13 +36,9 @@ const AmountText = styled(Typography)({
 
 const AutoCompletePaper = styled(Paper)({
   background: "#24282B",
-
-  // "& li:hover": {
-  //   background: "red"
-  // }
 })
 
-const AmountContainer = styled(Grid)(({ theme }) => ({
+const AmountContainer = styled(Grid)(({theme}) => ({
   [theme.breakpoints.down("sm")]: {
     paddingRight: 0,
   },
@@ -144,10 +48,16 @@ const AutoCompleteField = styled(Autocomplete)({
   "& .MuiInputLabel-root": {
     display: "none",
   },
-  "& .MuiInput-root": {
-    border: "1px solid #434242",
-    padding: 6,
+  "& .MuiAutocomplete-inputRoot": {
+    padding: 0
   },
+  "& label + .MuiInput-formControl": {
+    marginTop: "0"
+  },
+
+  '& .MuiAutocomplete-inputRoot[class*="MuiInput-root"] .MuiAutocomplete-input:first-child': {
+    padding: 0
+  }
 });
 
 const DaoBalance = styled(Grid)({
@@ -157,12 +67,6 @@ const DaoBalance = styled(Grid)({
 const CurrentAsset = styled(Typography)({
   opacity: 0.7,
 });
-
-const AmountSmallText = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 14,
-  },
-}));
 
 export interface FormTransferParams {
   recipient: string;
@@ -208,10 +112,10 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     getValues,
     setValue,
     watch,
-    formState: { errors, touchedFields: touched },
+    formState: {errors, touchedFields: touched},
   } = useFormContext<TreasuryProposalFormValues>();
 
-  const { fields, append } = useFieldArray({
+  const {fields, append} = useFieldArray({
     control,
     name: "transferForm.transfers",
   });
@@ -222,10 +126,10 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const daoId = useDAOID();
-  const { data: daoData } = useDAO(daoId);
+  const {data: daoData} = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
-  const { tokenHoldings: daoHoldings } = useDAOHoldings(daoId);
-  const { data: tezosBalance } = useTezosBalance(daoId);
+  const {tokenHoldings: daoHoldings} = useDAOHoldings(daoId);
+  const {data: tezosBalance} = useTezosBalance(daoId);
 
   const handleIsBatchChange = () => {
     setIsBatch(!isBatch);
@@ -240,15 +144,15 @@ export const NewTreasuryProposalDialog: React.FC = () => {
     errors.transferForm?.transfers?.[activeTransfer - 1] as any
   )?.amount;
 
-  const { transfers } = watch("transferForm");
+  const {transfers} = watch("transferForm");
 
   const currentTransfer = transfers[activeTransfer - 1];
 
   const daoAssets = daoHoldings
     ? [
-        ...daoHoldings,
-        { balance: tezosBalance || new BigNumber(0), token: { symbol: "XTZ" } },
-      ]
+      ...daoHoldings,
+      {balance: tezosBalance || new BigNumber(0), token: {symbol: "XTZ"}},
+    ]
     : [];
 
   const assetOptions = daoAssets.map((a) => a.token);
@@ -256,100 +160,49 @@ export const NewTreasuryProposalDialog: React.FC = () => {
 
   return (
     <DialogContent>
-      <DialogContentText id="alert-dialog-description">
-        <ProposalFormListItem container direction="row">
-          <Grid item xs={6}>
-            <Typography variant="subtitle2" color="textPrimary">
-              Batch Transfer?
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <SwitchContainer item xs={12} justify="flex-end">
-              <Switch
-                type="checkbox"
-                onChange={handleIsBatchChange}
-                checked={isBatch}
-              />
-            </SwitchContainer>
-          </Grid>
-        </ProposalFormListItem>
-
-        {values.transferForm.isBatch ? (
-          <BatchBar container direction="row" wrap="nowrap">
-            {values.transferForm.transfers.map((_, index) => {
-              return (
-                <TransferActive
-                  item
-                  key={index}
-                  onClick={() => setActiveTransfer(index + 1)}
-                  style={
-                    Number(index + 1) === activeTransfer
-                      ? styles.active
-                      : undefined
-                  }
-                >
-                  <Typography variant="subtitle2" color="textPrimary">
-                    #{index + 1}
-                  </Typography>
-                </TransferActive>
-              );
-            })}
-
-            <AddButton
-              onClick={() => {
-                append(emptyTransfer);
-                setActiveTransfer(activeTransfer + 1);
-              }}
-            >
-              +
-            </AddButton>
-          </BatchBar>
-        ) : null}
-
+      <Grid container direction={"column"} style={{gap: 31}}>
+        <Grid item>
+          <BatchBar isBatch={isBatch} stateIsBatch={values.transferForm.isBatch}
+                    handleIsBatchChange={handleIsBatchChange} onClickAdd={() => {
+            append(emptyTransfer);
+            setActiveTransfer(activeTransfer + 1);
+          }} items={values.transferForm.transfers} activeItem={activeTransfer}
+                    setActiveItem={(index: number) => setActiveTransfer(index + 1)} />
+        </Grid>
         {fields.map(
           (field, index) =>
             index === activeTransfer - 1 && (
               <>
-                <ProposalFormListItem container direction="row">
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2" color="textPrimary">
-                      Recipient
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <SwitchContainer item xs={12} justify="flex-end">
-                      <Controller
-                        key={field.id}
-                        name={`transferForm.transfers.${index}.recipient`}
-                        control={control}
-                        render={({ field }) => (
-                          <CustomTextField
-                            {...field}
-                            type="string"
-                            placeholder="Type an Address Here"
-                          />
-                        )}
+                <ProposalFormInput label={"Recipient"}>
+                  <Controller
+                    key={field.id}
+                    name={`transferForm.transfers.${index}.recipient`}
+                    control={control}
+                    render={({field}) => (
+                      <TextField
+                        {...field}
+                        type="string"
+                        InputProps={{disableUnderline: true}}
+                        placeholder="Type an Address Here"
                       />
+                    )}
+                  />
 
-                      {recipientError &&
-                      touched.transferForm?.transfers?.[activeTransfer - 1]
-                        ?.recipient ? (
-                        <ErrorText>{recipientError}</ErrorText>
-                      ) : null}
-                    </SwitchContainer>
-                  </Grid>
-                </ProposalFormListItem>
-                <AmountItem container direction="row" alignItems="center">
-                  <Grid item xs={isMobileSmall ? 12 : 5}>
-                    <Grid container direction="column">
-                      <Typography variant="subtitle2" color="textPrimary">
-                        Asset
-                      </Typography>
+                  {recipientError &&
+                  touched.transferForm?.transfers?.[activeTransfer - 1]
+                    ?.recipient ? (
+                    <ErrorText>{recipientError}</ErrorText>
+                  ) : null}
+                </ProposalFormInput>
+                <Grid container alignItems="center" style={{gap: 26}}>
+
+                  <Grid item xs={isMobileSmall ? 12 : 6}>
+                    <ProposalFormInput label={"Asset"}>
                       <Controller
                         key={field.id}
                         name={`transferForm.transfers.${index}.asset`}
                         control={control}
-                        render={({ field: { onChange, ...props } }) => (
+                        render={({field: {onChange, ...props}}) => (
                           <AutoCompleteField
                             options={assetOptions || []}
                             PaperComponent={AutoCompletePaper}
@@ -358,74 +211,67 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                                 option as
                                   | Token
                                   | {
-                                      symbol: string;
-                                    }
+                                  symbol: string;
+                                }
                               ).symbol
                             }
                             renderInput={(params) => (
-                              <TextField {...params} label="Select asset" />
+                              <TextField {...params} InputProps={{...params.InputProps, disableUnderline: true}}
+                                         label="Select asset"/>
                             )}
                             onChange={(e, data) => onChange(data)}
                             {...props}
                           />
                         )}
                       />
-                    </Grid>
+                    </ProposalFormInput>
                   </Grid>
-                  <Grid item xs={isMobileSmall ? 12 : 2}></Grid>
 
-                  <Grid item xs={isMobileSmall ? 12 : 5}>
-                    <Grid container direction="column">
-                      <AmountSmallText
-                        variant="subtitle2"
-                        color="textPrimary"
-                      >
-                        Amount
-                      </AmountSmallText>
 
-                      <SwitchContainer item xs={12} justify="flex-end">
-                        <Controller
-                          key={field.id}
-                          name={`transferForm.transfers.${index}.amount`}
-                          control={control}
-                          render={({ field }) => (
-                            <CustomTextFieldAmount
-                              {...field}
-                              type="tel"
-                              placeholder="0"
-                              InputProps={{
-                                inputProps: {
-                                  step: 0.01,
-                                  min: dao && dao.data.extra.min_xtz_amount,
-                                  max: dao && dao.data.extra.max_xtz_amount,
-                                },
-                                endAdornment: (
-                                  <InputAdornment position="start">
-                                    <CurrentAsset
-                                      color="textPrimary"
-                                      variant="subtitle2"
-                                    >
-                                      {" "}
-                                      {values.transferForm.transfers[
-                                        activeTransfer - 1
+                  <Grid item xs={isMobileSmall ? 12 : true}>
+                    <ProposalFormInput label={"Amount"}>
+
+                      <Controller
+                        key={field.id}
+                        name={`transferForm.transfers.${index}.amount`}
+                        control={control}
+                        render={({field}) => (
+                          <TextField
+                            {...field}
+                            type="tel"
+                            placeholder="0"
+                            InputProps={{
+                              inputProps: {
+                                step: 0.01,
+                                min: dao && dao.data.extra.min_xtz_amount,
+                                max: dao && dao.data.extra.max_xtz_amount,
+                              },
+                              disableUnderline: true,
+                              endAdornment: (
+                                <InputAdornment position="start">
+                                  <CurrentAsset
+                                    color="textPrimary"
+                                    variant="subtitle2"
+                                  >
+                                    {" "}
+                                    {values.transferForm.transfers[
+                                    activeTransfer - 1
                                       ].asset?.symbol || "-"}
-                                    </CurrentAsset>
-                                  </InputAdornment>
-                                ),
-                              }}
-                            />
-                          )}
-                        />
+                                  </CurrentAsset>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        )}
+                      />
 
-                        {amountError &&
-                        touched.transferForm?.transfers?.[activeTransfer - 1]
-                          ?.amount ? (
-                          <ErrorText>{amountError}</ErrorText>
-                        ) : null}
-                      </SwitchContainer>
-                    </Grid>
+                      {amountError &&
+                      touched.transferForm?.transfers?.[activeTransfer - 1]
+                        ?.amount ? (
+                        <ErrorText>{amountError}</ErrorText>
+                      ) : null}
+                    </ProposalFormInput>
                   </Grid>
-
                   <DaoBalance
                     container
                     direction="row"
@@ -453,11 +299,11 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                       ) : null}
                     </Grid>
                   </DaoBalance>
-                </AmountItem>
+                </Grid>
               </>
             )
         )}
-      </DialogContentText>
+      </Grid>
     </DialogContent>
   );
 };

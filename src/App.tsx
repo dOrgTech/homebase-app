@@ -5,6 +5,7 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
+import mixpanel from 'mixpanel-browser';
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Box, makeStyles, ThemeProvider } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
@@ -60,6 +61,17 @@ const styles = makeStyles({
     opacity: 1,
   },
 });
+
+if(!process.env.REACT_APP_MIXPANEL_TOKEN) {
+  throw new Error("REACT_APP_MIXPANEL_TOKEN env variable is missing")
+}
+
+if(!process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED) {
+  throw new Error("REACT_APP_MIXPANEL_DEBUG_ENABLED env variable is missing")
+}
+
+mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN, {debug: process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED == "true"}); 
+mixpanel.track('Visit');
 
 const App: React.FC = () => {
   const classes = styles();

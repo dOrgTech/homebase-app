@@ -9,6 +9,7 @@ export const theme = createMuiTheme({
     secondary: {
       main: "#81FEB7",
       dark: "#273833",
+      contrastText: "#1C1F23"
     },
     text: {
       primary: "#FFFFFF",
@@ -225,7 +226,10 @@ export const theme = createMuiTheme({
     },
     MuiDialogContent: {
       root: {
-        padding: 0,
+        padding: "42px 54px",
+        "&:first-child": {
+          paddingTop: "42px"
+        }
       },
     },
     MuiSelect: {
@@ -333,6 +337,6 @@ export const theme = createMuiTheme({
             paddingRight: 46,
           },
       }
-    }
+    },
   },
 });

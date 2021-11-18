@@ -9,6 +9,9 @@ import { formatUnits, xtzToMutez } from "../utils";
 import { BigNumber } from "bignumber.js";
 import { Token } from "models/Token";
 import { Ledger } from "services/indexer/types";
+import {Expr, Parser} from "@taquito/michel-codec";
+import {Schema} from "@taquito/michelson-encoder";
+import proposeCode from "./registryDAO/michelson/propose"
 
 interface DeployParams {
   params: MigrationParams;
