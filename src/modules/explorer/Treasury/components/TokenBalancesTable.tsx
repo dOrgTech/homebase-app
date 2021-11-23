@@ -5,12 +5,14 @@ import { TableHeader } from "modules/explorer/components/styled/TableHeader";
 import { useDAOID } from "modules/explorer/daoRouter";
 import React from "react";
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
 import { TreasuryTableRow } from "..";
 import { ProposalTableHeadText } from "./TableHeader";
 
 export const TokenTable: React.FC = () => {
   const daoId = useDAOID();
   const { tokenHoldings } = useDAOHoldings(daoId);
+  const { data: xtzBalance } = useTezosBalance(daoId);
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -38,6 +40,11 @@ export const TokenTable: React.FC = () => {
           {/* <Grid item xs={1} /> */}
         </TableHeader>
       )}
+      {xtzBalance ? (
+        <GenericTableContainer>
+          <TreasuryTableRow symbol="XTZ" balance={xtzBalance.div(1000000)} />
+        </GenericTableContainer>
+      ) : null}
       {tokenHoldings && tokenHoldings.length
         ? tokenHoldings.map((holding, i) => (
             <GenericTableContainer key={`holding-${i}`}>

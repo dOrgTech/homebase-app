@@ -32,4 +32,4 @@ export interface TransferDTO {
   to_alias: string;
 }
 
-export type TransferWithBN = Omit<TransferDTO, "amount"> & { amount: BigNumber }
+export type TokenTransferWithBN = Omit<TransferDTO, "amount"> & { amount: BigNumber }

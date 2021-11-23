@@ -3,9 +3,19 @@ import { useQuery } from "react-query";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { getDAOTransfers } from "services/bakingBad/transfers";
-import { TransferWithBN } from "services/bakingBad/transfers/types";
-import { parseUnits } from "services/contracts/utils";
+import { mutezToXtz, parseUnits } from "services/contracts/utils";
 import { BigNumber } from "bignumber.js";
+import { getXTZTransfers } from "services/indexer/dao/services";
+import dayjs from "dayjs";
+
+interface TransferWithBN {
+  name: string;
+  amount: BigNumber;
+  recipient: string;
+  sender: string;
+  date: string;
+  hash: string;
+}
 
 export const useTransfers = (contractAddress: string) => {
   const { data: dao } = useDAO(contractAddress);
@@ -14,18 +24,42 @@ export const useTransfers = (contractAddress: string) => {
   const result = useQuery<TransferWithBN[], Error>(
     ["transfers", contractAddress],
     async () => {
-      const transfers = await getDAOTransfers(
+      const tokenTransfersDTO = await getDAOTransfers(
         (dao as BaseDAO).data.address,
         network
       );
 
-      console.log(transfers);
-      return transfers
-        .filter((t) => t.from.toLowerCase() === contractAddress.toLowerCase())
-        .map((t) => ({
+      const xtzTransfersDTO = await getXTZTransfers(
+        (dao as BaseDAO).data.address
+      );
+
+      const xtzTransfers: TransferWithBN[] = xtzTransfersDTO.transfer.map(
+        (t) => ({
           ...t,
-          amount: parseUnits(new BigNumber(t.amount), t.token.decimals),
-        }));
+          recipient: contractAddress,
+          sender: t.from_address,
+          date: t.timestamp,
+          name: "XTZ",
+          hash: t.hash,
+          amount: mutezToXtz(new BigNumber(t.amount)),
+        })
+      );
+
+      console.log(tokenTransfersDTO)
+
+      const tokenTransfers: TransferWithBN[] = tokenTransfersDTO.map((t) => ({
+        ...t,
+        recipient: t.to,
+        sender: t.from,
+        date: t.timestamp,
+        name: t.token.symbol || "-",
+        hash: t.hash,
+        amount: parseUnits(new BigNumber(t.amount), t.token.decimals),
+      }));
+
+      return tokenTransfers
+        .concat(xtzTransfers)
+        .sort((a, b) => (dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1));
     },
     {
       enabled: !!dao,

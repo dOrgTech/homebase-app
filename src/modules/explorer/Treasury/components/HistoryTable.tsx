@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Grid,
   styled,
@@ -25,54 +25,132 @@ export const HistoryTable: React.FC = () => {
   const daoId = useDAOID();
   const { data: transfers } = useTransfers(daoId);
 
+  console.log(transfers)
+
+  const inboundTransfers = useMemo(() => {
+    if (!transfers) {
+      return [];
+    }
+
+    return transfers.filter(
+      (t) => t.recipient.toLowerCase() === daoId.toLowerCase()
+    );
+  }, [transfers, daoId]);
+
+  const outboundTransfers = useMemo(() => {
+    if (!transfers) {
+      return [];
+    }
+
+    return transfers.filter(
+      (t) => t.recipient.toLowerCase() !== daoId.toLowerCase()
+    );
+  }, [transfers, daoId]);
+
   return (
-    <ResponsiveGenericTable>
-      {!isMobileSmall && (
-        <TableHeader
-          item
-          container
-          wrap="nowrap"
-          id="demo"
-          justifyContent="space-between"
-        >
-          <Grid item xs={3}>
-            <ProposalTableHeadText align={"left"}>
-              TOKEN TRANSFER HISTORY
-            </ProposalTableHeadText>
-          </Grid>
-          <Grid item xs={3}>
-            <ProposalTableHeadText align={"left"}>DATE</ProposalTableHeadText>
-          </Grid>
-          <Grid item xs={3}>
-            <ProposalTableHeadText align={"left"}>
-              RECIPIENT
-            </ProposalTableHeadText>
-          </Grid>
-          <Grid item xs={1}>
-            <ProposalTableHeadText align={"left"}>AMOUNT</ProposalTableHeadText>
-          </Grid>
-        </TableHeader>
-      )}
+    <>
+      <ResponsiveGenericTable>
+        {!isMobileSmall && (
+          <TableHeader
+            item
+            container
+            wrap="nowrap"
+            id="demo"
+            justifyContent="space-between"
+          >
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>
+                OUTBOUND TOKEN TRANSFER HISTORY
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>DATE</ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>
+                RECIPIENT
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={1}>
+              <ProposalTableHeadText align={"left"}>
+                AMOUNT
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
+        )}
 
-      {transfers && transfers.length > 0
-        ? transfers.map((transfer, i) => (
-            <GenericTableContainer key={`token-${i}`}>
-              <TreasuryHistoryRow
-                name={transfer.token.symbol}
-                amount={transfer.amount}
-                recipient={transfer.to}
-                date={transfer.timestamp}
-                hash={transfer.hash}
-              />
-            </GenericTableContainer>
-          ))
-        : null}
+        {outboundTransfers
+          ? outboundTransfers.map((transfer, i) => (
+              <GenericTableContainer key={`token-${i}`}>
+                <TreasuryHistoryRow
+                  name={transfer.name}
+                  amount={transfer.amount}
+                  address={transfer.recipient}
+                  date={transfer.date}
+                  hash={transfer.hash}
+                  isInbound={false}
+                />
+              </GenericTableContainer>
+            ))
+          : null}
 
-      {history.length === 0 ? (
-        <NoProposals variant="subtitle1" color="textSecondary">
-          No transfers listed
-        </NoProposals>
-      ) : null}
-    </ResponsiveGenericTable>
+        {history.length === 0 ? (
+          <NoProposals variant="subtitle1" color="textSecondary">
+            No transfers listed
+          </NoProposals>
+        ) : null}
+      </ResponsiveGenericTable>
+      <ResponsiveGenericTable>
+        {!isMobileSmall && (
+          <TableHeader
+            item
+            container
+            wrap="nowrap"
+            id="demo"
+            justifyContent="space-between"
+          >
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>
+                INBOUND TOKEN TRANSFER HISTORY
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>DATE</ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={3}>
+              <ProposalTableHeadText align={"left"}>
+                SENDER
+              </ProposalTableHeadText>
+            </Grid>
+            <Grid item xs={1}>
+              <ProposalTableHeadText align={"left"}>
+                AMOUNT
+              </ProposalTableHeadText>
+            </Grid>
+          </TableHeader>
+        )}
+
+        {inboundTransfers
+          ? inboundTransfers.map((transfer, i) => (
+              <GenericTableContainer key={`token-${i}`}>
+                <TreasuryHistoryRow
+                  name={transfer.name}
+                  amount={transfer.amount}
+                  address={transfer.sender}
+                  date={transfer.date}
+                  hash={transfer.hash}
+                  isInbound={true}
+                />
+              </GenericTableContainer>
+            ))
+          : null}
+
+        {history.length === 0 ? (
+          <NoProposals variant="subtitle1" color="textSecondary">
+            No transfers listed
+          </NoProposals>
+        ) : null}
+      </ResponsiveGenericTable>
+    </>
   );
 };
