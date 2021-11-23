@@ -42,10 +42,11 @@ const Cursor = styled(Typography)({
 export const TreasuryHistoryRow: React.FC<{
   name: string;
   amount: BigNumber;
-  recipient: string;
+  address: string;
   date: string;
   hash: string;
-}> = ({ name, amount, recipient, date, hash }) => {
+  isInbound: boolean;
+}> = ({ name, amount, address, date, hash, isInbound }) => {
   const localizedFormat = require("dayjs/plugin/localizedFormat");
   dayjs.extend(localizedFormat);
   const theme = useTheme();
@@ -105,14 +106,14 @@ export const TreasuryHistoryRow: React.FC<{
                 color="textSecondary"
                 align={isMobileSmall ? "center" : "left"}
               >
-                RECIPIENT{" "}
+                {isInbound? "SENDER": "RECIPIENT"}{" "}
               </Typography>
             ) : null}
             <TokenName>
               {"  "}
               <Cursor variant="subtitle1" color="textSecondary">
-                {recipient.slice(0, 6)}...
-                {recipient.slice(recipient.length - 4, recipient.length)}
+                {address.slice(0, 6)}...
+                {address.slice(address.length - 4, address.length)}
               </Cursor>
             </TokenName>
           </Grid>

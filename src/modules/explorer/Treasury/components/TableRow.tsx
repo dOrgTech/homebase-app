@@ -35,7 +35,6 @@ const Cursor = styled(Typography)({
 export const TreasuryTableRow: React.FC<{
   symbol: string;
   balance: BigNumber;
-  decimals: number;
 }> = ({ symbol, balance }) => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();

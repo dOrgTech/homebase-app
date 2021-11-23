@@ -174,3 +174,19 @@ export interface FetchedProposals {
 export interface FetchedProposal {
   proposals: ProposalDTOWithVotes[];
 }
+
+export interface DAOXTZTransferDTO {
+  amount: string;
+  decimal_amount: number;
+  from_address: string;
+  timestamp: string;
+  hash: string;
+}
+
+export interface DAOXTZTransfer {
+  amount: BigNumber;
+  decimal_amount: number;
+  from_address: string;
+  timestamp: string;
+  hash: string;
+}

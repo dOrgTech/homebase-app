@@ -1,6 +1,7 @@
 import { client } from "../graphql";
 import {
   DAOListItem,
+  DAOXTZTransferDTO,
   FetchedDAO,
   FetchedProposal,
   FetchedProposals,
@@ -10,6 +11,7 @@ import {
   GET_DAO_QUERY,
   GET_PROPOSALS_QUERY,
   GET_PROPOSAL_QUERY,
+  GET_XTZ_TRANSFERS,
 } from "./queries";
 
 interface GetDAODTO {
@@ -26,6 +28,10 @@ interface GetProposalsDTO {
 
 interface GetProposalDTO {
   daos: [FetchedProposal];
+}
+
+interface GetXTZTransfersDTO {
+  transfer: [DAOXTZTransferDTO];
 }
 
 export const getDAO = async (address: string) => {
@@ -52,5 +58,11 @@ export const getProposal = async (address: string, proposalKey: string) => {
   return await client.request<GetProposalDTO>(GET_PROPOSAL_QUERY, {
     address,
     proposalKey,
+  });
+};
+
+export const getXTZTransfers = async (address: string) => {
+  return await client.request<GetXTZTransfersDTO>(GET_XTZ_TRANSFERS, {
+    address,
   });
 };
