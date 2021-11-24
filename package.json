@@ -48,6 +48,7 @@
     "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-spring-bottom-sheet": "^3.4.0",
     "serve": "^11.3.2",
     "yup": "^0.32.9"
   },

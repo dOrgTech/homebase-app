@@ -9,3 +9,7 @@ body {
 a {
   text-decoration: none;
 }
+
+[data-rsbs-overlay], [data-rsbs-root]:after {
+  background: #24282B
+}

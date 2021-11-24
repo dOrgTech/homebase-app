@@ -5,7 +5,7 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import mixpanel from 'mixpanel-browser';
+import mixpanel from "mixpanel-browser";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Box, makeStyles, ThemeProvider } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
@@ -20,6 +20,7 @@ import "App.css";
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions";
 import { Landing } from "modules/home/Landing";
 import { WarningFooter } from "modules/common/WarningFooter";
+import { ActionSheetProvider } from "modules/explorer/v2/context/ActionSheets";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,16 +63,18 @@ const styles = makeStyles({
   },
 });
 
-if(!process.env.REACT_APP_MIXPANEL_TOKEN) {
-  throw new Error("REACT_APP_MIXPANEL_TOKEN env variable is missing")
+if (!process.env.REACT_APP_MIXPANEL_TOKEN) {
+  throw new Error("REACT_APP_MIXPANEL_TOKEN env variable is missing");
 }
 
-if(!process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED) {
-  throw new Error("REACT_APP_MIXPANEL_DEBUG_ENABLED env variable is missing")
+if (!process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED) {
+  throw new Error("REACT_APP_MIXPANEL_DEBUG_ENABLED env variable is missing");
 }
 
-mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN, {debug: process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED == "true"}); 
-mixpanel.track('Visit');
+mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN, {
+  debug: process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED == "true",
+});
+mixpanel.track("Visit");
 
 const App: React.FC = () => {
   const classes = styles();
@@ -86,37 +89,39 @@ const App: React.FC = () => {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Box bgcolor="primary.dark" position="absolute" width="100%">
-            <Router>
-              <ScrollToTop />
-              <Switch>
-                <Route path="/creator">
-                  <CreatorProvider>
-                    <DAOCreate />
-                  </CreatorProvider>
-                  <WarningFooter
-                    text={
-                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
-                    }
-                  />
-                </Route>
-                <Route path="/explorer">
-                  <TZKTSubscriptionsProvider>
-                    <DAOExplorerRouter />
-                  </TZKTSubscriptionsProvider>
-                  <WarningFooter
-                    text={
-                      "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
-                    }
-                  />
-                </Route>
-                <Route path="/">
-                  <Landing />
-                </Route>
-                <Redirect to="/" />
-              </Switch>
-            </Router>
-          </Box>
+          <ActionSheetProvider>
+            <Box bgcolor="primary.dark" position="absolute" width="100%">
+              <Router>
+                <ScrollToTop />
+                <Switch>
+                  <Route path="/creator">
+                    <CreatorProvider>
+                      <DAOCreate />
+                    </CreatorProvider>
+                    <WarningFooter
+                      text={
+                        "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
+                      }
+                    />
+                  </Route>
+                  <Route path="/explorer">
+                    <TZKTSubscriptionsProvider>
+                      <DAOExplorerRouter />
+                    </TZKTSubscriptionsProvider>
+                    <WarningFooter
+                      text={
+                        "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
+                      }
+                    />
+                  </Route>
+                  <Route path="/">
+                    <Landing />
+                  </Route>
+                  <Redirect to="/" />
+                </Switch>
+              </Router>
+            </Box>
+          </ActionSheetProvider>
         </QueryClientProvider>
       </SnackbarProvider>
     </ThemeProvider>

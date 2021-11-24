@@ -8,7 +8,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import { Navbar } from "modules/common/Toolbar";
+import { Navbar } from "../../components/Toolbar";
 import { TabPanel } from "modules/explorer/components/TabPanel";
 import React, { useMemo, useState } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -79,7 +79,7 @@ export const DAOList: React.FC = () => {
 
   return (
     <>
-      <Navbar mode="explorer" disableMobileMenu/>
+      <Navbar disableMobileMenu/>
       <PageContainer>
         <Grid container style={{ gap: 42 }} direction="column">
           <Grid item>

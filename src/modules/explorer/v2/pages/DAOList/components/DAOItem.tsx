@@ -1,4 +1,12 @@
-import { styled, Grid, Theme, Typography, Link } from "@material-ui/core";
+import {
+  styled,
+  Grid,
+  Theme,
+  Typography,
+  Link,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import React from "react";
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
@@ -27,7 +35,7 @@ const NameText = styled(Typography)(({ theme }) => ({
   textOverflow: "ellipsis",
   color: theme.palette.text.primary,
   overflow: "hidden",
-  fontSize: 35
+  fontSize: 35,
 }));
 
 const NumberText = styled(Typography)({
@@ -48,19 +56,25 @@ export const DAOItem: React.FC<{
     votingAddresses: string[];
   };
 }> = ({ dao }) => {
+  const theme = useTheme();
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+
   return (
     <Link underline="none" href={`dao/${dao.id}`}>
       <Container container justifyContent="space-between" style={{ gap: 16 }}>
-        <Grid item xs={7}>
+        <Grid item xs={12} sm={7}>
           <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
           <NameText color="textPrimary">{dao.name}</NameText>
         </Grid>
-        <Grid item xs>
-          <NumberText color="textPrimary">
-            {dao.votingAddresses.length}
-          </NumberText>
+        <Grid item xs={12} sm>
+          {!isExtraSmall && (
+            <NumberText color="textPrimary">
+              {dao.votingAddresses.length}
+            </NumberText>
+          )}
+
           <VotingAddressesText color="textPrimary">
-            VOTING ADDRESSES
+            {isExtraSmall ? dao.votingAddresses.length : ""} VOTING ADDRESSES
           </VotingAddressesText>
         </Grid>
       </Container>
