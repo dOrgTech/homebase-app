@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New visual identity for the whole application
 
+## [1.0.3] - 2021-11-24
+### Added
+- Support for Hangzhounet
+
+### Changed
+- Fixed XTZ balances not showing properly on DAO treasuries
+- Added distinction between inbound and outbound transfers in DAO transfer history
+- Fixed XTZ balance in transfer proposal creation displaying as mutez
+
 ## [1.0.2] - 2021-11-17
 ### Added
 - Support for Granadanet
