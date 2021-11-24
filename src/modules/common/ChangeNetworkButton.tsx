@@ -124,6 +124,17 @@ export const NetworkMenu: React.FC<
             </Typography>
           </Grid>
         </AddressMenuItem>
+        <AddressMenuItem
+          container
+          alignItems="center"
+          onClick={() => handleNetworkChange("hangzhounet")}
+        >
+          <Grid item>
+            <Typography variant="subtitle2" color="textSecondary">
+              HANGZHOUNET
+            </Typography>
+          </Grid>
+        </AddressMenuItem>
       </AddressMenu>
     </StyledPopover>
   );
