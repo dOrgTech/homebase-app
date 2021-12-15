@@ -1,21 +1,17 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-const defaultTheme = createMuiTheme()
-const { breakpoints } = defaultTheme
-
-export const theme = createMuiTheme({
+export const legacyTheme = createMuiTheme({
   palette: {
     primary: {
-      main: "#2F3438",
-      dark: "#1C1F23",
-      light: "#424242",
+      main: "#1C1F23",
+      light: "#3D3D3D",
     },
     secondary: {
-      main: "#81FEB7",
-      dark: "#273833",
-      contrastText: "#1C1F23"
+      main: "#4BCF93",
+      light: "#81FEB7",
     },
     text: {
-      primary: "#FFFFFF",
+      primary: "#000000",
+      secondary: "#fff",
     },
     error: {
       main: "#ED254E",
@@ -30,13 +26,14 @@ export const theme = createMuiTheme({
   typography: {
     fontFamily: "Roboto Mono",
     h1: {
-      fontSize: 30,
-      [breakpoints.down("xs")]: {
-        fontSize: 22
-      }
+      fontSize: 35,
+      letterSpacing: "-0.01em",
     },
     subtitle1: {
-      fontSize: 32,
+      fontSize: 16,
+      fontWeight: 400,
+      lineHeight: "146.3%",
+      letterSpacing: "-0.01em",
     },
     subtitle2: {
       fontSize: 16,
@@ -48,35 +45,25 @@ export const theme = createMuiTheme({
       fontFamily: "Roboto",
     },
     h2: {
-      fontSize: 24,
+      color: "#000000",
+      fontSize: 25,
+      fontWeight: 500,
     },
     h4: {
-      fontSize: 21,
-      [breakpoints.down("xs")]: {
-        fontSize: 16
-      }
+      fontSize: 20,
     },
     h5: {
       fontSize: 35,
-      [breakpoints.down("xs")]: {
-        fontSize: 21
-      }
     },
     body1: {
-      fontSize: 18,
-      [breakpoints.down("xs")]: {
-        fontSize: 14
-      }
+      fontSize: 16,
     },
     body2: {
       fontSize: 16,
-      [breakpoints.down("xs")]: {
-        fontSize: 14
-      }
+      fontWeight: 300,
+      lineHeight: "413.4%",
+      opacity: 0.8,
     },
-    h6: {
-      fontSize: 14
-    }
   },
   overrides: {
     MuiSlider: {
@@ -194,9 +181,6 @@ export const theme = createMuiTheme({
         "&$disabled": {
           color: "#3d3d3d",
         },
-        textTransform: "capitalize",
-        fontWeight: 500,
-        fontSize: 18,
       },
       outlined: {
         "&$disabled": {
@@ -227,9 +211,11 @@ export const theme = createMuiTheme({
         maxWidth: "100%",
       },
       root: {
+        minHeight: 600,
         height: "auto",
       },
       paperWidthSm: {
+        minHeight: 600,
         height: "auto",
       },
     },
@@ -240,10 +226,7 @@ export const theme = createMuiTheme({
     },
     MuiDialogContent: {
       root: {
-        padding: "42px 54px",
-        "&:first-child": {
-          paddingTop: "42px"
-        }
+        padding: 0,
       },
     },
     MuiSelect: {
@@ -303,54 +286,6 @@ export const theme = createMuiTheme({
       root: {
         display: "none",
       },
-    },
-    MuiTable: {
-      root: {
-        borderRadius: "8px",
-        backgroundColor: "#2F3438"
-      }
-    },
-    MuiTableHead: {
-      root: {
-        minHeight: 58,
-        fontSize: 16,
-        fontWeight: 400,
-        letterSpacing: "-0.01em",
-        color: "#FFFFFF"
-      }
-    },
-    MuiTableFooter: {
-      root: {
-        minHeight: 60,
-        fontSize: 16,
-        fontWeight: 400,
-        letterSpacing: "-0.01em",
-        color: "##81FEB7",
-        borderTop: "0.3px solid #3D3D3D"
-      }
-    },
-    MuiTableBody: {
-      "root": {
-        "& > *": {
-          borderTop: "0.3px solid #3D3D3D",
-          minHeight: 90,
-        }
-      }
-    },
-    MuiTableCell: {
-      "root": {
-        borderBottom: "unset"
-      }
-    },
-    MuiTableRow: {
-      root: {
-          '& th:first-child, & td:first-child': {
-            paddingLeft: 46,
-          },
-          '& th:last-child, & td:last-child': {
-            paddingRight: 46,
-          },
-      }
     },
   },
 });

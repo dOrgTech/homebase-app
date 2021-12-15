@@ -1,4 +1,4 @@
-import { Grid, styled, Typography } from "@material-ui/core";
+import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -28,13 +28,8 @@ interface Balances {
 }
 
 const BalanceHeaderText = styled(Typography)({
-  fontSize: 21,
   letterSpacing: "-0.01em",
   paddingBottom: 10,
-});
-
-const BalanceTokenText = styled(Typography)({
-  fontSize: 24,
 });
 
 export const UserBalances: React.FC<{ daoId: string }> = ({
@@ -43,6 +38,8 @@ export const UserBalances: React.FC<{ daoId: string }> = ({
 }) => {
   const { account } = useTezos();
   const { data: dao, ledger } = useDAO(daoId);
+  const theme = useTheme()
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
   const balances = useMemo(() => {
     const userBalances: Balances = {
@@ -87,23 +84,23 @@ export const UserBalances: React.FC<{ daoId: string }> = ({
   return (
     <Grid container direction="column" style={{ gap: 40 }}>
       {children}
-      <Grid item container justifyContent="space-between">
+      <Grid item container direction={isExtraSmall? "column": "row"} justifyContent="space-between">
         {dao &&
           balancesList.map(({ displayName, balance }, i) => (
             <Grid item key={`balance-${i}`}>
-              <BalanceHeaderText color="secondary">
+              <BalanceHeaderText color="secondary" align={isExtraSmall? "center": "left"} variant="body2">
                 {displayName}
               </BalanceHeaderText>
-              <Grid container alignItems="baseline" spacing={2}>
+              <Grid container alignItems="baseline" spacing={2} justifyContent={isExtraSmall? "center": "flex-start"}>
                 <Grid item>
                   <Typography variant="h5" color="textPrimary">
                     {balance}
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <BalanceTokenText color="textPrimary">
+                  <Typography color="textPrimary" variant="h2">
                     {balance !== "-" ? dao.data.token.symbol : ""}
-                  </BalanceTokenText>
+                  </Typography>
                 </Grid>
               </Grid>
             </Grid>

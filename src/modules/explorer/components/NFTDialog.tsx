@@ -1,8 +1,6 @@
 import {
   Button,
-  Dialog,
   DialogContent,
-  DialogProps,
   DialogTitle,
   Grid,
   IconButton,
@@ -18,8 +16,9 @@ import { UserBadge } from "./UserBadge";
 import { NFT as NFTModel } from "models/Token";
 import { ProposalFormContainer, ProposalFormDefaultValues } from "./ProposalForm";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
 
-const CustomDialog = styled(Dialog)({
+const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiPaper-root": {
     width: 1010,
     height: 822,
@@ -61,11 +60,13 @@ const CloseButton = styled(IconButton)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-interface Props extends DialogProps {
+interface Props {
   nft: NFTModel | undefined;
+  open: boolean;
+  onClose: () => void;
 }
 
-export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
+export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
   const [openTransfer, setOpenTransfer] = useState(false)
   const { account } = useTezos()
   const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
@@ -95,9 +96,8 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
   return (
     <>
       <CustomDialog
-        aria-labelledby="nft-dialog-title"
-        aria-describedby="nft-dialog-description"
-        {...props}
+        onClose={onClose}
+        open={open}
       >
         {nft && (
           <>

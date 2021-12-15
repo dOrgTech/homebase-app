@@ -9,6 +9,7 @@ import {useDAOID} from "../v2/pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
 import {useProposeGuardianChange} from "../../../services/contracts/baseDAO/hooks/useProposeGuardianChange";
 import {useProposeConfigChange} from "../../../services/contracts/baseDAO/hooks/useProposeConfigChange";
+import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -78,11 +79,9 @@ export const ConfigProposalForm: React.FC<Props> = ({
 
   return (
     <FormProvider {...methods}>
-      <Dialog
+      <ResponsiveDialog
         open={open}
         onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
       >
         <Content container direction={"column"} style={{gap: 18}}>
           <Grid item>
@@ -182,7 +181,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
             Submit
           </SendButton>
         </Content>
-      </Dialog>
+      </ResponsiveDialog>
     </FormProvider>
   )
     ;

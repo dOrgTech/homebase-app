@@ -1,11 +1,11 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { createContext, useState } from "react";
-import { ConnectionSheet } from "../../components/ConnectionSheet";
+import { UserMenuSheet } from "../../components/UserMenuSheet";
 import { NetworkSheet } from "../../components/NetworkSheet";
 
 export enum ActionSheet {
   None,
-  Connection,
+  UserMenu,
   Network,
 }
 
@@ -31,13 +31,15 @@ export const ActionSheetProvider: React.FC = ({ children }) => {
     }
   }, [openedModal])
 
+  console.log(openedModal)
+
   return (
     <ActionSheetContext.Provider
       value={{ openedModal, setOpenedModal, onClose }}
     >
       {children}
-      <ConnectionSheet
-        open={ActionSheet.Connection === openedModal}
+      <UserMenuSheet
+        open={ActionSheet.UserMenu === openedModal}
         onClose={onClose}
       />
       <NetworkSheet

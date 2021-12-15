@@ -8,6 +8,7 @@ import {Controller, FormProvider, useForm} from "react-hook-form";
 import {useDAOID} from "../v2/pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
 import {useProposeGuardianChange} from "../../../services/contracts/baseDAO/hooks/useProposeGuardianChange";
+import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -65,7 +66,7 @@ export const GuardianChangeProposalForm: React.FC<Props> = ({
 
   return (
     <FormProvider {...methods}>
-      <Dialog
+      <ResponsiveDialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -105,7 +106,7 @@ export const GuardianChangeProposalForm: React.FC<Props> = ({
             Submit
           </SendButton>
         </Content>
-      </Dialog>
+      </ResponsiveDialog>
     </FormProvider>
   )
     ;

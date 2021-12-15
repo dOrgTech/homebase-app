@@ -9,7 +9,6 @@ import {
 import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {ErrorText} from "modules/explorer/components/styled/ErrorText";
 import * as Yup from "yup";
-import {useDAOID} from "modules/explorer/daoRouter";
 import {Autocomplete} from "@material-ui/lab";
 
 import {Controller, useFieldArray, useFormContext} from "react-hook-form";
@@ -17,6 +16,7 @@ import {NFT} from "modules/explorer/components/NFT";
 import {NFT as NFTModel} from "models/Token";
 import {BatchBar} from "../../components/BatchBar";
 import {ProposalFormInput} from "../../components/ProposalFormInput";
+import {useDAOID} from "../../v2/pages/DAO/router";
 
 const AutoCompletePaper = styled(Paper)({
   background: "#24282B",

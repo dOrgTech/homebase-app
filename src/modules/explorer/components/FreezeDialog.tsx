@@ -3,7 +3,6 @@ import {
   Grid,
   styled,
   Typography,
-  Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -14,7 +13,8 @@ import {
 import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { useDAOID } from "../daoRouter";
+import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
+import {useDAOID} from "../v2/pages/DAO/router";
 
 const CloseButton = styled(Typography)({
   fontWeight: 900,
@@ -45,7 +45,7 @@ const Title = styled(DialogTitle)(({ theme }) => ({
   },
 }));
 
-const CustomDialog = styled(Dialog)({
+const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {
     minHeight: "400px !important",
   },
@@ -145,7 +145,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
               <TextHeader
                 variant="subtitle1"
                 color="textSecondary"
-              ></TextHeader>
+              />
             </TableHeader>
             <InputContainer
               container

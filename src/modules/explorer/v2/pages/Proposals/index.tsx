@@ -12,7 +12,6 @@ import { ProposalsList } from "../../components/ProposalsList";
 import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
-import {ProposalSelectionMenu} from "../../../components/ProposalSelectionMenu";
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 45px",
@@ -102,7 +101,11 @@ export const Proposals: React.FC = () => {
           />
         )}
       </Grid>
-     <ProposalSelectionMenu open={openModal} handleClose={onCloseModal}/>
+      <ProposalFormContainer
+        open={openModal}
+        handleClose={onCloseModal}
+      />
+     {/* <ProposalSelectionMenu open={openModal} handleClose={onCloseModal}/> */}
     </>
   );
 };

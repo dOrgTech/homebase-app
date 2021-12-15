@@ -1,5 +1,10 @@
 /* eslint-disable react/display-name */
-import {Dialog, Grid, styled, Typography, TextField} from "@material-ui/core";
+import {
+  Grid,
+  styled,
+  Typography,
+  TextField,
+} from "@material-ui/core";
 import {
   registryProposalFormInitialState,
   RegistryProposalFormValues,
@@ -9,8 +14,8 @@ import {
   Asset,
   NewTreasuryProposalDialog,
   treasuryProposalFormInitialState,
-  TreasuryProposalFormValues,
-} from "modules/explorer/Treasury";
+  TreasuryProposalFormValues
+} from "modules/explorer/Treasury/components/NewTreasuryProposalDialog";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {useDAO} from "services/indexer/dao/hooks/useDAO";
 import {AppTabBar} from "./AppTabBar";
@@ -30,6 +35,7 @@ import {
 import {Token} from "models/Token";
 import {useDAOID} from "../v2/pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
+import {ResponsiveDialog} from "../v2/components/ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -82,8 +88,8 @@ const enabledForms: Record<DAOTemplate,
 };
 
 const Content = styled(Grid)({
-  padding: "0 54px"
-})
+  padding: "0 54px",
+});
 
 export const ProposalFormContainer: React.FC<Props> = ({
                                                          open,
@@ -97,19 +103,22 @@ export const ProposalFormContainer: React.FC<Props> = ({
   const [selectedTab, setSelectedTab] = useState(defaultTab || 0);
 
   const methods = useForm<Values>({
-    defaultValues: useMemo(() => ({
-      agoraPostId: "0",
-      ...treasuryProposalFormInitialState,
-      ...nftTransferFormInitialState,
-      ...registryProposalFormInitialState,
-      ...defaultValues
-    }), [defaultValues]),
+    defaultValues: useMemo(
+      () => ({
+        agoraPostId: "0",
+        ...treasuryProposalFormInitialState,
+        ...nftTransferFormInitialState,
+        ...registryProposalFormInitialState,
+        ...defaultValues,
+      }),
+      [defaultValues]
+    ),
     // resolver: yupResolver(validationSchema as any),
   });
 
   useEffect(() => {
-    methods.reset(defaultValues)
-  }, [defaultValues, methods])
+    methods.reset(defaultValues);
+  }, [defaultValues, methods]);
 
   const forms = enabledForms[dao?.data.type || "treasury"];
   const {mutate: treasuryMutate} = useTreasuryPropose();
@@ -170,12 +179,7 @@ export const ProposalFormContainer: React.FC<Props> = ({
 
   return (
     <FormProvider {...methods}>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+      <ResponsiveDialog open={open} onClose={handleClose}>
         {dao && daoHoldings && (
           <>
             <AppTabBar
@@ -207,9 +211,20 @@ export const ProposalFormContainer: React.FC<Props> = ({
                 </ProposalFormInput>
               </Grid>
               <Grid item>
-                <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>Proposal Fee: </Typography>
                 <Typography
-                  align="left" variant="subtitle2" color="secondary" display={"inline"}>
+                  align="left"
+                  variant="subtitle2"
+                  color="textPrimary"
+                  display={"inline"}
+                >
+                  Proposal Fee:{" "}
+                </Typography>
+                <Typography
+                  align="left"
+                  variant="subtitle2"
+                  color="secondary"
+                  display={"inline"}
+                >
                   {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
                   {dao ? dao.data.token.symbol : ""}
                 </Typography>
@@ -222,10 +237,9 @@ export const ProposalFormContainer: React.FC<Props> = ({
                 Submit
               </SendButton>
             </Content>
-
           </>
         )}
-      </Dialog>
+      </ResponsiveDialog>
     </FormProvider>
   );
 };

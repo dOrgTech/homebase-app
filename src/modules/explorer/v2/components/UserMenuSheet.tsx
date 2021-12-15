@@ -1,10 +1,9 @@
 import { styled, Grid, Typography } from "@material-ui/core";
 import { Blockie } from "modules/common/Blockie";
-import { CopyButton } from "modules/common/CopyButton";
 import React from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
-import { ArrowDownwardOutlined, ExitToApp } from "@material-ui/icons";
+import { ArrowDownwardOutlined, ExitToApp, FileCopyOutlined } from "@material-ui/icons";
 import { BottomSheet } from "./BottomSheet";
 
 const SheetContainer = styled(Grid)({
@@ -14,9 +13,10 @@ const SheetContainer = styled(Grid)({
 const SheetItem = styled(Grid)({
   height: 65,
   borderTop: "0.25px solid #7D8C8B",
+  cursor: "pointer",
   "& > *": {
-    height: "100%"
-  }
+    height: "100%",
+  },
 });
 
 interface Props {
@@ -28,14 +28,35 @@ const MenuText = styled(Typography)({
   fontSize: 14,
 });
 
-export const ConnectionSheet: React.FC<Props> = (props) => {
-  const { account } = useTezos();
+export const UserMenuSheet: React.FC<Props> = (props) => {
+  const { account, reset, connect } = useTezos();
+
+  const handleAccountClick = () => {
+    if(account) {
+      navigator.clipboard.writeText(account)
+    } else {
+      connect()
+    }
+
+    props.onClose()
+  }
+
+  const handleLogout = () => {
+    reset()
+    props.onClose()
+  }
 
   return (
     <BottomSheet open={props.open} onDismiss={props.onClose}>
       <SheetContainer>
         <SheetItem>
-          <Grid container justifyContent="center" style={{ gap: 9 }} alignItems="center">
+          <Grid
+            container
+            justifyContent="center"
+            style={{ gap: 9 }}
+            alignItems="center"
+            onClick={handleAccountClick}
+          >
             {account ? (
               <>
                 <Grid item>
@@ -47,7 +68,7 @@ export const ConnectionSheet: React.FC<Props> = (props) => {
                   </MenuText>
                 </Grid>
                 <Grid item>
-                  <CopyButton text={account} />
+                  <FileCopyOutlined htmlColor="#FFF" fontSize="small" />
                 </Grid>
               </>
             ) : (
@@ -56,16 +77,20 @@ export const ConnectionSheet: React.FC<Props> = (props) => {
                   <ArrowDownwardOutlined htmlColor="#FFF" fontSize="small" />
                 </Grid>
                 <Grid item>
-                  <MenuText color="textPrimary">
-                    Connect Wallet
-                  </MenuText>
+                  <MenuText color="textPrimary">Connect Wallet</MenuText>
                 </Grid>
               </>
             )}
           </Grid>
         </SheetItem>
         <SheetItem>
-          <Grid container justifyContent="center" style={{ gap: 9 }} alignItems="center">
+          <Grid
+            container
+            justifyContent="center"
+            style={{ gap: 9 }}
+            alignItems="center"
+            onClick={handleLogout}
+          >
             <Grid item>
               <ExitToApp htmlColor="#FFF" fontSize="small" />
             </Grid>

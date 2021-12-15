@@ -1,5 +1,5 @@
 import React from "react"
-import {Grid, Paper, styled, Switch, Typography, useTheme} from "@material-ui/core";
+import {Grid, Paper, styled, Switch, Typography } from "@material-ui/core";
 import {ProposalFormInput} from "./ProposalFormInput";
 
 const BatchBarContainer = styled(Grid)(({theme}) => ({
@@ -50,8 +50,6 @@ interface Props {
 }
 
 export const BatchBar = ({isBatch, handleIsBatchChange, onClickAdd, items, activeItem, setActiveItem}: Props) => {
-  const theme = useTheme();
-
   return (
     <ProposalFormInput>
       <Grid container direction="row" alignItems={"center"}>

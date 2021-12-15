@@ -1,6 +1,7 @@
 import {
   Box,
   Grid,
+  Theme,
   Typography,
 } from "@material-ui/core";
 import { styled } from "@material-ui/styles";
@@ -16,27 +17,27 @@ import {
   Proposal,
   ProposalStatus,
 } from "services/indexer/dao/mappers/proposal/types";
-import { ProfileAvatar } from "../components/styled/ProfileAvatar";
-import { UserProfileName } from "../components/UserProfileName";
+import { ProfileAvatar } from "../../../components/styled/ProfileAvatar";
+import { UserProfileName } from "../../../components/UserProfileName";
 import { useDAOID } from "modules/explorer/v2/pages/DAO/router";
-import { FreezeDialog } from "../components/FreezeDialog";
-import { UserBalances } from "../v2/components/UserBalances";
-import { StatusBadge } from "../components/StatusBadge";
-import { ProposalsList } from "../v2/components/ProposalsList";
+import { FreezeDialog } from "../../../components/FreezeDialog";
+import { UserBalances } from "../../components/UserBalances";
+import { StatusBadge } from "../../../components/StatusBadge";
+import { ProposalsList } from "../../components/ProposalsList";
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
   borderTop: `0.3px solid #5E6969`,
 });
 
-const BalancesHeader = styled(Grid)({
+const BalancesHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
   minHeight: "178px",
   padding: "46px 55px",
-  background: "#24282B",
+  background: theme.palette.primary.main,
   boxSizing: "border-box",
   borderRadius: 8,
   boxShadow: "none",
-});
+}));
 
 const MainContainer = styled(Box)({
   width: "100%",
@@ -44,6 +45,7 @@ const MainContainer = styled(Box)({
 
 const UsernameText = styled(Typography)({
   fontSize: 28,
+  wordBreak: "break-all"
 });
 
 const ProposalTitle = styled(Typography)({
@@ -146,9 +148,9 @@ export const User: React.FC = () => {
         <BalancesHeader item>
           <UserBalances daoId={daoId}>
             <Grid item>
-              <Grid container alignItems="center" justify="space-between">
+              <Grid container alignItems="center" justify="space-between" style={{ gap: 20 }}>
                 <Grid item>
-                  <Grid container spacing={2} alignItems="center">
+                  <Grid container spacing={2} alignItems="center" wrap="nowrap">
                     <Grid item>
                       <ProfileAvatar size={43} address={account} />
                     </Grid>

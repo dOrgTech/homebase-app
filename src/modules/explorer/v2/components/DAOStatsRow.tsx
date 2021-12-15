@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo } from "react";
 import { ReactComponent as VotingPeriodIcon } from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
 import {
@@ -9,6 +9,7 @@ import {
   LinearProgress,
   useTheme,
   Typography,
+  useMediaQuery,
 } from "@material-ui/core";
 import { ContentContainer } from "./ContentContainer";
 import { CycleDescription } from "./CycleDescription";
@@ -18,9 +19,13 @@ import BigNumber from "bignumber.js";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useDAOID } from "../pages/DAO/router";
 
-const StatsContainer = styled(ContentContainer)({
+const StatsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "42px 55px",
-});
+  [theme.breakpoints.down("xs")]: {
+    padding: "42px 25px",
+    width: "100%"
+  },
+}));
 
 const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   width: "100%",
@@ -45,8 +50,8 @@ export const DAOStatsRow: React.FC = () => {
   const symbol = data && data.data.token.symbol.toUpperCase();
   const blocksLeft = cycleInfo && cycleInfo.blocksLeft;
   const theme = useTheme();
-  const { data: activeProposals } =
-  useProposals(daoId, ProposalStatus.ACTIVE);
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -76,106 +81,125 @@ export const DAOStatsRow: React.FC = () => {
 
   return (
     <Grid item>
-        <Grid container style={{ gap: 47 }}>
-          <StatsContainer item>
-            <Grid container direction="column" style={{ gap: 24 }}>
-              <Grid item>
-                <CycleDescription daoAddress={daoId} />
-              </Grid>
-              <Grid item>
-                <Grid container style={{ gap: 16 }} wrap="nowrap">
-                  <Grid item>
-                    <ProgressContainer>
-                      <ProgressBar
-                        progress={
-                          data
-                            ? ((blocksLeft || 0) / Number(data.data.period)) *
-                              100
-                            : 100
-                        }
-                        radius={24}
-                        strokeWidth={4.5}
-                        strokeColor={theme.palette.secondary.main}
-                        trackStrokeWidth={3}
-                        trackStrokeColor={theme.palette.primary.light}
-                      />
-                    </ProgressContainer>
-                  </Grid>
-                  <Grid item>
-                    <Typography color="secondary" variant="body1">
-                      Current Cycle
-                    </Typography>
-                    <Typography color="textPrimary" variant="subtitle1">
-                      {cycleInfo?.currentCycle}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid item>
-                <Grid container style={{ gap: 32 }} wrap="nowrap">
-                  <Grid item>
-                    <IconContainer>
-                      <VotingPeriodIcon />
-                    </IconContainer>
-                  </Grid>
-                  <Grid item>
-                    <Typography color="secondary" variant="body1">
-                      Levels Left In Cycle
-                    </Typography>
-                    <Typography color="textPrimary" variant="subtitle1">
-                      {cycleInfo?.blocksLeft}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Grid>
+      <Grid container style={{ gap: isExtraSmall? 25: 47 }}>
+        <StatsContainer item>
+          <Grid container direction="column" style={{ gap: 24 }}>
+            <Grid item>
+              <CycleDescription daoAddress={daoId} />
             </Grid>
-          </StatsContainer>
-          <StatsContainer item xs>
-            <Grid container direction="column" style={{ gap: 37 }}>
-              <Grid item>
-                <Grid container direction="column" style={{ gap: 10 }}>
-                  <Grid item>
-                    <Typography color="secondary" variant="body1">
-                      {symbol} Locked
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="h3" color="textPrimary">
-                      {amountLocked.dp(10).toString()}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <LockedTokensBar
-                      variant="determinate"
-                      value={amountLockedPercentage.toNumber()}
-                      color="secondary"
+            <Grid item>
+              <Grid container style={{ gap: 16 }} wrap="nowrap">
+                <Grid item>
+                  <ProgressContainer>
+                    <ProgressBar
+                      progress={
+                        data
+                          ? ((blocksLeft || 0) / Number(data.data.period)) * 100
+                          : 100
+                      }
+                      radius={24}
+                      strokeWidth={4.5}
+                      strokeColor={theme.palette.secondary.main}
+                      trackStrokeWidth={3}
+                      trackStrokeColor={theme.palette.primary.light}
                     />
-                  </Grid>
+                  </ProgressContainer>
                 </Grid>
-              </Grid>
-              <Grid item>
-                <Grid container style={{ gap: 80 }}>
-                  <Grid item>
-                    <Typography color="secondary" variant="body1">
-                      Voting Addresses
-                    </Typography>
-                    <Typography variant="h1" color="textPrimary">
-                      {data?.data.ledger.length || "-"}
-                    </Typography>
-                  </Grid>
-                  <Grid item>
-                    <Typography color="secondary" variant="body1">
-                      Active Proposals
-                    </Typography>
-                    <Typography variant="h1" color="textPrimary">
-                      {activeProposals?.length}
-                    </Typography>
-                  </Grid>
+                <Grid item>
+                  <Typography color="secondary" variant="body1">
+                    Current Cycle
+                  </Typography>
+                  <Typography color="textPrimary" variant="h1">
+                    {cycleInfo?.currentCycle}
+                  </Typography>
                 </Grid>
               </Grid>
             </Grid>
-          </StatsContainer>
-        </Grid>
+            <Grid item>
+              <Grid container style={{ gap: 32 }} wrap="nowrap">
+                <Grid item>
+                  <IconContainer>
+                    <VotingPeriodIcon />
+                  </IconContainer>
+                </Grid>
+                <Grid item>
+                  <Typography color="secondary" variant="body1">
+                    Levels Left In Cycle
+                  </Typography>
+                  <Typography color="textPrimary" variant="h1">
+                    {cycleInfo?.blocksLeft}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </StatsContainer>
+        <StatsContainer item xs>
+          <Grid container direction="column" style={{ gap: 37 }}>
+            <Grid item>
+              <Grid container direction="column" style={{ gap: 10 }}>
+                <Grid item>
+                  <Typography color="secondary" variant="body1">
+                    {symbol} Locked
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography variant="h5" color="textPrimary">
+                    {amountLocked.dp(10).toString()}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <LockedTokensBar
+                    variant="determinate"
+                    value={amountLockedPercentage.toNumber()}
+                    color="secondary"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Grid
+                container
+                style={{ gap: isExtraSmall ? 10 : 80 }}
+                justifyContent={isExtraSmall ? "space-between" : "flex-start"}
+              >
+                <Grid item>
+                  <Typography
+                    align={isExtraSmall ? "center" : "left"}
+                    color="secondary"
+                    variant="body1"
+                  >
+                    Voting Addresses
+                  </Typography>
+                  <Typography
+                    align={isExtraSmall ? "center" : "left"}
+                    variant="h5"
+                    color="textPrimary"
+                  >
+                    {data?.data.ledger.length || "-"}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography
+                    align={isExtraSmall ? "center" : "left"}
+                    color="secondary"
+                    variant="body1"
+                  >
+                    Active Proposals
+                  </Typography>
+                  <Typography
+                    align={isExtraSmall ? "center" : "left"}
+                    variant="h5"
+                    color="textPrimary"
+                  >
+                    {activeProposals?.length}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </StatsContainer>
       </Grid>
-  )
-}
+    </Grid>
+  );
+};

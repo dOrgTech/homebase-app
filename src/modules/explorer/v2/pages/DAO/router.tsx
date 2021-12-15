@@ -12,23 +12,23 @@ import { DAO } from "modules/explorer/v2/pages/DAO";
 import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { Navbar } from "modules/common/Toolbar";
 import { NotFound } from "modules/explorer/components/NotFound";
 import { NotIndexed } from "modules/explorer/components/NotIndexed";
 import { UserBalancesWidget } from "modules/explorer/components/UserBalancesWidget";
-import { User } from "modules/explorer/pages/User";
+import { User } from "modules/explorer/v2/pages/User";
 import { ProposalDetails } from "../ProposalDetails";
 import { Treasury } from "../Treasury";
 import { Registry } from "../Registry";
 import { Proposals } from "../Proposals";
 import { NFTs } from "../NFTs";
+import { Navbar } from "../../components/Toolbar";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
   width: 1028,
   maxWidth: "100%",
   margin: "55px auto 0 auto",
-  paddingBottom: 32,
+  padding: "0 25px 32px 25px",
 
   [theme.breakpoints.down("xs")]: {
     margin: "25px auto 0 auto",
@@ -99,7 +99,7 @@ export const DAORouter = (): JSX.Element => {
 
   return (
     <DAOProvider daoId={daoId}>
-      <Navbar mode="explorer" disableMobileMenu>
+      <Navbar>
         <Grid item>
           <UserBalancesWidget />
         </Grid>

@@ -17,7 +17,7 @@ import { ReactComponent as NFTIcon } from "assets/logos/nft.svg";
 import { useHistory, useLocation } from "react-router-dom";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { useDAOID } from "../daoRouter";
+import {useDAOID} from "../v2/pages/DAO/router";
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,

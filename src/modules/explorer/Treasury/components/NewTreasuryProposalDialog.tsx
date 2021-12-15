@@ -16,7 +16,6 @@ import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {ErrorText} from "modules/explorer/components/styled/ErrorText";
 import * as Yup from "yup";
 import BigNumber from "bignumber.js";
-import {useDAOID} from "modules/explorer/daoRouter";
 import {Autocomplete} from "@material-ui/lab";
 
 import {Controller, useFieldArray, useFormContext} from "react-hook-form";
@@ -24,6 +23,7 @@ import {useTezosBalance} from "services/contracts/baseDAO/hooks/useTezosBalance"
 import {Token} from "models/Token";
 import {ProposalFormInput} from "../../components/ProposalFormInput";
 import {BatchBar} from "../../components/BatchBar";
+import {useDAOID} from "../../v2/pages/DAO/router";
 
 export type Asset = Token | { symbol: "XTZ" };
 

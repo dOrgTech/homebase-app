@@ -1,6 +1,6 @@
 import { Collapse, Grid, IconButton, Typography } from "@material-ui/core";
 import { styled } from "@material-ui/styles";
-import { ProposalItem } from "modules/explorer/pages/User";
+import { ProposalItem } from "modules/explorer/v2/pages/User";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Proposal } from "services/indexer/dao/mappers/proposal/types";

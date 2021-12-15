@@ -21,6 +21,7 @@ import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscr
 import { Landing } from "modules/home/Landing";
 import { WarningFooter } from "modules/common/WarningFooter";
 import { ActionSheetProvider } from "modules/explorer/v2/context/ActionSheets";
+import { legacyTheme } from "theme/legacy";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -96,7 +97,9 @@ const App: React.FC = () => {
                 <Switch>
                   <Route path="/creator">
                     <CreatorProvider>
-                      <DAOCreate />
+                      <ThemeProvider theme={legacyTheme}>
+                        <DAOCreate />
+                      </ThemeProvider>
                     </CreatorProvider>
                     <WarningFooter
                       text={

@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { formatNumber } from "../utils/FormatNumber";
 import { UpVotesDialog } from "./VotersDialog";
-import { MultiColorBar as CustomBar } from "modules/explorer/components";
+import { MultiColorBar as CustomBar } from "modules/explorer/components/ProgressBar";
 import { useVotesStats } from "../hooks/useVotesStats";
 import BigNumber from "bignumber.js";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
