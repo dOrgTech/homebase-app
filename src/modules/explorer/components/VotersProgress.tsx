@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useState} from "react";
 import {
+  Button,
   Grid,
   Paper,
   styled,
@@ -7,13 +8,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
-import { formatNumber } from "../utils/FormatNumber";
-import { UpVotesDialog } from "./VotersDialog";
-import { MultiColorBar as CustomBar } from "modules/explorer/components/ProgressBar";
-import { useVotesStats } from "../hooks/useVotesStats";
+import {formatNumber} from "../utils/FormatNumber";
+import {MultiColorBar as CustomBar} from "modules/explorer/components/ProgressBar";
+import {useVotesStats} from "../hooks/useVotesStats";
 import BigNumber from "bignumber.js";
-import { useProposal } from "services/indexer/dao/hooks/useProposal";
-import { Proposal } from "services/indexer/dao/mappers/proposal/types";
+import {useProposal} from "services/indexer/dao/hooks/useProposal";
+import {Proposal} from "services/indexer/dao/mappers/proposal/types";
+import {VotesDetailDialog} from "../v2/components/VotesDetailDialog";
 
 interface VotersData {
   showButton: boolean;
@@ -22,14 +23,14 @@ interface VotersData {
   wrapAll?: boolean;
 }
 
-const GreenDot = styled(Paper)(({ theme }) => ({
+const GreenDot = styled(Paper)(({theme}) => ({
   width: 9,
   height: 9,
   marginRight: 9,
   background: theme.palette.secondary.main,
 }));
 
-const RedDot = styled(Paper)(({ theme }) => ({
+const RedDot = styled(Paper)(({theme}) => ({
   width: 9,
   height: 9,
   marginRight: 9,
@@ -42,14 +43,15 @@ const StatusTitle = styled(Typography)({
 });
 
 export const VotersProgress: React.FC<VotersData> = ({
-  showButton,
-  daoId,
-  proposalId,
-  wrapAll,
-}) => {
+                                                       showButton,
+                                                       daoId,
+                                                       proposalId,
+                                                       wrapAll,
+                                                     }) => {
   const theme = useTheme();
+  const [open, setOpen] = useState(false);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const { data: proposalData } = useProposal(daoId, proposalId);
+  const {data: proposalData} = useProposal(daoId, proposalId);
   const proposal = proposalData as Proposal | undefined;
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
   const upVotes = proposal ? proposal.upVotes : new BigNumber(0);
@@ -73,7 +75,7 @@ export const VotersProgress: React.FC<VotersData> = ({
         container
         direction="row"
         alignItems="center"
-        spacing={1}
+        spacing={2}
       >
         <Grid
           item
@@ -91,7 +93,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             alignItems="baseline"
             wrap="nowrap"
           >
-            <GreenDot />
+            <GreenDot/>
             <StatusTitle color="textPrimary" variant="subtitle2">SUPPORT: </StatusTitle>
             <Typography color="textPrimary" variant="subtitle2">
               {proposal ? upVotes.toString() : "-"} (
@@ -110,7 +112,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             alignItems="center"
             wrap="nowrap"
           >
-            <RedDot />
+            <RedDot/>
             <StatusTitle color="textPrimary" variant="subtitle2">OPPOSE: </StatusTitle>
             <Typography color="textPrimary" variant="subtitle2">
               {proposal ? downVotes.toString() : "-"} (
@@ -131,11 +133,13 @@ export const VotersProgress: React.FC<VotersData> = ({
             alignItems="center"
             justify="flex-end"
           >
-            <UpVotesDialog
-              daoAddress={daoId}
-              proposalAddress={proposalId}
-              favor={true}
-            />
+            <Button
+              variant={"contained"}
+              color={"secondary"}
+              size={"small"}
+              onClick={() => setOpen(true)}
+              // favor={true}
+            >View</Button>
           </Grid>
         ) : null}
       </Grid>
@@ -146,6 +150,8 @@ export const VotersProgress: React.FC<VotersData> = ({
           color="secondary"
         />
       </Grid>
+      <VotesDetailDialog daoAddress={daoId}
+                         proposalAddress={proposalId} open={open} onClose={() => setOpen(false)}/>
     </>
   );
 };

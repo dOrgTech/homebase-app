@@ -82,7 +82,7 @@ export const DAOStatsRow: React.FC = () => {
   return (
     <Grid item>
       <Grid container style={{ gap: isExtraSmall? 25: 47 }}>
-        <StatsContainer item>
+        <StatsContainer item xs>
           <Grid container direction="column" style={{ gap: 24 }}>
             <Grid item>
               <CycleDescription daoAddress={daoId} />
@@ -160,7 +160,8 @@ export const DAOStatsRow: React.FC = () => {
             <Grid item>
               <Grid
                 container
-                style={{ gap: isExtraSmall ? 10 : 80 }}
+                style={{ gap: isExtraSmall ? 10 : 50 }}
+                wrap="nowrap"
                 justifyContent={isExtraSmall ? "space-between" : "flex-start"}
               >
                 <Grid item>
