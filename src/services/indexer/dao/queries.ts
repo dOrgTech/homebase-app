@@ -216,3 +216,16 @@ export const GET_PROPOSAL_QUERY = gql`
     }
   }
 `;
+
+export const GET_XTZ_TRANSFERS = gql`
+  query getTransfers($address: String!) {
+    transfer(where: {dao: {address: {_eq: $address}}}) {
+      decimal_amount
+      amount
+      from_address
+      timestamp
+      hash
+    }
+  }
+`;
+
