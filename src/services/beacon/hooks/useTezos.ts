@@ -5,6 +5,7 @@ import { connectWithBeacon, rpcNodes } from "services/beacon";
 import { Network, TezosContext } from "services/beacon/context";
 import { Tzip16Module } from "@taquito/tzip16";
 import mixpanel from 'mixpanel-browser';
+import {useHistory} from "react-router";
 
 type WalletConnectReturn = {
   tezos: TezosToolkit;
@@ -66,6 +67,7 @@ export const useTezos = (): WalletConnectReturn => {
       mixpanel.register({'Network': newNetwork});
 
       localStorage.setItem("homebase:network", newNetwork);
+
       
       if (!("_pkh" in tezos.wallet)) {
         const Tezos = new TezosToolkit(rpcNodes[newNetwork]);

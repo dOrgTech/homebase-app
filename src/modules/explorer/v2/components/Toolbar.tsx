@@ -133,6 +133,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
                 <Grid
                   container
                   alignItems="center"
+                  style={{ gap: 12 }}
                   justify={isMobileExtraSmall ? "center" : "flex-end"}
                 >
                   {children}

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, {useMemo} from "react";
 import {
   Grid,
   Link,
@@ -13,18 +13,16 @@ import {
   useTheme,
 } from "@material-ui/core";
 import hexToRgba from "hex-to-rgba";
-import { useDAOID } from "../../DAO/router";
-import { useTransfers } from "services/contracts/baseDAO/hooks/useTransfers";
-import { TransferWithBN } from "services/bakingBad/transfers/types";
+import {TransferWithBN} from "services/contracts/baseDAO/hooks/useTransfers";
 import dayjs from "dayjs";
-import { useTezos } from "services/beacon/hooks/useTezos";
-import { Network } from "services/beacon/context";
-import { ContentContainer } from "modules/explorer/v2/components/ContentContainer";
+import {useTezos} from "services/beacon/hooks/useTezos";
+import {Network} from "services/beacon/context";
+import {ContentContainer} from "modules/explorer/v2/components/ContentContainer";
 
 const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
 
-const TokenSymbol = styled(Typography)(({ theme }) => ({
+const TokenSymbol = styled(Typography)(({theme}) => ({
   background: hexToRgba(theme.palette.secondary.main, 0.11),
   borderRadius: 4,
   color: theme.palette.secondary.main,
@@ -33,12 +31,12 @@ const TokenSymbol = styled(Typography)(({ theme }) => ({
   width: "min-content",
 }));
 
-const createData = (transfer: TransferWithBN) => {
+const createData = (transfer: TransferWithBN, isInbound: boolean) => {
   return {
-    token: transfer.token.symbol,
-    date: dayjs(transfer.timestamp).format("ll"),
+    token: transfer.name,
+    date: dayjs(transfer.date).format("ll"),
     amount: transfer.amount.dp(10).toString(),
-    recipient: transfer.to,
+    address: isInbound ? transfer.sender : transfer.recipient,
     hash: transfer.hash,
   };
 };
@@ -51,24 +49,33 @@ interface RowData {
   token: string;
   date: string;
   amount: string;
-  recipient: string;
+  address: string;
   hash: string;
 }
 
-const titles = ["Transfer History", "Date", "Recipient", "Amount"];
+const outboundTitles = ["Outbound Transfers", "Date", "Recipient", "Amount"];
+const inboundTitles = ["Inbound Transfers", "Date", "Sender", "Amount"];
 
-const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
-  switch (title) {
-    case "Transfer History":
-      return rowData.token;
-    case "Date":
-      return rowData.date;
-    case "Recipient":
-      return rowData.recipient;
-    case "Amount":
-      return rowData.amount;
+const titleDataMatcher = (title: typeof outboundTitles[number]
+                            | typeof inboundTitles[number],
+                          rowData: RowData
+  ) => {
+    switch (title) {
+      case "Outbound Transfers":
+        return rowData.token;
+      case "Inbound Transfers":
+        return rowData.token;
+      case "Date":
+        return rowData.date;
+      case "Amount":
+        return rowData.amount;
+      case "Recipient":
+        return rowData.address
+      case "Sender":
+        return rowData.address
+    }
   }
-};
+;
 
 const MobileTableHeader = styled(Grid)({
   width: "100%",
@@ -83,12 +90,12 @@ const MobileTableRow = styled(Grid)({
 
 //TODO: Should mobile table items also redirect to block explorer on click?
 
-const MobileTransfersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
+const MobileTransfersTable: React.FC<{ data: RowData[]; isInbound: boolean }> = ({isInbound, data}) => {
   return (
     <Grid container direction="column" alignItems="center">
       <MobileTableHeader item>
         <Typography align="center" variant="h4" color="textPrimary">
-          Transfer History
+          {isInbound ? "Inbound" : "Outbound"} Transfer History
         </Typography>
       </MobileTableHeader>
       {data.map((row, i) => (
@@ -98,12 +105,12 @@ const MobileTransfersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
           container
           direction="column"
           alignItems="center"
-          style={{ gap: 19 }}
+          style={{gap: 19}}
         >
-          {titles.map((title, j) => (
+          {(isInbound ? inboundTitles : outboundTitles).map((title, j) => (
             <Grid item key={`transfersMobileItem-${j}`}>
               <Typography variant="h6" color="secondary" align="center">
-                {title === "Transfer History" ? "Token:" : title}
+                {title === "Outbound Transfers" || title === "Inbound Transfers" ? "Token:" : title}
               </Typography>
               <Typography variant="h6" color="textPrimary" align="center">
                 {titleDataMatcher(title, row)}
@@ -116,14 +123,14 @@ const MobileTransfersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   );
 };
 
-const DesktopTransfersTable: React.FC<{ data: RowData[]; network: Network }> =
-  ({ data: rows, network }) => {
+const DesktopTransfersTable: React.FC<{ isInbound: boolean; data: RowData[]; network: Network }> =
+  ({isInbound, data: rows, network}) => {
     return (
       <>
         <Table>
           <TableHead>
             <TableRow>
-              {titles.map((title, i) => (
+              {(isInbound ? inboundTitles : outboundTitles).map((title, i) => (
                 <TableCell key={`tokentitle-${i}`}>{title}</TableCell>
               ))}
             </TableRow>
@@ -142,7 +149,7 @@ const DesktopTransfersTable: React.FC<{ data: RowData[]; network: Network }> =
                   <TokenSymbol>{row.token}</TokenSymbol>
                 </TableCell>
                 <TableCell>{row.date}</TableCell>
-                <TableCell>{row.recipient}</TableCell>
+                <TableCell>{row.address}</TableCell>
                 <TableCell>{row.amount}</TableCell>
               </TableRow>
             ))}
@@ -152,28 +159,29 @@ const DesktopTransfersTable: React.FC<{ data: RowData[]; network: Network }> =
     );
   };
 
-export const TransfersTable: React.FC = () => {
+export const TransfersTable: React.FC<{ transfers: TransferWithBN[], isInbound: boolean }> = ({
+                                                                                                isInbound,
+                                                                                                transfers
+                                                                                              }) => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const daoId = useDAOID();
-  const { data: transfers } = useTransfers(daoId);
 
   const rows = useMemo(() => {
     if (!transfers) {
       return [];
     }
 
-    return transfers.map(createData);
-  }, [transfers]);
+    return transfers.map((t) => createData(t, isInbound));
+  }, [isInbound, transfers]);
 
-  const { network } = useTezos();
+  const {network} = useTezos();
 
   return (
     <TableContainer>
       {isSmall ? (
-        <MobileTransfersTable data={rows} />
+        <MobileTransfersTable data={rows} isInbound={isInbound}/>
       ) : (
-        <DesktopTransfersTable data={rows} network={network} />
+        <DesktopTransfersTable data={rows} network={network} isInbound={isInbound}/>
       )}
     </TableContainer>
   );

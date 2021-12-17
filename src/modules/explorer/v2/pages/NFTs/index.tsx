@@ -131,6 +131,7 @@ export const NFTs: React.FC = () => {
               key={`nft-${i}`}
               item
               container
+              xs={isMobileSmall? 12: undefined}
               direction="column"
               style={{ gap: 20 }}
               onClick={() => onClickNFT(nft)}

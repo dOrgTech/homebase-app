@@ -22,6 +22,7 @@ import { Registry } from "../Registry";
 import { Proposals } from "../Proposals";
 import { NFTs } from "../NFTs";
 import { Navbar } from "../../components/Toolbar";
+import {useHistory} from "react-router";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -43,9 +44,12 @@ enum DAOState {
 
 const DAORouteContent: React.FC = ({ children }) => {
   const daoId = useDAOID();
-  const { tezos } = useTezos();
+  const { tezos, network } = useTezos();
   const { data, error } = useDAO(daoId);
   const [state, setState] = useState<DAOState>(DAOState.FOUND);
+  const history = useHistory();
+
+  console.log(history)
 
   useEffect(() => {
     (async () => {
@@ -59,6 +63,12 @@ const DAORouteContent: React.FC = ({ children }) => {
       }
     })();
   }, [data, error, daoId, tezos.contract]);
+
+  useEffect(() => {
+    if(history && data && data.data.network.toLowerCase() !== network.toLowerCase()) {
+      history.push("/explorer")
+    }
+  }, [data, history, network])
 
   return (
     <>

@@ -101,15 +101,15 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
       >
         {nft && (
           <>
-            <DialogTitle>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <CloseButton onClick={() => (onClose as () => void)()}>
-                    <CloseIcon htmlColor="#FFF" />
-                  </CloseButton>
-                </Grid>
-              </Grid>
-            </DialogTitle>
+            {/*<DialogTitle>*/}
+            {/*  <Grid container justifyContent="flex-end">*/}
+            {/*    <Grid item>*/}
+            {/*      <CloseButton onClick={() => (onClose as () => void)()}>*/}
+            {/*        <CloseIcon htmlColor="#FFF" />*/}
+            {/*      </CloseButton>*/}
+            {/*    </Grid>*/}
+            {/*  </Grid>*/}
+            {/*</DialogTitle>*/}
             <Content>
               <Grid container direction="column" style={{ gap: 32 }}>
                 <Grid item>

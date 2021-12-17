@@ -7,13 +7,14 @@ import {
 import { CopyAddress } from "modules/common/CopyAddress";
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
 
-import React, { useState } from "react";
+import React, {useMemo, useState} from "react";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { Hero } from "../../components/Hero";
 import { HeroTitle } from "../../components/HeroTitle";
 import { useDAOID } from "../DAO/router";
 import { BalancesTable } from "./components/BalancesTable";
 import { TransfersTable } from "./components/TransfersTable";
+import {useTransfers} from "../../../../../services/contracts/baseDAO/hooks/useTransfers";
 
 export const Treasury: React.FC = () => {
   const theme = useTheme();
@@ -24,6 +25,27 @@ export const Treasury: React.FC = () => {
   const onCloseTransfer = () => {
     setOpenTransfer(false)
   }
+  const { data: transfers } = useTransfers(daoId);
+
+  const inboundTransfers = useMemo(() => {
+    if (!transfers) {
+      return [];
+    }
+
+    return transfers.filter(
+      (t) => t.recipient.toLowerCase() === daoId.toLowerCase()
+    );
+  }, [transfers, daoId]);
+
+  const outboundTransfers = useMemo(() => {
+    if (!transfers) {
+      return [];
+    }
+
+    return transfers.filter(
+      (t) => t.recipient.toLowerCase() !== daoId.toLowerCase()
+    );
+  }, [transfers, daoId]);
 
   return (
     <>
@@ -55,7 +77,10 @@ export const Treasury: React.FC = () => {
           <BalancesTable/>
         </Grid>
         <Grid item>
-          <TransfersTable />
+          <TransfersTable isInbound={true} transfers={inboundTransfers} />
+        </Grid>
+        <Grid item>
+          <TransfersTable isInbound={false} transfers={outboundTransfers} />
         </Grid>
       </Grid>
       <ProposalFormContainer

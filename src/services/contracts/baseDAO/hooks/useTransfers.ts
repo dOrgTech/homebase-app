@@ -8,7 +8,7 @@ import { BigNumber } from "bignumber.js";
 import { getXTZTransfers } from "services/indexer/dao/services";
 import dayjs from "dayjs";
 
-interface TransferWithBN {
+export interface TransferWithBN {
   name: string;
   amount: BigNumber;
   recipient: string;
@@ -52,7 +52,7 @@ export const useTransfers = (contractAddress: string) => {
         recipient: t.to,
         sender: t.from,
         date: t.timestamp,
-        name: t.token.symbol || "-",
+        name: t.token.symbol === "OBJKT"? `${t.token.symbol}#${t.token.token_id}` : t.token.symbol || "-",
         hash: t.hash,
         amount: parseUnits(new BigNumber(t.amount), t.token.decimals),
       }));

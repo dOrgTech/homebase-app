@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, {useMemo, useState} from "react";
 import {
   Button,
   Grid,
@@ -17,14 +17,14 @@ import {
   ProposalFormContainer,
   ProposalFormDefaultValues,
 } from "modules/explorer/components/ProposalForm";
-import { DAOHolding } from "services/bakingBad/tokenBalances";
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
-import { useDAOID } from "../../DAO/router";
+import {DAOHolding} from "services/bakingBad/tokenBalances";
+import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import {useTezosBalance} from "services/contracts/baseDAO/hooks/useTezosBalance";
+import {useDAOID} from "../../DAO/router";
 import BigNumber from "bignumber.js";
-import { ContentContainer } from "modules/explorer/v2/components/ContentContainer";
+import {ContentContainer} from "modules/explorer/v2/components/ContentContainer";
 
-const TokenSymbol = styled(Typography)(({ theme }) => ({
+const TokenSymbol = styled(Typography)(({theme}) => ({
   background: hexToRgba(theme.palette.secondary.main, 0.11),
   borderRadius: 4,
   color: theme.palette.secondary.main,
@@ -83,11 +83,11 @@ interface TableProps {
 }
 
 const MobileBalancesTable: React.FC<TableProps> = ({
-  rows,
-  tezosBalance,
-  openTokenTransferModal,
-  openXTZTransferModal,
-}) => {
+                                                     rows,
+                                                     tezosBalance,
+                                                     openTokenTransferModal,
+                                                     openXTZTransferModal,
+                                                   }) => {
   const XTZRowData: RowData = {
     symbol: "XTZ",
     address: "-",
@@ -106,7 +106,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
         container
         direction="column"
         alignItems="center"
-        style={{ gap: 19 }}
+        style={{gap: 19}}
       >
         {titles.map((title, j) => (
           <Grid item key={`balancesMobileItem-${j}`}>
@@ -122,6 +122,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
           <Button
             variant="contained"
             color="secondary"
+            size={"small"}
             onClick={() => openXTZTransferModal()}
           >
             Transfer
@@ -135,7 +136,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
           container
           direction="column"
           alignItems="center"
-          style={{ gap: 19 }}
+          style={{gap: 19}}
         >
           {titles.map((title, j) => (
             <Grid item key={`balancesMobileItem-${j}`}>
@@ -151,6 +152,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
             <Button
               variant="contained"
               color="secondary"
+              size={"small"}
               onClick={() => openTokenTransferModal(row.address)}
             >
               Transfer
@@ -163,11 +165,11 @@ const MobileBalancesTable: React.FC<TableProps> = ({
 };
 
 const DesktopBalancesTable: React.FC<TableProps> = ({
-  rows,
-  tezosBalance,
-  openTokenTransferModal,
-  openXTZTransferModal,
-}) => {
+                                                      rows,
+                                                      tezosBalance,
+                                                      openTokenTransferModal,
+                                                      openXTZTransferModal,
+                                                    }) => {
   return (
     <Table>
       <TableHead>
@@ -223,8 +225,8 @@ export const BalancesTable: React.FC = () => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const daoId = useDAOID();
-  const { tokenHoldings } = useDAOHoldings(daoId);
-  const { data: tezosBalance } = useTezosBalance(daoId);
+  const {tokenHoldings} = useDAOHoldings(daoId);
+  const {data: tezosBalance} = useTezosBalance(daoId);
   const [openTransfer, setOpenTransfer] = useState(false);
   const [defaultValues, setDefaultValues] =
     useState<ProposalFormDefaultValues>();

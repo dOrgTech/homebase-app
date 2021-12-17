@@ -3,9 +3,11 @@ import React, { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BottomSheet } from "./BottomSheet";
 import { Network } from "services/beacon/context";
+import {ResponsiveDialog} from "./ResponsiveDialog";
+import {ColorDot, networkDotColorMap} from "./ChangeNetworkButton";
 
 const SheetContainer = styled(Grid)({
-  paddingTop: 50,
+  padding: 12,
 });
 
 const SheetItem = styled(Grid)({
@@ -22,11 +24,11 @@ interface Props {
   onClose: () => void;
 }
 
-const MenuText = styled(Typography)({
-  fontSize: 14,
-});
+const TitleContainer = styled(Grid)({
+  padding: 25
+})
 
-const SUPPORTED_NETWORKS: Network[] = ["mainnet", "florencenet", "granadanet"];
+const SUPPORTED_NETWORKS: Network[] = ["mainnet", "granadanet", "hangzhounet"];
 
 export const NetworkSheet: React.FC<Props> = (props) => {
   const { network, changeNetwork } = useTezos();
@@ -37,21 +39,27 @@ export const NetworkSheet: React.FC<Props> = (props) => {
   );
 
   return (
-    <BottomSheet open={props.open} onDismiss={props.onClose}>
-      <SheetContainer>
+    <ResponsiveDialog open={props.open} onClose={props.onClose}>
+      <SheetContainer container direction={"column"}>
+        <TitleContainer item>
+          <Typography variant={"h4"} align={"center"} color={"textPrimary"}>Choose Network</Typography>
+        </TitleContainer>
         {options.map((networkOption, i) => (
-          <SheetItem key={`network-${i}`} onClick={() => {
+          <SheetItem item key={`network-${i}`} onClick={() => {
               props.onClose()
               changeNetwork(networkOption)
             }}>
-            <Grid container justifyContent="center" alignItems="center">
+            <Grid container justifyContent="center" alignItems="center" style={{ gap: 8 }}>
               <Grid item>
-                <MenuText color="textPrimary">{capitalize(networkOption)}</MenuText>
+                <ColorDot color={networkDotColorMap[networkOption]} />
+              </Grid>
+              <Grid item>
+                <Typography variant={"h6"} color="textPrimary">{capitalize(networkOption)}</Typography>
               </Grid>
             </Grid>
           </SheetItem>
         ))}
       </SheetContainer>
-    </BottomSheet>
+    </ResponsiveDialog>
   );
 };

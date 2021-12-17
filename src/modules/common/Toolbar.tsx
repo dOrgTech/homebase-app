@@ -32,7 +32,7 @@ const Header = styled(Grid)({
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
-  background: theme.palette.primary.dark,
+  background: theme.palette.primary.main,
 }));
 
 const StyledToolbar = styled(Toolbar)({
@@ -192,7 +192,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
                   </Grid>
                   <Grid item>
                     <Box paddingLeft="10px">
-                      <LogoText color="textPrimary">Homebase</LogoText>
+                      <LogoText color="textSecondary">Homebase</LogoText>
                     </Box>
                   </Grid>
                 </ToolbarContainer>
@@ -262,7 +262,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
                           />
                         </AddressMenuIcon>
                         <Grid item>
-                          <Typography variant="subtitle2" color="textPrimary">
+                          <Typography variant="subtitle2" color="textSecondary">
                             {toShortAddress(account)}
                           </Typography>
                         </Grid>
@@ -273,7 +273,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
                         onClick={handleNetworkClick}
                       >
                         <Grid item>
-                          <Typography variant="subtitle2" color="textPrimary">
+                          <Typography variant="subtitle2" color="textSecondary">
                             Change network ({network})
                           </Typography>
                         </Grid>
@@ -293,7 +293,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
                           />
                         </AddressMenuIcon>
                         <Grid item>
-                          <Typography variant="subtitle2" color="textPrimary">
+                          <Typography variant="subtitle2" color="textSecondary">
                             Log out
                           </Typography>
                         </Grid>

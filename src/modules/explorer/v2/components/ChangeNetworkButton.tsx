@@ -9,6 +9,7 @@ import {
 import React from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { ActionSheet, useActionSheet } from "../context/ActionSheets";
+import {Network} from "../../../../services/beacon/context";
 
 const StyledConnectedButton = styled(Box)({
   "& > *": {
@@ -23,7 +24,13 @@ const StyledConnectedButton = styled(Box)({
   }
 });
 
-const ColorDot = styled(Box)({
+export const networkDotColorMap: Record<Network, string> = {
+  mainnet: "#9EEE5D",
+  hangzhounet: "#E54FAE",
+  granadanet: "#819DEF",
+}
+
+export const ColorDot = styled(Box)({
   height: 6,
   width: 6,
   backgroundColor: ({ color }: { color: string }) => color,
@@ -36,14 +43,13 @@ const NetworkText = styled(Typography)({
 
 export const ChangeNetworkButton = () => {
   const { network } = useTezos()
-  const theme = useTheme();
   const { open } = useActionSheet(ActionSheet.Network);
 
   return (
     <StyledConnectedButton onClick={() => open()}>
       <Grid container style={{ gap: 5 }} alignItems="center" wrap="nowrap">
         <Grid item>
-          <ColorDot color={theme.palette.secondary.main} />
+          <ColorDot color={networkDotColorMap[network]} />
         </Grid>
         <Grid item>
           <NetworkText color="textPrimary">{capitalize(network)}</NetworkText>
