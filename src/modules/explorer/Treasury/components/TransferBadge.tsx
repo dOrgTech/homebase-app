@@ -4,10 +4,12 @@ import { BigNumber } from "bignumber.js";
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
 import { UserBadge } from "modules/explorer/components/UserBadge";
 import React from "react";
+import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
+import { mutezToXtz, parseUnits } from "services/contracts/utils";
 import { FA2Symbol } from "./FA2Symbol";
 
 const ArrowContainer = styled(Grid)(({ theme }) => ({
-  color: theme.palette.text.secondary,
+  color: theme.palette.text.primary,
 }));
 
 interface Props extends GridProps {
@@ -26,6 +28,11 @@ export const TransferBadge: React.FC<Props> = ({
   tokenId,
   ...props
 }) => {
+  const { data, error } = useTokenMetadata(contract, tokenId);
+
+  console.log(error)
+  console.log(contract, " ", tokenId, " ", data)
+
   return (
     <HighlightedBadge
       justify="center"
@@ -36,14 +43,18 @@ export const TransferBadge: React.FC<Props> = ({
       {...props}
     >
       <Grid item>
-        <Typography variant="body1" color="textSecondary">
-          {amount.toString()}{" "}
-          {contract && tokenId ? (
-            <FA2Symbol contractAddress={contract} tokenId={tokenId} />
-          ) : (
-            currency
-          )}
-        </Typography>
+        {data && (
+          <Typography variant="body1" color="textPrimary">
+            {data.symbol !== "XTZ"
+              ? parseUnits(amount, data.decimals).toString()
+              : mutezToXtz(amount).toString()}{" "}
+            {contract && tokenId ? (
+              <FA2Symbol contractAddress={contract} tokenId={tokenId} />
+            ) : (
+              currency
+            )}
+          </Typography>
+        )}
       </Grid>
       <ArrowContainer item>
         <ArrowForward color="inherit" />

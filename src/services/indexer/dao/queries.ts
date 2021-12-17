@@ -56,6 +56,18 @@ export const GET_DAO_QUERY = gql`
         holder {
           id
           address
+          proposals_aggregate {
+            aggregate {
+              count
+            }
+          }
+          votes_aggregate {
+            aggregate {
+              sum {
+                amount
+              }
+            }
+          }
         }
         current_stage_num
         current_unstaked

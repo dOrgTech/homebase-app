@@ -4,7 +4,6 @@ import {
   styled,
   Typography,
   useTheme,
-  Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -13,7 +12,7 @@ import {
   Button,
 } from "@material-ui/core";
 
-import { ProgressBar } from "modules/explorer/components";
+import { ProgressBar } from "modules/explorer/components/ProgressBar";
 import { useVotesStats } from "../hooks/useVotesStats";
 import { VotersProgress } from "./VotersProgress";
 import { AppTabBar } from "./AppTabBar";
@@ -21,6 +20,7 @@ import { TabPanel } from "./TabPanel";
 import { BigNumber } from "bignumber.js";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 import { UserBadge } from "./UserBadge";
+import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
 
 interface UpVotesDialogData {
   daoAddress: string;
@@ -39,7 +39,7 @@ const Title = styled(DialogTitle)({
   minWidth: 250,
 });
 
-const CustomDialog = styled(Dialog)({
+const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {
     minHeight: "400px !important",
     maxHeight: 600,
@@ -170,7 +170,8 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
   return (
     <div>
       <StyledViewButton
-        variant="outlined"
+        variant="contained"
+        size="small"
         color="secondary"
         onClick={handleClickOpen}
       >

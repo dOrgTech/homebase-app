@@ -5,3 +5,17 @@ body {
   margin: 0;
   background: #1C1F23;
 }
+
+a {
+  text-decoration: none;
+}
+
+[data-rsbs-backdrop] {
+  z-index: 1000000;
+}
+
+[data-rsbs-overlay], [data-rsbs-root]:after {
+  background: #1C1F23;
+  z-index: 1000001;
+  max-height: 90vh;
+}

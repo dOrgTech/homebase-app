@@ -11,8 +11,9 @@ import {
   Link,
 } from "@material-ui/core";
 import { SendButton } from "./ProposalFormSendButton";
+import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
 
-const CustomDialog = styled(Dialog)({
+const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {
     minHeight: "300px !important",
   },
@@ -33,7 +34,7 @@ export const WarningDialog: React.FC<{
   const [checked, setChecked] = useState(false);
 
   return (
-    <CustomDialog open={open}>
+    <CustomDialog open={open} onClose={handleClose}>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           <TableHeader container direction="row" alignItems="center">

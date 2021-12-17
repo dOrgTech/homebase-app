@@ -1,83 +1,24 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
   Grid,
-  styled,
-  Typography,
-  Paper,
   DialogContent,
-  DialogContentText,
-  TextField,
-  Switch,
+  TextField, styled,
 } from "@material-ui/core";
-import {
-  CustomTextarea,
-  DescriptionContainer,
-} from "modules/explorer/components/ProposalTextContainer";
-import { ProposalFormListItem } from "modules/explorer/components/styled/ProposalFormListItem";
-import { ErrorText } from "modules/explorer/components/styled/ErrorText";
-import { Registry } from "services/contracts/baseDAO";
+import {ErrorText} from "modules/explorer/components/styled/ErrorText";
+import {Registry} from "services/contracts/baseDAO";
 import * as Yup from "yup";
-import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import {Controller, useFieldArray, useFormContext} from "react-hook-form";
+import {BatchBar} from "../../components/BatchBar";
+import {ProposalFormInput} from "../../components/ProposalFormInput";
 
-const BatchBar = styled(Grid)(({ theme }) => ({
-  height: 60,
-  alignItems: "center",
-  borderBottom: `2px solid ${theme.palette.primary.light}`,
-  padding: "0px 24px",
-  cursor: "pointer",
-  overflowX: "auto",
-}));
+const emptyItem = {key: "", value: ""};
 
-const SwitchContainer = styled(Grid)({
-  textAlign: "end",
-});
-
-const TransferActive = styled(Grid)({
-  height: 53,
-  minWidth: 51,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-});
-
-const AddButton = styled(Paper)({
-  marginLeft: 12,
-  minHeight: 31,
-  minWidth: 31,
-  textAlign: "center",
-  padding: 0,
-  background: "#383939",
-  color: "#fff",
-  alignItems: "center",
-  display: "flex",
-  justifyContent: "center",
-  cursor: "pointer",
-});
-
-const styles = {
-  visible: {
-    display: "none",
-  },
-  active: {
-    background: "#3866F9",
-  },
-  show: {
-    visibility: "visible",
-  },
-  hide: {
-    visibility: "hidden",
-  },
-};
-
-const CustomTextField = styled(TextField)({
-  textAlign: "end",
+const TextArea = styled(TextField)({
   "& .MuiInputBase-input": {
-    textAlign: "end",
-    paddingRight: 12,
-  },
-});
-
-const emptyItem = { key: "", value: "" };
+    textAlign: "left",
+    paddingTop: 6
+  }
+})
 
 export const registryProposalFormInitialState: RegistryProposalFormValues = {
   registryUpdateForm: {
@@ -109,9 +50,9 @@ export const UpdateRegistryDialog: React.FC = () => {
     control,
     getValues,
     setValue,
-    formState: { errors, touchedFields: touched },
+    formState: {errors, touchedFields: touched},
   } = useFormContext<RegistryProposalFormValues>();
-  const { fields, append } = useFieldArray({
+  const {fields, append} = useFieldArray({
     control,
     name: "registryUpdateForm.list",
   });
@@ -131,117 +72,56 @@ export const UpdateRegistryDialog: React.FC = () => {
 
   return (
     <DialogContent>
-      <DialogContentText>
-        <ProposalFormListItem container direction="row">
-          <Grid item xs={6}>
-            <Typography variant="subtitle1" color="textSecondary">
-              Batch Update?
-            </Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <SwitchContainer item xs={12} justify="flex-end">
-              <Switch
-                type="checkbox"
-                onChange={handleIsBatchChange}
-                checked={isBatch}
-              />
-            </SwitchContainer>
-          </Grid>
-        </ProposalFormListItem>
-
+      <Grid container direction={"column"} style={{gap: 31}}>
+        <Grid item>
+          <BatchBar isBatch={isBatch} stateIsBatch={values.registryUpdateForm.isBatch}
+                    handleIsBatchChange={handleIsBatchChange} onClickAdd={() => {
+            append(emptyItem);
+            setActiveItem(activeItem + 1);
+          }} items={values.registryUpdateForm.list} activeItem={activeItem}
+                    setActiveItem={(index: number) => setActiveItem(index + 1)}/>
+        </Grid>
         {fields.map(
           (field, index) =>
             index === activeItem - 1 && (
               <>
-                {isBatch ? (
-                  <BatchBar container direction="row" wrap="nowrap">
-                    {values.registryUpdateForm.list.map((_, index) => {
-                      return (
-                        <TransferActive
-                          item
-                          key={index}
-                          onClick={() => setActiveItem(index + 1)}
-                          style={
-                            Number(index + 1) === activeItem
-                              ? styles.active
-                              : undefined
-                          }
-                        >
-                          <Typography variant="subtitle1" color="textSecondary">
-                            #{index + 1}
-                          </Typography>
-                        </TransferActive>
-                      );
-                    })}
+                <Grid item>
+                  <ProposalFormInput label={"Key"}>
+                    <Controller
+                      key={field.id}
+                      name={`registryUpdateForm.list.${activeItem - 1}.key`}
+                      control={control}
+                      render={({field}) => (
+                        <TextField
+                          {...field}
+                          type="string"
+                          InputProps={{disableUnderline: true}}
+                          placeholder="Type a Key"
+                        />
+                      )}
+                    />
 
-                    <AddButton
-                      onClick={() => {
-                        append(emptyItem);
-                        setActiveItem(activeItem + 1);
-                      }}
-                    >
-                      +
-                    </AddButton>
-                  </BatchBar>
-                ) : null}
-
-                <ProposalFormListItem container direction="row">
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle1" color="textSecondary">
-                      Key
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <SwitchContainer item xs={12} justify="flex-end">
-                      <Controller
-                        key={field.id}
-                        name={`registryUpdateForm.list.${activeItem - 1}.key`}
-                        control={control}
-                        render={({ field }) => (
-                          <CustomTextField
-                            {...field}
-                            type="string"
-                            placeholder="Type a Key"
-                          />
-                        )}
-                      />
-
-                      {keyError &&
-                      touched.registryUpdateForm?.list?.[activeItem - 1]
-                        ?.key ? (
-                        <ErrorText>{keyError}</ErrorText>
-                      ) : null}
-                    </SwitchContainer>
-                  </Grid>
-                </ProposalFormListItem>
-
-                <DescriptionContainer container direction="row">
-                  <Grid item xs={12}>
-                    <Grid
-                      container
-                      direction="row"
-                      alignItems="center"
-                      justify="space-between"
-                    >
-                      <Grid item xs={12}>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          Value
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
+                    {keyError &&
+                    touched.registryUpdateForm?.list?.[activeItem - 1]
+                      ?.key ? (
+                      <ErrorText>{keyError}</ErrorText>
+                    ) : null}
+                  </ProposalFormInput>
+                </Grid>
+                <Grid>
+                  <ProposalFormInput label={"Value"}>
                     <Controller
                       key={field.id}
                       name={`registryUpdateForm.list.${activeItem - 1}.value`}
                       control={control}
-                      render={({ field }) => (
-                        <CustomTextarea
+                      render={({field}) => (
+                        <TextArea
                           {...field}
                           multiline
                           type="string"
                           rows={6}
                           placeholder="Type a value"
+                          InputProps={{ disableUnderline: true}}
                         />
                       )}
                     />
@@ -251,12 +131,12 @@ export const UpdateRegistryDialog: React.FC = () => {
                       ?.value ? (
                       <ErrorText>{valueError}</ErrorText>
                     ) : null}
-                  </Grid>
-                </DescriptionContainer>
+                  </ProposalFormInput>
+                </Grid>
               </>
             )
         )}
-      </DialogContentText>
+      </Grid>
     </DialogContent>
   );
 };

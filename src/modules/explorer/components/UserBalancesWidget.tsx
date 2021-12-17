@@ -5,7 +5,7 @@ import hexToRgba from "hex-to-rgba";
 import React, { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { useDAOID } from "../daoRouter";
+import {useDAOID} from "../v2/pages/DAO/router";
 
 const BalanceBox = styled(Grid)(
   ({
@@ -87,7 +87,7 @@ export const UserBalancesWidget: React.FC = () => {
                 <TitleText align="center" color="inherit">
                   Available Balance
                 </TitleText>
-                <BalanceText align="center" color="textSecondary">
+                <BalanceText align="center" color="textPrimary">
                   {userLedger.available_balance.toString()}{" "}
                   {dao.data.token.symbol}
                 </BalanceText>
@@ -100,7 +100,7 @@ export const UserBalancesWidget: React.FC = () => {
                 <TitleText align="center" color="inherit">
                   Pending Balance
                 </TitleText>
-                <BalanceText align="center" color="textSecondary">
+                <BalanceText align="center" color="textPrimary">
                   {userLedger.pending_balance.toString()}{" "}
                   {dao.data.token.symbol}
                 </BalanceText>
@@ -113,7 +113,7 @@ export const UserBalancesWidget: React.FC = () => {
                 <TitleText align="center" color="inherit">
                   Staked Balance
                 </TitleText>
-                <BalanceText align="center" color="textSecondary">
+                <BalanceText align="center" color="textPrimary">
                   {userLedger.staked.toString()} {dao.data.token.symbol}
                 </BalanceText>
               </Grid>

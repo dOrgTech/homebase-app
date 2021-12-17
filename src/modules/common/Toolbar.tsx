@@ -7,10 +7,10 @@ import {
   Typography,
   Box,
   Grid,
-  Theme,
   useTheme,
   Popover,
   useMediaQuery,
+  Theme,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
@@ -24,14 +24,21 @@ import { Network } from "services/beacon/context";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
+import { NavigationMenu } from "modules/explorer/v2/components/NavigationMenu";
 
-const StyledAppBar = styled(AppBar)({
+const Header = styled(Grid)({
+ padding: "28px 125px"
+})
+
+const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
-});
+  background: theme.palette.primary.main,
+}));
 
 const StyledToolbar = styled(Toolbar)({
+  width: "100%",
   display: "flex",
-  padding: "22px 37px",
+  padding: 0,
   boxSizing: "border-box",
   justifyContent: "space-between",
   flexWrap: "wrap",
@@ -84,12 +91,6 @@ const AddressBarWrapper = styled(Grid)({
   },
 });
 
-const explorerBorder = (theme: Theme) => ({
-  appBorder: {
-    borderBottom: `2px solid ${theme.palette.primary.light}`,
-  },
-});
-
 const LogoItem = styled("img")({
   height: "30px",
   cursor: "pointer",
@@ -125,9 +126,10 @@ export const ConnectWalletButton = ({
   </ConnectWallet>
 );
 
-export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
+export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?: boolean }> = ({
   mode,
   children,
+  disableMobileMenu
 }) => {
   const { connect, account, reset, changeNetwork, network } = useTezos();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
@@ -151,7 +153,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
     changeNetwork(network);
     setPopperOpen(!popperOpen);
     setNetworkPopperOpen(!networkPopperOpen);
-    history.push("/explorer/daos");
+    history.push("/explorer");
   };
 
   const handleClick = (event: React.MouseEvent<any>) => {
@@ -172,13 +174,9 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
   const history = useHistory();
 
   return (
-    <StyledAppBar
-      position="sticky"
-      color="primary"
-      style={mode === "explorer" ? explorerBorder(theme).appBorder : undefined}
-    >
+    <StyledAppBar position="sticky">
       <StyledToolbar>
-        <Grid
+        <Header
           container
           direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
@@ -228,7 +226,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                           <ProfileAvatar size={22} address={account} />
                         </Grid>
                         <Grid item>
-                          <Typography variant="subtitle1">
+                          <Typography>
                             <UserProfileName address={account} short={true} />
                           </Typography>
                         </Grid>
@@ -304,7 +302,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
                   </StyledPopover>
                 </>
               ) : !isMobileSmall ? (
-                <Grid container justify="flex-end" wrap="nowrap" spacing={1}>
+                <Grid container justify="flex-end" wrap="nowrap" style={{ gap: 8 }}>
                   <Grid item>
                     <ChangeNetworkButton />
                   </Grid>
@@ -323,7 +321,8 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer" }> = ({
               )}
             </Grid>
           </Grid>
-        </Grid>
+        </Header>
+        <NavigationMenu disableMobileMenu={disableMobileMenu}/>
       </StyledToolbar>
       <NetworkMenu
         open={networkPopperOpen}
