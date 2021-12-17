@@ -1,14 +1,11 @@
 import {
   Button,
   DialogContent,
-  DialogTitle,
   Grid,
-  IconButton,
   Theme,
   Typography,
 } from "@material-ui/core";
 import { styled } from "@material-ui/styles";
-import CloseIcon from "@material-ui/icons/Close";
 import hexToRgba from "hex-to-rgba";
 import React, { useState } from "react";
 import { NFT } from "./NFT";
@@ -56,9 +53,9 @@ const NFTContainer = styled(Grid)({
   maxHeight: 415,
 });
 
-const CloseButton = styled(IconButton)(({ theme }: { theme: Theme }) => ({
-  color: theme.palette.text.secondary,
-}));
+// const CloseButton = styled(IconButton)(({ theme }: { theme: Theme }) => ({
+//   color: theme.palette.text.secondary,
+// }));
 
 interface Props {
   nft: NFTModel | undefined;

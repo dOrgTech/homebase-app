@@ -4,7 +4,6 @@ import {
   Grid,
   styled,
   Typography,
-  useTheme,
 } from "@material-ui/core";
 import React from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
