@@ -17,11 +17,6 @@ export const connectWithBeacon = async (
 }> => {
   let networkType;
 
-  const wallet = new BeaconWallet({
-    name: "Homebase",
-    iconUrl: "https://tezostaquito.io/img/favicon.png",
-  });
-
   switch (envNetwork) {
     case "hangzhounet":
       networkType = NetworkType.HANGZHOUNET;
@@ -43,6 +38,12 @@ export const connectWithBeacon = async (
       networkType = NetworkType.MAINNET;
       break;
   }
+
+  const wallet = new BeaconWallet({
+    name: "Homebase",
+    iconUrl: "https://tezostaquito.io/img/favicon.png",
+    preferredNetwork: networkType,
+  });
 
   await wallet.requestPermissions({
     network: {
