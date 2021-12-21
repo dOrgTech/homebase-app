@@ -27,7 +27,7 @@ const TitleContainer = styled(Grid)({
   padding: 25
 })
 
-const SUPPORTED_NETWORKS: Network[] = ["mainnet", "granadanet", "hangzhounet"];
+const SUPPORTED_NETWORKS: Network[] = ["mainnet", "hangzhounet"];
 
 export const NetworkSheet: React.FC<Props> = (props) => {
   const { network, changeNetwork } = useTezos();

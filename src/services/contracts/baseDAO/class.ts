@@ -85,6 +85,10 @@ export abstract class BaseDAO {
       });
       console.log("Originating DAO contract...");
 
+      console.log(baseDAOContractCode)
+      console.log(treasuryParams)
+      console.log(storageCode)
+
       const t = await tezos.wallet.originate({
         code: baseDAOContractCode,
         init: storageCode,
