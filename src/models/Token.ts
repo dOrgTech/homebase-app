@@ -13,6 +13,8 @@ interface TokenParams {
   supply: string;
 }
 
+export type NFTFormat = "image/jpeg" | "video/mp4"
+
 interface NFTParams extends TokenParams {
   description: string;
   artifact_uri: string;
@@ -20,7 +22,7 @@ interface NFTParams extends TokenParams {
   is_transferable: boolean;
   creators: string[];
   tags: string[];
-  formats: {
+  formats?: {
     mimeType: string;
     uri: string;
   }[];
@@ -67,10 +69,8 @@ export class NFT extends Token {
   is_transferable: boolean;
   creators: string[];
   tags: string[];
-  formats: {
-    mimeType: string;
-    uri: string;
-  }[];
+  preferredFormat: NFTFormat;
+  formats: NFTFormat[];
 
   constructor(params: NFTParams) {
     super(params);
@@ -84,6 +84,13 @@ export class NFT extends Token {
     this.is_transferable = params.is_transferable;
     this.creators = params.creators;
     this.tags = params.tags;
-    this.formats = params.formats;
+    this.formats = ["image/jpeg"]
+
+    if(params.formats) {
+      this.formats = params.formats.map(format => format.mimeType as NFTFormat);
+    }
+
+    //On BakingBad's APIs, it's simply the first one
+    this.preferredFormat = this.formats[0]
   }
 }

@@ -194,7 +194,7 @@ export const NFTTransferForm: React.FC = () => {
                             <NFT
                               qmHash={activeAsset.artifact_hash}
                               name={activeAsset.name}
-                              mimeType={activeAsset.formats[0].mimeType}
+                              mimeType={activeAsset.preferredFormat}
                             />
                           </NFTContainer>
                         </Grid>
