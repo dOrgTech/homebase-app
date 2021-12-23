@@ -5,7 +5,7 @@ import {
   Typography,
   Button,
   useTheme,
-  useMediaQuery,
+  useMediaQuery, Tooltip,
 } from "@material-ui/core";
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
@@ -19,6 +19,8 @@ import { ProposalsList } from "../../components/ProposalsList";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { UsersTable } from "../../components/UsersTable";
+import BigNumber from "bignumber.js";
+import {InfoIcon} from "../../../components/styled/InfoIcon";
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 55px",
@@ -80,11 +82,10 @@ export const DAO: React.FC = () => {
       .sort((a, b) => b.available_balance.minus(a.available_balance).toNumber())
       .map((p) => ({
         address: p.holder.address,
-        weight: p.available_balance
-        .multipliedBy(100)
-        .div(data.data.token.supply)
-        .decimalPlaces(2)
-        .toString(),
+        totalStaked: new BigNumber(p.total_balance).dp(10).toString(),
+        availableStaked: new BigNumber(p.available_balance)
+          .dp(10)
+          .toString(),
         votes: p.holder.votes_cast.toString(),
         proposalsVoted: p.holder.proposals_voted.toString()
       }));
@@ -108,6 +109,12 @@ export const DAO: React.FC = () => {
                 >
                   Execute
                 </ExecuteButton>
+                <Tooltip
+                  placement="bottom"
+                  title="Execute all passed proposals and drop all expired or rejected"
+                >
+                  <InfoIcon color="secondary" />
+                </Tooltip>
               </Grid>
             </Grid>
           </Grid>

@@ -154,7 +154,7 @@ export const NFTs: React.FC = () => {
                     <ImgContainer>
                       <NFT
                         qmHash={nft.token.artifact_hash}
-                        mimeType={nft.token.formats[0].mimeType}
+                        mimeType={nft.token.preferredFormat}
                         name={nft.token.name}
                       />
                     </ImgContainer>

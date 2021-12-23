@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { TreasuryProposeArgs } from "../treasuryDAO/types";
 import mixpanel from "mixpanel-browser";
+import {networkNameMap} from "../../../bakingBad";
 
 export const useTreasuryPropose = () => {
   const queryClient = useQueryClient();
@@ -47,7 +48,7 @@ export const useTreasuryPropose = () => {
           message: "Treasury proposal transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
-          detailsLink: `https://${network}.tzkt.io/` + data.opHash,
+          detailsLink: `https://${networkNameMap[network]}.tzkt.io/` + data.opHash,
         });
         return data;
       } catch (e) {

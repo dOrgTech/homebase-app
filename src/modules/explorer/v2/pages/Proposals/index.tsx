@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Grid, styled, Typography, Button } from "@material-ui/core";
+import {Grid, styled, Typography, Button, Tooltip} from "@material-ui/core";
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -12,6 +12,8 @@ import { ProposalsList } from "../../components/ProposalsList";
 import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
+import {InfoIcon} from "../../../components/styled/InfoIcon";
+import {useIsProposalButtonDisabled} from "../../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 45px",
@@ -27,7 +29,7 @@ export const Proposals: React.FC = () => {
   const daoId = useDAOID();
   const { data, cycleInfo } = useDAO(daoId);
   const { mutate } = useFlush();
-
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
   const { data: proposals } = useProposals(daoId);
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
 
@@ -68,6 +70,12 @@ export const Proposals: React.FC = () => {
                   >
                     Execute
                   </Button>
+                  <Tooltip
+                    placement="bottom"
+                    title="Execute all passed proposals and drop all expired or rejected"
+                  >
+                    <InfoIcon color="secondary" />
+                  </Tooltip>
                 </Grid>
               </Grid>
             </Grid>
@@ -76,9 +84,18 @@ export const Proposals: React.FC = () => {
                 variant="contained"
                 color="secondary"
                 onClick={handleProposalModal}
+                disabled={shouldDisable}
               >
                 New Proposal
               </Button>
+              {shouldDisable && (
+                <Tooltip
+                  placement="bottom"
+                  title="Not on proposal creation period"
+                >
+                  <InfoIcon color="secondary" />
+                </Tooltip>
+              )}
             </Grid>
           </Grid>
         </HeroContainer>

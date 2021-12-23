@@ -4,6 +4,7 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import {BaseDAO} from "../class";
 import {ConfigProposalParams} from "../types";
+import {networkNameMap} from "../../../bakingBad";
 
 export const useProposeConfigChange = () => {
     const queryClient = useQueryClient();
@@ -39,7 +40,7 @@ export const useProposeConfigChange = () => {
                     message: "Config proposal transaction confirmed!",
                     autoHideDuration: 10000,
                     variant: "success",
-                    detailsLink: `https://${network}.tzkt.io/` + data.opHash,
+                    detailsLink: `https://${networkNameMap[network]}.tzkt.io/` + data.opHash,
                 });
                 return data;
             } catch (e) {

@@ -105,17 +105,6 @@ export const NetworkMenu: React.FC<
         <AddressMenuItem
           container
           alignItems="center"
-          onClick={() => handleNetworkChange("granadanet")}
-        >
-          <Grid item>
-            <Typography variant="subtitle2" color="textSecondary">
-              GRANADANET
-            </Typography>
-          </Grid>
-        </AddressMenuItem>
-        <AddressMenuItem
-          container
-          alignItems="center"
           onClick={() => handleNetworkChange("hangzhounet")}
         >
           <Grid item>

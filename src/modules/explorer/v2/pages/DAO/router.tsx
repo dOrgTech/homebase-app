@@ -26,7 +26,7 @@ import {useHistory} from "react-router";
 
 const PageLayout = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
-  width: 1028,
+  width: 1100,
   maxWidth: "100%",
   margin: "55px auto 0 auto",
   padding: "0 25px 32px 25px",

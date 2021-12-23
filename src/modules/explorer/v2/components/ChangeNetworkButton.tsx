@@ -26,7 +26,6 @@ const StyledConnectedButton = styled(Box)({
 export const networkDotColorMap: Record<Network, string> = {
   mainnet: "#9EEE5D",
   hangzhounet: "#E54FAE",
-  granadanet: "#819DEF",
 }
 
 export const ColorDot = styled(Box)({

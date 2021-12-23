@@ -1,6 +1,5 @@
 import {
   Button,
-  DialogContent,
   Grid,
   Theme,
   Typography,
@@ -22,11 +21,6 @@ const CustomDialog = styled(ResponsiveDialog)({
     maxWidth: "100%",
     maxHeight: "100%",
   },
-});
-
-const Content = styled(DialogContent)({
-  boxSizing: "border-box",
-  padding: "29px 85px 68px 85px",
 });
 
 const TitleText = styled(Typography)({
@@ -107,7 +101,6 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
             {/*    </Grid>*/}
             {/*  </Grid>*/}
             {/*</DialogTitle>*/}
-            <Content>
               <Grid container direction="column" style={{ gap: 32 }}>
                 <Grid item>
                   <Grid container justifyContent="space-between" style={{ gap: 32 }}>
@@ -115,7 +108,7 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
                       <NFT
                         qmHash={nft.artifact_hash}
                         name={nft.name}
-                        mimeType={nft.formats[0].mimeType}
+                        mimeType={nft.preferredFormat}
                       />
                     </NFTContainer>
                     <Grid item>
@@ -126,7 +119,7 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
                           </TitleText>
                           <Typography color="textPrimary" variant="body1">
                             {nft.symbol}#{nft.token_id} •{" "}
-                            {nft.formats[0].mimeType}
+                            {nft.preferredFormat}
                           </Typography>
                         </Grid>
                         <Grid item>
@@ -166,7 +159,6 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
                   </Grid>
                 </Grid>
               </Grid>
-            </Content>
           </>
         )}
       </CustomDialog>

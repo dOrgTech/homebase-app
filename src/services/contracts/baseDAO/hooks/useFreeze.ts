@@ -4,6 +4,7 @@ import { useNotification } from "modules/common/hooks/useNotification";
 import { useMutation, useQueryClient } from "react-query";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
+import {networkNameMap} from "../../../bakingBad";
 
 interface Params {
   dao: BaseDAO;
@@ -53,7 +54,7 @@ export const useFreeze = () => {
           } transaction confirmed!`,
           autoHideDuration: 10000,
           variant: "success",
-          detailsLink: `https://${network}.tzkt.io/` + data.opHash,
+          detailsLink: `https://${networkNameMap[network]}.tzkt.io/` + data.opHash,
         });
         return data;
       } catch (e) {

@@ -1,12 +1,12 @@
 import { Network } from "services/beacon/context";
-import { API_URL } from "..";
+import {API_URL, networkNameMap} from "..";
 import { TransferDTO, TransfersDTO } from "./types";
 
 export const getDAOTransfers = async (
   daoId: string,
   network: Network
 ): Promise<TransferDTO[]> => {
-  const url = `${API_URL}/tokens/${network}/transfers/${daoId}`;
+  const url = `${API_URL}/tokens/${networkNameMap[network]}/transfers/${daoId}`;
 
   const response = await fetch(url);
 

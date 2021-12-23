@@ -5,8 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Migration tool for V2 contracts
+- Sending XTZ directly to DAO address
+- Delegating DAO's XTZ to baker
+- Changing DAO configuration parameters
+
+## [1.0.4] - 2021-12-23
 ### Added
 - New visual identity for the whole application
+
+### Changed
+- Removed Granadanet and Florencenet testnets
+
+### Fixed
+- Support for non-OBJKT NFTs
 
 ## [1.0.3] - 2021-11-24
 ### Added
