@@ -4,14 +4,10 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { Network } from "services/beacon/context";
 import {ResponsiveDialog} from "./ResponsiveDialog";
 import {ColorDot, networkDotColorMap} from "./ChangeNetworkButton";
+import {ContentContainer} from "./ContentContainer";
 
-const SheetContainer = styled(Grid)({
-  padding: 12,
-});
-
-const SheetItem = styled(Grid)({
-  height: 65,
-  borderTop: "0.25px solid #7D8C8B",
+const SheetItem = styled(ContentContainer)({
+  height: 50,
   "& > *": {
     height: "100%",
   },
@@ -22,10 +18,6 @@ interface Props {
   open: boolean;
   onClose: () => void;
 }
-
-const TitleContainer = styled(Grid)({
-  padding: 25
-})
 
 const SUPPORTED_NETWORKS: Network[] = ["mainnet", "hangzhounet"];
 
@@ -38,11 +30,8 @@ export const NetworkSheet: React.FC<Props> = (props) => {
   );
 
   return (
-    <ResponsiveDialog open={props.open} onClose={props.onClose}>
-      <SheetContainer container direction={"column"}>
-        <TitleContainer item>
-          <Typography variant={"h4"} align={"center"} color={"textPrimary"}>Choose Network</Typography>
-        </TitleContainer>
+    <ResponsiveDialog open={props.open} onClose={props.onClose} title={"Choose Network"}>
+      <Grid container direction={"column"} style={{ gap: 20 }}>
         {options.map((networkOption, i) => (
           <SheetItem item key={`network-${i}`} onClick={() => {
               props.onClose()
@@ -58,7 +47,7 @@ export const NetworkSheet: React.FC<Props> = (props) => {
             </Grid>
           </SheetItem>
         ))}
-      </SheetContainer>
+      </Grid>
     </ResponsiveDialog>
   );
 };

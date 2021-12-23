@@ -4,9 +4,7 @@ import {BigNumber} from "bignumber.js";
 import {HighlightedBadge} from "modules/explorer/components/styled/HighlightedBadge";
 import {UserBadge} from "modules/explorer/components/UserBadge";
 import React from "react";
-import {useTokenMetadata} from "services/contracts/baseDAO/hooks/useTokenMetadata";
-import {parseUnits} from "services/contracts/utils";
-import {FA2Symbol} from "./FA2Symbol";
+import {mutezToXtz} from "services/contracts/utils";
 
 const ArrowContainer = styled(Grid)(({theme}) => ({
   color: theme.palette.text.primary,
@@ -15,18 +13,13 @@ const ArrowContainer = styled(Grid)(({theme}) => ({
 interface Props extends GridProps {
   address: string;
   amount: BigNumber;
-  contract: string;
-  tokenId: string;
 }
 
-export const TransferBadge: React.FC<Props> = ({
-                                                 address,
-                                                 amount,
-                                                 contract,
-                                                 tokenId,
-                                                 ...props
-                                               }) => {
-  const {data} = useTokenMetadata(contract, tokenId);
+export const XTZTransferBadge: React.FC<Props> = ({
+                                                    address,
+                                                    amount,
+                                                    ...props
+                                                  }) => {
 
   return (
     <HighlightedBadge
@@ -38,12 +31,9 @@ export const TransferBadge: React.FC<Props> = ({
       {...props}
     >
       <Grid item>
-        {data && (
-          <Typography variant="body1" color="textPrimary">
-            {parseUnits(amount, data.decimals).toString()}{" "}
-            <FA2Symbol contractAddress={contract} tokenId={tokenId}/>
-          </Typography>
-        )}
+        <Typography variant="body1" color="textPrimary">
+          <Typography color={"textPrimary"}>{mutezToXtz(amount).toString()}{" "}XTZ</Typography>
+        </Typography>
       </Grid>
       <ArrowContainer item>
         <ArrowForward color="inherit"/>

@@ -1,5 +1,5 @@
 import React, {useMemo} from "react"
-import {Box, Button, Grid, styled, Typography} from "@material-ui/core";
+import {Button, Grid, styled, Typography} from "@material-ui/core";
 import {ResponsiveDialog} from "./ResponsiveDialog";
 import {useVotesStats} from "../../hooks/useVotesStats";
 import {BigNumber} from "bignumber.js";
@@ -24,13 +24,6 @@ enum SelectedVotes {
   SUPPORT,
   OPPOSE
 }
-
-const DialogContent = styled(Box)({
-  padding: "35px 58px",
-  width: "100%",
-  height: "100%",
-  boxSizing: "border-box"
-})
 
 export const VotesDetailDialog = ({open, onClose, daoAddress, proposalAddress}: Props) => {
   const [selectedTab, setSelectedTab] = React.useState(SelectedVotes.ALL);
@@ -80,65 +73,63 @@ export const VotesDetailDialog = ({open, onClose, daoAddress, proposalAddress}: 
   const votesToShow = selectedTab == SelectedVotes.ALL ? allVotes : selectedTab == SelectedVotes.SUPPORT ? supportVotes : againstVotes
 
   return (
-    <ResponsiveDialog open={open} onClose={onClose}>
-      <DialogContent>
-        <Grid container direction={"column"} style={{gap: 58}}>
-          <Grid item container direction={"column"} style={{gap: 16}}>
-            <Grid item>
-              <Typography variant={"h2"} color={"textPrimary"}
-                          style={{fontWeight: "bold"}}>Votes: {votesSum.toString()}</Typography>
-            </Grid>
-            <Grid item>
-              <VotersProgress
-                wrapAll={true}
-                showButton={false}
-                daoId={daoAddress}
-                proposalId={proposalAddress}
-              />
-            </Grid>
+    <ResponsiveDialog open={open} onClose={onClose} title={"Votes"}>
+      <Grid container direction={"column"} style={{gap: 58}}>
+        <Grid item container direction={"column"} style={{gap: 16}}>
+          <Grid item>
+            <Typography variant={"h2"} color={"textPrimary"}
+                        style={{fontWeight: "bold"}}>{votesSum.toString()}</Typography>
           </Grid>
-          <Grid item container direction={"column"} style={{gap: 40}}>
-            <Grid item container>
-              <Grid item>
-                <StyledTab
-                  variant="contained"
-                  color={selectedTab !== SelectedVotes.ALL ? "primary" : "secondary"}
-                  disableRipple={true}
-                  disableElevation={true}
-                  onClick={() => handleChangeTab(SelectedVotes.ALL)}
-                >
-                  All
-                </StyledTab>
-              </Grid>
-              <Grid item>
-                <StyledTab
-                  disableRipple={true}
-                  disableElevation={true}
-                  variant="contained"
-                  color={selectedTab !== SelectedVotes.SUPPORT ? "primary" : "secondary"}
-                  onClick={() => handleChangeTab(SelectedVotes.SUPPORT)}
-                >
-                  Support
-                </StyledTab>
-              </Grid>
-              <Grid item>
-                <StyledTab
-                  disableRipple={true}
-                  disableElevation={true}
-                  variant="contained"
-                  color={selectedTab !== SelectedVotes.OPPOSE ? "primary" : "secondary"}
-                  onClick={() => handleChangeTab(SelectedVotes.OPPOSE)}
-                >
-                  Oppose
-                </StyledTab>
-              </Grid>
-            </Grid>
-            <Grid item>
-              <VotesTable data={votesToShow}/>
-            </Grid>
+          <Grid item>
+            <VotersProgress
+              wrapAll={true}
+              showButton={false}
+              daoId={daoAddress}
+              proposalId={proposalAddress}
+            />
           </Grid>
         </Grid>
-      </DialogContent>
+        <Grid item container direction={"column"} style={{gap: 40}}>
+          <Grid item container>
+            <Grid item>
+              <StyledTab
+                variant="contained"
+                color={selectedTab !== SelectedVotes.ALL ? "primary" : "secondary"}
+                disableRipple={true}
+                disableElevation={true}
+                onClick={() => handleChangeTab(SelectedVotes.ALL)}
+              >
+                All
+              </StyledTab>
+            </Grid>
+            <Grid item>
+              <StyledTab
+                disableRipple={true}
+                disableElevation={true}
+                variant="contained"
+                color={selectedTab !== SelectedVotes.SUPPORT ? "primary" : "secondary"}
+                onClick={() => handleChangeTab(SelectedVotes.SUPPORT)}
+              >
+                Support
+              </StyledTab>
+            </Grid>
+            <Grid item>
+              <StyledTab
+                disableRipple={true}
+                disableElevation={true}
+                variant="contained"
+                color={selectedTab !== SelectedVotes.OPPOSE ? "primary" : "secondary"}
+                onClick={() => handleChangeTab(SelectedVotes.OPPOSE)}
+              >
+                Oppose
+              </StyledTab>
+            </Grid>
+          </Grid>
+          <Grid item>
+            <VotesTable data={votesToShow}/>
+          </Grid>
+        </Grid>
+      </Grid>
     </ResponsiveDialog>
 
   )

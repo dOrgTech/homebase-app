@@ -1,6 +1,5 @@
 import {
   Button,
-  DialogContent,
   Grid,
   Theme,
   Typography,
@@ -22,11 +21,6 @@ const CustomDialog = styled(ResponsiveDialog)({
     maxWidth: "100%",
     maxHeight: "100%",
   },
-});
-
-const Content = styled(DialogContent)({
-  boxSizing: "border-box",
-  padding: "29px 85px 68px 85px",
 });
 
 const TitleText = styled(Typography)({
@@ -107,7 +101,6 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
             {/*    </Grid>*/}
             {/*  </Grid>*/}
             {/*</DialogTitle>*/}
-            <Content>
               <Grid container direction="column" style={{ gap: 32 }}>
                 <Grid item>
                   <Grid container justifyContent="space-between" style={{ gap: 32 }}>
@@ -166,7 +159,6 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
                   </Grid>
                 </Grid>
               </Grid>
-            </Content>
           </>
         )}
       </CustomDialog>

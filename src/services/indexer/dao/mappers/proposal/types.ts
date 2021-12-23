@@ -2,30 +2,24 @@ import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
 import treasuryProposeCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
 import registryProposeCode from "services/contracts/baseDAO/registryDAO/michelson/propose";
-import { Schema } from "@taquito/michelson-encoder";
-import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
-import { parseUnits } from "services/contracts/utils";
-import { ProposalDTO } from "services/indexer/types";
+import {Schema} from "@taquito/michelson-encoder";
+import {Parser, Expr, unpackDataBytes} from "@taquito/michel-codec";
+import {parseUnits} from "services/contracts/utils";
+import {ProposalDTO} from "services/indexer/types";
 import {
   PMRegistryProposal,
   PMTreasuryProposal,
 } from "services/contracts/baseDAO/registryDAO/types";
-import { extractTransfersData } from ".";
-import { bytes2Char } from "@taquito/tzip16";
-import { BaseDAO } from "services/contracts/baseDAO";
-import { DAOTemplate } from "modules/creator/state";
+import {extractTransfersData} from ".";
+import {bytes2Char} from "@taquito/tzip16";
+import {BaseDAO} from "services/contracts/baseDAO";
+import {DAOTemplate} from "modules/creator/state";
 
 export enum IndexerStatus {
   CREATED = "created",
   DROPPED = "dropped",
   EXECUTED = "executed",
   REJECTED_AND_FLUSHED = "rejected_and_flushed",
-}
-
-export interface Voter {
-  address: string;
-  value: BigNumber;
-  support: boolean;
 }
 
 export enum ProposalStatus {
@@ -77,14 +71,14 @@ export abstract class Proposal {
 
   private cachedStatus:
     | {
-        level: number;
-        status: ProposalStatus;
-        statusHistory: {
-          status: ProposalStatus;
-          timestamp: string;
-          level: number;
-        }[];
-      }
+    level: number;
+    status: ProposalStatus;
+    statusHistory: {
+      status: ProposalStatus;
+      timestamp: string;
+      level: number;
+    }[];
+  }
     | undefined;
 
   constructor(dto: ProposalDTO, dao: BaseDAO) {
@@ -99,14 +93,20 @@ export abstract class Proposal {
       ),
       support: Boolean(vote.support),
     }));
-    this.upVotes = parseUnits(
-      new BigNumber(dto.upvotes),
-      dao.data.token.decimals
-    );
-    this.downVotes = parseUnits(
-      new BigNumber(dto.downvotes),
-      dao.data.token.decimals
-    );
+    this.upVotes = this.voters.reduce((acc, voter) => {
+      if (voter.support) {
+        return BigNumber.sum(acc, voter.value)
+      }
+
+      return acc;
+    }, new BigNumber(0));
+    this.downVotes = this.voters.reduce((acc, voter) => {
+      if (!voter.support) {
+        return BigNumber.sum(acc, voter.value)
+      }
+
+      return acc;
+    }, new BigNumber(0));
     this.proposer = dto.holder.address;
     this.startDate = dto.start_date;
     this.startLevel = dto.start_level;
@@ -133,7 +133,7 @@ export abstract class Proposal {
       const activeThreshold =
         Math.floor(
           (this.startLevel + Number(this.dao.data.period)) /
-            Number(this.dao.data.period)
+          Number(this.dao.data.period)
         ) * Number(this.dao.data.period);
 
       const passedOrRejectedThreshold =
@@ -236,9 +236,9 @@ export abstract class Proposal {
 export class TreasuryProposal extends Proposal {
   private cachedMetadata:
     | {
-        transfers: Transfer[];
-        agoraPostId: string;
-      }
+    transfers: Transfer[];
+    agoraPostId: string;
+  }
     | undefined;
 
   get metadata() {
@@ -250,7 +250,7 @@ export class TreasuryProposal extends Proposal {
       const schema = new Schema(micheline as Expr);
 
       const unpackedMetadata = unpackDataBytes(
-        { bytes: this.packedMetadata },
+        {bytes: this.packedMetadata},
         micheline as any
       ) as any;
       const proposalMetadataDTO: PMTreasuryProposal =
@@ -276,13 +276,13 @@ export class TreasuryProposal extends Proposal {
 export class RegistryProposal extends Proposal {
   private cachedMetadata:
     | {
-        transfers: Transfer[];
-        agoraPostId: string;
-        list: {
-          key: string;
-          value: string;
-        }[];
-      }
+    transfers: Transfer[];
+    agoraPostId: string;
+    list: {
+      key: string;
+      value: string;
+    }[];
+  }
     | undefined;
 
   get metadata() {
@@ -294,7 +294,7 @@ export class RegistryProposal extends Proposal {
       const schema = new Schema(micheline as Expr);
 
       const unpackedMetadata = unpackDataBytes(
-        { bytes: this.packedMetadata },
+        {bytes: this.packedMetadata},
         micheline as any
       ) as any;
       const proposalMetadataDTO: PMRegistryProposal =

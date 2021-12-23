@@ -35,7 +35,9 @@ import {
 import {Token} from "models/Token";
 import {useDAOID} from "../v2/pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
-import {ResponsiveDialog} from "../v2/components/ResponsiveDialog";
+import {
+  ProposalFormResponsiveDialog,
+} from "../v2/components/ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -172,14 +174,15 @@ export const ProposalFormContainer: React.FC<Props> = ({
         });
       }
 
+      methods.reset()
       handleClose();
     },
-    [dao, handleClose, registryMutate, treasuryMutate]
+    [dao, handleClose, methods, registryMutate, treasuryMutate]
   );
 
   return (
     <FormProvider {...methods}>
-      <ResponsiveDialog open={open} onClose={handleClose}>
+      <ProposalFormResponsiveDialog open={open} onClose={handleClose}>
         {dao && daoHoldings && (
           <>
             <AppTabBar
@@ -239,7 +242,7 @@ export const ProposalFormContainer: React.FC<Props> = ({
             </Content>
           </>
         )}
-      </ResponsiveDialog>
+      </ProposalFormResponsiveDialog>
     </FormProvider>
   );
 };

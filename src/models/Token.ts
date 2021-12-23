@@ -21,7 +21,7 @@ interface NFTParams extends TokenParams {
   thumbnail_uri: string;
   is_transferable: boolean;
   creators: string[];
-  tags: string[];
+  tags?: string[];
   formats?: {
     mimeType: string;
     uri: string;
@@ -83,7 +83,7 @@ export class NFT extends Token {
     this.thumbnail_uri = params.thumbnail_uri;
     this.is_transferable = params.is_transferable;
     this.creators = params.creators;
-    this.tags = params.tags;
+    this.tags = params.tags || [];
     this.formats = ["image/jpeg"]
 
     if(params.formats) {

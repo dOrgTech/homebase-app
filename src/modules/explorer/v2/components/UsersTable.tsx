@@ -17,12 +17,13 @@ import { UserBadge } from "modules/explorer/components/UserBadge";
 const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
 
-const titles = ["Rank", "Votes", "Weight", "Proposals Voted"] as const;
+const titles = ["Rank", "Votes", "Available Staked", "Total Staked", "Proposals Voted"] as const;
 
 interface RowData {
   address: string;
   votes: string;
-  weight: string;
+  availableStaked: string;
+  totalStaked: string;
   proposalsVoted: string;
 }
 
@@ -52,8 +53,10 @@ const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
       return rowData.address;
     case "Votes":
       return rowData.votes;
-    case "Weight":
-      return rowData.weight;
+    case "Available Staked":
+      return rowData.availableStaked
+    case "Total Staked":
+      return rowData.totalStaked;
     case "Proposals Voted":
       return rowData.proposalsVoted;
   }
@@ -115,10 +118,11 @@ const DesktopUsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
           {data.map((row, i) => (
             <TableRow key={`usersrow-${i}`}>
               <OverflowCell>
-                <UserBadge address={row.address} size={44} gap={16} />
+                <UserBadge smallText={true} address={row.address} size={44} gap={16} />
               </OverflowCell>
               <TableCell>{row.votes}</TableCell>
-              <TableCell>{row.weight}</TableCell>
+              <TableCell>{row.availableStaked}</TableCell>
+              <TableCell>{row.totalStaked}</TableCell>
               <TableCell>{row.proposalsVoted}</TableCell>
             </TableRow>
           ))}

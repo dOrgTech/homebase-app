@@ -41,7 +41,7 @@ export const ProposalsList: React.FC<Props> = ({
 
   return (
     <TableContainer item>
-      <Grid container direction="column">
+      <Grid container direction="column" wrap={"nowrap"}>
         <TableHeader item container justifyContent="space-between">
           <Grid item>
             <Typography variant="body1" color="textPrimary">
@@ -65,8 +65,8 @@ export const ProposalsList: React.FC<Props> = ({
           ) : null}
         </TableHeader>
         {proposals.length ? (
-          <Grid item>
             <Grid
+              item
               container
               component={Collapse}
               in={open}
@@ -87,7 +87,6 @@ export const ProposalsList: React.FC<Props> = ({
                 </Grid>
               ))}
             </Grid>
-          </Grid>
         ) : (
           <ProposalsFooter
             item

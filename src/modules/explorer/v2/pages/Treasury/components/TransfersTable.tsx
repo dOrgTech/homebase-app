@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import {useTezos} from "services/beacon/hooks/useTezos";
 import {Network} from "services/beacon/context";
 import {ContentContainer} from "modules/explorer/v2/components/ContentContainer";
+import {networkNameMap} from "../../../../../../services/bakingBad";
 
 const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);
@@ -141,7 +142,7 @@ const DesktopTransfersTable: React.FC<{ isInbound: boolean; data: RowData[]; net
                 component={Link}
                 key={`tokenrow-${i}`}
                 href={`https://${
-                  network === "mainnet" ? "" : network + "."
+                  network === "mainnet" ? "" : networkNameMap[network] + "."
                 }tzkt.io/${row.hash}`}
                 target="_blank"
               >

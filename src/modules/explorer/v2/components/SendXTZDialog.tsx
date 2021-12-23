@@ -1,18 +1,11 @@
 import React, {useCallback} from "react";
-import {
-  Grid,
-  styled,
-  Typography,
-  TextField,
-  InputAdornment,
-  Button,
-} from "@material-ui/core";
-import {useFreeze} from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
-import {useDAO} from "services/indexer/dao/hooks/useDAO";
-import {ResponsiveDialog} from "../v2/components/ResponsiveDialog";
-import {useDAOID} from "../v2/pages/DAO/router";
-import {ProposalFormInput} from "./ProposalFormInput";
+import {useSendXTZ} from "../../../../services/contracts/baseDAO/hooks/useSendXTZ";
+import {useDAOID} from "../pages/DAO/router";
+import {useDAO} from "../../../../services/indexer/dao/hooks/useDAO";
+import {Button, Grid, styled, TextField, Typography} from "@material-ui/core";
+import {ProposalFormInput} from "../../components/ProposalFormInput";
+import {ResponsiveDialog} from "./ResponsiveDialog";
 
 const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {
@@ -20,17 +13,11 @@ const CustomDialog = styled(ResponsiveDialog)({
   },
 });
 
-const CustomInput = styled(TextField)(({theme}) => ({
-  "& .MuiInputBase-input": {
-    color: theme.palette.secondary.main,
-  },
-}));
-
-export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
+export const SendXTZDialog: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
   const daoId = useDAOID();
-  const {mutate} = useFreeze();
+  const {mutate} = useSendXTZ();
   const {data: dao} = useDAO(daoId);
 
   const handleClickOpen = () => {
@@ -47,46 +34,38 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
       mutate({
         dao,
         amount: new BigNumber(amount),
-        freeze,
       });
 
       handleClose();
     }
-  }, [amount, dao, mutate, freeze]);
+  }, [amount, dao, mutate]);
 
   return (
     <div>
       <Button onClick={handleClickOpen} variant="contained" color="secondary">
-        {freeze ? "Deposit" : "Withdraw"}
+        Fund DAO with XTZ
       </Button>
       <CustomDialog
         open={open}
         onClose={handleClose}
-        title={freeze ? "DEPOSIT" : "WITHDRAW"}
+        title={"Fund DAO with XTZ"}
       >
         <Grid container direction={"column"} style={{gap: 36}}>
           <Grid item>
             <Typography variant="body2" color="textPrimary">
-              Confirm the {freeze ? "deposit" : "withdrawal"} of your tokens
+              Fund the DAO with XTZ
             </Typography>
           </Grid>
           <Grid item>
             <ProposalFormInput label={"Amount"}>
-              <CustomInput
+              <TextField
                 value={amount}
                 type="number"
                 placeholder="0"
                 onChange={(newValue: any) => setAmount(newValue.target.value)}
                 inputProps={{min: 0}}
                 InputProps={{
-                  disableUnderline: true,
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Typography color="secondary">
-                        {dao?.data.token.symbol}
-                      </Typography>
-                    </InputAdornment>
-                  ),
+                  disableUnderline: true
                 }}
               />
             </ProposalFormInput>
@@ -110,5 +89,5 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
         </Grid>
       </CustomDialog>
     </div>
-  );
-};
+  )
+}

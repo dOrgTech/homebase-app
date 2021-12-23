@@ -32,10 +32,6 @@ interface Props {
   defaultTab?: number;
 }
 
-const Content = styled(Grid)({
-  padding: "54px 54px 0 54px"
-})
-
 export const ConfigProposalForm: React.FC<Props> = ({
                                                       open,
                                                       handleClose,
@@ -83,7 +79,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
         open={open}
         onClose={handleClose}
       >
-        <Content container direction={"column"} style={{gap: 18}}>
+        <Grid container direction={"column"} style={{gap: 18}}>
           <Grid item>
             <ProposalFormInput label={"Frozen extra value"}>
               <Controller
@@ -180,7 +176,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
           >
             Submit
           </SendButton>
-        </Content>
+        </Grid>
       </ResponsiveDialog>
     </FormProvider>
   )
