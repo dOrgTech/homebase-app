@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { Network } from "services/beacon/context";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import {networkNameMap} from "../index";
 
 interface State {
   block: number;
@@ -20,7 +21,7 @@ interface BlockMessage {
   state: number;
 }
 
-const getUrl = (network: Network) => `https://api.${network}.tzkt.io/v1/events`;
+const getUrl = (network: Network) => `https://api.${networkNameMap[network]}.tzkt.io/v1/events`;
 
 const TZKTSubscriptionsProvider: React.FC = ({ children }) => {
   const [block, setBlock] = useState<number>(0);

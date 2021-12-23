@@ -1,16 +1,10 @@
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogProps,
-  DialogTitle,
   Grid,
-  IconButton,
   Theme,
   Typography,
 } from "@material-ui/core";
 import { styled } from "@material-ui/styles";
-import CloseIcon from "@material-ui/icons/Close";
 import hexToRgba from "hex-to-rgba";
 import React, { useState } from "react";
 import { NFT } from "./NFT";
@@ -18,19 +12,15 @@ import { UserBadge } from "./UserBadge";
 import { NFT as NFTModel } from "models/Token";
 import { ProposalFormContainer, ProposalFormDefaultValues } from "./ProposalForm";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
 
-const CustomDialog = styled(Dialog)({
+const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiPaper-root": {
     width: 1010,
     height: 822,
     maxWidth: "100%",
     maxHeight: "100%",
   },
-});
-
-const Content = styled(DialogContent)({
-  boxSizing: "border-box",
-  padding: "29px 85px 68px 85px",
 });
 
 const TitleText = styled(Typography)({
@@ -57,15 +47,17 @@ const NFTContainer = styled(Grid)({
   maxHeight: 415,
 });
 
-const CloseButton = styled(IconButton)(({ theme }: { theme: Theme }) => ({
-  color: theme.palette.text.secondary,
-}));
+// const CloseButton = styled(IconButton)(({ theme }: { theme: Theme }) => ({
+//   color: theme.palette.text.secondary,
+// }));
 
-interface Props extends DialogProps {
+interface Props {
   nft: NFTModel | undefined;
+  open: boolean;
+  onClose: () => void;
 }
 
-export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
+export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
   const [openTransfer, setOpenTransfer] = useState(false)
   const { account } = useTezos()
   const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
@@ -95,50 +87,48 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
   return (
     <>
       <CustomDialog
-        aria-labelledby="nft-dialog-title"
-        aria-describedby="nft-dialog-description"
-        {...props}
+        onClose={onClose}
+        open={open}
       >
         {nft && (
           <>
-            <DialogTitle>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <CloseButton onClick={() => (onClose as () => void)()}>
-                    <CloseIcon />
-                  </CloseButton>
-                </Grid>
-              </Grid>
-            </DialogTitle>
-            <Content>
+            {/*<DialogTitle>*/}
+            {/*  <Grid container justifyContent="flex-end">*/}
+            {/*    <Grid item>*/}
+            {/*      <CloseButton onClick={() => (onClose as () => void)()}>*/}
+            {/*        <CloseIcon htmlColor="#FFF" />*/}
+            {/*      </CloseButton>*/}
+            {/*    </Grid>*/}
+            {/*  </Grid>*/}
+            {/*</DialogTitle>*/}
               <Grid container direction="column" style={{ gap: 32 }}>
                 <Grid item>
-                  <Grid container style={{ gap: 60 }}>
+                  <Grid container justifyContent="space-between" style={{ gap: 32 }}>
                     <NFTContainer item>
                       <NFT
                         qmHash={nft.artifact_hash}
                         name={nft.name}
-                        mimeType={nft.formats[0].mimeType}
+                        mimeType={nft.preferredFormat}
                       />
                     </NFTContainer>
                     <Grid item>
                       <Grid container direction="column" style={{ gap: 26 }}>
                         <Grid item>
-                          <TitleText color="textSecondary">
+                          <TitleText color="textPrimary">
                             {nft.name}
                           </TitleText>
-                          <Typography color="textSecondary" variant="body1">
+                          <Typography color="textPrimary" variant="body1">
                             {nft.symbol}#{nft.token_id} •{" "}
-                            {nft.formats[0].mimeType}
+                            {nft.preferredFormat}
                           </Typography>
                         </Grid>
                         <Grid item>
-                          <Typography color="textSecondary" variant="body1">
+                          <Typography color="textPrimary" variant="body1">
                             {nft.description}
                           </Typography>
                         </Grid>
                         <Grid item>
-                          <Button variant="outlined" color="secondary" onClick={(e) => onClick(e, nft)}>
+                          <Button variant="contained" color="secondary" onClick={(e) => onClick(e, nft)}>
                             PROPOSE TRANSFER
                           </Button>
                         </Grid>
@@ -147,13 +137,13 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
                   </Grid>
                 </Grid>
                 <Grid item>
-                  <SubtitleText color="textSecondary" variant="body1">
+                  <SubtitleText color="textPrimary" variant="body1">
                     Creator
                   </SubtitleText>
                   <UserBadge address={nft.creators[0]} size={35} />
                 </Grid>
                 <Grid item>
-                  <SubtitleText color="textSecondary" variant="body1">
+                  <SubtitleText color="textPrimary" variant="body1">
                     Tags
                   </SubtitleText>
                   <Grid container style={{ gap: 12 }}>
@@ -169,7 +159,6 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, ...props }) => {
                   </Grid>
                 </Grid>
               </Grid>
-            </Content>
           </>
         )}
       </CustomDialog>

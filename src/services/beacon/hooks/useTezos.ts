@@ -66,6 +66,7 @@ export const useTezos = (): WalletConnectReturn => {
       mixpanel.register({'Network': newNetwork});
 
       localStorage.setItem("homebase:network", newNetwork);
+
       
       if (!("_pkh" in tezos.wallet)) {
         const Tezos = new TezosToolkit(rpcNodes[newNetwork]);

@@ -81,7 +81,7 @@ const BigLogo = styled("img")({
 });
 
 const TitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
-  color: theme.palette.text.secondary,
+  color: theme.palette.text.primary,
   fontSize: 40,
   letterSpacing: "-0.01em",
   fontWeight: "bold",
@@ -104,7 +104,7 @@ const OutlinedButton = styled(Button)(({ theme }: { theme: Theme }) => ({
   minWidth: 139,
   padding: "6px 16px",
   background: "transparent",
-  color: theme.palette.text.secondary,
+  color: theme.palette.text.primary,
   borderColor: theme.palette.secondary.main,
   "&:hover": {
     backgroundColor: hexToRgba(theme.palette.secondary.main, 0.24),
@@ -154,7 +154,7 @@ export const Landing: React.FC = () => {
                     <Grid item>
                       <Typography
                         variant="subtitle2"
-                        color="textSecondary"
+                        color="textPrimary"
                         align={isExtraSmall ? "center" : "left"}
                       >
                         Homebase is a web application that enables users to

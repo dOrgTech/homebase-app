@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { NFT, Token } from "models/Token";
 import { Network } from "services/beacon/context";
 import { parseUnits } from "services/contracts/utils";
-import { API_URL } from "..";
+import {API_URL, networkNameMap} from "..";
 import { DAOToken, NFTDTO, TokenBalancesDTO } from "./types";
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO =>
@@ -18,7 +18,7 @@ export interface NFTDAOHolding extends DAOHolding {
 }
 
 export const getDAOBalances = async (daoId: string, network: Network) => {
-  const url = `${API_URL}/account/${network}/${daoId}/token_balances`;
+  const url = `${API_URL}/account/${networkNameMap[network]}/${daoId}/token_balances`;
 
   const response = await fetch(url);
 
@@ -52,7 +52,7 @@ export const getTokenMetadata = async (
   network: Network,
   tokenId: string
 ) => {
-  const url = `${API_URL}/tokens/${network}/metadata?contract=${contractAddress}&token_id=${tokenId}`;
+  const url = `${API_URL}/tokens/${networkNameMap[network]}/metadata?contract=${contractAddress}&token_id=${tokenId}`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error("Failed to fetch proposals from BakingBad API");
