@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Delegating DAO's XTZ to baker
 - Changing DAO configuration parameters
 
+## [1.0.5] - 2021-12-30
+### Fixed
+- Only displaying first 10 NFTs in NFT page
+- Bug making NFT page crash if NFT had no indexed authors
+- Proposal creation and related action buttons being enabled even if not on proposal period
+
 ## [1.0.4] - 2021-12-23
 ### Added
 - New visual identity for the whole application
