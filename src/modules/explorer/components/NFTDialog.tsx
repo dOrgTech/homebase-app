@@ -1,7 +1,7 @@
 import {
   Button,
   Grid,
-  Theme,
+  Theme, Tooltip,
   Typography,
 } from "@material-ui/core";
 import { styled } from "@material-ui/styles";
@@ -13,6 +13,9 @@ import { NFT as NFTModel } from "models/Token";
 import { ProposalFormContainer, ProposalFormDefaultValues } from "./ProposalForm";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
+import {useIsProposalButtonDisabled} from "../../../services/contracts/baseDAO/hooks/useCycleInfo";
+import {InfoIcon} from "./styled/InfoIcon";
+import {useDAOID} from "../v2/pages/DAO/router";
 
 const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiPaper-root": {
@@ -84,6 +87,9 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
     setOpenTransfer(false)
   }
 
+  const daoId = useDAOID()
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
+
   return (
     <>
       <CustomDialog
@@ -128,9 +134,17 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
                           </Typography>
                         </Grid>
                         <Grid item>
-                          <Button variant="contained" color="secondary" onClick={(e) => onClick(e, nft)}>
+                          <Button variant="contained" color="secondary" onClick={(e) => onClick(e, nft)} disabled={shouldDisable}>
                             PROPOSE TRANSFER
                           </Button>
+                          {shouldDisable && (
+                            <Tooltip
+                              placement="bottom"
+                              title="Not on proposal creation period"
+                            >
+                              <InfoIcon color="secondary" />
+                            </Tooltip>
+                          )}
                         </Grid>
                       </Grid>
                     </Grid>
@@ -138,9 +152,9 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
                 </Grid>
                 <Grid item>
                   <SubtitleText color="textPrimary" variant="body1">
-                    Creator
+                    Creators
                   </SubtitleText>
-                  <UserBadge address={nft.creators[0]} size={35} />
+                  {nft.creators.length? nft.creators.map((creator, i) => <UserBadge key={`creator-${i}`} address={creator} size={35} />): <Typography color={"textPrimary"} variant={"body1"}>Unknown</Typography>}
                 </Grid>
                 <Grid item>
                   <SubtitleText color="textPrimary" variant="body1">

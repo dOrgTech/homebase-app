@@ -1,4 +1,4 @@
-import { Button, Grid, useMediaQuery, useTheme } from "@material-ui/core";
+import {Button, Grid, Tooltip, useMediaQuery, useTheme} from "@material-ui/core";
 import { CopyAddress } from "modules/common/CopyAddress";
 import {
   ProposalFormContainer,
@@ -15,6 +15,8 @@ import { HeroTitle } from "../../components/HeroTitle";
 import { useDAOID } from "../DAO/router";
 import { RegistryTable } from "./components/RegistryTable";
 import { UpdatesTable } from "./components/UpdatesTable";
+import {useIsProposalButtonDisabled} from "../../../../../services/contracts/baseDAO/hooks/useCycleInfo";
+import {InfoIcon} from "../../../components/styled/InfoIcon";
 
 export const Registry: React.FC = () => {
   const theme = useTheme();
@@ -24,6 +26,7 @@ export const Registry: React.FC = () => {
   const [updateRegistryOpen, setUpdateRegistryOpen] = useState(false);
   const { data: proposalsData } = useProposals(daoId);
   const [defaultData, setDefaultData] = useState<ProposalFormDefaultValues>();
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
 
   const onCloseRegistryUpdate = () => {
     setUpdateRegistryOpen(false);
@@ -110,9 +113,18 @@ export const Registry: React.FC = () => {
               variant="contained"
               color="secondary"
               onClick={() => setUpdateRegistryOpen(true)}
+              disabled={shouldDisable}
             >
               New Item
             </Button>
+            {shouldDisable && (
+              <Tooltip
+                placement="bottom"
+                title="Not on proposal creation period"
+              >
+                <InfoIcon color="secondary" />
+              </Tooltip>
+            )}
           </Grid>
         </Hero>
         <Grid item>

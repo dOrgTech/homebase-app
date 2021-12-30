@@ -2,7 +2,7 @@ import {
   Box,
   Button,
   Grid,
-  styled,
+  styled, Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -23,6 +23,8 @@ import { ContentContainer } from "../../components/ContentContainer";
 import { Hero } from "../../components/Hero";
 import { HeroTitle } from "../../components/HeroTitle";
 import { useDAOID } from "../DAO/router";
+import {InfoIcon} from "../../../components/styled/InfoIcon";
+import {useIsProposalButtonDisabled} from "../../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 
 const Card = styled(ContentContainer)({
   boxSizing: "border-box",
@@ -94,6 +96,8 @@ export const NFTs: React.FC = () => {
     setOpenTransfer(false);
   };
 
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
+
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
@@ -115,9 +119,18 @@ export const NFTs: React.FC = () => {
               variant="contained"
               color="secondary"
               onClick={() => setOpenTransfer(true)}
+              disabled={shouldDisable}
             >
               New Transfer
             </Button>
+            {shouldDisable && (
+              <Tooltip
+                placement="bottom"
+                title="Not on proposal creation period"
+              >
+                <InfoIcon color="secondary" />
+              </Tooltip>
+            )}
           </Grid>
         </Hero>
         <Grid item>
@@ -144,11 +157,11 @@ export const NFTs: React.FC = () => {
                   alignItems="center"
                 >
                   <FullWidthContainer item>
-                    <UserBadge
+                    {nft.token.firstCreator? <UserBadge
                       size={35}
-                      address={nft.token.creators[0]}
+                      address={nft.token.firstCreator}
                       short={true}
-                    />
+                    />: <Typography color={"textPrimary"} variant={"body1"}>Unknown</Typography>}
                   </FullWidthContainer>
                   <Grid item>
                     <ImgContainer>
@@ -179,6 +192,7 @@ export const NFTs: React.FC = () => {
                       color="secondary"
                       size="small"
                       onClick={(e) => onClick(e, nft.token)}
+                      disabled={shouldDisable}
                     >
                       Propose Transfer
                     </Button>

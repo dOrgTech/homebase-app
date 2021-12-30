@@ -68,6 +68,7 @@ export class NFT extends Token {
   thumbnail_hash: string;
   is_transferable: boolean;
   creators: string[];
+  firstCreator?: string;
   tags: string[];
   preferredFormat: NFTFormat;
   formats: NFTFormat[];
@@ -83,12 +84,12 @@ export class NFT extends Token {
     this.thumbnail_uri = params.thumbnail_uri;
     this.is_transferable = params.is_transferable;
     this.tags = params.tags || [];
-
-    this.creators = ["Unknown"];
     this.formats = ["image/jpeg"]
+    this.creators = []
 
-    if(params.creators) {
-      this.creators = params.creators
+    if(params.creators && params.creators.length) {
+      this.firstCreator = params.creators[0]
+      this.creators = params.creators;
     }
 
     if(params.formats) {
