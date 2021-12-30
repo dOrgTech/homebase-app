@@ -1,6 +1,6 @@
 import {
   Button,
-  Grid,
+  Grid, Tooltip,
   useMediaQuery,
   useTheme,
 } from "@material-ui/core";
@@ -16,6 +16,8 @@ import {BalancesTable} from "./components/BalancesTable";
 import {TransfersTable} from "./components/TransfersTable";
 import {useTransfers} from "../../../../../services/contracts/baseDAO/hooks/useTransfers";
 import {SendXTZDialog} from "../../components/SendXTZDialog";
+import {InfoIcon} from "../../../components/styled/InfoIcon";
+import {useIsProposalButtonDisabled} from "../../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 
 export const Treasury: React.FC = () => {
   const theme = useTheme();
@@ -48,6 +50,8 @@ export const Treasury: React.FC = () => {
     );
   }, [transfers, daoId]);
 
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
+
   return (
     <>
       <Grid container direction="column" style={{gap: 42}}>
@@ -74,9 +78,18 @@ export const Treasury: React.FC = () => {
                   variant="contained"
                   color="secondary"
                   onClick={() => setOpenTransfer(true)}
+                  disabled={shouldDisable}
                 >
                   New Transfer
                 </Button>
+                {shouldDisable && (
+                  <Tooltip
+                    placement="bottom"
+                    title="Not on proposal creation period"
+                  >
+                    <InfoIcon color="secondary" />
+                  </Tooltip>
+                )}
               </Grid>
             </Grid>
           </Grid>

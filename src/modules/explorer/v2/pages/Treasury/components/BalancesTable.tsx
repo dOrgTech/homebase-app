@@ -23,6 +23,7 @@ import {useTezosBalance} from "services/contracts/baseDAO/hooks/useTezosBalance"
 import {useDAOID} from "../../DAO/router";
 import BigNumber from "bignumber.js";
 import {ContentContainer} from "modules/explorer/v2/components/ContentContainer";
+import {useIsProposalButtonDisabled} from "../../../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 
 const TokenSymbol = styled(Typography)(({theme}) => ({
   background: hexToRgba(theme.palette.secondary.main, 0.11),
@@ -80,6 +81,7 @@ interface TableProps {
   tezosBalance: BigNumber;
   openXTZTransferModal: () => void;
   openTokenTransferModal: (tokenAddress: string) => void;
+  shouldDisable: boolean;
 }
 
 const MobileBalancesTable: React.FC<TableProps> = ({
@@ -87,6 +89,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
                                                      tezosBalance,
                                                      openTokenTransferModal,
                                                      openXTZTransferModal,
+                                                     shouldDisable
                                                    }) => {
   const XTZRowData: RowData = {
     symbol: "XTZ",
@@ -124,6 +127,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
             color="secondary"
             size={"small"}
             onClick={() => openXTZTransferModal()}
+            disabled={shouldDisable}
           >
             Transfer
           </Button>
@@ -154,6 +158,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
               color="secondary"
               size={"small"}
               onClick={() => openTokenTransferModal(row.address)}
+              disabled={shouldDisable}
             >
               Transfer
             </Button>
@@ -169,6 +174,7 @@ const DesktopBalancesTable: React.FC<TableProps> = ({
                                                       tezosBalance,
                                                       openTokenTransferModal,
                                                       openXTZTransferModal,
+                                                      shouldDisable
                                                     }) => {
   return (
     <Table>
@@ -191,6 +197,7 @@ const DesktopBalancesTable: React.FC<TableProps> = ({
               variant="contained"
               color="secondary"
               onClick={() => openXTZTransferModal()}
+              disabled={shouldDisable}
             >
               Transfer
             </Button>
@@ -210,6 +217,7 @@ const DesktopBalancesTable: React.FC<TableProps> = ({
                 variant="contained"
                 color="secondary"
                 onClick={() => openTokenTransferModal(row.address)}
+                disabled={shouldDisable}
               >
                 Transfer
               </Button>
@@ -225,6 +233,7 @@ export const BalancesTable: React.FC = () => {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const daoId = useDAOID();
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
   const {tokenHoldings} = useDAOHoldings(daoId);
   const {data: tezosBalance} = useTezosBalance(daoId);
   const [openTransfer, setOpenTransfer] = useState(false);
@@ -293,6 +302,7 @@ export const BalancesTable: React.FC = () => {
             tezosBalance={tezosBalance || new BigNumber(0)}
             openTokenTransferModal={onOpenTokenTransferModal}
             openXTZTransferModal={onOpenXTZTransferModal}
+            shouldDisable={shouldDisable}
           />
         ) : (
           <DesktopBalancesTable
@@ -300,6 +310,7 @@ export const BalancesTable: React.FC = () => {
             tezosBalance={tezosBalance || new BigNumber(0)}
             openTokenTransferModal={onOpenTokenTransferModal}
             openXTZTransferModal={onOpenXTZTransferModal}
+            shouldDisable={shouldDisable}
           />
         )}
       </TableContainer>
