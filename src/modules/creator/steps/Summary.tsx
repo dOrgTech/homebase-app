@@ -240,7 +240,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.votingBlocks} levels
+                  {state.data.votingSettings.votingBlocks} blocks
                 </Typography>
               </Grid>
             </UnderlinedGrid>
@@ -259,7 +259,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.proposalFlushBlocks} levels
+                  {state.data.votingSettings.proposalFlushBlocks} blocks
                 </Typography>
               </Grid>
             </UnderlinedGrid>
@@ -269,7 +269,7 @@ export const Summary = (): JSX.Element => {
             <UnderlinedGrid item container direction="row" alignItems="center">
               <Grid item xs={6}>
                 <Typography variant="body2" color="textSecondary">
-                  Proposal levels to expire
+                  Proposal blocks to expire
                 </Typography>
               </Grid>
               <Grid item xs={6}>
@@ -278,7 +278,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.proposalExpiryBlocks} levels
+                  {state.data.votingSettings.proposalExpiryBlocks} blocks
                 </Typography>
               </Grid>
             </UnderlinedGrid>

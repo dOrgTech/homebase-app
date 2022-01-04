@@ -150,15 +150,15 @@ const validateForm = (values: VotingSettings) => {
   });
 
   if (!values.votingBlocks) {
-    errors.votingBlocks = "Voting Period levels cannot be 0";
+    errors.votingBlocks = "Voting Period blocks cannot be 0";
   }
 
   if (!values.proposalFlushBlocks) {
-    errors.proposalFlushBlocks = "Proposal Flush Delay levels cannot be 0";
+    errors.proposalFlushBlocks = "Proposal Flush Delay blocks cannot be 0";
   }
 
   if (!values.proposalExpiryBlocks) {
-    errors.proposalExpiryBlocks = "Proposal levels to expire cannot be 0";
+    errors.proposalExpiryBlocks = "Proposal blocks to expire cannot be 0";
   }
 
   if (
@@ -257,7 +257,7 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">levels</Typography>
+              <Typography color="textSecondary">blocks</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.votingBlocks && touched.votingBlocks ? (
@@ -298,7 +298,7 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">levels</Typography>
+              <Typography color="textSecondary">blocks</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
@@ -339,7 +339,7 @@ const GovernanceForm = ({
               ></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">levels</Typography>
+              <Typography color="textSecondary">blocks</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
