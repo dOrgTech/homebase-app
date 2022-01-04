@@ -119,7 +119,13 @@ export const ProposalFormContainer: React.FC<Props> = ({
   });
 
   useEffect(() => {
-    methods.reset(defaultValues);
+    methods.reset({
+      agoraPostId: "0",
+      ...treasuryProposalFormInitialState,
+      ...nftTransferFormInitialState,
+      ...registryProposalFormInitialState,
+      ...defaultValues,
+    });
   }, [defaultValues, methods]);
 
   const forms = enabledForms[dao?.data.type || "treasury"];
