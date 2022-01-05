@@ -124,7 +124,7 @@ export const DAOStatsRow: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <Typography color="secondary" variant="body1">
-                    Levels Left In Cycle
+                    Blocks Left In Cycle
                   </Typography>
                   <Typography color="textPrimary" variant="h1">
                     {cycleInfo?.blocksLeft}

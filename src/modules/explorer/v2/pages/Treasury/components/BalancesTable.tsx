@@ -190,7 +190,7 @@ const DesktopBalancesTable: React.FC<TableProps> = ({
           <TableCell>
             <TokenSymbol>XTZ</TokenSymbol>
           </TableCell>
-          <TableCell>N/A</TableCell>
+          <TableCell>-</TableCell>
           <TableCell>{tezosBalance.toString()}</TableCell>
           <TableCell align="right">
             <Button
