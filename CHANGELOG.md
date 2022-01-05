@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Delegating DAO's XTZ to baker
 - Changing DAO configuration parameters
 
+## [1.0.6] - 2022-01-05
+### Added
+- Support for Audio NFTs
+- Unsupported media message for NFTs
+
+### Fixed
+- Proposal Fee in proposal form
+- Proposal form bug preventing creation, when opening from NFT/Treasury/Registry page directly
+- XTZ balance in Proposal form
+
 ## [1.0.5] - 2021-12-30
 ### Fixed
 - Only displaying first 10 NFTs in NFT page
