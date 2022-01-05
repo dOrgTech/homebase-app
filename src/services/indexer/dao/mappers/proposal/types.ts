@@ -116,7 +116,7 @@ export abstract class Proposal {
     );
     this.period = Number(dto.voting_stage_num) - 1;
     this.indexer_status_history = dto.status_updates.map((update) => ({
-      timestamp: `Level ${update.level} (${dayjs(update.timestamp).format(
+      timestamp: `Block ${update.level} (${dayjs(update.timestamp).format(
         "LLL"
       )})`,
       level: update.level,
