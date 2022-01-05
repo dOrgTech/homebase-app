@@ -68,9 +68,9 @@ export const useDAO = (address: string) => {
           dao.dao_type.name === "registry"
             ? ({
                 ...dao.registry_extras[0],
-                frozen_extra_value: parseUnits(unpackExtraNumValue(
+                frozen_extra_value: unpackExtraNumValue(
                   (dao.registry_extras[0] as any).frozen_extra_value
-                ), dao.token.decimals),
+                ),
                 frozen_scale_value: unpackExtraNumValue(
                   (dao.registry_extras[0] as any).frozen_scale_value
                 ),
@@ -89,9 +89,9 @@ export const useDAO = (address: string) => {
               } as any)
             : ({
                 ...dao.treasury_extras[0],
-                frozen_extra_value: parseUnits(unpackExtraNumValue(
+                frozen_extra_value: unpackExtraNumValue(
                   (dao.treasury_extras[0] as any).frozen_extra_value
-                ), dao.token.decimals),
+                ),
                 frozen_scale_value: unpackExtraNumValue(
                   (dao.treasury_extras[0] as any).frozen_scale_value
                 ),
