@@ -151,7 +151,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const daoAssets = daoHoldings
     ? [
         ...daoHoldings,
-        { balance: tezosBalance?.div(1000000) || new BigNumber(0), token: { symbol: "XTZ" } },
+        { balance: tezosBalance || new BigNumber(0), token: { symbol: "XTZ" } },
       ]
     : [];
 
