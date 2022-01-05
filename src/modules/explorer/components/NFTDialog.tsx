@@ -114,7 +114,7 @@ export const NFTDialog: React.FC<Props> = ({ nft, onClose, open }) => {
                       <NFT
                         qmHash={nft.artifact_hash}
                         name={nft.name}
-                        mimeType={nft.preferredFormat}
+                        mediaType={nft.mediaType}
                       />
                     </NFTContainer>
                     <Grid item>

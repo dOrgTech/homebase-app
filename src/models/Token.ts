@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import { Network } from "services/beacon/context";
+import {Network} from "services/beacon/context";
 
 interface TokenParams {
   id: string;
@@ -13,7 +13,11 @@ interface TokenParams {
   supply: string;
 }
 
-export type NFTFormat = "image/jpeg" | "video/mp4"
+export const SUPPORTED_MIME_TYPES = ["image/jpeg", "image/gif", "image/png", "video/mp4", "audio/mpeg", "audio/x-wav"] as const
+export const SUPPORTED_MEDIA_TYPES = ["image", "audio", "video"] as const
+
+export type NFTMimeType = typeof SUPPORTED_MIME_TYPES[number] | "unknown"
+export type NFTMediaType = typeof SUPPORTED_MEDIA_TYPES[number] | "unknown"
 
 interface NFTParams extends TokenParams {
   description: string;
@@ -60,6 +64,22 @@ export const extractQmHash = (ipfsUri: string) => {
   return ipfsUri.startsWith("ipfs://") ? ipfsUri.split("ipfs://")[1] : ipfsUri;
 };
 
+const getFormatTag = (mimeType: NFTMimeType) => {
+  if (mimeType.includes("video")) {
+    return "video";
+  }
+
+  if (mimeType.includes("audio")) {
+    return "audio";
+  }
+
+  if (mimeType.includes("image")) {
+    return "image";
+  }
+
+  return "unknown";
+};
+
 export class NFT extends Token {
   description: string;
   artifact_uri: string;
@@ -70,8 +90,9 @@ export class NFT extends Token {
   creators: string[];
   firstCreator?: string;
   tags: string[];
-  preferredFormat: NFTFormat;
-  formats: NFTFormat[];
+  preferredFormat: NFTMimeType;
+  mediaType: NFTMediaType;
+  formats: NFTMimeType[];
 
   constructor(params: NFTParams) {
     super(params);
@@ -87,16 +108,18 @@ export class NFT extends Token {
     this.formats = ["image/jpeg"]
     this.creators = []
 
-    if(params.creators && params.creators.length) {
+    if (params.creators && params.creators.length) {
       this.firstCreator = params.creators[0]
       this.creators = params.creators;
     }
 
-    if(params.formats) {
-      this.formats = params.formats.map(format => format.mimeType as NFTFormat);
+    if (params.formats) {
+      this.formats = params.formats.map(format => SUPPORTED_MIME_TYPES.includes(format.mimeType as any) ? format.mimeType as NFTMimeType : "unknown");
     }
 
     //On BakingBad's APIs, it's simply the first one
     this.preferredFormat = this.formats[0]
+
+    this.mediaType = getFormatTag(this.preferredFormat);
   }
 }
