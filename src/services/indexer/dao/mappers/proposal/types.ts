@@ -163,17 +163,17 @@ export abstract class Proposal {
       }
 
       if (currentLevel >= passedOrRejectedThreshold) {
-        if (this.upVotes.isGreaterThanOrEqualTo(this.quorumThreshold)) {
-          statusHistory.push({
-            status: ProposalStatus.PASSED,
-            timestamp: `Level ${passedOrRejectedThreshold}`,
-            level: passedOrRejectedThreshold,
-          });
-        } else if (
+        if (
           this.downVotes.isGreaterThanOrEqualTo(this.quorumThreshold)
         ) {
           statusHistory.push({
             status: ProposalStatus.REJECTED,
+            timestamp: `Level ${passedOrRejectedThreshold}`,
+            level: passedOrRejectedThreshold,
+          });
+        } else if (this.upVotes.isGreaterThanOrEqualTo(this.quorumThreshold)) {
+          statusHistory.push({
+            status: ProposalStatus.PASSED,
             timestamp: `Level ${passedOrRejectedThreshold}`,
             level: passedOrRejectedThreshold,
           });
