@@ -235,7 +235,7 @@ export const Landing: React.FC = () => {
             </Link>
           </Grid>
           <Grid item>
-            <Link target="_blank" href="https://discord.gg/Rgf72KEH">
+            <Link target="_blank" href="https://discord.gg/XufcBNu277">
               <IconContainer>
                 <SvgIcon>
                   <DiscordIcon />
