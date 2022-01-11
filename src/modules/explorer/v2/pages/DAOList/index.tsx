@@ -51,7 +51,7 @@ export const DAOList: React.FC = () => {
         name: dao.name,
         symbol: dao.token.symbol,
         votingAddresses: dao.ledgers.map((l) => l.holder.address),
-      }));
+      })).sort((a, b) => b.votingAddresses.length - a.votingAddresses.length);
 
       if (searchText) {
         return formattedDAOs.filter(
