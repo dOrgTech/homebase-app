@@ -68,7 +68,10 @@ export const useDAO = (address: string) => {
           dao.dao_type.name === "registry"
             ? ({
                 ...dao.registry_extras[0],
-                frozen_extra_value: unpackExtraNumValue(
+                // TODO: urgently investigate why this DAO is having data saved differently
+                frozen_extra_value: dao.address.toLowerCase() === "KT19CF3KKrvdW77ttFomCuin2k4uAVkryYqh".toLowerCase() ? parseUnits(unpackExtraNumValue(
+                  (dao.registry_extras[0] as any).frozen_extra_value
+                ), dao.token.decimals) : unpackExtraNumValue(
                   (dao.registry_extras[0] as any).frozen_extra_value
                 ),
                 frozen_scale_value: unpackExtraNumValue(
