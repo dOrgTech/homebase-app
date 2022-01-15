@@ -68,6 +68,7 @@ export const ProposalsList: React.FC<Props> = ({
             <Grid
               item
               container
+              wrap={"nowrap"}
               component={Collapse}
               in={open}
               timeout="auto"
