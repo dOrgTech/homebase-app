@@ -144,7 +144,7 @@ export const User: React.FC = () => {
 
   return (
     <MainContainer>
-      <Grid container direction="column" style={{ gap: 40 }}>
+      <Grid container direction="column" style={{ gap: 40 }} wrap={"nowrap"}>
         <BalancesHeader item>
           <UserBalances daoId={daoId}>
             <Grid item>
