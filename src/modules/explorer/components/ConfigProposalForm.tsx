@@ -5,11 +5,11 @@ import {useDAO} from "services/indexer/dao/hooks/useDAO";
 import {SendButton} from "./ProposalFormSendButton";
 import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {Controller, FormProvider, useForm} from "react-hook-form";
-import {useDAOID} from "../v2/pages/DAO/router";
+import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
 import {useProposeGuardianChange} from "../../../services/contracts/baseDAO/hooks/useProposeGuardianChange";
 import {useProposeConfigChange} from "../../../services/contracts/baseDAO/hooks/useProposeConfigChange";
-import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
+import { ResponsiveDialog } from "./ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;

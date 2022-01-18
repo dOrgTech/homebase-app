@@ -9,13 +9,13 @@ import {
   registryProposalFormInitialState,
   RegistryProposalFormValues,
   UpdateRegistryDialog,
-} from "modules/explorer/Registry/components/UpdateRegistryDialog";
+} from "modules/explorer/components/UpdateRegistryDialog";
 import {
   Asset,
   NewTreasuryProposalDialog,
   treasuryProposalFormInitialState,
   TreasuryProposalFormValues
-} from "modules/explorer/Treasury/components/NewTreasuryProposalDialog";
+} from "modules/explorer/components/NewTreasuryProposalDialog";
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {useDAO} from "services/indexer/dao/hooks/useDAO";
 import {AppTabBar} from "./AppTabBar";
@@ -31,13 +31,13 @@ import {
   NFTTransferForm,
   nftTransferFormInitialState,
   NFTTransferFormValues,
-} from "../Treasury/components/NFTTransfer";
+} from "./NFTTransfer";
 import {Token} from "models/Token";
-import {useDAOID} from "../v2/pages/DAO/router";
+import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
 import {
   ProposalFormResponsiveDialog,
-} from "../v2/components/ResponsiveDialog";
+} from "./ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;

@@ -11,7 +11,7 @@ import {
   Link,
 } from "@material-ui/core";
 import {SendButton} from "./ProposalFormSendButton";
-import {ResponsiveDialog} from "../v2/components/ResponsiveDialog";
+import {ResponsiveDialog} from "./ResponsiveDialog";
 
 const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {

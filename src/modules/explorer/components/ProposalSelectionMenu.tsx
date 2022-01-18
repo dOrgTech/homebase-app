@@ -4,16 +4,16 @@ import {
   styled,
   Button,
 } from "@material-ui/core";
-import { RegistryProposalFormValues } from "modules/explorer/Registry/components/UpdateRegistryDialog";
-import { TreasuryProposalFormValues } from "modules/explorer/Treasury/components/NewTreasuryProposalDialog";
+import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog";
+import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog";
 import React, { useState } from "react";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { NFTTransferFormValues } from "../Treasury/components/NFTTransfer";
-import { useDAOID } from "../v2/pages/DAO/router";
+import { NFTTransferFormValues } from "./NFTTransfer";
+import { useDAOID } from "../pages/DAO/router";
 import { ProposalFormContainer } from "./ProposalForm";
 import { ConfigProposalForm } from "./ConfigProposalForm";
 import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
-import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
+import { ResponsiveDialog } from "./ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;

@@ -12,10 +12,10 @@ import { UserBadge } from "./UserBadge";
 import { NFT as NFTModel } from "models/Token";
 import { ProposalFormContainer, ProposalFormDefaultValues } from "./ProposalForm";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
+import { ResponsiveDialog } from "./ResponsiveDialog";
 import {useIsProposalButtonDisabled} from "../../../services/contracts/baseDAO/hooks/useCycleInfo";
 import {InfoIcon} from "./styled/InfoIcon";
-import {useDAOID} from "../v2/pages/DAO/router";
+import {useDAOID} from "../pages/DAO/router";
 
 const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiPaper-root": {
