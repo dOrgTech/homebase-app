@@ -9,7 +9,9 @@ import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
 import {useProposeGuardianChange} from "../../../services/contracts/baseDAO/hooks/useProposeGuardianChange";
 import {useProposeConfigChange} from "../../../services/contracts/baseDAO/hooks/useProposeConfigChange";
-import { ResponsiveDialog } from "./ResponsiveDialog";
+import {ResponsiveDialog} from "./ResponsiveDialog";
+import * as Yup from 'yup';
+import {yupResolver} from "@hookform/resolvers/yup";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -17,9 +19,6 @@ type RecursivePartial<T> = {
 
 type Values = {
   frozen_extra_value: number
-  frozen_scale_value: number
-  max_proposal_size: number
-  slash_division_value: number
   slash_scale_value: number
 };
 
@@ -32,26 +31,20 @@ interface Props {
   defaultTab?: number;
 }
 
+// const validationSchema: Yup.SchemaOf<Values> = Yup.object({
+//   frozen_extra_value: Yup.number().required("Required"),
+//   slash_scale_value: Yup.number().min(0, "Cannot be lesser than 0").max(100, "Cannot be greater than 100")
+// });
+
 export const ConfigProposalForm: React.FC<Props> = ({
                                                       open,
                                                       handleClose,
-                                                      defaultValues,
                                                     }) => {
   const daoId = useDAOID();
   const {data: dao} = useDAO(daoId);
   const {data: daoHoldings} = useDAOHoldings(daoId);
 
-  const methods = useForm<Values>({
-    defaultValues: useMemo(() => ({
-      newGuardianAddress: "",
-      ...defaultValues
-    }), [defaultValues]),
-    // resolver: yupResolver(validationSchema as any),
-  });
-
-  useEffect(() => {
-    methods.reset(defaultValues)
-  }, [defaultValues, methods])
+  const methods = useForm<Values>();
 
   const {mutate} = useProposeConfigChange();
 
@@ -61,9 +54,6 @@ export const ConfigProposalForm: React.FC<Props> = ({
         mutate({
           dao, args: {
             frozen_extra_value: values.frozen_extra_value,
-            frozen_scale_value: values.frozen_scale_value,
-            max_proposal_size: values.max_proposal_size,
-            slash_division_value: values.slash_division_value,
             slash_scale_value: values.slash_scale_value
           }
         })
@@ -78,10 +68,14 @@ export const ConfigProposalForm: React.FC<Props> = ({
       <ResponsiveDialog
         open={open}
         onClose={handleClose}
+        title={"Change DAO configuration"}
       >
         <Grid container direction={"column"} style={{gap: 18}}>
           <Grid item>
-            <ProposalFormInput label={"Frozen extra value"}>
+            <Typography variant={'body1'} color={"secondary"}>All fields are optional. Leave empty what you wish to leave unchanged</Typography>
+          </Grid>
+          <Grid item>
+            <ProposalFormInput label={`Proposal fee (Current: ${dao?.data.extra.frozen_extra_value.toString()})`}>
               <Controller
                 control={methods.control}
                 name={`frozen_extra_value`}
@@ -89,7 +83,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
                   <TextField
                     {...field}
                     type="number"
-                    placeholder="Frozen extra value"
+                    placeholder="Proposal fee"
                     InputProps={{disableUnderline: true}}
                   />
                 )}
@@ -97,55 +91,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
             </ProposalFormInput>
           </Grid>
           <Grid item>
-            <ProposalFormInput label={"Frozen scale value"}>
-              <Controller
-                control={methods.control}
-                name={`frozen_scale_value`}
-                render={({field}) => (
-                  <TextField
-                    {...field}
-                    type="number"
-                    placeholder="Frozen scale value"
-                    InputProps={{disableUnderline: true}}
-                  />
-                )}
-              />
-            </ProposalFormInput>
-          </Grid>
-          <Grid item>
-            <ProposalFormInput label={"Max proposal size"}>
-              <Controller
-                control={methods.control}
-                name={`max_proposal_size`}
-                render={({field}) => (
-                  <TextField
-                    {...field}
-                    type="number"
-                    placeholder="Max proposal size"
-                    InputProps={{disableUnderline: true}}
-                  />
-                )}
-              />
-            </ProposalFormInput>
-          </Grid>
-          <Grid item>
-            <ProposalFormInput label={"Slash division value"}>
-              <Controller
-                control={methods.control}
-                name={`slash_division_value`}
-                render={({field}) => (
-                  <TextField
-                    {...field}
-                    type="number"
-                    placeholder="Slash division value"
-                    InputProps={{disableUnderline: true}}
-                  />
-                )}
-              />
-            </ProposalFormInput>
-          </Grid>
-          <Grid item>
-            <ProposalFormInput label={"Slash scale value"}>
+            <ProposalFormInput label={`Percentage of tokens returned after rejection (Current: ${dao?.data.extra.slash_scale_value.toString()}%)`}>
               <Controller
                 control={methods.control}
                 name={`slash_scale_value`}

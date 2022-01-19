@@ -233,15 +233,22 @@ export abstract class Proposal {
   }
 }
 
-export class TreasuryProposal extends Proposal {
-  private cachedMetadata:
-    | {
-    transfers: Transfer[];
-    agoraPostId: string;
+interface TreasuryProposalMetadata {
+  config: {
+    frozen_extra_value?: BigNumber;
+    frozen_scale_value?: BigNumber;
+    max_proposal_size?: BigNumber;
+    slash_division_value?: BigNumber;
+    slash_scale_value?: BigNumber;
   }
-    | undefined;
+  transfers: Transfer[];
+  agoraPostId: string;
+}
 
-  get metadata() {
+export class TreasuryProposal extends Proposal {
+  private cachedMetadata?: TreasuryProposalMetadata;
+
+  get metadata(): TreasuryProposalMetadata {
     if (!this.cachedMetadata) {
       const parser = new Parser();
       const micheline = parser.parseMichelineExpression(
@@ -264,6 +271,7 @@ export class TreasuryProposal extends Proposal {
         proposalMetadataDTO.transfer_proposal.agora_post_id.toString();
 
       this.cachedMetadata = {
+        config: {},
         transfers,
         agoraPostId,
       };
@@ -273,19 +281,26 @@ export class TreasuryProposal extends Proposal {
   }
 }
 
-export class RegistryProposal extends Proposal {
-  private cachedMetadata:
-    | {
-    transfers: Transfer[];
-    agoraPostId: string;
-    list: {
-      key: string;
-      value: string;
-    }[];
+interface RegistryProposalMetadata {
+  config: {
+    frozen_extra_value?: BigNumber;
+    frozen_scale_value?: BigNumber;
+    max_proposal_size?: BigNumber;
+    slash_division_value?: BigNumber;
+    slash_scale_value?: BigNumber;
   }
-    | undefined;
+  transfers: Transfer[];
+  agoraPostId: string;
+  list: {
+    key: string;
+    value: string;
+  }[];
+}
 
-  get metadata() {
+export class RegistryProposal extends Proposal {
+  private cachedMetadata?: RegistryProposalMetadata;
+
+  get metadata(): RegistryProposalMetadata {
     if (!this.cachedMetadata) {
       const parser = new Parser();
       const micheline = parser.parseMichelineExpression(
@@ -319,16 +334,12 @@ export class RegistryProposal extends Proposal {
         transfers,
         agoraPostId,
         list: registryDiff,
+        config: {}
       };
     }
 
     return this.cachedMetadata;
   }
-}
-
-export interface RegistryItemDTO {
-  prim: "Pair";
-  args: [{ string: string }, { args: [{ string: string }]; prim: "Some" }];
 }
 
 export interface Transfer {

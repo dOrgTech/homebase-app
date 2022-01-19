@@ -364,14 +364,24 @@ export interface PMFA2TransferType {
   ];
 }
 
+interface ConfigProposalDTO {
+  frozen_extra_value?: string;
+  frozen_scale_value?: string;
+  max_proposal_size?: string;
+  slash_division_value?: string;
+  slash_scale_value?: string;
+}
+
 export interface PMTreasuryProposal {
+  configuration_proposal: ConfigProposalDTO
   transfer_proposal: {
-    agora_post_id: "0";
+    agora_post_id: string;
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
   }
 }
 
 export interface PMRegistryProposal {
+  configuration_proposal: ConfigProposalDTO
   transfer_proposal: {
     agora_post_id: string;
     registry_diff: {
