@@ -42,6 +42,29 @@ jobs:
       - name: Bootstrap chain tests dependencies
         run : ./scripts/ci/install-chain-tests-deps.sh
 
+      # This step starts a single-node blockchain with a short block period.
+      # Node RPC endpoint is http://localhost:8732
+      - name: Start chain
+        env:
+          LOCAL_CHAIN_IN_BACKGROUND: true
+      # When a new Tezos protocol is activated on mainnet, the corresponding
+      # testnet name should be updated below
+        run: ./local-chain/run-local-chain.sh jakartanet
+
+      # This step exposes following environment variables:
+      # * env.TREASURY_DAO_ADDRESS
+      # * env.REGISTRY_DAO_ADDRESS
+      # * env.DUMMY_FA2_ADDRESS - 'KT' address, used as a governance token address in DAO contracts
+      # * env.DUMMY_GUARDIAN_ADDRESS - 'KT' address, used as a guardian address in DAO contracts
+      # * env.ADMIN_ADDRESS - 'tz' address, used as an admin address in DAO contracts and have large amount of XTZ
+
+      # Step example that use on of these addresses:
+      # - name: Echo addresses
+      #   run: echo "${{ env.ADMIN_ADDRESS }}"
+      - name: Fetch and deploy contracts
+        run: |
+          ./scripts/ci/deploy-contracts.sh
+
       # TO-DO: Uncomment when tests are ready to be run on CI (such as those in issues #129-#131)
       # - name: Test
       #  run: yarn test:ci

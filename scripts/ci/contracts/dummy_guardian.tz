@@ -1,0 +1,9 @@
+parameter (pair address bytes);
+storage unit;
+code { UNPAIR ;
+       UNPAIR ;
+       CONTRACT %drop_proposal bytes ;
+       IF_NONE
+         { DROP ; NIL operation }
+         { SWAP ; PUSH mutez 0 ; SWAP ; TRANSFER_TOKENS ; NIL operation ; SWAP ; CONS } ;
+       PAIR }
