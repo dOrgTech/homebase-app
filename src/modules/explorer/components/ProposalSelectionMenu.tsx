@@ -43,40 +43,40 @@ enum ProposalModalKey {
   registry,
 }
 
-const enabledOptions = {
-  registry: [
-    {
-      name: "Change DAO configuration",
-      key: ProposalModalKey.config,
-    },
-    {
-      name: "Update Guardian",
-      key: ProposalModalKey.guardian,
-    },
-    {
-      name: "Transfer funds/tokens/NFTs",
-      key: ProposalModalKey.transfer,
-    },
-    {
-      name: "Update registry",
-      key: ProposalModalKey.registry,
-    },
-  ],
-  treasury: [
-    {
-      name: "Change DAO configuration",
-      key: ProposalModalKey.config,
-    },
-    {
-      name: "Update Guardian",
-      key: ProposalModalKey.guardian,
-    },
-    {
-      name: "Transfer funds/tokens/NFTs",
-      key: ProposalModalKey.transfer,
-    },
-  ],
-};
+// const enabledOptions = {
+//   registry: [
+//     {
+//       name: "Change DAO configuration",
+//       key: ProposalModalKey.config,
+//     },
+//     {
+//       name: "Update Guardian",
+//       key: ProposalModalKey.guardian,
+//     },
+//     {
+//       name: "Transfer funds/tokens/NFTs",
+//       key: ProposalModalKey.transfer,
+//     },
+//     {
+//       name: "Update registry",
+//       key: ProposalModalKey.registry,
+//     },
+//   ],
+//   treasury: [
+//     {
+//       name: "Change DAO configuration",
+//       key: ProposalModalKey.config,
+//     },
+//     {
+//       name: "Update Guardian",
+//       key: ProposalModalKey.guardian,
+//     },
+//     {
+//       name: "Transfer funds/tokens/NFTs",
+//       key: ProposalModalKey.transfer,
+//     },
+//   ],
+// };
 
 export const ProposalSelectionMenu: React.FC<Props> = ({
                                                          open,

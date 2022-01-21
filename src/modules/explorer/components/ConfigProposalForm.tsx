@@ -1,17 +1,14 @@
 /* eslint-disable react/display-name */
-import {Dialog, Grid, styled, Typography, TextField} from "@material-ui/core";
-import React, {useCallback, useEffect, useMemo} from "react";
+import { Grid, Typography, TextField} from "@material-ui/core";
+import React, {useCallback} from "react";
 import {useDAO} from "services/indexer/dao/hooks/useDAO";
 import {SendButton} from "./ProposalFormSendButton";
 import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {Controller, FormProvider, useForm} from "react-hook-form";
 import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
-import {useProposeGuardianChange} from "../../../services/contracts/baseDAO/hooks/useProposeGuardianChange";
 import {useProposeConfigChange} from "../../../services/contracts/baseDAO/hooks/useProposeConfigChange";
 import {ResponsiveDialog} from "./ResponsiveDialog";
-import * as Yup from 'yup';
-import {yupResolver} from "@hookform/resolvers/yup";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
