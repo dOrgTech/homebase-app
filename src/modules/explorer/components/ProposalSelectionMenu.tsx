@@ -12,8 +12,8 @@ import {NFTTransferFormValues} from "./NFTTransfer";
 import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormContainer} from "./ProposalForm";
 import {ConfigProposalForm} from "./ConfigProposalForm";
-// import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
 import {ResponsiveDialog} from "./ResponsiveDialog";
+import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -38,7 +38,7 @@ interface Props {
 
 enum ProposalModalKey {
   config,
-  // guardian,
+  guardian,
   transfer,
   registry,
 }
@@ -49,10 +49,10 @@ const enabledOptions = {
       name: "Change DAO configuration",
       key: ProposalModalKey.config,
     },
-    // {
-    //   name: "Update Guardian",
-    //   key: ProposalModalKey.guardian,
-    // },
+    {
+      name: "Update Guardian",
+      key: ProposalModalKey.guardian,
+    },
     {
       name: "Transfer funds/tokens/NFTs",
       key: ProposalModalKey.transfer,
@@ -67,10 +67,10 @@ const enabledOptions = {
       name: "Change DAO configuration",
       key: ProposalModalKey.config,
     },
-    // {
-    //   name: "Update Guardian",
-    //   key: ProposalModalKey.guardian,
-    // },
+    {
+      name: "Update Guardian",
+      key: ProposalModalKey.guardian,
+    },
     {
       name: "Transfer funds/tokens/NFTs",
       key: ProposalModalKey.transfer,
@@ -109,20 +109,16 @@ export const ProposalSelectionMenu: React.FC<Props> = ({
                 <Typography variant={"body1"} color={"textPrimary"}>Which proposal would you like to
                   create?</Typography>
               </Grid>
-              <Grid item>
-                <Grid container style={{gap: 21}} alignItems={"center"}>
-                  <Grid item>
-                    <Button variant={"contained"} color={"secondary"}
+              <Grid container justifyContent="center" direction={"column"}>
+                
+                    <Button variant={"contained"} color={"secondary"} style={{marginBottom: 20}}
                             onClick={() => handleOptionSelected(ProposalModalKey.transfer)}>Assets / Registry</Button>
-                  </Grid>
-                  <Grid item>
-                    <Typography variant={"body1"} color={"textPrimary"}>or</Typography>
-                  </Grid>
-                  <Grid item>
-                    <Button variant={"contained"} color={"secondary"}
+
+                    <Button variant={"contained"} color={"secondary"}  style={{marginBottom: 20}}
                             onClick={() => handleOptionSelected(ProposalModalKey.config)}>Configuration</Button>
-                  </Grid>
-                </Grid>
+
+                    <Button variant={"contained"} color={"secondary"}  style={{marginBottom: 20}}
+                            onClick={() => handleOptionSelected(ProposalModalKey.guardian)}>Change Guardian</Button>
               </Grid>
             </Content>
           </>
@@ -139,10 +135,10 @@ export const ProposalSelectionMenu: React.FC<Props> = ({
         open={ProposalModalKey.config === openModal}
         handleClose={() => handleCloseModal()}
       />
-      {/*<GuardianChangeProposalForm*/}
-      {/*  open={ProposalModalKey.guardian === openModal}*/}
-      {/*  handleClose={() => handleCloseModal()}*/}
-      {/*/>*/}
+      <GuardianChangeProposalForm  
+        open={ProposalModalKey.guardian === openModal}
+        handleClose={() => handleCloseModal()}
+      /> 
     </>
   );
 };

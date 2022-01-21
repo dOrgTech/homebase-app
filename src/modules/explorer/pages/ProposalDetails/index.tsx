@@ -37,6 +37,7 @@ import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {VoteDialog} from "../../components/VoteDialog";
 import {XTZTransferBadge} from "../../components/XTZTransferBadge";
 import {InfoIcon} from "../../components/styled/InfoIcon";
+import { GuardianTransferBadge } from "modules/explorer/components/GuardianTransferBadge";
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px",
@@ -132,6 +133,14 @@ export const ProposalDetails: React.FC = () => {
     }
 
     return proposal.metadata.list;
+  }, [proposal]);
+
+  const updateGuardian = useMemo(() => {
+    if (!proposal || !(proposal instanceof RegistryProposal)) {
+      return '';
+    }
+
+    return proposal.metadata.update_guardian;
   }, [proposal]);
 
   const transfers = useMemo(() => {
@@ -352,6 +361,7 @@ export const ProposalDetails: React.FC = () => {
                       </Grid>
                     );
                   })}
+                  {updateGuardian !== '' && <GuardianTransferBadge address={updateGuardian}/>}
                   {list.map(({key, value}, index) => (
                     <Grid
                       key={index}

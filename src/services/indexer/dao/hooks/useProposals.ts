@@ -29,7 +29,7 @@ export const useProposals = (
 
       const fetched = response.daos[0];
       let proposals: Proposal[];
-
+      
       switch (dao.data.type) {
         case "treasury":
           proposals = fetched.proposals.map(

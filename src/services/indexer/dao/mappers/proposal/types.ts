@@ -2,18 +2,15 @@ import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
 import treasuryProposeCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
 import registryProposeCode from "services/contracts/baseDAO/registryDAO/michelson/propose";
-import {Schema} from "@taquito/michelson-encoder";
-import {Parser, Expr, unpackDataBytes} from "@taquito/michel-codec";
-import {parseUnits} from "services/contracts/utils";
-import {ProposalDTO} from "services/indexer/types";
-import {
-  PMRegistryProposal,
-  PMTreasuryProposal,
-} from "services/contracts/baseDAO/registryDAO/types";
-import {extractTransfersData} from ".";
-import {bytes2Char} from "@taquito/tzip16";
-import {BaseDAO} from "services/contracts/baseDAO";
-import {DAOTemplate} from "modules/creator/state";
+import { Schema } from "@taquito/michelson-encoder";
+import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
+import { parseUnits } from "services/contracts/utils";
+import { ProposalDTO } from "services/indexer/types";
+import { PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types";
+import { extractTransfersData } from ".";
+import { bytes2Char } from "@taquito/tzip16";
+import { BaseDAO } from "services/contracts/baseDAO";
+import { DAOTemplate } from "modules/creator/state";
 
 export enum IndexerStatus {
   CREATED = "created",
@@ -67,18 +64,18 @@ export abstract class Proposal {
     value: BigNumber;
     support: boolean;
   }[];
-  type: DAOTemplate
+  type: DAOTemplate;
 
   private cachedStatus:
     | {
-    level: number;
-    status: ProposalStatus;
-    statusHistory: {
-      status: ProposalStatus;
-      timestamp: string;
-      level: number;
-    }[];
-  }
+        level: number;
+        status: ProposalStatus;
+        statusHistory: {
+          status: ProposalStatus;
+          timestamp: string;
+          level: number;
+        }[];
+      }
     | undefined;
 
   constructor(dto: ProposalDTO, dao: BaseDAO) {
@@ -87,22 +84,19 @@ export abstract class Proposal {
     this.dao = dao;
     this.voters = dto.votes.map((vote) => ({
       address: vote.holder.address,
-      value: parseUnits(
-        new BigNumber(vote.amount),
-        this.dao.data.token.decimals
-      ),
+      value: parseUnits(new BigNumber(vote.amount), this.dao.data.token.decimals),
       support: Boolean(vote.support),
     }));
     this.upVotes = this.voters.reduce((acc, voter) => {
       if (voter.support) {
-        return BigNumber.sum(acc, voter.value)
+        return BigNumber.sum(acc, voter.value);
       }
 
       return acc;
     }, new BigNumber(0));
     this.downVotes = this.voters.reduce((acc, voter) => {
       if (!voter.support) {
-        return BigNumber.sum(acc, voter.value)
+        return BigNumber.sum(acc, voter.value);
       }
 
       return acc;
@@ -110,15 +104,10 @@ export abstract class Proposal {
     this.proposer = dto.holder.address;
     this.startDate = dto.start_date;
     this.startLevel = dto.start_level;
-    this.quorumThreshold = parseUnits(
-      new BigNumber(dto.quorum_threshold),
-      dao.data.token.decimals
-    );
+    this.quorumThreshold = parseUnits(new BigNumber(dto.quorum_threshold), dao.data.token.decimals);
     this.period = Number(dto.voting_stage_num) - 1;
     this.indexer_status_history = dto.status_updates.map((update) => ({
-      timestamp: `Block ${update.level} (${dayjs(update.timestamp).format(
-        "LLL"
-      )})`,
+      timestamp: `Block ${update.level} (${dayjs(update.timestamp).format("LLL")})`,
       level: update.level,
       description: update.proposal_status.description,
     }));
@@ -131,18 +120,13 @@ export abstract class Proposal {
   public getStatus(currentLevel: number) {
     if (!this.cachedStatus || currentLevel !== this.cachedStatus.level) {
       const activeThreshold =
-        Math.floor(
-          (this.startLevel + Number(this.dao.data.period)) /
-          Number(this.dao.data.period)
-        ) * Number(this.dao.data.period);
+        Math.floor((this.startLevel + Number(this.dao.data.period)) / Number(this.dao.data.period)) *
+        Number(this.dao.data.period);
 
-      const passedOrRejectedThreshold =
-        activeThreshold + Number(this.dao.data.period);
+      const passedOrRejectedThreshold = activeThreshold + Number(this.dao.data.period);
 
-      const flushThreshold =
-        this.startLevel + Number(this.dao.data.proposal_flush_level);
-      const expiredThreshold =
-        this.startLevel + Number(this.dao.data.proposal_expired_level);
+      const flushThreshold = this.startLevel + Number(this.dao.data.proposal_flush_level);
+      const expiredThreshold = this.startLevel + Number(this.dao.data.proposal_expired_level);
 
       const statusHistory: {
         status: ProposalStatus;
@@ -163,9 +147,7 @@ export abstract class Proposal {
       }
 
       if (currentLevel >= passedOrRejectedThreshold) {
-        if (
-          this.downVotes.isGreaterThanOrEqualTo(this.quorumThreshold)
-        ) {
+        if (this.downVotes.isGreaterThanOrEqualTo(this.quorumThreshold)) {
           statusHistory.push({
             status: ProposalStatus.REJECTED,
             timestamp: `Level ${passedOrRejectedThreshold}`,
@@ -186,15 +168,10 @@ export abstract class Proposal {
         }
       }
 
-      if (
-        currentLevel >= flushThreshold &&
-        statusHistory.some((s) => s.status === ProposalStatus.PASSED)
-      ) {
+      if (currentLevel >= flushThreshold && statusHistory.some((s) => s.status === ProposalStatus.PASSED)) {
         statusHistory.push({
           status: ProposalStatus.EXECUTABLE,
-          timestamp: `Level ${
-            this.startLevel + this.dao.data.proposal_flush_level
-          }`,
+          timestamp: `Level ${this.startLevel + this.dao.data.proposal_flush_level}`,
           level: flushThreshold,
         });
       }
@@ -202,25 +179,17 @@ export abstract class Proposal {
       if (currentLevel >= expiredThreshold) {
         statusHistory.push({
           status: ProposalStatus.EXPIRED,
-          timestamp: `Level ${
-            this.startLevel + this.dao.data.proposal_expired_level
-          }`,
+          timestamp: `Level ${this.startLevel + this.dao.data.proposal_expired_level}`,
           level: expiredThreshold,
         });
       }
 
-      const orderedStatusHistory = statusHistory.sort(
-        (a, b) => a.level - b.level
-      );
+      const orderedStatusHistory = statusHistory.sort((a, b) => a.level - b.level);
 
       const finalStatuses = [ProposalStatus.DROPPED, ProposalStatus.EXECUTED];
-      const finalStatusIndex = statusHistory.findIndex((a) =>
-        finalStatuses.includes(a.status)
-      );
+      const finalStatusIndex = statusHistory.findIndex((a) => finalStatuses.includes(a.status));
       const filteredStatusHistory =
-        finalStatusIndex > -1
-          ? orderedStatusHistory.splice(0, finalStatusIndex + 1)
-          : orderedStatusHistory;
+        finalStatusIndex > -1 ? orderedStatusHistory.splice(0, finalStatusIndex + 1) : orderedStatusHistory;
 
       this.cachedStatus = {
         status: filteredStatusHistory.slice(-1)[0].status,
@@ -240,7 +209,7 @@ interface TreasuryProposalMetadata {
     max_proposal_size?: BigNumber;
     slash_division_value?: BigNumber;
     slash_scale_value?: BigNumber;
-  }
+  };
   transfers: Transfer[];
   agoraPostId: string;
 }
@@ -251,24 +220,15 @@ export class TreasuryProposal extends Proposal {
   get metadata(): TreasuryProposalMetadata {
     if (!this.cachedMetadata) {
       const parser = new Parser();
-      const micheline = parser.parseMichelineExpression(
-        treasuryProposeCode
-      ) as Expr;
+      const micheline = parser.parseMichelineExpression(treasuryProposeCode) as Expr;
       const schema = new Schema(micheline as Expr);
 
-      const unpackedMetadata = unpackDataBytes(
-        {bytes: this.packedMetadata},
-        micheline as any
-      ) as any;
-      const proposalMetadataDTO: PMTreasuryProposal =
-        schema.Execute(unpackedMetadata);
+      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
+      const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(unpackedMetadata);
 
-      const transfers = extractTransfersData(
-        proposalMetadataDTO.transfer_proposal.transfers
-      );
+      const transfers = extractTransfersData(proposalMetadataDTO.transfer_proposal.transfers);
 
-      const agoraPostId =
-        proposalMetadataDTO.transfer_proposal.agora_post_id.toString();
+      const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id.toString();
 
       this.cachedMetadata = {
         config: {},
@@ -288,8 +248,9 @@ interface RegistryProposalMetadata {
     max_proposal_size?: BigNumber;
     slash_division_value?: BigNumber;
     slash_scale_value?: BigNumber;
-  }
+  };
   transfers: Transfer[];
+  update_guardian: string;
   agoraPostId: string;
   list: {
     key: string;
@@ -297,45 +258,50 @@ interface RegistryProposalMetadata {
   }[];
 }
 
+const REGISTRY_PROPOSAL_METADATA_VALUES: RegistryProposalMetadata = {
+  config: {},
+  transfers: [],
+  update_guardian: "",
+  agoraPostId: "",
+  list: [],
+};
 export class RegistryProposal extends Proposal {
   private cachedMetadata?: RegistryProposalMetadata;
 
   get metadata(): RegistryProposalMetadata {
     if (!this.cachedMetadata) {
       const parser = new Parser();
-      const micheline = parser.parseMichelineExpression(
-        registryProposeCode
-      ) as Expr;
+      const micheline = parser.parseMichelineExpression(registryProposeCode) as Expr;
       const schema = new Schema(micheline as Expr);
 
-      const unpackedMetadata = unpackDataBytes(
-        {bytes: this.packedMetadata},
-        micheline as any
-      ) as any;
-      const proposalMetadataDTO: PMRegistryProposal =
-        schema.Execute(unpackedMetadata);
+      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
+      const proposalMetadataDTO: PMRegistryProposal = schema.Execute(unpackedMetadata);
 
       let transfers: Transfer[] = [];
+      const { update_guardian, transfer_proposal } = proposalMetadataDTO;
 
-      if (proposalMetadataDTO.transfer_proposal.transfers) {
-        transfers = extractTransfersData(
-          proposalMetadataDTO.transfer_proposal.transfers
-        );
+      if (update_guardian) {
+        REGISTRY_PROPOSAL_METADATA_VALUES.update_guardian = update_guardian;
       }
 
-      const agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id;
-      const registryDiff =
-        proposalMetadataDTO.transfer_proposal.registry_diff.map((item) => ({
-          key: bytes2Char(item[0]),
-          value: bytes2Char(item[1]),
-        }));
+      if (transfer_proposal) {
+        const { agora_post_id, registry_diff } = transfer_proposal;
+        if (transfer_proposal.transfers) {
+          transfers = extractTransfersData(transfer_proposal.transfers);
+          REGISTRY_PROPOSAL_METADATA_VALUES.transfers = transfers;
+        }
+        if (agora_post_id) {
+          REGISTRY_PROPOSAL_METADATA_VALUES.agoraPostId = agora_post_id;
+        }
+        if (registry_diff) {
+          REGISTRY_PROPOSAL_METADATA_VALUES.list = registry_diff.map((item) => ({
+            key: bytes2Char(item[0]),
+            value: bytes2Char(item[1]),
+          }));
+        }
+      }
 
-      this.cachedMetadata = {
-        transfers,
-        agoraPostId,
-        list: registryDiff,
-        config: {}
-      };
+      this.cachedMetadata = REGISTRY_PROPOSAL_METADATA_VALUES;
     }
 
     return this.cachedMetadata;

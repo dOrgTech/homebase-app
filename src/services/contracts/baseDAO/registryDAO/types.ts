@@ -374,6 +374,7 @@ interface ConfigProposalDTO {
 
 export interface PMTreasuryProposal {
   configuration_proposal: ConfigProposalDTO
+  update_guardian: string
   transfer_proposal: {
     agora_post_id: string;
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
@@ -382,6 +383,7 @@ export interface PMTreasuryProposal {
 
 export interface PMRegistryProposal {
   configuration_proposal: ConfigProposalDTO
+  update_guardian: string
   transfer_proposal: {
     agora_post_id: string;
     registry_diff: {
