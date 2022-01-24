@@ -117,34 +117,23 @@ export const Landing: React.FC = () => {
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   return (
-    <Background
-      container
-      direction="column"
-      justifyContent="space-between"
-      wrap="nowrap"
-    >
+    <Background container direction='column' justifyContent='space-between' wrap='nowrap'>
       {!isExtraSmall && (
         <Grid item>
           <Header />
         </Grid>
       )}
       <Grid item>
-        <Grid container justifyContent="center">
+        <Grid container justifyContent='center'>
           <Grid item>
             <MainContainer item>
               <Grid
                 container
-                justify="space-between"
+                justify='space-between'
                 direction={isExtraSmall ? "column-reverse" : "row"}
-                style={isExtraSmall ? { gap: 50 } : {}}
-              >
+                style={isExtraSmall ? { gap: 50 } : {}}>
                 <Grid item xs>
-                  <Grid
-                    container
-                    direction="column"
-                    style={{ gap: 32 }}
-                    justifyContent="center"
-                  >
+                  <Grid container direction='column' style={{ gap: 32 }} justifyContent='center'>
                     {!isExtraSmall && (
                       <Grid item>
                         <TitleText>Homebase</TitleText>
@@ -152,37 +141,26 @@ export const Landing: React.FC = () => {
                     )}
 
                     <Grid item>
-                      <Typography
-                        variant="subtitle2"
-                        color="textPrimary"
-                        align={isExtraSmall ? "center" : "left"}
-                      >
-                        Homebase is a web application that enables users to
-                        create and manage/use DAOs on the Tezos blockchain. This
-                        application aims to help empower community members and
-                        developers to launch and participate in Tezos-based DAOs
+                      <Typography variant='subtitle2' color='textPrimary' align={isExtraSmall ? "center" : "left"}>
+                        Homebase is a web application that enables users to create and manage/use DAOs on the Tezos
+                        blockchain. This application aims to help empower community members and developers to launch and
+                        participate in Tezos-based DAOs
                       </Typography>
                     </Grid>
                     <Grid item>
                       <Grid
                         container
                         style={{ gap: 16 }}
-                        wrap="nowrap"
-                        justifyContent={isExtraSmall ? "center" : "flex-start"}
-                      >
+                        wrap='nowrap'
+                        justifyContent={isExtraSmall ? "center" : "flex-start"}>
                         <Grid item>
-                          <Link href="/explorer" underline="none">
+                          <Link href='/explorer' underline='none'>
                             <FullButton>Enter App</FullButton>
                           </Link>
                         </Grid>
                         <Grid item>
-                          <Link
-                            href="https://github.com/tezos-commons/baseDAO"
-                            underline="none"
-                          >
-                            <OutlinedButton variant="outlined">
-                              Learn More
-                            </OutlinedButton>
+                          <Link href='/faq' underline='none'>
+                            <OutlinedButton variant='outlined'>Learn More</OutlinedButton>
                           </Link>
                         </Grid>
                       </Grid>
@@ -190,13 +168,7 @@ export const Landing: React.FC = () => {
                   </Grid>
                 </Grid>
                 <Grid item xs>
-                  <Grid
-                    container
-                    direction="column"
-                    alignItems="center"
-                    justify="center"
-                    style={{ gap: 20 }}
-                  >
+                  <Grid container direction='column' alignItems='center' justify='center' style={{ gap: 20 }}>
                     {isExtraSmall && (
                       <Grid item>
                         <TitleText>Homebase</TitleText>
@@ -218,24 +190,20 @@ export const Landing: React.FC = () => {
       <Grid item>
         <StyledToolbar
           container
-          direction="row"
-          alignItems="center"
-          wrap="wrap"
+          direction='row'
+          alignItems='center'
+          wrap='wrap'
           justifyContent={isExtraSmall ? "center" : "flex-start"}
-          style={{ gap: 25 }}
-        >
+          style={{ gap: 25 }}>
           <Grid item>
-            <Link
-              target="_blank"
-              href="https://github.com/dOrgTech/homebase-app"
-            >
+            <Link target='_blank' href='https://github.com/dOrgTech/homebase-app'>
               <IconContainer>
-                <GitHubIcon color="secondary" />
+                <GitHubIcon color='secondary' />
               </IconContainer>
             </Link>
           </Grid>
           <Grid item>
-            <Link target="_blank" href="https://discord.gg/XufcBNu277">
+            <Link target='_blank' href='https://discord.gg/XufcBNu277'>
               <IconContainer>
                 <SvgIcon>
                   <DiscordIcon />
