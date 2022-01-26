@@ -69,6 +69,10 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
+const GridItemContainer = styled(Grid)(() => ({
+  display: "flex",
+}));
+
 const ValueText = styled(Typography)({
   fontSize: 14,
 });
@@ -230,7 +234,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         </Typography>
       </SecondContainer>
 
-      <Grid container direction='row' wrap='wrap'>
+      <GridItemContainer>
         <CustomInputContainer item xs={12} sm={4}>
           <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={6}>
@@ -247,8 +251,12 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
           </ItemContainer>
           {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
         </CustomInputContainer>
-        {votingBlocks && <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={votingBlocks} />}
-      </Grid>
+        {votingBlocks && (
+          <Grid item style={{ marginLeft: 15 }}>
+            <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={votingBlocks} />
+          </Grid>
+        )}
+      </GridItemContainer>
 
       {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
 
@@ -258,7 +266,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         </Typography>
       </SecondContainer>
 
-      <Grid container direction='row' wrap='wrap'>
+      <GridItemContainer>
         <CustomInputContainer item xs={12} sm={4}>
           <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={6}>
@@ -277,8 +285,12 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
             <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
           ) : null}
         </CustomInputContainer>
-        {proposalFlushBlocks && <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalFlushBlocks} />}
-      </Grid>
+        {proposalFlushBlocks && (
+          <Grid item style={{ marginLeft: 15 }}>
+            <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalFlushBlocks} />
+          </Grid>
+        )}
+      </GridItemContainer>
 
       {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
         <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
@@ -290,7 +302,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         </Typography>
       </SecondContainer>
 
-      <Grid container direction='row' wrap='wrap'>
+      <GridItemContainer>
         <CustomInputContainer item xs={12} sm={4}>
           <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={6}>
@@ -309,8 +321,12 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
             <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
           ) : null}
         </CustomInputContainer>
-        {proposalExpiryBlocks && <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalExpiryBlocks} />}
-      </Grid>
+        {proposalExpiryBlocks && (
+          <Grid item style={{ marginLeft: 15 }}>
+            <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalExpiryBlocks} />
+          </Grid>
+        )}
+      </GridItemContainer>
 
       {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
         <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
