@@ -1,26 +1,15 @@
-import {
-  Grid,
-  Paper,
-  styled,
-  Typography,
-  Slider,
-  withStyles,
-  withTheme,
-  Box,
-  Tooltip,
-} from "@material-ui/core";
+import { Grid, Paper, styled, Typography, Slider, withStyles, withTheme, Box, Tooltip } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { useHistory } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 
-import {
-  CreatorContext,
-  ActionTypes,
-  VotingSettings,
-} from "modules/creator/state";
+import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state";
 import { InfoOutlined } from "@material-ui/icons";
+import { getNetworkStats } from "services/bakingBad/stats";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { EstimatedTime } from "modules/explorer/components/EstimatedTime";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -167,13 +156,11 @@ const validateForm = (values: VotingSettings) => {
     values.proposalExpiryBlocks !== undefined
   ) {
     if (values.proposalFlushBlocks <= values.votingBlocks * 2) {
-      errors.proposalFlushBlocks =
-        "Must be more than double the Voting Period Duration";
+      errors.proposalFlushBlocks = "Must be more than double the Voting Period Duration";
     }
 
     if (values.proposalExpiryBlocks <= values.proposalFlushBlocks) {
-      errors.proposalExpiryBlocks =
-        "Must be greater than Proposal Flush Delay Duration";
+      errors.proposalExpiryBlocks = "Must be greater than Proposal Flush Delay Duration";
     }
   }
 
@@ -193,13 +180,8 @@ const validateForm = (values: VotingSettings) => {
 };
 
 //TODO: Remove any from this component
-const GovernanceForm = ({
-  submitForm,
-  values,
-  setFieldValue,
-  errors,
-  touched,
-}: any) => {
+const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+  const { network } = useTezos();
   const {
     dispatch,
     state: {
@@ -208,6 +190,19 @@ const GovernanceForm = ({
   } = useContext(CreatorContext);
   const match = useRouteMatch();
   const history = useHistory();
+  const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0);
+  const { votingBlocks, proposalFlushBlocks, proposalExpiryBlocks } = values;
+
+  useEffect(() => {
+    (async () => {
+      let blockDuration = 0;
+      const blockchainInfo = await getNetworkStats(network);
+      if (blockchainInfo) {
+        blockchainInfo.time_between_blocks.forEach((time) => (blockDuration = blockDuration + time));
+        setBlockTimeAverage(blockDuration / 2);
+      }
+    })();
+  }, [network]);
 
   useEffect(() => {
     if (values) {
@@ -229,217 +224,151 @@ const GovernanceForm = ({
 
   return (
     <>
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
+      <SecondContainer container direction='row'>
+        <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
           Voting Cycle Duration
         </Typography>
       </SecondContainer>
 
-      <Grid container direction="row" wrap="wrap">
+      <Grid container direction='row' wrap='wrap'>
         <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
+          <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={6}>
               <Field
-                name="votingBlocks"
-                type="number"
-                placeholder="00"
+                name='votingBlocks'
+                type='number'
+                placeholder='00'
                 component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
+                inputProps={{ min: 0 }}></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">blocks</Typography>
+              <Typography color='textSecondary'>blocks</Typography>
             </GridItemCenter>
           </ItemContainer>
-          {errors.votingBlocks && touched.votingBlocks ? (
-            <ErrorText>{errors.votingBlocks}</ErrorText>
-          ) : null}
+          {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
         </CustomInputContainer>
+        {votingBlocks && <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={votingBlocks} />}
       </Grid>
 
-      {errors.votingBlocks && touched.votingBlocks ? (
-        <ErrorText>{errors.votingBlocks}</ErrorText>
-      ) : null}
+      {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
 
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
+      <SecondContainer container direction='row'>
+        <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
           Proposal Execution Delay
         </Typography>
       </SecondContainer>
 
-      <Grid container direction="row" wrap="wrap">
+      <Grid container direction='row' wrap='wrap'>
         <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
+          <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={6}>
               <Field
-                name="proposalFlushBlocks"
-                type="number"
-                placeholder="00"
+                name='proposalFlushBlocks'
+                type='number'
+                placeholder='00'
                 component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
+                inputProps={{ min: 0 }}></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">blocks</Typography>
+              <Typography color='textSecondary'>blocks</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
             <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
           ) : null}
         </CustomInputContainer>
+        {proposalFlushBlocks && <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalFlushBlocks} />}
       </Grid>
 
       {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
         <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
       ) : null}
 
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
+      <SecondContainer container direction='row'>
+        <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
           Proposal Expiration Threshold
         </Typography>
       </SecondContainer>
 
-      <Grid container direction="row" wrap="wrap">
+      <Grid container direction='row' wrap='wrap'>
         <CustomInputContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
+          <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={6}>
               <Field
-                name="proposalExpiryBlocks"
-                type="number"
-                placeholder="00"
+                name='proposalExpiryBlocks'
+                type='number'
+                placeholder='00'
                 component={TextField}
-                inputProps={{ min: 0 }}
-              ></Field>
+                inputProps={{ min: 0 }}></Field>
             </GridItemCenter>
             <GridItemCenter item xs={6}>
-              <Typography color="textSecondary">blocks</Typography>
+              <Typography color='textSecondary'>blocks</Typography>
             </GridItemCenter>
           </ItemContainer>
           {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
             <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
           ) : null}
         </CustomInputContainer>
+        {proposalExpiryBlocks && <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalExpiryBlocks} />}
       </Grid>
 
       {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
         <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
       ) : null}
 
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
+      <SecondContainer container direction='row'>
+        <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
           Required Stake to Propose
         </Typography>
       </SecondContainer>
 
-      <StakeContainer container direction="row" alignItems="center">
+      <StakeContainer container direction='row' alignItems='center'>
         <AdditionContainer item xs={11} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
+          <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={6}>
               <Field
-                name="proposeStakeRequired"
-                type="number"
-                placeholder="00"
+                name='proposeStakeRequired'
+                type='number'
+                placeholder='00'
                 inputProps={{ min: 0, defaultValue: 0 }}
-                component={TextField}
-              ></Field>
+                component={TextField}></Field>
             </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={6}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <Typography color="textSecondary">
-                {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
-              </Typography>
+            <GridItemCenter item xs={6} container direction='row' justify='space-around'>
+              <Typography color='textSecondary'>{orgSettings.governanceToken.tokenMetadata?.symbol || ""}</Typography>
               <Tooltip
-                placement="bottom"
+                placement='bottom'
                 title={`Amount of ${
                   orgSettings.governanceToken.tokenMetadata?.symbol || ""
-                } required to make a proposal. Total supply: ${
-                  orgSettings.governanceToken.tokenMetadata?.supply
-                }`}
-              >
-                <InfoIconInput color="secondary" />
+                } required to make a proposal. Total supply: ${orgSettings.governanceToken.tokenMetadata?.supply}`}>
+                <InfoIconInput color='secondary' />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
         </AdditionContainer>
         {errors.proposeStakeRequired || errors.proposeStakePercentage ? (
-          <ErrorText>
-            {errors.proposeStakeRequired || errors.proposeStakePercentage}
-          </ErrorText>
+          <ErrorText>{errors.proposeStakeRequired || errors.proposeStakePercentage}</ErrorText>
         ) : null}
       </StakeContainer>
 
-      <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
+      <SecondContainer container direction='row'>
+        <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
           Returned Stake After Proposal Rejection
         </Typography>
 
-        <Grid
-          container
-          direction="row"
-          alignItems="center"
-          spacing={1}
-          style={{ marginTop: 14 }}
-        >
+        <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 14 }}>
           <GridNoPadding item xs={8} sm={9}>
-            <Field name="frozenScaleValue">
+            <Field name='frozenScaleValue'>
               {() => (
                 <StyledSlider
                   value={getIn(values, "frozenScaleValue")}
-                  onChange={(value: any, newValue: any) =>
-                    setFieldValue("frozenScaleValue", newValue || 0)
-                  }
+                  onChange={(value: any, newValue: any) => setFieldValue("frozenScaleValue", newValue || 0)}
                 />
               )}
             </Field>
           </GridNoPadding>
           <GridNoPadding item xs={4} sm={3}>
             <CustomSliderValue>
-              <Value variant="subtitle1" color="textSecondary">
+              <Value variant='subtitle1' color='textSecondary'>
                 {getIn(values, "frozenScaleValue")}%
               </Value>
             </CustomSliderValue>
@@ -447,86 +376,39 @@ const GovernanceForm = ({
         </Grid>
       </SecondContainer>
 
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
+      <SpacingContainer direction='row' container alignItems='center'>
+        <Typography variant='subtitle1' color='textSecondary'>
           Min & Max Transfer Amounts
         </Typography>
       </SpacingContainer>
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
+      <Grid container direction='row' alignItems='center' style={{ marginTop: 14 }}>
         <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
+          <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={5}>
-              <Field
-                name="minXtzAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
+              <Field name='minXtzAmount' type='number' placeholder='00' component={TextField}></Field>
             </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <ValueText color="textSecondary">Min. XTZ</ValueText>
-              <Tooltip
-                placement="bottom"
-                title="Minimum amount of XTZ that can be transferred"
-              >
-                <InfoIconInput color="secondary" />
+            <GridItemCenter item xs={7} container direction='row' justify='space-around'>
+              <ValueText color='textSecondary'>Min. XTZ</ValueText>
+              <Tooltip placement='bottom' title='Minimum amount of XTZ that can be transferred'>
+                <InfoIconInput color='secondary' />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.minXtzAmount && touched.minXtzAmount ? (
-            <ErrorText>{errors.minXtzAmount}</ErrorText>
-          ) : null}
+          {errors.minXtzAmount && touched.minXtzAmount ? <ErrorText>{errors.minXtzAmount}</ErrorText> : null}
         </AdditionContainer>
         <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justify="center"
-          >
+          <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={5}>
-              <Field
-                name="maxXtzAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-              ></Field>
+              <Field name='maxXtzAmount' type='number' placeholder='00' component={TextField}></Field>
             </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justify="space-around"
-            >
-              <ValueText color="textSecondary">Max. XTZ </ValueText>
-              <Tooltip
-                placement="bottom"
-                title="Maximum amount of XTZ that can be transferred"
-              >
-                <InfoIconInput color="secondary" />
+            <GridItemCenter item xs={7} container direction='row' justify='space-around'>
+              <ValueText color='textSecondary'>Max. XTZ </ValueText>
+              <Tooltip placement='bottom' title='Maximum amount of XTZ that can be transferred'>
+                <InfoIconInput color='secondary' />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.maxXtzAmount && touched.maxXtzAmount ? (
-            <ErrorText>{errors.maxXtzAmount}</ErrorText>
-          ) : null}
+          {errors.maxXtzAmount && touched.maxXtzAmount ? <ErrorText>{errors.maxXtzAmount}</ErrorText> : null}
         </AdditionContainer>
       </Grid>
     </>
@@ -539,10 +421,7 @@ export const Governance: React.FC = () => {
   const { votingSettings } = state.data;
   const history = useHistory();
 
-  const saveStepInfo = (
-    values: VotingSettings,
-    { setSubmitting }: { setSubmitting: (b: boolean) => void }
-  ) => {
+  const saveStepInfo = (values: VotingSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
     const newState = {
       ...state.data,
       votingSettings: values,
@@ -555,36 +434,23 @@ export const Governance: React.FC = () => {
 
   return (
     <Box maxWidth={620}>
-      <Grid container direction="row" justify="space-between">
+      <Grid container direction='row' justify='space-between'>
         <Grid item xs={12}>
-          <Typography variant="h3" color="textSecondary">
+          <Typography variant='h3' color='textSecondary'>
             Proposals & Voting
           </Typography>
         </Grid>
       </Grid>
-      <Grid container direction="row">
+      <Grid container direction='row'>
         <Grid item xs={12}>
-          <CustomTypography variant="subtitle1" color="textSecondary">
-            These settings will define the duration, support and approval
-            required for proposals.
+          <CustomTypography variant='subtitle1' color='textSecondary'>
+            These settings will define the duration, support and approval required for proposals.
           </CustomTypography>
         </Grid>
       </Grid>
 
-      <Formik
-        enableReinitialize
-        validate={validateForm}
-        onSubmit={saveStepInfo}
-        initialValues={votingSettings}
-      >
-        {({
-          submitForm,
-          isSubmitting,
-          setFieldValue,
-          values,
-          errors,
-          touched,
-        }) => {
+      <Formik enableReinitialize validate={validateForm} onSubmit={saveStepInfo} initialValues={votingSettings}>
+        {({ submitForm, isSubmitting, setFieldValue, values, errors, touched }) => {
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm
