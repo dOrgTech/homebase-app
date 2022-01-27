@@ -71,6 +71,7 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
 
 const GridItemContainer = styled(Grid)(() => ({
   display: "flex",
+  alignItems: "center",
 }));
 
 const ValueText = styled(Typography)({
@@ -252,7 +253,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
           {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
         </CustomInputContainer>
         {votingBlocks && (
-          <Grid item style={{ marginLeft: 15 }}>
+          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
             <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={votingBlocks} />
           </Grid>
         )}
@@ -286,7 +287,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
           ) : null}
         </CustomInputContainer>
         {proposalFlushBlocks && (
-          <Grid item style={{ marginLeft: 15 }}>
+          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
             <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalFlushBlocks} />
           </Grid>
         )}
@@ -322,7 +323,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
           ) : null}
         </CustomInputContainer>
         {proposalExpiryBlocks && (
-          <Grid item style={{ marginLeft: 15 }}>
+          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
             <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalExpiryBlocks} />
           </Grid>
         )}

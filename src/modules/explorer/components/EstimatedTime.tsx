@@ -6,7 +6,7 @@ export const EstimatedTime: React.FC<{ blockTimeAverage: number; blockQty: numbe
   blockQty,
 }) => {
   return (
-    <Grid container style={{ gap: 32, marginTop: 10 }} wrap='nowrap'>
+    <Grid container style={{ gap: 32}} wrap='nowrap'>
       <Grid item>
         <Typography color='secondary' variant='subtitle1'>
           Estimated time
