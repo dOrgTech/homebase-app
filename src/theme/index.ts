@@ -1,6 +1,6 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-const defaultTheme = createMuiTheme()
-const { breakpoints } = defaultTheme
+const defaultTheme = createMuiTheme();
+const { breakpoints } = defaultTheme;
 
 export const theme = createMuiTheme({
   palette: {
@@ -12,7 +12,7 @@ export const theme = createMuiTheme({
     secondary: {
       main: "#81FEB7",
       dark: "#273833",
-      contrastText: "#1C1F23"
+      contrastText: "#1C1F23",
     },
     text: {
       primary: "#FFFFFF",
@@ -32,8 +32,8 @@ export const theme = createMuiTheme({
     h1: {
       fontSize: 30,
       [breakpoints.down("xs")]: {
-        fontSize: 22
-      }
+        fontSize: 22,
+      },
     },
     subtitle1: {
       fontSize: 32,
@@ -53,30 +53,30 @@ export const theme = createMuiTheme({
     h4: {
       fontSize: 21,
       [breakpoints.down("xs")]: {
-        fontSize: 16
-      }
+        fontSize: 16,
+      },
     },
     h5: {
       fontSize: 35,
       [breakpoints.down("xs")]: {
-        fontSize: 21
-      }
+        fontSize: 21,
+      },
     },
     body1: {
       fontSize: 18,
       [breakpoints.down("xs")]: {
-        fontSize: 14
-      }
+        fontSize: 14,
+      },
     },
     body2: {
       fontSize: 16,
       [breakpoints.down("xs")]: {
-        fontSize: 14
-      }
+        fontSize: 14,
+      },
     },
     h6: {
-      fontSize: 14
-    }
+      fontSize: 14,
+    },
   },
   overrides: {
     MuiSlider: {
@@ -113,11 +113,11 @@ export const theme = createMuiTheme({
         },
       },
       active: {
-        color: "#fff !important",
+        color: "#fff ",
         opacity: 1,
       },
       completed: {
-        color: "#fff !important",
+        color: "#fff ",
         opacity: 0.5,
         fontWeight: 300,
       },
@@ -139,10 +139,10 @@ export const theme = createMuiTheme({
     },
     MuiStepIcon: {
       active: {
-        color: "#1C1F23 !important",
+        color: "#1C1F23 ",
       },
       completed: {
-        color: "#fff !important",
+        color: "#fff ",
       },
       root: {
         height: 32,
@@ -243,8 +243,8 @@ export const theme = createMuiTheme({
       root: {
         padding: "42px 54px",
         "&:first-child": {
-          paddingTop: "42px"
-        }
+          paddingTop: "42px",
+        },
       },
     },
     MuiSelect: {
@@ -308,8 +308,8 @@ export const theme = createMuiTheme({
     MuiTable: {
       root: {
         borderRadius: "8px",
-        backgroundColor: "#2F3438"
-      }
+        backgroundColor: "#2F3438",
+      },
     },
     MuiTableHead: {
       root: {
@@ -317,8 +317,8 @@ export const theme = createMuiTheme({
         fontSize: 16,
         fontWeight: 400,
         letterSpacing: "-0.01em",
-        color: "#FFFFFF"
-      }
+        color: "#FFFFFF",
+      },
     },
     MuiTableFooter: {
       root: {
@@ -327,31 +327,31 @@ export const theme = createMuiTheme({
         fontWeight: 400,
         letterSpacing: "-0.01em",
         color: "##81FEB7",
-        borderTop: "0.3px solid #3D3D3D"
-      }
+        borderTop: "0.3px solid #3D3D3D",
+      },
     },
     MuiTableBody: {
-      "root": {
+      root: {
         "& > *": {
           borderTop: "0.3px solid #3D3D3D",
           minHeight: 90,
-        }
-      }
+        },
+      },
     },
     MuiTableCell: {
-      "root": {
-        borderBottom: "unset"
-      }
+      root: {
+        borderBottom: "unset",
+      },
     },
     MuiTableRow: {
       root: {
-          '& th:first-child, & td:first-child': {
-            paddingLeft: 46,
-          },
-          '& th:last-child, & td:last-child': {
-            paddingRight: 46,
-          },
-      }
+        "& th:first-child, & td:first-child": {
+          paddingLeft: 46,
+        },
+        "& th:last-child, & td:last-child": {
+          paddingRight: 46,
+        },
+      },
     },
   },
 });

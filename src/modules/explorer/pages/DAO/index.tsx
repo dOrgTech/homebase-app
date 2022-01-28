@@ -1,12 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import {
-  Grid,
-  styled,
-  Typography,
-  Button,
-  useTheme,
-  useMediaQuery, Tooltip,
-} from "@material-ui/core";
+import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Tooltip } from "@material-ui/core";
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -20,7 +13,8 @@ import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { UsersTable } from "../../components/UsersTable";
 import BigNumber from "bignumber.js";
-import {InfoIcon} from "../../components/styled/InfoIcon";
+import { InfoIcon } from "../../components/styled/InfoIcon";
+import { MigrationSection } from "modules/explorer/components/MigrationSection";
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 55px",
@@ -83,61 +77,56 @@ export const DAO: React.FC = () => {
       .map((p) => ({
         address: p.holder.address,
         totalStaked: new BigNumber(p.total_balance).dp(10).toString(),
-        availableStaked: new BigNumber(p.available_balance)
-          .dp(10)
-          .toString(),
+        availableStaked: new BigNumber(p.available_balance).dp(10).toString(),
         votes: p.holder.votes_cast.toString(),
-        proposalsVoted: p.holder.proposals_voted.toString()
+        proposalsVoted: p.holder.proposals_voted.toString(),
       }));
   }, [cycleInfo, data, ledger]);
 
   return (
-    <Grid container direction="column" style={{ gap: isExtraSmall ? 25 : 42 }}>
+    <Grid container direction='column' style={{ gap: isExtraSmall ? 25 : 42 }}>
       <HeroContainer item>
-        <Grid container direction="column" style={{ gap: 36 }}>
+        <Grid container direction='column' style={{ gap: 36 }}>
           <Grid item>
-            <Grid container style={{ gap: 20 }} alignItems="baseline">
+            <Grid container style={{ gap: 20 }} alignItems='baseline'>
               <Grid item>
-                <TitleText color="textPrimary">{name}</TitleText>
+                <TitleText color='textPrimary'>{name}</TitleText>
               </Grid>
               <Grid item>
                 <ExecuteButton
-                  variant="contained"
-                  color="secondary"
+                  variant='contained'
+                  color='secondary'
                   size={isExtraSmall ? "small" : "medium"}
-                  onClick={onFlush}
-                >
+                  onClick={onFlush}>
                   Execute
                 </ExecuteButton>
-                <Tooltip
-                  placement="bottom"
-                  title="Execute all passed proposals and drop all expired or rejected"
-                >
-                  <InfoIcon color="secondary" />
+                <Tooltip placement='bottom' title='Execute all passed proposals and drop all expired or rejected'>
+                  <InfoIcon color='secondary' />
                 </Tooltip>
               </Grid>
             </Grid>
           </Grid>
           <Grid item>
-            <SubtitleText variant="body1" color="textPrimary">
+            <SubtitleText variant='body1' color='textPrimary'>
               {description}
             </SubtitleText>
           </Grid>
         </Grid>
       </HeroContainer>
+      <MigrationSection />
       <UserBalancesBox daoId={daoId} />
       <DAOStatsRow />
 
       {data && cycleInfo && proposals && (
         <ProposalsList
           showFooter
-          title="Active Proposals"
+          title='Active Proposals'
           currentLevel={cycleInfo.currentLevel}
           proposals={proposals}
         />
       )}
       <TableContainer item>
-          <UsersTable data={usersTableData} />
+        <UsersTable data={usersTableData} />
       </TableContainer>
     </Grid>
   );
