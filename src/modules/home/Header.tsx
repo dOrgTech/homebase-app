@@ -39,9 +39,9 @@ const StyledToolbar = styled(Toolbar)({
 
 const HeaderButton = styled(Button)(({ theme }: { theme: Theme }) => ({
   minHeight: 39,
-  minWidth: 139,
+  minWidth: 130,
   background: theme.palette.secondary.main,
-  color: theme.palette.text.secondary,
+  color: theme.palette.primary.dark,
   borderColor: hexToRgba(theme.palette.secondary.main, 0.23),
   "&:hover": {
     backgroundColor: hexToRgba(theme.palette.secondary.main, 0.24),
@@ -77,7 +77,7 @@ export const Header: React.FC = () => {
           </Grid>
           <Grid item>
             <Link href="/explorer" underline="none">
-              <HeaderButton>ENTER APP</HeaderButton>
+              <HeaderButton>Enter App</HeaderButton>
             </Link>
           </Grid>
         </Grid>

@@ -10,7 +10,7 @@ const Container = styled(Box)({
   width: "100%",
   minHeight: 92,
   bottom: 0,
-  background: hexToRgba("#FFC839", 0.4),
+  background: hexToRgba("#746438", 0.95),
   boxSizing: "border-box",
   padding: "25px 50px",
   color: "#FFC839",
@@ -36,6 +36,8 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
           >
             <Grid item>
               <WarningIcon fill="#FFC839" />
+            </Grid>
+            <Grid item style={{marginRight: "10px"}}>
             </Grid>
             <Grid item>
               <ContainerText align="center" color="inherit">

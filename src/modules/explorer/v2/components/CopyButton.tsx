@@ -3,7 +3,7 @@ import { Box, styled, Tooltip } from "@material-ui/core";
 import { FileCopyOutlined } from "@material-ui/icons";
 
 const CopyIcon = styled(FileCopyOutlined)({
-  cursor: "pointer",
+  cursor: "pointer"
 });
 
 export const CopyButton: React.FC<{ text: string }> = ({ text }) => {

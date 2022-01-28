@@ -16,10 +16,10 @@ const StyledConnectedButton = styled(Box)({
   },
   background: "#24282B",
   borderRadius: 4,
-  padding: 5,
+  padding: "5px 10px",
   cursor: "pointer",
   "&:hover": {
-    background: "rgb(39, 56, 51)"
+    background: "#273833"
   }
 });
 

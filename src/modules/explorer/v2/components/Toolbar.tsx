@@ -57,6 +57,7 @@ const ConnectWallet = styled(Button)({
   maxHeight: 50,
   alignSelf: "baseline",
   whiteSpace: "nowrap",
+  fontSize: 14,
 });
 
 const AddressBarWrapper = styled(Grid)({
