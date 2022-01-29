@@ -18,7 +18,7 @@ export const GuardianTransferBadge: React.FC<Props> = ({ address, ...props }) =>
       alignItems='center'
       direction='row'
       container
-      style={{ gap: 20, width: "100%" }}
+      style={{ gap: 20 }}
       {...props}>
       <Grid item>
         <Typography variant={"body1"} color={"textPrimary"}>

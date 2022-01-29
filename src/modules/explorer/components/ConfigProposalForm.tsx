@@ -15,8 +15,8 @@ type RecursivePartial<T> = {
 };
 
 type Values = {
-  frozen_extra_value: number
-  returnedPercentage: number
+  frozen_extra_value: string
+  returnedPercentage: string
 };
 
 export type ProposalFormDefaultValues = RecursivePartial<Values>;
@@ -48,16 +48,30 @@ export const ConfigProposalForm: React.FC<Props> = ({
   const onSubmit = useCallback(
     (values: Values) => {
       if (dao) {
-        mutate({
-          dao, args: {
-            frozen_extra_value: values.frozen_extra_value,
-            slash_scale_value: values.returnedPercentage ? 100 - values.returnedPercentage : undefined
+        console.log(values);
+
+        const mutateValues = {
+          frozen_extra_value: parseInt(values.frozen_extra_value),
+          slash_scale_value: !Number.isNaN(parseInt(values.returnedPercentage)) ?
+            100 - Number(values.returnedPercentage) : NaN
+        }
+
+        Object.entries(mutateValues).map(([key, value]) => {
+          if(Number.isNaN(value)) {
+            delete mutateValues[key as keyof typeof mutateValues];
           }
+        });
+
+        console.log(mutateValues)
+
+        mutate({
+          dao, args: mutateValues
         })
+        methods.reset()
         handleClose();
       }
     },
-    [dao, handleClose, mutate]
+    [dao, handleClose, methods, mutate]
   );
 
   return (
