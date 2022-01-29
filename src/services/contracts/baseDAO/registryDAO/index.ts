@@ -8,6 +8,7 @@ import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
 import { RegistryExtraDTO } from "services/indexer/types";
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import {BigNumber} from "bignumber.js";
 
 const parser = new Parser();
 
@@ -78,6 +79,9 @@ export class RegistryDAO extends BaseDAO {
         this.data.extra.registry_affected
       ),
     };
+
+    this.data.extra.returnedPercentage = new BigNumber(100)
+      .minus(new BigNumber(this.data.extra.slash_scale_value)).toString();
   }
 
   public propose = async (

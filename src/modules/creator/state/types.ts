@@ -22,7 +22,7 @@ export type QuorumSettings = {
 
 export type VotingSettings = {
   proposeStakeRequired: number;
-  frozenScaleValue: number;
+  returnedTokenPercentage: number;
   minXtzAmount: number;
   maxXtzAmount: number;
 

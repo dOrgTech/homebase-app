@@ -426,12 +426,12 @@ const GovernanceForm = ({
           style={{ marginTop: 14 }}
         >
           <GridNoPadding item xs={8} sm={9}>
-            <Field name="frozenScaleValue">
+            <Field name="returnedTokenPercentage">
               {() => (
                 <StyledSlider
-                  value={getIn(values, "frozenScaleValue")}
+                  value={getIn(values, "returnedTokenPercentage")}
                   onChange={(value: any, newValue: any) =>
-                    setFieldValue("frozenScaleValue", newValue || 0)
+                    setFieldValue("returnedTokenPercentage", newValue || 0)
                   }
                 />
               )}
@@ -440,7 +440,7 @@ const GovernanceForm = ({
           <GridNoPadding item xs={4} sm={3}>
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
-                {getIn(values, "frozenScaleValue")}%
+                {getIn(values, "returnedTokenPercentage")}%
               </Value>
             </CustomSliderValue>
           </GridNoPadding>

@@ -6,6 +6,7 @@ import { TreasuryProposeArgs } from "./types";
 import proposeCode from "./michelson/propose";
 import { TreasuryExtraDTO } from "services/indexer/types";
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import {BigNumber} from "bignumber.js";
 
 const parser = new Parser();
 
@@ -16,6 +17,9 @@ interface TreasuryDAOData extends BaseDAOData {
 export class TreasuryDAO extends BaseDAO {
   constructor(public data: TreasuryDAOData) {
     super(data);
+
+    this.data.extra.returnedPercentage = new BigNumber(100)
+      .minus(new BigNumber(this.data.extra.slash_scale_value)).toString();
   }
 
   public propose = async (

@@ -11,9 +11,10 @@ import { ContentContainer } from "../../components/ContentContainer";
 import { ProposalsList } from "../../components/ProposalsList";
 import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
-import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
+// import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
 import {InfoIcon} from "../../components/styled/InfoIcon";
 import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
+import {ProposalSelectionMenu} from "../../components/ProposalSelectionMenu";
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 45px",
@@ -32,16 +33,19 @@ export const Proposals: React.FC = () => {
   const shouldDisable = useIsProposalButtonDisabled(daoId);
   const { data: proposals } = useProposals(daoId);
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
+  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE);
+  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED);
 
   const onFlush = useCallback(async () => {
-    if (proposals && proposals.length && data) {
+    if (executableProposals && expiredProposals && executableProposals.length && data) {
       mutate({
         dao: data,
-        numOfProposalsToFlush: proposals.length + 1,
+        numOfProposalsToFlush: executableProposals.length,
+        expiredProposalIds: expiredProposals.map(p => p.id)
       });
       return;
     }
-  }, [data, mutate, proposals]);
+  }, [data, mutate, executableProposals, expiredProposals]);
 
   const onCloseModal = () => {
     setOpenModal(false);
@@ -67,6 +71,7 @@ export const Proposals: React.FC = () => {
                     color="secondary"
                     size="small"
                     onClick={onFlush}
+                    disabled={!executableProposals || !executableProposals.length}
                   >
                     Execute
                   </Button>
@@ -118,11 +123,11 @@ export const Proposals: React.FC = () => {
           />
         )}
       </Grid>
-      <ProposalFormContainer
-        open={openModal}
-        handleClose={onCloseModal}
-      />
-     {/* <ProposalSelectionMenu open={openModal} handleClose={onCloseModal}/> */}
+      {/*<ProposalFormContainer*/}
+      {/*  open={openModal}*/}
+      {/*  handleClose={onCloseModal}*/}
+      {/*/>*/}
+      <ProposalSelectionMenu open={openModal} handleClose={onCloseModal}/>
     </>
   );
 };

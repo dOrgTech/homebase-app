@@ -31,12 +31,13 @@ import {
   RegistryProposal,
   TreasuryProposal,
   FA2Transfer,
-  ProposalStatus,
+  ProposalStatus, Proposal,
 } from "services/indexer/dao/mappers/proposal/types";
 import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {VoteDialog} from "../../components/VoteDialog";
 import {XTZTransferBadge} from "../../components/XTZTransferBadge";
 import {InfoIcon} from "../../components/styled/InfoIcon";
+import {GuardianTransferBadge} from "modules/explorer/components/GuardianTransferBadge";
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px",
@@ -83,6 +84,18 @@ const VoteButton = styled(Button)(({favor}: { favor: boolean }) => ({
   backgroundColor: favor ? "#3FE888" : "#FF486E",
 }));
 
+const getReadableConfig = (configKey: keyof Proposal["metadata"]["config"]) => {
+  switch (configKey) {
+    case "frozen_extra_value":
+      return "Proposal fee";
+    case "slash_scale_value":
+      return "Percentage of tokens returned after rejection";
+
+    default:
+      return "Unknown Config parameter"
+  }
+}
+
 export const ProposalDetails: React.FC = () => {
   const {proposalId} = useParams<{
     proposalId: string;
@@ -98,7 +111,7 @@ export const ProposalDetails: React.FC = () => {
   const {data: holdings} = useDAOHoldings(daoId);
   const canDropProposal = useCanDropProposal(daoId, proposalId);
   const {data: agoraPost} = useAgoraTopic(
-    Number(proposal?.metadata.agoraPostId)
+    Number(proposal?.metadata?.agoraPostId)
   );
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
 
@@ -177,7 +190,7 @@ export const ProposalDetails: React.FC = () => {
                   placement="bottom"
                   title="Guardian and proposer may drop proposal at anytime. Anyone may drop proposal if proposal expired"
                 >
-                  <InfoIcon color="secondary" />
+                  <InfoIcon color="secondary"/>
                 </Tooltip>
               </Grid>
             </Grid>
@@ -289,9 +302,9 @@ export const ProposalDetails: React.FC = () => {
                     style={{height: "100%"}}
                   >
                     <Grid item>
-                      { proposal && (<Tooltip
+                      {proposal && (<Tooltip
                         placement="bottom"
-                        title={`Amount of ${dao?.data.token.symbol} required to be locked through voting for a proposal to be passed/rejected. ${(proposal.upVotes.gte(proposal.downVotes)? proposal.upVotes.toString(): proposal.downVotes.toString()) }/${quorumThreshold} votes.`}
+                        title={`Amount of ${dao?.data.token.symbol} required to be locked through voting for a proposal to be passed/rejected. ${(proposal.upVotes.gte(proposal.downVotes) ? proposal.upVotes.toString() : proposal.downVotes.toString())}/${quorumThreshold} votes.`}
                       >
                         <InfoIcon color="secondary"/>
                       </Tooltip>)}
@@ -352,6 +365,34 @@ export const ProposalDetails: React.FC = () => {
                       </Grid>
                     );
                   })}
+                  {proposal.metadata.config.map(({key, value}, index) => (
+                    <Grid
+                      key={index}
+                      item
+                      container
+                      alignItems="center"
+                      direction={isMobileSmall ? "column" : "row"}
+                    >
+                      <HighlightedBadge
+                        justify="center"
+                        alignItems="center"
+                        direction="row"
+                        container
+                      >
+                        <Grid item>
+                          <DetailsText variant="body1" color="textPrimary">
+                            Change <Typography
+                            variant="body1" color="secondary"
+                            display={"inline"}>{getReadableConfig(key as keyof Proposal["metadata"]["config"])}
+                          </Typography> to <Typography
+                            variant="body1" color="secondary" display={"inline"}>{value.toString()}</Typography>
+                          </DetailsText>
+                        </Grid>
+                      </HighlightedBadge>
+                    </Grid>
+                  ))}
+                  {proposal.metadata.update_guardian !== '' &&
+                    <GuardianTransferBadge address={proposal.metadata.update_guardian}/>}
                   {list.map(({key, value}, index) => (
                     <Grid
                       key={index}

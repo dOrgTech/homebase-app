@@ -30,7 +30,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
   votingSettings: {
     votingBlocks: 0,
     proposeStakeRequired: 0,
-    frozenScaleValue: 0,
+    returnedTokenPercentage: 0,
     minXtzAmount: 0,
     maxXtzAmount: 0,
     proposalFlushBlocks: 0,

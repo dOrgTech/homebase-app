@@ -12,7 +12,7 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   governance_token_address: `"${storage.governanceToken.address}"`,
   governance_token_id: `"${storage.governanceToken.tokenId}n"`,
   max_proposal_size: `2500n`,
-  slash_division_value: `${storage.extra.slashDivisionValue.toFixed()}n`,
+  slash_division_value: `100n`,
   slash_scale_value: `${storage.extra.slashScaleValue.toFixed()}n`,
   frozen_extra_value: `${storage.extra.frozenExtraValue.toFixed()}n`,
   frozen_scale_value: '0n',
