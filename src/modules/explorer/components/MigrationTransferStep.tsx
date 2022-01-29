@@ -56,7 +56,7 @@ export const MigrationTransferStep: React.FC<{ newDaoAddress: string, onComplete
                 votingSettings: {
                     votingBlocks: Number(dao.data.period),
                     proposeStakeRequired: Number(dao.data.extra.frozen_extra_value),
-                    frozenScaleValue: Number(dao.data.extra.slash_scale_value),
+                    returnedTokenPercentage: Number(dao.data.extra.returnedPercentage),
                     minXtzAmount: mutezToXtz(new BigNumber(dao.data.extra.min_xtz_amount)).toNumber(),
                     maxXtzAmount: mutezToXtz(new BigNumber(dao.data.extra.max_xtz_amount)).toNumber(),
                     proposalFlushBlocks: Number(dao.data.proposal_flush_level),
