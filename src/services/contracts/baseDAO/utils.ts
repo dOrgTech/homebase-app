@@ -21,9 +21,7 @@ export const fromStateToBaseStorage = (
     },
     guardian: info.orgSettings.guardian,
     extra: {
-      frozenScaleValue: new BigNumber(
-        info.votingSettings.proposeStakePercentage
-      ),
+      frozenScaleValue: new BigNumber(0),
       frozenExtraValue: new BigNumber(info.votingSettings.proposeStakeRequired),
       slashScaleValue: new BigNumber(info.votingSettings.frozenScaleValue),
       slashDivisionValue: new BigNumber(100),

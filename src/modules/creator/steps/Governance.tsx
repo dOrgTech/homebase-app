@@ -402,9 +402,9 @@ const GovernanceForm = ({
             </GridItemCenter>
           </ItemContainer>
         </AdditionContainer>
-        {errors.proposeStakeRequired || errors.proposeStakePercentage ? (
+        {errors.proposeStakeRequired ? (
           <ErrorText>
-            {errors.proposeStakeRequired || errors.proposeStakePercentage}
+            {errors.proposeStakeRequired}
           </ErrorText>
         ) : null}
       </StakeContainer>

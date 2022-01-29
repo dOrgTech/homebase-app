@@ -2,7 +2,6 @@ import { Token } from "models/Token";
 
 export type OrgSettings = {
   name: string;
-  symbol: string;
   description: string;
   administrator: string;
   guardian: string;
@@ -23,9 +22,7 @@ export type QuorumSettings = {
 
 export type VotingSettings = {
   proposeStakeRequired: number;
-  proposeStakePercentage: number;
   frozenScaleValue: number;
-  frozenDivisionValue: number;
   minXtzAmount: number;
   maxXtzAmount: number;
 
