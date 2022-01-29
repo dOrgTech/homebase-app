@@ -323,6 +323,7 @@ function getBaseMetadata(proposalMetadataDTO: PMTreasuryProposal | PMRegistryPro
 
   if ("configuration_proposal" in proposalMetadataDTO) {
     values.config = Object.entries(proposalMetadataDTO.configuration_proposal)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, value]) => !!value)
       .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
   }
