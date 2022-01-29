@@ -316,7 +316,7 @@ export const Summary = (): JSX.Element => {
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.frozenScaleValue}% of locked tokens
+                  {state.data.votingSettings.returnedTokenPercentage}% of locked tokens
                 </Typography>
               </Grid>
             </UnderlinedGrid>

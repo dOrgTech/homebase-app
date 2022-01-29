@@ -1,5 +1,5 @@
-import { BigNumber } from "bignumber.js";
-import { Extra, TransferParams } from "..";
+import {BigNumber} from "bignumber.js";
+import {Extra, TransferParams} from "..";
 
 export interface RegistryItem {
   key: string;
@@ -372,18 +372,20 @@ interface ConfigProposalDTO {
   slash_scale_value?: string;
 }
 
-export interface PMTreasuryProposal {
+export type PMBaseProposal = {
   configuration_proposal: ConfigProposalDTO
-  update_guardian: string
+} | {
+  update_guardian: string;
+}
+
+export type PMTreasuryProposal = PMBaseProposal | {
   transfer_proposal: {
     agora_post_id: string;
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
   }
 }
 
-export interface PMRegistryProposal {
-  configuration_proposal: ConfigProposalDTO
-  update_guardian: string
+export type PMRegistryProposal = PMBaseProposal | {
   transfer_proposal: {
     agora_post_id: string;
     registry_diff: {
@@ -393,5 +395,3 @@ export interface PMRegistryProposal {
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
   };
 }
-
-export type ProposalMetadata = PMTreasuryProposal | PMRegistryProposal;

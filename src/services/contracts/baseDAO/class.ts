@@ -110,12 +110,19 @@ export abstract class BaseDAO {
 
   public flush = async (
     numerOfProposalsToFlush: number,
+    expiredProposalIds: string[],
     tezos: TezosToolkit
   ) => {
     const daoContract = await getContract(tezos, this.data.address);
-    const operation = await daoContract.methods.flush(numerOfProposalsToFlush);
+    const initialBatch = await tezos.wallet.batch()
 
-    return await operation.send();
+    const batch = expiredProposalIds.reduce((prev, current) => {
+      return prev.withContractCall(daoContract.methods.drop_proposal(current))
+    }, initialBatch)
+
+    batch.withContractCall(daoContract.methods.flush(numerOfProposalsToFlush));
+
+    return await batch.send();
   };
 
   public dropProposal = async (proposalId: string, tezos: TezosToolkit) => {

@@ -65,6 +65,7 @@ export interface RegistryExtraDTO {
   min_xtz_amount: string;
   max_xtz_amount: string;
   slash_scale_value: string;
+  returnedPercentage: string;
 }
 
 export interface TreasuryExtraDTO {
@@ -75,6 +76,7 @@ export interface TreasuryExtraDTO {
   min_xtz_amount: string;
   max_xtz_amount: string;
   slash_scale_value: string;
+  returnedPercentage: string;
 }
 
 export interface HolderDTO {

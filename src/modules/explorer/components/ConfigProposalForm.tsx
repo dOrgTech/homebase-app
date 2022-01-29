@@ -16,7 +16,7 @@ type RecursivePartial<T> = {
 
 type Values = {
   frozen_extra_value: number
-  slash_scale_value: number
+  returnedPercentage: number
 };
 
 export type ProposalFormDefaultValues = RecursivePartial<Values>;
@@ -51,7 +51,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
         mutate({
           dao, args: {
             frozen_extra_value: values.frozen_extra_value,
-            slash_scale_value: values.slash_scale_value
+            slash_scale_value: values.returnedPercentage ? 100 - values.returnedPercentage : undefined
           }
         })
         handleClose();
@@ -88,15 +88,15 @@ export const ConfigProposalForm: React.FC<Props> = ({
             </ProposalFormInput>
           </Grid>
           <Grid item>
-            <ProposalFormInput label={`Percentage of tokens returned after rejection (Current: ${dao?.data.extra.slash_scale_value.toString()}%)`}>
+            <ProposalFormInput label={`Percentage of tokens returned after rejection (Current: ${dao?.data.extra.returnedPercentage.toString()}%)`}>
               <Controller
                 control={methods.control}
-                name={`slash_scale_value`}
+                name={`returnedPercentage`}
                 render={({field}) => (
                   <TextField
                     {...field}
                     type="number"
-                    placeholder="Slash scale value"
+                    placeholder="Returned tokens percentage"
                     InputProps={{disableUnderline: true}}
                   />
                 )}

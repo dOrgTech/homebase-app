@@ -1,12 +1,8 @@
-import dayjs from "dayjs";
 import { useQuery } from "react-query";
 import { BaseDAO, CycleInfo } from "services/contracts/baseDAO";
 import { getProposals } from "services/indexer/dao/services";
 import {
-  Proposal,
   ProposalStatus,
-  RegistryProposal,
-  TreasuryProposal,
 } from "services/indexer/dao/mappers/proposal/types";
 import { useDAO } from "./useDAO";
 
@@ -25,39 +21,13 @@ export const useProposals = (
     ["proposals", contractAddress, status],
     async () => {
       const dao = daoData as BaseDAO;
-      const response = await getProposals(contractAddress as string);
-
-      const fetched = response.daos[0];
-      let proposals: Proposal[];
-      
-      switch (dao.data.type) {
-        case "treasury":
-          proposals = fetched.proposals.map(
-            (proposal) => new TreasuryProposal(proposal, dao)
-          );
-
-          break;
-        case "registry":
-          proposals = fetched.proposals.map(
-            (proposal) => new RegistryProposal(proposal, dao)
-          );
-
-          break;
-        default:
-          throw new Error(
-            `DAO with address '${dao.data.address}' has an unrecognized type '${dao.data.type}'`
-          );
-      }
-
-      const proposalsWithVoters = proposals.sort((a, b) =>
-        dayjs(b.startDate).isAfter(dayjs(a.startDate)) ? 1 : -1
-      );
+      const proposals = await getProposals(dao);
 
       if (!status) {
-        return proposalsWithVoters;
+        return proposals;
       }
 
-      return proposalsWithVoters.filter(
+      return proposals.filter(
         (proposalData) =>
           proposalData.getStatus((cycleInfo as CycleInfo).currentLevel)
             .status === status
