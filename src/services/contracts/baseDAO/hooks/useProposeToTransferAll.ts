@@ -21,7 +21,8 @@ export const useProposeToTransferAll = () => {
         amount: holding.balance.toNumber(),
         recipient,
         asset: holding.token,
-      }))
+      })).filter(transfer => !(transfer.asset.contract.toLowerCase() === dao.data.token.contract.toLowerCase()
+        && transfer.asset.token_id === dao.data.token.token_id))
 
       if (xtzBalance.gt(new BigNumber(0))) {
         transfers.push({
