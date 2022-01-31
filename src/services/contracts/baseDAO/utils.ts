@@ -40,7 +40,7 @@ export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams
     proposalFlushPeriod: proposalFlush,
     proposalExpiryPeriod: expiryPeriod,
   };
-  console.log('storageData', storageData);
+  
   return storageData;
 };
 
