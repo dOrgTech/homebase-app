@@ -11,6 +11,8 @@ import {getNetworkStats} from "services/bakingBad/stats";
 import {useTezos} from "services/beacon/hooks/useTezos";
 import {EstimatedTime} from "modules/explorer/components/EstimatedTime";
 import {theme} from "../../../theme";
+import dayjs from "dayjs";
+import {getEstimatedTime} from "../../../services/time/calculateTime";
 
 const CustomTypography = styled(Typography)(({theme}) => ({
     paddingBottom: 10,
@@ -203,7 +205,13 @@ const GovernanceForm = ({submitForm, values, setFieldValue, errors, touched}: an
     const history = useHistory();
     const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0);
     const {votingBlocks, proposalFlushBlocks, proposalExpiryBlocks} = values;
+    const initialProposalTime = getEstimatedTime();
+    const timeToCreateProposal = votingBlocks && getEstimatedTime(parseInt(votingBlocks) * blockTimeAverage);
+    
+    // const expireProposalTome = votingBlocks && proposalFlushBlocks && proposalExpiryBlocks && getEstimatedTime(parseInt())
 
+    console.log(initialProposalTime);
+    console.log(timeToCreateProposal);
     useEffect(() => {
         (async () => {
             let blockDuration = 0;
@@ -258,8 +266,8 @@ const GovernanceForm = ({submitForm, values, setFieldValue, errors, touched}: an
                                     <Typography color='textSecondary'>blocks</Typography>
                                 </GridItemCenter>
                             </ItemContainer>
-                            {errors.votingBlocks && touched.votingBlocks ?
-                                <ErrorText>{errors.votingBlocks}</ErrorText> : null}
+                            {/*{errors.votingBlocks && touched.votingBlocks ?*/}
+                            {/*    <ErrorText>{errors.votingBlocks}</ErrorText> : null}*/}
                         </CustomInputContainer>
                     </GridItemContainer>
                     {votingBlocks && (
@@ -267,7 +275,7 @@ const GovernanceForm = ({submitForm, values, setFieldValue, errors, touched}: an
                             <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={votingBlocks}/>
                         </Grid>
                     )}
-                    {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
+                    {/*{errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}*/}
                 </Grid>
                 <Grid item style={{marginRight: 15}}>
                     <SecondContainer container direction='row'>
@@ -291,9 +299,9 @@ const GovernanceForm = ({submitForm, values, setFieldValue, errors, touched}: an
                                     <Typography color='textSecondary'>blocks</Typography>
                                 </GridItemCenter>
                             </ItemContainer>
-                            {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
-                                <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
-                            ) : null}
+                            {/*{errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (*/}
+                            {/*    <ErrorText>{errors.proposalFlushBlocks}</ErrorText>*/}
+                            {/*) : null}*/}
 
                         </CustomInputContainer>
 
@@ -303,9 +311,9 @@ const GovernanceForm = ({submitForm, values, setFieldValue, errors, touched}: an
                             <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalFlushBlocks}/>
                         </Grid>
                     )}
-                    {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
-                        <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
-                    ) : null}
+                    {/*{errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (*/}
+                    {/*    <ErrorText>{errors.proposalFlushBlocks}</ErrorText>*/}
+                    {/*) : null}*/}
                 </Grid>
 
                 <Grid item style={{marginRight: 15}}>
@@ -330,9 +338,6 @@ const GovernanceForm = ({submitForm, values, setFieldValue, errors, touched}: an
                                     <Typography color='textSecondary'>blocks</Typography>
                                 </GridItemCenter>
                             </ItemContainer>
-                            {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
-                                <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
-                            ) : null}
 
                         </CustomInputContainer>
 
@@ -342,21 +347,22 @@ const GovernanceForm = ({submitForm, values, setFieldValue, errors, touched}: an
                             <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={proposalExpiryBlocks}/>
                         </Grid>
                     )}
-                    {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
-                        <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
-                    ) : null}
+                    {/*{errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (*/}
+                    {/*    <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>*/}
+                    {/*) : null}*/}
                 </Grid>
             </Grid>
 
-            <Box>
-                <Typography color={"textSecondary"}>Jane creates a DAO at <CustomSpan>01/28 18:00</CustomSpan>,
-                    at <CustomSpan>01/28 19:00</CustomSpan> she will be able to create a proposal
-                    and at <CustomSpan>01/28 22:00</CustomSpan>.
-
-                    The vote will close at <CustomSpan>01/28 19:00</CustomSpan> and if it passes, the proposal will be
-                    executable at <CustomSpan>01/28 22:00</CustomSpan> and will expire at{' '}
-                    <CustomSpan>01/28 23:00</CustomSpan></Typography>
-            </Box>
+            {timeToCreateProposal && <Box>
+                <Typography color={"textSecondary"}>If Jane creates a DAO
+                    at <CustomSpan>{initialProposalTime.dateHour} on {initialProposalTime.date}</CustomSpan>,
+                    she will be able to create a proposal
+                    at <CustomSpan>{timeToCreateProposal.dateHour} on {timeToCreateProposal.date}</CustomSpan>.
+                    Voting will close
+                    at <CustomSpan>3:00 on 01/28</CustomSpan>. If the proposal passes, it&apos;ll be executable
+                    at <CustomSpan>3:00 on 01/28</CustomSpan> and will expire at <CustomSpan>4:00 on 01/28</CustomSpan>
+                </Typography>
+            </Box>}
 
             <Box style={{marginTop: 12}}>
                 <SecondContainer container direction='row'>
