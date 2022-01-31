@@ -250,7 +250,7 @@ export abstract class BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      this.data.extra.frozen_extra_value,
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     );
 
@@ -266,7 +266,7 @@ export abstract class BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      this.data.extra.frozen_extra_value,
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     );
 
