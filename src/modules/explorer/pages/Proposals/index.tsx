@@ -15,6 +15,7 @@ import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import {InfoIcon} from "../../components/styled/InfoIcon";
 import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 import {ProposalSelectionMenu} from "../../components/ProposalSelectionMenu";
+import {useDropAllExpired} from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired";
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 45px",
@@ -30,6 +31,7 @@ export const Proposals: React.FC = () => {
   const daoId = useDAOID();
   const { data, cycleInfo } = useDAO(daoId);
   const { mutate } = useFlush();
+  const { mutate: dropAllExpired } = useDropAllExpired();
   const shouldDisable = useIsProposalButtonDisabled(daoId);
   const { data: proposals } = useProposals(daoId);
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
@@ -46,6 +48,16 @@ export const Proposals: React.FC = () => {
       return;
     }
   }, [data, mutate, executableProposals, expiredProposals]);
+
+  const onDropAllExpired = useCallback(async () => {
+    if (expiredProposals && expiredProposals.length && data) {
+      dropAllExpired({
+        dao: data,
+        expiredProposalIds: expiredProposals.map(p => p.id)
+      });
+      return;
+    }
+  }, [data, dropAllExpired, expiredProposals]);
 
   const onCloseModal = () => {
     setOpenModal(false);
@@ -78,6 +90,23 @@ export const Proposals: React.FC = () => {
                   <Tooltip
                     placement="bottom"
                     title="Execute all passed proposals and drop all expired or rejected"
+                  >
+                    <InfoIcon color="secondary" />
+                  </Tooltip>
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={onDropAllExpired}
+                    disabled={!expiredProposals || !expiredProposals.length}
+                  >
+                    Drop All Expired
+                  </Button>
+                  <Tooltip
+                    placement="bottom"
+                    title="Drop all expired proposals"
                   >
                     <InfoIcon color="secondary" />
                   </Tooltip>
