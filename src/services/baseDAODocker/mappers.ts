@@ -27,6 +27,7 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   governance_total_supply: `${token.supply.toFixed()}n`,
   period: `${storage.votingPeriod}n`,
   start_level: '100n',
+  max_voters: `${token.supply.toFixed()}n`,
   min_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.minXtzAmount)).toFixed()}mutez`,
   max_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.maxXtzAmount)).toFixed()}mutez`,
 })
