@@ -10,7 +10,7 @@ export const getEstimatedTime = (secondsToAdd?: number): EstimatedTimeType => {
         date: '',
         dateHour: ''
     }
-    console.log(secondsToAdd);
+
     if (!secondsToAdd) {
         currentEstimated.date = dayjs().format('MM/DD');
         currentEstimated.dateHour = dayjs().format('HH:mm');

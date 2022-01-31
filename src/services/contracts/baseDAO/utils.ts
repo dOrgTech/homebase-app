@@ -10,9 +10,10 @@ import isBetween from "dayjs/plugin/isBetween";
 
 dayjs.extend(isBetween);
 
-export const fromStateToBaseStorage = (
-  info: MigrationParams
-): BaseStorageParams => {
+export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams => {
+  const votingBlocks = 2 * info.votingSettings.votingBlocks || 0;
+  const proposalFlush = votingBlocks + info.votingSettings.proposalFlushBlocks || 0;
+  const expiryPeriod = proposalFlush + info.votingSettings.proposalExpiryBlocks || 0;
   const storageData = {
     adminAddress: info.orgSettings.administrator || "",
     governanceToken: {
@@ -21,9 +22,7 @@ export const fromStateToBaseStorage = (
     },
     guardian: info.orgSettings.guardian,
     extra: {
-      frozenScaleValue: new BigNumber(
-        info.votingSettings.proposeStakePercentage
-      ),
+      frozenScaleValue: new BigNumber(info.votingSettings.proposeStakePercentage),
       frozenExtraValue: new BigNumber(info.votingSettings.proposeStakeRequired),
       slashScaleValue: new BigNumber(info.votingSettings.frozenScaleValue),
       slashDivisionValue: new BigNumber(100),
@@ -38,24 +37,18 @@ export const fromStateToBaseStorage = (
     quorumChange: info.quorumSettings.quorumChange,
     quorumMaxChange: info.quorumSettings.quorumMaxChange,
 
-    proposalFlushPeriod: info.votingSettings.proposalFlushBlocks || 0,
-    proposalExpiryPeriod: info.votingSettings.proposalExpiryBlocks || 0,
+    proposalFlushPeriod: proposalFlush,
+    proposalExpiryPeriod: expiryPeriod,
   };
-
+  console.log('storageData', storageData);
   return storageData;
 };
 
-export const getContract = async (
-  tezos: TezosToolkit,
-  contractAddress: string
-) => {
+export const getContract = async (tezos: TezosToolkit, contractAddress: string) => {
   return await tezos.wallet.at(contractAddress, tzip16);
 };
 
-export const calculateCycleInfo = (
-  originationTime: string,
-  votingPeriod: number
-) => {
+export const calculateCycleInfo = (originationTime: string, votingPeriod: number) => {
   const current = dayjs().unix() - dayjs(originationTime).unix();
   const periodLeftPercentage = (current / votingPeriod) % 1;
   const timeLeftPercentage = votingPeriod * periodLeftPercentage;
