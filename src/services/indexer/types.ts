@@ -37,7 +37,6 @@ export interface DAODTO {
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
-  max_voters: string;
   min_quorum_threshold: string;
   period: string;
   proposal_expired_level: string;

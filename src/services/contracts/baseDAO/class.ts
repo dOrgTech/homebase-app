@@ -40,7 +40,6 @@ export interface BaseDAOData {
   max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
-  max_voters: string;
   min_quorum_threshold: string;
   period: string;
   proposal_expired_level: string;
@@ -130,6 +129,17 @@ export abstract class BaseDAO {
 
     return await contract.methods.drop_proposal(proposalId).send();
   };
+
+  public dropAllExpired = async (expiredProposalIds: string[], tezos: TezosToolkit) => {
+    const daoContract = await getContract(tezos, this.data.address);
+    const initialBatch = await tezos.wallet.batch()
+
+    const batch = expiredProposalIds.reduce((prev, current) => {
+      return prev.withContractCall(daoContract.methods.drop_proposal(current))
+    }, initialBatch)
+
+    return await batch.send();
+  }
 
   public sendXtz = async (xtzAmount: BigNumber, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address);
