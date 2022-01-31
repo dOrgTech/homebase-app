@@ -16,13 +16,17 @@ export const useProposeToTransferAll = () => {
     Error,
     { dao: BaseDAO, holdings: DAOHolding[], xtzBalance: BigNumber, recipient: string }>(
     async ({dao, holdings, recipient, xtzBalance}) => {
-      const transfers: TransferParams[] = holdings.map(holding => ({
-        type: "FA2" as const,
-        amount: holding.balance.toNumber(),
-        recipient,
-        asset: holding.token,
-      })).filter(transfer => !(transfer.asset.contract.toLowerCase() === dao.data.token.contract.toLowerCase()
-        && transfer.asset.token_id === dao.data.token.token_id))
+
+      const transfers: TransferParams[] = holdings
+        .filter(h => h.token.contract.toLowerCase() !== dao.data.token.contract.toLowerCase())
+        .map(holding => ({
+          type: "FA2" as const,
+          amount: holding.balance.toNumber(),
+          recipient,
+          asset: holding.token,
+        }))
+
+      console.log(transfers)
 
       if (xtzBalance.gt(new BigNumber(0))) {
         transfers.push({

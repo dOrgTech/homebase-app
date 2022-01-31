@@ -32,9 +32,10 @@ export const MigrationCreateStep: React.FC<{ onClick: (address: string) => void 
     const { data: dao } = useDAO(daoId);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_, updateCache] = useLocalStorage<MigrationParams>(CREATOR_LOCAL_STORAGE_KEY, INITIAL_STATE.data);
+    const [isCacheSet, setIsCacheSet] = useState(false);
 
   useEffect(() => {
-    if (dao) {
+    if (dao && !isCacheSet) {
       updateCache({
         template: dao.data.type,
         orgSettings: {
@@ -67,8 +68,10 @@ export const MigrationCreateStep: React.FC<{ onClick: (address: string) => void 
           quorumMaxChange: Number(dao.data.max_quorum_change) / 10000,
         },
       });
+
+      setIsCacheSet(true)
     }
-  }, [dao, updateCache]);
+  }, [dao, isCacheSet, updateCache]);
 
     return (
         <Grid container>
