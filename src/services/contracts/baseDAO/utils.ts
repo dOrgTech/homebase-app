@@ -10,9 +10,10 @@ import isBetween from "dayjs/plugin/isBetween";
 
 dayjs.extend(isBetween);
 
-export const fromStateToBaseStorage = (
-  info: MigrationParams
-): BaseStorageParams => {
+export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams => {
+  const proposalFlush = 2 * info.votingSettings.votingBlocks + info.votingSettings.proposalFlushBlocks;
+  const expiryPeriod = proposalFlush + info.votingSettings.proposalExpiryBlocks;
+
   return {
     adminAddress: info.orgSettings.administrator || "",
     governanceToken: {
@@ -34,22 +35,16 @@ export const fromStateToBaseStorage = (
     quorumChange: info.quorumSettings.quorumChange,
     quorumMaxChange: info.quorumSettings.quorumMaxChange,
 
-    proposalFlushPeriod: info.votingSettings.proposalFlushBlocks || 0,
-    proposalExpiryPeriod: info.votingSettings.proposalExpiryBlocks || 0,
+    proposalFlushPeriod: proposalFlush,
+    proposalExpiryPeriod: expiryPeriod,
   };
 };
 
-export const getContract = async (
-  tezos: TezosToolkit,
-  contractAddress: string
-) => {
+export const getContract = async (tezos: TezosToolkit, contractAddress: string) => {
   return await tezos.wallet.at(contractAddress, tzip16);
 };
 
-export const calculateCycleInfo = (
-  originationTime: string,
-  votingPeriod: number
-) => {
+export const calculateCycleInfo = (originationTime: string, votingPeriod: number) => {
   const current = dayjs().unix() - dayjs(originationTime).unix();
   const periodLeftPercentage = (current / votingPeriod) % 1;
   const timeLeftPercentage = votingPeriod * periodLeftPercentage;

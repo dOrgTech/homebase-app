@@ -1,9 +1,9 @@
-import {ContractAbstraction, TezosToolkit, TransactionWalletOperation, Wallet,} from "@taquito/taquito";
-import {DAOTemplate, MigrationParams} from "modules/creator/state";
-import {Network} from "services/beacon/context";
-import {ConfigProposalParams, fromStateToBaseStorage, getContract} from ".";
-import {MetadataDeploymentResult} from "../metadataCarrier/deploy";
-import {generateStorageContract} from "services/baseDAODocker";
+import { ContractAbstraction, TezosToolkit, TransactionWalletOperation, Wallet } from "@taquito/taquito";
+import { DAOTemplate, MigrationParams } from "modules/creator/state";
+import { Network } from "services/beacon/context";
+import { ConfigProposalParams, fromStateToBaseStorage, getContract } from ".";
+import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
+import { generateStorageContract } from "services/baseDAODocker";
 import baseDAOContractCode from "./michelson/baseDAO";
 import {formatUnits, xtzToMutez} from "../utils";
 import {BigNumber} from "bignumber.js";
@@ -26,6 +26,7 @@ export interface CycleInfo {
   blocksLeft: number;
   currentCycle: number;
   currentLevel: number;
+  timeEstimateForNextBlock: number;
   type: CycleType;
 }
 
@@ -56,7 +57,7 @@ export interface BaseDAOData {
   network: Network;
   extra: {
     frozen_extra_value: string;
-  }
+  };
 }
 
 export abstract class BaseDAO {
@@ -67,9 +68,7 @@ export abstract class BaseDAO {
     const treasuryParams = fromStateToBaseStorage(params);
 
     if (!metadata.deployAddress) {
-      throw new Error(
-        "Error deploying treasury DAO: There's not address of metadata"
-      );
+      throw new Error("Error deploying treasury DAO: There's not address of metadata");
     }
 
     const account = await tezos.wallet.pkh();
@@ -85,9 +84,9 @@ export abstract class BaseDAO {
       });
       console.log("Originating DAO contract...");
 
-      console.log(baseDAOContractCode)
-      console.log(treasuryParams)
-      console.log(storageCode)
+      console.log(baseDAOContractCode);
+      console.log(treasuryParams);
+      console.log(storageCode);
 
       const t = tezos.wallet.originate({
         code: baseDAOContractCode,
@@ -159,10 +158,7 @@ export abstract class BaseDAO {
             from: await tezos.wallet.pkh(),
             proposal_key: proposalKey,
             vote_type: support,
-            vote_amount: formatUnits(
-              amount,
-              this.data.token.decimals
-            ).toString(),
+            vote_amount: formatUnits(amount, this.data.token.decimals).toString(),
           },
         },
       ])
@@ -186,11 +182,7 @@ export abstract class BaseDAO {
           },
         ])
       )
-      .withContractCall(
-        daoContract.methods.freeze(
-          formatUnits(amount, tokenMetadata.decimals).toString()
-        )
-      )
+      .withContractCall(daoContract.methods.freeze(formatUnits(amount, tokenMetadata.decimals).toString()))
       .withContractCall(
         govTokenContract.methods.update_operators([
           {
@@ -235,8 +227,10 @@ export abstract class BaseDAO {
       configuration_proposal: {
         frozen_extra_value: configParams.frozen_extra_value,
         slash_scale_value: configParams.slash_scale_value
-      },
-    }, proposeCode, tezos)
+      }},
+      proposeCode,
+      tezos
+    );
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
@@ -250,9 +244,13 @@ export abstract class BaseDAO {
   public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {
     const contract = await getContract(tezos, this.data.address);
 
-    const proposalMetadata = await BaseDAO.encodeProposalMetadata({
-      update_guardian: newGuardianAddress,
-    }, proposeCode, tezos)
+    const proposalMetadata = await BaseDAO.encodeProposalMetadata(
+      {
+        update_guardian: newGuardianAddress,
+      },
+      proposeCode,
+      tezos
+    );
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
