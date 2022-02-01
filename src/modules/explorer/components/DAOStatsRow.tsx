@@ -9,7 +9,7 @@ import { useProposals } from "services/indexer/dao/hooks/useProposals";
 import BigNumber from "bignumber.js";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useDAOID } from "../pages/DAO/router";
-import { Countdown } from "./Countdown";
+import {useTimeLeftInCycle} from "../hooks/useTimeLeftInCycle";
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "42px 55px",
@@ -44,6 +44,7 @@ export const DAOStatsRow: React.FC = () => {
   const theme = useTheme();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
+  const { hours, minutes, days } = useTimeLeftInCycle()
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -109,19 +110,14 @@ export const DAOStatsRow: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <Typography color='secondary' variant='body1'>
-                    Blocks Left In Cycle
+                    Time Left In Cycle
                   </Typography>
-                  <Typography color='textPrimary' variant='h1'>
-                    {cycleInfo?.blocksLeft}
+                  <Typography color='textPrimary' variant='h2'>
+                    {days}d {hours}h {minutes}m ({cycleInfo?.blocksLeft} blocks)
                   </Typography>
                 </Grid>
               </Grid>
             </Grid>
-            {cycleInfo && (
-              <Grid item>
-                <Countdown cycleInfo={cycleInfo} />
-              </Grid>
-            )}
           </Grid>
         </StatsContainer>
         <StatsContainer item xs>

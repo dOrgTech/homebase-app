@@ -1,9 +1,15 @@
 import { Grid, Typography } from "@material-ui/core";
 import React from "react";
 
-export const EstimatedTime: React.FC<{ blockTimeAverage: number; blockQty: number }> = ({
-  blockTimeAverage,
-  blockQty,
+interface Props {
+  days: number | string;
+  hours: number | string;
+  minutes: number | string;
+}
+
+export const EstimatedTime: React.FC<Props> = ({
+  hours, days,
+  minutes
 }) => {
   return (
     <Grid container style={{ gap: 32}} wrap='nowrap'>
@@ -13,13 +19,13 @@ export const EstimatedTime: React.FC<{ blockTimeAverage: number; blockQty: numbe
         </Typography>
         <Grid style={{ display: "flex", marginTop: 2 }} wrap='nowrap'>
           <Typography color='textSecondary' variant='subtitle2' style={{ marginRight: 8 }}>
-            {Math.floor((blockTimeAverage * blockQty) / (3600 * 24))}d
+            {days}d
           </Typography>
           <Typography color='textSecondary' variant='subtitle2' style={{ marginRight: 8 }}>
-            {Math.floor(((blockTimeAverage * blockQty) % (3600 * 24)) / 3600)}h
+            {hours}h
           </Typography>
           <Typography color='textSecondary' variant='subtitle2' style={{ marginRight: 8 }}>
-            {Math.floor(((blockTimeAverage * blockQty) % 3600) / 60)}m
+            {minutes}m
           </Typography>
         </Grid>
       </Grid>

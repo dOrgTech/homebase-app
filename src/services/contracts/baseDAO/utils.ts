@@ -1,20 +1,20 @@
-import { TezosToolkit } from "@taquito/taquito";
-import { tzip16 } from "@taquito/tzip16";
-import { BigNumber } from "bignumber.js";
+import {TezosToolkit} from "@taquito/taquito";
+import {tzip16} from "@taquito/tzip16";
+import {BigNumber} from "bignumber.js";
 import dayjs from "dayjs";
-import { MigrationParams } from "modules/creator/state";
-import { CycleType } from ".";
-import { BaseStorageParams } from "./types";
-import { unpackDataBytes } from "@taquito/michel-codec";
+import {MigrationParams} from "modules/creator/state";
+import {CycleType} from ".";
+import {BaseStorageParams} from "./types";
+import {unpackDataBytes} from "@taquito/michel-codec";
 import isBetween from "dayjs/plugin/isBetween";
 
 dayjs.extend(isBetween);
 
 export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams => {
-  const votingBlocks = 2 * info.votingSettings.votingBlocks || 0;
-  const proposalFlush = votingBlocks + info.votingSettings.proposalFlushBlocks || 0;
-  const expiryPeriod = proposalFlush + info.votingSettings.proposalExpiryBlocks || 0;
-  const storageData = {
+  const proposalFlush = 2 * info.votingSettings.votingBlocks + info.votingSettings.proposalFlushBlocks;
+  const expiryPeriod = proposalFlush + info.votingSettings.proposalExpiryBlocks;
+
+  return {
     adminAddress: info.orgSettings.administrator || "",
     governanceToken: {
       address: info.orgSettings.governanceToken.address,
@@ -22,7 +22,6 @@ export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams
     },
     guardian: info.orgSettings.guardian,
     extra: {
-      frozenScaleValue: new BigNumber(info.votingSettings.proposeStakePercentage),
       frozenExtraValue: new BigNumber(info.votingSettings.proposeStakeRequired),
       slashScaleValue: new BigNumber(info.votingSettings.frozenScaleValue),
       slashDivisionValue: new BigNumber(100),
@@ -40,8 +39,6 @@ export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams
     proposalFlushPeriod: proposalFlush,
     proposalExpiryPeriod: expiryPeriod,
   };
-  
-  return storageData;
 };
 
 export const getContract = async (tezos: TezosToolkit, contractAddress: string) => {

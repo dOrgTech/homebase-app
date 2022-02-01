@@ -11,7 +11,7 @@ import { getNetworkStats } from "services/bakingBad/stats";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { EstimatedTime } from "modules/explorer/components/EstimatedTime";
 import { theme } from "../../../theme";
-import { getEstimatedTime } from "../../../services/time/calculateTime";
+import dayjs from "dayjs";
 
 const CustomTypography = styled(Typography)(({ theme }) => ({
   paddingBottom: 10,
@@ -149,31 +149,17 @@ const validateForm = (values: VotingSettings) => {
     }
   });
 
-  if (!values.votingBlocks) {
-    errors.votingBlocks = "Voting Period blocks cannot be 0";
+  if (!values.votingBlocks || Number(values.votingBlocks) <= 0) {
+    errors.votingBlocks = "Must be greater than 0";
   }
 
-  if (!values.proposalFlushBlocks) {
-    errors.proposalFlushBlocks = "Proposal Flush Delay blocks cannot be 0";
+  if (!values.proposalFlushBlocks || Number(values.proposalFlushBlocks) <= 0) {
+    errors.proposalFlushBlocks = "Must be greater than 0";
   }
 
-  if (!values.proposalExpiryBlocks) {
-    errors.proposalExpiryBlocks = "Proposal blocks to expire cannot be 0";
+  if (!values.proposalExpiryBlocks || Number(values.proposalExpiryBlocks) <= 0) {
+    errors.proposalExpiryBlocks = "Must be greater than 0";
   }
-
-//   if (
-//     values.votingBlocks !== undefined &&
-//     values.proposalFlushBlocks !== undefined &&
-//     values.proposalExpiryBlocks !== undefined
-//   ) {
-//     if (values.proposalFlushBlocks <= values.votingBlocks * 2) {
-//       errors.proposalFlushBlocks = "Must be more than double the Voting Period Duration";
-//     }
-
-//     if (values.proposalExpiryBlocks <= values.proposalFlushBlocks) {
-//       errors.proposalExpiryBlocks = "Must be greater than Proposal Flush Delay Duration";
-//     }
-//   }
 
   if (values.proposeStakeRequired <= 0) {
     errors.proposeStakeRequired = "Must be greater than 0";
@@ -190,7 +176,45 @@ const validateForm = (values: VotingSettings) => {
   return errors;
 };
 
-//TODO: Remove any from this component
+const secondsToTime = (seconds: number) => ({
+  days: Math.floor(seconds / (3600 * 24)),
+  hours: Math.floor((seconds % (3600 * 24)) / 3600),
+  minutes: Math.floor((seconds % 3600) / 60)
+})
+
+const useEstimatedBlockTimes = ({ votingBlocks,
+                                  proposalFlushBlocks,
+                                  proposalExpiryBlocks,
+                                  blockTimeAverage }: {
+  votingBlocks: number,
+  proposalFlushBlocks: number,
+  proposalExpiryBlocks: number,
+  blockTimeAverage: number
+}) => {
+  const now = dayjs();
+
+  const periodSeconds = votingBlocks * blockTimeAverage
+  const flushDelaySeconds = proposalFlushBlocks * blockTimeAverage
+  const expiryDelaySeconds = proposalExpiryBlocks * blockTimeAverage
+
+  const creationMoment = now.add(periodSeconds, 's')
+  const activeMoment = creationMoment.add(periodSeconds, 's')
+  const closeMoment = activeMoment.add(periodSeconds, 's')
+  const flushMoment = closeMoment.add(flushDelaySeconds, 's')
+  const expiryMoment = flushMoment.add(expiryDelaySeconds, 's')
+
+  return {
+    creationMoment,
+    activeMoment,
+    closeMoment,
+    flushMoment,
+    expiryMoment,
+    votingTime: secondsToTime(periodSeconds),
+    flushDelayTime: secondsToTime(flushDelaySeconds),
+    expiryDelayTime: secondsToTime(expiryDelaySeconds),
+  }
+}
+
 const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: any) => {
   const { network } = useTezos();
   const {
@@ -203,19 +227,21 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
   const history = useHistory();
   const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0);
   const { votingBlocks, proposalFlushBlocks, proposalExpiryBlocks } = values;
-  const initialProposalTime = getEstimatedTime();
-  const doubleVoting = votingBlocks && 2 * parseInt(votingBlocks);
-  const timeToCreateProposal = votingBlocks && getEstimatedTime(parseInt(votingBlocks) * blockTimeAverage);
-  const votingCloseTime = doubleVoting && getEstimatedTime(doubleVoting * blockTimeAverage);
-  const executableTime =
-    doubleVoting &&
-    proposalFlushBlocks &&
-    getEstimatedTime((doubleVoting + parseInt(proposalFlushBlocks)) * blockTimeAverage);
-  const expireProposalTime =
-    doubleVoting &&
-    proposalFlushBlocks &&
-    proposalExpiryBlocks &&
-    getEstimatedTime((doubleVoting + parseInt(proposalFlushBlocks) + parseInt(proposalFlushBlocks)) * blockTimeAverage);
+  const {
+    creationMoment,
+    closeMoment,
+    flushMoment,
+    expiryMoment,
+    votingTime,
+    flushDelayTime,
+    activeMoment,
+    expiryDelayTime,
+  } = useEstimatedBlockTimes({
+    votingBlocks,
+    proposalFlushBlocks,
+    proposalExpiryBlocks,
+    blockTimeAverage
+  })
 
   useEffect(() => {
     (async () => {
@@ -265,7 +291,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
                     type='number'
                     placeholder='00'
                     component={TextField}
-                    inputProps={{ min: 0 }}></Field>
+                    inputProps={{min: 0}}/>
                 </GridItemCenter>
                 <GridItemCenter item xs={6}>
                   <Typography color='textSecondary'>blocks</Typography>
@@ -274,8 +300,13 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
             </CustomInputContainer>
           </GridItemContainer>
 
+          <Grid item>
+            {errors.votingBlocks && touched.votingBlocks ?
+              <ErrorText>{errors.votingBlocks}</ErrorText> : null}
+          </Grid>
+
           <Grid item style={{ margin: "14px 15px", height: 62 }}>
-            <EstimatedTime blockTimeAverage={blockTimeAverage} blockQty={votingBlocks ? votingBlocks : 0} />
+            <EstimatedTime {...votingTime} />
           </Grid>
         </Grid>
         <Grid item style={{ marginRight: 15 }}>
@@ -304,10 +335,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
             </CustomInputContainer>
           </GridItemContainer>
 
+          <Grid item>
+            {errors.proposalFlushBlocks && touched.proposalFlushBlocks ?
+              <ErrorText>{errors.proposalFlushBlocks}</ErrorText> : null}
+          </Grid>
+
           <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
             <EstimatedTime
-              blockTimeAverage={blockTimeAverage}
-              blockQty={proposalFlushBlocks ? proposalFlushBlocks : 0}
+              {...flushDelayTime}
             />
           </Grid>
         </Grid>
@@ -338,10 +373,15 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
             </CustomInputContainer>
           </GridItemContainer>
 
+          <Grid item>
+            {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
+                <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
+            ) : null}
+          </Grid>
+
           <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
             <EstimatedTime
-              blockTimeAverage={blockTimeAverage}
-              blockQty={proposalExpiryBlocks ? proposalExpiryBlocks : 0}
+              {...expiryDelayTime}
             />
           </Grid>
         </Grid>
@@ -351,21 +391,25 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         <Typography color={"textSecondary"}>
           If Jane creates a DAO at{" "}
           <CustomSpan>
-            {initialProposalTime.dateHour} on {initialProposalTime.date}
+            {dayjs().format("HH:mm MM/DD")}
           </CustomSpan>
           , she will be able to create a proposal at{" "}
           <CustomSpan>
-            {timeToCreateProposal ? `${timeToCreateProposal.dateHour} on ${timeToCreateProposal.date}` : "-------"}
+            {creationMoment.format("HH:mm MM/DD")}
           </CustomSpan>
-          . Voting will close at{" "}
+          , and the DAO will vote on it from{" "}
           <CustomSpan>
-            {votingCloseTime ? `${votingCloseTime.dateHour} on ${votingCloseTime.date}` : "-------"}
+            {activeMoment.format("HH:mm MM/DD")}{" "}
+          </CustomSpan>
+           through{" "}
+          <CustomSpan>
+            {closeMoment.format("HH:mm MM/DD")}
           </CustomSpan>
           . If the proposal passes, it&apos;ll be executable at{" "}
-          <CustomSpan>{executableTime ? `${executableTime.dateHour} on ${executableTime.date}` : "-------"}</CustomSpan>{" "}
+          <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan>{" "}
           and will expire at{" "}
           <CustomSpan>
-            {expireProposalTime ? `${expireProposalTime.dateHour} on ${expireProposalTime.date}` : "-------"}
+            {expiryMoment.format("HH:mm MM/DD")}
           </CustomSpan>
         </Typography>
       </Grid>
@@ -442,7 +486,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         <AdditionContainer item xs={12} sm={4}>
           <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={5}>
-              <Field name='minXtzAmount' type='number' placeholder='00' component={TextField}></Field>
+              <Field name='minXtzAmount' type='number' placeholder='00' component={TextField}/>
             </GridItemCenter>
             <GridItemCenter item xs={7} container direction='row' justify='space-around'>
               <ValueText color='textSecondary'>Min. XTZ</ValueText>
@@ -456,7 +500,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         <AdditionContainer item xs={12} sm={4}>
           <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={5}>
-              <Field name='maxXtzAmount' type='number' placeholder='00' component={TextField}></Field>
+              <Field name='maxXtzAmount' type='number' placeholder='00' component={TextField}/>
             </GridItemCenter>
             <GridItemCenter item xs={7} container direction='row' justify='space-around'>
               <ValueText color='textSecondary'>Max. XTZ </ValueText>

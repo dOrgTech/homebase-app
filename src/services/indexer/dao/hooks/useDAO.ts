@@ -9,10 +9,12 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { TreasuryDAO, RegistryDAO, unpackExtraNumValue, CycleInfo } from "services/contracts/baseDAO";
 import { parseUnits } from "services/contracts/utils";
 import { getDAO } from "services/indexer/dao/services";
+import {useBlockchainInfo} from "../../../contracts/baseDAO/hooks/useBlockchainInfo";
 
 export const useDAO = (address: string) => {
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>();
   const { network } = useTezos();
+  const { data: blockchainInfo } = useBlockchainInfo();
   const {
     state: { block },
   } = useContext(TZKTSubscriptionsContext);
@@ -96,10 +98,9 @@ export const useDAO = (address: string) => {
 
   useEffect(() => {
     (async () => {
-      if (data) {
-        let blockTimeAverage = 0;
-        const blockchainInfo = await getNetworkStats(network);
-        blockchainInfo.time_between_blocks.forEach((time) => (blockTimeAverage = blockTimeAverage + time));
+      if (data && blockchainInfo) {
+        const blockTimeAverage = blockchainInfo.time_between_blocks
+          .reduce((prev, current) => prev + current, 0) / blockchainInfo.time_between_blocks.length;
         const blocksFromStart = block - data.data.start_level;
         const periodsFromStart = Math.floor(blocksFromStart / Number(data.data.period));
         const type = periodsFromStart % 2 == 0 ? "voting" : "proposing";
@@ -114,7 +115,7 @@ export const useDAO = (address: string) => {
         });
       }
     })();
-  }, [data, block, network]);
+  }, [data, blockchainInfo, block, network]);
 
   const ledgerWithBalances = useMemo(() => {
     if (data && cycleInfo) {
