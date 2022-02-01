@@ -25,6 +25,7 @@ If DAO currently has this parameter wrong it can be changed through a config pro
 - Returned tokens percentage when a proposal is rejected was being set incorrectly in the DAO creator, it is now fixed.
 If DAO currently has this parameter wrong it can be changed through a config proposal.
 - Proposal Fee now being properly displayed in Proposal forms
+- Proposal status was sometimes being shown incorrectly
 
 ## [1.0.6] - 2022-01-05
 ### Added
