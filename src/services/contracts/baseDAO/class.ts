@@ -221,6 +221,18 @@ export abstract class BaseDAO {
     return packed;
   }
 
+  public dropAllExpired = async (expiredProposalIds: string[], tezos: TezosToolkit) => {
+    const daoContract = await getContract(tezos, this.data.address);
+    const initialBatch = await tezos.wallet.batch()
+
+    const batch = expiredProposalIds.reduce((prev, current) => {
+      return prev.withContractCall(daoContract.methods.drop_proposal(current))
+    }, initialBatch)
+
+    return await batch.send();
+  }
+
+
   public async proposeConfigChange(configParams: ConfigProposalParams, tezos: TezosToolkit) {
     const contract = await getContract(tezos, this.data.address);
     const proposalMetadata = await BaseDAO.encodeProposalMetadata({
