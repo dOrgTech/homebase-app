@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useRef, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { Network } from "services/beacon/context";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import {networkNameMap} from "../index";
+import { networkNameMap } from "../index";
 
 interface State {
   block: number;
@@ -30,9 +30,7 @@ const TZKTSubscriptionsProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      socketRef.current = new HubConnectionBuilder()
-        .withUrl(getUrl(network))
-        .build();
+      socketRef.current = new HubConnectionBuilder().withUrl(getUrl(network)).build();
 
       await socketRef.current.start();
 
@@ -49,11 +47,7 @@ const TZKTSubscriptionsProvider: React.FC = ({ children }) => {
     };
   }, [network]);
 
-  return (
-    <TZKTSubscriptionsContext.Provider value={{ state: { block } }}>
-      {children}
-    </TZKTSubscriptionsContext.Provider>
-  );
+  return <TZKTSubscriptionsContext.Provider value={{ state: { block } }}>{children}</TZKTSubscriptionsContext.Provider>;
 };
 
 export { TZKTSubscriptionsProvider, TZKTSubscriptionsContext };

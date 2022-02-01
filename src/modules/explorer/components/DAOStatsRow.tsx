@@ -1,16 +1,7 @@
 import React, { useMemo } from "react";
 import { ReactComponent as VotingPeriodIcon } from "assets/logos/votingPeriod.svg";
 import ProgressBar from "react-customizable-progressbar";
-import {
-  Box,
-  Grid,
-  styled,
-  SvgIcon,
-  LinearProgress,
-  useTheme,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import { Box, Grid, styled, SvgIcon, LinearProgress, useTheme, Typography, useMediaQuery } from "@material-ui/core";
 import { ContentContainer } from "./ContentContainer";
 import { CycleDescription } from "./CycleDescription";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -18,12 +9,13 @@ import { useProposals } from "services/indexer/dao/hooks/useProposals";
 import BigNumber from "bignumber.js";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 import { useDAOID } from "../pages/DAO/router";
+import {useTimeLeftInCycle} from "../hooks/useTimeLeftInCycle";
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "42px 55px",
   [theme.breakpoints.down("xs")]: {
     padding: "42px 25px",
-    width: "100%"
+    width: "100%",
   },
 }));
 
@@ -52,6 +44,7 @@ export const DAOStatsRow: React.FC = () => {
   const theme = useTheme();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
+  const { hours, minutes, days } = useTimeLeftInCycle()
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -59,8 +52,7 @@ export const DAOStatsRow: React.FC = () => {
     }
 
     return ledger.reduce((acc, current) => {
-      const frozenBalance =
-        new BigNumber(current.total_balance) || new BigNumber(0);
+      const frozenBalance = new BigNumber(current.total_balance) || new BigNumber(0);
       return acc.plus(frozenBalance);
     }, new BigNumber(0));
   }, [ledger]);
@@ -75,28 +67,22 @@ export const DAOStatsRow: React.FC = () => {
 
   const totalTokens = amountLocked.plus(amountNotLocked);
 
-  const amountLockedPercentage = totalTokens
-    ? amountLocked.div(totalTokens).multipliedBy(100)
-    : new BigNumber(0);
+  const amountLockedPercentage = totalTokens ? amountLocked.div(totalTokens).multipliedBy(100) : new BigNumber(0);
 
   return (
     <Grid item>
-      <Grid container style={{ gap: isExtraSmall? 25: 47 }}>
+      <Grid container style={{ gap: isExtraSmall ? 25 : 47 }}>
         <StatsContainer item xs>
-          <Grid container direction="column" style={{ gap: 24 }}>
+          <Grid container direction='column' style={{ gap: 24 }}>
             <Grid item>
               <CycleDescription daoAddress={daoId} />
             </Grid>
             <Grid item>
-              <Grid container style={{ gap: 16 }} wrap="nowrap">
+              <Grid container style={{ gap: 16 }} wrap='nowrap'>
                 <Grid item>
                   <ProgressContainer>
                     <ProgressBar
-                      progress={
-                        data
-                          ? ((blocksLeft || 0) / Number(data.data.period)) * 100
-                          : 100
-                      }
+                      progress={data ? ((blocksLeft || 0) / Number(data.data.period)) * 100 : 100}
                       radius={24}
                       strokeWidth={4.5}
                       strokeColor={theme.palette.secondary.main}
@@ -106,28 +92,28 @@ export const DAOStatsRow: React.FC = () => {
                   </ProgressContainer>
                 </Grid>
                 <Grid item>
-                  <Typography color="secondary" variant="body1">
+                  <Typography color='secondary' variant='body1'>
                     Current Cycle
                   </Typography>
-                  <Typography color="textPrimary" variant="h1">
+                  <Typography color='textPrimary' variant='h1'>
                     {cycleInfo?.currentCycle}
                   </Typography>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item>
-              <Grid container style={{ gap: 32 }} wrap="nowrap">
+              <Grid container style={{ gap: 32 }} wrap='nowrap'>
                 <Grid item>
                   <IconContainer>
                     <VotingPeriodIcon />
                   </IconContainer>
                 </Grid>
                 <Grid item>
-                  <Typography color="secondary" variant="body1">
-                    Blocks Left In Cycle
+                  <Typography color='secondary' variant='body1'>
+                    Time Left In Cycle
                   </Typography>
-                  <Typography color="textPrimary" variant="h1">
-                    {cycleInfo?.blocksLeft}
+                  <Typography color='textPrimary' variant='h2'>
+                    {days}d {hours}h {minutes}m ({cycleInfo?.blocksLeft} blocks)
                   </Typography>
                 </Grid>
               </Grid>
@@ -135,25 +121,21 @@ export const DAOStatsRow: React.FC = () => {
           </Grid>
         </StatsContainer>
         <StatsContainer item xs>
-          <Grid container direction="column" style={{ gap: 37 }}>
+          <Grid container direction='column' style={{ gap: 37 }}>
             <Grid item>
-              <Grid container direction="column" style={{ gap: 10 }}>
+              <Grid container direction='column' style={{ gap: 10 }}>
                 <Grid item>
-                  <Typography color="secondary" variant="body1">
+                  <Typography color='secondary' variant='body1'>
                     {symbol} Locked
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography variant="h5" color="textPrimary">
+                  <Typography variant='h5' color='textPrimary'>
                     {amountLocked.dp(10).toString()}
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <LockedTokensBar
-                    variant="determinate"
-                    value={amountLockedPercentage.toNumber()}
-                    color="secondary"
-                  />
+                  <LockedTokensBar variant='determinate' value={amountLockedPercentage.toNumber()} color='secondary' />
                 </Grid>
               </Grid>
             </Grid>
@@ -161,38 +143,21 @@ export const DAOStatsRow: React.FC = () => {
               <Grid
                 container
                 style={{ gap: isExtraSmall ? 10 : 50 }}
-                wrap="nowrap"
-                justifyContent={isExtraSmall ? "space-between" : "flex-start"}
-              >
+                wrap='nowrap'
+                justifyContent={isExtraSmall ? "space-between" : "flex-start"}>
                 <Grid item>
-                  <Typography
-                    align={isExtraSmall ? "center" : "left"}
-                    color="secondary"
-                    variant="body1"
-                  >
+                  <Typography align={isExtraSmall ? "center" : "left"} color='secondary' variant='body1'>
                     Voting Addresses
                   </Typography>
-                  <Typography
-                    align={isExtraSmall ? "center" : "left"}
-                    variant="h5"
-                    color="textPrimary"
-                  >
+                  <Typography align={isExtraSmall ? "center" : "left"} variant='h5' color='textPrimary'>
                     {data?.data.ledger.length || "-"}
                   </Typography>
                 </Grid>
                 <Grid item>
-                  <Typography
-                    align={isExtraSmall ? "center" : "left"}
-                    color="secondary"
-                    variant="body1"
-                  >
+                  <Typography align={isExtraSmall ? "center" : "left"} color='secondary' variant='body1'>
                     Active Proposals
                   </Typography>
-                  <Typography
-                    align={isExtraSmall ? "center" : "left"}
-                    variant="h5"
-                    color="textPrimary"
-                  >
+                  <Typography align={isExtraSmall ? "center" : "left"} variant='h5' color='textPrimary'>
                     {activeProposals?.length}
                   </Typography>
                 </Grid>
