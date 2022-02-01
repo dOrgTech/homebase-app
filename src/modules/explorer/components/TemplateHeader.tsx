@@ -10,7 +10,7 @@ import { RectangleContainer } from "./styled/RectangleHeader";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 import { SendXTZDialog } from "./SendXTZDialog";
-import {useDAOID} from "../v2/pages/DAO/router";
+import {useDAOID} from "../pages/DAO/router";
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,

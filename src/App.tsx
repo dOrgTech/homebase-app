@@ -10,7 +10,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { Box, makeStyles, ThemeProvider } from "@material-ui/core";
 import { SnackbarProvider } from "notistack";
 
-import { DAOExplorerRouter } from "modules/explorer/v2/router";
+import { DAOExplorerRouter } from "modules/explorer/router";
 import { DAOCreate } from "modules/creator";
 import { CreatorProvider } from "modules/creator/state";
 import ScrollToTop from "modules/common/ScrollToTop";
@@ -20,7 +20,7 @@ import "App.css";
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions";
 import { Landing } from "modules/home/Landing";
 import { WarningFooter } from "modules/common/WarningFooter";
-import { ActionSheetProvider } from "modules/explorer/v2/context/ActionSheets";
+import { ActionSheetProvider } from "modules/explorer/context/ActionSheets";
 import { legacyTheme } from "theme/legacy";
 
 const queryClient = new QueryClient({

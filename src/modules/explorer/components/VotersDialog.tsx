@@ -20,7 +20,7 @@ import { TabPanel } from "./TabPanel";
 import { BigNumber } from "bignumber.js";
 import { useProposal } from "services/indexer/dao/hooks/useProposal";
 import { UserBadge } from "./UserBadge";
-import { ResponsiveDialog } from "../v2/components/ResponsiveDialog";
+import { ResponsiveDialog } from "./ResponsiveDialog";
 
 interface UpVotesDialogData {
   daoAddress: string;

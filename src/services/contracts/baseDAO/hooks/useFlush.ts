@@ -12,7 +12,7 @@ export const useFlush = () => {
   return useMutation<
     any | Error,
     Error,
-    { dao: BaseDAO; numOfProposalsToFlush: number }
+    { dao: BaseDAO; numOfProposalsToFlush: number, expiredProposalIds: string[] }
   >(
     async (params) => {
       const { key: flushNotification, closeSnackbar: closeFlushNotification } =
@@ -30,6 +30,7 @@ export const useFlush = () => {
 
         const data = await params.dao.flush(
           params.numOfProposalsToFlush,
+          params.expiredProposalIds,
           tezosToolkit
         );
         closeFlushNotification(flushNotification);
