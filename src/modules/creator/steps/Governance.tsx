@@ -75,11 +75,6 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const GridItemContainer = styled(Grid)(() => ({
-  display: "flex",
-  alignItems: "center",
-}));
-
 const ValueText = styled(Typography)({
   fontSize: 14,
 });
@@ -179,29 +174,31 @@ const validateForm = (values: VotingSettings) => {
 const secondsToTime = (seconds: number) => ({
   days: Math.floor(seconds / (3600 * 24)),
   hours: Math.floor((seconds % (3600 * 24)) / 3600),
-  minutes: Math.floor((seconds % 3600) / 60)
-})
+  minutes: Math.floor((seconds % 3600) / 60),
+});
 
-const useEstimatedBlockTimes = ({ votingBlocks,
-                                  proposalFlushBlocks,
-                                  proposalExpiryBlocks,
-                                  blockTimeAverage }: {
-  votingBlocks: number,
-  proposalFlushBlocks: number,
-  proposalExpiryBlocks: number,
-  blockTimeAverage: number
+const useEstimatedBlockTimes = ({
+  votingBlocks,
+  proposalFlushBlocks,
+  proposalExpiryBlocks,
+  blockTimeAverage,
+}: {
+  votingBlocks: number;
+  proposalFlushBlocks: number;
+  proposalExpiryBlocks: number;
+  blockTimeAverage: number;
 }) => {
   const now = dayjs();
 
-  const periodSeconds = votingBlocks * blockTimeAverage
-  const flushDelaySeconds = proposalFlushBlocks * blockTimeAverage
-  const expiryDelaySeconds = proposalExpiryBlocks * blockTimeAverage
+  const periodSeconds = votingBlocks * blockTimeAverage;
+  const flushDelaySeconds = proposalFlushBlocks * blockTimeAverage;
+  const expiryDelaySeconds = proposalExpiryBlocks * blockTimeAverage;
 
-  const creationMoment = now.add(periodSeconds, 's')
-  const activeMoment = creationMoment.add(periodSeconds, 's')
-  const closeMoment = activeMoment.add(periodSeconds, 's')
-  const flushMoment = closeMoment.add(flushDelaySeconds, 's')
-  const expiryMoment = flushMoment.add(expiryDelaySeconds, 's')
+  const creationMoment = now.add(periodSeconds, "s");
+  const activeMoment = creationMoment.add(periodSeconds, "s");
+  const closeMoment = activeMoment.add(periodSeconds, "s");
+  const flushMoment = closeMoment.add(flushDelaySeconds, "s");
+  const expiryMoment = flushMoment.add(expiryDelaySeconds, "s");
 
   return {
     creationMoment,
@@ -212,8 +209,8 @@ const useEstimatedBlockTimes = ({ votingBlocks,
     votingTime: secondsToTime(periodSeconds),
     flushDelayTime: secondsToTime(flushDelaySeconds),
     expiryDelayTime: secondsToTime(expiryDelaySeconds),
-  }
-}
+  };
+};
 
 const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: any) => {
   const { network } = useTezos();
@@ -240,8 +237,8 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
     votingBlocks,
     proposalFlushBlocks,
     proposalExpiryBlocks,
-    blockTimeAverage
-  })
+    blockTimeAverage,
+  });
 
   useEffect(() => {
     (async () => {
@@ -274,15 +271,15 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
 
   return (
     <>
-      <Grid container>
-        <Grid item style={{ marginRight: 15 }}>
+      <Grid container style={{ gap: 15 }}>
+        <Grid item>
           <SecondContainer container direction='row'>
             <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
               Voting Cycle Duration
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container alignItems='center'>
             <CustomInputContainer item xs={12}>
               <ItemContainer container direction='row' alignItems='center' justify='center'>
                 <GridItemCenter item xs={6}>
@@ -291,32 +288,31 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
                     type='number'
                     placeholder='00'
                     component={TextField}
-                    inputProps={{min: 0}}/>
+                    inputProps={{ min: 0 }}
+                  />
                 </GridItemCenter>
                 <GridItemCenter item xs={6}>
                   <Typography color='textSecondary'>blocks</Typography>
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </Grid>
 
           <Grid item>
-            {errors.votingBlocks && touched.votingBlocks ?
-              <ErrorText>{errors.votingBlocks}</ErrorText> : null}
+            {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
           </Grid>
 
-          <Grid item style={{ margin: "14px 15px", height: 62 }}>
-            <EstimatedTime {...votingTime} />
-          </Grid>
+          <EstimatedTime {...votingTime} />
         </Grid>
-        <Grid item style={{ marginRight: 15 }}>
+
+        <Grid item>
           <SecondContainer container direction='row'>
             <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
               Proposal Execution Delay
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container alignItems='center'>
             <CustomInputContainer item xs={12}>
               <ItemContainer container direction='row' alignItems='center' justify='center'>
                 <GridItemCenter item xs={6}>
@@ -333,28 +329,25 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </Grid>
 
           <Grid item>
-            {errors.proposalFlushBlocks && touched.proposalFlushBlocks ?
-              <ErrorText>{errors.proposalFlushBlocks}</ErrorText> : null}
+            {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
+              <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
+            ) : null}
           </Grid>
 
-          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
-            <EstimatedTime
-              {...flushDelayTime}
-            />
-          </Grid>
+          <EstimatedTime {...flushDelayTime} />
         </Grid>
 
-        <Grid item style={{ marginRight: 15 }}>
+        <Grid item>
           <SecondContainer container direction='row'>
             <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
               Proposal Expiration Threshold
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container alignItems='center'>
             <CustomInputContainer item xs={12}>
               <ItemContainer container direction='row' alignItems='center' justify='center'>
                 <GridItemCenter item xs={6}>
@@ -371,50 +364,30 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </Grid>
 
           <Grid item>
             {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
-                <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
+              <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
             ) : null}
           </Grid>
 
-          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
-            <EstimatedTime
-              {...expiryDelayTime}
-            />
-          </Grid>
+          <EstimatedTime {...expiryDelayTime} />
         </Grid>
       </Grid>
 
-      <Grid item style={{ margin: "24px 0" }}>
+      <SpacingContainer>
         <Typography color={"textSecondary"}>
-          If Jane creates a DAO at{" "}
-          <CustomSpan>
-            {dayjs().format("HH:mm MM/DD")}
-          </CustomSpan>
-          , she will be able to create a proposal at{" "}
-          <CustomSpan>
-            {creationMoment.format("HH:mm MM/DD")}
-          </CustomSpan>
-          , and the DAO will vote on it from{" "}
-          <CustomSpan>
-            {activeMoment.format("HH:mm MM/DD")}{" "}
-          </CustomSpan>
-           through{" "}
-          <CustomSpan>
-            {closeMoment.format("HH:mm MM/DD")}
-          </CustomSpan>
-          . If the proposal passes, it&apos;ll be executable at{" "}
-          <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan>{" "}
-          and will expire at{" "}
-          <CustomSpan>
-            {expiryMoment.format("HH:mm MM/DD")}
-          </CustomSpan>
+          If Jane creates a DAO at <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she will be able to create
+          a proposal at <CustomSpan>{creationMoment.format("HH:mm MM/DD")}</CustomSpan>, and the DAO will vote on it
+          from <CustomSpan>{activeMoment.format("HH:mm MM/DD")} </CustomSpan>
+          through <CustomSpan>{closeMoment.format("HH:mm MM/DD")}</CustomSpan>. If the proposal passes, it&apos;ll be
+          executable at <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan> and will expire at{" "}
+          <CustomSpan>{expiryMoment.format("HH:mm MM/DD")}</CustomSpan>
         </Typography>
-      </Grid>
+      </SpacingContainer>
 
-      <Grid item style={{ marginTop: 12 }}>
+      <SpacingContainer>
         <SecondContainer container direction='row'>
           <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
             Required Stake to Propose
@@ -449,7 +422,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
             <ErrorText>{errors.proposeStakeRequired || errors.proposeStakePercentage}</ErrorText>
           ) : null}
         </StakeContainer>
-      </Grid>
+      </SpacingContainer>
 
       <SecondContainer container direction='row'>
         <Typography style={styles.voting} variant='subtitle1' color='textSecondary'>
@@ -458,20 +431,18 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
 
         <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 14 }}>
           <GridNoPadding item xs={8} sm={9}>
-            <Field name="returnedTokenPercentage">
+            <Field name='returnedTokenPercentage'>
               {() => (
                 <StyledSlider
                   value={getIn(values, "returnedTokenPercentage")}
-                  onChange={(value: any, newValue: any) =>
-                    setFieldValue("returnedTokenPercentage", newValue || 0)
-                  }
+                  onChange={(value: any, newValue: any) => setFieldValue("returnedTokenPercentage", newValue || 0)}
                 />
               )}
             </Field>
           </GridNoPadding>
           <GridNoPadding item xs={4} sm={3}>
             <CustomSliderValue>
-              <Value variant="subtitle1" color="textSecondary">
+              <Value variant='subtitle1' color='textSecondary'>
                 {getIn(values, "returnedTokenPercentage")}%
               </Value>
             </CustomSliderValue>
@@ -488,7 +459,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         <AdditionContainer item xs={12} sm={4}>
           <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={5}>
-              <Field name='minXtzAmount' type='number' placeholder='00' component={TextField}/>
+              <Field name='minXtzAmount' type='number' placeholder='00' component={TextField} />
             </GridItemCenter>
             <GridItemCenter item xs={7} container direction='row' justify='space-around'>
               <ValueText color='textSecondary'>Min. XTZ</ValueText>
@@ -502,7 +473,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched }: 
         <AdditionContainer item xs={12} sm={4}>
           <ItemContainer container direction='row' alignItems='center' justify='center'>
             <GridItemCenter item xs={5}>
-              <Field name='maxXtzAmount' type='number' placeholder='00' component={TextField}/>
+              <Field name='maxXtzAmount' type='number' placeholder='00' component={TextField} />
             </GridItemCenter>
             <GridItemCenter item xs={7} container direction='row' justify='space-around'>
               <ValueText color='textSecondary'>Max. XTZ </ValueText>
