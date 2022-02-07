@@ -11,7 +11,7 @@ The following dependencies are required to run homebase-app:
 | Node       | `v12.18.4` or above |
 | Yarn       | `v1.22.*` or above  |
 
-# Third Party Services
+# Third Party Services 
 
 The following third party services are being used by Homebase:
 
