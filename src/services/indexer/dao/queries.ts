@@ -77,7 +77,6 @@ export const GET_DAO_QUERY = gql`
       max_proposals
       max_quorum_change
       max_quorum_threshold
-      max_voters
       min_quorum_threshold
       name
       network
@@ -158,13 +157,11 @@ export const GET_PROPOSALS_QUERY = gql`
         }
         votes {
           amount
-          hash
           holder {
             address
             id
           }
           id
-          key
           support
         }
       }
@@ -203,13 +200,11 @@ export const GET_PROPOSAL_QUERY = gql`
         }
         votes {
           amount
-          hash
           holder {
             address
             id
           }
           id
-          key
           support
         }
       }

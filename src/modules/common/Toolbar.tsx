@@ -24,7 +24,7 @@ import { Network } from "services/beacon/context";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
-import { NavigationMenu } from "modules/explorer/v2/components/NavigationMenu";
+import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
 
 const Header = styled(Grid)({
  padding: "28px 125px"

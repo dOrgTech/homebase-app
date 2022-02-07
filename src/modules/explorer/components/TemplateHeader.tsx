@@ -9,8 +9,7 @@ import {
 import { RectangleContainer } from "./styled/RectangleHeader";
 import { CopyAddress } from "modules/common/CopyAddress";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { SendXTZDialog } from "./SendXTZDialog";
-import {useDAOID} from "../v2/pages/DAO/router";
+import {useDAOID} from "../pages/DAO/router";
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -27,14 +26,10 @@ const CustomRectangleContainer = styled(RectangleContainer)(({ theme }) => ({
   },
 }));
 
-const StyledSendXTZContainer = styled(Grid)({
-  paddingTop: 10,
-});
-
 export const TemplateHeader: React.FC<{
   template: string;
   showSendXtz?: boolean;
-}> = ({ template, showSendXtz, children }) => {
+}> = ({ template, children }) => {
   const theme = useTheme();
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const daoId = useDAOID();
@@ -78,16 +73,6 @@ export const TemplateHeader: React.FC<{
               address={dao.data.address}
               justify={isMobileSmall ? "center" : "flex-start"}
             />
-          )}
-          {showSendXtz && (
-            <StyledSendXTZContainer
-              container
-              justify={isMobileSmall ? "center" : "flex-start"}
-            >
-              <Grid item>
-                <SendXTZDialog />
-              </Grid>
-            </StyledSendXTZContainer>
           )}
         </Grid>
       </CustomRectangleContainer>
