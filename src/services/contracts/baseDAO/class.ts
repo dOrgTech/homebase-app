@@ -227,7 +227,6 @@ export abstract class BaseDAO {
       data,
       type: michelsonType as Expr,
     });
-
     return packed;
   }
 
@@ -262,6 +261,26 @@ export abstract class BaseDAO {
       proposeCode,
       tezos
     );
+    const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposalMetadata
+    );
+
+    return await contractMethod.send();
+  }
+
+  public async proposeDelegationChange(newDelegationAddress: string, tezos: TezosToolkit) {
+    const contract = await getContract(tezos, this.data.address);
+
+    const proposalMetadata = await BaseDAO.encodeProposalMetadata(
+      {
+        update_contract_delegate: newDelegationAddress,
+      },
+      proposeCode,
+      tezos
+    );
+    
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
