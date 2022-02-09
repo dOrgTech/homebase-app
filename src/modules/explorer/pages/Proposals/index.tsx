@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import {Grid, styled, Typography, Button, Tooltip} from "@material-ui/core";
+import { Grid, styled, Typography, Button, Tooltip } from "@material-ui/core";
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
@@ -12,10 +12,10 @@ import { ProposalsList } from "../../components/ProposalsList";
 import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
 // import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
-import {InfoIcon} from "../../components/styled/InfoIcon";
-import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
-import {ProposalSelectionMenu} from "../../components/ProposalSelectionMenu";
-import {useDropAllExpired} from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired";
+import { InfoIcon } from "../../components/styled/InfoIcon";
+import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
+import { ProposalSelectionMenu } from "../../components/ProposalSelectionMenu";
+import { useDropAllExpired } from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired";
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 45px",
@@ -43,7 +43,7 @@ export const Proposals: React.FC = () => {
       mutate({
         dao: data,
         numOfProposalsToFlush: executableProposals.length,
-        expiredProposalIds: expiredProposals.map(p => p.id)
+        expiredProposalIds: expiredProposals.map((p) => p.id),
       });
       return;
     }
@@ -53,7 +53,7 @@ export const Proposals: React.FC = () => {
     if (expiredProposals && expiredProposals.length && data) {
       dropAllExpired({
         dao: data,
-        expiredProposalIds: expiredProposals.map(p => p.id)
+        expiredProposalIds: expiredProposals.map((p) => p.id),
       });
       return;
     }
@@ -69,65 +69,49 @@ export const Proposals: React.FC = () => {
 
   return (
     <>
-      <Grid container direction="column" style={{ gap: 42 }}>
+      <Grid container direction='column' style={{ gap: 42 }}>
         <HeroContainer item>
-          <Grid container justifyContent="space-between">
+          <Grid container justifyContent='space-between'>
             <Grid item>
-              <Grid container style={{ gap: 20 }} alignItems="center">
+              <Grid container style={{ gap: 20 }} alignItems='center'>
                 <Grid item>
-                  <TitleText color="textPrimary">Proposals</TitleText>
+                  <TitleText color='textPrimary'>Proposals</TitleText>
                 </Grid>
                 <Grid item>
                   <Button
-                    variant="contained"
-                    color="secondary"
-                    size="small"
+                    variant='contained'
+                    color='secondary'
+                    size='small'
                     onClick={onFlush}
-                    disabled={!executableProposals || !executableProposals.length}
-                  >
+                    disabled={!executableProposals || !executableProposals.length}>
                     Execute
                   </Button>
-                  <Tooltip
-                    placement="bottom"
-                    title="Execute all passed proposals and drop all expired or rejected"
-                  >
-                    <InfoIcon color="secondary" />
+                  <Tooltip placement='bottom' title='Execute all passed proposals and drop all expired or rejected'>
+                    <InfoIcon color='secondary' />
                   </Tooltip>
                 </Grid>
                 <Grid item>
                   <Button
-                    variant="contained"
-                    color="secondary"
-                    size="small"
+                    variant='contained'
+                    color='secondary'
+                    size='small'
                     onClick={onDropAllExpired}
-                    disabled={!expiredProposals || !expiredProposals.length}
-                  >
+                    disabled={!expiredProposals || !expiredProposals.length}>
                     Drop All Expired
                   </Button>
-                  <Tooltip
-                    placement="bottom"
-                    title="Drop all expired proposals"
-                  >
-                    <InfoIcon color="secondary" />
+                  <Tooltip placement='bottom' title='Drop all expired proposals'>
+                    <InfoIcon color='secondary' />
                   </Tooltip>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleProposalModal}
-                disabled={shouldDisable}
-              >
+              <Button variant='contained' color='secondary' onClick={handleProposalModal} disabled={shouldDisable}>
                 New Proposal
               </Button>
               {shouldDisable && (
-                <Tooltip
-                  placement="bottom"
-                  title="Not on proposal creation period"
-                >
-                  <InfoIcon color="secondary" />
+                <Tooltip placement='bottom' title='Not on proposal creation period'>
+                  <InfoIcon color='secondary' />
                 </Tooltip>
               )}
             </Grid>
@@ -137,26 +121,18 @@ export const Proposals: React.FC = () => {
         <UserBalancesBox daoId={daoId} />
 
         {data && cycleInfo && activeProposals && (
-          <ProposalsList
-            title={"Active Proposals"}
-            currentLevel={cycleInfo.currentLevel}
-            proposals={activeProposals}
-          />
+          <ProposalsList title={"Active Proposals"} currentLevel={cycleInfo.currentLevel} proposals={activeProposals} />
         )}
 
         {data && cycleInfo && proposals && (
-          <ProposalsList
-            title={"All Proposals"}
-            currentLevel={cycleInfo.currentLevel}
-            proposals={proposals}
-          />
+          <ProposalsList title={"All Proposals"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
         )}
       </Grid>
       {/*<ProposalFormContainer*/}
       {/*  open={openModal}*/}
       {/*  handleClose={onCloseModal}*/}
       {/*/>*/}
-      <ProposalSelectionMenu open={openModal} handleClose={onCloseModal}/>
+      <ProposalSelectionMenu open={openModal} handleClose={onCloseModal} daoType={data && data.data.dao_type.name} />
     </>
   );
 };

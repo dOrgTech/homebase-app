@@ -1,18 +1,22 @@
-import {TezosToolkit} from "@taquito/taquito";
-import {Schema} from "@taquito/michelson-encoder";
-import {Expr, Parser} from "@taquito/michel-codec";
-import {BaseDAO, BaseDAOData, getContract} from "..";
-import {TreasuryProposeArgs} from "./types";
+import { TezosToolkit } from "@taquito/taquito";
+import { Schema } from "@taquito/michelson-encoder";
+import { Expr, Parser } from "@taquito/michel-codec";
+import { BaseDAO, BaseDAOData, getContract } from "..";
+import { TreasuryProposeArgs } from "./types";
 import proposeCode from "./michelson/propose";
-import {TreasuryExtraDTO} from "services/indexer/types";
-import {mapTransfersArgs} from "services/indexer/dao/mappers/proposal";
-import {BigNumber} from "bignumber.js";
-import {formatUnits} from "../../utils";
+import { TreasuryExtraDTO } from "services/indexer/types";
+import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import { BigNumber } from "bignumber.js";
+import { formatUnits } from "../../utils";
 
 const parser = new Parser();
 
 interface TreasuryDAOData extends BaseDAOData {
   extra: TreasuryExtraDTO;
+  dao_type: {
+    id: number;
+    name: string;
+  };
 }
 
 export class TreasuryDAO extends BaseDAO {
@@ -20,13 +24,11 @@ export class TreasuryDAO extends BaseDAO {
     super(data);
 
     this.data.extra.returnedPercentage = new BigNumber(100)
-      .minus(new BigNumber(this.data.extra.slash_scale_value)).toString();
+      .minus(new BigNumber(this.data.extra.slash_scale_value))
+      .toString();
   }
 
-  public propose = async (
-    { agoraPostId, transfers }: TreasuryProposeArgs,
-    tezos: TezosToolkit
-  ) => {
+  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address);
 
     const michelsonType = parser.parseData(proposeCode);
