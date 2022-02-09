@@ -2,7 +2,7 @@
 [![](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 
 Homebase is a platform designed to let users create and manage DAOs on the Tezos blockchain.
-
+ 
 # Prequisites
 The following dependencies are required to run homebase-app:
 

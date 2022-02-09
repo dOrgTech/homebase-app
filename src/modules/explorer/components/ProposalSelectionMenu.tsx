@@ -1,9 +1,5 @@
 /* eslint-disable react/display-name */
-import {
-  Grid,
-  styled,
-  Button,
-} from "@material-ui/core";
+import { Grid, styled, Button, Typography } from "@material-ui/core";
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog";
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog";
 import React, { useState } from "react";
@@ -12,8 +8,9 @@ import { NFTTransferFormValues } from "./NFTTransfer";
 import { useDAOID } from "../pages/DAO/router";
 import { ProposalFormContainer } from "./ProposalForm";
 import { ConfigProposalForm } from "./ConfigProposalForm";
-import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
 import { ResponsiveDialog } from "./ResponsiveDialog";
+import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
+
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -28,7 +25,7 @@ type Values = {
 export type ProposalFormDefaultValues = RecursivePartial<Values>;
 
 const Content = styled(Grid)({
-  padding: "54px 54px 0 54px",
+  padding: "0 25px",
 });
 
 interface Props {
@@ -43,52 +40,45 @@ enum ProposalModalKey {
   registry,
 }
 
-const enabledOptions = {
-  registry: [
-    {
-      name: "Change DAO configuration",
-      key: ProposalModalKey.config,
-    },
-    {
-      name: "Update Guardian",
-      key: ProposalModalKey.guardian,
-    },
-    {
-      name: "Transfer funds/tokens/NFTs",
-      key: ProposalModalKey.transfer,
-    },
-    {
-      name: "Update registry",
-      key: ProposalModalKey.registry,
-    },
-  ],
-  treasury: [
-    {
-      name: "Change DAO configuration",
-      key: ProposalModalKey.config,
-    },
-    {
-      name: "Update Guardian",
-      key: ProposalModalKey.guardian,
-    },
-    {
-      name: "Transfer funds/tokens/NFTs",
-      key: ProposalModalKey.transfer,
-    },
-  ],
-};
+// const enabledOptions = {
+//   registry: [
+//     {
+//       name: "Change DAO configuration",
+//       key: ProposalModalKey.config,
+//     },
+//     {
+//       name: "Update Guardian",
+//       key: ProposalModalKey.guardian,
+//     },
+//     {
+//       name: "Transfer funds/tokens/NFTs",
+//       key: ProposalModalKey.transfer,
+//     },
+//     {
+//       name: "Update registry",
+//       key: ProposalModalKey.registry,
+//     },
+//   ],
+//   treasury: [
+//     {
+//       name: "Change DAO configuration",
+//       key: ProposalModalKey.config,
+//     },
+//     {
+//       name: "Update Guardian",
+//       key: ProposalModalKey.guardian,
+//     },
+//     {
+//       name: "Transfer funds/tokens/NFTs",
+//       key: ProposalModalKey.transfer,
+//     },
+//   ],
+// };
 
-export const ProposalSelectionMenu: React.FC<Props> = ({
-  open,
-  handleClose,
-}) => {
+export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID();
   const { data: dao } = useDAO(daoId);
   const [openModal, setOpenModal] = useState<ProposalModalKey>();
-  const options =
-    dao?.data.type === "registry"
-      ? enabledOptions.registry
-      : enabledOptions.treasury;
 
   const handleOptionSelected = (key: ProposalModalKey) => {
     setOpenModal(key);
@@ -101,39 +91,51 @@ export const ProposalSelectionMenu: React.FC<Props> = ({
 
   return (
     <>
-      <ResponsiveDialog
-        open={open}
-        onClose={handleClose}
-      >
+      <ResponsiveDialog open={open} onClose={handleClose} title={"Add New Proposal"}>
         {dao && (
           <>
-            <Content container style={{ gap: 42 }}>
-              {options.map((option, i) => (
-                <Grid item key={`modal-option-${i}`}>
+            <Content container direction={"column"} style={{ gap: 32 }}>
+              <Grid item>
+                <Typography variant={"body1"} color={"textPrimary"}>
+                  Which proposal would you like to create?
+                </Typography>
+              </Grid>
+              <Grid container justifyContent='center' direction={"column"}>
+                <Button
+                  variant={"contained"}
+                  color={"secondary"}
+                  style={{ marginBottom: 20 }}
+                  onClick={() => handleOptionSelected(ProposalModalKey.transfer)}>
+                  Assets / Registry
+                </Button>
+
+                {dao.data.type === "registry" && (
                   <Button
-                    color={"secondary"}
                     variant={"contained"}
-                    onClick={() => handleOptionSelected(option.key)}
-                  >
-                    {option.name}
+                    color={"secondary"}
+                    style={{ marginBottom: 20 }}
+                    onClick={() => handleOptionSelected(ProposalModalKey.config)}>
+                    Configuration
                   </Button>
-                </Grid>
-              ))}
+                )} 
+
+                <Button
+                  variant={"contained"}
+                  color={"secondary"}
+                  style={{ marginBottom: 20 }}
+                  onClick={() => handleOptionSelected(ProposalModalKey.guardian)}>
+                  Change Guardian
+                </Button>
+              </Grid>
             </Content>
           </>
         )}
       </ResponsiveDialog>
       <ProposalFormContainer
-        open={
-          ProposalModalKey.transfer === openModal ||
-          ProposalModalKey.registry === openModal
-        }
+        open={ProposalModalKey.transfer === openModal || ProposalModalKey.registry === openModal}
         handleClose={() => handleCloseModal()}
       />
-      <ConfigProposalForm
-        open={ProposalModalKey.config === openModal}
-        handleClose={() => handleCloseModal()}
-      />
+      <ConfigProposalForm open={ProposalModalKey.config === openModal} handleClose={() => handleCloseModal()} />
       <GuardianChangeProposalForm
         open={ProposalModalKey.guardian === openModal}
         handleClose={() => handleCloseModal()}

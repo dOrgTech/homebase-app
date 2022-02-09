@@ -81,7 +81,6 @@ export interface MemberTokenAllocation {
 export interface BaseExtraState {
   frozenExtraValue: BigNumber;
   slashScaleValue: BigNumber;
-  slashDivisionValue: BigNumber;
   maxXtzAmount: BigNumber;
   minXtzAmount: BigNumber;
 }

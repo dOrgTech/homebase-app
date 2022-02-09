@@ -15,7 +15,6 @@ export interface GeneratorArgs {
   quorum_threshold: string
   min_xtz_amount: string
   max_xtz_amount: string
-  max_voters: string;
   guardian_address: string
   min_quorum: string;
   max_quorum: string;

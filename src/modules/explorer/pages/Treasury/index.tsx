@@ -15,7 +15,6 @@ import {useDAOID} from "../DAO/router";
 import {BalancesTable} from "./components/BalancesTable";
 import {TransfersTable} from "./components/TransfersTable";
 import {useTransfers} from "../../../../services/contracts/baseDAO/hooks/useTransfers";
-import {SendXTZDialog} from "../../components/SendXTZDialog";
 import {InfoIcon} from "../../components/styled/InfoIcon";
 import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 
@@ -69,10 +68,7 @@ export const Treasury: React.FC = () => {
             )}
           </Grid>
           <Grid item>
-            <Grid container style={{gap: 18}}>
-              <Grid item>
-                <SendXTZDialog/>
-              </Grid>
+            <Grid container>
               <Grid item>
                 <Button
                   variant="contained"

@@ -61,17 +61,20 @@ export const DAO: React.FC = () => {
   const name = data && data.data.name;
   const description = data && data.data.description;
 
-  const { data: proposals } = useProposals(daoId, ProposalStatus.ACTIVE);
+  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
+  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE);
+  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED);
 
   const onFlush = useCallback(async () => {
-    if (proposals && proposals.length && data) {
+    if (executableProposals && expiredProposals && executableProposals.length && data) {
       mutate({
         dao: data,
-        numOfProposalsToFlush: proposals.length + 1,
+        numOfProposalsToFlush: executableProposals.length,
+        expiredProposalIds: expiredProposals.map(p => p.id)
       });
       return;
     }
-  }, [data, mutate, proposals]);
+  }, [data, mutate, expiredProposals, executableProposals]);
 
   const usersTableData = useMemo(() => {
     if (!ledger || !cycleInfo || !data) {
@@ -106,6 +109,7 @@ export const DAO: React.FC = () => {
                   color="secondary"
                   size={isExtraSmall ? "small" : "medium"}
                   onClick={onFlush}
+                  disabled={!executableProposals || !executableProposals.length}
                 >
                   Execute
                 </ExecuteButton>
@@ -128,12 +132,12 @@ export const DAO: React.FC = () => {
       <UserBalancesBox daoId={daoId} />
       <DAOStatsRow />
 
-      {data && cycleInfo && proposals && (
+      {data && cycleInfo && activeProposals && (
         <ProposalsList
           showFooter
           title="Active Proposals"
           currentLevel={cycleInfo.currentLevel}
-          proposals={proposals}
+          proposals={activeProposals}
         />
       )}
       <TableContainer item>

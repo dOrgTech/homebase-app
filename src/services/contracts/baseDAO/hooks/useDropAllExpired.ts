@@ -4,7 +4,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { BaseDAO } from "..";
 import {networkNameMap} from "../../../bakingBad";
 
-export const useFlush = () => {
+export const useDropAllExpired = () => {
   const queryClient = useQueryClient();
   const openNotification = useNotification();
   const { network, tezos, account, connect } = useTezos();
@@ -12,12 +12,12 @@ export const useFlush = () => {
   return useMutation<
     any | Error,
     Error,
-    { dao: BaseDAO; numOfProposalsToFlush: number, expiredProposalIds: string[] }
-  >(
+    { dao: BaseDAO; expiredProposalIds: string[] }
+    >(
     async (params) => {
-      const { key: flushNotification, closeSnackbar: closeFlushNotification } =
+      const { key: dropNotification, closeSnackbar: closeFlushNotification } =
         openNotification({
-          message: "Please sign the transaction to flush",
+          message: "Please sign the transaction to drop all expired proposals",
           persist: true,
           variant: "info",
         });
@@ -28,12 +28,11 @@ export const useFlush = () => {
           tezosToolkit = await connect();
         }
 
-        const data = await params.dao.flush(
-          params.numOfProposalsToFlush,
+        const data = await params.dao.dropAllExpired(
           params.expiredProposalIds,
           tezosToolkit
         );
-        closeFlushNotification(flushNotification);
+        closeFlushNotification(dropNotification);
 
         await data.confirmation(1);
         openNotification({
@@ -45,7 +44,7 @@ export const useFlush = () => {
 
         return data;
       } catch (e) {
-        closeFlushNotification(flushNotification);
+        closeFlushNotification(dropNotification);
         openNotification({
           message: "An error has happened with execute transaction!",
           variant: "error",
