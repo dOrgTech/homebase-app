@@ -54,10 +54,6 @@ export abstract class Proposal {
   proposer: string;
   period: number;
   proposerFrozenTokens: string;
-  dao_type!: {
-    id: number;
-    name: "treasury" | "registry";
-  };
   indexer_status_history: {
     timestamp: string;
     description: IndexerStatus;

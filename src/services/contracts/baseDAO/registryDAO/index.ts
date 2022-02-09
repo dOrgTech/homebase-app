@@ -14,10 +14,6 @@ const parser = new Parser();
 
 interface RegistryDAOData extends BaseDAOData {
   extra: RegistryExtraDTO;
-  dao_type: {
-    id: number;
-    name: string;
-  };
 }
 
 interface RegistryItemDTO {

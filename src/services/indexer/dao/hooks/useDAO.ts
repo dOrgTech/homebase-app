@@ -57,7 +57,6 @@ export const useDAO = (address: string) => {
           };
         }),
         type: dao.dao_type.name,
-        dao_type: dao.dao_type,
         extra:
           dao.dao_type.name === "registry"
             ? ({

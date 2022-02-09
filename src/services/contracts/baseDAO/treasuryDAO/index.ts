@@ -13,10 +13,6 @@ const parser = new Parser();
 
 interface TreasuryDAOData extends BaseDAOData {
   extra: TreasuryExtraDTO;
-  dao_type: {
-    id: number;
-    name: string;
-  };
 }
 
 export class TreasuryDAO extends BaseDAO {

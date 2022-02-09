@@ -11,6 +11,7 @@ import { ConfigProposalForm } from "./ConfigProposalForm";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
 
+
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
 };
@@ -30,7 +31,6 @@ const Content = styled(Grid)({
 interface Props {
   open: boolean;
   handleClose: () => void;
-  daoType?: string;
 }
 
 enum ProposalModalKey {
@@ -75,7 +75,7 @@ enum ProposalModalKey {
 //   ],
 // };
 
-export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose, daoType }) => {
+export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID();
   const { data: dao } = useDAO(daoId);
   const [openModal, setOpenModal] = useState<ProposalModalKey>();
@@ -109,7 +109,7 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose, daoT
                   Assets / Registry
                 </Button>
 
-                {daoType === "registry" && (
+                {dao.data.type === "registry" && (
                   <Button
                     variant={"contained"}
                     color={"secondary"}
@@ -117,7 +117,7 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose, daoT
                     onClick={() => handleOptionSelected(ProposalModalKey.config)}>
                     Configuration
                   </Button>
-                )}
+                )} 
 
                 <Button
                   variant={"contained"}

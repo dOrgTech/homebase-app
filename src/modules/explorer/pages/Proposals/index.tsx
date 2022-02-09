@@ -132,7 +132,7 @@ export const Proposals: React.FC = () => {
       {/*  open={openModal}*/}
       {/*  handleClose={onCloseModal}*/}
       {/*/>*/}
-      <ProposalSelectionMenu open={openModal} handleClose={onCloseModal} daoType={data && data.data.dao_type.name} />
+      <ProposalSelectionMenu open={openModal} handleClose={onCloseModal} />
     </>
   );
 };
