@@ -3,7 +3,7 @@ import React from "react";
 import { Header } from "./Header";
 import { ContentContainer } from "../explorer/components/ContentContainer";
 import { FAQItem } from "./FAQItem";
-import { FAQ_LIST } from "./FAQList";
+import { useGenerateFAQ } from "./hooks/useGenerateFAQ";
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "100%",
@@ -25,6 +25,7 @@ const TextBlock = styled(ContentContainer)({
 export const FAQ: React.FC = () => {
   const theme = useTheme();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const faqList = useGenerateFAQ();
 
   return (
     <PageContainer>
@@ -51,7 +52,7 @@ export const FAQ: React.FC = () => {
           </Typography>
         </TextBlock>
 
-        {FAQ_LIST.map(({ question, answer }, i) => (
+        {faqList.map(({ question, answer }, i) => (
           <FAQItem key={`question-${i}`} question={question} answer={answer} />
         ))}
       </Grid>

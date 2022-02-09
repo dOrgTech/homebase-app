@@ -12,7 +12,6 @@ const MarkdownParagraph = (props: { children: ReactNode }) => {
 };
 
 const MarkdownLink = (props: any) => {
-  console.log(props);
   return (
     <Link target='_blank' color='secondary' underline='always' href={props.href}>
       {props.children}
