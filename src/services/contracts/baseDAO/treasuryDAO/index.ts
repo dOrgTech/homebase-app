@@ -1,11 +1,13 @@
-import { TezosToolkit } from "@taquito/taquito";
-import { Schema } from "@taquito/michelson-encoder";
-import { Parser, Expr } from "@taquito/michel-codec";
-import { BaseDAO, BaseDAOData, getContract } from "..";
-import { TreasuryProposeArgs } from "./types";
+import {TezosToolkit} from "@taquito/taquito";
+import {Schema} from "@taquito/michelson-encoder";
+import {Expr, Parser} from "@taquito/michel-codec";
+import {BaseDAO, BaseDAOData, getContract} from "..";
+import {TreasuryProposeArgs} from "./types";
 import proposeCode from "./michelson/propose";
-import { TreasuryExtraDTO } from "services/indexer/types";
-import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import {TreasuryExtraDTO} from "services/indexer/types";
+import {mapTransfersArgs} from "services/indexer/dao/mappers/proposal";
+import {BigNumber} from "bignumber.js";
+import {formatUnits} from "../../utils";
 
 const parser = new Parser();
 
@@ -16,6 +18,9 @@ interface TreasuryDAOData extends BaseDAOData {
 export class TreasuryDAO extends BaseDAO {
   constructor(public data: TreasuryDAOData) {
     super(data);
+
+    this.data.extra.returnedPercentage = new BigNumber(100)
+      .minus(new BigNumber(this.data.extra.slash_scale_value)).toString();
   }
 
   public propose = async (
@@ -40,11 +45,10 @@ export class TreasuryDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      this.data.extra.frozen_extra_value,
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     );
 
-    const result = await contractMethod.send();
-    return result;
+    return await contractMethod.send();
   };
 }

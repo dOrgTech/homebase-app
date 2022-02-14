@@ -10,8 +10,8 @@ import {
 import {useFreeze} from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
 import {useDAO} from "services/indexer/dao/hooks/useDAO";
-import {ResponsiveDialog} from "../v2/components/ResponsiveDialog";
-import {useDAOID} from "../v2/pages/DAO/router";
+import {ResponsiveDialog} from "./ResponsiveDialog";
+import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
 
 const CustomDialog = styled(ResponsiveDialog)({

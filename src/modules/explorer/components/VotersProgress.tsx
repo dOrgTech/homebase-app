@@ -14,7 +14,7 @@ import {useVotesStats} from "../hooks/useVotesStats";
 import BigNumber from "bignumber.js";
 import {useProposal} from "services/indexer/dao/hooks/useProposal";
 import {Proposal} from "services/indexer/dao/mappers/proposal/types";
-import {VotesDetailDialog} from "../v2/components/VotesDetailDialog";
+import {VotesDetailDialog} from "./VotesDetailDialog";
 
 interface VotersData {
   showButton: boolean;
