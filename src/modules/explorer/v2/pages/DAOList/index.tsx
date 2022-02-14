@@ -16,7 +16,6 @@ import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs";
 import { ConnectMessage } from "./components/ConnectMessage";
 import { DAOItem } from "./components/DAOItem";
 import { SearchInput } from "./components/Searchbar";
-import hexToRgba from "hex-to-rgba";
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "100%",

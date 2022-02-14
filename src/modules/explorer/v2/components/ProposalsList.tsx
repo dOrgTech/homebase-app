@@ -7,7 +7,6 @@ import { Proposal } from "services/indexer/dao/mappers/proposal/types";
 import { ContentContainer } from "./ContentContainer";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import hexToRgba from "hex-to-rgba";
 
 const TableContainer = styled(ContentContainer)({
   width: "100%",
