@@ -1,15 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Box, Button, Grid, styled, Typography } from "@material-ui/core";
 import { theme } from "../../../theme";
 import { useDAOID } from "../pages/DAO/router";
 import { useDAO } from "../../../services/indexer/dao/hooks/useDAO";
-import useLocalStorage from "../../common/hooks/useLocalStorage";
-import { CREATOR_LOCAL_STORAGE_KEY, INITIAL_STATE, MigrationParams } from "../../creator/state";
 import { useDAOHoldings } from "../../../services/contracts/baseDAO/hooks/useDAOHoldings";
 import { useTezosBalance } from "../../../services/contracts/baseDAO/hooks/useTezosBalance";
 import { useProposeToTransferAll } from "../../../services/contracts/baseDAO/hooks/useProposeToTransferAll";
-import { mutezToXtz } from "../../../services/contracts/utils";
-import BigNumber from "bignumber.js";
 
 const SpanStyled = styled("span")({
   color: theme.palette.secondary.main,

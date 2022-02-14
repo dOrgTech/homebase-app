@@ -1,18 +1,16 @@
-import {TezosToolkit} from "@taquito/taquito";
-import {tzip16} from "@taquito/tzip16";
-import {BigNumber} from "bignumber.js";
+import { TezosToolkit } from "@taquito/taquito";
+import { tzip16 } from "@taquito/tzip16";
+import { BigNumber } from "bignumber.js";
 import dayjs from "dayjs";
-import {MigrationParams} from "modules/creator/state";
-import {CycleType} from ".";
-import {BaseStorageParams} from "./types";
-import {unpackDataBytes} from "@taquito/michel-codec";
+import { MigrationParams } from "modules/creator/state";
+import { CycleType, TransferParams } from ".";
+import { BaseStorageParams } from "./types";
+import { unpackDataBytes } from "@taquito/michel-codec";
 import isBetween from "dayjs/plugin/isBetween";
 
 dayjs.extend(isBetween);
 
-export const fromStateToBaseStorage = (
-  info: MigrationParams
-): BaseStorageParams => {
+export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams => {
   return {
     adminAddress: info.orgSettings.administrator || "",
     governanceToken: {
@@ -38,17 +36,11 @@ export const fromStateToBaseStorage = (
   };
 };
 
-export const getContract = async (
-  tezos: TezosToolkit,
-  contractAddress: string
-) => {
+export const getContract = async (tezos: TezosToolkit, contractAddress: string) => {
   return await tezos.wallet.at(contractAddress, tzip16);
 };
 
-export const calculateCycleInfo = (
-  originationTime: string,
-  votingPeriod: number
-) => {
+export const calculateCycleInfo = (originationTime: string, votingPeriod: number) => {
   const current = dayjs().unix() - dayjs(originationTime).unix();
   const periodLeftPercentage = (current / votingPeriod) % 1;
   const timeLeftPercentage = votingPeriod * periodLeftPercentage;
@@ -64,4 +56,17 @@ export const calculateCycleInfo = (
 
 export const unpackExtraNumValue = (bytes: string): BigNumber => {
   return new BigNumber((unpackDataBytes({ bytes }) as { int: string }).int);
+};
+
+const MAX_ITEMS_IN_PROPOSAL = 15;
+
+export const splitTransferParams = (transfers: TransferParams[]): TransferParams[][] => {
+  const groups = transfers
+    .map((_item: TransferParams, index: number) => {
+      return index % MAX_ITEMS_IN_PROPOSAL === 0 ? transfers.slice(index, index + MAX_ITEMS_IN_PROPOSAL) : null;
+    })
+    .filter((item) => {
+      return item;
+    });
+  return groups as TransferParams[][];
 };
