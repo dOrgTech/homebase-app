@@ -264,7 +264,6 @@ export class RegistryProposal extends Proposal {
       const schema = new Schema(micheline as Expr);
 
       const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
-
       const proposalMetadataDTO: PMRegistryProposal = schema.Execute(unpackedMetadata);
 
       values = { ...values, ...getBaseMetadata(proposalMetadataDTO) };

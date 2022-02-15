@@ -8,7 +8,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { TreasuryDAO, RegistryDAO, unpackExtraNumValue, CycleInfo } from "services/contracts/baseDAO";
 import { parseUnits } from "services/contracts/utils";
 import { getDAO } from "services/indexer/dao/services";
-import {useBlockchainInfo} from "../../../contracts/baseDAO/hooks/useBlockchainInfo";
+import { useBlockchainInfo } from "../../../contracts/baseDAO/hooks/useBlockchainInfo";
 
 export const useDAO = (address: string) => {
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>();
@@ -61,45 +61,27 @@ export const useDAO = (address: string) => {
           dao.dao_type.name === "registry"
             ? ({
                 ...dao.registry_extras[0],
-                frozen_extra_value: parseUnits(unpackExtraNumValue(
-                  (dao.registry_extras[0] as any).frozen_extra_value
-                ), dao.token.decimals),
-                frozen_scale_value: unpackExtraNumValue(
-                  (dao.registry_extras[0] as any).frozen_scale_value
+                frozen_extra_value: parseUnits(
+                  unpackExtraNumValue((dao.registry_extras[0] as any).frozen_extra_value),
+                  dao.token.decimals
                 ),
-                slash_division_value: unpackExtraNumValue(
-                  (dao.registry_extras[0] as any).slash_division_value
-                ),
-                min_xtz_amount: unpackExtraNumValue(
-                  (dao.registry_extras[0] as any).min_xtz_amount
-                ),
-                max_xtz_amount: unpackExtraNumValue(
-                  (dao.registry_extras[0] as any).max_xtz_amount
-                ),
-                slash_scale_value: unpackExtraNumValue(
-                  (dao.registry_extras[0] as any).slash_scale_value
-                ),
+                frozen_scale_value: unpackExtraNumValue((dao.registry_extras[0] as any).frozen_scale_value),
+                slash_division_value: unpackExtraNumValue((dao.registry_extras[0] as any).slash_division_value),
+                min_xtz_amount: unpackExtraNumValue((dao.registry_extras[0] as any).min_xtz_amount),
+                max_xtz_amount: unpackExtraNumValue((dao.registry_extras[0] as any).max_xtz_amount),
+                slash_scale_value: unpackExtraNumValue((dao.registry_extras[0] as any).slash_scale_value),
               } as any)
             : ({
                 ...dao.treasury_extras[0],
-                frozen_extra_value: parseUnits(unpackExtraNumValue(
-                  (dao.treasury_extras[0] as any).frozen_extra_value
-                ), dao.token.decimals),
-                frozen_scale_value: unpackExtraNumValue(
-                  (dao.treasury_extras[0] as any).frozen_scale_value
+                frozen_extra_value: parseUnits(
+                  unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_extra_value),
+                  dao.token.decimals
                 ),
-                slash_division_value: unpackExtraNumValue(
-                  (dao.treasury_extras[0] as any).slash_division_value
-                ),
-                min_xtz_amount: unpackExtraNumValue(
-                  (dao.treasury_extras[0] as any).min_xtz_amount
-                ),
-                max_xtz_amount: unpackExtraNumValue(
-                  (dao.treasury_extras[0] as any).max_xtz_amount
-                ),
-                slash_scale_value: unpackExtraNumValue(
-                  (dao.treasury_extras[0] as any).slash_scale_value
-                ),
+                frozen_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_scale_value),
+                slash_division_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_division_value),
+                min_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).min_xtz_amount),
+                max_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).max_xtz_amount),
+                slash_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_scale_value),
               } as any),
         quorum_threshold: parseUnits(new BigNumber(dao.quorum_threshold), dao.token.decimals),
       };
@@ -122,8 +104,9 @@ export const useDAO = (address: string) => {
   useEffect(() => {
     (async () => {
       if (data && blockchainInfo) {
-        const blockTimeAverage = blockchainInfo.time_between_blocks
-          .reduce((prev: number, current: number) => prev + current, 0) / blockchainInfo.time_between_blocks.length;
+        const blockTimeAverage =
+          blockchainInfo.time_between_blocks.reduce((prev: number, current: number) => prev + current, 0) /
+          blockchainInfo.time_between_blocks.length;
         const blocksFromStart = block - data.data.start_level;
         const periodsFromStart = Math.floor(blocksFromStart / Number(data.data.period));
         const type = periodsFromStart % 2 == 0 ? "voting" : "proposing";

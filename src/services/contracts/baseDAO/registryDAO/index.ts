@@ -1,14 +1,14 @@
-import {Expr, Parser, unpackDataBytes} from "@taquito/michel-codec";
-import {TezosToolkit} from "@taquito/taquito";
-import {Schema} from "@taquito/michelson-encoder";
-import {BaseDAO, BaseDAOData, getContract} from "..";
-import {RegistryProposeArgs} from "./types";
-import {bytes2Char, char2Bytes} from "@taquito/tzip16";
+import { Expr, Parser, unpackDataBytes } from "@taquito/michel-codec";
+import { TezosToolkit } from "@taquito/taquito";
+import { Schema } from "@taquito/michelson-encoder";
+import { BaseDAO, BaseDAOData, getContract } from "..";
+import { RegistryProposeArgs } from "./types";
+import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
-import {RegistryExtraDTO} from "services/indexer/types";
-import {mapTransfersArgs} from "services/indexer/dao/mappers/proposal";
-import {BigNumber} from "bignumber.js";
-import {formatUnits} from "../../utils";
+import { RegistryExtraDTO } from "services/indexer/types";
+import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import { BigNumber } from "bignumber.js";
+import { formatUnits } from "../../utils";
 
 const parser = new Parser();
 
@@ -75,13 +75,12 @@ export class RegistryDAO extends BaseDAO {
 
     this.decoded = {
       decodedRegistry: mapStorageRegistryList(this.data.extra.registry),
-      decodedRegistryAffected: mapStorageRegistryAffectedList(
-        this.data.extra.registry_affected
-      ),
+      decodedRegistryAffected: mapStorageRegistryAffectedList(this.data.extra.registry_affected),
     };
 
     this.data.extra.returnedPercentage = new BigNumber(100)
-      .minus(new BigNumber(this.data.extra.slash_scale_value)).toString();
+      .minus(new BigNumber(this.data.extra.slash_scale_value))
+      .toString();
   }
 
   public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {
@@ -130,14 +129,8 @@ export class RegistryDAO extends BaseDAO {
 
     const dataToEncode = {
       transfer_proposal: {
-        transfers: mapTransfersArgs(
-          transfer_proposal.transfers,
-          this.data.address
-        ),
-        registry_diff: transfer_proposal.registry_diff.map((item) => [
-          char2Bytes(item.key),
-          char2Bytes(item.value),
-        ]),
+        transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
+        registry_diff: transfer_proposal.registry_diff.map((item) => [char2Bytes(item.key), char2Bytes(item.value)]),
         agora_post_id: agoraPostId,
       },
     };
