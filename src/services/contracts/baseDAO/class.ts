@@ -252,25 +252,7 @@ export abstract class BaseDAO {
     return await contractMethod.send();
   }
 
-  public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {
-    const contract = await getContract(tezos, this.data.address);
-
-    const proposalMetadata = await BaseDAO.encodeProposalMetadata(
-      {
-        update_guardian: newGuardianAddress,
-      },
-      proposeCode,
-      tezos
-    );
-
-    const contractMethod = contract.methods.propose(
-      await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata
-    );
-
-    return await contractMethod.send();
-  }
-
+  public abstract proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit): Promise<TransactionWalletOperation>
+  public abstract proposeDelegationChange(newGuardianAddress: string, tezos: TezosToolkit): Promise<TransactionWalletOperation>
   public abstract propose(...args: any[]): Promise<TransactionWalletOperation>;
 }
