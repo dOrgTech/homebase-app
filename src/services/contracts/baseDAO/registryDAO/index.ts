@@ -120,34 +120,40 @@ export class RegistryDAO extends BaseDAO {
     const michelsonType = parser.parseData(proposeCode);
     const schema = new Schema(michelsonType as Expr);
     let batch = await tezos.wallet.batch();
-    const dataToEncode = {
-      transfer_proposal: {
-        registry_diff: transfer_proposal.registry_diff.map((item) => [char2Bytes(item.key), char2Bytes(item.value)]),
-        agora_post_id: agoraPostId,
-      },
-    };
-    const data = schema.Encode(dataToEncode);
-    const { packed: proposalMetadata } = await tezos.rpc.packData({
-      data,
-      type: michelsonType as Expr,
-    });
-    batch.withContractCall(
-      contract.methods.propose(await tezos.wallet.pkh(), this.data.extra.frozen_extra_value, proposalMetadata)
-    );
-    for await (const transfers of transfer_proposal.transfersBatches) {
-      const data = schema.Encode({
+    if (transfer_proposal.registry_diff.length) {
+      const dataToEncode = {
         transfer_proposal: {
+          registry_diff: transfer_proposal.registry_diff.map((item) => [char2Bytes(item.key), char2Bytes(item.value)]),
           agora_post_id: agoraPostId,
-          transfers: mapTransfersArgs(transfers, this.data.address),
+          transfers: [],
         },
-      });
+      };
+      const data = schema.Encode(dataToEncode);
       const { packed: proposalMetadata } = await tezos.rpc.packData({
         data,
         type: michelsonType as Expr,
       });
-      batch = await batch.withContractCall(
+      batch.withContractCall(
         contract.methods.propose(await tezos.wallet.pkh(), this.data.extra.frozen_extra_value, proposalMetadata)
       );
+    }
+    if (transfer_proposal.transfersBatches.length && transfer_proposal.transfersBatches[0].length) {
+      for await (const transfers of transfer_proposal.transfersBatches) {
+        const data = schema.Encode({
+          transfer_proposal: {
+            registry_diff: [],
+            agora_post_id: agoraPostId,
+            transfers: mapTransfersArgs(transfers, this.data.address),
+          },
+        });
+        const { packed: proposalMetadata } = await tezos.rpc.packData({
+          data,
+          type: michelsonType as Expr,
+        });
+        batch = await batch.withContractCall(
+          contract.methods.propose(await tezos.wallet.pkh(), this.data.extra.frozen_extra_value, proposalMetadata)
+        );
+      }
     }
     return await batch.send();
   };
