@@ -1,14 +1,14 @@
-import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
-import { TezosToolkit } from "@taquito/taquito";
-import { Schema } from "@taquito/michelson-encoder";
-import { BaseDAOData, getContract } from "..";
-import { BaseDAO } from "..";
-import { RegistryBatchProposeArgs, RegistryProposeArgs } from "./types";
-import { bytes2Char, char2Bytes } from "@taquito/tzip16";
+import {Expr, Parser, unpackDataBytes} from "@taquito/michel-codec";
+import {TezosToolkit} from "@taquito/taquito";
+import {Schema} from "@taquito/michelson-encoder";
+import {BaseDAO, BaseDAOData, getContract} from "..";
+import {RegistryBatchProposeArgs, RegistryProposeArgs} from "./types";
+import {bytes2Char, char2Bytes} from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
-import { RegistryExtraDTO } from "services/indexer/types";
-import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
-import { BigNumber } from "bignumber.js";
+import {RegistryExtraDTO} from "services/indexer/types";
+import {mapTransfersArgs} from "services/indexer/dao/mappers/proposal";
+import {BigNumber} from "bignumber.js";
+import {formatUnits} from "../../utils";
 
 const parser = new Parser();
 
@@ -106,13 +106,11 @@ export class RegistryDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      this.data.extra.frozen_extra_value,
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     );
 
-    const result = await contractMethod.send();
-
-    return result;
+    return await contractMethod.send();
   };
 
   public batchPropose = async ({ agoraPostId, transfer_proposal }: RegistryBatchProposeArgs, tezos: TezosToolkit) => {

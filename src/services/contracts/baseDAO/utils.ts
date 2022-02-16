@@ -11,6 +11,9 @@ import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(isBetween);
 
 export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams => {
+  const proposalFlush = 2 * info.votingSettings.votingBlocks + info.votingSettings.proposalFlushBlocks;
+  const expiryPeriod = proposalFlush + info.votingSettings.proposalExpiryBlocks;
+
   return {
     adminAddress: info.orgSettings.administrator || "",
     governanceToken: {
@@ -31,8 +34,8 @@ export const fromStateToBaseStorage = (info: MigrationParams): BaseStorageParams
     quorumChange: info.quorumSettings.quorumChange,
     quorumMaxChange: info.quorumSettings.quorumMaxChange,
 
-    proposalFlushPeriod: info.votingSettings.proposalFlushBlocks || 0,
-    proposalExpiryPeriod: info.votingSettings.proposalExpiryBlocks || 0,
+    proposalFlushPeriod: proposalFlush,
+    proposalExpiryPeriod: expiryPeriod,
   };
 };
 

@@ -8,7 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migration tool for V2 contracts
 - Sending XTZ directly to DAO address
 - Delegating DAO's XTZ to baker
+
+## [1.0.7] - 2022-01-31
+### Added
 - Changing DAO configuration parameters
+- Drop all expired proposals button
+- Human-readable time estimates for cycle duration
+
+### Changed
+- Execute button now automatically drops all expired proposals and executes proposals in batch, no need to manually drop expired proposals anymore.
+- In the DAO creator, the cycle and voting settings are now friendlier
+
+### Fixed
+- Proposal fee being set incorrectly in the DAO creator now fixed.
+If DAO currently has this parameter wrong it can be changed through a config proposal.
+- Returned tokens percentage when a proposal is rejected was being set incorrectly in the DAO creator, it is now fixed.
+If DAO currently has this parameter wrong it can be changed through a config proposal.
+- Proposal Fee now being properly displayed in Proposal forms
+- Proposal status was sometimes being shown incorrectly
 
 ## [1.0.6] - 2022-01-05
 ### Added

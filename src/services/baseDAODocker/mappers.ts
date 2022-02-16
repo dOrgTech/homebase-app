@@ -1,5 +1,5 @@
 import { BaseStorageParams } from "services/contracts/baseDAO";
-import { xtzToMutez } from "services/contracts/utils";
+import {formatUnits, xtzToMutez} from "services/contracts/utils";
 import { GeneratorArgs } from "./types";
 import { char2Bytes } from '@taquito/tzip16';
 import { MetadataDeploymentResult } from 'services/contracts/metadataCarrier/deploy';
@@ -14,7 +14,7 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   max_proposal_size: `2500n`,
   slash_division_value: `100n`,
   slash_scale_value: `${storage.extra.slashScaleValue.toFixed()}n`,
-  frozen_extra_value: `${storage.extra.frozenExtraValue.toFixed()}n`,
+  frozen_extra_value: `${formatUnits(storage.extra.frozenExtraValue, token.decimals).toFixed()}n`,
   frozen_scale_value: '0n',
   metadata_map: formatMetadata(metadata),
   quorum_threshold: `${storage.quorumThreshold.toFixed()}n`,
@@ -26,8 +26,8 @@ export const storageParamsToBaseDAODockerArgs = (storage: BaseStorageParams, met
   proposal_expired_level: `${storage.proposalExpiryPeriod}n`,
   governance_total_supply: `${token.supply.toFixed()}n`,
   period: `${storage.votingPeriod}n`,
-  max_voters: `${token.supply.toFixed()}n`,
   start_level: '100n',
+  max_voters: `${token.supply.toFixed()}n`,
   min_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.minXtzAmount)).toFixed()}mutez`,
   max_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.maxXtzAmount)).toFixed()}mutez`,
 })

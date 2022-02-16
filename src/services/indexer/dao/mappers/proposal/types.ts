@@ -48,6 +48,7 @@ export abstract class Proposal {
   upVotes: BigNumber;
   downVotes: BigNumber;
   startLevel: number;
+  votingPeriodNum: number;
   startDate: string;
   quorumThreshold: BigNumber;
   proposer: string;
@@ -82,6 +83,7 @@ export abstract class Proposal {
     this.type = dao.data.type;
     this.id = dto.key;
     this.dao = dao;
+    this.votingPeriodNum = Number(dto.voting_stage_num);
     this.voters = dto.votes.map((vote) => ({
       address: vote.holder.address,
       value: parseUnits(new BigNumber(vote.amount), this.dao.data.token.decimals),
@@ -119,9 +121,7 @@ export abstract class Proposal {
 
   public getStatus(currentLevel: number) {
     if (!this.cachedStatus || currentLevel !== this.cachedStatus.level) {
-      const activeThreshold =
-        Math.floor((this.startLevel + Number(this.dao.data.period)) / Number(this.dao.data.period)) *
-        Number(this.dao.data.period);
+      const activeThreshold = this.votingPeriodNum * Number(this.dao.data.period) + this.dao.data.start_level;
 
       const passedOrRejectedThreshold = activeThreshold + Number(this.dao.data.period);
 
