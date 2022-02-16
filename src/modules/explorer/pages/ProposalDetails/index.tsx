@@ -34,6 +34,7 @@ import {XTZTransferBadge} from "../../components/XTZTransferBadge";
 import {InfoIcon} from "../../components/styled/InfoIcon";
 import {GuardianTransferBadge} from "modules/explorer/components/GuardianTransferBadge";
 import {useUnstakeVotes} from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes";
+import {useTezos} from "../../../../services/beacon/hooks/useTezos";
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px",
@@ -105,10 +106,12 @@ export const ProposalDetails: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const {mutate: dropProposal} = useDropProposal();
   const {data: holdings} = useDAOHoldings(daoId);
+  const { account } = useTezos()
   const canDropProposal = useCanDropProposal(daoId, proposalId);
   const {data: agoraPost} = useAgoraTopic(
     Number(proposal?.metadata?.agoraPostId)
   );
+
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
   const { mutate: mutateUnstake } = useUnstakeVotes()
 
@@ -164,8 +167,10 @@ export const ProposalDetails: React.FC = () => {
     proposal?.getStatus(cycleInfo.currentLevel).status ===
     ProposalStatus.ACTIVE;
 
-  const canUnstakeVotes = cycleInfo && (proposal?.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
-    proposal?.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED)
+  const canUnstakeVotes = cycleInfo && proposal && account &&
+    (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
+    proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
+    proposal.voters.some(({ address }) => address.toLowerCase() === account.toLowerCase())
 
   return (
     <>
