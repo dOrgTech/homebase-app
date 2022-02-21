@@ -31,7 +31,6 @@ export const MigrationTransferStep: React.FC<{ newDaoAddress: string; onComplete
     const onClickTransfer = async () => {
       if (dao && xtzBalance) {
         try {
-            });
           await proposeToTransferAll({
             dao,
             recipient: newDaoAddress,
