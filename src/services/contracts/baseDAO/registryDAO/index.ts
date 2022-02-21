@@ -1,14 +1,14 @@
-import {Expr, Parser, unpackDataBytes} from "@taquito/michel-codec";
-import {TezosToolkit} from "@taquito/taquito";
-import {Schema} from "@taquito/michelson-encoder";
-import {BaseDAO, BaseDAOData, getContract} from "..";
-import {RegistryBatchProposeArgs, RegistryProposeArgs} from "./types";
-import {bytes2Char, char2Bytes} from "@taquito/tzip16";
+import { Expr, Parser, unpackDataBytes } from "@taquito/michel-codec";
+import { TezosToolkit } from "@taquito/taquito";
+import { Schema } from "@taquito/michelson-encoder";
+import { BaseDAO, BaseDAOData, getContract } from "..";
+import { RegistryBatchProposeArgs, RegistryProposeArgs } from "./types";
+import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
-import {RegistryExtraDTO} from "services/indexer/types";
-import {mapTransfersArgs} from "services/indexer/dao/mappers/proposal";
-import {BigNumber} from "bignumber.js";
-import {formatUnits} from "../../utils";
+import { RegistryExtraDTO } from "services/indexer/types";
+import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import { BigNumber } from "bignumber.js";
+import { formatUnits } from "../../utils";
 
 const parser = new Parser();
 
@@ -132,7 +132,11 @@ export class RegistryDAO extends BaseDAO {
         type: michelsonType as Expr,
       });
       batch.withContractCall(
-        contract.methods.propose(await tezos.wallet.pkh(), this.data.extra.frozen_extra_value, proposalMetadata)
+        contract.methods.propose(
+          await tezos.wallet.pkh(),
+          formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+          proposalMetadata
+        )
       );
     }
     if (transfer_proposal.transfersBatches.length && transfer_proposal.transfersBatches[0].length) {
@@ -149,7 +153,11 @@ export class RegistryDAO extends BaseDAO {
           type: michelsonType as Expr,
         });
         batch = await batch.withContractCall(
-          contract.methods.propose(await tezos.wallet.pkh(), this.data.extra.frozen_extra_value, proposalMetadata)
+          contract.methods.propose(
+            await tezos.wallet.pkh(),
+            formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+            proposalMetadata
+          )
         );
       }
     }

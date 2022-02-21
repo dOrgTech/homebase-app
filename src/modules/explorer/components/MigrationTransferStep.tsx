@@ -27,21 +27,22 @@ export const MigrationTransferStep: React.FC<{ newDaoAddress: string; onComplete
 
     const { nftHoldings, tokenHoldings } = useDAOHoldings(daoId);
     const { data: xtzBalance } = useTezosBalance(daoId);
-    const { mutate: proposeToTransferAll } = useProposeToTransferAll();
-
-    const onClickTransfer = () => {
+    const { mutateAsync: proposeToTransferAll } = useProposeToTransferAll();
+    const onClickTransfer = async () => {
       if (dao && xtzBalance) {
         try {
-          new Promise(() => {
-            proposeToTransferAll({
-              dao,
-              recipient: newDaoAddress,
-              holdings: [...tokenHoldings, ...nftHoldings],
-              xtzBalance,
             });
-          }).then(() => onComplete());
+          await proposeToTransferAll({
+            dao,
+            recipient: newDaoAddress,
+            holdings: [...tokenHoldings, ...nftHoldings],
+            xtzBalance,
+          }).then(() => {
+            onComplete();
+          });
         } catch (error) {
           onError();
+          return;
         }
       }
     };

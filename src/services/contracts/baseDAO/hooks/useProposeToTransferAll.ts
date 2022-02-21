@@ -35,7 +35,17 @@ export const useProposeToTransferAll = () => {
       });
     }
 
-    const splitterTransfer = splitTransferParams(transfers);
+    const checkTransfers = transfers.filter((transfer) => {
+      if (transfer.type === "FA2" && dao.data.address && dao.data.token) {
+        if (dao.data.token.token_id !== transfer.asset.token_id) {
+          return transfer;
+        }
+      } else {
+        return transfer;
+      }
+    });
+
+    const splitterTransfer = splitTransferParams(checkTransfers);
 
     try {
       if ((dao as BaseDAO).data.type === "treasury") {
@@ -59,7 +69,6 @@ export const useProposeToTransferAll = () => {
         });
       }
     } catch (e) {
-      console.error(e);
       return new Error((e as Error).message);
     }
   });

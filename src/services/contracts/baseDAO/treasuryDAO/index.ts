@@ -1,13 +1,13 @@
-import {TezosToolkit} from "@taquito/taquito";
-import {Schema} from "@taquito/michelson-encoder";
-import {Expr, Parser} from "@taquito/michel-codec";
-import {BaseDAO, BaseDAOData, getContract} from "..";
-import {TreasuryBatchProposeArgs, TreasuryProposeArgs} from "./types";
+import { TezosToolkit } from "@taquito/taquito";
+import { Schema } from "@taquito/michelson-encoder";
+import { Expr, Parser } from "@taquito/michel-codec";
+import { BaseDAO, BaseDAOData, getContract } from "..";
+import { TreasuryBatchProposeArgs, TreasuryProposeArgs } from "./types";
 import proposeCode from "./michelson/propose";
-import {TreasuryExtraDTO} from "services/indexer/types";
-import {mapTransfersArgs} from "services/indexer/dao/mappers/proposal";
-import {BigNumber} from "bignumber.js";
-import {formatUnits} from "../../utils";
+import { TreasuryExtraDTO } from "services/indexer/types";
+import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
+import { BigNumber } from "bignumber.js";
+import { formatUnits } from "../../utils";
 
 const parser = new Parser();
 
@@ -67,7 +67,11 @@ export class TreasuryDAO extends BaseDAO {
         type: michelsonType as Expr,
       });
       batch = await batch.withContractCall(
-        contract.methods.propose(await tezos.wallet.pkh(), this.data.extra.frozen_extra_value, proposalMetadata)
+        contract.methods.propose(
+          await tezos.wallet.pkh(),
+          formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+          proposalMetadata
+        )
       );
     }
     return await batch.send();
