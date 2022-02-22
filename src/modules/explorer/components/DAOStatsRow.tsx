@@ -12,10 +12,10 @@ import { useDAOID } from "../pages/DAO/router";
 import {useTimeLeftInCycle} from "../hooks/useTimeLeftInCycle";
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
-  padding: "42px 55px",
+  padding: "38px 55px",
   [theme.breakpoints.down("xs")]: {
-    padding: "42px 25px",
-    width: "100%",
+    padding: "38px 29px",
+    width: "100%"
   },
 }));
 
@@ -87,7 +87,7 @@ export const DAOStatsRow: React.FC = () => {
                       strokeWidth={4.5}
                       strokeColor={theme.palette.secondary.main}
                       trackStrokeWidth={3}
-                      trackStrokeColor={theme.palette.primary.light}
+                      trackStrokeColor={"rgba(125,140,139, 0.2)"}
                     />
                   </ProgressContainer>
                 </Grid>

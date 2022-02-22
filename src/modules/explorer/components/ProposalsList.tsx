@@ -13,13 +13,14 @@ const TableContainer = styled(ContentContainer)({
 });
 
 const TableHeader = styled(Grid)({
-  minHeight: 76,
-  padding: "24px 54px",
+  padding: "16px 46px",
+  minHeight: 34
 });
 
 const ProposalsFooter = styled(Grid)({
-  borderTop: `0.3px solid #5E6969`,
-  minHeight: 60,
+  padding: "16px 46px",
+  borderTop: ".6px solid rgba(125,140,139, 0.2)",
+  minHeight: 34,
 });
 
 interface Props {
@@ -44,7 +45,7 @@ export const ProposalsList: React.FC<Props> = ({
       <Grid container direction="column" wrap={"nowrap"}>
         <TableHeader item container justifyContent="space-between">
           <Grid item>
-            <Typography variant="body1" color="textPrimary">
+            <Typography variant="body2" style={{fontWeight: "500"}} color="textPrimary">
               {title}
             </Typography>
           </Grid>
@@ -111,7 +112,7 @@ export const ProposalsList: React.FC<Props> = ({
           >
             <Grid item>
               <Link to="proposals">
-                <Typography color="secondary" align="center">
+                <Typography color="secondary" variant="body2" align="center">
                   View All Proposals
                 </Typography>
               </Link>
