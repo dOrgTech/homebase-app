@@ -43,7 +43,7 @@ export const useProposeDelegationChange = () => {
                 });
                 return data;
             } catch (e) {
-                console.log(e);
+                console.error(e);
                 closeProposalNotification(proposalNotification);
                 openNotification({
                     message: "An error has happened with propose transaction!",

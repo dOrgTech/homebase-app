@@ -37,7 +37,7 @@ import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {VoteDialog} from "../../components/VoteDialog";
 import {XTZTransferBadge} from "../../components/XTZTransferBadge";
 import {InfoIcon} from "../../components/styled/InfoIcon";
-import {GuardianTransferBadge} from "modules/explorer/components/GuardianTransferBadge";
+import {ProposalTransferBadge} from "modules/explorer/components/ProposalTransferBadge";
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px",
@@ -159,7 +159,7 @@ export const ProposalDetails: React.FC = () => {
     cycleInfo &&
     proposal?.getStatus(cycleInfo.currentLevel).status ===
     ProposalStatus.ACTIVE;
-
+    
   return (
     <>
       <Grid container direction="column" style={{gap: 42}}>
@@ -391,8 +391,10 @@ export const ProposalDetails: React.FC = () => {
                       </HighlightedBadge>
                     </Grid>
                   ))}
+                  {proposal.metadata.update_contract_delegate !== '' &&
+                    <ProposalTransferBadge address={proposal.metadata.update_contract_delegate} label="Change Delegation"/>}
                   {proposal.metadata.update_guardian !== '' &&
-                    <GuardianTransferBadge address={proposal.metadata.update_guardian}/>}
+                    <ProposalTransferBadge address={proposal.metadata.update_guardian} label="Update Guardian"/>}
                   {list.map(({key, value}, index) => (
                     <Grid
                       key={index}
