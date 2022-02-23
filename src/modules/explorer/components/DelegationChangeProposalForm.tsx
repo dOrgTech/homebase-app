@@ -72,10 +72,10 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
         onClose={handleClose}
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
-        title={"Change Delegation"}>
+        title={"Change Delegate"}>
         <Content container direction={"column"} style={{ gap: 18 }}>
           <Grid item>
-            <ProposalFormInput label={"New Delegation Address"}>
+            <ProposalFormInput label={"New Delegate Address"}>
               <Controller
                 control={methods.control}
                 name={`newDelegationAddress`}

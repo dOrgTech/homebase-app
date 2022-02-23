@@ -134,7 +134,7 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) =>
                   color={"secondary"}
                   style={{ marginBottom: 20 }}
                   onClick={() => handleOptionSelected(ProposalModalKey.delegation)}>
-                  Change Delegation
+                  Change Delegate
                 </Button>
               </Grid>
             </Content>

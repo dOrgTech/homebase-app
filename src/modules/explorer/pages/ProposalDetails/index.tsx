@@ -392,7 +392,7 @@ export const ProposalDetails: React.FC = () => {
                     </Grid>
                   ))}
                   {proposal.metadata.update_contract_delegate !== '' &&
-                    <ProposalTransferBadge address={proposal.metadata.update_contract_delegate} label="Change Delegation"/>}
+                    <ProposalTransferBadge address={proposal.metadata.update_contract_delegate} label="New Delegate"/>}
                   {proposal.metadata.update_guardian !== '' &&
                     <ProposalTransferBadge address={proposal.metadata.update_guardian} label="Update Guardian"/>}
                   {list.map(({key, value}, index) => (
