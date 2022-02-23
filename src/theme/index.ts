@@ -94,6 +94,7 @@ export const theme = createMuiTheme({
         backgroundColor: "#4BCF93",
         fontSize: 14,
         padding: "10px 15px",
+        color: "#1C1F23"
       },
     },
     MuiStepLabel: {
@@ -194,9 +195,13 @@ export const theme = createMuiTheme({
         "&$disabled": {
           color: "#3d3d3d",
         },
+        "&:hover": {
+          backgroundColor: "#62eda5 !important",
+        },
         textTransform: "capitalize",
         fontWeight: 500,
         fontSize: 18,
+        padding: "3px 14px"
       },
       outlined: {
         "&$disabled": {
@@ -207,7 +212,14 @@ export const theme = createMuiTheme({
         padding: "1px 8px",
         fontSize: "1rem",
       },
+      containedPrimary: {
+        "&:hover": {
+          background: "#273833 !important",
+          opacity: "100% !important"
+        }
+      }
     },
+
     MuiInputBase: {
       input: {
         textAlign: "center",
@@ -327,13 +339,13 @@ export const theme = createMuiTheme({
         fontWeight: 400,
         letterSpacing: "-0.01em",
         color: "##81FEB7",
-        borderTop: "0.3px solid #3D3D3D"
+        borderTop: "0.3px solid rgba(125,140,139, 0.2)"
       }
     },
     MuiTableBody: {
       "root": {
         "& > *": {
-          borderTop: "0.3px solid #3D3D3D",
+          borderTop: "0.3px solid rgba(125,140,139, 0.2)",
           minHeight: 90,
         }
       }
@@ -353,5 +365,16 @@ export const theme = createMuiTheme({
           },
       }
     },
+    MuiGrid: {
+      'align-items-xs-center': {
+        alignItems: 'center',
+      },
+    },
+    MuiLinearProgress: {
+      root: {
+        borderRadius: 50,
+        background: "rgba(125,140,139, 0.2) !important"
+      },
+    }
   },
 });

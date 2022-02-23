@@ -14,7 +14,7 @@ const StyledSendButton = styled(ViewButton)(({ theme }) => ({
   border: "1px",
   background: theme.palette.secondary.main,
   borderRadius: 4,
-  color: theme.palette.text.secondary,
+  color: "#1C1F23",
 }));
 
 export const SendButton: React.FC<ViewButtonProps> = ({

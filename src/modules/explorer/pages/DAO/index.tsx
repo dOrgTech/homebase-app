@@ -31,8 +31,9 @@ const HeroContainer = styled(ContentContainer)(({ theme }) => ({
 }));
 
 const TitleText = styled(Typography)(({ theme }) => ({
-  fontSize: 64,
+  fontSize: 60,
   fontWeight: 500,
+  lineHeight: .8,
 
   [theme.breakpoints.down("xs")]: {
     fontSize: 26,
@@ -117,7 +118,7 @@ export const DAO: React.FC = () => {
                   placement="bottom"
                   title="Execute all passed proposals and drop all expired or rejected"
                 >
-                  <InfoIcon color="secondary" />
+                  <InfoIcon color="secondary" style={{ marginBottom:18 }} />
                 </Tooltip>
               </Grid>
             </Grid>

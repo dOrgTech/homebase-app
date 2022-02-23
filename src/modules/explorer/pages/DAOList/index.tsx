@@ -127,6 +127,7 @@ export const DAOList: React.FC = () => {
                     <StyledTab
                       variant="contained"
                       color={selectedTab !== 0 ? "primary" : "secondary"}
+                      style={selectedTab !==0 ? {borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex:0} : {borderRadius: 4, zIndex: 1}}
                       disableRipple={true}
                       disableElevation={true}
                       onClick={() => handleChangeTab(0)}
@@ -135,11 +136,13 @@ export const DAOList: React.FC = () => {
                     </StyledTab>
                   </Grid>
                   <Grid item>
+                  
                     <StyledTab
                       disableRipple={true}
                       disableElevation={true}
                       variant="contained"
                       color={selectedTab !== 1 ? "primary" : "secondary"}
+                      style={selectedTab !==1 ? {borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0} : {borderRadius: 4, marginLeft: -1, zIndex: 1}}
                       onClick={() => handleChangeTab(1)}
                     >
                       My DAOs

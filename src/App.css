@@ -19,3 +19,36 @@ a {
   z-index: 1000001;
   max-height: 90vh;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+/* *::-webkit-scrollbar {
+  display: none;
+} */
+
+/* Hide scrollbar for IE, Edge and Firefox */
+/* * {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+} */
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background:#2b2f35;
+
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #3f4549;
+  border-radius: 50px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #4a5055;
+}

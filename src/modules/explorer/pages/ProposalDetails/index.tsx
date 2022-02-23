@@ -1,10 +1,4 @@
-import {
-  Button,
-  Grid,
-  Theme, Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@material-ui/core";
+import {Button, Grid, Theme, Tooltip, Typography, useMediaQuery,} from "@material-ui/core";
 import {styled, useTheme} from "@material-ui/styles";
 import ReactHtmlParser from "react-html-parser";
 import {BigNumber} from "bignumber.js";
@@ -28,16 +22,19 @@ import {formatNumber} from "modules/explorer/utils/FormatNumber";
 import {HighlightedBadge} from "modules/explorer/components/styled/HighlightedBadge";
 import {TransferBadge} from "modules/explorer/components/TransferBadge";
 import {
+  FA2Transfer,
+  Proposal,
+  ProposalStatus,
   RegistryProposal,
   TreasuryProposal,
-  FA2Transfer,
-  ProposalStatus, Proposal,
 } from "services/indexer/dao/mappers/proposal/types";
 import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {VoteDialog} from "../../components/VoteDialog";
 import {XTZTransferBadge} from "../../components/XTZTransferBadge";
 import {InfoIcon} from "../../components/styled/InfoIcon";
 import {ProposalTransferBadge} from "modules/explorer/components/ProposalTransferBadge";
+import {useUnstakeVotes} from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes";
+import {useTezos} from "../../../../services/beacon/hooks/useTezos";
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px",
@@ -109,11 +106,14 @@ export const ProposalDetails: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const {mutate: dropProposal} = useDropProposal();
   const {data: holdings} = useDAOHoldings(daoId);
+  const { account } = useTezos()
   const canDropProposal = useCanDropProposal(daoId, proposalId);
   const {data: agoraPost} = useAgoraTopic(
     Number(proposal?.metadata?.agoraPostId)
   );
+
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
+  const { mutate: mutateUnstake } = useUnstakeVotes()
 
   const onClickVote = (support: boolean) => {
     setVoteIsSupport(support);
@@ -130,6 +130,13 @@ export const ProposalDetails: React.FC = () => {
       proposalId,
     });
   }, [dao, dropProposal, proposalId]);
+
+  const onUnstakeVotes = useCallback(async () => {
+    await mutateUnstake({
+      dao: dao as BaseDAO,
+      proposalId,
+    });
+  }, [dao, mutateUnstake, proposalId]);
 
   const proposalCycle = proposal ? proposal.period : "-";
 
@@ -159,7 +166,12 @@ export const ProposalDetails: React.FC = () => {
     cycleInfo &&
     proposal?.getStatus(cycleInfo.currentLevel).status ===
     ProposalStatus.ACTIVE;
-    
+
+  const canUnstakeVotes = cycleInfo && proposal && account &&
+    (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
+    proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
+    proposal.voters.some(({ address }) => address.toLowerCase() === account.toLowerCase())
+
   return (
     <>
       <Grid container direction="column" style={{gap: 42}}>
@@ -189,6 +201,22 @@ export const ProposalDetails: React.FC = () => {
                 <Tooltip
                   placement="bottom"
                   title="Guardian and proposer may drop proposal at anytime. Anyone may drop proposal if proposal expired"
+                >
+                  <InfoIcon color="secondary"/>
+                </Tooltip>
+              </Grid>
+              <Grid>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  disabled={!canUnstakeVotes}
+                  onClick={onUnstakeVotes}
+                >
+                  Unstake votes
+                </Button>
+                <Tooltip
+                  placement="bottom"
+                  title="Can only unstake if proposal is executed or dropped, and if you have voted and have not called this action on this proposal before"
                 >
                   <InfoIcon color="secondary"/>
                 </Tooltip>

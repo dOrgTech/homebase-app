@@ -216,6 +216,14 @@ export abstract class BaseDAO {
       .send();
   };
 
+  public unstakeVotes = async (proposalId: string, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, this.data.address);
+
+    return await contract.methods
+      .unstake_vote([proposalId])
+      .send();
+  };
+
   static async encodeProposalMetadata(dataToEncode: any, michelsonSchemaString: string, tezos: TezosToolkit) {
     const parser = new Parser();
 

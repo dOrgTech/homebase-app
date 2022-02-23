@@ -114,13 +114,6 @@ function updateDeploymentStatus({ deploying, contract }: DeploymentStatus) {
   };
 }
 
-function updateTemplate(template: DAOTemplate) {
-  return <const>{
-    type: ActionTypes.UPDATE_TEMPLATE,
-    template,
-  };
-}
-
 function clearCache() {
   return <const>{
     type: ActionTypes.CLEAR_CACHE,
@@ -128,7 +121,6 @@ function clearCache() {
 }
 
 export type CreatorAction = ReturnType<
-  | typeof updateTemplate
   | typeof updateNavigationBar
   | typeof updateOrgSettings
   | typeof updateVotingSettings
@@ -144,7 +136,6 @@ export enum ActionTypes {
   UPDATE_ORGANIZATION_SETTINGS = "UPDATE_ORGANIZATION_SETTINGS",
   UPDATE_DEPLOYMENT_STATUS = "UPDATE_DEPLOYMENT_STATUS",
   CLEAR_CACHE = "CLEAR_CACHE",
-  UPDATE_TEMPLATE = "UPDATE_TEMPLATE",
 }
 export interface TokenHolder {
   address: string;

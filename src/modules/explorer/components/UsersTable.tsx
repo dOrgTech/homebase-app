@@ -39,12 +39,12 @@ const StyledTableHead = styled(TableHead)({
 });
 
 const StyledTableRow = styled(TableRow)({
-  borderBottom: "1px solid #3D3D3D",
+  borderBottom: ".6px solid rgba(125,140,139, 0.2)",
 });
 
 const MobileTableRow = styled(Grid)({
   padding: "30px",
-  borderBottom: "0.3px solid #3D3D3D",
+  borderBottom: "0.3px solid rgba(125,140,139, 0.2)",
 });
 
 const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
@@ -65,7 +65,7 @@ const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
 const MobileTableHeader = styled(Grid)({
   width: "100%",
   padding: 20,
-  borderBottom: "0.3px solid #3D3D3D"
+  borderBottom: "0.3px solid rgba(125,140,139, 0.2)"
 })
 
 const MobileUsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
