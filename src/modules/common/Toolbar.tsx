@@ -148,6 +148,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
   
   useEffect(() => {
     changeNetwork(pathNetwork);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathNetwork]);
 
 
