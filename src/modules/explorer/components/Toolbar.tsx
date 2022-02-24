@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -11,7 +11,7 @@ import {
   useMediaQuery,
   Theme,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import HomeButton from "assets/logos/homebase_logo.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
@@ -20,6 +20,7 @@ import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
 import { ActionSheet, useActionSheet } from "../context/ActionSheets";
+import { Network } from "services/beacon/context";
 
 const Header = styled(Grid)(({ theme }) => ({
   padding: "28px 125px",
@@ -88,11 +89,9 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
-export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
-  disableMobileMenu,
-  children,
-}) => {
-  const { connect, account } = useTezos();
+export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu, children }) => {
+  const { connect, account, changeNetwork } = useTezos();
+  const { network } = useParams<{ network: Network }>();
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
@@ -100,25 +99,30 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
 
   const history = useHistory();
 
+  useEffect(() => {
+    if (network) {
+      changeNetwork(network);
+    }
+  }, []);
+
   return (
-    <StyledAppBar position="sticky">
+    <StyledAppBar position='sticky'>
       <StyledToolbar>
         <Header
           container
           direction={isMobileExtraSmall ? "column" : "row"}
-          alignItems="center"
-          wrap="wrap"
-          justify={"space-between"}
-        >
+          alignItems='center'
+          wrap='wrap'
+          justify={"space-between"}>
           <Grid item>
             <Box onClick={() => history.push("/explorer")}>
-              <ToolbarContainer container alignItems="center" wrap="nowrap">
+              <ToolbarContainer container alignItems='center' wrap='nowrap'>
                 <Grid item>
                   <LogoItem src={HomeButton} />
                 </Grid>
                 <Grid item>
-                  <Box paddingLeft="10px">
-                    <LogoText color="textPrimary">Homebase</LogoText>
+                  <Box paddingLeft='10px'>
+                    <LogoText color='textPrimary'>Homebase</LogoText>
                   </Box>
                 </Grid>
               </ToolbarContainer>
@@ -126,34 +130,26 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
           </Grid>
 
           <Grid item>
-            <Grid
-              container
-              justify={isMobileExtraSmall ? "center" : "flex-end"}
-            >
+            <Grid container justify={isMobileExtraSmall ? "center" : "flex-end"}>
               {account ? (
                 <Grid
                   container
-                  alignItems="center"
+                  alignItems='center'
                   style={{ gap: 12 }}
-                  justify={isMobileExtraSmall ? "center" : "flex-end"}
-                >
+                  justify={isMobileExtraSmall ? "center" : "flex-end"}>
                   {children}
                   <Grid item>
-                    <Grid container alignItems="center" style={{ gap: 8 }}>
+                    <Grid container alignItems='center' style={{ gap: 8 }}>
                       <Grid item>
                         <ChangeNetworkButton />
                       </Grid>
-                      <AddressBarWrapper
-                        item
-                        onClick={() => openUserMenuSheet()}
-                      >
+                      <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
                           container
-                          alignItems="center"
-                          wrap="nowrap"
-                          justify="flex-end"
-                          style={{ gap: 8 }}
-                        >
+                          alignItems='center'
+                          wrap='nowrap'
+                          justify='flex-end'
+                          style={{ gap: 8 }}>
                           <Grid item>
                             <ProfileAvatar size={22} address={account} />
                           </Grid>
@@ -168,23 +164,12 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
                   </Grid>
                 </Grid>
               ) : (
-                <Grid
-                  container
-                  justify="flex-end"
-                  alignItems="center"
-                  wrap="nowrap"
-                  style={{ gap: 8 }}
-                >
+                <Grid container justify='flex-end' alignItems='center' wrap='nowrap' style={{ gap: 8 }}>
                   <Grid item>
                     <ChangeNetworkButton />
                   </Grid>
                   <Grid item>
-                    <ConnectWallet
-                      color="secondary"
-                      variant="contained"
-                      size="small"
-                      onClick={() => connect()}
-                    >
+                    <ConnectWallet color='secondary' variant='contained' size='small' onClick={() => connect()}>
                       Connect Wallet
                     </ConnectWallet>
                   </Grid>

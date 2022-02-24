@@ -26,7 +26,7 @@ const CustomButton = styled(Button)({
 });
 
 export const Review: React.FC = () => {
-  const { account, connect } = useTezos();
+  const { account, connect, network } = useTezos();
   const validDAOData = useCreatorRouteValidation();
   const { state, dispatch } = useContext(CreatorContext);
   const info: MigrationParams = state.data;
@@ -108,7 +108,7 @@ export const Review: React.FC = () => {
                     color="secondary"
                     variant="outlined"
                     onClick={() =>
-                      history.push("/explorer/dao/" + data.address)
+                      history.push(`/explorer/dao/${network}` + data.address)
                     }
                   >
                     Go to my DAO

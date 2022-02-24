@@ -8,6 +8,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React from "react";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   background: theme.palette.primary.main,
@@ -56,11 +57,12 @@ export const DAOItem: React.FC<{
     votingAddresses: string[];
   };
 }> = ({ dao }) => {
+  const { network } = useTezos();
   const theme = useTheme();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
-
+  
   return (
-    <Link underline="none" href={`dao/${dao.id}`}>
+    <Link underline="none" href={`/explorer/dao/${network}/${dao.id}`}>
       <Container container justifyContent="space-between" style={{ gap: 16 }}>
         <Grid item xs={12} sm={7}>
           <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>

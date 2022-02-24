@@ -19,6 +19,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { debounce } from "../utils/debounce";
+import { Network } from "services/beacon/context";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -51,42 +52,42 @@ interface Page {
   href: string;
 }
 
-const getPages = (daoId: string): Page[] => [
+const getPages = (daoId: string, network: Network): Page[] => [
   {
     pathId: "overview",
     name: "Home",
     icon: HouseIcon,
-    href: `/explorer/dao/${daoId}`,
+    href: `/explorer/dao/${network}/${daoId}`,
   },
   {
     pathId: "proposals",
     name: "Proposals",
     icon: VotingIcon,
-    href: `/explorer/dao/${daoId}/proposals`,
+    href: `/explorer/dao/${network}/${daoId}/proposals`,
   },
   {
     pathId: "treasury",
     name: "Treasury",
     icon: TreasuryIcon,
-    href: `/explorer/dao/${daoId}/treasury`,
+    href: `/explorer/dao/${network}/${daoId}/treasury`,
   },
   {
     pathId: "registry",
     name: "Registry",
     icon: RegistryIcon,
-    href: `/explorer/dao/${daoId}/registry`,
+    href: `/explorer/dao/${network}/${daoId}/registry`,
   },
   {
     pathId: "nfts",
     name: "NFT",
     icon: NFTIcon,
-    href: `/explorer/dao/${daoId}/nfts`,
+    href: `/explorer/dao/${network}/${daoId}/nfts`,
   },
   {
     pathId: "user",
     name: "User",
     icon: UserIcon,
-    href: `/explorer/dao/${daoId}/user`,
+    href: `/explorer/dao/${network}/${daoId}/user`,
   },
 ];
 
@@ -137,7 +138,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
   disableMobileMenu,
 }) => {
   const [pages, setPages] = useState<Page[]>([]);
-  const { account } = useTezos();
+  const { account, network } = useTezos();
   const daoId = useDAOID();
   const { data: dao } = useDAO(daoId);
   const path = useLocation();
@@ -158,10 +159,10 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
       }
 
       setPages(
-        getPages(daoId).filter((page) => !disabledPages.includes(page.name))
+        getPages(daoId, network).filter((page) => !disabledPages.includes(page.name))
       );
     }
-  }, [account, dao, daoId]);
+  }, [account, dao, daoId, network]);
 
   return !isMobileSmall || disableMobileMenu ? (
     <Container container justifyContent="center" style={{ gap: 92 }}>

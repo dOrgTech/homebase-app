@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -12,7 +12,7 @@ import {
   useMediaQuery,
   Theme,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { TezosToolkit } from "@taquito/taquito";
 
 import HomeButton from "assets/logos/homebase_logo.svg";
@@ -139,10 +139,17 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const { network: pathNetwork } = useParams<{ network: Network }>();
   const [networkAnchorEl, setNetworkAnchorEl] =
     React.useState<HTMLButtonElement | null>(null);
+
   const [networkPopperOpen, setNetworkPopperOpen] = useState(false);
+    
+  
+  useEffect(() => {
+    changeNetwork(pathNetwork);
+  }, [pathNetwork]);
+
 
   const handleNetworkClick = (event: React.MouseEvent<any>) => {
     setNetworkAnchorEl(event.currentTarget);
@@ -170,6 +177,7 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
     navigator.clipboard.writeText(address);
     setPopperOpen(false);
   };
+
 
   const history = useHistory();
 

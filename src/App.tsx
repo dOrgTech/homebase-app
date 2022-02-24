@@ -95,7 +95,7 @@ const App: React.FC = () => {
               <Router>
                 <ScrollToTop />
                 <Switch>
-                  <Route path="/creator">
+                  <Route path="/creator/:network">
                     <CreatorProvider>
                       <ThemeProvider theme={legacyTheme}>
                         <DAOCreate />

@@ -109,7 +109,7 @@ export const DAOList: React.FC = () => {
                     </Grid>
                   </Grid>
                   <Grid item>
-                    <Link underline="none" href={`/creator`}>
+                    <Link underline="none" href={`/creator/${network}/dao`}>
                       <Button variant="contained" color="secondary">
                         Create DAO
                       </Button>
