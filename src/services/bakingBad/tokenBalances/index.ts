@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import {NFT, Token} from "models/Token";
 import {Network} from "services/beacon/context";
 import {parseUnits} from "services/contracts/utils";
-import {API_URL, networkNameMap} from "..";
+import {API_URL, FALLBACK_URL, networkNameMap} from "..";
 import {DAOToken, NFTDTO, TokenBalancesDTO} from "./types";
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO =>
@@ -27,7 +27,12 @@ interface DAOBalance {
 export const getDAOBalances = async (daoId: string, network: Network, offset = 0, balances: DAOBalance[] = []): Promise<DAOBalance[]> => {
   const url = `${API_URL}/account/${networkNameMap[network]}/${daoId}/token_balances?size=${ELEMENTS_PER_REQUEST}&offset=${offset}`;
 
-  const response = await fetch(url);
+  let response = await fetch(url);
+
+  if (!response.ok) {
+    const fallbackUrl = `${FALLBACK_URL}/account/${networkNameMap[network]}/${daoId}/token_balances?size=${ELEMENTS_PER_REQUEST}&offset=${offset}`;
+    response = await fetch(fallbackUrl);
+  }
 
   if (!response.ok) {
     throw new Error("Failed to fetch contract storage from BakingBad API");
