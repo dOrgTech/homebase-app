@@ -2,15 +2,15 @@ import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
 import treasuryProposeCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
 import registryProposeCode from "services/contracts/baseDAO/registryDAO/michelson/propose";
-import {Schema} from "@taquito/michelson-encoder";
-import {Parser, Expr, unpackDataBytes} from "@taquito/michel-codec";
-import {parseUnits} from "services/contracts/utils";
-import {ProposalDTO} from "services/indexer/types";
-import {PMRegistryProposal, PMTreasuryProposal} from "services/contracts/baseDAO/registryDAO/types";
-import {extractTransfersData} from ".";
-import {bytes2Char} from "@taquito/tzip16";
-import {BaseDAO} from "services/contracts/baseDAO";
-import {DAOTemplate} from "modules/creator/state";
+import { Schema } from "@taquito/michelson-encoder";
+import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
+import { parseUnits } from "services/contracts/utils";
+import { ProposalDTO } from "services/indexer/types";
+import { PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types";
+import { extractTransfersData } from ".";
+import { bytes2Char } from "@taquito/tzip16";
+import { BaseDAO } from "services/contracts/baseDAO";
+import { DAOTemplate } from "modules/creator/state";
 
 export enum IndexerStatus {
   CREATED = "created",
@@ -69,14 +69,14 @@ export abstract class Proposal {
 
   private cachedStatus:
     | {
-    level: number;
-    status: ProposalStatus;
-    statusHistory: {
-      status: ProposalStatus;
-      timestamp: string;
-      level: number;
-    }[];
-  }
+        level: number;
+        status: ProposalStatus;
+        statusHistory: {
+          status: ProposalStatus;
+          timestamp: string;
+          level: number;
+        }[];
+      }
     | undefined;
 
   constructor(dto: ProposalDTO, dao: BaseDAO) {
@@ -222,12 +222,12 @@ export class TreasuryProposal extends Proposal {
       const micheline = parser.parseMichelineExpression(treasuryProposeCode) as Expr;
       const schema = new Schema(micheline as Expr);
 
-      const unpackedMetadata = unpackDataBytes({bytes: this.packedMetadata}, micheline as any) as any;
+      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
       const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(unpackedMetadata);
 
-      values = { ...values, ...getBaseMetadata(proposalMetadataDTO) }
+      values = { ...values, ...getBaseMetadata(proposalMetadataDTO) };
 
-      if("transfer_proposal" in proposalMetadataDTO) {
+      if ("transfer_proposal" in proposalMetadataDTO) {
         values.transfers = extractTransfersData(proposalMetadataDTO.transfer_proposal.transfers);
         values.agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id.toString();
       }
@@ -264,13 +264,13 @@ export class RegistryProposal extends Proposal {
       const micheline = parser.parseMichelineExpression(registryProposeCode) as Expr;
       const schema = new Schema(micheline as Expr);
 
-      const unpackedMetadata = unpackDataBytes({bytes: this.packedMetadata}, micheline as any) as any;
+      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
       const proposalMetadataDTO: PMRegistryProposal = schema.Execute(unpackedMetadata);
 
-      values = { ...values, ...getBaseMetadata(proposalMetadataDTO) }
+      values = { ...values, ...getBaseMetadata(proposalMetadataDTO) };
 
       if ("transfer_proposal" in proposalMetadataDTO) {
-        const {agora_post_id, registry_diff, transfers} = proposalMetadataDTO.transfer_proposal;
+        const { agora_post_id, registry_diff, transfers } = proposalMetadataDTO.transfer_proposal;
 
         values.agoraPostId = agora_post_id;
 
@@ -305,7 +305,7 @@ export interface FA2Transfer extends Transfer {
 }
 
 interface BaseProposalMetadata {
-  config: { key: "frozen_extra_value" | "slash_scale_value"; value: BigNumber }[]
+  config: { key: "frozen_extra_value" | "slash_scale_value"; value: BigNumber }[];
   update_guardian: string;
   agoraPostId: string;
 }
@@ -314,7 +314,7 @@ function getBaseMetadata(proposalMetadataDTO: PMTreasuryProposal | PMRegistryPro
   const values: BaseProposalMetadata = {
     config: [],
     update_guardian: "",
-    agoraPostId: "-1"
+    agoraPostId: "-1",
   };
 
   if ("update_guardian" in proposalMetadataDTO) {
@@ -325,7 +325,7 @@ function getBaseMetadata(proposalMetadataDTO: PMTreasuryProposal | PMRegistryPro
     values.config = Object.entries(proposalMetadataDTO.configuration_proposal)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, value]) => !!value)
-      .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
+      .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }));
   }
 
   return values;
