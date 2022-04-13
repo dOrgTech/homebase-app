@@ -4,7 +4,7 @@ import { BlockchainStats } from "./types";
 export const getNetworkStats = async (
   network: Network
 ): Promise<BlockchainStats> => {
-  const url = `${process.env.REACT_APP_CORS_PROXY_URL}https://api.${
+  const url = `${process.env.REACT_APP_CORS_PROXY_URL}/https://api.${
     network !== "mainnet" ? "hangzhou." : ""
   }tzstats.com/explorer/config/head`;
   const response = await fetch(url);
