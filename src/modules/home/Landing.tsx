@@ -88,26 +88,26 @@ const TitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
 }));
 
 const FullButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-  minHeight: 44,
-  minWidth: 139,
+  minHeight: 39,
+  minWidth: 130,
   background: theme.palette.secondary.main,
-  color: theme.palette.text.secondary,
+  color: theme.palette.primary.dark,
   borderColor: hexToRgba(theme.palette.secondary.main, 0.23),
   "&:hover": {
-    backgroundColor: hexToRgba(theme.palette.secondary.main, 0.24),
+    backgroundColor: "#62eda5",
     borderColor: theme.palette.secondary.main,
   },
 }));
 
 const OutlinedButton = styled(Button)(({ theme }: { theme: Theme }) => ({
   minHeight: 39,
-  minWidth: 139,
+  minWidth: 130,
   padding: "6px 16px",
   background: "transparent",
   color: theme.palette.text.primary,
   borderColor: theme.palette.secondary.main,
   "&:hover": {
-    backgroundColor: hexToRgba(theme.palette.secondary.main, 0.24),
+    backgroundColor: hexToRgba("#81FEB7", 0.24),
     borderColor: theme.palette.secondary.main,
   },
 }));
@@ -136,7 +136,7 @@ export const Landing: React.FC = () => {
                   <Grid container direction='column' style={{ gap: 32 }} justifyContent='center'>
                     {!isExtraSmall && (
                       <Grid item>
-                        <TitleText>Homebase</TitleText>
+                        <TitleText>Tezos Homebase</TitleText>
                       </Grid>
                     )}
 
@@ -171,7 +171,7 @@ export const Landing: React.FC = () => {
                   <Grid container direction='column' alignItems='center' justify='center' style={{ gap: 20 }}>
                     {isExtraSmall && (
                       <Grid item>
-                        <TitleText>Homebase</TitleText>
+                        <TitleText>Tezos Homebase</TitleText>
                       </Grid>
                     )}
                     <Grid item>
