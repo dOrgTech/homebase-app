@@ -8,6 +8,7 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React from "react";
+import {useHistory} from 'react-router-dom';
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   background: theme.palette.primary.main,
@@ -57,10 +58,15 @@ export const DAOItem: React.FC<{
   };
 }> = ({ dao }) => {
   const theme = useTheme();
+  const history = useHistory();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
+  const handleNavigateToDao = () => {
+    history.push(`dao/${dao.id}`)
+  }
+
   return (
-    <Link underline="none" href={`dao/${dao.id}`}>
+    <Link underline="none" onClick={handleNavigateToDao}>
       <Container container justifyContent="space-between" style={{ gap: 16 }}>
         <Grid item xs={12} sm={7}>
           <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
