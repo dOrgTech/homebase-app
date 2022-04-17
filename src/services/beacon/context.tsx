@@ -26,11 +26,10 @@ const getInitialNetwork = (): Network => {
     return storageNetwork as Network
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
+  const envNetwork = process?.env.REACT_APP_NETWORK?.toString().toLowerCase() as Network
 
   if(!envNetwork) {
-    throw new Error("No Network ENV set")
+    throw new Error("REACT_APP_NETWORK missing from .env")
   }
 
   window.localStorage.setItem("homebase:network", envNetwork)
@@ -38,15 +37,21 @@ const getInitialNetwork = (): Network => {
   return envNetwork
 }
 
+const getInitialAccount = (): string => {
+  const storageAccount = window.localStorage.getItem("beacon:active-account")
+  return storageAccount ?? ""
+}
+
 const network = getInitialNetwork()
+const account = getInitialAccount()
 const Tezos = new TezosToolkit(rpcNodes[network]);
 Tezos.setPackerProvider(new MichelCodecPacker());
 Tezos.addExtension(new Tzip16Module());
 
 const INITIAL_STATE: TezosState = {
   tezos: Tezos,
-  network: network,
-  account: "",
+  network,
+  account,
   wallet: undefined
 };
 
