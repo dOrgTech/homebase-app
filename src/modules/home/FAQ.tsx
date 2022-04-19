@@ -42,13 +42,13 @@ export const FAQ: React.FC = () => {
             <br />
           </Typography>
           <Typography color={"textPrimary"} variant={"body1"}>
-            We strive to make Homebase super user-centered. Feel free to reach out to our team at any time on{" "}
+             We strive to make Homebase super user-centered. Feel free to reach out to our team at any time on the{" "}
             <Link color={"secondary"} target='_blank' href='https://discord.gg/XufcBNu277'>
               Discord
             </Link>
             .<br />
             <br />
-            Below are questions we’ve received and would like to share the answers to in direct way for users.
+            Below are questions we’ve received and would like to share the answers to in a direct way for users.
           </Typography>
         </TextBlock>
 
