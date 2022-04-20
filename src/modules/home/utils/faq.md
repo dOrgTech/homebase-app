@@ -163,7 +163,7 @@ Assets can be directly transferred to the DAO's address. There is no special pro
 <answer>
 
 
-<question>What are levels?/other technical questions like FA2 tokens?<question>
+<question>What are levels and what are FA2 tokens?<question>
 <answer>
 **Levels** - Are equivalent to blocks on the Tezos blockchain. The time between blocks is at least one minute, and varies somewhat. A cycle is 4,096 blocks.
 &nbsp;
@@ -173,3 +173,11 @@ Assets can be directly transferred to the DAO's address. There is no special pro
 
 <question>How much does launching a DAO on Tezos cost?<question>
 <answer>About 7 tez.<answer>
+
+
+<question>Can your DAOs own NFTs?<question>
+<answer>
+On Homebase, DAOs can have an NFT treasury.
+&nbsp;
+To transfer NFT’s to the treasury, send them to the DAO's address just like any other token. Once transferred, they should be visible in the *NFT* tab.
+<answer>
