@@ -5,7 +5,15 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { ReactMarkdownOptions } from "react-markdown/lib/react-markdown";
 import { SpecialComponents } from "react-markdown/lib/ast-to-react";
-import { Link } from "@material-ui/core";
+import { Link, styled } from "@material-ui/core";
+
+const getSrcPath = (src?: string): string => {
+  return require(`../../assets/markdown/${src}`).default;
+}
+
+const MarkDownImg = styled('img')({
+  maxWidth: '100%'
+})
 
 const MarkdownParagraph = (props: { children: ReactNode }) => {
   return <Typography variant='body1'>{props.children}</Typography>;
@@ -38,10 +46,6 @@ const MarkdownHeader = (props: { children: ReactNode; level: number }) => {
   }
 };
 
-const getSrcPath = (src?: string): string => {
-  return require(`../../assets/markdown/${src}`).default;
-}
-
 const components: Partial<
   Omit<import("react-markdown/lib/complex-types").NormalComponents, keyof SpecialComponents> & SpecialComponents
 > = {
@@ -55,7 +59,7 @@ const components: Partial<
   a: MarkdownLink,
   img: (props) => {
     // local paths can not be referenced from md file as they need to be imported as module
-    return <img {...props} src={getSrcPath(props.src)} />
+    return <MarkDownImg {...props} src={getSrcPath(props.src)} />
   },
 };
 

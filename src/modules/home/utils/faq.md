@@ -31,7 +31,7 @@ You might find this [DAO Canvas](https://github.com/DAOresearch/dao-canvas) reso
 &nbsp;
 ## **Tokens**
 &nbsp;
-To create a DAO on Homebase, your community needs to have a token. Tokens give members voting rights. DAOs typically have two types of membership tied to tokens: token-based memberships, where members govern a decentralized protocol together and can purchase tokens through liquidity pools or decentralized exchanges; and shares-based memberships, where a DAO is pooling financial resources to fund development, charity, or investments.
+To create a DAO on Homebase, your community needs to have a token. Tokens give members voting rights. DAOs typically have two types of membership tied to tokens: **token-based memberships**, where members govern a decentralized protocol together and can purchase tokens through liquidity pools or decentralized exchanges; and **shares-based memberships**, where a DAO is pooling financial resources to fund development, charity, or investments.
 &nbsp;
 Governance tokens can be 1:1, one membership one vote, or they can be allocated according to reputation, where community members earn tokens through contributing to DAO, and their voting power is proportional to their investment of time, money, labor, or other kinds of resources.
 &nbsp;
@@ -42,8 +42,38 @@ Please note that on Tezos you cannot use an NFT token as your voting token.
 <answer>
 Here’s a step-by-step walkthrough of how to configure your DAO in Homebase.
 &nbsp;
-Watch this video [![Homebase DAO - Creating a DAO on Tezos](how_to_create_dao_on_tezos.png)](https://www.youtube.com/watch?v=E15-zGGXwCc "Homebase DAO - Creating a DAO on Tezos"), or read through the description below.
+Watch this video, or read the description below.
 &nbsp;
+[![Homebase DAO - Creating a DAO on Tezos](how_to_create_dao_on_tezos.png)](https://www.youtube.com/watch?v=E15-zGGXwCc "Homebase DAO - Creating a DAO on Tezos")
+&nbsp;
+From the homepage, [https://tezos-homebase.io/](https://tezos-homebase.io/), click on Enter App.
+&nbsp;
+From here you will Create DAO.
+&nbsp;
+![Homebase DAO - Creating a DAO on Tezos](dao_create.png)
+&nbsp;
+Connect your wallet to proceed. 
+&nbsp;
+There are two types of DAOs on Homebase. Treasury DAOs and Registry DAOs. Select which one is the type of DAO you are creating. The most common type of DAO is a Treasury DAO, to collectively manage shared resources, so this tutorial will walk you through that.
+&nbsp;
+![Homebase DAO - Creating a DAO on Tezos](dao_select_template.png)
+&nbsp;
+Next, you will configure the DAO settings. We’ll walk you through what each of these terms means as we go.
+&nbsp;
+![Homebase DAO - Creating a DAO on Tezos](dao_settings.png)
+&nbsp;
+&nbsp;
+**Token address** is the smart contract address of the token that your community uses to pool assets. If you have not yet created one, you will need to. You don’t need to be a smart contract developer to do this. You can use the [FA2 bakery](https://fa2-bakery.netlify.app/).
+&nbsp;
+Please note, you cannot use an NFT token for voting on Homebase. If you enter an NFT token on this screen, your DAO will fail to complete at the end of the creator. You must have or create a token using the FA2 standard.
+&nbsp;
+**Token ID** In Tezos’ FA2 token standard, one token address can have multiple IDs. For example, you might have one token that is for one sub-set of voters to vote on a specific aspect of an organization, and another for a different subset. Or you might have different tokens that have different utility functions.
+&nbsp;
+**DAO Name** Usually this is your community’s name.
+&nbsp;
+**Token Symbol** the abbreviation for your token, as set up when you created your FA2 token.
+&nbsp;
+**Description** What does your community do with this DAO? This is most often a one-line description of your community. Here’s an example of how it shows up in the end:
 <answer>
 
 
