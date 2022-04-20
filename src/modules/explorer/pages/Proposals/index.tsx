@@ -71,7 +71,7 @@ export const Proposals: React.FC = () => {
     <>
       <Grid container direction='column' style={{ gap: 42 }}>
         <HeroContainer item>
-          <Grid container justifyContent="space-between" alignItems="center">
+          <Grid container justifyContent='space-between'>
             <Grid item>
               <Grid container style={{ gap: 20 }} alignItems='center'>
                 <Grid item>
@@ -79,8 +79,9 @@ export const Proposals: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <Button
-                    variant="contained"
-                    color="secondary"
+                    variant='contained'
+                    color='secondary'
+                    size='small'
                     onClick={onFlush}
                     disabled={!executableProposals || !executableProposals.length}>
                     Execute

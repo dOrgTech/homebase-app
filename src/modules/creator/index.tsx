@@ -65,6 +65,12 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   fontFamily: "Roboto Mono",
 }));
 
+const FAQClickToAction = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  fontSize: "14px",
+  cursor: "pointer",
+}));
+
 const ProgressContainer = styled(Grid)(({ theme }) => ({
   borderRight: `2px solid ${theme.palette.primary.light}`,
   display: "grid",
@@ -110,12 +116,16 @@ export const DAOCreate: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const goToFAQ = (): void => {
+    history.push("/faq");
+  };
+
   useEffect(() => {
-    mixpanel.unregister("daoAddress")
-    mixpanel.unregister("daoType")
-    
-    mixpanel.track("Visited Creator")
-  }, [])
+    mixpanel.unregister("daoAddress");
+    mixpanel.unregister("daoType");
+
+    mixpanel.track("Visited Creator");
+  }, []);
 
   return (
     <PageContainer container direction="row">
@@ -180,6 +190,11 @@ export const DAOCreate: React.FC = () => {
                 </IndicatorValue>
               </Box>
             </ProgressBar>
+            <Box>
+              <FAQClickToAction onClick={goToFAQ}>
+                New to DAOs? Read our FAQ
+              </FAQClickToAction>
+            </Box>
             <StyledStepper activeStep={step} orientation="vertical">
               {STEPS.map(({ title }: StepInfo, index: number) => (
                 <Step key={title}>
