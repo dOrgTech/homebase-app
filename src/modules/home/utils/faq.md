@@ -46,23 +46,23 @@ Here’s a step-by-step walkthrough of how to configure your DAO in Homebase.
 &nbsp;
 Watch this video, or read the description below.
 &nbsp;
-[![Homebase DAO - Creating a DAO on Tezos](how_to_create_dao_on_tezos.png)](https://www.youtube.com/watch?v=E15-zGGXwCc "Homebase DAO - Creating a DAO on Tezos")
+[![Homebase DAO - Creating a DAO on Tezos](~local/how_to_create_dao_on_tezos.png)](https://www.youtube.com/watch?v=E15-zGGXwCc "Homebase DAO - Creating a DAO on Tezos")
 &nbsp;
 From the homepage, [https://tezos-homebase.io/](https://tezos-homebase.io/), click on Enter App.
 &nbsp;
 From here you will Create DAO.
 &nbsp;
-![Homebase DAO - Creating a DAO on Tezos](dao_create.png)
+![Homebase DAO - Creating a DAO on Tezos](~local/dao_create.png)
 &nbsp;
 Connect your wallet to proceed. 
 &nbsp;
 There are two types of DAOs on Homebase. Treasury DAOs and Registry DAOs. Select which one is the type of DAO you are creating. The most common type of DAO is a Treasury DAO, to collectively manage shared resources, so this tutorial will walk you through that.
 &nbsp;
-![Homebase DAO - Creating a DAO on Tezos](dao_select_template.png)
+![Homebase DAO - Creating a DAO on Tezos](~local/dao_select_template.png)
 &nbsp;
 Next, you will configure the DAO settings. We’ll walk you through what each of these terms means as we go.
 &nbsp;
-![Homebase DAO - Creating a DAO on Tezos](dao_settings.png)
+![Homebase DAO - Creating a DAO on Tezos](~local/dao_settings.png)
 &nbsp;
 &nbsp;
 **Token address** - is the smart contract address of the token that your community uses to pool assets. If you have not yet created one, you will need to. You don’t need to be a smart contract developer to do this. You can use the [FA2 bakery](https://fa2-bakery.netlify.app/).
@@ -77,7 +77,7 @@ Please note, you cannot use an NFT token for voting on Homebase. If you enter an
 &nbsp;
 **Description** - What does your community do with this DAO? This is most often a one-line description of your community. Here’s an example of how it shows up in the end:
 &nbsp;
-![Homebase DAO - Creating a DAO on Tezos](dao_description.png)
+![Homebase DAO - Creating a DAO on Tezos](~local/dao_description.png)
 &nbsp;
 **Administrator** - The admin role is supposed to be held by someone (generally the originator of the DAO) only at the beginning of the contract life, after which it should be given to the DAO itself, which will accept it automatically. The admin role's only ability is to make the DAO call transfer on another FA2 contract using the transfer_contract_tokens entrypoint. This is intended to allow the originator of the DAO to make some transfers to set up the contract before leaving it to its token holders.
 &nbsp;
@@ -158,7 +158,7 @@ Assets can be directly transferred to the DAO's address. There is no special pro
 &nbsp;
 #### **How to make a proposal on Homebase?**
 &nbsp;
-[![How To Create a Proposal on Homebase DAO.](dao_how_to_create_a_proposal_on_tezos.png)](https://www.youtube.com/watch?v=auFUekD-5iM "How To Create a Proposal on Homebase DAO.")
+[![How To Create a Proposal on Homebase DAO.](~local/dao_how_to_create_a_proposal_on_tezos.png)](https://www.youtube.com/watch?v=auFUekD-5iM "How To Create a Proposal on Homebase DAO.")
 &nbsp;
 <answer>
 

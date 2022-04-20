@@ -7,7 +7,7 @@ import { ReactMarkdownOptions } from "react-markdown/lib/react-markdown";
 import { SpecialComponents } from "react-markdown/lib/ast-to-react";
 import { Link, styled } from "@material-ui/core";
 
-const getSrcPath = (src?: string): string => {
+const getSrcPathForLocalImage = (src?: string): string => {
   return require(`../../assets/markdown/${src}`).default;
 }
 
@@ -58,8 +58,20 @@ const components: Partial<
   p: MarkdownParagraph,
   a: MarkdownLink,
   img: (props) => {
+    const { src } = props;
+    if (!src) {
+      return null
+    }
+
     // local paths can not be referenced from md file as they need to be imported as module
-    return <MarkDownImg {...props} src={getSrcPath(props.src)} />
+    // src paths with suffix ~local/ are treated differently than external src paths
+    if (src.includes('~local/')) {
+      const srcWithoutSuffix = src.replace('~local/','')
+      return <MarkDownImg {...props} src={getSrcPathForLocalImage(srcWithoutSuffix)} />
+    }
+
+    return <MarkDownImg {...props} />
+
   },
 };
 
