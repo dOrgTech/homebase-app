@@ -1,6 +1,6 @@
 <question>Why create a DAO ?<question>
-<answer>A DAO is a way to collectively manage resources in a community, in a way that is fair, transparent,
-and participatory. Instead of relying on top-down decision making, a DAO is led by a community. Founders put in funds and receive shares. As the DAO grows, new members are voted in, and members can receive shares for work, funds, or whatever else the community decides. Members can make proposals and vote. DAOs tend to be more creative, collaborative, agile, and fair.
+<answer>
+A DAO is a way to collectively manage resources in a community, in a way that is fair, transparent, and participatory. Instead of relying on top-down decision making, a DAO is led by a community. Founders put in funds and receive shares. As the DAO grows, new members are voted in, and members can receive shares for work, funds, or whatever else the community decides. Members can make proposals and vote. DAOs tend to be more creative, collaborative, agile, and fair.
 &nbsp;
 You might choose to make a DAO to collectively decide which projects your community will develop, or to reward active members with NFT's for their contributions. Homebase is a platform designed to empower communities to create and run DAOs on Tezos.
 &nbsp;
@@ -17,6 +17,7 @@ Here are a few articles about why the cooperative decentralization of web3 is re
 &nbsp;
 Tezos Homebase was developed for the Tezos community to organize and develop DAOs together. Over time, Homebase will add features based on common needs as more Tezos communities create DAOs. The future of DAOs is bright, as more and more developers, creators, and protocols are utilizing the power of DAOs to build community engagement and realize the peer-to-peer benefit of blockchain innovation.
 <answer>
+
 
 <question>How do you create a DAO?<question>
 <answer>
@@ -37,6 +38,7 @@ Governance tokens can be 1:1, one membership one vote, or they can be allocated 
 &nbsp;
 Please note that on Tezos you cannot use an NFT token as your voting token.
 <answer>
+
 
 <question>How to create a DAO on Homebase<question>
 <answer>
@@ -89,7 +91,7 @@ Please note, you cannot use an NFT token for voting on Homebase. If you enter an
 &nbsp;
 **Proposal Execution Delay** - This is the time, expressed in blocks/levels that need to pass for a proposal to become "executable". It should always be more than double the duration of a cycle, to ensure
 &nbsp;
-**Proposal Expiration Threshold** - The time in levels/blocks required before a proposal becomes expired. *This amount has to be bigger than the proposal execution delay*, because if it’s not, then your proposals would never be executable, because they would expire before they could be executed.
+**Proposal Expiration Threshold** - The time in levels/blocks required before a proposal becomes expired. **This amount has to be bigger than the proposal execution delay**, because if it’s not, then your proposals would never be executable, because they would expire before they could be executed.
 &nbsp;
 **Returned Stake After Proposal Rejection** - If a proposal fails, the proposer receives a percentage back.
 &nbsp;
@@ -130,14 +132,44 @@ After your DAO has been properly indexed, you will see a button that says, "go t
 
 
 <question>What is a registry?<question>
-<answer>A registry is a token-curated list of anything that DAO chooses. Examples might include marketplaces, a map of highly ranked places, or approved companies for placing ads on a blockchain-based media network. 
+<answer>
+A registry is a token-curated list of anything that DAO chooses. Examples might include marketplaces, a map of highly ranked places, or approved companies for placing ads on a blockchain-based media network. 
 &nbsp;
 &nbsp;
 ## **How does it work?**
 &nbsp;
 A person or entity who wants their offering placed on the list, stakes tokens to the DAO to apply. A setting is configured in the DAO for how long the application is in the queue before it is automatically approved. During this time, any member of the DAO (they are curators in this case) may choose to challenge the application. This triggers a vote among curators. If the application is rejected, the applicant forfeits their deposit, which is then split between the challenger and the curators who voted to reject the proposal. If the application is accepted, the challenger’s deposit is split between the applicant and the curators who voted to accept.
 &nbsp;
-(If this kind of thing is fascinating to you, you might like reading about curation markets and futarchy.)<answer>
+(If this kind of thing is fascinating to you, you might like reading about curation markets and futarchy.)
+<answer>
+
+
+<question>What is a treasury?<question>
+<answer>
+A treasury is a DAO who’s primary use is to hold funds and disperse them according to proposals.
+&nbsp;
+For example, a member of an artists DAO might propose to disperse an amount of funds to a designer who created the winning sneaker designs for their community to sell as merch. A service DAO might disperse treasury funds to pay developers for working on client projects. A grants DAO might disperse funds for anything from academic research, to protocol improvements, to local civic policy development. It’s really up to your community, its purpose, and creativity what the funds are used for.
+&nbsp;
+&nbsp;
+#### **How are funds added to a treasury?**
+&nbsp;
+Assets can be directly transferred to the DAO's address. There is no special process. Once transferred they should be visible in the *Treasury* tab.
+&nbsp;
+&nbsp;
+#### **How to make a proposal on Homebase?**
+&nbsp;
+[![How To Create a Proposal on Homebase DAO.](dao_how_to_create_a_proposal_on_tezos.png)](https://www.youtube.com/watch?v=auFUekD-5iM "How To Create a Proposal on Homebase DAO.")
+&nbsp;
+<answer>
+
+
+<question>What are levels?/other technical questions like FA2 tokens?<question>
+<answer>
+**Levels** - Are equivalent to blocks on the Tezos blockchain. The time between blocks is at least one minute, and varies somewhat. A cycle is 4,096 blocks.
+&nbsp;
+**FA2** - Is a token standard on Tezos, which supports standardization of permissions, and different token types including NFT’s. [Read more on the Tezos Developer Portal](https://tezos.b9lab.com/fa2). 
+<answer>
+
 
 <question>How much does launching a DAO on Tezos cost?<question>
 <answer>About 7 tez.<answer>
