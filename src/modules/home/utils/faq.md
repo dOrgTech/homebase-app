@@ -42,7 +42,7 @@ Please note that on Tezos you cannot use an NFT token as your voting token.
 <answer>
 Here’s a step-by-step walkthrough of how to configure your DAO in Homebase.
 &nbsp;
-Watch this video [![Homebase DAO - Creating a DAO on Tezos](/src/assets/logos/discord.svg)](https://www.youtube.com/watch?v=E15-zGGXwCc "Homebase DAO - Creating a DAO on Tezos"), or read through the description below.
+Watch this video [![Homebase DAO - Creating a DAO on Tezos](how_to_create_dao_on_tezos.png)](https://www.youtube.com/watch?v=E15-zGGXwCc "Homebase DAO - Creating a DAO on Tezos"), or read through the description below.
 &nbsp;
 <answer>
 

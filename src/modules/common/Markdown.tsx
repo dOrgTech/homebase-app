@@ -38,6 +38,10 @@ const MarkdownHeader = (props: { children: ReactNode; level: number }) => {
   }
 };
 
+const getSrcPath = (src?: string): string => {
+  return require(`../../assets/markdown/${src}`).default;
+}
+
 const components: Partial<
   Omit<import("react-markdown/lib/complex-types").NormalComponents, keyof SpecialComponents> & SpecialComponents
 > = {
@@ -49,6 +53,10 @@ const components: Partial<
   h6: MarkdownHeader,
   p: MarkdownParagraph,
   a: MarkdownLink,
+  img: (props) => {
+    // local paths can not be referenced from md file as they need to be imported as module
+    return <img {...props} src={getSrcPath(props.src)} />
+  },
 };
 
 const Markdown = (props: ReactMarkdownOptions) => {
