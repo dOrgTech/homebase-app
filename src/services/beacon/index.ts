@@ -4,7 +4,8 @@ import { Network } from "services/beacon/context";
 
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.smartpy.io",
-  hangzhounet: "https://hangzhounet.smartpy.io"
+  hangzhounet: "https://hangzhounet.smartpy.io",
+  ithacanet: "https://ithacanet.smartpy.io"
 };
 
 export const connectWithBeacon = async (
@@ -23,6 +24,10 @@ export const connectWithBeacon = async (
   switch (envNetwork) {
     case "hangzhounet":
       networkType = NetworkType.HANGZHOUNET;
+      break;
+
+    case "ithacanet":
+      networkType = NetworkType.ITHACANET;
       break;
 
     case "mainnet":
