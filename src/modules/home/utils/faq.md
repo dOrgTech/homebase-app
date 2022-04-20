@@ -63,17 +63,69 @@ Next, you will configure the DAO settings. We’ll walk you through what each of
 ![Homebase DAO - Creating a DAO on Tezos](dao_settings.png)
 &nbsp;
 &nbsp;
-**Token address** is the smart contract address of the token that your community uses to pool assets. If you have not yet created one, you will need to. You don’t need to be a smart contract developer to do this. You can use the [FA2 bakery](https://fa2-bakery.netlify.app/).
+**Token address** - is the smart contract address of the token that your community uses to pool assets. If you have not yet created one, you will need to. You don’t need to be a smart contract developer to do this. You can use the [FA2 bakery](https://fa2-bakery.netlify.app/).
 &nbsp;
 Please note, you cannot use an NFT token for voting on Homebase. If you enter an NFT token on this screen, your DAO will fail to complete at the end of the creator. You must have or create a token using the FA2 standard.
 &nbsp;
-**Token ID** In Tezos’ FA2 token standard, one token address can have multiple IDs. For example, you might have one token that is for one sub-set of voters to vote on a specific aspect of an organization, and another for a different subset. Or you might have different tokens that have different utility functions.
+**Token ID** - In Tezos’ FA2 token standard, one token address can have multiple IDs. For example, you might have one token that is for one sub-set of voters to vote on a specific aspect of an organization, and another for a different subset. Or you might have different tokens that have different utility functions.
 &nbsp;
-**DAO Name** Usually this is your community’s name.
+**DAO Name** - Usually this is your community’s name.
 &nbsp;
-**Token Symbol** the abbreviation for your token, as set up when you created your FA2 token.
+**Token Symbol** - the abbreviation for your token, as set up when you created your FA2 token.
 &nbsp;
-**Description** What does your community do with this DAO? This is most often a one-line description of your community. Here’s an example of how it shows up in the end:
+**Description** - What does your community do with this DAO? This is most often a one-line description of your community. Here’s an example of how it shows up in the end:
+&nbsp;
+![Homebase DAO - Creating a DAO on Tezos](dao_description.png)
+&nbsp;
+**Administrator** - The admin role is supposed to be held by someone (generally the originator of the DAO) only at the beginning of the contract life, after which it should be given to the DAO itself, which will accept it automatically. The admin role's only ability is to make the DAO call transfer on another FA2 contract using the transfer_contract_tokens entrypoint. This is intended to allow the originator of the DAO to make some transfers to set up the contract before leaving it to its token holders.
+&nbsp;
+**Guardian** - a person/address who can drop a proposal at any time. See an offensive/spammy proposal? The guardian can drop it without asking. Once this looks good, click on continue (bottom right of the screen).
+&nbsp;
+&nbsp;
+&nbsp;
+#### **Configure Proposal and Voting**
+&nbsp;
+**Voting Cycle Duration** - levels = blocks, if you’re familiar with that term from other blockchains. In Tezos levels are at least 60 seconds long, so this roughly equates to time. 7,000 levels would be approximately 5 days.
+&nbsp;
+**Proposal Execution Delay** - This is the time, expressed in blocks/levels that need to pass for a proposal to become "executable". It should always be more than double the duration of a cycle, to ensure
+&nbsp;
+**Proposal Expiration Threshold** - The time in levels/blocks required before a proposal becomes expired. *This amount has to be bigger than the proposal execution delay*, because if it’s not, then your proposals would never be executable, because they would expire before they could be executed.
+&nbsp;
+**Returned Stake After Proposal Rejection** - If a proposal fails, the proposer receives a percentage back.
+&nbsp;
+**Min & Max Transfer Amounts** - This helps you set a threshold for the amount that is acceptable to warrant the attention load of members voting, and also protect the DAO from a high percentage of the treasury being transferred with one proposal.
+&nbsp;
+**Quorum Threshold** - A quorum in democratic process refers to the amount of participants that need to participate in order for a vote to be a valid representative of a collective decision. Here it is measured in terms of % of total governance tokens in the DAO. For example, if there are 100,000 tokens in your DAO, and the quorum is 10%, at least 10,000 tokens or voting power need to be voted with. If not, the proposal will fail and not be able to be executed.
+&nbsp;
+Set your quorum to be low if it’s important that low participation doesn’t interfere with community governance. If your community is making highly consequential proposals, you might consider having a higher quorum.
+&nbsp;
+The next two numbers are the minimum and maximum amount the quorum threshold can get adjusted to after a period change. 
+&nbsp;
+**Quorum Change** - A value that gets computed internally in the formula that calculates quorum adjustment.
+&nbsp;
+**Quorum Max Change** - The maximum amount your quorum can change in between periods.
+&nbsp;
+&nbsp;
+&nbsp;
+#### **Distribution Settings**
+&nbsp;
+**Token holder** - these are the initial token holders in this DAO.
+&nbsp;
+**Maximum Agent Spend Per Cycle** - This is the maximum amount of funds the DAO can spend per cycle (around 3 days).
+&nbsp;
+**Administrator** - this is the wallet address that allows the originator of the DAO to make some transfers to set up the contract before leaving it to its token holders. It’s usually the same as the administrator address you entered on the first screen.
+&nbsp;
+&nbsp;
+&nbsp;
+#### **Review Information**
+&nbsp;
+If you click on next, you will be taken to the review information page, where you will be able to see everything you have configured so far; and if you see anything that you would like to change, you can just click on the edit button and you will be taken to that part of the creator and you will be able to change your settings. 
+&nbsp;
+If everything looks correct. And you can click on the launch button.
+&nbsp;
+Connect your wallet if you haven't already. You will first deploy the metadata carrier contract, which is a contract that contains your DAO's metadata information. Next, you would confirm the origination of the actual DAO contract, after the metadata carrier contract has already been deployed. And finally, after the DAO contract has been deployed, you just need to wait for Homebase's, indexer to pick up your DAO's contract.
+&nbsp;
+After your DAO has been properly indexed, you will see a button that says, "go to my DAO". And if you click on it, you will be taken to your DAO's page.
 <answer>
 
 
