@@ -5,7 +5,15 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import { ReactMarkdownOptions } from "react-markdown/lib/react-markdown";
 import { SpecialComponents } from "react-markdown/lib/ast-to-react";
-import { Link } from "@material-ui/core";
+import { Link, styled } from "@material-ui/core";
+
+const getSrcPathForLocalImage = (src?: string): string => {
+  return require(`../../assets/markdown/${src}`).default;
+}
+
+const MarkDownImg = styled('img')({
+  maxWidth: '100%'
+})
 
 const MarkdownParagraph = (props: { children: ReactNode }) => {
   return <Typography variant='body1'>{props.children}</Typography>;
@@ -49,6 +57,22 @@ const components: Partial<
   h6: MarkdownHeader,
   p: MarkdownParagraph,
   a: MarkdownLink,
+  img: (props) => {
+    const { src } = props;
+    if (!src) {
+      return null
+    }
+
+    // local paths can not be referenced from md file as they need to be imported as module
+    // src paths with suffix ~local/ are treated differently than external src paths
+    if (src.includes('~local/')) {
+      const srcWithoutSuffix = src.replace('~local/','')
+      return <MarkDownImg {...props} src={getSrcPathForLocalImage(srcWithoutSuffix)} />
+    }
+
+    return <MarkDownImg {...props} />
+
+  },
 };
 
 const Markdown = (props: ReactMarkdownOptions) => {
