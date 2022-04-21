@@ -154,10 +154,11 @@ For example, a member of an artists DAO might propose to disperse an amount of f
 #### **How are funds added to a treasury?**
 &nbsp;
 Assets can be directly transferred to the DAO's address. There is no special process. Once transferred they should be visible in the *Treasury* tab.
-&nbsp;
-&nbsp;
-#### **How to make a proposal on Homebase?**
-&nbsp;
+<answer>
+
+
+<question>How to make a proposal on Homebase?<question>
+<answer>
 [![How To Create a Proposal on Homebase DAO.](~local/dao_how_to_create_a_proposal_on_tezos.png)](https://www.youtube.com/watch?v=auFUekD-5iM "How To Create a Proposal on Homebase DAO.")
 &nbsp;
 <answer>
