@@ -118,7 +118,7 @@ const App: React.FC = () => {
                       }
                     />
                   </Route>
-                  <Route path={"/faq"}>
+                  <Route path="/faq">
                     <FAQ />
                   </Route>
                   <Route path="/">
