@@ -176,13 +176,8 @@ export const Landing: React.FC = () => {
                           </Link>
                         </Grid>
                         <Grid item>
-                          <Link
-                            href="https://github.com/tezos-commons/baseDAO"
-                            underline="none"
-                          >
-                            <OutlinedButton variant="outlined">
-                              Learn More
-                            </OutlinedButton>
+                          <Link href='/faq' underline='none'>
+                            <OutlinedButton variant='outlined'>Learn More</OutlinedButton>
                           </Link>
                         </Grid>
                       </Grid>
