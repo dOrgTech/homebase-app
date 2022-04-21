@@ -67,7 +67,7 @@ Next, you will configure the DAO settings. We’ll walk you through what each of
 &nbsp;
 **Token address** - is the smart contract address of the token that your community uses to pool assets. If you have not yet created one, you will need to. You don’t need to be a smart contract developer to do this. You can use the [FA2 bakery](https://fa2-bakery.netlify.app/).
 &nbsp;
-Please note, you cannot use an NFT token for voting on Homebase. If you enter an NFT token on this screen, your DAO will fail to complete at the end of the creator. You must have or create a token using the FA2 standard.
+Please note, you cannot use an NFT token for voting on Homebase. If you enter an NFT token on this screen, your DAO will fail to complete at the end of the creator.
 &nbsp;
 **Token ID** - In Tezos’ FA2 token standard, one token address can have multiple IDs. For example, you might have one token that is for one sub-set of voters to vote on a specific aspect of an organization, and another for a different subset. Or you might have different tokens that have different utility functions.
 &nbsp;
@@ -125,7 +125,7 @@ If you click on next, you will be taken to the review information page, where yo
 &nbsp;
 If everything looks correct. And you can click on the launch button.
 &nbsp;
-Connect your wallet if you haven't already. You will first deploy the metadata carrier contract, which is a contract that contains your DAO's metadata information. Next, you would confirm the origination of the actual DAO contract, after the metadata carrier contract has already been deployed. And finally, after the DAO contract has been deployed, you just need to wait for Homebase's, indexer to pick up your DAO's contract.
+Connect your wallet if you haven't already. You will first deploy the metadata carrier contract, which is a contract that contains your DAO's metadata information. Next, you would confirm the origination of the actual DAO contract, after the metadata carrier contract has already been deployed. And finally, after the DAO contract has been deployed, you just need to wait for Homebase's indexer to pick up your DAO's contract.
 &nbsp;
 After your DAO has been properly indexed, you will see a button that says, "go to my DAO". And if you click on it, you will be taken to your DAO's page.
 <answer>

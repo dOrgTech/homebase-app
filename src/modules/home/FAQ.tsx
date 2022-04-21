@@ -29,21 +29,21 @@ export const FAQ: React.FC = () => {
 
   return (
     <PageContainer>
-      <Grid container direction='column' style={{ gap: 46 }}>
+      <Grid container direction="column" style={{ gap: 46 }}>
         {!isExtraSmall && (
           <Grid item>
             <Header />
           </Grid>
         )}
         <TextBlock item>
-          <Typography color={"textPrimary"} variant={"h1"}>
+          <Typography color="textPrimary" variant="h1">
             Welcome to Homebase FAQ
             <br />
             <br />
           </Typography>
-          <Typography color={"textPrimary"} variant={"body1"}>
+          <Typography color="textPrimary" variant="body1">
              We strive to make Homebase super user-centered. Feel free to reach out to our team at any time on the{" "}
-            <Link color={"secondary"} target='_blank' href='https://discord.gg/XufcBNu277'>
+            <Link color="secondary" target="_blank" href='https://discord.gg/XufcBNu277'>
               Discord
             </Link>
             .<br />
