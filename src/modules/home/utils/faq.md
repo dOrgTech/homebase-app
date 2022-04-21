@@ -10,9 +10,9 @@ Here are a few articles about why the cooperative decentralization of web3 is re
 &nbsp;
 "DAO's are a fundamental shift to the way humans organize and collaborate!"
 &nbsp;
-[Crypto's networked decentralization will drive web3](https://techcrunch.com/2021/09/16/cryptos-networked-collaboration-will-drive-web-3-0/), \_Tech Crunch\*.
+[Crypto's networked decentralization will drive web3](https://techcrunch.com/2021/09/16/cryptos-networked-collaboration-will-drive-web-3-0/), _Tech Crunch_.
 [Why Web3 Matters](https://future.a16z.com/why-web3-matters/), _a16z_.
-[Why web 3.0 communities are a big deal?](https://uxdesign.cc/why-web-3-0-communities-are-a-big-deal-600c8e5013c3): a non-technical narrative, _UX Collective_.
+[Why web 3.0 communities are a big deal?](https://uxdesign.cc/why-web-3-0-communities-are-a-big-deal-600c8e5013c3), a non-technical narrative, _UX Collective_.
 &nbsp;
 &nbsp;
 Tezos Homebase was developed for the Tezos community to organize and develop DAOs together. Over time, Homebase will add features based on common needs as more Tezos communities create DAOs. The future of DAOs is bright, as more and more developers, creators, and protocols are utilizing the power of DAOs to build community engagement and realize the peer-to-peer benefit of blockchain innovation.
