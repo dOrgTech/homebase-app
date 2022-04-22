@@ -22,7 +22,7 @@ import { Landing } from "modules/home/Landing";
 import { WarningFooter } from "modules/common/WarningFooter";
 import { ActionSheetProvider } from "modules/explorer/context/ActionSheets";
 import { legacyTheme } from "theme/legacy";
-import {FAQ} from "./modules/home/FAQ";
+import { FAQ } from "modules/home/FAQ";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -118,7 +118,7 @@ const App: React.FC = () => {
                       }
                     />
                   </Route>
-                  <Route path={"/faq"}>
+                  <Route path="/faq">
                     <FAQ />
                   </Route>
                   <Route path="/">
