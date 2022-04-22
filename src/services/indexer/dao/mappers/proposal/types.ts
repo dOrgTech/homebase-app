@@ -214,6 +214,7 @@ export class TreasuryProposal extends Proposal {
       config: [],
       transfers: [],
       update_guardian: "",
+      update_contract_delegate: "",
       agoraPostId: "",
     };
 
@@ -224,7 +225,6 @@ export class TreasuryProposal extends Proposal {
 
       const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
       const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(unpackedMetadata);
-
       values = { ...values, ...getBaseMetadata(proposalMetadataDTO) };
 
       if ("transfer_proposal" in proposalMetadataDTO) {
@@ -254,6 +254,7 @@ export class RegistryProposal extends Proposal {
     let values: RegistryProposalMetadata = {
       config: [],
       transfers: [],
+      update_contract_delegate: "",
       update_guardian: "",
       agoraPostId: "",
       list: [],
@@ -266,7 +267,7 @@ export class RegistryProposal extends Proposal {
 
       const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
       const proposalMetadataDTO: PMRegistryProposal = schema.Execute(unpackedMetadata);
-
+      
       values = { ...values, ...getBaseMetadata(proposalMetadataDTO) };
 
       if ("transfer_proposal" in proposalMetadataDTO) {
@@ -307,6 +308,7 @@ export interface FA2Transfer extends Transfer {
 interface BaseProposalMetadata {
   config: { key: "frozen_extra_value" | "slash_scale_value"; value: BigNumber }[];
   update_guardian: string;
+  update_contract_delegate: string;
   agoraPostId: string;
 }
 
@@ -314,8 +316,13 @@ function getBaseMetadata(proposalMetadataDTO: PMTreasuryProposal | PMRegistryPro
   const values: BaseProposalMetadata = {
     config: [],
     update_guardian: "",
+    update_contract_delegate: "",
     agoraPostId: "-1",
   };
+
+  if ("update_contract_delegate" in proposalMetadataDTO) {
+    values.update_contract_delegate = proposalMetadataDTO.update_contract_delegate;
+  }
 
   if ("update_guardian" in proposalMetadataDTO) {
     values.update_guardian = proposalMetadataDTO.update_guardian;

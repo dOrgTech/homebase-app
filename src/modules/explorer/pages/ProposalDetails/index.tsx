@@ -32,7 +32,7 @@ import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import {VoteDialog} from "../../components/VoteDialog";
 import {XTZTransferBadge} from "../../components/XTZTransferBadge";
 import {InfoIcon} from "../../components/styled/InfoIcon";
-import {GuardianTransferBadge} from "modules/explorer/components/GuardianTransferBadge";
+import {ProposalTransferBadge} from "modules/explorer/components/ProposalTransferBadge";
 import {useUnstakeVotes} from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes";
 import {useTezos} from "../../../../services/beacon/hooks/useTezos";
 
@@ -419,8 +419,10 @@ export const ProposalDetails: React.FC = () => {
                       </HighlightedBadge>
                     </Grid>
                   ))}
+                  {proposal.metadata.update_contract_delegate !== '' &&
+                    <ProposalTransferBadge address={proposal.metadata.update_contract_delegate} label="New Delegate"/>}
                   {proposal.metadata.update_guardian !== '' &&
-                    <GuardianTransferBadge address={proposal.metadata.update_guardian}/>}
+                    <ProposalTransferBadge address={proposal.metadata.update_guardian} label="Update Guardian"/>}
                   {list.map(({key, value}, index) => (
                     <Grid
                       key={index}

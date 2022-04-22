@@ -376,6 +376,8 @@ export type PMBaseProposal = {
   configuration_proposal: ConfigProposalDTO
 } | {
   update_guardian: string;
+} | {
+  update_contract_delegate: string
 }
 
 export type PMTreasuryProposal = PMBaseProposal | {
