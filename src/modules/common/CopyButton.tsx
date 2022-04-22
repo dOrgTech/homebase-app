@@ -12,7 +12,8 @@ export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
     <Box
       padding="5px 0 0 10px"
       marginTop="auto"
-      onClick={() => {
+      onClick={(e) => {
+        e.preventDefault()
         navigator.clipboard.writeText(text);
         setCopied(true);
 

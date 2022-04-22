@@ -24,6 +24,45 @@ export class TreasuryDAO extends BaseDAO {
       .toString();
   }
 
+  public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {
+    const contract = await getContract(tezos, this.data.address);
+    const parser = new Parser();
+    const michelsonType = parser.parseData(proposeCode);
+
+    const { packed: proposalMetadata } = await tezos.rpc.packData({
+      data: { prim: "Right", args: [{ string: newGuardianAddress }] },
+      type: michelsonType as Expr,
+    });
+
+    const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposalMetadata
+    );
+
+    return await contractMethod.send();
+  }
+
+  public async proposeDelegationChange(newDelegationAddress: string, tezos: TezosToolkit) {
+    const contract = await getContract(tezos, this.data.address);
+
+    const proposalMetadata = await BaseDAO.encodeProposalMetadata(
+      {
+        update_contract_delegate: newDelegationAddress,
+      },
+      proposeCode,
+      tezos
+    );
+
+    const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposalMetadata
+    );
+
+    return await contractMethod.send();
+  }
+
   public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address);
 

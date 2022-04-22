@@ -10,6 +10,7 @@ import { ProposalFormContainer } from "./ProposalForm";
 import { ConfigProposalForm } from "./ConfigProposalForm";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
+import { DelegationChangeProposalForm } from "./DelegationChangeProposalForm";
 
 
 type RecursivePartial<T> = {
@@ -38,6 +39,7 @@ enum ProposalModalKey {
   guardian,
   transfer,
   registry,
+  delegation,
 }
 
 // const enabledOptions = {
@@ -126,6 +128,14 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) =>
                   onClick={() => handleOptionSelected(ProposalModalKey.guardian)}>
                   Change Guardian
                 </Button>
+
+                <Button
+                  variant={"contained"}
+                  color={"secondary"}
+                  style={{ marginBottom: 20 }}
+                  onClick={() => handleOptionSelected(ProposalModalKey.delegation)}>
+                  Change Delegate
+                </Button>
               </Grid>
             </Content>
           </>
@@ -138,6 +148,10 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) =>
       <ConfigProposalForm open={ProposalModalKey.config === openModal} handleClose={() => handleCloseModal()} />
       <GuardianChangeProposalForm
         open={ProposalModalKey.guardian === openModal}
+        handleClose={() => handleCloseModal()}
+      />
+      <DelegationChangeProposalForm
+        open={ProposalModalKey.delegation === openModal}
         handleClose={() => handleCloseModal()}
       />
     </>

@@ -9,20 +9,16 @@ const ArrowContainer = styled(Grid)(({ theme }) => ({
 }));
 
 interface Props extends GridProps {
+  label: string;
   address: string;
 }
 
-export const GuardianTransferBadge: React.FC<Props> = ({ address, ...props }) => {
+export const ProposalTransferBadge: React.FC<Props> = ({ label, address, ...props }) => {
   return (
-    <HighlightedBadge
-      alignItems='center'
-      direction='row'
-      container
-      style={{ gap: 20 }}
-      {...props}>
+    <HighlightedBadge alignItems='center' direction='row' container style={{ gap: 20 }} {...props}>
       <Grid item>
         <Typography variant={"body1"} color={"textPrimary"}>
-          Update guardian
+          {label}
         </Typography>
       </Grid>
       <ArrowContainer item>
