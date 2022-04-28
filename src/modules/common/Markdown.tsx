@@ -11,17 +11,17 @@ const getSrcPathForLocalImage = (src?: string): string => {
   return require(`../../assets/markdown/${src}`).default;
 }
 
-const MarkDownImg = styled('img')({
-  maxWidth: '100%'
+const MarkDownImg = styled("img")({
+  maxWidth: "100%"
 })
 
 const MarkdownParagraph = (props: { children: ReactNode }) => {
-  return <Typography variant='body1'>{props.children}</Typography>;
+  return <Typography variant="body1">{props.children}</Typography>;
 };
 
 const MarkdownLink = (props: any) => {
   return (
-    <Link target='_blank' color='secondary' underline='always' href={props.href}>
+    <Link target="_blank" color="secondary" underline="always" href={props.href}>
       {props.children}
     </Link>
   );
@@ -30,19 +30,19 @@ const MarkdownLink = (props: any) => {
 const MarkdownHeader = (props: { children: ReactNode; level: number }) => {
   switch (props.level) {
     case 1:
-      return <Typography variant='h1'>{props.children}</Typography>;
+      return <Typography variant="h1">{props.children}</Typography>;
     case 2:
-      return <Typography variant='h2'>{props.children}</Typography>;
+      return <Typography variant="h2">{props.children}</Typography>;
     case 3:
-      return <Typography variant='h3'>{props.children}</Typography>;
+      return <Typography variant="h3">{props.children}</Typography>;
     case 4:
-      return <Typography variant='h4'>{props.children}</Typography>;
+      return <Typography variant="h4">{props.children}</Typography>;
     case 5:
-      return <Typography variant='h5'>{props.children}</Typography>;
+      return <Typography variant="h5">{props.children}</Typography>;
     case 6:
-      return <Typography variant='h6'>{props.children}</Typography>;
+      return <Typography variant="h6">{props.children}</Typography>;
     default:
-      return <Typography variant='h6'>{props.children}</Typography>;
+      return <Typography variant="h6">{props.children}</Typography>;
   }
 };
 
@@ -65,8 +65,8 @@ const components: Partial<
 
     // local paths can not be referenced from md file as they need to be imported as module
     // src paths with suffix ~local/ are treated differently than external src paths
-    if (src.includes('~local/')) {
-      const srcWithoutSuffix = src.replace('~local/','')
+    if (src.includes("~local/")) {
+      const srcWithoutSuffix = src.replace("~local/", "")
       return <MarkDownImg {...props} src={getSrcPathForLocalImage(srcWithoutSuffix)} />
     }
 

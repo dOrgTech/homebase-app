@@ -22,9 +22,9 @@ const AccordionContent = styled(AccordionDetails)({
 export const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
   return (
     <TableContainer>
-      <Grid container direction='column' wrap={"nowrap"}>
+      <Grid container direction="column" wrap="nowrap">
         <Accordion>
-          <AccordionHeader expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
+          <AccordionHeader expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
             <Typography>{question}</Typography>
           </AccordionHeader>
           <AccordionContent>

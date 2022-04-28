@@ -113,6 +113,17 @@ export const NetworkMenu: React.FC<
             </Typography>
           </Grid>
         </AddressMenuItem>
+        <AddressMenuItem
+          container
+          alignItems="center"
+          onClick={() => handleNetworkChange("ithacanet")}
+        >
+          <Grid item>
+            <Typography variant="subtitle2" color="textSecondary">
+              ITHACANET
+            </Typography>
+          </Grid>
+        </AddressMenuItem>
       </AddressMenu>
     </StyledPopover>
   );

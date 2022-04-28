@@ -5,7 +5,7 @@ import mixpanel from "mixpanel-browser";
 import React, { createContext, useEffect, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
 
-export type Network = "mainnet" | "hangzhounet"
+export type Network = "mainnet" | "hangzhounet" | "ithacanet"
 
 interface TezosState {
   network: Network;
