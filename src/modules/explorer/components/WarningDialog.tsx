@@ -1,11 +1,8 @@
 import React, {useState} from "react";
 import {
   styled,
-  Dialog,
-  DialogContent,
   Grid,
   Typography,
-  DialogContentText,
   Checkbox,
   FormControlLabel,
   Link,
