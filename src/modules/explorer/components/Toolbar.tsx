@@ -22,21 +22,50 @@ import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
 import { ActionSheet, useActionSheet } from "../context/ActionSheets";
 
 const Header = styled(Grid)(({ theme }) => ({
-  padding: "28px 125px",
+  width: "1000px",
+  height: "100%",
+  margin: "auto",
+  padding: "28px 0",
+  flexDirection: "row",
 
-  [theme.breakpoints.down("xs")]: {
-    padding: "28px 25px",
+  ["@media (max-width: 1425px)"]: {
+    
   },
+
+  ["@media (max-width:1335px)"]: {
+    
+  },
+
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+  },
+
+  ["@media (max-width:1030px)"]: { 
+    
+  },
+
+  ["@media (max-width:960px)"]: { 
+    
+  },
+
+  ["@media (max-width:645px)"]: {
+    flexDirection: "column",
+
+  }
 }));
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
   background: theme.palette.primary.dark,
+  position: "sticky",
+
+  ["@media (max-height:750px)"]: {
+    position: "static",
+  }
 }));
 
 const StyledToolbar = styled(Toolbar)({
-  width: "100%",
-  display: "flex",
+  width: "100%", 
   padding: 0,
   boxSizing: "border-box",
   justifyContent: "space-between",
@@ -51,6 +80,8 @@ const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
   cursor: "pointer",
+  fontFamily: "Roboto",
+  letterSpacing: "initial",
 });
 
 const ConnectWallet = styled(Button)({
@@ -76,16 +107,11 @@ const LogoItem = styled("img")({
 });
 
 const ToolbarContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    display: "flex",
-    justifyContent: "center",
-    marginLeft: 16,
+  ["@media (max-width: 645px)"]: {
+    marginBottom: "20px",
   },
-  [theme.breakpoints.down("md")]: {
-    display: "flex",
-    justifyContent: "center",
-    marginLeft: 0,
-  },
+
+  
 }));
 
 export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
@@ -94,25 +120,24 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
 }) => {
   const { connect, account } = useTezos();
   const theme = useTheme();
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"));
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu);
 
   const history = useHistory();
 
   return (
-    <StyledAppBar position="sticky">
+    <StyledAppBar>
       <StyledToolbar>
         <Header
           container
-          direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
           wrap="wrap"
           justify={"space-between"}
         >
           <Grid item>
             <Box onClick={() => history.push("/explorer")}>
-              <ToolbarContainer container alignItems="center" wrap="nowrap">
+              <ToolbarContainer container alignItems="center" wrap="nowrap" >
                 <Grid item>
                   <LogoItem src={HomeButton} />
                 </Grid>

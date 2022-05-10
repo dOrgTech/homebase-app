@@ -47,6 +47,16 @@ const MobileTableRow = styled(Grid)({
   borderBottom: "0.3px solid rgba(125,140,139, 0.2)",
 });
 
+const TableText = styled(Typography)({
+  fontSize: "16px",
+  fontWeight: 500,
+
+  ["@media (max-width:1155px)"]: { 
+    fontSize: "15px",
+    whiteSpace: "nowrap",
+  },
+});
+
 const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
   switch (title) {
     case "Rank":
@@ -106,11 +116,11 @@ const DesktopUsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
       <Table>
         <StyledTableHead>
           <StyledTableRow>
-            <TableCell>Top Addresses</TableCell>
+            <TableCell><TableText>Top Addresses</TableText></TableCell>
           </StyledTableRow>
           <TableRow>
             {titles.map((title, i) => (
-              <TableCell key={`userstitle-${i}`}>{title}</TableCell>
+              <TableCell key={`userstitle-${i}`}><TableText>{title}</TableText></TableCell>
             ))}
           </TableRow>
         </StyledTableHead>

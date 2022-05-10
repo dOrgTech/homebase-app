@@ -1,6 +1,15 @@
-import { Typography, useMediaQuery, useTheme } from "@material-ui/core";
+import { Typography, useMediaQuery, useTheme, Theme, styled } from "@material-ui/core";
 import React from "react";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
+
+const ProposalsStatus = styled(Typography)(({ theme }: { theme: Theme }) => ({
+  fontSize: "20px",
+  color: theme.palette.text.primary,
+
+  ["@media (max-width:1030px)"]: { 
+    fontSize: "18px",
+  },
+}));
 
 export const CycleDescription: React.FC<{ daoAddress: string }> = ({
   daoAddress,
@@ -11,10 +20,10 @@ export const CycleDescription: React.FC<{ daoAddress: string }> = ({
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
   return (
-    <Typography variant="h4" color="textPrimary" align={isExtraSmall? "center": "left"}>
+    <ProposalsStatus align={isExtraSmall? "center": "left"}>
       {isVotingPeriod === "voting"
-        ? "VOTING ON PROPOSALS"
-        : "CREATING PROPOSALS"}
-    </Typography>
+        ? "Voting on Proposals"
+        : "Creating Proposals"}
+    </ProposalsStatus>
   );
 };

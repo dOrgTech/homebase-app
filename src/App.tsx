@@ -22,7 +22,7 @@ import { Landing } from "modules/home/Landing";
 import { WarningFooter } from "modules/common/WarningFooter";
 import { ActionSheetProvider } from "modules/explorer/context/ActionSheets";
 import { legacyTheme } from "theme/legacy";
-import { FAQ } from "modules/home/FAQ";
+import { Footer } from "modules/common/Footer"; 
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -107,6 +107,7 @@ const App: React.FC = () => {
                         "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
                       }
                     />
+                   
                   </Route>
                   <Route path="/explorer">
                     <TZKTSubscriptionsProvider>
@@ -117,9 +118,7 @@ const App: React.FC = () => {
                         "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
                       }
                     />
-                  </Route>
-                  <Route path="/faq">
-                    <FAQ />
+                    <Footer></Footer>
                   </Route>
                   <Route path="/">
                     <Landing />

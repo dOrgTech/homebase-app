@@ -19,30 +19,77 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { debounce } from "../utils/debounce";
+import { red } from "@material-ui/core/colors";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
-  position: "sticky",
   background: theme.palette.primary.main,
+  position: "sticky",
+  top: "0px",
 }));
+
+const InnerContainer = styled(Grid)(({ theme }) => ({
+  width: "1000px",
+  margin: "auto",
+  justifyContent: "space-between",
+
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+
+  },
+}));
+
+const PageItem = styled(Grid)(({theme, isSelected}: {theme: Theme; isSelected: boolean}) => ({
+  height: "60px",
+  borderTop: "2px solid transparent",
+  borderBottom: isSelected 
+  ? "2px solid" + theme.palette.secondary.main
+  : "2px solid transparent",
+
+  "& > a > *": {
+    height: "100%",
+  },
+
+
+
+}),
+);
 
 const IconContainer = styled("span")(
   ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
     "& > svg > *": {
       fill: isSelected
-        ? theme.palette.secondary.main
-        : theme.palette.text.primary,
+      ? theme.palette.secondary.main
+      : theme.palette.text.primary,
     },
-  })
+
+  
+
+    // "&:hover > svg:hover > *": {
+    //   fill: isSelected
+    //   ? theme.palette.secondary.main
+    //   : theme.palette.secondary.main,
+    // }
+  }),
+
 );
 
-const PageItem = styled(Grid)({
-  height: 65,
+const NavText = styled(Typography)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    color: isSelected
+    ? theme.palette.secondary.main
+    : theme.palette.text.primary,
+    
+    // "&:hover": {
+    //   color: isSelected
+    //   ? theme.palette.secondary.main
+    //   : theme.palette.secondary.main,
+    // }
 
-  "& > a > *": {
-    height: "100%",
-  },
-});
+    
+  }),
+
+);
 
 interface Page {
   pathId: string;
@@ -96,7 +143,6 @@ const StyledBottomBar = styled(Grid)(
     height: 55,
     bottom: visible ? 0 : -55,
     backgroundColor: theme.palette.primary.main,
-    borderTop: `2px solid ${theme.palette.primary.light}`,
     zIndex: 10000,
     width: "100%",
     transition: "bottom 0.5s",
@@ -114,6 +160,7 @@ const BottomNavBar: React.FC = ({ children }) => {
       setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
 
       setPrevScrollPos(currentScrollPos);
+
     }, 100);
 
     window.addEventListener("scroll", handleScroll);
@@ -164,9 +211,10 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
   }, [account, dao, daoId]);
 
   return !isMobileSmall || disableMobileMenu ? (
-    <Container container justifyContent="center" style={{ gap: 92 }}>
+    <Container container>
+      <InnerContainer container>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} item alignItems="center">
+        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item alignItems="center">
           <Link to={page.href}>
             <Grid
               container
@@ -180,21 +228,22 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
                 </IconContainer>
               </Grid>
               <Grid item>
-                <Typography
-                  color={pathId === page.pathId ? "secondary" : "textPrimary"}
+                <NavText
+                  isSelected={pathId === page.pathId}
                 >
                   {page.name}
-                </Typography>
+                </NavText>
               </Grid>
             </Grid>
           </Link>
         </PageItem>
       ))}
+      </InnerContainer>
     </Container>
   ) : (
     <BottomNavBar>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} item alignItems="center">
+        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item alignItems="center">
           <Link to={page.href}>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>

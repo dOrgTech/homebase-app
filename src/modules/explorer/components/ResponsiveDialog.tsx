@@ -7,7 +7,7 @@ const Content = styled(Grid)({
 })
 
 const CloseButton = styled(Typography)({
-  fontWeight: 900,
+  fontWeight: 700,
   cursor: "pointer",
 });
 
@@ -59,7 +59,7 @@ export const ResponsiveDialog: React.FC<{ open: boolean; onClose: () => void; ti
               align="right"
               onClick={onClose}
             >
-              X
+              x
             </CloseButton>
           </Grid>
         </Grid>

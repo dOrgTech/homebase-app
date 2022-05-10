@@ -4,13 +4,14 @@ import {
   Grid,
   styled,
   Typography,
+  Theme,
 } from "@material-ui/core";
 import React from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { ActionSheet, useActionSheet } from "../context/ActionSheets";
 import {Network} from "../../../services/beacon/context";
 
-const StyledConnectedButton = styled(Box)({
+const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {
     height: "100%",
   },
@@ -19,9 +20,9 @@ const StyledConnectedButton = styled(Box)({
   padding: "5px 10px",
   cursor: "pointer",
   "&:hover": {
-    background: "#273833"
+    background: theme.palette.secondary.dark,
   }
-});
+}));
 
 export const networkDotColorMap: Record<Network, string> = {
   mainnet: "#9EEE5D",

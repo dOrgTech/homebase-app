@@ -4,8 +4,8 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 const BalancesBox = styled(Grid)(({ theme }) => ({
-  minHeight: "153px",
-  padding: "38px 55px",
+  minHeight: "137px",
+  padding: "38px 38px",
   background: theme.palette.primary.main,
   boxSizing: "border-box",
   borderRadius: 8,

@@ -21,32 +21,46 @@ import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { UsersTable } from "../../components/UsersTable";
 import BigNumber from "bignumber.js";
 import {InfoIcon} from "../../components/styled/InfoIcon";
+import { FontDownloadRounded } from "@material-ui/icons";
+import { SmallButton } from '../../../common/SmallButton';
+
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
-  padding: "38px 55px",
+  padding: "38px 38px",
 
-  [theme.breakpoints.down("xs")]: {
-    padding: "38px 29px",
-  },
+  // [theme.breakpoints.down("xs")]: {
+  //   padding: "38px 29px",
+  // },
 }));
 
 const TitleText = styled(Typography)(({ theme }) => ({
-  fontSize: 60,
+  fontSize: 40,
   fontWeight: 500,
   lineHeight: .8,
 
-  [theme.breakpoints.down("xs")]: {
-    fontSize: 26,
+  ["@media (max-width:1155px)"]: { 
+
   },
 }));
 
 const SubtitleText = styled(Typography)({
-  fontWeight: 400,
+  margin: "0 auto",
+  width: "875px",
+  fontWeight: 300,
+  maxHeight: "200px",
+  overflowY: "scroll",
+
+  ["@media (max-width:1166px)"]: { 
+    width:"75.3vw"
+  },  
+
+  ["@media (max-width:1138px)"]: { 
+    width:"100%"
+  },  
+
 });
 
-const ExecuteButton = styled(Button)({
-  marginTop: "-35px",
-});
+
 
 const TableContainer = styled(ContentContainer)({
   width: "100%",
@@ -105,15 +119,14 @@ export const DAO: React.FC = () => {
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
               <Grid item>
-                <ExecuteButton
+                <SmallButton
                   variant="contained"
-                  color="secondary"
                   size={isExtraSmall ? "small" : "medium"}
                   onClick={onFlush}
                   disabled={!executableProposals || !executableProposals.length}
                 >
                   Execute
-                </ExecuteButton>
+                </SmallButton>
                 <Tooltip
                   placement="bottom"
                   title="Execute all passed proposals and drop all expired or rejected"
@@ -123,7 +136,7 @@ export const DAO: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
-          <Grid item>
+          <Grid item style={{marginTop:"-10px"}}>
             <SubtitleText variant="body1" color="textPrimary">
               {description}
             </SubtitleText>
