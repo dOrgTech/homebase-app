@@ -19,7 +19,6 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { debounce } from "../utils/debounce";
-import { red } from "@material-ui/core/colors";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
