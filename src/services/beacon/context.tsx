@@ -15,7 +15,7 @@ export const TezosContext = createContext<TezosProvider>({
   dispatch: () => {},
 });
 
-const getInitialState = async (): Promise<TezosState> => {
+const getSavedState = async (): Promise<TezosState> => {
   const network = getTezosNetwork()
   const tezos = createTezos(network)
   const wallet = createWallet()
@@ -37,7 +37,7 @@ export const TezosProvider: React.FC = ({ children }) => {
   }, [state.network])
 
   useEffect(() => {
-    getInitialState()
+    getSavedState()
       .then((tezosState) => {
           dispatch({
             type: TezosActionType.UPDATE_TEZOS,
