@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, { useMemo } from "react";
 import {
   Grid,
   Link,
@@ -16,7 +16,7 @@ import hexToRgba from "hex-to-rgba";
 import {TransferWithBN} from "services/contracts/baseDAO/hooks/useTransfers";
 import dayjs from "dayjs";
 import {useTezos} from "services/beacon/hooks/useTezos";
-import {Network} from "services/beacon/context";
+import {Network} from "services/beacon";
 import {ContentContainer} from "modules/explorer/components/ContentContainer";
 import {networkNameMap} from "../../../../../services/bakingBad";
 

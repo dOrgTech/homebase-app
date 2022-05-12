@@ -1,6 +1,6 @@
 import { ContractAbstraction, TezosToolkit, TransactionWalletOperation, Wallet } from "@taquito/taquito";
 import { DAOTemplate, MigrationParams } from "modules/creator/state";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { ConfigProposalParams, fromStateToBaseStorage, getContract } from ".";
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
 import { generateStorageContract } from "services/baseDAODocker";

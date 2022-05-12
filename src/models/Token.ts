@@ -1,5 +1,5 @@
 import BigNumber from "bignumber.js";
-import {Network} from "services/beacon/context";
+import { Network } from "services/beacon";
 
 interface TokenParams {
   id: string;

@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useRef, useState } from "react";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { networkNameMap } from "../index";
 

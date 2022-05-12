@@ -1,7 +1,7 @@
 import { styled, Grid, Typography, capitalize } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import {ResponsiveDialog} from "./ResponsiveDialog";
 import {ColorDot, networkDotColorMap} from "./ChangeNetworkButton";
 import {ContentContainer} from "./ContentContainer";

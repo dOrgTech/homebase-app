@@ -1,4 +1,4 @@
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 
 export interface TokenBalancesDTO {
   balances: (DAOToken & { balance: string })[];
