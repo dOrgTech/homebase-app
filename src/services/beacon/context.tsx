@@ -3,7 +3,7 @@ import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 import mixpanel from "mixpanel-browser";
 import React, { createContext, useEffect, useReducer } from "react";
-import { rpcNodes } from "services/beacon";
+import {createWallet, rpcNodes} from 'services/beacon';
 
 export type Network = "mainnet" | "hangzhounet" | "ithacanet"
 
@@ -92,11 +92,40 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
   }
 };
 
+const getInitialState = async (): Promise<TezosState> => {
+  const network = getInitialNetwork()
+
+  const tezos = new TezosToolkit(rpcNodes[network]);
+  tezos.setPackerProvider(new MichelCodecPacker());
+  tezos.addExtension(new Tzip16Module());
+
+  const wallet = createWallet()
+
+  const account = await wallet.client.getActiveAccount()
+
+  return {
+    network,
+    tezos,
+    wallet,
+    account: account?.address ?? "",
+  }
+}
+
 export const TezosProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   useEffect(() => {
-    mixpanel.register({'Network': INITIAL_STATE.network });
+    mixpanel.register({'Network': state.network });
+  }, [state.network])
+
+  useEffect(() => {
+    getInitialState()
+      .then((tezosState) => {
+          dispatch({
+            type: "UPDATE_TEZOS",
+            payload: tezosState,
+          });
+      })
   }, [])
 
   return (
