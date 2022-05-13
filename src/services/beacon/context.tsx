@@ -16,16 +16,24 @@ export const TezosContext = createContext<TezosProvider>({
 });
 
 const getSavedState = async (): Promise<TezosState> => {
-  const network = getTezosNetwork()
-  const tezos = createTezos(network)
-  const wallet = createWallet()
-  const account = await wallet.client.getActiveAccount()
+  try {
+    const network = getTezosNetwork()
+    const tezos = createTezos(network)
+    const wallet = createWallet()
+    const activeAccount = await wallet.client.getActiveAccount()
 
-  return {
-    network,
-    tezos,
-    wallet,
-    account: account?.address ?? "",
+    if (!activeAccount?.address) {
+      throw new Error ('No wallet address found')
+    }
+
+    return {
+      network,
+      tezos,
+      wallet,
+      account: activeAccount.address,
+    }
+  } catch (error) {
+    return INITIAL_STATE
   }
 }
 

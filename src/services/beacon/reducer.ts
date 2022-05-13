@@ -16,8 +16,9 @@ const tezos = createTezos(network)
 export const INITIAL_STATE: TezosState = {
   tezos,
   network,
+  wallet: undefined,
+  // @TODO: refactor interface this is actually an address
   account: "",
-  wallet: undefined
 };
 
 export const reducer = (state: TezosState, action: TezosAction): TezosState => {
