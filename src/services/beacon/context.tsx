@@ -1,19 +1,19 @@
-import React, { createContext, useEffect, useReducer } from "react";
-import mixpanel from "mixpanel-browser";
-import { createTezos, createWallet, getTezosNetwork } from './utils';
-import { INITIAL_STATE, reducer, TezosState} from './reducer';
-import {TezosAction, TezosActionType} from './actions';
+import React, { createContext, useEffect, useReducer } from "react"
+import mixpanel from "mixpanel-browser"
+import { createTezos, createWallet, getTezosNetwork } from "./utils"
+import { INITIAL_STATE, reducer, TezosState } from "./reducer"
+import { TezosAction, TezosActionType } from "./actions"
 
 interface TezosProvider {
-  state: TezosState;
-  dispatch: React.Dispatch<TezosAction>;
+  state: TezosState
+  dispatch: React.Dispatch<TezosAction>
 }
 
 export const TezosContext = createContext<TezosProvider>({
   state: INITIAL_STATE,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  dispatch: () => {},
-});
+  dispatch: () => {}
+})
 
 const getSavedState = async (): Promise<TezosState> => {
   try {
@@ -23,14 +23,14 @@ const getSavedState = async (): Promise<TezosState> => {
     const activeAccount = await wallet.client.getActiveAccount()
 
     if (!activeAccount?.address) {
-      throw new Error ('No wallet address found')
+      throw new Error("No wallet address found")
     }
 
     return {
       network,
       tezos,
       wallet,
-      account: activeAccount.address,
+      account: activeAccount.address
     }
   } catch (error) {
     return INITIAL_STATE
@@ -38,25 +38,20 @@ const getSavedState = async (): Promise<TezosState> => {
 }
 
 export const TezosProvider: React.FC = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
 
   useEffect(() => {
-    mixpanel.register({'Network': state.network });
+    mixpanel.register({ Network: state.network })
   }, [state.network])
 
   useEffect(() => {
-    getSavedState()
-      .then((tezosState) => {
-          dispatch({
-            type: TezosActionType.UPDATE_TEZOS,
-            payload: tezosState,
-          });
+    getSavedState().then(tezosState => {
+      dispatch({
+        type: TezosActionType.UPDATE_TEZOS,
+        payload: tezosState
       })
+    })
   }, [])
 
-  return (
-    <TezosContext.Provider value={{ state, dispatch }}>
-      {children}
-    </TezosContext.Provider>
-  );
-};
+  return <TezosContext.Provider value={{ state, dispatch }}>{children}</TezosContext.Provider>
+}

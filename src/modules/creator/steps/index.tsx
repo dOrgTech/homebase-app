@@ -1,51 +1,42 @@
-import React, { useEffect, useMemo } from "react";
-import { Route, Switch, useLocation } from "react-router";
-import { Redirect, useRouteMatch } from "react-router-dom";
+import React, { useEffect, useMemo } from "react"
+import { Route, Switch, useLocation } from "react-router"
+import { Redirect, useRouteMatch } from "react-router-dom"
 
-import { StepInfo } from "modules/creator/state";
-import {
-  Summary,
-  DaoSettings,
-  Governance,
-  Review,
-} from "modules/creator/steps";
+import { StepInfo } from "modules/creator/state"
+import { Summary, DaoSettings, Governance, Review } from "modules/creator/steps"
 
-import { ProtectedRoute } from "modules/creator/components/ProtectedRoute";
-import { Quorum } from "./Quorum";
-import mixpanel from "mixpanel-browser";
+import { ProtectedRoute } from "modules/creator/components/ProtectedRoute"
+import { Quorum } from "./Quorum"
+import mixpanel from "mixpanel-browser"
 
 export const STEPS: StepInfo[] = [
   { title: "Configure DAO settings", index: 0 },
   { title: "Configure Proposal & Voting", index: 1 },
   { title: "Adjust Quorum", index: 2 },
-  { title: "Review information", index: 3 },
-];
+  { title: "Review information", index: 3 }
+]
 
 const urlToStepMap: Record<string, number> = {
   dao: 0,
   voting: 1,
   quorum: 2,
   summary: 3,
-  review: 4,
-};
+  review: 4
+}
 
-const AnalyticsWrappedStep: React.FC<{ name: string; index: number }> = ({
-  name,
-  index,
-  children,
-}) => {
+const AnalyticsWrappedStep: React.FC<{ name: string; index: number }> = ({ name, index, children }) => {
   useEffect(() => {
     mixpanel.track("Visited Creator Step", {
       stepName: name,
-      stepIndex: index,
-    });
-  }, [index, name]);
+      stepIndex: index
+    })
+  }, [index, name])
 
-  return <>{children}</>;
-};
+  return <>{children}</>
+}
 
 export const StepRouter: React.FC = () => {
-  const match = useRouteMatch();
+  const match = useRouteMatch()
 
   return (
     <ProtectedRoute>
@@ -78,24 +69,24 @@ export const StepRouter: React.FC = () => {
         <Redirect to={`${match.url}/dao`} />
       </Switch>
     </ProtectedRoute>
-  );
-};
+  )
+}
 
-type CreatorRouteNames = keyof typeof urlToStepMap;
+type CreatorRouteNames = keyof typeof urlToStepMap
 
 export const useStepNumber = (): number => {
-  const { pathname } = useLocation();
+  const { pathname } = useLocation()
 
   return useMemo(() => {
     const extracted: CreatorRouteNames = pathname.endsWith("/")
       ? pathname.split("/").slice(-2)[0]
-      : pathname.split("/").slice(-1)[0];
+      : pathname.split("/").slice(-1)[0]
 
-    return urlToStepMap[extracted];
-  }, [pathname]);
-};
+    return urlToStepMap[extracted]
+  }, [pathname])
+}
 
-export { Summary } from "modules/creator/steps/Summary";
-export { DaoSettings } from "modules/creator/steps/DaoSettings";
-export { Governance } from "modules/creator/steps/Governance";
-export { Review } from "modules/creator/steps/Review";
+export { Summary } from "modules/creator/steps/Summary"
+export { DaoSettings } from "modules/creator/steps/DaoSettings"
+export { Governance } from "modules/creator/steps/Governance"
+export { Review } from "modules/creator/steps/Review"

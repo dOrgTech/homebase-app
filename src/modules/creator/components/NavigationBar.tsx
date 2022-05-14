@@ -1,20 +1,13 @@
-import {
-  styled,
-  Grid,
-  Typography,
-  Paper,
-  useMediaQuery,
-  useTheme,
-} from "@material-ui/core";
-import React from "react";
+import { styled, Grid, Typography, Paper, useMediaQuery, useTheme } from "@material-ui/core"
+import React from "react"
 
-import { NavigationBarProps } from "modules/creator/state";
+import { NavigationBarProps } from "modules/creator/state"
 
 const Footer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
   justifyContent: "flex-end",
-  zIndex: 20,
-}));
+  zIndex: 20
+}))
 
 const BackButton = styled(Paper)({
   boxShadow: "none",
@@ -25,8 +18,8 @@ const BackButton = styled(Paper)({
   textAlign: "center",
   marginLeft: "4%",
   paddingTop: "1%",
-  cursor: "pointer",
-});
+  cursor: "pointer"
+})
 
 const NextButton = styled(Paper)({
   boxShadow: "none",
@@ -40,8 +33,8 @@ const NextButton = styled(Paper)({
   marginRight: "4%",
   cursor: "pointer",
   paddingLeft: "3%",
-  paddingRight: "3%",
-});
+  paddingRight: "3%"
+})
 
 const FooterContainer = styled(Grid)(({ isMobile }: { isMobile: boolean }) => ({
   flexGrow: 0,
@@ -52,27 +45,16 @@ const FooterContainer = styled(Grid)(({ isMobile }: { isMobile: boolean }) => ({
   padding: 0,
   margin: 0,
   height: "100%",
-  zIndex: 20,
-}));
+  zIndex: 20
+}))
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
   return (
-    <Footer
-      container
-      direction="row"
-      justify="space-between"
-      alignItems="center"
-    >
-      <FooterContainer
-        item
-        xs={12}
-        container
-        alignItems="center"
-        isMobile={isMobile}
-      >
+    <Footer container direction="row" justify="space-between" alignItems="center">
+      <FooterContainer item xs={12} container alignItems="center" isMobile={isMobile}>
         <Grid item xs={6}>
           {back && (
             <BackButton onClick={back.handler}>
@@ -89,5 +71,5 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
         </Grid>
       </FooterContainer>
     </Footer>
-  );
-};
+  )
+}

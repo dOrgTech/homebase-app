@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo } from "react"
 import {
   Box,
   Grid,
@@ -10,22 +10,22 @@ import {
   styled,
   useMediaQuery,
   useTheme,
-  Theme,
-} from "@material-ui/core";
-import ProgressBar from "react-customizable-progressbar";
-import { useHistory } from "react-router";
+  Theme
+} from "@material-ui/core"
+import ProgressBar from "react-customizable-progressbar"
+import { useHistory } from "react-router"
 
-import { CreatorContext, StepInfo } from "modules/creator/state";
-import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps";
-import HomeButton from "assets/logos/homebase_logo.svg";
-import { NavigationBar } from "modules/creator/components/NavigationBar";
-import { Navbar } from "modules/common/Toolbar";
-import mixpanel from "mixpanel-browser";
+import { CreatorContext, StepInfo } from "modules/creator/state"
+import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps"
+import HomeButton from "assets/logos/homebase_logo.svg"
+import { NavigationBar } from "modules/creator/components/NavigationBar"
+import { Navbar } from "modules/common/Toolbar"
+import mixpanel from "mixpanel-browser"
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
-  minHeight: "100vh",
-}));
+  minHeight: "100vh"
+}))
 
 const StepContentContainer = styled(Grid)({
   alignItems: "center",
@@ -35,17 +35,17 @@ const StepContentContainer = styled(Grid)({
   boxSizing: "border-box",
   overflowY: "auto",
   padding: "4vw",
-  zIndex: 10,
-});
+  zIndex: 10
+})
 
 const StyledStepper = styled(Stepper)({
   background: "inherit",
-  marginTop: 70,
-});
+  marginTop: 70
+})
 
 const StepContentHeigth = styled(Grid)({
-  height: "calc(100vh - 75px)",
-});
+  height: "calc(100vh - 75px)"
+})
 
 const IndicatorValue = styled(Paper)(({ theme }) => ({
   display: "flex",
@@ -62,107 +62,84 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   userSelect: "none",
   boxShadow: "none",
   background: "inherit",
-  fontFamily: "Roboto Mono",
-}));
+  fontFamily: "Roboto Mono"
+}))
 
 const FAQClickToAction = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
   fontSize: "14px",
-  cursor: "pointer",
-}));
+  cursor: "pointer"
+}))
 
 const ProgressContainer = styled(Grid)(({ theme }) => ({
   borderRight: `2px solid ${theme.palette.primary.light}`,
-  display: "grid",
-}));
+  display: "grid"
+}))
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
-  cursor: "pointer",
-});
+  cursor: "pointer"
+})
 
 const custom = (theme: Theme) => ({
   logo: {
     height: "100%",
     alignItems: "baseline",
     display: "flex",
-    marginTop: 22,
+    marginTop: 22
   },
   appBorder: {
-    borderBottom: `2px solid ${theme.palette.primary.light}`,
+    borderBottom: `2px solid ${theme.palette.primary.light}`
   },
   appHeight: {
-    height: "inherit",
+    height: "inherit"
   },
   appLogoHeight: {
     height: "inherit",
-    borderRight: `2px solid ${theme.palette.primary.light}`,
-  },
-});
+    borderRight: `2px solid ${theme.palette.primary.light}`
+  }
+})
 
 const LogoItem = styled("img")({
   cursor: "pointer",
-  width: "36px",
-});
+  width: "36px"
+})
 
 export const DAOCreate: React.FC = () => {
-  const creator = useContext(CreatorContext);
+  const creator = useContext(CreatorContext)
 
-  const { back, next } = creator.state;
-  const step = useStepNumber();
-  const progress = useMemo(() => step * 25, [step]);
-  const history = useHistory();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { back, next } = creator.state
+  const step = useStepNumber()
+  const progress = useMemo(() => step * 25, [step])
+  const history = useHistory()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   const goToFAQ = (): void => {
-    history.push("/faq");
-  };
+    history.push("/faq")
+  }
 
   useEffect(() => {
-    mixpanel.unregister("daoAddress");
-    mixpanel.unregister("daoType");
+    mixpanel.unregister("daoAddress")
+    mixpanel.unregister("daoType")
 
-    mixpanel.track("Visited Creator");
-  }, []);
+    mixpanel.track("Visited Creator")
+  }, [])
 
   return (
     <PageContainer container direction="row">
       {!isMobile && (
-        <ProgressContainer
-          item
-          xs={3}
-          container
-          justify="center"
-          alignItems="center"
-          direction="column"
-        >
-          <Grid
-            item
-            container
-            direction="column"
-            alignItems="center"
-            xs={3}
-            style={{ maxWidth: "unset" }}
-          >
+        <ProgressContainer item xs={3} container justify="center" alignItems="center" direction="column">
+          <Grid item container direction="column" alignItems="center" xs={3} style={{ maxWidth: "unset" }}>
             <Grid item>
               <Box
-                style={
-                  location.pathname === "/creator"
-                    ? custom(theme).logo
-                    : undefined
-                }
+                style={location.pathname === "/creator" ? custom(theme).logo : undefined}
                 onClick={() => history.push("/explorer")}
                 margin="auto"
                 marginTop="22px"
               >
-                <Grid
-                  container
-                  alignItems="center"
-                  wrap="nowrap"
-                  justify="center"
-                >
+                <Grid container alignItems="center" wrap="nowrap" justify="center">
                   <Grid item>
                     <LogoItem src={HomeButton} />
                   </Grid>
@@ -185,15 +162,11 @@ export const DAOCreate: React.FC = () => {
               trackStrokeColor={theme.palette.primary.light}
             >
               <Box className="indicator">
-                <IndicatorValue>
-                  {progress === 0.5 ? 0 : step * 25}%
-                </IndicatorValue>
+                <IndicatorValue>{progress === 0.5 ? 0 : step * 25}%</IndicatorValue>
               </Box>
             </ProgressBar>
             <Box>
-              <FAQClickToAction onClick={goToFAQ}>
-                New to DAOs? Read our FAQ
-              </FAQClickToAction>
+              <FAQClickToAction onClick={goToFAQ}>New to DAOs? Read our FAQ</FAQClickToAction>
             </Box>
             <StyledStepper activeStep={step} orientation="vertical">
               {STEPS.map(({ title }: StepInfo, index: number) => (
@@ -207,12 +180,7 @@ export const DAOCreate: React.FC = () => {
       )}
 
       <StepContentHeigth item xs={12} md={9} container justify="center">
-        <Grid
-          container
-          direction="column"
-          alignItems="center"
-          style={{ width: "100%" }}
-        >
+        <Grid container direction="column" alignItems="center" style={{ width: "100%" }}>
           <Navbar mode="creator" />
           <Grid item style={{ width: "100%" }} xs>
             <StepContentContainer item container justify="center">
@@ -223,5 +191,5 @@ export const DAOCreate: React.FC = () => {
       </StepContentHeigth>
       {step < 5 && <NavigationBar back={back} next={next} />}
     </PageContainer>
-  );
-};
+  )
+}

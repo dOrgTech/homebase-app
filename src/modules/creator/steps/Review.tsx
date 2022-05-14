@@ -1,36 +1,31 @@
-import React, { useContext, useEffect, useMemo } from "react";
-import { Button, Grid, Box, styled, Typography } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import React, { useContext, useEffect, useMemo } from "react"
+import { Button, Grid, Box, styled, Typography } from "@material-ui/core"
+import { useHistory } from "react-router-dom"
 
-import Rocket from "assets/img/rocket.svg";
-import { useOriginate } from "services/contracts/baseDAO/hooks/useOriginate";
-import {
-  getTokensInfo,
-  CreatorContext,
-  ActionTypes,
-  MigrationParams,
-} from "modules/creator/state";
-import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types";
-import { DeploymentLoader } from "../components/DeploymentLoader";
-import { useCreatorRouteValidation } from "modules/creator/components/ProtectedRoute";
-import { useTezos } from "services/beacon/hooks/useTezos";
-import { ConnectWalletButton } from "modules/common/Toolbar";
+import Rocket from "assets/img/rocket.svg"
+import { useOriginate } from "services/contracts/baseDAO/hooks/useOriginate"
+import { getTokensInfo, CreatorContext, ActionTypes, MigrationParams } from "modules/creator/state"
+import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types"
+import { DeploymentLoader } from "../components/DeploymentLoader"
+import { useCreatorRouteValidation } from "modules/creator/components/ProtectedRoute"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { ConnectWalletButton } from "modules/common/Toolbar"
 
 const RocketImg = styled("img")({
   marginBottom: 46,
-  height: 128,
-});
+  height: 128
+})
 
 const CustomButton = styled(Button)({
-  marginTop: 20,
-});
+  marginTop: 20
+})
 
 export const Review: React.FC = () => {
-  const { account, connect } = useTezos();
-  const validDAOData = useCreatorRouteValidation();
-  const { state, dispatch } = useContext(CreatorContext);
-  const info: MigrationParams = state.data;
-  const { frozenToken, unfrozenToken } = getTokensInfo(info);
+  const { account, connect } = useTezos()
+  const validDAOData = useCreatorRouteValidation()
+  const { state, dispatch } = useContext(CreatorContext)
+  const info: MigrationParams = state.data
+  const { frozenToken, unfrozenToken } = getTokensInfo(info)
 
   const metadataCarrierParams: MetadataCarrierParameters = useMemo(
     () => ({
@@ -40,65 +35,52 @@ export const Review: React.FC = () => {
         unfrozenToken,
         description: info.orgSettings.description,
         authors: [info.orgSettings.administrator],
-        template: state.data.template,
-      },
+        template: state.data.template
+      }
     }),
-    [
-      frozenToken,
-      info.orgSettings.administrator,
-      info.orgSettings.description,
-      state.data.template,
-      unfrozenToken,
-    ]
-  );
+    [frozenToken, info.orgSettings.administrator, info.orgSettings.description, state.data.template, unfrozenToken]
+  )
 
   const {
     mutation: { mutate, data, error },
     states,
-    activeState,
-  } = useOriginate(state.data.template);
-  const history = useHistory();
+    activeState
+  } = useOriginate(state.data.template)
+  const history = useHistory()
 
   // TODO: Fix infinite calling here
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       if (!validDAOData && info && metadataCarrierParams) {
-        await connect();
+        await connect()
         mutate({
           metadataParams: metadataCarrierParams,
-          params: info,
-        });
+          params: info
+        })
       }
-    })();
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (data && data.address) {
       dispatch({
-        type: ActionTypes.CLEAR_CACHE,
-      });
+        type: ActionTypes.CLEAR_CACHE
+      })
     }
-  }, [data, dispatch]);
+  }, [data, dispatch])
 
   return (
     <>
       <Grid container direction="row" justify="center">
         {account ? (
-          <Grid
-            container
-            direction="column"
-            justify="center"
-            alignItems="center"
-            style={{ height: "fit-content" }}
-          >
+          <Grid container direction="column" justify="center" alignItems="center" style={{ height: "fit-content" }}>
             <Grid item>
               <RocketImg src={Rocket} alt="rocket" />
             </Grid>
             <Grid item>
               <Typography variant="h4" color="textSecondary">
-                Deploying <strong> {state.data.orgSettings.name} </strong> to
-                the Tezos Network
+                Deploying <strong> {state.data.orgSettings.name} </strong> to the Tezos Network
               </Typography>
             </Grid>
             <Grid item xs={12}>
@@ -107,9 +89,7 @@ export const Review: React.FC = () => {
                   <CustomButton
                     color="secondary"
                     variant="outlined"
-                    onClick={() =>
-                      history.push("/explorer/dao/" + data.address)
-                    }
+                    onClick={() => history.push("/explorer/dao/" + data.address)}
                   >
                     Go to my DAO
                   </CustomButton>
@@ -121,11 +101,7 @@ export const Review: React.FC = () => {
           <ConnectWalletButton connect={connect} />
         )}
       </Grid>
-      <DeploymentLoader
-        states={states}
-        activeStep={activeState}
-        error={error}
-      />
+      <DeploymentLoader states={states} activeStep={activeState} error={error} />
     </>
-  );
-};
+  )
+}

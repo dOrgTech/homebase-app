@@ -1,7 +1,7 @@
-import React from "react";
-import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core";
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
-import hexToRgba from "hex-to-rgba";
+import React from "react"
+import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import hexToRgba from "hex-to-rgba"
 
 const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
   const statusToColor = {
@@ -13,32 +13,28 @@ const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
     [ProposalStatus.NO_QUORUM]: theme.palette.text.secondary,
     [ProposalStatus.EXPIRED]: theme.palette.text.secondary,
     [ProposalStatus.DROPPED]: theme.palette.error.main,
-    [ProposalStatus.EXECUTED]: theme.palette.secondary.main,
-  };
+    [ProposalStatus.EXECUTED]: theme.palette.secondary.main
+  }
 
-  return statusToColor[status];
-};
+  return statusToColor[status]
+}
 
-const Badge = styled(Grid)(
-  ({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
-    borderRadius: 4,
-    height: 27,
-    boxSizing: "border-box",
-    width: 105,
-    textAlign: "center",
-    padding: "0 7px",
+const Badge = styled(Grid)(({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
+  "borderRadius": 4,
+  "height": 27,
+  "boxSizing": "border-box",
+  "width": 105,
+  "textAlign": "center",
+  "padding": "0 7px",
 
-    background: hexToRgba(getStatusColor(status, theme), 0.4),
-    color: getStatusColor(status, theme),
-    "& > div": {
-      height: "100%",
-    },
-  })
-);
+  "background": hexToRgba(getStatusColor(status, theme), 0.4),
+  "color": getStatusColor(status, theme),
+  "& > div": {
+    height: "100%"
+  }
+}))
 
-export const TableStatusBadge: React.FC<
-  { status: ProposalStatus } & GridProps
-> = ({ status, ...props }) => (
+export const TableStatusBadge: React.FC<{ status: ProposalStatus } & GridProps> = ({ status, ...props }) => (
   <Badge status={status} {...props}>
     <Grid container alignItems="center" justify="center">
       <Grid item>
@@ -46,4 +42,4 @@ export const TableStatusBadge: React.FC<
       </Grid>
     </Grid>
   </Badge>
-);
+)

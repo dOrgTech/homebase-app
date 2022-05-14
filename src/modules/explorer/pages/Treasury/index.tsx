@@ -1,77 +1,60 @@
-import {
-  Button,
-  Grid,
-  Link,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@material-ui/core";
-import { CopyAddress } from "modules/common/CopyAddress";
-import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
+import { Button, Grid, Link, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { CopyAddress } from "modules/common/CopyAddress"
+import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
 
-import React, { useMemo, useState } from "react";
-import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { Hero } from "../../components/Hero";
-import { HeroTitle } from "../../components/HeroTitle";
-import { useDAOID } from "../DAO/router";
-import { BalancesTable } from "./components/BalancesTable";
-import { TransfersTable } from "./components/TransfersTable";
-import { useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers";
-import { InfoIcon } from "../../components/styled/InfoIcon";
-import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
-import { useDelegate } from "services/contracts/baseDAO/hooks/useDelegate";
-import { DelegationChangeProposalForm } from "modules/explorer/components/DelegationChangeProposalForm";
+import React, { useMemo, useState } from "react"
+import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { Hero } from "../../components/Hero"
+import { HeroTitle } from "../../components/HeroTitle"
+import { useDAOID } from "../DAO/router"
+import { BalancesTable } from "./components/BalancesTable"
+import { TransfersTable } from "./components/TransfersTable"
+import { useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers"
+import { InfoIcon } from "../../components/styled/InfoIcon"
+import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
+import { useDelegate } from "services/contracts/baseDAO/hooks/useDelegate"
+import { DelegationChangeProposalForm } from "modules/explorer/components/DelegationChangeProposalForm"
 
 export const Treasury: React.FC = () => {
-  const theme = useTheme();
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const daoId = useDAOID();
-  const { data: dao } = useDAO(daoId);
-  const [openTransfer, setOpenTransfer] = useState(false);
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const daoId = useDAOID()
+  const { data: dao } = useDAO(daoId)
+  const [openTransfer, setOpenTransfer] = useState(false)
   const onCloseTransfer = () => {
-    setOpenTransfer(false);
-  };
-  const [openDelegationChange, setOpenDelegationChange] = useState(false);
+    setOpenTransfer(false)
+  }
+  const [openDelegationChange, setOpenDelegationChange] = useState(false)
   const onCloseDelegationChange = () => {
-    setOpenDelegationChange(false);
-  };
-  const { data: transfers } = useTransfers(daoId);
-  const { data: delegate } = useDelegate(daoId);
+    setOpenDelegationChange(false)
+  }
+  const { data: transfers } = useTransfers(daoId)
+  const { data: delegate } = useDelegate(daoId)
 
   const inboundTransfers = useMemo(() => {
     if (!transfers) {
-      return [];
+      return []
     }
 
-    return transfers.filter(
-      (t) => t.recipient.toLowerCase() === daoId.toLowerCase()
-    );
-  }, [transfers, daoId]);
+    return transfers.filter(t => t.recipient.toLowerCase() === daoId.toLowerCase())
+  }, [transfers, daoId])
 
   const outboundTransfers = useMemo(() => {
     if (!transfers) {
-      return [];
+      return []
     }
 
-    return transfers.filter(
-      (t) => t.recipient.toLowerCase() !== daoId.toLowerCase()
-    );
-  }, [transfers, daoId]);
+    return transfers.filter(t => t.recipient.toLowerCase() !== daoId.toLowerCase())
+  }, [transfers, daoId])
 
-  const shouldDisable = useIsProposalButtonDisabled(daoId);
+  const shouldDisable = useIsProposalButtonDisabled(daoId)
 
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
         <Hero>
           <Grid container item direction="column" style={{ gap: 42 }}>
-            <Grid
-              container
-              item
-              justifyContent="space-between"
-              alignItems="center"
-            >
+            <Grid container item justifyContent="space-between" alignItems="center">
               <Grid item>
                 <HeroTitle>Treasury</HeroTitle>
                 {dao && (
@@ -79,7 +62,7 @@ export const Treasury: React.FC = () => {
                     address={dao.data.address}
                     justify={isMobileSmall ? "center" : "flex-start"}
                     typographyProps={{
-                      variant: "subtitle2",
+                      variant: "subtitle2"
                     }}
                   />
                 )}
@@ -96,10 +79,7 @@ export const Treasury: React.FC = () => {
                       New Transfer
                     </Button>
                     {shouldDisable && (
-                      <Tooltip
-                        placement="bottom"
-                        title="Not on proposal creation period"
-                      >
+                      <Tooltip placement="bottom" title="Not on proposal creation period">
                         <InfoIcon color="secondary" />
                       </Tooltip>
                     )}
@@ -108,18 +88,9 @@ export const Treasury: React.FC = () => {
               </Grid>
             </Grid>
             {delegate ? (
-              <Grid
-                container
-                item
-                justifyContent="space-between"
-                alignItems="center"
-              >
+              <Grid container item justifyContent="space-between" alignItems="center">
                 <Grid item>
-                  <Typography
-                    variant="body1"
-                    color="textPrimary"
-                    style={{ fontWeight: "bold", paddingBottom: "3px" }}
-                  >
+                  <Typography variant="body1" color="textPrimary" style={{ fontWeight: "bold", paddingBottom: "3px" }}>
                     Current delegate
                   </Typography>
                   <Link href={`https://baking-bad.org/${daoId}`} target={"_blank"}>
@@ -137,7 +108,7 @@ export const Treasury: React.FC = () => {
                           justify={isMobileSmall ? "center" : "flex-start"}
                           typographyProps={{
                             variant: "subtitle2",
-                            color: "secondary",
+                            color: "secondary"
                           }}
                         />
                       </Grid>
@@ -156,10 +127,7 @@ export const Treasury: React.FC = () => {
                         Change delegate
                       </Button>
                       {shouldDisable && (
-                        <Tooltip
-                          placement="bottom"
-                          title="Not on proposal creation period"
-                        >
+                        <Tooltip placement="bottom" title="Not on proposal creation period">
                           <InfoIcon color="secondary" />
                         </Tooltip>
                       )}
@@ -180,15 +148,8 @@ export const Treasury: React.FC = () => {
           <TransfersTable isInbound={false} transfers={outboundTransfers} />
         </Grid>
       </Grid>
-      <ProposalFormContainer
-        open={openTransfer}
-        handleClose={onCloseTransfer}
-        defaultTab={1}
-      />
-      <DelegationChangeProposalForm
-        open={openDelegationChange}
-        handleClose={onCloseDelegationChange}
-      />
+      <ProposalFormContainer open={openTransfer} handleClose={onCloseTransfer} defaultTab={1} />
+      <DelegationChangeProposalForm open={openDelegationChange} handleClose={onCloseDelegationChange} />
     </>
-  );
-};
+  )
+}

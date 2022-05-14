@@ -1,17 +1,13 @@
-import React, {useState} from "react";
-import {
-  Grid,
-  DialogContent,
-  TextField, styled,
-} from "@material-ui/core";
-import {ErrorText} from "modules/explorer/components/styled/ErrorText";
-import {Registry} from "services/contracts/baseDAO";
-import * as Yup from "yup";
-import {Controller, useFieldArray, useFormContext} from "react-hook-form";
-import {BatchBar} from "./BatchBar";
-import {ProposalFormInput} from "./ProposalFormInput";
+import React, { useState } from "react"
+import { Grid, DialogContent, TextField, styled } from "@material-ui/core"
+import { ErrorText } from "modules/explorer/components/styled/ErrorText"
+import { Registry } from "services/contracts/baseDAO"
+import * as Yup from "yup"
+import { Controller, useFieldArray, useFormContext } from "react-hook-form"
+import { BatchBar } from "./BatchBar"
+import { ProposalFormInput } from "./ProposalFormInput"
 
-const emptyItem = {key: "", value: ""};
+const emptyItem = { key: "", value: "" }
 
 const TextArea = styled(TextField)({
   "& .MuiInputBase-input": {
@@ -23,63 +19,67 @@ const TextArea = styled(TextField)({
 export const registryProposalFormInitialState: RegistryProposalFormValues = {
   registryUpdateForm: {
     list: [emptyItem],
-    isBatch: false,
-  },
-};
+    isBatch: false
+  }
+}
 
 export interface RegistryProposalFormValues {
   registryUpdateForm: {
-    list: Registry[];
-    isBatch: boolean;
-  };
+    list: Registry[]
+    isBatch: boolean
+  }
 }
 
 export const updateRegistryFormSchema = Yup.object().shape({
   registryUpdateForm: Yup.object().shape({
     list: Yup.array().of(
       Yup.object().shape({
-        key: Yup.string().required("Required"),
+        key: Yup.string().required("Required")
       })
-    ),
-  }),
-});
+    )
+  })
+})
 
 export const UpdateRegistryDialog: React.FC = () => {
-  const [activeItem, setActiveItem] = React.useState(1);
+  const [activeItem, setActiveItem] = React.useState(1)
   const {
     control,
     getValues,
     setValue,
-    formState: {errors, touchedFields: touched},
-  } = useFormContext<RegistryProposalFormValues>();
-  const {fields, append} = useFieldArray({
+    formState: { errors, touchedFields: touched }
+  } = useFormContext<RegistryProposalFormValues>()
+  const { fields, append } = useFieldArray({
     control,
-    name: "registryUpdateForm.list",
-  });
-  const values = getValues();
-  const [isBatch, setIsBatch] = useState(values.registryUpdateForm.isBatch);
+    name: "registryUpdateForm.list"
+  })
+  const values = getValues()
+  const [isBatch, setIsBatch] = useState(values.registryUpdateForm.isBatch)
 
   const handleIsBatchChange = () => {
-    setIsBatch(!isBatch);
-    setValue("registryUpdateForm.isBatch", !isBatch);
-    setActiveItem(1);
-  };
+    setIsBatch(!isBatch)
+    setValue("registryUpdateForm.isBatch", !isBatch)
+    setActiveItem(1)
+  }
 
-  const keyError = (errors?.registryUpdateForm?.list?.[activeItem - 1] as any)
-    ?.key;
-  const valueError = (errors?.registryUpdateForm?.list?.[activeItem - 1] as any)
-    ?.value;
+  const keyError = (errors?.registryUpdateForm?.list?.[activeItem - 1] as any)?.key
+  const valueError = (errors?.registryUpdateForm?.list?.[activeItem - 1] as any)?.value
 
   return (
     <DialogContent>
-      <Grid container direction={"column"} style={{gap: 31}}>
+      <Grid container direction={"column"} style={{ gap: 31 }}>
         <Grid item>
-          <BatchBar isBatch={isBatch} stateIsBatch={values.registryUpdateForm.isBatch}
-                    handleIsBatchChange={handleIsBatchChange} onClickAdd={() => {
-            append(emptyItem);
-            setActiveItem(activeItem + 1);
-          }} items={values.registryUpdateForm.list} activeItem={activeItem}
-                    setActiveItem={(index: number) => setActiveItem(index + 1)}/>
+          <BatchBar
+            isBatch={isBatch}
+            stateIsBatch={values.registryUpdateForm.isBatch}
+            handleIsBatchChange={handleIsBatchChange}
+            onClickAdd={() => {
+              append(emptyItem)
+              setActiveItem(activeItem + 1)
+            }}
+            items={values.registryUpdateForm.list}
+            activeItem={activeItem}
+            setActiveItem={(index: number) => setActiveItem(index + 1)}
+          />
         </Grid>
         {fields.map(
           (field, index) =>
@@ -91,19 +91,17 @@ export const UpdateRegistryDialog: React.FC = () => {
                       key={field.id}
                       name={`registryUpdateForm.list.${activeItem - 1}.key`}
                       control={control}
-                      render={({field}) => (
+                      render={({ field }) => (
                         <TextField
                           {...field}
                           type="string"
-                          InputProps={{disableUnderline: true}}
+                          InputProps={{ disableUnderline: true }}
                           placeholder="Type a Key"
                         />
                       )}
                     />
 
-                    {keyError &&
-                    touched.registryUpdateForm?.list?.[activeItem - 1]
-                      ?.key ? (
+                    {keyError && touched.registryUpdateForm?.list?.[activeItem - 1]?.key ? (
                       <ErrorText>{keyError}</ErrorText>
                     ) : null}
                   </ProposalFormInput>
@@ -114,21 +112,19 @@ export const UpdateRegistryDialog: React.FC = () => {
                       key={field.id}
                       name={`registryUpdateForm.list.${activeItem - 1}.value`}
                       control={control}
-                      render={({field}) => (
+                      render={({ field }) => (
                         <TextArea
                           {...field}
                           multiline
                           type="string"
                           rows={6}
                           placeholder="Type a value"
-                          InputProps={{ disableUnderline: true}}
+                          InputProps={{ disableUnderline: true }}
                         />
                       )}
                     />
 
-                    {valueError &&
-                    touched.registryUpdateForm?.list?.[activeItem - 1]
-                      ?.value ? (
+                    {valueError && touched.registryUpdateForm?.list?.[activeItem - 1]?.value ? (
                       <ErrorText>{valueError}</ErrorText>
                     ) : null}
                   </ProposalFormInput>
@@ -138,5 +134,5 @@ export const UpdateRegistryDialog: React.FC = () => {
         )}
       </Grid>
     </DialogContent>
-  );
-};
+  )
+}

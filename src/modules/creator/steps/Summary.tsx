@@ -1,92 +1,87 @@
-import { Box, Grid, styled, Typography } from "@material-ui/core";
-import React, { useContext, useEffect } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { ActionTypes, CreatorContext } from "modules/creator/state";
+import { Box, Grid, styled, Typography } from "@material-ui/core"
+import React, { useContext, useEffect } from "react"
+import { useHistory, useRouteMatch } from "react-router-dom"
+import { ActionTypes, CreatorContext } from "modules/creator/state"
 
 const CustomTypography = styled(Typography)({
-  marginTop: 10,
-});
+  marginTop: 10
+})
 
 const SecondContainer = styled(Grid)({
-  marginTop: 25,
-});
+  marginTop: 25
+})
 
 const TitleSpacing = styled(Typography)({
-  marginTop: 12,
-});
+  marginTop: 12
+})
 
 const ContainerSpacing = styled(Typography)({
-  marginTop: 24,
-});
+  marginTop: 24
+})
 
 const ContainerSpacingButton = styled(Typography)({
   marginTop: 24,
-  cursor: "pointer",
-});
+  cursor: "pointer"
+})
 
 const ContainerButton = styled(Typography)(({ theme }) => ({
   paddingBottom: 8,
   marginTop: 24,
   borderBottom: `1px solid ${theme.palette.primary.light}`,
-  cursor: "pointer",
-}));
+  cursor: "pointer"
+}))
 
 const AdminContainer = styled(Grid)(({ theme }) => ({
   border: `1px solid ${theme.palette.primary.light}`,
   marginTop: 16,
-  padding: "16px 18px",
-}));
+  padding: "16px 18px"
+}))
 
 const AdminAddress = styled(Typography)({
-  wordBreak: "break-all",
-});
+  wordBreak: "break-all"
+})
 
 const UnderlinedGrid = styled(Grid)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.primary.light}`,
-  padding: 2,
-}));
+  padding: 2
+}))
 
 export const Summary = (): JSX.Element => {
-  const { dispatch, state } = useContext(CreatorContext);
-  const history = useHistory();
-  const match = useRouteMatch();
+  const { dispatch, state } = useContext(CreatorContext)
+  const history = useHistory()
+  const match = useRouteMatch()
 
   const goToVoting = () => {
-    history.push(`voting`);
-  };
+    history.push(`voting`)
+  }
 
   const goToQuorum = () => {
-    history.push(`quorum`);
-  };
+    history.push(`quorum`)
+  }
 
   const goToSettings = () => {
-    history.push(`dao`);
-  };
+    history.push(`dao`)
+  }
 
   useEffect(() => {
     dispatch({
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          history.push(`review`);
+          history.push(`review`)
         },
-        text: "LAUNCH",
+        text: "LAUNCH"
       },
       back: {
         handler: () => history.push(`quorum`),
-        text: "BACK",
-      },
-    });
-  }, [dispatch, history, match.path, match.url]);
+        text: "BACK"
+      }
+    })
+  }, [dispatch, history, match.path, match.url])
 
   return (
     <Box maxWidth={650}>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        style={{ height: "fit-content" }}
-      >
+      <Grid container direction="row" justify="space-between" style={{ height: "fit-content" }}>
         <Grid item xs={12}>
           <Typography variant="h3" color="textSecondary">
             Review information
@@ -123,12 +118,7 @@ export const Summary = (): JSX.Element => {
             </ContainerSpacing>
           </Grid>
           <Grid item xs={6}>
-            <ContainerSpacingButton
-              color="secondary"
-              variant="subtitle1"
-              align="right"
-              onClick={goToSettings}
-            >
+            <ContainerSpacingButton color="secondary" variant="subtitle1" align="right" onClick={goToSettings}>
               EDIT
             </ContainerSpacingButton>
           </Grid>
@@ -141,11 +131,7 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={6} sm={9}>
-                <AdminAddress
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
+                <AdminAddress variant="subtitle1" color="textSecondary" align="right">
                   {state.data.orgSettings.administrator}
                 </AdminAddress>
               </Grid>
@@ -160,11 +146,7 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={6} sm={9}>
-                <AdminAddress
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
+                <AdminAddress variant="subtitle1" color="textSecondary" align="right">
                   {state.data.orgSettings.guardian}
                 </AdminAddress>
               </Grid>
@@ -180,11 +162,7 @@ export const Summary = (): JSX.Element => {
               </Typography>
             </Grid>
             <Grid item xs={6} sm={7}>
-              <AdminAddress
-                variant="subtitle1"
-                color="textSecondary"
-                align="right"
-              >
+              <AdminAddress variant="subtitle1" color="textSecondary" align="right">
                 {state.data.orgSettings.governanceToken.address}
               </AdminAddress>
             </Grid>
@@ -199,11 +177,7 @@ export const Summary = (): JSX.Element => {
               </Typography>
             </Grid>
             <Grid item xs={7}>
-              <Typography
-                variant="subtitle1"
-                color="textSecondary"
-                align="right"
-              >
+              <Typography variant="subtitle1" color="textSecondary" align="right">
                 {state.data.orgSettings.governanceToken.tokenId}
               </Typography>
             </Grid>
@@ -217,12 +191,7 @@ export const Summary = (): JSX.Element => {
             </ContainerSpacing>
           </Grid>
           <Grid item xs={6}>
-            <ContainerButton
-              color="secondary"
-              variant="subtitle1"
-              align="right"
-              onClick={goToVoting}
-            >
+            <ContainerButton color="secondary" variant="subtitle1" align="right" onClick={goToVoting}>
               EDIT
             </ContainerButton>
           </Grid>
@@ -235,11 +204,7 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
+                <Typography variant="subtitle1" color="textSecondary" align="right">
                   {state.data.votingSettings.votingBlocks} blocks
                 </Typography>
               </Grid>
@@ -254,11 +219,7 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
+                <Typography variant="subtitle1" color="textSecondary" align="right">
                   {state.data.votingSettings.proposalFlushBlocks} blocks
                 </Typography>
               </Grid>
@@ -273,11 +234,7 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
+                <Typography variant="subtitle1" color="textSecondary" align="right">
                   {state.data.votingSettings.proposalExpiryBlocks} blocks
                 </Typography>
               </Grid>
@@ -292,11 +249,7 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
+                <Typography variant="subtitle1" color="textSecondary" align="right">
                   {state.data.votingSettings.proposeStakeRequired} locked tokens
                 </Typography>
               </Grid>
@@ -311,11 +264,7 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography
-                  variant="subtitle1"
-                  color="textSecondary"
-                  align="right"
-                >
+                <Typography variant="subtitle1" color="textSecondary" align="right">
                   {state.data.votingSettings.returnedTokenPercentage}% of locked tokens
                 </Typography>
               </Grid>
@@ -324,23 +273,14 @@ export const Summary = (): JSX.Element => {
 
           {state.data.template === "treasury" && (
             <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
+              <UnderlinedGrid item container direction="row" alignItems="center">
                 <Grid item xs={6}>
                   <Typography variant="body2" color="textSecondary">
                     Transfer maximum XTZ amount
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
+                  <Typography variant="subtitle1" color="textSecondary" align="right">
                     {state.data.votingSettings.maxXtzAmount} XTZ
                   </Typography>
                 </Grid>
@@ -350,23 +290,14 @@ export const Summary = (): JSX.Element => {
 
           {state.data.template === "treasury" && (
             <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
+              <UnderlinedGrid item container direction="row" alignItems="center">
                 <Grid item xs={6}>
                   <Typography variant="body2" color="textSecondary">
                     Transfer minimum XTZ amount
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
+                  <Typography variant="subtitle1" color="textSecondary" align="right">
                     {state.data.votingSettings.minXtzAmount} XTZ
                   </Typography>
                 </Grid>
@@ -381,33 +312,19 @@ export const Summary = (): JSX.Element => {
               </ContainerSpacing>
             </Grid>
             <Grid item xs={6}>
-              <ContainerButton
-                color="secondary"
-                variant="subtitle1"
-                align="right"
-                onClick={goToQuorum}
-              >
+              <ContainerButton color="secondary" variant="subtitle1" align="right" onClick={goToQuorum}>
                 EDIT
               </ContainerButton>
             </Grid>
             <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
+              <UnderlinedGrid item container direction="row" alignItems="center">
                 <Grid item xs={6}>
                   <Typography variant="body2" color="textSecondary">
                     Quorum threshold
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
+                  <Typography variant="subtitle1" color="textSecondary" align="right">
                     {state.data.quorumSettings.quorumThreshold}%
                   </Typography>
                 </Grid>
@@ -415,23 +332,14 @@ export const Summary = (): JSX.Element => {
             </Grid>
 
             <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
+              <UnderlinedGrid item container direction="row" alignItems="center">
                 <Grid item xs={6}>
                   <Typography variant="body2" color="textSecondary">
                     Quorum Change
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
+                  <Typography variant="subtitle1" color="textSecondary" align="right">
                     {state.data.quorumSettings.quorumChange}%
                   </Typography>
                 </Grid>
@@ -439,23 +347,14 @@ export const Summary = (): JSX.Element => {
             </Grid>
 
             <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
+              <UnderlinedGrid item container direction="row" alignItems="center">
                 <Grid item xs={6}>
                   <Typography variant="body2" color="textSecondary">
                     Quorum Max Change
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
+                  <Typography variant="subtitle1" color="textSecondary" align="right">
                     {state.data.quorumSettings.quorumMaxChange}%
                   </Typography>
                 </Grid>
@@ -463,23 +362,14 @@ export const Summary = (): JSX.Element => {
             </Grid>
 
             <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
+              <UnderlinedGrid item container direction="row" alignItems="center">
                 <Grid item xs={6}>
                   <Typography variant="body2" color="textSecondary">
                     Quorum Min. Amount
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
+                  <Typography variant="subtitle1" color="textSecondary" align="right">
                     {state.data.quorumSettings.minQuorumAmount}%
                   </Typography>
                 </Grid>
@@ -487,32 +377,22 @@ export const Summary = (): JSX.Element => {
             </Grid>
 
             <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
+              <UnderlinedGrid item container direction="row" alignItems="center">
                 <Grid item xs={6}>
                   <Typography variant="body2" color="textSecondary">
                     Quorum Max. Amount
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
+                  <Typography variant="subtitle1" color="textSecondary" align="right">
                     {state.data.quorumSettings.maxQuorumAmount}%
                   </Typography>
                 </Grid>
               </UnderlinedGrid>
             </Grid>
-
           </SecondContainer>
         </SecondContainer>
       </Grid>
     </Box>
-  );
-};
+  )
+}

@@ -1,70 +1,63 @@
-import React, { useCallback, useMemo } from "react";
-import {
-  Grid,
-  styled,
-  Typography,
-  Button,
-  useTheme,
-  useMediaQuery, Tooltip,
-} from "@material-ui/core";
+import React, { useCallback, useMemo } from "react"
+import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Tooltip } from "@material-ui/core"
 
-import { useFlush } from "services/contracts/baseDAO/hooks/useFlush";
-import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { useProposals } from "services/indexer/dao/hooks/useProposals";
-import { useDAOID } from "./router";
+import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
+import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useProposals } from "services/indexer/dao/hooks/useProposals"
+import { useDAOID } from "./router"
 
-import { UserBalancesBox } from "../../components/UserBalances";
-import { ContentContainer } from "../../components/ContentContainer";
-import { ProposalsList } from "../../components/ProposalsList";
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types";
-import { DAOStatsRow } from "../../components/DAOStatsRow";
-import { UsersTable } from "../../components/UsersTable";
-import BigNumber from "bignumber.js";
-import {InfoIcon} from "../../components/styled/InfoIcon";
+import { UserBalancesBox } from "../../components/UserBalances"
+import { ContentContainer } from "../../components/ContentContainer"
+import { ProposalsList } from "../../components/ProposalsList"
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { DAOStatsRow } from "../../components/DAOStatsRow"
+import { UsersTable } from "../../components/UsersTable"
+import BigNumber from "bignumber.js"
+import { InfoIcon } from "../../components/styled/InfoIcon"
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 55px",
 
   [theme.breakpoints.down("xs")]: {
-    padding: "38px 29px",
-  },
-}));
+    padding: "38px 29px"
+  }
+}))
 
 const TitleText = styled(Typography)(({ theme }) => ({
   fontSize: 60,
   fontWeight: 500,
-  lineHeight: .8,
+  lineHeight: 0.8,
 
   [theme.breakpoints.down("xs")]: {
-    fontSize: 26,
-  },
-}));
+    fontSize: 26
+  }
+}))
 
 const SubtitleText = styled(Typography)({
-  fontWeight: 400,
-});
+  fontWeight: 400
+})
 
 const ExecuteButton = styled(Button)({
-  marginTop: "-35px",
-});
+  marginTop: "-35px"
+})
 
 const TableContainer = styled(ContentContainer)({
-  width: "100%",
-});
+  width: "100%"
+})
 
 export const DAO: React.FC = () => {
-  const daoId = useDAOID();
-  const { data, cycleInfo, ledger } = useDAO(daoId);
-  const { mutate } = useFlush();
-  const theme = useTheme();
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const daoId = useDAOID()
+  const { data, cycleInfo, ledger } = useDAO(daoId)
+  const { mutate } = useFlush()
+  const theme = useTheme()
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
-  const name = data && data.data.name;
-  const description = data && data.data.description;
+  const name = data && data.data.name
+  const description = data && data.data.description
 
-  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE);
-  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE);
-  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED);
+  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
+  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
+  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
 
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {
@@ -72,28 +65,26 @@ export const DAO: React.FC = () => {
         dao: data,
         numOfProposalsToFlush: executableProposals.length,
         expiredProposalIds: expiredProposals.map(p => p.id)
-      });
-      return;
+      })
+      return
     }
-  }, [data, mutate, expiredProposals, executableProposals]);
+  }, [data, mutate, expiredProposals, executableProposals])
 
   const usersTableData = useMemo(() => {
     if (!ledger || !cycleInfo || !data) {
-      return [];
+      return []
     }
 
     return ledger
       .sort((a, b) => b.available_balance.minus(a.available_balance).toNumber())
-      .map((p) => ({
+      .map(p => ({
         address: p.holder.address,
         totalStaked: new BigNumber(p.total_balance).dp(10).toString(),
-        availableStaked: new BigNumber(p.available_balance)
-          .dp(10)
-          .toString(),
+        availableStaked: new BigNumber(p.available_balance).dp(10).toString(),
         votes: p.holder.votes_cast.toString(),
         proposalsVoted: p.holder.proposals_voted.toString()
-      }));
-  }, [cycleInfo, data, ledger]);
+      }))
+  }, [cycleInfo, data, ledger])
 
   return (
     <Grid container direction="column" style={{ gap: isExtraSmall ? 25 : 42 }}>
@@ -114,11 +105,8 @@ export const DAO: React.FC = () => {
                 >
                   Execute
                 </ExecuteButton>
-                <Tooltip
-                  placement="bottom"
-                  title="Execute all passed proposals and drop all expired or rejected"
-                >
-                  <InfoIcon color="secondary" style={{ marginBottom:18 }} />
+                <Tooltip placement="bottom" title="Execute all passed proposals and drop all expired or rejected">
+                  <InfoIcon color="secondary" style={{ marginBottom: 18 }} />
                 </Tooltip>
               </Grid>
             </Grid>
@@ -142,8 +130,8 @@ export const DAO: React.FC = () => {
         />
       )}
       <TableContainer item>
-          <UsersTable data={usersTableData} />
+        <UsersTable data={usersTableData} />
       </TableContainer>
     </Grid>
-  );
-};
+  )
+}

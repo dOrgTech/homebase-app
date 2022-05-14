@@ -7,62 +7,65 @@ import {
   Popover,
   useMediaQuery,
   useTheme,
-  PopoverProps,
-} from "@material-ui/core";
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { Network } from "services/beacon";
-import { useTezos } from "services/beacon/hooks/useTezos";
+  PopoverProps
+} from "@material-ui/core"
+import React, { useState } from "react"
+import { useHistory } from "react-router-dom"
+import { Network } from "services/beacon"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const StyledPopover = styled(Popover)({
   ".MuiPaper-root": {
-    borderRadius: 4,
-  },
-});
+    borderRadius: 4
+  }
+})
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
   borderRadius: 4,
-  backgroundColor: "#282B31",
-}));
+  backgroundColor: "#282B31"
+}))
 
 const AddressMenuItem = styled(Grid)(({ theme }) => ({
-  cursor: "pointer",
-  boxSizing: "border-box",
-  color: theme.palette.text.secondary,
-  padding: "20px 34px",
+  "cursor": "pointer",
+  "boxSizing": "border-box",
+  "color": theme.palette.text.secondary,
+  "padding": "20px 34px",
   "&:hover": {
     background: "rgba(129, 254, 183, 0.03)",
     borderLeft: `2px solid ${theme.palette.secondary.light}`,
-    cursor: "pointer",
-  },
-}));
+    cursor: "pointer"
+  }
+}))
 
 export const ChangeNetworkButton = () => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-    null
-  );
-  const [popperOpen, setPopperOpen] = useState(false);
-  const { changeNetwork, network } = useTezos();
-  const history = useHistory();
-  const theme = useTheme();
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+  const [popperOpen, setPopperOpen] = useState(false)
+  const { changeNetwork, network } = useTezos()
+  const history = useHistory()
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
   const handleClick = (event: React.MouseEvent<any>) => {
-    setAnchorEl(event.currentTarget);
-    setPopperOpen(!popperOpen);
-  };
+    setAnchorEl(event.currentTarget)
+    setPopperOpen(!popperOpen)
+  }
 
   const handleNetworkChange = (network: Network) => {
-    changeNetwork(network);
-    setPopperOpen(!popperOpen);
-    history.push("/explorer/daos");
-  };
+    changeNetwork(network)
+    setPopperOpen(!popperOpen)
+    history.push("/explorer/daos")
+  }
 
   return (
     <>
-      <Button size={isMobileExtraSmall? "small": undefined} color="secondary" variant="outlined" onClick={handleClick}>
+      <Button
+        size={isMobileExtraSmall ? "small" : undefined}
+        color="secondary"
+        variant="outlined"
+        onClick={handleClick}
+      >
         {isMobileSmall ? "" : "Network: "}
         {network}
       </Button>
@@ -70,54 +73,43 @@ export const ChangeNetworkButton = () => {
         open={popperOpen}
         anchorEl={anchorEl}
         onClose={() => {
-          setPopperOpen(false);
+          setPopperOpen(false)
         }}
         handleNetworkChange={handleNetworkChange}
       />
     </>
-  );
-};
+  )
+}
 
-export const NetworkMenu: React.FC<
-  PopoverProps & { handleNetworkChange: (network: Network) => void }
-> = ({ handleNetworkChange, ...props }) => {
+export const NetworkMenu: React.FC<PopoverProps & { handleNetworkChange: (network: Network) => void }> = ({
+  handleNetworkChange,
+  ...props
+}) => {
   return (
     <StyledPopover
       id={"wallet-Popper"}
       style={{ zIndex: 1500, borderRadius: 4 }}
       PaperProps={{
-        style: { borderRadius: 4, backgroundColor: "transparent" },
+        style: { borderRadius: 4, backgroundColor: "transparent" }
       }}
       {...props}
     >
       <AddressMenu>
-        <AddressMenuItem
-          container
-          alignItems="center"
-          onClick={() => handleNetworkChange("mainnet")}
-        >
+        <AddressMenuItem container alignItems="center" onClick={() => handleNetworkChange("mainnet")}>
           <Grid item>
             <Typography variant="subtitle2" color="textSecondary">
               MAINNET
             </Typography>
           </Grid>
         </AddressMenuItem>
-        <AddressMenuItem
-          container
-          alignItems="center"
-          onClick={() => handleNetworkChange("hangzhounet")}
-        >
+        <AddressMenuItem container alignItems="center" onClick={() => handleNetworkChange("hangzhounet")}>
           <Grid item>
             <Typography variant="subtitle2" color="textSecondary">
               HANGZHOUNET
             </Typography>
           </Grid>
         </AddressMenuItem>
-        <AddressMenuItem
-          container
-          alignItems="center"
-          onClick={() => handleNetworkChange("ithacanet")}
-        >
+        <AddressMenuItem container alignItems="center" onClick={() => handleNetworkChange("ithacanet")}>
           <Grid item>
             <Typography variant="subtitle2" color="textSecondary">
               ITHACANET
@@ -126,5 +118,5 @@ export const NetworkMenu: React.FC<
         </AddressMenuItem>
       </AddressMenu>
     </StyledPopover>
-  );
-};
+  )
+}

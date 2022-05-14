@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 import {
   AppBar,
   Toolbar,
@@ -9,30 +9,30 @@ import {
   Grid,
   useTheme,
   useMediaQuery,
-  Theme,
-} from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+  Theme
+} from "@material-ui/core"
+import { useHistory } from "react-router-dom"
 
-import HomeButton from "assets/logos/homebase_logo.svg";
-import { useTezos } from "services/beacon/hooks/useTezos";
-import { ChangeNetworkButton } from "./ChangeNetworkButton";
-import { UserProfileName } from "modules/explorer/components/UserProfileName";
-import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
-import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
-import { ActionSheet, useActionSheet } from "../context/ActionSheets";
+import HomeButton from "assets/logos/homebase_logo.svg"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { ChangeNetworkButton } from "./ChangeNetworkButton"
+import { UserProfileName } from "modules/explorer/components/UserProfileName"
+import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
+import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
+import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 
 const Header = styled(Grid)(({ theme }) => ({
   padding: "28px 125px",
 
   [theme.breakpoints.down("xs")]: {
-    padding: "28px 25px",
-  },
-}));
+    padding: "28px 25px"
+  }
+}))
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
-  background: theme.palette.primary.dark,
-}));
+  background: theme.palette.primary.dark
+}))
 
 const StyledToolbar = styled(Toolbar)({
   width: "100%",
@@ -40,65 +40,62 @@ const StyledToolbar = styled(Toolbar)({
   padding: 0,
   boxSizing: "border-box",
   justifyContent: "space-between",
-  flexWrap: "wrap",
-});
+  flexWrap: "wrap"
+})
 
 const AddressContainer = styled(Grid)({
-  cursor: "pointer",
-});
+  cursor: "pointer"
+})
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
-  cursor: "pointer",
-});
+  cursor: "pointer"
+})
 
 const ConnectWallet = styled(Button)({
   maxHeight: 50,
   alignSelf: "baseline",
   whiteSpace: "nowrap",
-  fontSize: 14,
-});
+  fontSize: 14
+})
 
 const AddressBarWrapper = styled(Grid)({
-  boxSizing: "border-box",
-  padding: "8px 16px",
-  borderRadius: 4,
+  "boxSizing": "border-box",
+  "padding": "8px 16px",
+  "borderRadius": 4,
   "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-  },
-});
+    background: "rgba(129, 254, 183, 0.03)"
+  }
+})
 
 const LogoItem = styled("img")({
   height: "30px",
   cursor: "pointer",
-  paddingTop: 8,
-});
+  paddingTop: 8
+})
 
 const ToolbarContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     display: "flex",
     justifyContent: "center",
-    marginLeft: 16,
+    marginLeft: 16
   },
   [theme.breakpoints.down("md")]: {
     display: "flex",
     justifyContent: "center",
-    marginLeft: 0,
-  },
-}));
+    marginLeft: 0
+  }
+}))
 
-export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
-  disableMobileMenu,
-  children,
-}) => {
-  const { connect, account } = useTezos();
-  const theme = useTheme();
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu, children }) => {
+  const { connect, account } = useTezos()
+  const theme = useTheme()
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
-  const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu);
+  const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
 
-  const history = useHistory();
+  const history = useHistory()
 
   return (
     <StyledAppBar position="sticky">
@@ -126,10 +123,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
           </Grid>
 
           <Grid item>
-            <Grid
-              container
-              justify={isMobileExtraSmall ? "center" : "flex-end"}
-            >
+            <Grid container justify={isMobileExtraSmall ? "center" : "flex-end"}>
               {account ? (
                 <Grid
                   container
@@ -143,10 +137,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
                       <Grid item>
                         <ChangeNetworkButton />
                       </Grid>
-                      <AddressBarWrapper
-                        item
-                        onClick={() => openUserMenuSheet()}
-                      >
+                      <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
                           container
                           alignItems="center"
@@ -168,23 +159,12 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
                   </Grid>
                 </Grid>
               ) : (
-                <Grid
-                  container
-                  justify="flex-end"
-                  alignItems="center"
-                  wrap="nowrap"
-                  style={{ gap: 8 }}
-                >
+                <Grid container justify="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
                   <Grid item>
                     <ChangeNetworkButton />
                   </Grid>
                   <Grid item>
-                    <ConnectWallet
-                      color="secondary"
-                      variant="contained"
-                      size="small"
-                      onClick={() => connect()}
-                    >
+                    <ConnectWallet color="secondary" variant="contained" size="small" onClick={() => connect()}>
                       Connect Wallet
                     </ConnectWallet>
                   </Grid>
@@ -196,5 +176,5 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
         <NavigationMenu disableMobileMenu={disableMobileMenu} />
       </StyledToolbar>
     </StyledAppBar>
-  );
-};
+  )
+}
