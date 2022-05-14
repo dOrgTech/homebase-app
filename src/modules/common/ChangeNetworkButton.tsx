@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { useTezos } from "services/beacon/hooks/useTezos";
 
 const StyledPopover = styled(Popover)({

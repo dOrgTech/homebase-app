@@ -20,7 +20,7 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";

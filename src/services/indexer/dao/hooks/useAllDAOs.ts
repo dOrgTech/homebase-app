@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { getDAOs } from "services/indexer/dao/services";
 
 export const useAllDAOs = (network: Network) => {

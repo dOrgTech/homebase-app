@@ -1,4 +1,5 @@
-import React, {useMemo} from "react";
+import dayjs from "dayjs";
+import React, { useMemo } from "react";
 import {
   Grid,
   Link,
@@ -13,12 +14,11 @@ import {
   useTheme,
 } from "@material-ui/core";
 import hexToRgba from "hex-to-rgba";
-import {TransferWithBN} from "services/contracts/baseDAO/hooks/useTransfers";
-import dayjs from "dayjs";
-import {useTezos} from "services/beacon/hooks/useTezos";
-import {Network} from "services/beacon/context";
-import {ContentContainer} from "modules/explorer/components/ContentContainer";
-import {networkNameMap} from "../../../../../services/bakingBad";
+import { TransferWithBN } from "services/contracts/baseDAO/hooks/useTransfers";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { Network } from "services/beacon";
+import { ContentContainer } from "modules/explorer/components/ContentContainer";
+import { networkNameMap } from "services/bakingBad";
 
 const localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat);

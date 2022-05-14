@@ -8,9 +8,9 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { networkNameMap } from "services/bakingBad";
 import { ProfileAvatar } from "./styled/ProfileAvatar";
 import { UserProfileName } from "./UserProfileName";
-import {networkNameMap} from "../../../services/bakingBad";
 
 const Text = styled(Typography)({
   wordBreak: "break-all"
@@ -21,6 +21,7 @@ export const UserBadge: React.FC<{ address: string, size?: number, gap?: number,
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const isMediumSmall = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useTezos();
+
 
   return (
     <Grid container wrap="nowrap" alignItems="center" direction="row" style={{ gap: gap || 8 }}>
