@@ -17,10 +17,9 @@ export const CycleDescription: React.FC<{ daoAddress: string }> = ({
   const { cycleInfo } = useDAO(daoAddress);
   const isVotingPeriod = cycleInfo && cycleInfo.type;
   const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
   return (
-    <ProposalsStatus align={isExtraSmall? "center": "left"}>
+    <ProposalsStatus>
       {isVotingPeriod === "voting"
         ? "Voting on Proposals"
         : "Creating Proposals"}

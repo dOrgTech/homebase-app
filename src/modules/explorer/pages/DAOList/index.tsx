@@ -68,6 +68,20 @@ const DAOItemGrid = styled(Grid)({
   ["@media (max-width:960px)"]: { 
     gap: "14px"
   },
+
+  ["@media (max-width:830px)"]: { 
+    gap: "12px"
+  },
+
+});
+
+const DAOItemCard = styled(Grid)({
+  flexBasis: "49%",
+
+  ["@media (max-width:760px)"]: { 
+    minWidth: "100%",
+  },
+
 });
 
 export const DAOList: React.FC = () => {
@@ -194,9 +208,9 @@ export const DAOList: React.FC = () => {
                 justifyContent={isMobileSmall ? "center" : "flex-start"}
               >
                 {currentDAOs.map((dao, i) => (
-                  <Grid key={`dao-${i}`} item style={{flexBasis: "49%"}}>
+                  <DAOItemCard key={`dao-${i}`} item>
                     <DAOItem dao={dao} />
-                  </Grid>
+                  </DAOItemCard>
                 ))}
 
                 {isLoading ? (

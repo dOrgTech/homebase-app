@@ -56,6 +56,10 @@ const PageItem = styled(Grid)(({theme, isSelected}: {theme: Theme; isSelected: b
 
 const IconContainer = styled("span")(
   ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    height: "25px",
+    display: "flex",
+    justifyContent: "center",
+
     "& > svg > *": {
       fill: isSelected
       ? theme.palette.secondary.main
@@ -75,6 +79,8 @@ const IconContainer = styled("span")(
 
 const NavText = styled(Typography)(
   ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    display: "flex",
+    justifyContent: "center",
     color: isSelected
     ? theme.palette.secondary.main
     : theme.palette.text.primary,
@@ -142,6 +148,7 @@ const StyledBottomBar = styled(Grid)(
     height: 55,
     bottom: visible ? 0 : -55,
     backgroundColor: theme.palette.primary.main,
+    boxShadow: "0px -4px 7px -4px rgba(0,0,0,0.2)",
     zIndex: 10000,
     width: "100%",
     transition: "bottom 0.5s",
@@ -189,7 +196,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
   const path = useLocation();
   const pathId = path.pathname.split("/").slice(-1)[0];
   const theme = useTheme();
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down(865));
 
   useEffect(() => {
     if (dao) {

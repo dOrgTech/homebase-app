@@ -51,7 +51,8 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
 
   },
 
-  ["@media (max-width:645px)"]: {
+  ["@media (max-width:760px)"]: { 
+    maxWidth: "86vw"
 
   },
 

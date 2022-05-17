@@ -19,9 +19,12 @@ const StatsContainer = styled(ContentContainer)(({ theme }) => ({
     maxHeight: "303px",
   },
 
-  [theme.breakpoints.down("xs")]: {
-    padding: "38px 29px",
-    width: "100%"
+  ["@media (max-width:831px)"]: { 
+    minWidth: "99%",
+  },
+
+  ["@media (max-width:390px)"]: { 
+    maxHeight: "340px",
   },
 }));
 
@@ -67,6 +70,14 @@ const ProposalInfoTitle = styled(Typography)({
     fontSize: "16.3px",
     whiteSpace: "initial",
   },
+
+  ["@media (max-width:830.99px)"]: { 
+    fontSize: "18px",
+  },
+
+  ["@media (max-width:409.99px)"]: { 
+    fontSize: "16px",
+  },
 });
 
 const LargeNumber = styled(Typography)(({ theme }) => ({
@@ -78,6 +89,7 @@ const LargeNumber = styled(Typography)(({ theme }) => ({
   ["@media (max-width:1030px)"]: { 
     fontSize: "30px"
   },
+
 }));
 
 const CycleTime = styled(Typography)(({ theme }) => ({
@@ -87,9 +99,21 @@ const CycleTime = styled(Typography)(({ theme }) => ({
 
   ["@media (max-width:1030px)"]: { 
     fontSize: "16px",
-    width: "50%"
     
   },
+
+  ["@media (max-width:830.99px)"]: { 
+    fontSize: "20px",
+  },
+
+  ["@media (max-width:434px)"]: { 
+    fontSize: "18px",
+  },
+
+  ["@media (max-width:409.99px)"]: { 
+    fontSize: "15px",
+  },
+
 }));
 
 export const DAOStatsRow: React.FC = () => {
@@ -152,9 +176,9 @@ export const DAOStatsRow: React.FC = () => {
                   <ProposalInfoTitle color='secondary'>
                     Current Cycle
                   </ProposalInfoTitle>
-                  <Typography color='textPrimary'>
+                  <CycleTime color='textPrimary'>
                     {cycleInfo?.currentCycle}
-                  </Typography>
+                  </CycleTime>
                 </Grid>
               </Grid>
             </Grid>
@@ -203,18 +227,18 @@ export const DAOStatsRow: React.FC = () => {
                 wrap='nowrap'
                 justifyContent={isExtraSmall ? "space-between" : "flex-start"}>
                 <Grid item>
-                  <ProposalInfoTitle align={isExtraSmall ? "center" : "left"} color='secondary'>
+                  <ProposalInfoTitle color='secondary'>
                     Voting Addresses
                   </ProposalInfoTitle>
-                  <LargeNumber align={isExtraSmall ? "center" : "left"}>
+                  <LargeNumber>
                     {data?.data.ledger.length || "-"}
                   </LargeNumber>
                 </Grid>
                 <Grid item>
-                  <ProposalInfoTitle align={isExtraSmall ? "center" : "left"} color='secondary'>
+                  <ProposalInfoTitle color='secondary'>
                     Active Proposals
                   </ProposalInfoTitle>
-                  <LargeNumber align={isExtraSmall ? "center" : "left"} color='textPrimary'>
+                  <LargeNumber color='textPrimary'>
                     {activeProposals?.length}
                   </LargeNumber>
                 </Grid>

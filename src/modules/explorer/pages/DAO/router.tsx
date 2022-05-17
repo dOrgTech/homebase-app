@@ -27,7 +27,7 @@ import {useHistory} from "react-router";
 const PageLayout = styled("div")(({ theme }) => ({
   background: theme.palette.primary.dark,
   width: "1000px",
-  margin: "auto",
+  margin: "42px auto 0px auto",
 
   ["@media (max-width: 1425px)"]: {
     
@@ -47,9 +47,8 @@ const PageLayout = styled("div")(({ theme }) => ({
 
   },
 
-  ["@media (max-width:960px)"]: { 
-  
-    
+  ["@media (max-width:865px)"]: { 
+    marginTop: 0,
   },
 
   // [theme.breakpoints.down("xs")]: {
@@ -125,7 +124,6 @@ export const useDAOID = () => {
 export const DAORouter = (): JSX.Element => {
   const match = useRouteMatch();
   const theme = useTheme();
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { id: daoId } = useParams<{ id: string }>();
 
   return (
@@ -135,7 +133,7 @@ export const DAORouter = (): JSX.Element => {
           <UserBalancesWidget />
         </Grid>
       </Navbar>
-      <PageLayout style={{ marginTop: 42 }}>
+      <PageLayout>
         <Switch>
           <DAORoute path={`${match.url}/proposal/:proposalId`}>
             <ProposalDetails />

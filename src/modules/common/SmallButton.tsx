@@ -4,6 +4,6 @@ import {
   } from "@material-ui/core";
 
 export const SmallButton = styled(Button)({
-    verticalAlign: "text-bottom",
+    justifyItems: "center",
     fontSize: "16px",
   });

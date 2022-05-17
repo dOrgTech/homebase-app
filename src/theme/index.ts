@@ -395,15 +395,17 @@ export const theme = createTheme({
 declare module '@material-ui/core/styles/createBreakpoints' {
   interface BreakpointOverrides {
     mobile: true;
+    toolbarswitch: true;
   }
 }
 
 export const themeOptions: ThemeOptions = {
   breakpoints: {
     values: {
-      mobile: 645,
       xs: 0,
       sm: 600,
+      mobile: 645,
+      toolbarswitch: 865,
       md: 900,
       lg: 1200,
       xl: 1536
