@@ -1,9 +1,9 @@
 import { useQueryClient } from 'react-query';
-import { useCallback, useContext } from "react";
-import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
-import { connectWithBeacon, rpcNodes } from "services/beacon";
-import { Network, TezosContext } from "services/beacon/context";
-import { Tzip16Module } from "@taquito/tzip16";
+import { useCallback, useContext } from 'react';
+import { MichelCodecPacker, TezosToolkit } from '@taquito/taquito';
+import { connectWithBeacon, Network, rpcNodes, TezosActionType } from 'services/beacon';
+import { TezosContext } from 'services/beacon/context';
+import { Tzip16Module } from '@taquito/tzip16';
 import mixpanel from 'mixpanel-browser';
 
 type WalletConnectReturn = {
@@ -34,7 +34,7 @@ export const useTezos = (): WalletConnectReturn => {
     const account = await newTezos.wallet.pkh();
 
     dispatch({
-      type: "UPDATE_TEZOS",
+      type: TezosActionType.UPDATE_TEZOS,
       payload: {
         network: newNetwork || network,
         tezos: newTezos,
@@ -59,7 +59,7 @@ export const useTezos = (): WalletConnectReturn => {
       await wallet.disconnect()
 
       dispatch({
-        type: "RESET_TEZOS",
+        type: TezosActionType.RESET_TEZOS,
       });
     }, [dispatch, wallet]),
     changeNetwork: async (newNetwork: Network) => {
@@ -74,7 +74,7 @@ export const useTezos = (): WalletConnectReturn => {
         Tezos.addExtension(new Tzip16Module());
   
         dispatch({
-          type: "UPDATE_TEZOS",
+          type: TezosActionType.UPDATE_TEZOS,
           payload: {
             network: newNetwork,
             tezos: Tezos,

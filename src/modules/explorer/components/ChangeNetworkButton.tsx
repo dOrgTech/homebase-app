@@ -7,9 +7,9 @@ import {
   Theme,
 } from "@material-ui/core";
 import React from "react";
+import { Network } from "services/beacon";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { ActionSheet, useActionSheet } from "../context/ActionSheets";
-import {Network} from "../../../services/beacon/context";
 
 const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {

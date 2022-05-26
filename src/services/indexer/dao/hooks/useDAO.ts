@@ -3,7 +3,7 @@ import { Token } from "models/Token";
 import { useState, useContext, useEffect, useMemo } from "react";
 import { useQuery } from "react-query";
 import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import {
   TreasuryDAO,
