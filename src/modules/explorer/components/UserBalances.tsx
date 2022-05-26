@@ -33,7 +33,6 @@ interface Balances {
 }
 
 const BalanceHeaderText = styled(Typography)({
-  letterSpacing: "-0.01em",
   paddingBottom: 10,
   fontSize: 18,
 

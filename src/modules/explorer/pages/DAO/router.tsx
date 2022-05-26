@@ -47,7 +47,7 @@ const PageLayout = styled("div")(({ theme }) => ({
 
   },
 
-  ["@media (max-width:865px)"]: { 
+  ["@media (max-width:960px)"]: { 
     marginTop: 0,
   },
 

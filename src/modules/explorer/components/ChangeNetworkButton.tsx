@@ -15,12 +15,15 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {
     height: "100%",
   },
-  background: "#24282B",
+  background: theme.palette.primary.main,
   borderRadius: 4,
   padding: "5px 10px",
   cursor: "pointer",
+  transition: ".15s ease-out",
+
   "&:hover": {
     background: theme.palette.secondary.dark,
+    transition: ".15s ease-in",
   }
 }));
 

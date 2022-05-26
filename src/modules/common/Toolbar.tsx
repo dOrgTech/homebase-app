@@ -25,6 +25,8 @@ import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
+import { SmallButton } from './SmallButton';
+
 
 const Header = styled(Grid)({
  padding: "28px 125px"
@@ -54,11 +56,6 @@ const LogoText = styled(Typography)({
   cursor: "pointer",
   fontFamily: "Roboto",
   letterSpacing: "initial",
-});
-
-const ConnectWallet = styled(Button)({
-  maxHeight: 50,
-  alignSelf: "baseline",
 });
 
 const AddressMenu = styled(Box)(() => ({
@@ -118,9 +115,9 @@ export const ConnectWalletButton = ({
 }: {
   connect: () => Promise<TezosToolkit>;
 }) => (
-  <ConnectWallet color="secondary" variant="outlined" onClick={() => connect()}>
+  <SmallButton variant="outlined" onClick={() => connect()}>
     Connect Wallet
-  </ConnectWallet>
+  </SmallButton>
 );
 
 export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?: boolean }> = ({

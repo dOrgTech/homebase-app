@@ -1,3 +1,4 @@
+import { alpha } from "@material-ui/core";
 import { createTheme } from "@material-ui/core/styles";
 import { ThemeOptions } from "@material-ui/core/styles/createTheme";
 const defaultTheme = createTheme()
@@ -13,7 +14,7 @@ export const theme = createTheme({
     primary: {
       main: "#2F3438",
       dark: "#1C1F23",
-      light: "#4A4E52",
+      light: "#41484d",
     },
     secondary: {
       main: "#81FEB7",
@@ -86,7 +87,7 @@ export const theme = createTheme({
   overrides: {
     MuiTypography: {
       root: {
-        letterSpacing: "-0.03em",
+        letterSpacing: "-0.03em !important",
         // lineHeight: "1.5 !important",
         // wordSpacing: "40",
       },
@@ -204,18 +205,21 @@ export const theme = createTheme({
     },
     MuiButton: {
       root: {
-        "&$disabled": {
-          color: "#2F3438 !important",
-          background: "#515558 !important",
-        },
-        "&:hover": {
-          backgroundColor: "#62eda5 !important",
-        },
         textTransform: "capitalize",
         fontWeight: 500,
         fontSize: 18,
         padding: "3px 14px",
-        
+        letterSpacing: "-0.03em",
+        boxShadow: "none",
+
+        "&:hover": {
+          boxShadow: "none",
+        },
+
+        "&$disabled": {
+          color: "#2F3438 !important",
+          background: "#41484d !important",
+        },
       },
       outlined: {
         "&$disabled": {
@@ -226,12 +230,6 @@ export const theme = createTheme({
         padding: "1px 8px",
         fontSize: "1rem",
       },
-      containedPrimary: {
-        "&:hover": {
-          background: "#273833 !important",
-          opacity: "100% !important"
-        }
-      }
     },
     MuiInputBase: {
       input: {

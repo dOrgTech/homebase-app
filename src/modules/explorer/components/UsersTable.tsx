@@ -144,7 +144,7 @@ const DesktopUsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
 
 export const UsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   const theme = useTheme();
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down(960));
 
   return isExtraSmall ? (
     <MobileUsersTable data={data} />

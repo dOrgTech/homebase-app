@@ -18,6 +18,9 @@ import {useTransfers} from "../../../../services/contracts/baseDAO/hooks/useTran
 import {InfoIcon} from "../../components/styled/InfoIcon";
 import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 import { styled, Typography } from "@material-ui/core";
+import { SmallButton } from '../../../common/SmallButton';
+import { MainButton } from '../../../common/MainButton';
+
 
 const DelegateTitle = styled(Typography)(({ theme }) => ({
   fontSize: 18,
@@ -79,14 +82,14 @@ export const Treasury: React.FC = () => {
           <Grid item style={{display: "flex", alignItems: "center", }}>
             <Grid container>
               <Grid item>
-                <Button
+                <MainButton
                   variant="contained"
                   color="secondary"
                   onClick={() => setOpenTransfer(true)}
                   disabled={shouldDisable}
                 >
                   New Transfer
-                </Button>
+                </MainButton>
                 {shouldDisable && (
                   <Tooltip
                     placement="bottom"
@@ -116,14 +119,14 @@ export const Treasury: React.FC = () => {
             <Grid item style={{display: "flex", alignItems: "center"}}>
             <Grid container>
               <Grid item>
-                <Button
+                <SmallButton
                   variant="contained"
                   color="secondary"
                   onClick={() => setOpenTransfer(true)}
                   disabled={shouldDisable}
                 >
                   Change Delegate
-                </Button>
+                </SmallButton>
                 {shouldDisable && (
                   <Tooltip
                     placement="bottom"

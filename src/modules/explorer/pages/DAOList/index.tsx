@@ -6,6 +6,7 @@ import {
   styled,
   Typography,
   useMediaQuery,
+  Theme,
   useTheme,
 } from "@material-ui/core";
 import { Navbar } from "../../components/Toolbar";
@@ -16,6 +17,8 @@ import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs";
 import { ConnectMessage } from "./components/ConnectMessage";
 import { DAOItem } from "./components/DAOItem";
 import { SearchInput } from "./components/Searchbar";
+import { MainButton } from '../../../common/MainButton';
+
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -45,9 +48,17 @@ const PageContainer = styled("div")(({ theme }) => ({
   },
 }));
 
-const StyledTab = styled(Button)({
+const StyledTab = styled(Button)(({theme, isSelected}: {theme: Theme; isSelected: boolean}) => ({ 
   fontSize: 16,
-});
+  color: isSelected ? theme.palette.primary.dark : "#fff",
+
+  backgroundColor: isSelected ? theme.palette.secondary.main : theme.palette.primary.main,
+
+  "&:hover": {
+    backgroundColor: isSelected ? theme.palette.secondary.main : theme.palette.secondary.dark,
+  }
+}),
+);
 
 const Search = styled(Grid)({
   width: "49.5%",
@@ -161,9 +172,9 @@ export const DAOList: React.FC = () => {
                   </Grid>
                   <Grid item>
                     <Link underline="none" href={`/creator`}>
-                      <Button variant="contained" color="secondary">
+                      <MainButton variant="contained" color="secondary">
                         Create DAO
-                      </Button>
+                      </MainButton>
                     </Link>
                   </Grid>
                 </Grid>
@@ -177,10 +188,10 @@ export const DAOList: React.FC = () => {
                   <Grid item>
                     <StyledTab
                       variant="contained"
-                      color={selectedTab !== 0 ? "primary" : "secondary"}
                       style={selectedTab !==0 ? {borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex:0} : {borderRadius: 4, zIndex: 1}}
                       disableElevation={true}
                       onClick={() => handleChangeTab(0)}
+                      isSelected={selectedTab === 0 ? true : false}
                     >
                       All
                     </StyledTab>
@@ -190,9 +201,9 @@ export const DAOList: React.FC = () => {
                     <StyledTab
                       disableElevation={true}
                       variant="contained"
-                      color={selectedTab !== 1 ? "primary" : "secondary"}
                       style={selectedTab !==1 ? {borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0} : {borderRadius: 4, marginLeft: -1, zIndex: 1}}
                       onClick={() => handleChangeTab(1)}
+                      isSelected={selectedTab === 1 ? true : false}
                     >
                       My DAOs
                     </StyledTab>

@@ -31,6 +31,7 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   boxSizing: "border-box",
   padding: 32,
   cursor: "pointer",
+  transition: "0.15s ease-out",
   
   ["@media (max-width:1335px)"]: { 
     minHeight: 130,
@@ -58,12 +59,13 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
 
   "&:hover": {
     background: theme.palette.secondary.dark,
+    scale: 1.01,
+    transition: "0.15s ease-in",
   },
 }));
 
 const SymbolText = styled(Typography)({
   fontSize: "18px",
-  letterSpacing: "-0.01em",
   fontWeight: 300,
 
   ["@media (max-width:1335px)"]: { 
@@ -99,7 +101,6 @@ const NameText = styled(Typography)(({ theme }) => ({
 
 const NumberText = styled(Typography)({
   fontSize: "28px",
-  letterSpacing: "-0.01em",
   fontWeight: 300,
 
   ["@media (max-width:1335px)"]: { 
@@ -121,7 +122,6 @@ const NumberText = styled(Typography)({
 
 const VotingAddressesText = styled(Typography)({
   fontSize: "19px",
-  letterSpacing: "-0.01em",
   fontWeight: 300,
 
   ["@media (max-width:1335px)"]: { 

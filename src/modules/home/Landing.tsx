@@ -18,6 +18,8 @@ import Vector2 from "assets/vectors/Vector2.svg";
 import hexToRgba from "hex-to-rgba";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg";
+import { MainButton } from '../common/MainButton';
+
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
@@ -162,17 +164,17 @@ export const Landing: React.FC = () => {
                       >
                         <Grid item>
                           <Link href="/explorer" underline="none">
-                            <Button variant="contained" color="secondary">Enter App</Button>
+                            <MainButton variant="contained" color="secondary">Enter App</MainButton>
                           </Link>
                         </Grid>
                         <Grid item>
                           <Link
-                            href="https://github.com/tezos-commons/baseDAO"
+                            href="/faq"
                             underline="none"
                           >
-                            <Button variant="contained" color="secondary">
+                            <MainButton variant="contained" color="secondary">
                               Learn More
-                            </Button>
+                            </MainButton>
                           </Link>
                         </Grid>
                       </Grid>

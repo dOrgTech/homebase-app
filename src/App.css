@@ -24,8 +24,7 @@ a {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 * {
-  scrollbar-width: none;  
-  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+  scrollbar-width: none; 
 }
 
 /* width */

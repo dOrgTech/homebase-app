@@ -20,6 +20,8 @@ import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
 import { ActionSheet, useActionSheet } from "../context/ActionSheets";
+import { SmallButton } from '../../common/SmallButton';
+
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -82,13 +84,6 @@ const LogoText = styled(Typography)({
   cursor: "pointer",
   fontFamily: "Roboto",
   letterSpacing: "initial",
-});
-
-const ConnectWallet = styled(Button)({
-  maxHeight: 50,
-  alignSelf: "baseline",
-  whiteSpace: "nowrap",
-  fontSize: 14,
 });
 
 const AddressBarWrapper = styled(Grid)({
@@ -204,14 +199,14 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
                     <ChangeNetworkButton />
                   </Grid>
                   <Grid item>
-                    <ConnectWallet
+                    <SmallButton
                       color="secondary"
                       variant="contained"
-                      size="small"
+                      style={{fontSize: "14px"}}
                       onClick={() => connect()}
                     >
                       Connect Wallet
-                    </ConnectWallet>
+                    </SmallButton>
                   </Grid>
                 </Grid>
               )}
