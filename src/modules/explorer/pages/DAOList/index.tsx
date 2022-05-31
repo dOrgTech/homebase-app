@@ -6,6 +6,7 @@ import {
   styled,
   Typography,
   useMediaQuery,
+  Theme,
   useTheme,
 } from "@material-ui/core";
 import { Navbar } from "../../components/Toolbar";
@@ -16,21 +17,82 @@ import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs";
 import { ConnectMessage } from "./components/ConnectMessage";
 import { DAOItem } from "./components/DAOItem";
 import { SearchInput } from "./components/Searchbar";
+import { MainButton } from '../../../common/MainButton';
+
 
 const PageContainer = styled("div")(({ theme }) => ({
-  width: "100%",
-  maxWidth: 1186,
+  width: "1000px",
   height: "100%",
   margin: "auto",
 
-  [theme.breakpoints.down("md")]: {
-    padding: "18px",
-    boxSizing: "border-box",
+  ["@media (max-width: 1425px)"]: {
+    
+  },
+
+  ["@media (max-width:1335px)"]: {
+  
+  },
+
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+  
+  },
+
+  ["@media (max-width:1030px)"]: { 
+
+  },
+
+  ["@media (max-width:960px)"]: { 
+  
+    
   },
 }));
 
-const StyledTab = styled(Button)({
+const StyledTab = styled(Button)(({theme, isSelected}: {theme: Theme; isSelected: boolean}) => ({ 
   fontSize: 16,
+  color: isSelected ? theme.palette.primary.dark : "#fff",
+
+  backgroundColor: isSelected ? theme.palette.secondary.main : theme.palette.primary.main,
+
+  "&:hover": {
+    backgroundColor: isSelected ? theme.palette.secondary.main : theme.palette.secondary.dark,
+  }
+}),
+);
+
+const Search = styled(Grid)({
+  width: "49.5%",
+
+  ["@media (max-width: 645px)"]: {
+    width: "100%",
+    marginTop: "14px",
+  },
+});
+
+const DAOItemGrid = styled(Grid)({
+  gap: "18px",
+
+  ["@media (max-width: 1155px)"]: {
+    gap: "16px"
+  },
+
+  ["@media (max-width:960px)"]: { 
+    gap: "14px"
+  },
+
+  ["@media (max-width:830px)"]: { 
+    gap: "12px"
+  },
+
+});
+
+const DAOItemCard = styled(Grid)({
+  flexBasis: "49%",
+
+  ["@media (max-width:760px)"]: { 
+    minWidth: "100%",
+  },
+
 });
 
 export const DAOList: React.FC = () => {
@@ -39,7 +101,7 @@ export const DAOList: React.FC = () => {
 
   const theme = useTheme();
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"));
 
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -89,9 +151,9 @@ export const DAOList: React.FC = () => {
               alignItems="center"
               style={{ gap: 42 }}
             >
-              <Grid item xs={8} sm={6}>
+              <Search>
                 <SearchInput search={filterDAOs} />
-              </Grid>
+              </Search>
               <Grid item>
                 <Grid container style={{ gap: 22 }} justifyContent="center">
                   <Grid item>
@@ -102,7 +164,7 @@ export const DAOList: React.FC = () => {
                       style={{ height: "100%" }}
                     >
                       <Grid item>
-                        <Typography color="textPrimary">
+                        <Typography style={{ fontSize: "18px" }} color="textPrimary">
                           {daos?.length || 0} DAOs
                         </Typography>
                       </Grid>
@@ -110,9 +172,9 @@ export const DAOList: React.FC = () => {
                   </Grid>
                   <Grid item>
                     <Link underline="none" href={`/creator`}>
-                      <Button variant="contained" color="secondary">
+                      <MainButton variant="contained" color="secondary">
                         Create DAO
-                      </Button>
+                      </MainButton>
                     </Link>
                   </Grid>
                 </Grid>
@@ -126,11 +188,10 @@ export const DAOList: React.FC = () => {
                   <Grid item>
                     <StyledTab
                       variant="contained"
-                      color={selectedTab !== 0 ? "primary" : "secondary"}
                       style={selectedTab !==0 ? {borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex:0} : {borderRadius: 4, zIndex: 1}}
-                      disableRipple={true}
                       disableElevation={true}
                       onClick={() => handleChangeTab(0)}
+                      isSelected={selectedTab === 0}
                     >
                       All
                     </StyledTab>
@@ -138,12 +199,11 @@ export const DAOList: React.FC = () => {
                   <Grid item>
                   
                     <StyledTab
-                      disableRipple={true}
                       disableElevation={true}
                       variant="contained"
-                      color={selectedTab !== 1 ? "primary" : "secondary"}
                       style={selectedTab !==1 ? {borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0} : {borderRadius: 4, marginLeft: -1, zIndex: 1}}
                       onClick={() => handleChangeTab(1)}
+                      isSelected={selectedTab === 1}
                     >
                       My DAOs
                     </StyledTab>
@@ -154,15 +214,14 @@ export const DAOList: React.FC = () => {
           </Grid>
           <Grid item>
             <TabPanel value={selectedTab} index={0}>
-              <Grid
+              <DAOItemGrid
                 container
-                style={{ gap: 18 }}
                 justifyContent={isMobileSmall ? "center" : "flex-start"}
               >
                 {currentDAOs.map((dao, i) => (
-                  <Grid key={`dao-${i}`} item>
+                  <DAOItemCard key={`dao-${i}`} item>
                     <DAOItem dao={dao} />
-                  </Grid>
+                  </DAOItemCard>
                 ))}
 
                 {isLoading ? (
@@ -170,7 +229,7 @@ export const DAOList: React.FC = () => {
                     <CircularProgress color="secondary" />
                   </Grid>
                 ) : null}
-              </Grid>
+              </DAOItemGrid>
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
               <Grid

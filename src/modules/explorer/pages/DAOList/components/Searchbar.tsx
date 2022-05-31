@@ -14,6 +14,7 @@ const StyledInput = withStyles((theme: Theme) => ({
       display: "none",
     },
     "& div.MuiInputBase-root": {
+      fontSize: 18,
       height: 54,
       boxSizing: "border-box",
       background: theme.palette.primary.main,
@@ -47,7 +48,7 @@ const StyledInput = withStyles((theme: Theme) => ({
 }))(TextField);
 
 const SearchIcon = styled(SearchOutlined)({
-  marginRight: 16,
+  marginRight: 5,
 });
 
 export const SearchInput: React.FC<{ search: any }> = ({ search }) => {

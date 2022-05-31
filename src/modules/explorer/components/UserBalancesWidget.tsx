@@ -5,7 +5,7 @@ import hexToRgba from "hex-to-rgba";
 import React, { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import {useDAOID} from "../pages/DAO/router";
+import { useDAOID } from "../pages/DAO/router";
 
 const BalanceBox = styled(Grid)(
   ({

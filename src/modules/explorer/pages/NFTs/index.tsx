@@ -25,6 +25,8 @@ import { HeroTitle } from "../../components/HeroTitle";
 import { useDAOID } from "../DAO/router";
 import {InfoIcon} from "../../components/styled/InfoIcon";
 import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
+import { SmallButton } from '../../../common/SmallButton';
+import { MainButton } from '../../../common/MainButton';
 
 const Card = styled(ContentContainer)({
   boxSizing: "border-box",
@@ -115,14 +117,14 @@ export const NFTs: React.FC = () => {
             )}
           </Grid>
           <Grid item>
-            <Button
+            <MainButton
               variant="contained"
               color="secondary"
               onClick={() => setOpenTransfer(true)}
               disabled={shouldDisable}
             >
               New Transfer
-            </Button>
+            </MainButton>
             {shouldDisable && (
               <Tooltip
                 placement="bottom"
@@ -187,7 +189,7 @@ export const NFTs: React.FC = () => {
                     </NFTTitle>
                   </Grid>
                   <Grid item>
-                    <Button
+                    <SmallButton
                       variant="contained"
                       color="secondary"
                       size="small"
@@ -195,7 +197,7 @@ export const NFTs: React.FC = () => {
                       disabled={shouldDisable}
                     >
                       Propose Transfer
-                    </Button>
+                    </SmallButton>
                   </Grid>
                 </Grid>
               </Grid>

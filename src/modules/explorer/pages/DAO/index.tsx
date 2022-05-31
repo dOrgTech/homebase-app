@@ -21,31 +21,57 @@ import { DAOStatsRow } from "../../components/DAOStatsRow";
 import { UsersTable } from "../../components/UsersTable";
 import BigNumber from "bignumber.js";
 import {InfoIcon} from "../../components/styled/InfoIcon";
+import { SmallButton } from '../../../common/SmallButton';
+
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
-  padding: "38px 55px",
+  padding: "38px 38px",
 
-  [theme.breakpoints.down("xs")]: {
-    padding: "38px 29px",
-  },
 }));
 
 const TitleText = styled(Typography)(({ theme }) => ({
-  fontSize: 60,
+  fontSize: 40,
   fontWeight: 500,
   lineHeight: .8,
 
-  [theme.breakpoints.down("xs")]: {
-    fontSize: 26,
+  ["@media (max-width:642px)"]: { 
+    fontSize: 35,
+  },
+
+  ["@media (max-width:583px)"]: { 
+    fontSize: 30,
+  },
+
+  ["@media (max-width:533px)"]: { 
+    fontSize: 25,
+  },
+
+  ["@media (max-width:462px)"]: { 
+    fontSize: 22,
   },
 }));
 
 const SubtitleText = styled(Typography)({
-  fontWeight: 400,
-});
+  fontSize: 18,
+  margin: "-10px auto 0 auto",
+  width: "875px",
+  fontWeight: 300,
+  maxHeight: "200px",
+  overflowY: "scroll",
 
-const ExecuteButton = styled(Button)({
-  marginTop: "-35px",
+  ["@media (max-width:1166px)"]: { 
+    width:"75.3vw"
+  },  
+
+  ["@media (max-width:1138px)"]: { 
+    width:"100%"
+  },  
+
+  ["@media (max-width:599.98px)"]: { 
+    width:"100%",
+    margin: "-15px auto 0 auto",
+  }, 
+
 });
 
 const TableContainer = styled(ContentContainer)({
@@ -100,31 +126,29 @@ export const DAO: React.FC = () => {
       <HeroContainer item>
         <Grid container direction="column" style={{ gap: 36 }}>
           <Grid item>
-            <Grid container style={{ gap: 20 }} alignItems="baseline">
+            <Grid container style={{ gap: 20 }} alignItems="center">
               <Grid item>
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
               <Grid item>
-                <ExecuteButton
+                <SmallButton
                   variant="contained"
-                  color="secondary"
                   size={isExtraSmall ? "small" : "medium"}
                   onClick={onFlush}
                   disabled={!executableProposals || !executableProposals.length}
                 >
                   Execute
-                </ExecuteButton>
+                </SmallButton>
                 <Tooltip
-                  placement="bottom"
                   title="Execute all passed proposals and drop all expired or rejected"
                 >
-                  <InfoIcon color="secondary" style={{ marginBottom:18 }} />
+                  <InfoIcon color="secondary" />
                 </Tooltip>
               </Grid>
             </Grid>
           </Grid>
-          <Grid item>
-            <SubtitleText variant="body1" color="textPrimary">
+          <Grid item >
+            <SubtitleText color="textPrimary">
               {description}
             </SubtitleText>
           </Grid>

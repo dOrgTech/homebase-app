@@ -5,6 +5,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  alpha
 } from "@material-ui/core";
 import { ReactComponent as HouseIcon } from "assets/logos/home.svg";
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg";
@@ -22,27 +23,101 @@ import { debounce } from "../utils/debounce";
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
-  position: "sticky",
   background: theme.palette.primary.main,
+  position: "sticky",
+  top: "0px",
 }));
 
-const IconContainer = styled("span")(
-  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-    "& > svg > *": {
-      fill: isSelected
-        ? theme.palette.secondary.main
-        : theme.palette.text.primary,
-    },
-  })
-);
+const InnerContainer = styled(Grid)(({ theme }) => ({
+  width: "1000px",
+  margin: "auto",
+  justifyContent: "space-between",
 
-const PageItem = styled(Grid)({
-  height: 65,
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+
+  },
+}));
+
+const PageItem = styled(Grid)(({theme, isSelected}: {theme: Theme; isSelected: boolean}) => ({
+  height: "60px",
+  display: "flex",
+  alignItems: "center",
+  padding: "0 8px",
+  borderTop: "2px solid transparent",
+  borderBottom: isSelected 
+  ? "2px solid" + theme.palette.secondary.main
+  : "2px solid transparent",
+  transition: isSelected ? "0s ease-in" : ".1s ease-out",
+
 
   "& > a > *": {
     height: "100%",
   },
-});
+
+  "&:hover": {
+    "& > a > * > * > * > * > *": {
+     fill: isSelected
+     ? theme.palette.secondary.main
+     : theme.palette.secondary.main,
+     transition: isSelected ? "none" : ".15s ease-in",
+    },
+
+    "& > a > * > * > *": {
+      color: isSelected
+     ? theme.palette.secondary.main
+     : theme.palette.secondary.main,
+     transition: isSelected ? "none" : ".15s ease-in",
+    },
+  },
+
+  "& > a > * > * > * > * > *": {
+    transition: ".15s ease-out",
+   },
+
+   "& > a > * > * > *": {
+    transition: ".15s ease-out",
+   },
+}),
+);
+
+const PageItemBg = styled(Grid)(({theme, isSelected}: {theme: Theme; isSelected: boolean}) => ({ 
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 15,
+  // background: isSelected 
+  // ? alpha(theme.palette.primary.dark, 0.15)
+  // : "transparent",
+  // padding: "8px 15px",
+  // borderRadius: 4,
+
+}),
+);
+
+
+const IconContainer = styled("span")(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    height: "25px",
+    display: "flex",
+    justifyContent: "center",
+
+    "& > svg > *": {
+      fill: isSelected
+      ? theme.palette.secondary.main
+      : theme.palette.text.primary,
+    },
+  }),
+);
+
+const NavText = styled(Typography)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    display: "flex",
+    justifyContent: "center",
+    color: isSelected
+    ? theme.palette.secondary.main
+    : theme.palette.text.primary,
+  }),
+);
 
 interface Page {
   pathId: string;
@@ -94,14 +169,20 @@ const StyledBottomBar = styled(Grid)(
   ({ theme, visible }: { theme: Theme; visible: boolean }) => ({
     position: "fixed",
     height: 55,
-    bottom: visible ? 0 : -55,
-    backgroundColor: theme.palette.primary.main,
-    borderTop: `2px solid ${theme.palette.primary.light}`,
-    zIndex: 10000,
     width: "100%",
+    bottom: /*visible ? 0 : -55*/ 0,
+    backgroundColor: theme.palette.primary.main,
+    boxShadow: "0px -4px 7px -4px rgba(0,0,0,0.2)",
+    zIndex: 10000,
     transition: "bottom 0.5s",
   })
 );
+
+const BottomBarItems = styled(Grid)(({
+  width: "86vw",
+  margin: "0 auto",
+  justifyContent: "space-between",
+}));
 
 const BottomNavBar: React.FC = ({ children }) => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -114,6 +195,7 @@ const BottomNavBar: React.FC = ({ children }) => {
       setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
 
       setPrevScrollPos(currentScrollPos);
+
     }, 100);
 
     window.addEventListener("scroll", handleScroll);
@@ -125,10 +207,9 @@ const BottomNavBar: React.FC = ({ children }) => {
     <StyledBottomBar
       container
       direction={"row"}
-      justify={"space-evenly"}
       visible={visible}
     >
-      {children}
+      <BottomBarItems container>{children}</BottomBarItems>
     </StyledBottomBar>
   );
 };
@@ -143,7 +224,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
   const path = useLocation();
   const pathId = path.pathname.split("/").slice(-1)[0];
   const theme = useTheme();
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down(960));
 
   useEffect(() => {
     if (dao) {
@@ -164,37 +245,34 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
   }, [account, dao, daoId]);
 
   return !isMobileSmall || disableMobileMenu ? (
-    <Container container justifyContent="center" style={{ gap: 92 }}>
+    <Container container>
+      <InnerContainer container>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} item alignItems="center">
+        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item>
           <Link to={page.href}>
-            <Grid
-              container
-              alignItems="center"
-              justifyContent="center"
-              style={{ gap: 15 }}
-            >
+            <PageItemBg isSelected={pathId === page.pathId} container>
               <Grid item>
                 <IconContainer isSelected={pathId === page.pathId}>
                   <page.icon />
                 </IconContainer>
               </Grid>
               <Grid item>
-                <Typography
-                  color={pathId === page.pathId ? "secondary" : "textPrimary"}
+                <NavText
+                  isSelected={pathId === page.pathId}
                 >
                   {page.name}
-                </Typography>
+                </NavText>
               </Grid>
-            </Grid>
+            </PageItemBg>
           </Link>
         </PageItem>
       ))}
+      </InnerContainer>
     </Container>
   ) : (
     <BottomNavBar>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} item alignItems="center">
+        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item alignItems="center">
           <Link to={page.href}>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>

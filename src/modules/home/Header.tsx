@@ -27,6 +27,8 @@ const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
   cursor: "pointer",
+  fontFamily: "Roboto",
+  letterSpacing: "initial",
 });
 
 const StyledToolbar = styled(Toolbar)({
@@ -36,18 +38,6 @@ const StyledToolbar = styled(Toolbar)({
   justifyContent: "space-between",
   flexWrap: "wrap",
 });
-
-const HeaderButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-  minHeight: 39,
-  minWidth: 130,
-  background: theme.palette.secondary.main,
-  color: theme.palette.primary.dark,
-  borderColor: hexToRgba(theme.palette.secondary.main, 0.23),
-  "&:hover": {
-    backgroundColor: hexToRgba(theme.palette.secondary.main, 0.24),
-    borderColor: theme.palette.secondary.main,
-  },
-}));
 
 export const Header: React.FC = () => {
   return (
@@ -77,7 +67,7 @@ export const Header: React.FC = () => {
           </Grid>
           <Grid item>
             <Link href="/explorer" underline="none">
-              <HeaderButton>Enter App</HeaderButton>
+              <Button variant="contained" color="secondary">Enter App</Button>
             </Link>
           </Grid>
         </Grid>

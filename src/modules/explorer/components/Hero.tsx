@@ -3,7 +3,7 @@ import React from "react"
 import { ContentContainer } from "./ContentContainer";
 
 const Container = styled(ContentContainer)({
-  padding: "40px 45px",
+  padding: "38px 38px",
   boxSizing: "border-box",
 
   "& > *": {
