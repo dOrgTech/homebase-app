@@ -8,7 +8,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-  SvgIcon, 
+  SvgIcon,
 } from "@material-ui/core";
 import React from "react";
 import { Header } from "./Header";
@@ -18,8 +18,7 @@ import Vector2 from "assets/vectors/Vector2.svg";
 import hexToRgba from "hex-to-rgba";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg";
-import { MainButton } from '../common/MainButton';
-
+import { MainButton } from "../common/MainButton";
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
@@ -92,20 +91,6 @@ const SubtitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontWeight: 300,
 }));
 
-
-// const OutlinedButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-//   minHeight: 39,
-//   minWidth: 130,
-//   padding: "6px 16px",
-//   background: "transparent",
-//   color: theme.palette.text.primary,
-//   borderColor: theme.palette.secondary.main,
-//   "&:hover": {
-//     backgroundColor: hexToRgba("#81FEB7", 0.24),
-//     borderColor: theme.palette.secondary.main,
-//   },
-// }));
-
 export const Landing: React.FC = () => {
   const theme = useTheme();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
@@ -146,9 +131,7 @@ export const Landing: React.FC = () => {
                     )}
 
                     <Grid item>
-                      <SubtitleText
-                        align={isExtraSmall ? "center" : "left"}
-                      >
+                      <SubtitleText align={isExtraSmall ? "center" : "left"}>
                         Homebase is a web application that enables users to
                         create and manage/use DAOs on the Tezos blockchain. This
                         application aims to help empower community members and
@@ -164,14 +147,13 @@ export const Landing: React.FC = () => {
                       >
                         <Grid item>
                           <Link href="/explorer" underline="none">
-                            <MainButton variant="contained" color="secondary">Enter App</MainButton>
+                            <MainButton variant="contained" color="secondary">
+                              Enter App
+                            </MainButton>
                           </Link>
                         </Grid>
                         <Grid item>
-                          <Link
-                            href="/faq"
-                            underline="none"
-                          >
+                          <Link href="/faq" underline="none">
                             <MainButton variant="contained" color="secondary">
                               Learn More
                             </MainButton>

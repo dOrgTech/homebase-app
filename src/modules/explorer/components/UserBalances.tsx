@@ -137,7 +137,7 @@ export const UserBalances: React.FC<{ daoId: string }> = ({
               <BalanceGrid container alignItems="baseline" spacing={1} justifyContent={isExtraSmall? "center": "flex-start"}>
                 <Grid item>
                   <Balance color="textPrimary">
-                    40{balance}
+                    {balance}
                   </Balance>
                 </Grid>
                 <Grid item>

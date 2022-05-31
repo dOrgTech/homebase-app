@@ -175,7 +175,6 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
           direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
           wrap="wrap"
-          // justify={mode === "explorer" ? "space-between" : "flex-end"}
         >
           {mode === "explorer" && (
             <Grid item>
