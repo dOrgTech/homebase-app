@@ -24,6 +24,8 @@ import {useDAOID} from "../../DAO/router";
 import BigNumber from "bignumber.js";
 import {ContentContainer} from "modules/explorer/components/ContentContainer";
 import {useIsProposalButtonDisabled} from "../../../../../services/contracts/baseDAO/hooks/useCycleInfo";
+import { SmallButton } from '../../../../common/SmallButton';
+
 
 const TokenSymbol = styled(Typography)(({theme}) => ({
   background: hexToRgba(theme.palette.secondary.main, 0.11),
@@ -122,7 +124,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
           </Grid>
         ))}
         <Grid item>
-          <Button
+          <SmallButton
             variant="contained"
             color="secondary"
             size={"small"}
@@ -130,7 +132,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
             disabled={shouldDisable}
           >
             Transfer
-          </Button>
+          </SmallButton>
         </Grid>
       </MobileTableRow>
       {rows.map((row, i) => (
@@ -153,7 +155,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
             </Grid>
           ))}
           <Grid item>
-            <Button
+            <SmallButton
               variant="contained"
               color="secondary"
               size={"small"}
@@ -161,7 +163,7 @@ const MobileBalancesTable: React.FC<TableProps> = ({
               disabled={shouldDisable}
             >
               Transfer
-            </Button>
+            </SmallButton>
           </Grid>
         </MobileTableRow>
       ))}
@@ -193,14 +195,14 @@ const DesktopBalancesTable: React.FC<TableProps> = ({
           <TableCell>-</TableCell>
           <TableCell>{tezosBalance.toString()}</TableCell>
           <TableCell align="right">
-            <Button
+            <SmallButton
               variant="contained"
               color="secondary"
               onClick={() => openXTZTransferModal()}
               disabled={shouldDisable}
             >
               Transfer
-            </Button>
+            </SmallButton>
           </TableCell>
         </TableRow>
 
@@ -213,14 +215,14 @@ const DesktopBalancesTable: React.FC<TableProps> = ({
             <TableCell>{row.amount}</TableCell>
             <TableCell align="right">
               {" "}
-              <Button
+              <SmallButton
                 variant="contained"
                 color="secondary"
                 onClick={() => openTokenTransferModal(row.address)}
                 disabled={shouldDisable}
               >
                 Transfer
-              </Button>
+              </SmallButton>
             </TableCell>
           </TableRow>
         ))}

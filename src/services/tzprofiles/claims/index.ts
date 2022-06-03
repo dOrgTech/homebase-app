@@ -1,4 +1,4 @@
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { API_URL } from "..";
 import { Claim, ClaimsDTO } from "./types";
 

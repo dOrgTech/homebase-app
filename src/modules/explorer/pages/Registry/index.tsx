@@ -17,6 +17,7 @@ import { RegistryTable } from "./components/RegistryTable";
 import { UpdatesTable } from "./components/UpdatesTable";
 import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
 import {InfoIcon} from "../../components/styled/InfoIcon";
+import { MainButton } from '../../../common/MainButton';
 
 export const Registry: React.FC = () => {
   const theme = useTheme();
@@ -109,14 +110,14 @@ export const Registry: React.FC = () => {
             )}
           </Grid>
           <Grid item>
-            <Button
+            <MainButton
               variant="contained"
               color="secondary"
               onClick={() => setUpdateRegistryOpen(true)}
               disabled={shouldDisable}
             >
               New Item
-            </Button>
+            </MainButton>
             {shouldDisable && (
               <Tooltip
                 placement="bottom"

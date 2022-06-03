@@ -1,5 +1,10 @@
 import React from "react";
-import { AccordionDetails, AccordionSummary, Grid, Typography } from "@material-ui/core";
+import {
+  AccordionDetails,
+  AccordionSummary,
+  Grid,
+  Typography,
+} from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { styled } from "@material-ui/styles";
 import { ContentContainer } from "../explorer/components/ContentContainer";
@@ -13,18 +18,30 @@ const TableContainer = styled(ContentContainer)({
 const AccordionHeader = styled(AccordionSummary)({
   minHeight: 40,
   padding: "20px 40px",
+  background: "rgb(47, 52, 56)",
 });
 const AccordionContent = styled(AccordionDetails)({
   flexDirection: "column",
   padding: "35px 40px",
+  background: "rgb(47, 52, 56)",
 });
 
-export const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
+export const FAQItem = ({
+  question,
+  answer,
+}: {
+  question: string;
+  answer: string;
+}) => {
   return (
     <TableContainer>
       <Grid container direction="column" wrap="nowrap">
         <Accordion>
-          <AccordionHeader expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+          <AccordionHeader
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
             <Typography>{question}</Typography>
           </AccordionHeader>
           <AccordionContent>

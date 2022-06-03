@@ -1,18 +1,25 @@
-import { createMuiTheme } from "@material-ui/core/styles";
-const defaultTheme = createMuiTheme();
-const { breakpoints } = defaultTheme;
+import { alpha } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
+import { ThemeOptions } from "@material-ui/core/styles/createTheme";
+const defaultTheme = createTheme()
+const { breakpoints } = defaultTheme
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
+  props: {
+    MuiButtonBase: {
+      disableRipple: true,
+    },
+  },
   palette: {
     primary: {
       main: "#2F3438",
       dark: "#1C1F23",
-      light: "#424242",
+      light: "#41484d",
     },
     secondary: {
       main: "#81FEB7",
-      dark: "#273833",
-      contrastText: "#1C1F23",
+      dark: "#6AE9A720",
+      contrastText: "#1C1F23"
     },
     text: {
       primary: "#FFFFFF",
@@ -32,8 +39,8 @@ export const theme = createMuiTheme({
     h1: {
       fontSize: 30,
       [breakpoints.down("xs")]: {
-        fontSize: 22,
-      },
+        fontSize: 22
+      }
     },
     subtitle1: {
       fontSize: 32,
@@ -45,7 +52,6 @@ export const theme = createMuiTheme({
     h3: {
       fontSize: 35,
       fontWeight: 400,
-      fontFamily: "Roboto",
     },
     h2: {
       fontSize: 24,
@@ -53,32 +59,39 @@ export const theme = createMuiTheme({
     h4: {
       fontSize: 21,
       [breakpoints.down("xs")]: {
-        fontSize: 16,
-      },
+        fontSize: 16
+      }
     },
     h5: {
       fontSize: 35,
       [breakpoints.down("xs")]: {
-        fontSize: 21,
-      },
+        fontSize: 21
+      }
     },
     body1: {
       fontSize: 18,
       [breakpoints.down("xs")]: {
-        fontSize: 14,
-      },
+        fontSize: 14
+      }
     },
     body2: {
       fontSize: 16,
       [breakpoints.down("xs")]: {
-        fontSize: 14,
-      },
+        fontSize: 14
+      }
     },
     h6: {
-      fontSize: 14,
-    },
+      fontSize: 14
+    }
   },
   overrides: {
+    MuiTypography: {
+      root: {
+        letterSpacing: "-0.03em !important",
+        // lineHeight: "1.5 !important",
+        // wordSpacing: "40",
+      },
+    },
     MuiSlider: {
       root: {
         color: "#3D3D3D",
@@ -91,26 +104,10 @@ export const theme = createMuiTheme({
     },
     MuiTooltip: {
       tooltip: {
-        backgroundColor: "#4BCF93",
+        backgroundColor: "#62eda5",
         fontSize: 14,
         padding: "10px 15px",
         color: "#1C1F23"
-      },
-    },
-    MuiAccordion: {
-      root: {
-        background: "#2F3438",
-      },
-    },
-    MuiAccordionDetails: {
-      root: {
-        background: "#24282B",
-      },
-    },
-    MuiSvgIcon: {
-      root: {
-        background: "transparent",
-        color: "#fff",
       },
     },
     MuiStepLabel: {
@@ -208,16 +205,21 @@ export const theme = createMuiTheme({
     },
     MuiButton: {
       root: {
-        "&$disabled": {
-          color: "#3d3d3d",
-        },
-        "&:hover": {
-          backgroundColor: "#62eda5 !important",
-        },
         textTransform: "capitalize",
         fontWeight: 500,
         fontSize: 18,
-        padding: "3px 14px"
+        padding: "3px 14px",
+        letterSpacing: "-0.03em",
+        boxShadow: "none",
+
+        "&:hover": {
+          boxShadow: "none",
+        },
+
+        "&$disabled": {
+          color: "#2F3438 !important",
+          background: "#41484d !important",
+        },
       },
       outlined: {
         "&$disabled": {
@@ -228,14 +230,7 @@ export const theme = createMuiTheme({
         padding: "1px 8px",
         fontSize: "1rem",
       },
-      containedPrimary: {
-        "&:hover": {
-          background: "#273833 !important",
-          opacity: "100% !important"
-        }
-      }
     },
-
     MuiInputBase: {
       input: {
         textAlign: "center",
@@ -271,8 +266,8 @@ export const theme = createMuiTheme({
       root: {
         padding: "42px 54px",
         "&:first-child": {
-          paddingTop: "42px",
-        },
+          paddingTop: "42px"
+        }
       },
     },
     MuiSelect: {
@@ -336,8 +331,8 @@ export const theme = createMuiTheme({
     MuiTable: {
       root: {
         borderRadius: "8px",
-        backgroundColor: "#2F3438",
-      },
+        backgroundColor: "#2F3438"
+      }
     },
     MuiTableHead: {
       root: {
@@ -345,8 +340,8 @@ export const theme = createMuiTheme({
         fontSize: 16,
         fontWeight: 400,
         letterSpacing: "-0.01em",
-        color: "#FFFFFF",
-      },
+        color: "#FFFFFF"
+      }
     },
     MuiTableFooter: {
       root: {
@@ -355,31 +350,31 @@ export const theme = createMuiTheme({
         fontWeight: 400,
         letterSpacing: "-0.01em",
         color: "##81FEB7",
-        borderTop: "0.3px solid #3D3D3D",
-      },
+        borderTop: "0.3px solid rgba(125,140,139, 0.2)"
+      }
     },
     MuiTableBody: {
-      root: {
+      "root": {
         "& > *": {
           borderTop: "0.3px solid rgba(125,140,139, 0.2)",
           minHeight: 90,
-        },
-      },
+        }
+      }
     },
     MuiTableCell: {
-      root: {
-        borderBottom: "unset",
-      },
+      "root": {
+        borderBottom: "unset"
+      }
     },
     MuiTableRow: {
       root: {
-        "& th:first-child, & td:first-child": {
-          paddingLeft: 46,
-        },
-        "& th:last-child, & td:last-child": {
-          paddingRight: 46,
-        },
-      },
+          '& th:first-child, & td:first-child': {
+            paddingLeft: 46,
+          },
+          '& th:last-child, & td:last-child': {
+            paddingRight: 46,
+          },
+      }
     },
     MuiGrid: {
       'align-items-xs-center': {
@@ -394,3 +389,24 @@ export const theme = createMuiTheme({
     }
   },
 });
+
+declare module '@material-ui/core/styles/createBreakpoints' {
+  interface BreakpointOverrides {
+    mobile: true;
+    toolbarswitch: true;
+  }
+}
+
+export const themeOptions: ThemeOptions = {
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      mobile: 645,
+      toolbarswitch: 865,
+      md: 900,
+      lg: 1200,
+      xl: 1536
+    }
+  },
+}

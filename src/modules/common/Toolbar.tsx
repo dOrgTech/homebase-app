@@ -20,11 +20,13 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
 import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
 import { ViewButton } from "modules/explorer/components/ViewButton";
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
+import { SmallButton } from './SmallButton';
+
 
 const Header = styled(Grid)({
  padding: "28px 125px"
@@ -52,11 +54,8 @@ const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
   cursor: "pointer",
-});
-
-const ConnectWallet = styled(Button)({
-  maxHeight: 50,
-  alignSelf: "baseline",
+  fontFamily: "Roboto",
+  letterSpacing: "initial",
 });
 
 const AddressMenu = styled(Box)(() => ({
@@ -69,12 +68,7 @@ const AddressMenuItem = styled(Grid)(({ theme }) => ({
   cursor: "pointer",
   boxSizing: "border-box",
   color: theme.palette.text.secondary,
-  padding: "20px 34px",
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${theme.palette.secondary.light}`,
-    cursor: "pointer",
-  },
+  padding: "20px 3px",
 }));
 
 const AddressMenuIcon = styled(Grid)({
@@ -105,15 +99,15 @@ const StyledPopover = styled(Popover)({
 
 const ToolbarContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
-    display: "flex",
-    justifyContent: "center",
-    marginLeft: 16,
+    // display: "flex",
+    // justifyContent: "center",
+    // marginLeft: 16,
   },
-  [theme.breakpoints.down("md")]: {
-    display: "flex",
-    justifyContent: "center",
-    marginLeft: 0,
-  },
+  // [theme.breakpoints.down("md")]: {
+  //   display: "flex",
+  //   justifyContent: "center",
+  //   marginLeft: 0,
+  // },
 }));
 
 export const ConnectWalletButton = ({
@@ -121,9 +115,9 @@ export const ConnectWalletButton = ({
 }: {
   connect: () => Promise<TezosToolkit>;
 }) => (
-  <ConnectWallet color="secondary" variant="outlined" onClick={() => connect()}>
+  <SmallButton variant="outlined" onClick={() => connect()}>
     Connect Wallet
-  </ConnectWallet>
+  </SmallButton>
 );
 
 export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?: boolean }> = ({
@@ -174,14 +168,13 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
   const history = useHistory();
 
   return (
-    <StyledAppBar position="sticky">
+    <StyledAppBar>
       <StyledToolbar>
         <Header
           container
           direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
           wrap="wrap"
-          justify={mode === "explorer" ? "space-between" : "flex-end"}
         >
           {mode === "explorer" && (
             <Grid item>

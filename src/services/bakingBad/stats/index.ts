@@ -1,4 +1,4 @@
-import { Network } from "services/beacon/context";
+import { Network } from "services/beacon";
 import { BlockchainStats } from "./types";
 
 const networkToUrlMap: Record<Network, string> = {

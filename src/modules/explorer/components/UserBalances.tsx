@@ -4,12 +4,17 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
 
 const BalancesBox = styled(Grid)(({ theme }) => ({
-  minHeight: "153px",
-  padding: "38px 55px",
+  minHeight: "137px",
+  maxHeight: "344px",
+  padding: "38px 38px",
   background: theme.palette.primary.main,
   boxSizing: "border-box",
   borderRadius: 8,
   boxShadow: "none",
+
+  ["@media (max-width:409.99px)"]: { 
+    maxHeight: "325px",
+  },
 }));
 
 interface Balances {
@@ -28,8 +33,46 @@ interface Balances {
 }
 
 const BalanceHeaderText = styled(Typography)({
-  letterSpacing: "-0.01em",
   paddingBottom: 10,
+  fontSize: 18,
+
+  ["@media (max-width:710px)"]: { 
+    fontSize: 16,
+  },
+
+  ["@media (max-width:635px)"]: { 
+    fontSize: 18,
+    paddingBottom: 8,
+  },
+
+  ["@media (max-width:409.99px)"]: { 
+    fontSize: 16,
+  },
+});
+
+const BalanceGrid = styled(Grid)({
+  ["@media (max-width:636px)"]: { 
+    marginBottom: 25,
+  },
+
+  ["@media (max-width:409.99px)"]: { 
+    marginBottom: 20,
+  },
+});
+
+const Balance = styled(Typography)({
+  fontSize: 36,
+  lineHeight: "0.9",
+  fontWeight: 300,
+
+  ["@media (max-width:1030px)"]: { 
+    fontSize: 30,
+  },
+});
+
+const BalanceToken = styled(Typography)({
+  fontSize: 24,
+  fontWeight: 300,
 });
 
 export const UserBalances: React.FC<{ daoId: string }> = ({
@@ -39,7 +82,7 @@ export const UserBalances: React.FC<{ daoId: string }> = ({
   const { account } = useTezos();
   const { data: dao, ledger } = useDAO(daoId);
   const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down(635))
 
   const balances = useMemo(() => {
     const userBalances: Balances = {
@@ -88,21 +131,21 @@ export const UserBalances: React.FC<{ daoId: string }> = ({
         {dao &&
           balancesList.map(({ displayName, balance }, i) => (
             <Grid item key={`balance-${i}`}>
-              <BalanceHeaderText color="secondary" align={isExtraSmall? "center": "left"} variant="body2">
+              <BalanceHeaderText color="secondary" align={isExtraSmall? "center": "left"}>
                 {displayName}
               </BalanceHeaderText>
-              <Grid container alignItems="baseline" spacing={2} justifyContent={isExtraSmall? "center": "flex-start"}>
+              <BalanceGrid container alignItems="baseline" spacing={1} justifyContent={isExtraSmall? "center": "flex-start"}>
                 <Grid item>
-                  <Typography variant="h5" color="textPrimary">
+                  <Balance color="textPrimary">
                     {balance}
-                  </Typography>
+                  </Balance>
                 </Grid>
                 <Grid item>
-                  <Typography color="textPrimary" variant="h2">
+                  <BalanceToken color="textPrimary">
                     {balance !== "-" ? dao.data.token.symbol : ""}
-                  </Typography>
+                  </BalanceToken>
                 </Grid>
-              </Grid>
+              </BalanceGrid>
             </Grid>
           ))}
       </Grid>

@@ -24,16 +24,36 @@ import { NFTs } from "../NFTs";
 import { Navbar } from "../../components/Toolbar";
 import {useHistory} from "react-router";
 
-const PageLayout = styled(Grid)(({ theme }) => ({
+const PageLayout = styled("div")(({ theme }) => ({
   background: theme.palette.primary.dark,
-  width: 1100,
-  maxWidth: "100%",
-  margin: "55px auto 0 auto",
-  padding: "0 25px 32px 25px",
+  width: "1000px",
+  margin: "42px auto 0px auto",
 
-  [theme.breakpoints.down("xs")]: {
-    margin: "25px auto 0 auto",
-  }
+  ["@media (max-width: 1425px)"]: {
+    
+  },
+
+  ["@media (max-width:1335px)"]: {
+
+
+  },
+
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+
+  },
+
+  ["@media (max-width:1030px)"]: { 
+
+  },
+
+  ["@media (max-width:960px)"]: { 
+    marginTop: 0,
+  },
+
+  // [theme.breakpoints.down("xs")]: {
+  //   margin: "25px auto 0 auto",
+  // }
 }));
 
 enum DAOState {
@@ -49,6 +69,7 @@ const DAORouteContent: React.FC = ({ children }) => {
   const [state, setState] = useState<DAOState>(DAOState.FOUND);
   const history = useHistory();
 
+  console.log(history)
 
   useEffect(() => {
     (async () => {
@@ -103,7 +124,6 @@ export const useDAOID = () => {
 export const DAORouter = (): JSX.Element => {
   const match = useRouteMatch();
   const theme = useTheme();
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   const { id: daoId } = useParams<{ id: string }>();
 
   return (
@@ -113,11 +133,7 @@ export const DAORouter = (): JSX.Element => {
           <UserBalancesWidget />
         </Grid>
       </Navbar>
-      <PageLayout
-        container
-        wrap="nowrap"
-        direction={isMobileExtraSmall ? "column" : "row"}
-      >
+      <PageLayout>
         <Switch>
           <DAORoute path={`${match.url}/proposal/:proposalId`}>
             <ProposalDetails />

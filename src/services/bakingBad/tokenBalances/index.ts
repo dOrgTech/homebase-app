@@ -1,9 +1,9 @@
 import BigNumber from "bignumber.js";
 import {NFT, Token} from "models/Token";
-import {Network} from "services/beacon/context";
-import {parseUnits} from "services/contracts/utils";
-import {API_URL, networkNameMap} from "..";
-import {DAOToken, NFTDTO, TokenBalancesDTO} from "./types";
+import { Network } from "services/beacon";
+import { parseUnits } from "services/contracts/utils";
+import { API_URL, networkNameMap } from "..";
+import { DAOToken, NFTDTO, TokenBalancesDTO } from "./types";
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO =>
   value.hasOwnProperty("artifact_uri");

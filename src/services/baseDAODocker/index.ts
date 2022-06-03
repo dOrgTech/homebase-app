@@ -1,4 +1,4 @@
-import { Network } from '../beacon/context';
+import { Network } from 'services/beacon';
 import { DAOTemplate } from "modules/creator/state"
 import { BaseStorageParams } from "services/contracts/baseDAO"
 import { MetadataDeploymentResult } from "services/contracts/metadataCarrier/deploy"

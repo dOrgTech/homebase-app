@@ -12,28 +12,109 @@ import { useDAOID } from "../pages/DAO/router";
 import {useTimeLeftInCycle} from "../hooks/useTimeLeftInCycle";
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
-  padding: "38px 55px",
-  [theme.breakpoints.down("xs")]: {
-    padding: "38px 29px",
-    width: "100%"
+  padding: "38px 38px",
+  maxHeight: "310px",
+
+  ["@media (max-width:1030px)"]: { 
+    maxHeight: "303px",
+  },
+
+  ["@media (max-width:831px)"]: { 
+    minWidth: "99%",
+  },
+
+  ["@media (max-width:390px)"]: { 
+    maxHeight: "340px",
   },
 }));
 
 const LockedTokensBar = styled(LinearProgress)(({ theme }) => ({
   width: "100%",
+  height: "8px",
+  marginTop: "15px",
+  marginBottom: "43px",
   "&.MuiLinearProgress-colorSecondary": {
     background: theme.palette.primary.light,
+  },
+
+  ["@media (max-width:1030px)"]: { 
+    marginTop: "13px",
+    marginBottom: "40px",
   },
 }));
 
 const IconContainer = styled(SvgIcon)({
-  width: 58,
+  width: "auto",
   height: 64,
 });
 
 const ProgressContainer = styled(Box)({
   marginLeft: "-18px",
+  marginTop: "-20px",
+  marginBottom: "-5px",
+  
+  // ["@media (max-width:1030px)"]: { 
+  //   marginBottom: "-7px"
+  // },
+
 });
+
+const ProposalInfoTitle = styled(Typography)({
+  fontSize: "18px",
+
+  ["@media (max-width:1155px)"]: { 
+    whiteSpace: "nowrap",
+  },
+
+  ["@media (max-width:1030px)"]: { 
+    fontSize: "16.3px",
+    whiteSpace: "initial",
+  },
+
+  ["@media (max-width:830.99px)"]: { 
+    fontSize: "18px",
+  },
+
+  ["@media (max-width:409.99px)"]: { 
+    fontSize: "16px",
+  },
+});
+
+const LargeNumber = styled(Typography)(({ theme }) => ({
+  fontSize: "36px",
+  fontWeight: 300,
+  color: theme.palette.text.primary,
+  marginTop: "7px",
+
+  ["@media (max-width:1030px)"]: { 
+    fontSize: "30px"
+  },
+
+}));
+
+const CycleTime = styled(Typography)(({ theme }) => ({
+  fontWeight: 300,
+  color: theme.palette.text.primary,
+  fontSize: "20px",
+
+  ["@media (max-width:1030px)"]: { 
+    fontSize: "16px",
+    
+  },
+
+  ["@media (max-width:830.99px)"]: { 
+    fontSize: "20px",
+  },
+
+  ["@media (max-width:434px)"]: { 
+    fontSize: "18px",
+  },
+
+  ["@media (max-width:409.99px)"]: { 
+    fontSize: "15px",
+  },
+
+}));
 
 export const DAOStatsRow: React.FC = () => {
   const daoId = useDAOID();
@@ -71,68 +152,68 @@ export const DAOStatsRow: React.FC = () => {
 
   return (
     <Grid item>
-      <Grid container style={{ gap: isExtraSmall ? 25 : 47 }}>
+      <Grid container style={{ gap: isExtraSmall ? 25 : 44 }}>
         <StatsContainer item xs>
-          <Grid container direction='column' style={{ gap: 24 }}>
+          <Grid container direction='column' style={{ gap: 24, marginTop: "-3px" }}>
             <Grid item>
               <CycleDescription daoAddress={daoId} />
             </Grid>
             <Grid item>
-              <Grid container style={{ gap: 16 }} wrap='nowrap'>
+              <Grid container wrap='nowrap'>
                 <Grid item>
                   <ProgressContainer>
                     <ProgressBar
                       progress={data ? ((blocksLeft || 0) / Number(data.data.period)) * 100 : 100}
-                      radius={24}
-                      strokeWidth={4.5}
+                      radius={35}
+                      strokeWidth={6}
                       strokeColor={theme.palette.secondary.main}
-                      trackStrokeWidth={3}
+                      trackStrokeWidth={5}
                       trackStrokeColor={"rgba(125,140,139, 0.2)"}
                     />
                   </ProgressContainer>
                 </Grid>
                 <Grid item>
-                  <Typography color='secondary' variant='body1'>
+                  <ProposalInfoTitle color='secondary'>
                     Current Cycle
-                  </Typography>
-                  <Typography color='textPrimary' variant='h1'>
+                  </ProposalInfoTitle>
+                  <CycleTime color='textPrimary'>
                     {cycleInfo?.currentCycle}
-                  </Typography>
+                  </CycleTime>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item>
-              <Grid container style={{ gap: 32 }} wrap='nowrap'>
+              <Grid container style={{ gap: 28 }} wrap='nowrap'>
                 <Grid item>
                   <IconContainer>
                     <VotingPeriodIcon />
                   </IconContainer>
                 </Grid>
                 <Grid item>
-                  <Typography color='secondary' variant='body1'>
+                  <ProposalInfoTitle color='secondary' style={{marginTop: "-6px"}}>
                     Time Left In Cycle
-                  </Typography>
-                  <Typography color='textPrimary' variant='h2'>
+                  </ProposalInfoTitle>
+                  <CycleTime>
                     {days}d {hours}h {minutes}m ({cycleInfo?.blocksLeft} blocks)
-                  </Typography>
+                  </CycleTime>
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
         </StatsContainer>
         <StatsContainer item xs>
-          <Grid container direction='column' style={{ gap: 37 }}>
+          <Grid container direction='column'style={{marginTop:"-3px"}}>
             <Grid item>
-              <Grid container direction='column' style={{ gap: 10 }}>
+              <Grid container direction='column'>
                 <Grid item>
-                  <Typography color='secondary' variant='body1'>
+                  <ProposalInfoTitle color='secondary'>
                     {symbol} Locked
-                  </Typography>
+                  </ProposalInfoTitle>
                 </Grid>
                 <Grid item>
-                  <Typography variant='h5' color='textPrimary'>
+                  <LargeNumber>
                     {amountLocked.dp(10).toString()}
-                  </Typography>
+                  </LargeNumber>
                 </Grid>
                 <Grid item>
                   <LockedTokensBar variant='determinate' value={amountLockedPercentage.toNumber()} color='secondary' />
@@ -146,20 +227,20 @@ export const DAOStatsRow: React.FC = () => {
                 wrap='nowrap'
                 justifyContent={isExtraSmall ? "space-between" : "flex-start"}>
                 <Grid item>
-                  <Typography align={isExtraSmall ? "center" : "left"} color='secondary' variant='body1'>
+                  <ProposalInfoTitle color='secondary'>
                     Voting Addresses
-                  </Typography>
-                  <Typography align={isExtraSmall ? "center" : "left"} variant='h5' color='textPrimary'>
+                  </ProposalInfoTitle>
+                  <LargeNumber>
                     {data?.data.ledger.length || "-"}
-                  </Typography>
+                  </LargeNumber>
                 </Grid>
                 <Grid item>
-                  <Typography align={isExtraSmall ? "center" : "left"} color='secondary' variant='body1'>
+                  <ProposalInfoTitle color='secondary'>
                     Active Proposals
-                  </Typography>
-                  <Typography align={isExtraSmall ? "center" : "left"} variant='h5' color='textPrimary'>
+                  </ProposalInfoTitle>
+                  <LargeNumber color='textPrimary'>
                     {activeProposals?.length}
-                  </Typography>
+                  </LargeNumber>
                 </Grid>
               </Grid>
             </Grid>

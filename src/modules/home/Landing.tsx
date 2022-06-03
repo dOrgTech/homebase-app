@@ -9,7 +9,6 @@ import {
   useMediaQuery,
   useTheme,
   SvgIcon,
-  // withStyles,
 } from "@material-ui/core";
 import React from "react";
 import { Header } from "./Header";
@@ -19,6 +18,7 @@ import Vector2 from "assets/vectors/Vector2.svg";
 import hexToRgba from "hex-to-rgba";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg";
+import { MainButton } from "../common/MainButton";
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
@@ -83,33 +83,12 @@ const BigLogo = styled("img")({
 const TitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.text.primary,
   fontSize: 40,
-  letterSpacing: "-0.01em",
   fontWeight: "bold",
 }));
 
-const FullButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-  minHeight: 39,
-  minWidth: 130,
-  background: theme.palette.secondary.main,
-  color: theme.palette.primary.dark,
-  borderColor: hexToRgba(theme.palette.secondary.main, 0.23),
-  "&:hover": {
-    backgroundColor: "#62eda5",
-    borderColor: theme.palette.secondary.main,
-  },
-}));
-
-const OutlinedButton = styled(Button)(({ theme }: { theme: Theme }) => ({
-  minHeight: 39,
-  minWidth: 130,
-  padding: "6px 16px",
-  background: "transparent",
+const SubtitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.text.primary,
-  borderColor: theme.palette.secondary.main,
-  "&:hover": {
-    backgroundColor: hexToRgba("#81FEB7", 0.24),
-    borderColor: theme.palette.secondary.main,
-  },
+  fontWeight: 300,
 }));
 
 export const Landing: React.FC = () => {
@@ -117,23 +96,34 @@ export const Landing: React.FC = () => {
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   return (
-    <Background container direction='column' justifyContent='space-between' wrap='nowrap'>
+    <Background
+      container
+      direction="column"
+      justifyContent="space-between"
+      wrap="nowrap"
+    >
       {!isExtraSmall && (
         <Grid item>
           <Header />
         </Grid>
       )}
       <Grid item>
-        <Grid container justifyContent='center'>
+        <Grid container justifyContent="center">
           <Grid item>
             <MainContainer item>
               <Grid
                 container
-                justify='space-between'
+                justify="space-between"
                 direction={isExtraSmall ? "column-reverse" : "row"}
-                style={isExtraSmall ? { gap: 50 } : {}}>
+                style={isExtraSmall ? { gap: 50 } : {}}
+              >
                 <Grid item xs>
-                  <Grid container direction='column' style={{ gap: 32 }} justifyContent='center'>
+                  <Grid
+                    container
+                    direction="column"
+                    style={{ gap: 32 }}
+                    justifyContent="center"
+                  >
                     {!isExtraSmall && (
                       <Grid item>
                         <TitleText>Tezos Homebase</TitleText>
@@ -141,26 +131,32 @@ export const Landing: React.FC = () => {
                     )}
 
                     <Grid item>
-                      <Typography variant='subtitle2' color='textPrimary' align={isExtraSmall ? "center" : "left"}>
-                        Homebase is a web application that enables users to create and manage/use DAOs on the Tezos
-                        blockchain. This application aims to help empower community members and developers to launch and
-                        participate in Tezos-based DAOs
-                      </Typography>
+                      <SubtitleText align={isExtraSmall ? "center" : "left"}>
+                        Homebase is a web application that enables users to
+                        create and manage/use DAOs on the Tezos blockchain. This
+                        application aims to help empower community members and
+                        developers to launch and participate in Tezos-based DAOs
+                      </SubtitleText>
                     </Grid>
                     <Grid item>
                       <Grid
                         container
                         style={{ gap: 16 }}
-                        wrap='nowrap'
-                        justifyContent={isExtraSmall ? "center" : "flex-start"}>
+                        wrap="nowrap"
+                        justifyContent={isExtraSmall ? "center" : "flex-start"}
+                      >
                         <Grid item>
-                          <Link href='/explorer' underline='none'>
-                            <FullButton>Enter App</FullButton>
+                          <Link href="/explorer" underline="none">
+                            <MainButton variant="contained" color="secondary">
+                              Enter App
+                            </MainButton>
                           </Link>
                         </Grid>
                         <Grid item>
-                          <Link href='/faq' underline='none'>
-                            <OutlinedButton variant='outlined'>Learn More</OutlinedButton>
+                          <Link href="/faq" underline="none">
+                            <MainButton variant="contained" color="secondary">
+                              Learn More
+                            </MainButton>
                           </Link>
                         </Grid>
                       </Grid>
@@ -168,7 +164,13 @@ export const Landing: React.FC = () => {
                   </Grid>
                 </Grid>
                 <Grid item xs>
-                  <Grid container direction='column' alignItems='center' justify='center' style={{ gap: 20 }}>
+                  <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-end"
+                    justify="center"
+                    style={{ gap: 20 }}
+                  >
                     {isExtraSmall && (
                       <Grid item>
                         <TitleText>Tezos Homebase</TitleText>
@@ -190,20 +192,24 @@ export const Landing: React.FC = () => {
       <Grid item>
         <StyledToolbar
           container
-          direction='row'
-          alignItems='center'
-          wrap='wrap'
+          direction="row"
+          alignItems="center"
+          wrap="wrap"
           justifyContent={isExtraSmall ? "center" : "flex-start"}
-          style={{ gap: 25 }}>
+          style={{ gap: 25 }}
+        >
           <Grid item>
-            <Link target='_blank' href='https://github.com/dOrgTech/homebase-app'>
+            <Link
+              target="_blank"
+              href="https://github.com/dOrgTech/homebase-app"
+            >
               <IconContainer>
-                <GitHubIcon color='secondary' />
+                <GitHubIcon color="secondary" />
               </IconContainer>
             </Link>
           </Grid>
           <Grid item>
-            <Link target='_blank' href='https://discord.gg/XufcBNu277'>
+            <Link target="_blank" href="https://discord.gg/XufcBNu277">
               <IconContainer>
                 <SvgIcon>
                   <DiscordIcon />
