@@ -52,6 +52,7 @@ export const FAQ: React.FC = () => {
 
   return (
     <PageContainer>
+      <Grid container direction="column">
         {!isExtraSmall && (
           <Grid item>
             <Header />
@@ -59,7 +60,7 @@ export const FAQ: React.FC = () => {
         )}
         <PageGrid container direction="column">
         <TextBlock item>
-          <TitleText color="textPrimary" variant="h1">
+          <TitleText color="textPrimary">
             Welcome to Homebase FAQ
           </TitleText>
           <BodyTextGrid container>

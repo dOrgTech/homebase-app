@@ -11,13 +11,35 @@ import {
 import { styled } from "@material-ui/styles";
 import HomeButton from "assets/logos/homebase_logo.svg";
 import hexToRgba from "hex-to-rgba";
+import { MainButton } from '../common/MainButton';
 import React from "react";
 import { MainButton } from '../common/MainButton';
 
-const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
+const HeaderGrid = styled(Grid)(({ theme }) => ({
+  width: "1000px",
+  height: "100%",
+  margin: "auto",
+  padding: "28px 0",
+  flexDirection: "row",
+
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+  },
+
+  ["@media (max-width:645px)"]: {
+    flexDirection: "column",
+
+  }
+}));
+
+const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
-  background: "none",
   position: "sticky",
+
+  ["@media (max-height:750px)"]: {
+    position: "static",
+  }
+});
 
   ["@media (max-height:750px)"]: {
     position: "static",
@@ -65,13 +87,13 @@ const Head = styled(Grid)(({ theme }) => ({
 
 export const Header: React.FC = () => {
   return (
-    <StyledAppBar>
+    <StyledAppBar color="transparent">
       <StyledToolbar>
-        <Head
+        <HeaderGrid
           container
           alignItems="center"
           wrap="wrap"
-          justify={"space-between"}
+          justify="space-between"
         >
           <Grid item>
             <Link href="/landing">
@@ -92,7 +114,7 @@ export const Header: React.FC = () => {
               <MainButton variant="contained" color="secondary">Enter App</MainButton>
             </Link>
           </Grid>
-        </Head>
+        </HeaderGrid>
       </StyledToolbar>
     </StyledAppBar>
   );
