@@ -11,7 +11,7 @@ import {
   SvgIcon,
 } from "@material-ui/core";
 import React from "react";
-import { Header } from "./Header";
+import { Header } from "./LandingHeader";
 import HomebaseLogo from "assets/logos/homebase_logo.svg";
 import Vector1 from "assets/vectors/Vector1.svg";
 import Vector2 from "assets/vectors/Vector2.svg";

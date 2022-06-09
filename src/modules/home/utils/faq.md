@@ -21,16 +21,15 @@ Tezos Homebase was developed for the Tezos community to organize and develop DAO
 
 <question>How do you create a DAO?<question>
 <answer>
-## **The social side of DAO’s**
+### **The social side of DAO’s**
 &nbsp;
 While Homebase empowers you to create a DAO for your community to collectively manage resources together on-chain, it’s up to you to decide how your community is governed.
 &nbsp;
 For example, do you have social processes connected with how you make decisions, such as dialogue, a recurring cadence of meetings to talk through, any agreements on how you are achieving your mission together?
 &nbsp;
 You might find this [DAO Canvas](https://github.com/DAOresearch/dao-canvas) resource helpful for communicating transparently with your community how you organize together.
-&nbsp;
-&nbsp;
-## **Tokens**
+# **&nbsp;**
+### **Tokens**
 &nbsp;
 To create a DAO on Homebase, your community needs to have a token. Tokens give members voting rights. DAOs typically have two types of membership tied to tokens: **token-based memberships**, where members govern a decentralized protocol together and can purchase tokens through liquidity pools or decentralized exchanges; and **shares-based memberships**, where a DAO is pooling financial resources to fund development, charity, or investments.
 &nbsp;
@@ -85,7 +84,7 @@ Please note, you cannot use an NFT token for voting on Homebase. If you enter an
 &nbsp;
 &nbsp;
 &nbsp;
-#### **Configure Proposal and Voting**
+### **Configure Proposal and Voting**
 &nbsp;
 **Voting Cycle Duration** - levels = blocks, if you’re familiar with that term from other blockchains. In Tezos levels are at least 60 seconds long, so this roughly equates to time. 7,000 levels would be approximately 5 days.
 &nbsp;
@@ -109,7 +108,7 @@ The next two numbers are the minimum and maximum amount the quorum threshold can
 &nbsp;
 &nbsp;
 &nbsp;
-#### **Distribution Settings**
+### **Distribution Settings**
 &nbsp;
 **Token holder** - these are the initial token holders in this DAO.
 &nbsp;
@@ -119,7 +118,7 @@ The next two numbers are the minimum and maximum amount the quorum threshold can
 &nbsp;
 &nbsp;
 &nbsp;
-#### **Review Information**
+### **Review Information**
 &nbsp;
 If you click on next, you will be taken to the review information page, where you will be able to see everything you have configured so far; and if you see anything that you would like to change, you can just click on the edit button and you will be taken to that part of the creator and you will be able to change your settings. 
 &nbsp;
@@ -136,7 +135,7 @@ After your DAO has been properly indexed, you will see a button that says, "go t
 A registry is a token-curated list of anything that DAO chooses. Examples might include marketplaces, a map of highly ranked places, or approved companies for placing ads on a blockchain-based media network. 
 &nbsp;
 &nbsp;
-## **How does it work?**
+### **How does it work?**
 &nbsp;
 A person or entity who wants their offering placed on the list, stakes tokens to the DAO to apply. A setting is configured in the DAO for how long the application is in the queue before it is automatically approved. During this time, any member of the DAO (they are curators in this case) may choose to challenge the application. This triggers a vote among curators. If the application is rejected, the applicant forfeits their deposit, which is then split between the challenger and the curators who voted to reject the proposal. If the application is accepted, the challenger’s deposit is split between the applicant and the curators who voted to accept.
 &nbsp;
@@ -151,7 +150,7 @@ A treasury is a DAO who’s primary use is to hold funds and disperse them accor
 For example, a member of an artists DAO might propose to disperse an amount of funds to a designer who created the winning sneaker designs for their community to sell as merch. A service DAO might disperse treasury funds to pay developers for working on client projects. A grants DAO might disperse funds for anything from academic research, to protocol improvements, to local civic policy development. It’s really up to your community, its purpose, and creativity what the funds are used for.
 &nbsp;
 &nbsp;
-#### **How are funds added to a treasury?**
+### **How are funds added to a treasury?**
 &nbsp;
 Assets can be directly transferred to the DAO's address. There is no special process. Once transferred they should be visible in the *Treasury* tab.
 <answer>
