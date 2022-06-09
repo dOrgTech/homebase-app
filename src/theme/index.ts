@@ -50,7 +50,7 @@ export const theme = createTheme({
       fontWeight: 400,
     },
     h3: {
-      fontSize: 35,
+      fontSize: 21,
       fontWeight: 400,
     },
     h2: {
@@ -386,7 +386,7 @@ export const theme = createTheme({
         borderRadius: 50,
         background: "rgba(125,140,139, 0.2) !important"
       },
-    }
+    },
   },
 });
 
