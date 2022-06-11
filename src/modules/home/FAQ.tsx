@@ -37,7 +37,7 @@ const TitleText = styled(Typography)(({ theme }) => ({
 const BodyText = styled(Typography)(({ theme }) => ({
   fontSize: 18,
   fontWeight: 300,
-  
+
 }));
 
 const BodyTextGrid = styled(Grid)({
@@ -46,13 +46,10 @@ const BodyTextGrid = styled(Grid)({
 });
 
 export const FAQ: React.FC = () => {
-  const theme = useTheme();
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  const faqList = useGenerateFAQ();
+@@ -29,33 +52,33 @@ export const FAQ: React.FC = () => {
 
   return (
     <PageContainer>
-      <Grid container direction="column">
         {!isExtraSmall && (
           <Grid item>
             <Header />
@@ -60,7 +57,7 @@ export const FAQ: React.FC = () => {
         )}
         <PageGrid container direction="column">
         <TextBlock item>
-          <TitleText color="textPrimary">
+          <TitleText color="textPrimary" variant="h1">
             Welcome to Homebase FAQ
           </TitleText>
           <BodyTextGrid container>
