@@ -46,7 +46,9 @@ const BodyTextGrid = styled(Grid)({
 });
 
 export const FAQ: React.FC = () => {
-@@ -29,33 +52,33 @@ export const FAQ: React.FC = () => {
+  const theme = useTheme();
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  const faqList = useGenerateFAQ();
 
   return (
     <PageContainer>
