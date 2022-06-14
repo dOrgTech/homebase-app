@@ -20,6 +20,7 @@ import {useIsProposalButtonDisabled} from "../../../../services/contracts/baseDA
 import { styled, Typography } from "@material-ui/core";
 import { SmallButton } from '../../../common/SmallButton';
 import { MainButton } from '../../../common/MainButton';
+import { DelegationChangeProposalForm } from "modules/explorer/components/DelegationChangeProposalForm";
 
 
 const DelegateTitle = styled(Typography)(({ theme }) => ({
@@ -35,6 +36,8 @@ export const Treasury: React.FC = () => {
   const daoId = useDAOID();
   const {data: dao} = useDAO(daoId);
   const [openTransfer, setOpenTransfer] = useState(false);
+  const [openDelegationChange, setOpenDelegationChange] = useState(false);
+
   const onCloseTransfer = () => {
     setOpenTransfer(false)
   }
@@ -122,7 +125,7 @@ export const Treasury: React.FC = () => {
                 <SmallButton
                   variant="contained"
                   color="secondary"
-                  onClick={() => setOpenTransfer(true)}
+                  onClick={() => setOpenDelegationChange(true)}
                   disabled={shouldDisable}
                 >
                   Change Delegate
@@ -155,6 +158,10 @@ export const Treasury: React.FC = () => {
         open={openTransfer}
         handleClose={onCloseTransfer}
         defaultTab={1}
+      />
+      <DelegationChangeProposalForm
+        open={openDelegationChange}
+        handleClose={()=>setOpenDelegationChange(false)}
       />
     </>
   );

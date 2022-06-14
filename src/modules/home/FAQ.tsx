@@ -37,7 +37,7 @@ const TitleText = styled(Typography)(({ theme }) => ({
 const BodyText = styled(Typography)(({ theme }) => ({
   fontSize: 18,
   fontWeight: 300,
-  
+
 }));
 
 const BodyTextGrid = styled(Grid)({

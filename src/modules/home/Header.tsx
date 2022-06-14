@@ -29,7 +29,6 @@ const LogoItem = styled("img")({
   paddingTop: 8,
   height: "30px",
 });
-
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",

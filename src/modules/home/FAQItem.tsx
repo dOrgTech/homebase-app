@@ -10,7 +10,6 @@ import { styled } from "@material-ui/core/styles";
 import { ContentContainer } from "../explorer/components/ContentContainer";
 import Accordion from "@material-ui/core/Accordion";
 import Markdown from "modules/common/Markdown";
-
 const TableContainer = styled(ContentContainer)({
   width: "100%",
 });
