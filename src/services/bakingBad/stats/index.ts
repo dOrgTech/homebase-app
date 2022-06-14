@@ -3,7 +3,6 @@ import { BlockchainStats } from "./types";
 
 const networkToUrlMap: Record<Network, string> = {
   mainnet: "",
-  hangzhounet: "hangzhou.",
   ithacanet: "ithaca."
 }
 

@@ -1,3 +1,10 @@
+import { styled, useTheme } from "@material-ui/core";
+import { NotFound } from "modules/explorer/components/NotFound";
+import { NotIndexed } from "modules/explorer/components/NotIndexed";
+import { DAO } from "modules/explorer/pages/DAO/index";
+import { User } from "modules/explorer/pages/User";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router";
 import {
   Redirect,
   Route,
@@ -6,54 +13,33 @@ import {
   useParams,
   useRouteMatch,
 } from "react-router-dom";
-import React, { useContext, useEffect, useState } from "react";
-
-import { DAO } from "modules/explorer/pages/DAO/index";
-import { Grid, styled, useMediaQuery, useTheme } from "@material-ui/core";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { NotFound } from "modules/explorer/components/NotFound";
-import { NotIndexed } from "modules/explorer/components/NotIndexed";
-import { UserBalancesWidget } from "modules/explorer/components/UserBalancesWidget";
-import { User } from "modules/explorer/pages/User";
-import { ProposalDetails } from "../ProposalDetails";
-import { Treasury } from "../Treasury";
-import { Registry } from "../Registry";
-import { Proposals } from "../Proposals";
-import { NFTs } from "../NFTs";
 import { Navbar } from "../../components/Toolbar";
-import {useHistory} from "react-router";
+import { NFTs } from "../NFTs";
+import { ProposalDetails } from "../ProposalDetails";
+import { Proposals } from "../Proposals";
+import { Registry } from "../Registry";
+import { Treasury } from "../Treasury";
 
 const PageLayout = styled("div")(({ theme }) => ({
   background: theme.palette.primary.dark,
   width: "1000px",
   margin: "42px auto 0px auto",
 
-  ["@media (max-width: 1425px)"]: {
-    
-  },
+  ["@media (max-width: 1425px)"]: {},
 
-  ["@media (max-width:1335px)"]: {
+  ["@media (max-width:1335px)"]: {},
 
-
-  },
-
-  ["@media (max-width:1167px)"]: { 
+  ["@media (max-width:1167px)"]: {
     width: "86vw",
-
   },
 
-  ["@media (max-width:1030px)"]: { 
+  ["@media (max-width:1030px)"]: {},
 
-  },
-
-  ["@media (max-width:960px)"]: { 
+  ["@media (max-width:960px)"]: {
     marginTop: 0,
   },
-
-  // [theme.breakpoints.down("xs")]: {
-  //   margin: "25px auto 0 auto",
-  // }
 }));
 
 enum DAOState {
@@ -69,8 +55,6 @@ const DAORouteContent: React.FC = ({ children }) => {
   const [state, setState] = useState<DAOState>(DAOState.FOUND);
   const history = useHistory();
 
-  console.log(history)
-
   useEffect(() => {
     (async () => {
       if (!data && !!error) {
@@ -85,10 +69,14 @@ const DAORouteContent: React.FC = ({ children }) => {
   }, [data, error, daoId, tezos.contract]);
 
   useEffect(() => {
-    if(history && data && data.data.network.toLowerCase() !== network.toLowerCase()) {
-      history.push("/explorer")
+    if (
+      history &&
+      data &&
+      data.data.network.toLowerCase() !== network.toLowerCase()
+    ) {
+      history.push("/explorer");
     }
-  }, [data, history, network])
+  }, [data, history, network]);
 
   return (
     <>
@@ -128,11 +116,7 @@ export const DAORouter = (): JSX.Element => {
 
   return (
     <DAOProvider daoId={daoId}>
-      <Navbar>
-        <Grid item>
-          <UserBalancesWidget />
-        </Grid>
-      </Navbar>
+      <Navbar />
       <PageLayout>
         <Switch>
           <DAORoute path={`${match.url}/proposal/:proposalId`}>
