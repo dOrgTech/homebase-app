@@ -13,7 +13,7 @@ export const useTezosBalance = (contractAddress: string) => {
     ["tezosBalance", contractAddress],
     async () => {
       const balance = await tezos.tz.getBalance((dao as BaseDAO).data.address);
-      return mutezToXtz(balance)
+      return mutezToXtz(new BigNumber(balance.toString()));
     },
     {
       enabled: !!dao && !!tezos,

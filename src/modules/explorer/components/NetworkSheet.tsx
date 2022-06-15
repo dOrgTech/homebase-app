@@ -2,16 +2,16 @@ import { styled, Grid, Typography, capitalize } from "@material-ui/core";
 import React, { useMemo } from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { Network } from "services/beacon/context";
-import {ResponsiveDialog} from "./ResponsiveDialog";
-import {ColorDot, networkDotColorMap} from "./ChangeNetworkButton";
-import {ContentContainer} from "./ContentContainer";
+import { ResponsiveDialog } from "./ResponsiveDialog";
+import { ColorDot, networkDotColorMap } from "./ChangeNetworkButton";
+import { ContentContainer } from "./ContentContainer";
 
 const SheetItem = styled(ContentContainer)({
   height: 50,
   "& > *": {
     height: "100%",
   },
-  cursor: "pointer"
+  cursor: "pointer",
 });
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
   onClose: () => void;
 }
 
-const SUPPORTED_NETWORKS: Network[] = ["mainnet", "hangzhounet"];
+const SUPPORTED_NETWORKS: Network[] = ["mainnet", "hangzhounet", "ithacanet"];
 
 export const NetworkSheet: React.FC<Props> = (props) => {
   const { network, changeNetwork } = useTezos();
@@ -30,19 +30,34 @@ export const NetworkSheet: React.FC<Props> = (props) => {
   );
 
   return (
-    <ResponsiveDialog open={props.open} onClose={props.onClose} title={"Choose Network"}>
+    <ResponsiveDialog
+      open={props.open}
+      onClose={props.onClose}
+      title={"Choose Network"}
+    >
       <Grid container direction={"column"} style={{ gap: 20 }}>
         {options.map((networkOption, i) => (
-          <SheetItem item key={`network-${i}`} onClick={() => {
-              props.onClose()
-              changeNetwork(networkOption)
-            }}>
-            <Grid container justifyContent="center" alignItems="center" style={{ gap: 8 }}>
+          <SheetItem
+            item
+            key={`network-${i}`}
+            onClick={() => {
+              props.onClose();
+              changeNetwork(networkOption);
+            }}
+          >
+            <Grid
+              container
+              justifyContent="center"
+              alignItems="center"
+              style={{ gap: 8 }}
+            >
               <Grid item>
                 <ColorDot color={networkDotColorMap[networkOption]} />
               </Grid>
               <Grid item>
-                <Typography variant={"h6"} color="textPrimary">{capitalize(networkOption)}</Typography>
+                <Typography variant={"h6"} color="textPrimary">
+                  {capitalize(networkOption)}
+                </Typography>
               </Grid>
             </Grid>
           </SheetItem>
