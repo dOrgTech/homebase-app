@@ -5,13 +5,13 @@ import mixpanel from "mixpanel-browser";
 import React, { createContext, useEffect, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
 
-export type Network = "mainnet" | "hangzhounet"
+export type Network = "mainnet" | "hangzhounet" | "ithacanet";
 
 interface TezosState {
   network: Network;
   tezos: TezosToolkit;
   account: string;
-  wallet: BeaconWallet | undefined
+  wallet: BeaconWallet | undefined;
 }
 
 interface TezosProvider {
@@ -20,25 +20,27 @@ interface TezosProvider {
 }
 
 const getInitialNetwork = (): Network => {
-  const storageNetwork = window.localStorage.getItem("homebase:network")
+  const storageNetwork = window.localStorage.getItem("homebase:network");
 
-  if(storageNetwork) {
-    return storageNetwork as Network
+  if (storageNetwork) {
+    return storageNetwork as Network;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
+  const envNetwork = process.env
+    .REACT_APP_NETWORK!.toString()
+    .toLowerCase() as Network;
 
-  if(!envNetwork) {
-    throw new Error("No Network ENV set")
+  if (!envNetwork) {
+    throw new Error("No Network ENV set");
   }
 
-  window.localStorage.setItem("homebase:network", envNetwork)
+  window.localStorage.setItem("homebase:network", envNetwork);
 
-  return envNetwork
-}
+  return envNetwork;
+};
 
-const network = getInitialNetwork()
+const network = getInitialNetwork();
 const Tezos = new TezosToolkit(rpcNodes[network]);
 Tezos.setPackerProvider(new MichelCodecPacker());
 Tezos.addExtension(new Tzip16Module());
@@ -47,7 +49,7 @@ const INITIAL_STATE: TezosState = {
   tezos: Tezos,
   network: network,
   account: "",
-  wallet: undefined
+  wallet: undefined,
 };
 
 export const TezosContext = createContext<TezosProvider>({
@@ -80,15 +82,15 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
         tezos: action.payload.tezos,
         network: action.payload.network,
         account: action.payload.account,
-        wallet: action.payload.wallet
+        wallet: action.payload.wallet,
       };
     case "RESET_TEZOS":
       return {
         ...state,
         tezos: Tezos,
         account: "",
-        wallet: undefined
-      }
+        wallet: undefined,
+      };
   }
 };
 
@@ -96,8 +98,8 @@ export const TezosProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
   useEffect(() => {
-    mixpanel.register({'Network': INITIAL_STATE.network });
-  }, [])
+    mixpanel.register({ Network: INITIAL_STATE.network });
+  }, []);
 
   return (
     <TezosContext.Provider value={{ state, dispatch }}>
