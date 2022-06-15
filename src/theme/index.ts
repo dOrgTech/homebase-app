@@ -353,5 +353,21 @@ export const theme = createMuiTheme({
         },
       },
     },
+    MuiAccordion: {
+      root: {
+        background: "#2F3438",
+      },
+    },
+    MuiAccordionDetails: {
+      root: {
+        background: "#24282B",
+      },
+    },
+    MuiSvgIcon: {
+      root: {
+        background: "transparent",
+        color: "#fff",
+      },
+    },
   },
 });
