@@ -447,7 +447,7 @@ export const DaoSettings = (): JSX.Element => {
   };
 
   return (
-    <Box maxWidth="620px">
+    <Box>
       <Grid
         container
         direction="row"

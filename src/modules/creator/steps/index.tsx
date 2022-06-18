@@ -7,26 +7,29 @@ import {
   Summary,
   DaoSettings,
   Governance,
-  Review,
+  Review
 } from "modules/creator/steps";
 
 import { ProtectedRoute } from "modules/creator/components/ProtectedRoute";
 import { Quorum } from "./Quorum";
 import mixpanel from "mixpanel-browser";
+import { Template } from "./Template";
 
 export const STEPS: StepInfo[] = [
-  { title: "Configure DAO settings", index: 0 },
-  { title: "Configure Proposal & Voting", index: 1 },
-  { title: "Adjust Quorum", index: 2 },
-  { title: "Review information", index: 3 },
+  { title: "Select Template", index: 0 },
+  { title: "Configure DAO settings", index: 1 },
+  { title: "Configure Proposal & Voting", index: 2 },
+  { title: "Adjust Quorum", index: 3 },
+  { title: "Review information", index: 4 },
 ];
 
 const urlToStepMap: Record<string, number> = {
-  dao: 0,
-  voting: 1,
-  quorum: 2,
-  summary: 3,
-  review: 4,
+  template: 0,
+  dao: 1,
+  voting: 2,
+  quorum: 3,
+  summary: 4,
+  review: 5,
 };
 
 const AnalyticsWrappedStep: React.FC<{ name: string; index: number }> = ({
@@ -50,32 +53,37 @@ export const StepRouter: React.FC = () => {
   return (
     <ProtectedRoute>
       <Switch>
+        <Route path={`${match.url}/template`}>
+          <AnalyticsWrappedStep name="Select Template" index={0}>
+            <Template />
+          </AnalyticsWrappedStep>
+        </Route>
         <Route path={`${match.url}/dao`}>
-          <AnalyticsWrappedStep name="DAO Settings" index={0}>
+          <AnalyticsWrappedStep name="DAO Settings" index={1}>
             <DaoSettings />
           </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/voting`}>
-          <AnalyticsWrappedStep name="Governance" index={1}>
+          <AnalyticsWrappedStep name="Governance" index={2}>
             <Governance />
           </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/quorum`}>
-          <AnalyticsWrappedStep name="Quorum" index={2}>
+          <AnalyticsWrappedStep name="Quorum" index={3}>
             <Quorum />
           </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/summary`}>
-          <AnalyticsWrappedStep name="Summary" index={3}>
+          <AnalyticsWrappedStep name="Summary" index={4}>
             <Summary />
           </AnalyticsWrappedStep>
         </Route>
         <Route path={`${match.url}/review`}>
-          <AnalyticsWrappedStep name="Deployment" index={4}>
+          <AnalyticsWrappedStep name="Deployment" index={5}>
             <Review />
           </AnalyticsWrappedStep>
         </Route>
-        <Redirect to={`${match.url}/dao`} />
+        <Redirect to={`${match.url}/template`} />
       </Switch>
     </ProtectedRoute>
   );
@@ -96,6 +104,7 @@ export const useStepNumber = (): number => {
 };
 
 export { Summary } from "modules/creator/steps/Summary";
+export { Template } from "modules/creator/steps/Template";
 export { DaoSettings } from "modules/creator/steps/DaoSettings";
 export { Governance } from "modules/creator/steps/Governance";
 export { Review } from "modules/creator/steps/Review";
