@@ -15,10 +15,10 @@ const CustomTypography = styled(Typography)({
 
 interface Props {
   title: string;
-  description: string;
+  description: any;
 }
 
-export const TitleBock: React.FC<Props> = ({ title, description }) => {
+export const TitleBlock: React.FC<Props> = ({ title, description }) => {
   return (
     <StyledGrid container direction="row" justify="space-between">
       <Grid item xs={12}>

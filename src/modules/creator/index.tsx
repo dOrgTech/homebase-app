@@ -33,7 +33,10 @@ const StepContentContainer = styled(Grid)({
   overflowY: "auto",
   marginLeft: 47,
   zIndex: 10,
-  width: 'fit-content'
+  width: 'fit-content',
+  ["@media (max-width:1167px)"]: {
+    marginLeft: 0
+  }
 });
 
 const StyledStepper = styled(Stepper)({
@@ -109,7 +112,10 @@ const PageContent = styled(Grid)({
   margin: "auto",
   padding: "28px 0",
   flexDirection: "row",
-  paddingTop: 0
+  paddingTop: 0,
+  ["@media (max-width:1167px)"]: {
+    width: "86vw",
+  }
 });
 
 export const DAOCreate: React.FC = () => {

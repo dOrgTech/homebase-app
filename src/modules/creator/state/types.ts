@@ -100,6 +100,13 @@ function updateVotingSettings(voting: VotingSettings) {
   };
 }
 
+function updateTemplate(template: DAOTemplate) {
+  return <const>{
+    type: ActionTypes.UPDATE_TEMPLATE,
+    template,
+  };
+}
+
 function updateQuorumSettings(quorum: QuorumSettings) {
   return <const>{
     type: ActionTypes.UPDATE_QUORUM_SETTINGS,
@@ -127,11 +134,13 @@ export type CreatorAction = ReturnType<
   | typeof updateQuorumSettings
   | typeof updateDeploymentStatus
   | typeof clearCache
+  | typeof updateTemplate
 >;
 
 export enum ActionTypes {
   UPDATE_NAVIGATION_BAR = "UPDATE_NAVIGATION_BAR",
   UPDATE_VOTING_SETTINGS = "UPDATE_VOTING_SETTINGS",
+  UPDATE_TEMPLATE = "UPDATE_TEMPLATE",
   UPDATE_QUORUM_SETTINGS = "UPDATE_QUORUM_SETTINGS",
   UPDATE_ORGANIZATION_SETTINGS = "UPDATE_ORGANIZATION_SETTINGS",
   UPDATE_DEPLOYMENT_STATUS = "UPDATE_DEPLOYMENT_STATUS",

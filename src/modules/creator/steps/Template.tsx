@@ -1,27 +1,56 @@
-import { Grid, styled, Typography, Box } from "@material-ui/core";
-import React, { useContext, useEffect } from "react";
+import {
+  Grid,
+  styled,
+  Typography,
+  Box,
+  useMediaQuery,
+  useTheme,
+  makeStyles,
+} from "@material-ui/core";
+import React, { useContext, useEffect, useState } from "react";
 import { useHistory, withRouter } from "react-router";
 
 import { AccountBalance, FormatListBulleted } from "@material-ui/icons";
-import { ActionTypes, CreatorContext } from "modules/creator/state";
-import { TitleBock } from "modules/common/TitleBlock";
+import {
+  ActionTypes,
+  CreatorContext,
+  DAOTemplate,
+} from "modules/creator/state";
+import { TitleBlock } from "modules/common/TitleBlock";
 import { useRouteMatch } from "react-router-dom";
 
 const CustomBox = styled(Grid)(({ theme }) => ({
   height: 273,
   background: "#2F3438",
   borderRadius: 8,
-  maxWidth: 330,
+  maxWidth: 320,
   width: "-webkit-fill-available",
   padding: "40px 50px",
   textAlign: "start",
   cursor: "pointer",
   paddingBottom: 0,
-  '&:hover': {
+  "&:hover": {
     border: "3px solid rgba(129, 254, 183, 0.4)",
-    padding: "37px 47px"
-  }
+    padding: "37px 47px",
+  },
+  ["@media (max-width:1167px)"]: {
+    marginBottom: 20,
+  },
 }));
+
+const styles = makeStyles({
+  selected: {
+    border: "3px solid rgba(129, 254, 183, 0.4)",
+    padding: "37px 47px",
+  },
+});
+
+const ErrorText = styled(Typography)({
+  display: "block",
+  fontSize: 14,
+  color: "red",
+  marginTop: 8,
+});
 
 const CustomBalance = styled(AccountBalance)(({ theme }) => ({
   width: 64,
@@ -51,40 +80,68 @@ const BoxDescription = styled(Typography)({
 
 export const Template = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext);
+  const { template } = state.data;
+
   const history = useHistory();
-  
+
   const match = useRouteMatch();
 
+  const theme = useTheme();
+  const style = styles();
+
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
+
+  const [selectedTemplate, setTemplate] = useState<DAOTemplate | "">(template);
+  const [error, setError] = useState<boolean>(false);
+
   useEffect(() => {
-      dispatch({
-        type: ActionTypes.UPDATE_NAVIGATION_BAR,
-        next: {
-          handler: () => {
-            history.push(`dao`)
-          },
-          text: "CONTINUE",
+    dispatch({
+      type: ActionTypes.UPDATE_NAVIGATION_BAR,
+      next: {
+        handler: () => {
+          if (!selectedTemplate) {
+            return setError(true);
+          }
+          dispatch({
+            type: ActionTypes.UPDATE_TEMPLATE,
+            template: selectedTemplate,
+          });
+          return history.push(`dao`);
         },
-        back: {
-          handler: () => history.push("/explorer"),
-          text: "BACK",
-        },
-      });
-  }, [dispatch, history, match.path, match.url]);
+        text: "CONTINUE",
+      },
+      back: {
+        handler: () => history.push("/explorer"),
+        text: "BACK",
+      },
+    });
+  }, [dispatch, history, match.path, match.url, selectedTemplate]);
+
+  const update = (templateValue: DAOTemplate) => {
+    setError(false);
+    setTemplate(templateValue);
+  };
 
   return (
     <Box>
-      <TitleBock
+      <TitleBlock
         title={"DAO Creator"}
         description={"Create an organization by picking a template below."}
       />
-
-      <Grid container justifyContent="space-between" direction="row">
+      <Grid
+        container
+        justifyContent={isMobileSmall ? "center" : "space-between"}
+        direction="row"
+      >
         <CustomBox
           item
           container
           direction="column"
           justifyContent="flex-start"
           alignItems="center"
+          xs={isMobileSmall ? 12 : 6}
+          onClick={() => update("treasury")}
+          className={selectedTemplate === "treasury" ? style.selected : ""}
         >
           <CustomBalance />
           <BoxTitle color="textSecondary">Treasury</BoxTitle>
@@ -98,6 +155,9 @@ export const Template = (): JSX.Element => {
           direction="column"
           justifyContent="flex-start"
           alignItems="center"
+          xs={isMobileSmall ? 12 : 6}
+          onClick={() => update("registry")}
+          className={selectedTemplate === "registry" ? style.selected : ""}
         >
           <CustomList />
           <BoxTitle color="textSecondary">Registry</BoxTitle>
@@ -106,6 +166,9 @@ export const Template = (): JSX.Element => {
           </BoxDescription>
         </CustomBox>{" "}
       </Grid>
+      {error ? (
+        <ErrorText>{"Must select a template in order to continue"}</ErrorText>
+      ) : null}
     </Box>
   );
 };

@@ -18,6 +18,7 @@ import { useHistory, withRouter } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
+import { TitleBlock } from "modules/common/TitleBlock";
 
 import {
   CreatorContext,
@@ -448,7 +449,7 @@ export const DaoSettings = (): JSX.Element => {
 
   return (
     <Box>
-      <Grid
+      {/* <Grid
         container
         direction="row"
         justify="space-between"
@@ -476,7 +477,27 @@ export const DaoSettings = (): JSX.Element => {
           </CustomTypography>
         </Grid>
         <Grid item xs={12}></Grid>
-      </Grid>
+      </Grid> */}
+
+      <TitleBlock
+        title="DAO Settings"
+        description={
+          <CustomTypography variant="subtitle1" color="textSecondary">
+            These settings will define the name, symbol, and initial
+            distribution of your token. You will need a pre-existing FA2 token
+            to use as governance token. To deploy your own governance token you
+            can go{" "}
+            <Link
+              target="_blank"
+              href="https://fa2-bakery.netlify.app/"
+              color="secondary"
+            >
+              here
+            </Link>{" "}
+            and then come back.
+          </CustomTypography>
+        }
+      ></TitleBlock>
 
       <Formik
         enableReinitialize

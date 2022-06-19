@@ -111,6 +111,15 @@ export const reducer = (
         },
       };
       return state;
+    case ActionTypes.UPDATE_TEMPLATE:
+      state = {
+        ...state,
+        data: {
+          ...state.data,
+          template: action.template,
+        },
+      };
+      return state;
     case ActionTypes.CLEAR_CACHE:
       window.localStorage.removeItem(LOCAL_STORAGE_KEY);
       state = {

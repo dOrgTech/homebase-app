@@ -374,7 +374,7 @@ export const Navbar: React.FC<{
             </BackButtonText>
           </BackButtonContainer>
         </Header>
-        <NavigationMenu disableMobileMenu={disableMobileMenu} />
+        {/* <NavigationMenu disableMobileMenu={disableMobileMenu} /> */}
       </StyledToolbar>
     </StyledAppBar>
   );
