@@ -91,7 +91,7 @@ export const Template = (): JSX.Element => {
 
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
-  const [selectedTemplate, setTemplate] = useState<DAOTemplate | "">(template);
+  const [selectedTemplate, setTemplate] = useState<DAOTemplate>(template);
   const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {

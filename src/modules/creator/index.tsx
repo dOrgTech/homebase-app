@@ -47,9 +47,6 @@ const StyledStepper = styled(Stepper)({
   }
 });
 
-const StepContentHeigth = styled(Grid)({
-  height: "calc(100vh - 75px)",
-});
 
 const IndicatorValue = styled(Paper)(({ theme }) => ({
   display: "flex",
@@ -176,12 +173,12 @@ export const DAOCreate: React.FC = () => {
           </ProgressContainer>
         )}
 
-        <Grid item xs={12} md={9} container justify="center">
+        <Grid item xs={12} md={9} container justify="center" alignItems="baseline">
           <Grid
             container
             direction="column"
             alignItems="center"
-            style={{ width: "100%" }}
+            style={{ width: "100%", marginBottom: 20 }}
           >
             <Grid item style={{ width: "100%" }} xs>
               <StepContentContainer item container justify="center">

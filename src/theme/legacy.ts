@@ -30,9 +30,9 @@ export const legacyTheme = createMuiTheme({
       letterSpacing: "-0.01em",
     },
     subtitle1: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: 400,
-      lineHeight: "146.3%",
+      lineHeight: "26.33px",
       letterSpacing: "-0.01em",
     },
     subtitle2: {
@@ -221,7 +221,7 @@ export const legacyTheme = createMuiTheme({
     },
     MuiInputBase: {
       input: {
-        textAlign: "center",
+        textAlign: "start",
         color: "#fff",
       },
     },
@@ -313,6 +313,6 @@ export const legacyTheme = createMuiTheme({
       root: {
         display: "none",
       },
-    },
+    }
   },
 });

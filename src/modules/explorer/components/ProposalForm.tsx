@@ -87,6 +87,7 @@ const enabledForms: Record<DAOTemplate,
       component: () => <UpdateRegistryDialog/>,
     },
   ],
+  '':  []
 };
 
 const Content = styled(Grid)({

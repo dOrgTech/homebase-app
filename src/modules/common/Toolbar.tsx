@@ -86,7 +86,7 @@ const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   position: "sticky",
 
   ["@media (max-height:750px)"]: {
-    position: "static",
+    position: "sticky",
   },
 }));
 

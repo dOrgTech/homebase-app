@@ -8,6 +8,7 @@ import {
   withTheme,
   Box,
   Tooltip,
+  InputAdornment,
 } from "@material-ui/core";
 import { TextField } from "formik-material-ui";
 import React, { useContext, useEffect, useState } from "react";
@@ -20,18 +21,30 @@ import {
   ActionTypes,
   VotingSettings,
 } from "modules/creator/state";
-import { InfoOutlined } from "@material-ui/icons";
+import { InfoOutlined, InfoRounded } from "@material-ui/icons";
 import { getNetworkStats } from "services/bakingBad/stats";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { EstimatedTime } from "modules/explorer/components/EstimatedTime";
 import { theme } from "../../../theme";
 import dayjs from "dayjs";
+import { TitleBlock } from "modules/common/TitleBlock";
 
-const CustomTypography = styled(Typography)(({ theme }) => ({
-  paddingBottom: 10,
-  borderBottom: `1px solid ${theme.palette.primary.light}`,
-  marginTop: 10,
-  marginBottom: 33,
+const CustomTooltip = styled(Tooltip)({
+  marginLeft: 8,
+});
+
+const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
+  cursor: "default",
+  color: theme.palette.secondary.light,
+  height: 18,
+  width: 18,
+}));
+
+const InfoIconDanger = styled(InfoRounded)(({ theme }) => ({
+  cursor: "default",
+  color: theme.palette.error.main,
+  height: 18,
+  width: 18,
 }));
 
 const CustomSpan = styled("span")({
@@ -57,36 +70,31 @@ const StakeContainer = styled(Grid)({
 });
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  border: `1px solid ${theme.palette.primary.light}`,
-  height: 62,
+  border: "none",
+  height: 54,
   marginTop: 14,
-  "&:nth-child(2)": {
-    borderLeft: "none",
-    borderRight: "none",
-    [theme.breakpoints.down("sm")]: {
-      borderLeft: `1px solid ${theme.palette.primary.light}`,
-      borderRight: `1px solid ${theme.palette.primary.light}`,
-    },
-  },
+  background: "#2F3438",
+  borderRadius: 8,
+  
 }));
 
 const AdditionContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
-  border: `1px solid ${theme.palette.primary.light}`,
-  height: 62,
+  border: "none",
+  height: 54,
+  background: "#2F3438",
+  borderRadius: 8,
+  marginRight: 15
 }));
 
 const GridItemCenter = styled(Grid)({
   textAlign: "center",
+  alignItems: "center",
 });
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
-  padding: 12,
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${theme.palette.secondary.light}`,
-  },
+  padding: 12
 }));
 
 const GridItemContainer = styled(Grid)(() => ({
@@ -143,11 +151,7 @@ const styles = {
 };
 
 const GridNoPadding = styled(Grid)({
-  padding: "0px !important",
-});
-
-const InfoIconInput = styled(InfoOutlined)({
-  cursor: "default",
+  paddingLeft: "8px !important",
 });
 
 const validateForm = (values: VotingSettings) => {
@@ -297,8 +301,8 @@ const GovernanceForm = ({
 
   return (
     <>
-      <Grid container>
-        <Grid item style={{ marginRight: 15 }}>
+      <Grid container direction="row">
+        <Grid item style={{ paddingRight: 15 }} xs={4}>
           <SecondContainer container direction="row">
             <Typography
               style={styles.voting}
@@ -343,7 +347,7 @@ const GovernanceForm = ({
             <EstimatedTime {...votingTime} />
           </Grid>
         </Grid>
-        <Grid item style={{ marginRight: 15 }}>
+        <Grid item style={{ paddingRight: 15 }} xs={4}>
           <SecondContainer container direction="row">
             <Typography
               style={styles.voting}
@@ -371,8 +375,20 @@ const GovernanceForm = ({
                     inputProps={{ min: 0 }}
                   />
                 </GridItemCenter>
-                <GridItemCenter item xs={6}>
+                <GridItemCenter
+                  item
+                  xs={6}
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
                   <Typography color="textSecondary">blocks</Typography>
+                  <CustomTooltip
+                    placement="bottom"
+                    title="This should always be more than double the duration of a cycle, to ensure the proposal will not become executable in the cycle it was created, nor in the one it was voted on"
+                  >
+                    <InfoIconDanger />
+                  </CustomTooltip>
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
@@ -389,14 +405,14 @@ const GovernanceForm = ({
           </Grid>
         </Grid>
 
-        <Grid item style={{ marginRight: 15 }}>
+        <Grid item xs={4}>
           <SecondContainer container direction="row">
             <Typography
               style={styles.voting}
               variant="subtitle1"
               color="textSecondary"
             >
-              Proposal Expiration Threshold
+              Proposal Expiry Threshold
             </Typography>
           </SecondContainer>
 
@@ -436,8 +452,8 @@ const GovernanceForm = ({
         </Grid>
       </Grid>
 
-      <Grid item style={{ margin: "24px 0" }}>
-        <Typography color={"textSecondary"}>
+      <TitleBlock description={(
+        <><Typography color={"textSecondary"}>
           If Jane creates a DAO at{" "}
           <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she will be
           able to create a proposal at{" "}
@@ -450,7 +466,10 @@ const GovernanceForm = ({
           expire at{" "}
           <CustomSpan>{expiryMoment.format("HH:mm MM/DD")}</CustomSpan>
         </Typography>
-      </Grid>
+        </>)}>
+        </TitleBlock>
+
+
 
       <Grid item style={{ marginTop: 12 }}>
         <SecondContainer container direction="row">
@@ -498,7 +517,7 @@ const GovernanceForm = ({
                     orgSettings.governanceToken.tokenMetadata?.supply
                   }`}
                 >
-                  <InfoIconInput color="secondary" />
+                  <InfoIconInput />
                 </Tooltip>
               </GridItemCenter>
             </ItemContainer>
@@ -524,7 +543,7 @@ const GovernanceForm = ({
           container
           direction="row"
           alignItems="center"
-          spacing={1}
+          // spacing={1}
           style={{ marginTop: 14 }}
         >
           <GridNoPadding item xs={8} sm={9}>
@@ -587,7 +606,7 @@ const GovernanceForm = ({
                 placement="bottom"
                 title="Minimum amount of XTZ that can be transferred"
               >
-                <InfoIconInput color="secondary" />
+                <InfoIconInput />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
@@ -622,7 +641,7 @@ const GovernanceForm = ({
                 placement="bottom"
                 title="Maximum amount of XTZ that can be transferred"
               >
-                <InfoIconInput color="secondary" />
+                <InfoIconInput />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
@@ -656,22 +675,14 @@ export const Governance: React.FC = () => {
   };
 
   return (
-    <Box maxWidth={950}>
-      <Grid container direction="row" justify="space-between">
-        <Grid item xs={12}>
-          <Typography variant="h3" color="textSecondary">
-            Proposals & Voting
-          </Typography>
-        </Grid>
-      </Grid>
-      <Grid container direction="row">
-        <Grid item xs={12}>
-          <CustomTypography variant="subtitle1" color="textSecondary">
-            These settings will define the duration, support and approval
-            required for proposals.
-          </CustomTypography>
-        </Grid>
-      </Grid>
+    <Box>
+      <TitleBlock
+        title={"Proposals & Voting"}
+        tooltip={true}
+        description={
+          "These settings will define the duration, support and approval required for proposals."
+        }
+      ></TitleBlock>
 
       <Formik
         enableReinitialize

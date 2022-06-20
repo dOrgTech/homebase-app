@@ -14,8 +14,10 @@ import { NavigationBarProps } from "modules/creator/state";
 const Footer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
   marginLeft: 47,
+  marginBottom: 10,
   ["@media (max-width:1167px)"]: {
     marginLeft: 0,
+    marginBottom: 50,
   }
 }));
 

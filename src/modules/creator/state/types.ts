@@ -54,7 +54,7 @@ export interface NavigationBarProps {
   };
 }
 
-export type DAOTemplate = "treasury" | "registry";
+export type DAOTemplate = "treasury" | "registry" | "" ;
 
 type DeploymentStatus = {
   deploying: boolean;
