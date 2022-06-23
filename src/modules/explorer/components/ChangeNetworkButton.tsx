@@ -24,13 +24,14 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "&:hover": {
     background: theme.palette.secondary.dark,
     transition: ".15s ease-in",
-  }
+  },
 }));
 
 export const networkDotColorMap: Record<Network, string> = {
   mainnet: "#9EEE5D",
   ithacanet: "#291F79",
-}
+  devnet: "#291F79",
+};
 
 export const ColorDot = styled(Box)({
   height: 6,
@@ -44,7 +45,7 @@ const NetworkText = styled(Typography)({
 });
 
 export const ChangeNetworkButton = () => {
-  const { network } = useTezos()
+  const { network } = useTezos();
   const { open } = useActionSheet(ActionSheet.Network);
 
   return (

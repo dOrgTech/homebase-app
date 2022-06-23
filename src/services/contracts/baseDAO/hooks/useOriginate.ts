@@ -38,7 +38,6 @@ const waitForIndexation = async (contractAddress: string) => {
 
       if (response.daos.length > 0) {
         resolve(true);
-
       } else {
         if (tries > 12) {
           console.log(`DAO indexation timed out`);
@@ -89,9 +88,10 @@ export const useOriginate = (template: DAOTemplate) => {
       mixpanel.track("Started DAO origination", {
         contract: "MetadataCarrier",
         daoName: params.orgSettings.name,
-        daoType: params.template
-      })
+        daoType: params.template,
+      });
 
+      console.log("metadataParams: ", JSON.stringify(metadataParams));
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
         tezos: tezosToolkit,
@@ -119,10 +119,10 @@ export const useOriginate = (template: DAOTemplate) => {
 
       mixpanel.track("Started DAO origination", {
         contract: "BaseDAO",
-        daoName: params.orgSettings.name
-      })
+        daoName: params.orgSettings.name,
+      });
 
-      console.log(params, network, metadata)
+      console.log(params, network, metadata);
 
       const contract = await BaseDAO.baseDeploy(template, {
         tezos: tezosToolkit,
@@ -150,13 +150,13 @@ export const useOriginate = (template: DAOTemplate) => {
 
       mixpanel.track("Completed DAO creation", {
         daoName: params.orgSettings.name,
-        daoType: params.template
-      })
+        daoType: params.template,
+      });
 
       mixpanel.track("Waiting for DAO indexation", {
         daoName: params.orgSettings.name,
-        daoType: params.template
-      })
+        daoType: params.template,
+      });
 
       const indexed = await waitForIndexation(contract.address);
 
@@ -172,8 +172,8 @@ export const useOriginate = (template: DAOTemplate) => {
 
       mixpanel.track("Completed DAO indexation", {
         daoName: params.orgSettings.name,
-        daoType: params.template
-      })
+        daoType: params.template,
+      });
 
       return contract;
     },
@@ -184,7 +184,7 @@ export const useOriginate = (template: DAOTemplate) => {
     }
   );
 
-  console.log(result)
+  console.log(result);
 
   return { mutation: result, states, activeState };
 };

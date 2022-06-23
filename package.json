@@ -57,6 +57,7 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
+    "@testing-library/react": "12.1.2",
     "@types/jest": "^26.0.21",
     "@types/node": "^14.14.35",
     "@types/react": "^17.0.3",
@@ -96,6 +97,11 @@
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
       "yarn lint:fix"
+    ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
     ]
   }
 }
