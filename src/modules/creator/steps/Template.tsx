@@ -108,11 +108,11 @@ export const Template = (): JSX.Element => {
           });
           return history.push(`dao`);
         },
-        text: "CONTINUE",
+        text: "Continue",
       },
       back: {
         handler: () => history.push("/explorer"),
-        text: "BACK",
+        text: "Back",
       },
     });
   }, [dispatch, history, match.path, match.url, selectedTemplate]);

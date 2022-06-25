@@ -55,8 +55,8 @@ const InfoIcon = styled(InfoRounded)(({ theme }) => ({
 const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.secondary.light,
-  height: 18,
-  width: 18
+  height: 16,
+  width: 16
 }));
 
 const TextareaContainer = styled(Grid)({
@@ -147,11 +147,11 @@ const DaoSettingsForm = withRouter(
             handler: () => {
               submitForm(values);
             },
-            text: "CONTINUE",
+            text: "Continue",
           },
           back: {
             handler: () => history.push(`templates`),
-            text: "BACK",
+            text: "Back",
           },
         });
       }

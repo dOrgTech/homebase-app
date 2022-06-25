@@ -38,6 +38,8 @@ export const legacyTheme = createMuiTheme({
     subtitle2: {
       fontSize: 16,
       fontWeight: 400,
+      lineHeight: "26.33px",
+      letterSpacing: "-0.01em",
     },
     h3: {
       fontSize: 35,
@@ -135,6 +137,12 @@ export const legacyTheme = createMuiTheme({
           borderLeftColor: "#81feb7",
           opacity: 1
         }
+      },
+      completed: {
+        '& span': {
+          borderLeftColor: "#81feb7",
+          opacity: 1
+        }
       }
     },
     MuiStepContent: {
@@ -202,6 +210,11 @@ export const legacyTheme = createMuiTheme({
           borderBottom: "none",
         },
       },
+    },
+    MuiInputAdornment: {
+      positionStart: {
+        marginLeft: 8
+      }
     },
     MuiButton: {
       root: {

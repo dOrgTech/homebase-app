@@ -36,15 +36,16 @@ const CustomTooltip = styled(Tooltip)({
 const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.secondary.light,
-  height: 18,
-  width: 18,
+  height: 16,
+  width: 16,
+  marginLeft: 8,
 }));
 
 const InfoIconDanger = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.error.main,
-  height: 18,
-  width: 18,
+  height: 16,
+  width: 16,
 }));
 
 const CustomSpan = styled("span")({
@@ -75,7 +76,6 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
   background: "#2F3438",
   borderRadius: 8,
-  
 }));
 
 const AdditionContainer = styled(Grid)(({ theme }) => ({
@@ -84,17 +84,22 @@ const AdditionContainer = styled(Grid)(({ theme }) => ({
   height: 54,
   background: "#2F3438",
   borderRadius: 8,
-  marginRight: 15
+  marginRight: 15,
+  ["@media (max-width:1167px)"]: {
+    marginRight: 0,
+  },
 }));
 
 const GridItemCenter = styled(Grid)({
   textAlign: "center",
   alignItems: "center",
+  display: "flex",
+  justifyContent: "flex-end",
 });
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
-  padding: 12
+  padding: "12px 25px",
 }));
 
 const GridItemContainer = styled(Grid)(() => ({
@@ -117,7 +122,7 @@ const StyledSlider = withStyles({
   thumb: {
     height: 20,
     width: 20,
-    top: "24.5%",
+    top: "36.5%",
     backgroundColor: "#fff",
     border: "3px solid #fff",
   },
@@ -130,13 +135,13 @@ const StyledSlider = withStyles({
 
 const CustomSliderValue = styled(withTheme(Paper))((props) => ({
   boxShadow: "none",
-  height: 62,
-  border: `1px solid ${props.theme.palette.primary.light}`,
+  height: 54,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  borderRadius: 0,
-  background: props.theme.palette.primary.main,
+  background: "#2F3438",
+  borderRadius: 8,
+  width: 97,
 }));
 
 const Value = styled(Typography)({
@@ -150,8 +155,22 @@ const styles = {
   },
 };
 
+const InputContainer = styled(Grid)({
+  paddingRight: 15,
+  ["@media (max-width:1167px)"]: {
+    paddingRight: 0,
+  },
+});
+
 const GridNoPadding = styled(Grid)({
   paddingLeft: "8px !important",
+});
+
+const InfoBox = styled(Paper)({
+  boxShadow: "none",
+  border: "none",
+  background: "inherit",
+  marginTop: 20,
 });
 
 const validateForm = (values: VotingSettings) => {
@@ -286,13 +305,13 @@ const GovernanceForm = ({
       dispatch({
         type: ActionTypes.UPDATE_NAVIGATION_BAR,
         next: {
-          text: "CONTINUE",
+          text: "Continue",
           handler: () => {
             submitForm(values);
           },
         },
         back: {
-          text: "BACK",
+          text: "Back",
           handler: () => history.push(`dao`),
         },
       });
@@ -302,7 +321,7 @@ const GovernanceForm = ({
   return (
     <>
       <Grid container direction="row">
-        <Grid item style={{ paddingRight: 15 }} xs={4}>
+        <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
             <Typography
               style={styles.voting}
@@ -346,8 +365,8 @@ const GovernanceForm = ({
           <Grid item style={{ margin: "14px 15px", height: 62 }}>
             <EstimatedTime {...votingTime} />
           </Grid>
-        </Grid>
-        <Grid item style={{ paddingRight: 15 }} xs={4}>
+        </InputContainer>
+        <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
             <Typography
               style={styles.voting}
@@ -403,9 +422,9 @@ const GovernanceForm = ({
           <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
             <EstimatedTime {...flushDelayTime} />
           </Grid>
-        </Grid>
+        </InputContainer>
 
-        <Grid item xs={4}>
+        <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
             <Typography
               style={styles.voting}
@@ -449,27 +468,31 @@ const GovernanceForm = ({
           <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
             <EstimatedTime {...expiryDelayTime} />
           </Grid>
-        </Grid>
+        </InputContainer>
       </Grid>
 
-      <TitleBlock description={(
-        <><Typography color={"textSecondary"}>
-          If Jane creates a DAO at{" "}
-          <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she will be
-          able to create a proposal at{" "}
-          <CustomSpan>{creationMoment.format("HH:mm MM/DD")}</CustomSpan>, and
-          the DAO will vote on it from{" "}
-          <CustomSpan>{activeMoment.format("HH:mm MM/DD")} </CustomSpan>
-          through <CustomSpan>{closeMoment.format("HH:mm MM/DD")}</CustomSpan>.
-          If the proposal passes, it&apos;ll be executable at{" "}
-          <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan> and will
-          expire at{" "}
-          <CustomSpan>{expiryMoment.format("HH:mm MM/DD")}</CustomSpan>
-        </Typography>
-        </>)}>
-        </TitleBlock>
-
-
+      <InfoBox>
+        <TitleBlock
+          description={
+            <>
+              <Typography color={"textSecondary"}>
+                If Jane creates a DAO at{" "}
+                <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she
+                will be able to create a proposal at{" "}
+                <CustomSpan>{creationMoment.format("HH:mm MM/DD")}</CustomSpan>,
+                and the DAO will vote on it from{" "}
+                <CustomSpan>{activeMoment.format("HH:mm MM/DD")} </CustomSpan>
+                through{" "}
+                <CustomSpan>{closeMoment.format("HH:mm MM/DD")}</CustomSpan>. If
+                the proposal passes, it&apos;ll be executable at{" "}
+                <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan> and
+                will expire at{" "}
+                <CustomSpan>{expiryMoment.format("HH:mm MM/DD")}</CustomSpan>
+              </Typography>
+            </>
+          }
+        ></TitleBlock>
+      </InfoBox>
 
       <Grid item style={{ marginTop: 12 }}>
         <SecondContainer container direction="row">
@@ -483,14 +506,14 @@ const GovernanceForm = ({
         </SecondContainer>
 
         <StakeContainer container direction="row" alignItems="center">
-          <AdditionContainer item xs={11} sm={4}>
+          <AdditionContainer item xs={12} sm={4}>
             <ItemContainer
               container
               direction="row"
               alignItems="center"
               justify="center"
             >
-              <GridItemCenter item xs={6}>
+              <GridItemCenter item xs={5}>
                 <Field
                   name="proposeStakeRequired"
                   type="number"
@@ -501,7 +524,7 @@ const GovernanceForm = ({
               </GridItemCenter>
               <GridItemCenter
                 item
-                xs={6}
+                xs={7}
                 container
                 direction="row"
                 justify="space-around"
@@ -543,10 +566,9 @@ const GovernanceForm = ({
           container
           direction="row"
           alignItems="center"
-          // spacing={1}
           style={{ marginTop: 14 }}
         >
-          <GridNoPadding item xs={8} sm={9}>
+          <GridNoPadding item xs={8} sm={10}>
             <Field name="returnedTokenPercentage">
               {() => (
                 <StyledSlider
@@ -558,7 +580,14 @@ const GovernanceForm = ({
               )}
             </Field>
           </GridNoPadding>
-          <GridNoPadding item xs={4} sm={3}>
+          <GridNoPadding
+            item
+            xs={4}
+            sm={2}
+            container
+            direction="row"
+            justifyContent="flex-end"
+          >
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
                 {getIn(values, "returnedTokenPercentage")}%

@@ -25,6 +25,21 @@ const CustomButton = styled(Button)({
   marginTop: 20,
 });
 
+const CustomText = styled(Typography)({
+  fontWeight: "bold",
+  marginLeft: 12,
+  marginRight: 12,
+});
+
+const StyledContainer = styled(Box)({
+  minHeight: 500,
+  minWidth: 650,
+  display: "grid",
+  ["@media (max-width:1167px)"]: {
+    minWidth: "auto",
+  },
+});
+
 export const Review: React.FC = () => {
   const { account, connect } = useTezos();
   const validDAOData = useCreatorRouteValidation();
@@ -59,6 +74,8 @@ export const Review: React.FC = () => {
   } = useOriginate(state.data.template);
   const history = useHistory();
 
+  console.log(states);
+
   // TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
@@ -82,50 +99,74 @@ export const Review: React.FC = () => {
   }, [data, dispatch]);
 
   return (
-    <>
+    <StyledContainer>
       <Grid container direction="row" justify="center">
         {account ? (
-          <Grid
-            container
-            direction="column"
-            justify="center"
-            alignItems="center"
-            style={{ height: "fit-content" }}
-          >
-            <Grid item>
-              <RocketImg src={Rocket} alt="rocket" />
+          <>
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              style={{ height: "fit-content" }}
+            >
+              <Grid item>
+                <RocketImg src={Rocket} alt="rocket" />
+              </Grid>
+              <Grid item container direction="row" justifyContent="center">
+                <Typography variant="h4" color="textSecondary">
+                  Deploying
+                </Typography>
+                <CustomText color="secondary" variant="h4">
+                  {" "}
+                  {state.data.orgSettings.name}
+                </CustomText>
+                <Typography variant="h4" color="textSecondary">
+                  {" "}
+                  to the Tezos Network
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Box>
+                  {data && data.address ? (
+                    <CustomButton
+                      color="secondary"
+                      variant="outlined"
+                      onClick={() =>
+                        history.push("/explorer/dao/" + data.address)
+                      }
+                    >
+                      Go to my DAO
+                    </CustomButton>
+                  ) : null}
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Typography variant="h4" color="textSecondary">
-                Deploying <strong> {state.data.orgSettings.name} </strong> to
-                the Tezos Network
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Box>
-                {data && data.address ? (
-                  <CustomButton
-                    color="secondary"
-                    variant="outlined"
-                    onClick={() =>
-                      history.push("/explorer/dao/" + data.address)
-                    }
-                  >
-                    Go to my DAO
-                  </CustomButton>
-                ) : null}
-              </Box>
-            </Grid>
-          </Grid>
+            <DeploymentLoader
+              states={states}
+              activeStep={activeState}
+              error={error}
+            />
+
+            {(states[0].activeText !== "" &&
+            states[2].completedText === "" && error === null) ? (
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignContent="center"
+              >
+                <Typography color="secondary">
+                  {" "}
+                  This may take several minutes{" "}
+                </Typography>
+              </Grid>
+            ) : null}
+          </>
         ) : (
           <ConnectWalletButton connect={connect} />
         )}
       </Grid>
-      <DeploymentLoader
-        states={states}
-        activeStep={activeState}
-        error={error}
-      />
-    </>
+    </StyledContainer>
   );
 };

@@ -120,7 +120,7 @@ export const DAOCreate: React.FC = () => {
 
   const { back, next } = creator.state;
   const step = useStepNumber();
-  const progress = useMemo(() => step * 25, [step]);
+  const progress = useMemo(() => step * 20, [step]);
   const history = useHistory();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -153,7 +153,7 @@ export const DAOCreate: React.FC = () => {
               >
                 <Box className="indicator">
                   <IndicatorValue>
-                    {progress === 0.5 ? 0 : step * 25}%
+                    {progress === 0.5 ? 0 : step * 20}%
                   </IndicatorValue>
                 </Box>
               </ProgressBar>
@@ -186,7 +186,7 @@ export const DAOCreate: React.FC = () => {
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 6 && <NavigationBar back={back} next={next} />}
+          {step < 5 && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>

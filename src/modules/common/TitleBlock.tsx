@@ -1,4 +1,4 @@
-import { Grid, styled, Tooltip, Typography } from "@material-ui/core";
+import { Grid, Paper, styled, Tooltip, Typography } from "@material-ui/core";
 import React from "react";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 import { InfoRounded } from "@material-ui/icons";
@@ -17,19 +17,31 @@ const CustomTypography = styled(Typography)({
 
 const CustomTooltip = styled(Tooltip)({
   marginLeft: 8,
+  ["@media (max-width:1167px)"]: {
+    marginLeft: 0,
+    marginTop: 8
+  },
 });
 
 const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.secondary.light,
-  height: 18,
-  width: 18,
+  height: 16,
+  width: 16,
 }));
 
 const CustomTooltipText = styled(Typography)({
   fontSize: 12,
   marginLeft: 2,
 });
+
+const CustomTextContainer = styled(Paper)({
+  maxWidth: "fit-content",
+  background: "inherit",
+  boxShadow: "none",
+  display: "flex",
+  alignItems: "flex-end"
+})
 
 interface Props {
   title?: ReactElement | string;
@@ -47,18 +59,20 @@ export const TitleBlock: React.FC<Props> = ({
   return (
     <StyledGrid container direction="row" justify="space-between">
       <Grid item xs={12} container direction="row" alignItems="flex-end">
+        <CustomTextContainer>
         <Typography variant="h3" color="textSecondary">
           {title}
         </Typography>
+        </CustomTextContainer>
         {tooltip ? (
-          <>
-            <CustomTooltip placement="bottom" title={tooltipText}>
+      <CustomTextContainer>
+              <CustomTooltip placement="bottom" title={tooltipText}>
               <InfoIconInput />
             </CustomTooltip>
             <CustomTooltipText color="secondary">
               Configure Proposals and Voting{" "}
             </CustomTooltipText>
-          </>
+          </CustomTextContainer>
         ) : null}
       </Grid>
       <Grid item xs={12}>
