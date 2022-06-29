@@ -7,7 +7,7 @@ import {
   Summary,
   DaoSettings,
   Governance,
-  Review
+  Review,
 } from "modules/creator/steps";
 
 import { ProtectedRoute } from "modules/creator/components/ProtectedRoute";

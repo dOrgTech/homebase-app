@@ -74,8 +74,6 @@ export const Review: React.FC = () => {
   } = useOriginate(state.data.template);
   const history = useHistory();
 
-  console.log(states);
-
   // TODO: Fix infinite calling here
   useEffect(() => {
     (async () => {
@@ -148,8 +146,9 @@ export const Review: React.FC = () => {
               error={error}
             />
 
-            {(states[0].activeText !== "" &&
-            states[2].completedText === "" && error === null) ? (
+            {states[0].activeText !== "" &&
+            states[2].completedText === "" &&
+            error === null ? (
               <Grid
                 container
                 direction="row"
