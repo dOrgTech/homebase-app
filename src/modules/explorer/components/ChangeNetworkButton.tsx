@@ -1,14 +1,8 @@
-import {
-  Box,
-  capitalize,
-  Grid,
-  styled,
-  Typography,
-} from "@material-ui/core";
+import { Box, capitalize, Grid, styled, Typography } from "@material-ui/core";
 import React from "react";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { ActionSheet, useActionSheet } from "../context/ActionSheets";
-import {Network} from "../../../services/beacon/context";
+import { Network } from "../../../services/beacon/context";
 
 const StyledConnectedButton = styled(Box)({
   "& > *": {
@@ -19,14 +13,15 @@ const StyledConnectedButton = styled(Box)({
   padding: 5,
   cursor: "pointer",
   "&:hover": {
-    background: "rgb(39, 56, 51)"
-  }
+    background: "rgb(39, 56, 51)",
+  },
 });
 
 export const networkDotColorMap: Record<Network, string> = {
   mainnet: "#9EEE5D",
   hangzhounet: "#E54FAE",
-}
+  ithacanet: "#291F79",
+};
 
 export const ColorDot = styled(Box)({
   height: 6,
@@ -40,7 +35,7 @@ const NetworkText = styled(Typography)({
 });
 
 export const ChangeNetworkButton = () => {
-  const { network } = useTezos()
+  const { network } = useTezos();
   const { open } = useActionSheet(ActionSheet.Network);
 
   return (
