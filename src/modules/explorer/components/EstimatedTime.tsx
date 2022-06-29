@@ -1,5 +1,10 @@
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, styled, Typography } from "@material-ui/core";
 import React from "react";
+
+const EstimatedTimeContainer = styled(Grid)({
+  boxSizing: "border-box",
+  padding: "15px 0px",
+});
 
 interface Props {
   days: number | string;
@@ -7,28 +12,25 @@ interface Props {
   minutes: number | string;
 }
 
-export const EstimatedTime: React.FC<Props> = ({
-  hours, days,
-  minutes
-}) => {
+export const EstimatedTime: React.FC<Props> = ({ hours, days, minutes }) => {
   return (
-    <Grid container style={{ gap: 32}} wrap='nowrap'>
+    <EstimatedTimeContainer>
       <Grid item>
         <Typography color='secondary' variant='subtitle1'>
           Estimated time
         </Typography>
-        <Grid style={{ display: "flex", marginTop: 2 }} wrap='nowrap'>
-          <Typography color='textSecondary' variant='subtitle2' style={{ marginRight: 8 }}>
+        <Grid container style={{ gap: 10 }} wrap='nowrap'>
+          <Typography color='textSecondary' variant='subtitle2'>
             {days}d
           </Typography>
-          <Typography color='textSecondary' variant='subtitle2' style={{ marginRight: 8 }}>
+          <Typography color='textSecondary' variant='subtitle2'>
             {hours}h
           </Typography>
-          <Typography color='textSecondary' variant='subtitle2' style={{ marginRight: 8 }}>
+          <Typography color='textSecondary' variant='subtitle2'>
             {minutes}m
           </Typography>
         </Grid>
       </Grid>
-    </Grid>
+    </EstimatedTimeContainer>
   );
 };

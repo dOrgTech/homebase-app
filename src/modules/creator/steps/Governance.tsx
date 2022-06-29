@@ -89,11 +89,6 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const GridItemContainer = styled(Grid)(() => ({
-  display: "flex",
-  alignItems: "center",
-}));
-
 const ValueText = styled(Typography)({
   fontSize: 14,
 });
@@ -309,7 +304,7 @@ const GovernanceForm = ({
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container alignItems="center">
             <CustomInputContainer item xs={12}>
               <ItemContainer
                 container
@@ -331,7 +326,7 @@ const GovernanceForm = ({
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </Grid>
 
           <Grid item>
             {errors.votingBlocks && touched.votingBlocks ? (
@@ -339,9 +334,7 @@ const GovernanceForm = ({
             ) : null}
           </Grid>
 
-          <Grid item style={{ margin: "14px 15px", height: 62 }}>
-            <EstimatedTime {...votingTime} />
-          </Grid>
+          <EstimatedTime {...votingTime} />
         </Grid>
         <Grid item style={{ marginRight: 15 }}>
           <SecondContainer container direction="row">
@@ -354,7 +347,7 @@ const GovernanceForm = ({
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container alignItems="center">
             <CustomInputContainer item xs={12}>
               <ItemContainer
                 container
@@ -376,7 +369,7 @@ const GovernanceForm = ({
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </Grid>
 
           <Grid item>
             {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
@@ -400,7 +393,7 @@ const GovernanceForm = ({
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container alignItems="center">
             <CustomInputContainer item xs={12}>
               <ItemContainer
                 container
@@ -422,7 +415,7 @@ const GovernanceForm = ({
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </Grid>
 
           <Grid item>
             {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
@@ -436,7 +429,7 @@ const GovernanceForm = ({
         </Grid>
       </Grid>
 
-      <Grid item style={{ margin: "24px 0" }}>
+      <SpacingContainer>
         <Typography color={"textSecondary"}>
           If Jane creates a DAO at{" "}
           <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she will be
@@ -450,7 +443,7 @@ const GovernanceForm = ({
           expire at{" "}
           <CustomSpan>{expiryMoment.format("HH:mm MM/DD")}</CustomSpan>
         </Typography>
-      </Grid>
+      </SpacingContainer>
 
       <Grid item style={{ marginTop: 12 }}>
         <SecondContainer container direction="row">
