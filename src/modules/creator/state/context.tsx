@@ -16,7 +16,7 @@ const deploymentStatus = {
 const LOCAL_STORAGE_KEY = "creatorParams";
 
 export const INITIAL_MIGRATION_STATE: MigrationParams = {
-  template: "registry",
+  template: "",
   orgSettings: {
     name: "",
     symbol: "",
@@ -108,6 +108,15 @@ export const reducer = (
         data: {
           ...state.data,
           votingSettings: action.voting,
+        },
+      };
+      return state;
+    case ActionTypes.UPDATE_TEMPLATE:
+      state = {
+        ...state,
+        data: {
+          ...state.data,
+          template: action.template,
         },
       };
       return state;

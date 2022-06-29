@@ -21,6 +21,17 @@ const WaitingText = styled(Typography)({
   maxWidth: 650,
 });
 
+
+const StyledContainer = styled(Box)({
+  width: "100%",
+  marginTop: "-15%",
+  minWidth: 650,
+  ["@media (max-width:1167px)"]: {
+    minWidth: "auto"
+  }
+});
+
+
 const StyledStepper = styled(Stepper)(({ theme }) => ({
   width: "100%",
   paddingLeft: 0,
@@ -120,7 +131,7 @@ export const DeploymentLoader: React.FC<Props> = ({
   }, [activeStep, isFinished, states.length]);
 
   return (
-    <Box width={"100%"} marginTop={"-15%"}>
+    <StyledContainer >
       <Grid container justify="center">
         <Grid item>
           <WaitingText variant="subtitle1" color="textSecondary">
@@ -162,6 +173,6 @@ export const DeploymentLoader: React.FC<Props> = ({
           </Step>
         ))}
       </StyledStepper>
-    </Box>
+    </StyledContainer>
   );
 };

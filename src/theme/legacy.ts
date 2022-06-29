@@ -7,11 +7,11 @@ export const legacyTheme = createMuiTheme({
     },
     secondary: {
       main: "#4BCF93",
-      light: "#81FEB7",
+      light: "#81FEB7"
     },
     text: {
       primary: "#000000",
-      secondary: "#fff",
+      secondary: "#fff"
     },
     error: {
       main: "#ED254E",
@@ -30,19 +30,21 @@ export const legacyTheme = createMuiTheme({
       letterSpacing: "-0.01em",
     },
     subtitle1: {
-      fontSize: 16,
+      fontSize: 18,
       fontWeight: 400,
-      lineHeight: "146.3%",
+      lineHeight: "26.33px",
       letterSpacing: "-0.01em",
     },
     subtitle2: {
       fontSize: 16,
       fontWeight: 400,
+      lineHeight: "26.33px",
+      letterSpacing: "-0.01em",
     },
     h3: {
       fontSize: 35,
-      fontWeight: 400,
-      fontFamily: "Roboto",
+      fontWeight: 500,
+      fontFamily: "Roboto Mono",
     },
     h2: {
       color: "#000000",
@@ -63,7 +65,7 @@ export const legacyTheme = createMuiTheme({
       fontWeight: 300,
       lineHeight: "413.4%",
       opacity: 0.8,
-    },
+    }
   },
   overrides: {
     MuiSlider: {
@@ -84,11 +86,18 @@ export const legacyTheme = createMuiTheme({
       },
     },
     MuiStepLabel: {
+      root: {
+        marginTop: -3,
+      },
       label: {
         color: "#fff",
         opacity: 0.5,
         marginLeft: 15,
-        lineHeight: "40px",
+        fontSize: 14,
+        lineHeight: "18.5px",
+        height: 40,
+        display: "flex",
+        alignItems: "center",
         "&$completed": {
           fontWeight: 300,
         },
@@ -110,9 +119,31 @@ export const legacyTheme = createMuiTheme({
       },
     },
     MuiStepConnector: {
-      lineVertical: {
-        display: "none",
+      vertical: {
+        padding: "0px",
+        marginLeft: 17,
       },
+      lineVertical: {
+        borderLeftWidth: 2,
+        minHeight: 28,
+        marginTop: -16,
+      },
+      line: {
+        borderColor: "#fff",
+        opacity: 0.2
+      },
+      active: {
+        '& span': {
+          borderLeftColor: "#81feb7",
+          opacity: 1
+        }
+      },
+      completed: {
+        '& span': {
+          borderLeftColor: "#81feb7",
+          opacity: 1
+        }
+      }
     },
     MuiStepContent: {
       root: {
@@ -134,18 +165,22 @@ export const legacyTheme = createMuiTheme({
       root: {
         height: 32,
         width: 32,
-        color: "#1C1F23",
-        border: "1px solid #3D3D3D",
+        color: "#2f3438",
+        border: "2px solid rgba(255, 255, 255, 0.2)",
         borderRadius: "50%",
         "&$active": {
-          fill: "#fff",
-          border: "1px solid #3D3D3D",
+          fill: "#81feb7",
+          border: "2px solid #81feb7",
           borderRadius: "50%",
           "& $text": {
             fill: "#1C1F23",
-            border: "1px solid #3D3D3D",
+            border: "1px solid #2f3438",
           },
         },
+        "&$completed": {
+          fill: "#81feb7",
+          border: "2px solid #81feb7",
+        }
       },
       text: {
         fill: "#fff",
@@ -176,6 +211,11 @@ export const legacyTheme = createMuiTheme({
         },
       },
     },
+    MuiInputAdornment: {
+      positionStart: {
+        marginLeft: 8
+      }
+    },
     MuiButton: {
       root: {
         "&$disabled": {
@@ -194,7 +234,7 @@ export const legacyTheme = createMuiTheme({
     },
     MuiInputBase: {
       input: {
-        textAlign: "center",
+        textAlign: "start",
         color: "#fff",
       },
     },
@@ -286,6 +326,6 @@ export const legacyTheme = createMuiTheme({
       root: {
         display: "none",
       },
-    },
+    }
   },
 });
