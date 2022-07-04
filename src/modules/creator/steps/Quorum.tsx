@@ -120,6 +120,8 @@ const InputContainer = styled(Grid)({
   },
 });
 
+type QuorumChange = { key: string; preventDefault: () => void };
+
 const validateForm = (values: QuorumSettings) => {
   const errors: FormikErrors<QuorumSettings> = {};
 
@@ -159,6 +161,10 @@ const validateForm = (values: QuorumSettings) => {
   }
 
   return errors;
+};
+
+const handleChange = (event: QuorumChange) => {
+  return event.key === "." || event.key === "," ? event.preventDefault() : null;
 };
 
 //TODO: Remove any from this component
@@ -334,6 +340,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
               <Field
                 name="quorumChange"
                 type="number"
+                onKeyDown={(e: QuorumChange) => handleChange(e)}
                 placeholder="00"
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
