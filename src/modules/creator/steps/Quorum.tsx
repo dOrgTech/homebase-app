@@ -161,6 +161,10 @@ const validateForm = (values: QuorumSettings) => {
   return errors;
 };
 
+const handleChange = (event: { key: string; preventDefault: () => any; }) => {
+    return (event.key === '.') || (event.key === ',') ?  event.preventDefault() : null
+}
+
 //TODO: Remove any from this component
 const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
   const {
@@ -334,6 +338,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
               <Field
                 name="quorumChange"
                 type="number"
+                onKeyDown={(e: { key: string; preventDefault: () => any; }) => handleChange(e)}
                 placeholder="00"
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
