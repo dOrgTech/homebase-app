@@ -87,8 +87,14 @@ export abstract class BaseDAO {
       console.log("treasuryParams: ", treasuryParams);
       console.log("account: ", account);
       console.log("metadata: ", metadata);
+      let paramsNetwork: Network;
+      if (network === "devnet") {
+        paramsNetwork = "ithacanet";
+      } else {
+        paramsNetwork = network;
+      }
       const storageCode = await generateStorageContract({
-        network,
+        network: paramsNetwork,
         template,
         storage: treasuryParams,
         originatorAddress: account,

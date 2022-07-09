@@ -75,14 +75,14 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
       >
         <Grid item xs={6}>
           {back && (
-            <BackButton onClick={back.handler}>
+            <BackButton id="back-button" onClick={back.handler}>
               <Typography>{back.text}</Typography>
             </BackButton>
           )}
         </Grid>
         <Grid item xs={6}>
           {next && (
-            <NextButton onClick={next.handler}>
+            <NextButton id="next-button" onClick={next.handler}>
               <Typography color="secondary">{next.text}</Typography>
             </NextButton>
           )}

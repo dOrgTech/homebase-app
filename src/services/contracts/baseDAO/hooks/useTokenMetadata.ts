@@ -6,6 +6,8 @@ import { useTezos } from "services/beacon/hooks/useTezos";
 
 export const useTokenMetadata = (address?: string, tokenId?: string) => {
   const { tezos, network } = useTezos();
+  console.log("network: ", network);
+  console.log("tezos: ", tezos);
 
   const result = useQuery<Token, Error>(
     ["tokenMetadata", address, tokenId],

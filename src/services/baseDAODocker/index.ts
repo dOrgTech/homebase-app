@@ -23,16 +23,19 @@ export const generateStorageContract = async ({
   metadata,
   network,
 }: BaseDAODockerParams): Promise<string> => {
+  console.log("originatorAddress: ", originatorAddress);
   const tokenMetadata = await getTokenMetadata(
     storage.governanceToken.address,
     network,
     storage.governanceToken.tokenId
   );
+  console.log("tokenMetadata: ", tokenMetadata);
   const args = storageParamsToBaseDAODockerArgs(
     storage,
     metadata,
     tokenMetadata
   );
+  console.log("args: ", args);
 
   const url = `${API_URL}/${originatorAddress}/${template}?${Object.keys(args)
     .map((key) => `${key}=${args[key as keyof GeneratorArgs]}`)

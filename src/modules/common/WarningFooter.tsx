@@ -23,7 +23,7 @@ const ContainerText = styled(Typography)({
   color: "inherit",
   fontSize: "18px",
 
-  ["@media (max-width:1030px)"]: { 
+  ["@media (max-width:1030px)"]: {
     fontSize: "16px",
   },
 });
@@ -44,15 +44,15 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
             <Grid item>
               <WarningIcon fill="#FFC839" />
             </Grid>
-            <Grid item style={{marginRight: "10px"}}>
+            <Grid item style={{ marginRight: "10px" }}></Grid>
+            <Grid item>
+              <ContainerText align="center">{text}</ContainerText>
             </Grid>
             <Grid item>
-              <ContainerText align="center">
-                {text}
-              </ContainerText>
-            </Grid>
-            <Grid item>
-              <IconButton onClick={() => setOpen(false)}>
+              <IconButton
+                id="warning-close-button"
+                onClick={() => setOpen(false)}
+              >
                 <CloseIcon htmlColor="#FFC839" />
               </IconButton>
             </Grid>

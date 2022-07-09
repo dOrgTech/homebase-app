@@ -1,10 +1,10 @@
-import { TezosToolkit } from '@taquito/taquito';
-import { BeaconWallet } from '@taquito/beacon-wallet';
-import { Network } from './utils';
+import { TezosToolkit, Wallet } from "@taquito/taquito";
+import { BeaconWallet } from "@taquito/beacon-wallet";
+import { Network } from "./utils";
 
 export enum TezosActionType {
   UPDATE_TEZOS = "UPDATE_TEZOS",
-  RESET_TEZOS = "RESET_TEZOS"
+  RESET_TEZOS = "RESET_TEZOS",
 }
 
 interface UpdateTezos {
@@ -13,7 +13,7 @@ interface UpdateTezos {
     tezos: TezosToolkit;
     network: Network;
     account: string;
-    wallet: BeaconWallet | undefined;
+    wallet: BeaconWallet | Wallet | undefined;
   };
 }
 
@@ -22,4 +22,3 @@ interface ResetTezos {
 }
 
 export type TezosAction = UpdateTezos | ResetTezos;
-

@@ -55,6 +55,9 @@ export const getNetworkTypeByEnvNetwork = (
     case "mainnet":
       return NetworkType.MAINNET;
 
+    case "devnet":
+      return NetworkType.CUSTOM;
+
     default:
       return NetworkType.MAINNET;
   }
