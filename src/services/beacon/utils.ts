@@ -1,50 +1,55 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 
-export type Network = "mainnet" | "ithacanet"
+export type Network = "mainnet" | "jakartanet";
 
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.smartpy.io",
-  ithacanet: "https://ithacanet.smartpy.io"
+  jakartanet: "https://jakartanet.ecadinfra.com",
 };
 
 export const getTezosNetwork = (): Network => {
-  const storageNetwork = window.localStorage.getItem("homebase:network")
+  const storageNetwork = window.localStorage.getItem("homebase:network");
 
-  if(storageNetwork) {
-    return storageNetwork as Network
+  if (storageNetwork) {
+    return storageNetwork as Network;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
+  const envNetwork = process.env
+    .REACT_APP_NETWORK!.toString()
+    .toLowerCase() as Network;
 
-  if(!envNetwork) {
-    throw new Error("No Network ENV set")
+  if (!envNetwork) {
+    throw new Error("No Network ENV set");
   }
 
-  window.localStorage.setItem("homebase:network", envNetwork)
+  window.localStorage.setItem("homebase:network", envNetwork);
 
-  return envNetwork
-}
+  return envNetwork;
+};
 
-export const createWallet = () => new BeaconWallet({
-  name: "Homebase",
-  iconUrl: "https://tezostaquito.io/img/favicon.png",
-})
+export const createWallet = () =>
+  new BeaconWallet({
+    name: "Homebase",
+    iconUrl: "https://tezostaquito.io/img/favicon.png",
+  });
 
-export const createTezos = (network: Network) =>  {
+export const createTezos = (network: Network) => {
   const tezos = new TezosToolkit(rpcNodes[network]);
   tezos.setPackerProvider(new MichelCodecPacker());
   tezos.addExtension(new Tzip16Module());
   return tezos;
-}
+};
 
-export const getNetworkTypeByEnvNetwork = (envNetwork: Network): NetworkType => {
-    switch (envNetwork) {
-    case "ithacanet":
-      return NetworkType.ITHACANET;
+export const getNetworkTypeByEnvNetwork = (
+  envNetwork: Network
+): NetworkType => {
+  switch (envNetwork) {
+    case "jakartanet":
+      return NetworkType.JAKARTANET;
 
     case "mainnet":
       return NetworkType.MAINNET;
@@ -52,7 +57,7 @@ export const getNetworkTypeByEnvNetwork = (envNetwork: Network): NetworkType => 
     default:
       return NetworkType.MAINNET;
   }
-}
+};
 
 export const connectWithBeacon = async (
   envNetwork: Network
@@ -69,12 +74,14 @@ export const connectWithBeacon = async (
     },
   });
 
-  const accounts: any[] = JSON.parse(localStorage.getItem("beacon:accounts") as string)
+  const accounts: any[] = JSON.parse(
+    localStorage.getItem("beacon:accounts") as string
+  );
 
-  const network = accounts[0].network.type as Network
+  const network = accounts[0].network.type as Network;
 
   return {
     network,
-    wallet
-  }
+    wallet,
+  };
 };

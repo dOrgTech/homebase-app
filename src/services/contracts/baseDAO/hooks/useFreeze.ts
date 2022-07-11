@@ -34,11 +34,15 @@ export const useFreeze = () => {
 
         if (!account) {
           tezosToolkit = await connect();
+          console.log("tezosToolkit: ", tezosToolkit);
         }
+        console.log("tezosToolkit: ", tezosToolkit);
+        console.log("{ network, tezos, account, connect }: ", { network, tezos, account, connect });
 
         const data = await (params.dao as BaseDAO)[
           params.freeze ? "freeze" : "unfreeze"
         ](params.amount, tezosToolkit);
+        console.log("data: ", data);
 
         mixpanel.track(`Tokens ${params.freeze? "Deposited": "Withdrawn"}`, {
           dao: params.dao.data.address,
