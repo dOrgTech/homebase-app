@@ -62,7 +62,12 @@ export const ChangeNetworkButton = () => {
 
   return (
     <>
-      <Button size={isMobileExtraSmall? "small": undefined} color="secondary" variant="outlined" onClick={handleClick}>
+      <Button
+        size={isMobileExtraSmall ? "small" : undefined}
+        color="secondary"
+        variant="outlined"
+        onClick={handleClick}
+      >
         {isMobileSmall ? "" : "Network: "}
         {network}
       </Button>
@@ -110,6 +115,17 @@ export const NetworkMenu: React.FC<
           <Grid item>
             <Typography variant="subtitle2" color="textSecondary">
               ITHACANET
+            </Typography>
+          </Grid>
+        </AddressMenuItem>
+        <AddressMenuItem
+          container
+          alignItems="center"
+          onClick={() => handleNetworkChange("devnet")}
+        >
+          <Grid item>
+            <Typography variant="subtitle2" color="textSecondary">
+              DEVNET
             </Typography>
           </Grid>
         </AddressMenuItem>

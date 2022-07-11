@@ -76,8 +76,17 @@ export const getTokenMetadata = async (
   tokenId: string
 ) => {
   console.log("API_URL: ", API_URL);
-  const url = `${API_URL}/tokens/${networkNameMap[network]}/metadata?contract=${contractAddress}&token_id=${tokenId}`;
+  let url;
+
+  console.log("network: ", network);
+  if (network === "devnet") {
+    url = `http://localhost:14000/v1/tokens/sandboxnet/metadata?contract=${contractAddress}&token_id=${tokenId}`;
+    console.log("url: ", url);
+  } else {
+    url = `${API_URL}/tokens/${networkNameMap[network]}/metadata?contract=${contractAddress}&token_id=${tokenId}`;
+  }
   const response = await fetch(url);
+  console.log("response: ", response);
   if (!response.ok) {
     throw new Error("Failed to fetch proposals from BakingBad API");
   }
