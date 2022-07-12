@@ -3,7 +3,7 @@ import { BlockchainStats } from "./types";
 
 const networkToUrlMap: Record<Network, string> = {
   mainnet: "",
-  ithacanet: "ithaca."
+  jakartanet: "jakarta."
 }
 
 export const getNetworkStats = async (
