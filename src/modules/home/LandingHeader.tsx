@@ -50,7 +50,7 @@ import {
             alignItems="center"
             wrap="wrap"
             spacing={4}
-            justify="space-between"
+            justifyContent="space-between"
           >
             <Grid item>
               <Link href="/landing">

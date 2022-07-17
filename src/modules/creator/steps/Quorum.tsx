@@ -227,7 +227,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
                 xs={7}
                 container
                 direction="row"
-                justify="flex-end"
+                justifyContent="flex-end"
               >
                 <Tooltip
                   placement="bottom"
@@ -265,7 +265,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
                 xs={7}
                 container
                 direction="row"
-                justify="space-around"
+                justifyContent="space-around"
               >
                 <ValueText color="textSecondary"> Min</ValueText>
                 <Tooltip
@@ -334,7 +334,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            justifyContent="center"
           >
             <GridItemCenter item xs={5}>
               <Field
@@ -382,7 +382,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            justifyContent="center"
           >
             <GridItemCenter item xs={5}>
               <Field
@@ -402,7 +402,7 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
               xs={7}
               container
               direction="row"
-              justify="space-around"
+              justifyContent="space-around"
             >
               <Tooltip
                 placement="bottom"

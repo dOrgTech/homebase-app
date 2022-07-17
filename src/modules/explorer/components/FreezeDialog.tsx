@@ -1,4 +1,4 @@
-import React, {useCallback} from "react";
+import React, {useCallback, useMemo} from "react";
 import {
   Grid,
   styled,
@@ -13,6 +13,8 @@ import {useDAO} from "services/indexer/dao/hooks/useDAO";
 import {ResponsiveDialog} from "./ResponsiveDialog";
 import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
 
 const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {
@@ -48,7 +50,14 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
   const [amount, setAmount] = React.useState<number>(0);
   const daoId = useDAOID();
   const {mutate} = useFreeze();
-  const {data: dao} = useDAO(daoId);
+  const {data: dao, ledger} = useDAO(daoId);
+  const { account } = useTezos();
+
+  const {data: tezosBalance} = useTezosBalance(account.toString());
+
+
+  const [showMax, setShowMax] = React.useState<boolean>(false);
+  const [max, setMax] = React.useState(0);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -71,6 +80,26 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
     }
   }, [amount, dao, mutate, freeze]);
 
+
+  useMemo(() => {
+    if (!ledger) {
+      return setShowMax(false);
+    } else {
+      console.log(tezosBalance?.toNumber());
+      console.log(account);
+      const userLedger = ledger.find(
+        (l) => l.holder.address.toLowerCase() === account.toLowerCase()
+      );
+      if (userLedger) {
+        setMax(userLedger.available_balance.toNumber());
+        return setShowMax(true);
+      }
+      console.log(userLedger);
+      return setShowMax(false);
+    }
+  }, [ledger, account, tezosBalance]);
+
+
   return (
     <div>
       <Button onClick={handleClickOpen} variant="contained" color="secondary">
@@ -90,7 +119,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
           <Grid item>
             <CustomLabelsContainer item container direction="row" justifyContent="space-between" alignItems="center">
               <CustomAmountLabel>Amount</CustomAmountLabel>
-              <CustomMaxLabel color="secondary">Use Max</CustomMaxLabel>
+             {showMax ? <CustomMaxLabel color="secondary" onClick={() => setAmount(max)}>Use Max</CustomMaxLabel> : null }
             </CustomLabelsContainer>
             <ProposalFormInput>
               <CustomInput
@@ -117,7 +146,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            justifyContent="center"
           >
             <Button
               variant="contained"

@@ -338,7 +338,7 @@ const GovernanceForm = ({
                 container
                 direction="row"
                 alignItems="center"
-                justify="center"
+                justifyContent="center"
               >
                 <GridItemCenter item xs={6}>
                   <Field
@@ -383,7 +383,7 @@ const GovernanceForm = ({
                 container
                 direction="row"
                 alignItems="center"
-                justify="center"
+                justifyContent="center"
               >
                 <GridItemCenter item xs={6}>
                   <Field
@@ -441,7 +441,7 @@ const GovernanceForm = ({
                 container
                 direction="row"
                 alignItems="center"
-                justify="center"
+                justifyContent="center"
               >
                 <GridItemCenter item xs={6}>
                   <Field
@@ -511,7 +511,7 @@ const GovernanceForm = ({
               container
               direction="row"
               alignItems="center"
-              justify="center"
+              justifyContent="center"
             >
               <GridItemCenter item xs={5}>
                 <Field
@@ -527,7 +527,7 @@ const GovernanceForm = ({
                 xs={7}
                 container
                 direction="row"
-                justify="space-around"
+                justifyContent="space-around"
               >
                 <Typography color="textSecondary">
                   {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
@@ -613,7 +613,7 @@ const GovernanceForm = ({
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            justifyContent="center"
           >
             <GridItemCenter item xs={5}>
               <Field
@@ -628,7 +628,7 @@ const GovernanceForm = ({
               xs={7}
               container
               direction="row"
-              justify="space-around"
+              justifyContent="space-around"
             >
               <ValueText color="textSecondary">Min. XTZ</ValueText>
               <Tooltip
@@ -648,7 +648,7 @@ const GovernanceForm = ({
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            justifyContent="center"
           >
             <GridItemCenter item xs={5}>
               <Field
@@ -663,7 +663,7 @@ const GovernanceForm = ({
               xs={7}
               container
               direction="row"
-              justify="space-around"
+              justifyContent="space-around"
             >
               <ValueText color="textSecondary">Max. XTZ </ValueText>
               <Tooltip

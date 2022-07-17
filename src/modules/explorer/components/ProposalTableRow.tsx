@@ -120,7 +120,7 @@ export const ProposalTableRow: React.FC<{ proposal: Proposal }> = ({
         container
         direction="row"
         alignItems="center"
-        justify="flex-end"
+        justifyContent="flex-end"
       >
         <>
           {status === ProposalStatus.ACTIVE ? (

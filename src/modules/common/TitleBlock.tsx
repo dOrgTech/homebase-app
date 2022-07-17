@@ -57,7 +57,7 @@ export const TitleBlock: React.FC<Props> = ({
   tooltipText = "",
 }) => {
   return (
-    <StyledGrid container direction="row" justify="space-between">
+    <StyledGrid container direction="row" justifyContent="space-between">
       <Grid item xs={12} container direction="row" alignItems="flex-end">
         <CustomTextContainer>
         <Typography variant="h3" color="textSecondary">

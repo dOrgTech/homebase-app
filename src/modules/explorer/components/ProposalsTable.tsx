@@ -80,7 +80,7 @@ export const ProposalsTable: React.FC<Props> = ({
       ) : null}
 
       {isLoading && (
-        <LoaderContainer container direction="row" justify="center">
+        <LoaderContainer container direction="row" justifyContent="center">
           <CircularProgress color="secondary" />
         </LoaderContainer>
       )}

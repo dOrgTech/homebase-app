@@ -25,7 +25,7 @@ export const SendButton: React.FC<ViewButtonProps> = ({
     <SendContainer
       container
       direction="row"
-      justify="center"
+      justifyContent="center"
       alignItems="center"
     >
       <StyledSendButton {...props}>{children}</StyledSendButton>
