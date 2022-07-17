@@ -26,6 +26,8 @@ const getSavedState = async (): Promise<TezosState> => {
       throw new Error ('No wallet address found')
     }
 
+    tezos.setProvider({ wallet });
+
     return {
       network,
       tezos,
