@@ -26,6 +26,23 @@ const CustomInput = styled(TextField)(({theme}) => ({
   },
 }));
 
+
+const CustomLabelsContainer = styled(Grid)({
+  marginBottom: 12
+});
+
+const CustomAmountLabel = styled(Typography)({
+  fontWeight: 500
+});
+
+const CustomMaxLabel = styled(Typography)({
+  fontSize: 16,
+  paddingBottom: 5,
+  textDecoration: "underline",
+  textUnderlineOffset: 6,
+  cursor: "pointer"
+});
+
 export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
@@ -71,7 +88,11 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
             </Typography>
           </Grid>
           <Grid item>
-            <ProposalFormInput label={"Amount"}>
+            <CustomLabelsContainer item container direction="row" justifyContent="space-between" alignItems="center">
+              <CustomAmountLabel>Amount</CustomAmountLabel>
+              <CustomMaxLabel color="secondary">Use Max</CustomMaxLabel>
+            </CustomLabelsContainer>
+            <ProposalFormInput>
               <CustomInput
                 value={amount}
                 type="number"
