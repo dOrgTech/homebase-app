@@ -3,10 +3,10 @@ import { BlockchainStats } from "./types";
 
 const networkToUrlMap: Record<Network, string> = {
   mainnet: "",
-  ithacanet: "ithaca.",
-  devnet: "ithaca.",
+  jakartanet: "jakarta.",
+  devnet: "jakarta.",
 };
-
+  
 export const getNetworkStats = async (
   network: Network
 ): Promise<BlockchainStats> => {

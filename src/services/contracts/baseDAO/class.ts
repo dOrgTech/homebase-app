@@ -89,7 +89,7 @@ export abstract class BaseDAO {
       console.log("metadata: ", metadata);
       let paramsNetwork: Network;
       if (network === "devnet") {
-        paramsNetwork = "ithacanet";
+        paramsNetwork = "jakartanet";
       } else {
         paramsNetwork = network;
       }

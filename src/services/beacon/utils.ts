@@ -1,13 +1,13 @@
-import { NetworkType } from "@airgap/beacon-sdk";
+import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 
-export type Network = "mainnet" | "ithacanet" | "devnet";
+export type Network = "mainnet" | "jakartanet" | "devnet";
 
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.smartpy.io",
-  ithacanet: "https://ithacanet.smartpy.io",
+  jakartanet: "https://jakartanet.ecadinfra.com",
   devnet: "http://localhost:20000",
 };
 
@@ -45,12 +45,10 @@ export const createTezos = (network: Network) => {
   return tezos;
 };
 
-export const getNetworkTypeByEnvNetwork = (
-  envNetwork: Network
-): NetworkType => {
-  switch (envNetwork) {
-    case "ithacanet":
-      return NetworkType.ITHACANET;
+export const getNetworkTypeByEnvNetwork = (envNetwork: Network): NetworkType => {
+    switch (envNetwork) {
+    case "jakartanet":
+      return NetworkType.JAKARTANET;
 
     case "mainnet":
       return NetworkType.MAINNET;
