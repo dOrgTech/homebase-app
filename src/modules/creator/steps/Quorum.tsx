@@ -167,8 +167,9 @@ const handleChange = (event: QuorumChange) => {
   return event.key === "." || event.key === "," ? event.preventDefault() : null;
 };
 
+
 //TODO: Remove any from this component
-const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
+const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
   const {
     dispatch,
     state: {
@@ -177,6 +178,15 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
   } = useContext(CreatorContext);
   const match = useRouteMatch();
   const history = useHistory();
+
+  const controlMaxFieldLimit = (field: string, value: any) => {
+    const itemValue = value.target.value.split(".");
+    if (itemValue[0] && itemValue[0].length > 18 || itemValue[1] && itemValue[1].length > 8 ) { 
+     return value.preventDefault();
+    }    
+    setFieldValue(field, value.target.value);
+  };
+  
 
   useEffect(() => {
     if (values) {
@@ -220,6 +230,10 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
                       <ValueText color="textSecondary">%</ValueText>
                     ),
                   }}
+                  onClick={() => setFieldTouched("quorumThreshold")}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("quorumThreshold", e)
+                  }
                 />
               </GridItemCenter>
               <GridItemCenterBottom
@@ -258,6 +272,10 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
                       <ValueText color="textSecondary">%</ValueText>
                     ),
                   }}
+                  onClick={() => setFieldTouched("minQuorumAmount")}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("minQuorumAmount", e)
+                  }
                 ></Field>
               </GridItemCenter>
               <GridItemCenter
@@ -292,6 +310,10 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
                       <ValueText color="textSecondary">%</ValueText>
                     ),
                   }}
+                  onClick={() => setFieldTouched("maxQuorumAmount")}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("maxQuorumAmount", e)
+                  }
                 ></Field>
               </GridItemCenter>
               <GridItemCenter item xs={7} container direction="row">
@@ -347,6 +369,10 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
                 InputProps={{
                   endAdornment: <ValueText color="textSecondary">%</ValueText>,
                 }}
+                onClick={() => setFieldTouched("quorumChange")}
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("quorumChange", e)
+                }
               />
             </GridItemCenter>
 
@@ -394,6 +420,10 @@ const QuorumForm = ({ submitForm, values, errors, touched }: any) => {
                 InputProps={{
                   endAdornment: <ValueText color="textSecondary">%</ValueText>,
                 }}
+                onClick={() => setFieldTouched("quorumMaxChange")}
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("quorumMaxChange", e)
+                }
               />
             </GridItemCenter>
 
@@ -456,7 +486,9 @@ export const Quorum: React.FC = () => {
       ></TitleBlock>
 
       <Formik
-        enableReinitialize
+        enableReinitialize={true}
+        validateOnChange={true}
+        validateOnBlur={false}
         validate={(values) => validateForm(values)}
         onSubmit={saveStepInfo}
         initialValues={quorumSettings}
@@ -468,6 +500,7 @@ export const Quorum: React.FC = () => {
           values,
           errors,
           touched,
+          setFieldTouched
         }) => {
           return (
             <Form style={{ width: "100%" }}>
@@ -478,6 +511,7 @@ export const Quorum: React.FC = () => {
                 errors={errors}
                 touched={touched}
                 values={values}
+                setFieldTouched={setFieldTouched}
               />
             </Form>
           );

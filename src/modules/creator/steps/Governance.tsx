@@ -174,7 +174,6 @@ const InfoBox = styled(Paper)({
 });
 
 const validateForm = (values: VotingSettings) => {
-  console.log("entra a validar")
   const errors: FormikErrors<VotingSettings> = {};
 
   Object.keys(values).forEach((key) => {
@@ -205,32 +204,22 @@ const validateForm = (values: VotingSettings) => {
   if (values.proposeStakeRequired <= 0) {
     errors.proposeStakeRequired = "Must be greater than 0";
   }
-  // if (values.proposeStakeRequired && values.proposeStakeRequired.toLocaleString().split(".")[1] && values.proposeStakeRequired.toLocaleString().split(".")[1].length  > 18) {
-  //   errors.proposeStakeRequired = "Only up to 18 decimals allow";
-  // }
-
-  if (values.proposeStakeRequired && values.proposeStakeRequired.toString().includes('e+')) {
-    errors.proposeStakeRequired = "Number too big";
-  }
-  
 
   if (values.maxXtzAmount <= 0) {
     errors.maxXtzAmount = "Must be greater than 0";
   }
 
-  if (values.maxXtzAmount.toString().length > 255) {
-    errors.maxXtzAmount = "Too big, number must be shorter";
+  if (values.minXtzAmount && String(values.maxXtzAmount).length > 255) {
+    errors.maxXtzAmount = "Too big, number must be smaller";
   }
 
-  if (values.minXtzAmount.toString().length > 255) {
-    errors.minXtzAmount = "Too big, number must be shorter";
+  if (values.minXtzAmount && String(values.minXtzAmount).length > 255) {
+    errors.minXtzAmount = "Too big, number must be smaller";
   }
 
   if (values.minXtzAmount > values.maxXtzAmount) {
     errors.maxXtzAmount = "Must be greater than Min. XTZ amount";
   }
-
-  console.log(errors);
 
   return errors;
 };
@@ -282,7 +271,7 @@ const GovernanceForm = ({
   setFieldValue,
   errors,
   touched,
-  setFieldTouched
+  setFieldTouched,
 }: any) => {
   const { network } = useTezos();
   const {
@@ -319,6 +308,14 @@ const GovernanceForm = ({
       }
     })();
   }, [network]);
+
+  const controlMaxFieldLimit = (field: string, value: any) => {
+      const itemValue = value.target.value.split(".");
+      if (itemValue[0] && itemValue[0].length > 18 || itemValue[1] && itemValue[1].length > 8 ) { 
+       return value.preventDefault();
+      }    
+      setFieldValue(field, value.target.value);
+  };
 
   useEffect(() => {
     if (values) {
@@ -535,13 +532,17 @@ const GovernanceForm = ({
             >
               <GridItemCenter item xs={5}>
                 <Field
-                  
                   name="proposeStakeRequired"
                   type="number"
                   placeholder="00"
-                  inputProps={{ min: 0, defaultValue: 0}}
+                  InputProps={{
+                    inputProps: { min: 0, defaultValue: 0, step: 0.01 },
+                  }}
                   component={TextField}
                   onClick={() => setFieldTouched("proposeStakeRequired")}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("proposeStakeRequired", e)
+                  }
                 />
               </GridItemCenter>
               <GridItemCenter
@@ -644,7 +645,9 @@ const GovernanceForm = ({
                 placeholder="00"
                 component={TextField}
                 onClick={() => setFieldTouched("minXtzAmount")}
-
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("minXtzAmount", e)
+                }
               />
             </GridItemCenter>
             <GridItemCenter
@@ -681,6 +684,9 @@ const GovernanceForm = ({
                 placeholder="00"
                 component={TextField}
                 onClick={() => setFieldTouched("maxXtzAmount")}
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("maxXtzAmount", e)
+                }
               />
             </GridItemCenter>
             <GridItemCenter
@@ -739,9 +745,9 @@ export const Governance: React.FC = () => {
       ></TitleBlock>
 
       <Formik
-         enableReinitialize={true}
-         validateOnChange={true}
-         validateOnBlur={false}
+        enableReinitialize={true}
+        validateOnChange={true}
+        validateOnBlur={false}
         validate={validateForm}
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
@@ -753,7 +759,7 @@ export const Governance: React.FC = () => {
           values,
           errors,
           touched,
-          setFieldTouched
+          setFieldTouched,
         }) => {
           return (
             <Form style={{ width: "100%" }}>
