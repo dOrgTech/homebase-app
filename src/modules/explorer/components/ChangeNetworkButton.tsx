@@ -30,7 +30,7 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
 export const networkDotColorMap: Record<Network, string> = {
   mainnet: "#9EEE5D",
   jakartanet: "#291F39",
-  devnet: "#291F79",
+  devnet: "#491F79",
 };
 
 export const ColorDot = styled(Box)({
