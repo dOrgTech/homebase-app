@@ -5,17 +5,30 @@ import {
   Tab,
   Tabs,
   useMediaQuery,
+  Theme,
   useTheme
 } from "@material-ui/core";
 
-const CustomTab = styled(Tab)({
-  flex: 1
-});
+const CustomTab = styled(Tab)(({ theme }) => ({
+  flex: 1,
+  opacity: 1,
+  paddingBottom: 12,
+  
+  "&:hover": {
+    color: theme.palette.secondary.main
+  }
+}));
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   paddingTop: "20px",
   boxShadow: "unset",
-  borderBottom: `2px solid ${theme.palette.primary.light}`
+  borderBottom: "1.5px solid #2b3030",
+  background: theme.palette.primary.dark,
+
+  "& .Mui-selected": {
+    color: theme.palette.secondary.main
+  },
+
 }));
 
 export const AppTabBar: React.FC<{

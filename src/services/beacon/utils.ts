@@ -78,3 +78,16 @@ export const connectWithBeacon = async (
     wallet
   }
 };
+
+const dAppClient = new DAppClient({
+  name: "Color Mode",
+});
+
+const theme = localStorage.getItem("theme");
+async function darkTheme() {
+  await dAppClient.setColorMode(
+    theme === "dark" ? ColorMode.DARK : ColorMode.DARK
+  );
+}
+
+darkTheme();

@@ -28,7 +28,7 @@ interface Props {
 }
 
 const Content = styled(Grid)({
-  padding: "10px 0",
+  
 });
 
 export const GuardianChangeProposalForm: React.FC<Props> = ({ open, handleClose, defaultValues }) => {
@@ -76,8 +76,8 @@ export const GuardianChangeProposalForm: React.FC<Props> = ({ open, handleClose,
         <Content container direction={"column"} style={{ gap: 18 }}>
           {dao && (
             <Grid item>
-              <Typography variant={"body2"} color={"inherit"}>
-                Current Guardian: {dao.data.guardian}
+              <Typography color={"inherit"} style={{ marginBottom: "7px"}}>
+                Current Guardian: <span style={{ fontWeight: 300, fontSize: "16px", marginLeft: "-5px" }}>{dao.data.guardian}</span>
               </Typography>
             </Grid>
           )}
@@ -102,7 +102,7 @@ export const GuardianChangeProposalForm: React.FC<Props> = ({ open, handleClose,
             <Typography align='left' variant='subtitle2' color='textPrimary' display={"inline"}>
               Proposal Fee:{" "}
             </Typography>
-            <Typography align='left' variant='subtitle2' color='secondary' display={"inline"}>
+            <Typography align='left' variant='subtitle2' color='secondary' display={"inline"} style={{ fontWeight: 300 }}>
               {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
             </Typography>
           </Grid>

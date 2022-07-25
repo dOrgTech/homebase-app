@@ -1,19 +1,16 @@
 import React from "react";
 import { styled, Grid } from "@material-ui/core";
 import { ViewButton, ViewButtonProps } from "./ViewButton";
+import { MainButton } from "modules/common/MainButton";
 
 const SendContainer = styled(Grid)(({ theme }) => ({
-  height: 80,
   [theme.breakpoints.down("sm")]: {
     height: 100,
   },
 }));
 
-const StyledSendButton = styled(ViewButton)(({ theme }) => ({
+const StyledSendButton = styled(MainButton)(({ theme }) => ({
   width: 101,
-  border: "1px",
-  background: theme.palette.secondary.main,
-  borderRadius: 4,
   color: "#1C1F23",
 }));
 

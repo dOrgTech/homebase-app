@@ -1,24 +1,29 @@
 import React from "react"
 import {useTheme, useMediaQuery, Dialog, styled, Grid, Typography, Theme} from "@material-ui/core";
 import {BottomSheet} from "./BottomSheet";
+import CloseButton from "modules/common/CloseButton";
 
 const Content = styled(Grid)({
-  padding: "41px 46px"
+  padding: "41px 46px",
 })
 
-const CloseButton = styled(Typography)({
-  fontWeight: 700,
-  cursor: "pointer",
-});
+// const CloseButton = styled(Typography)({
+//   fontWeight: 400,
+//   cursor: "pointer",
+//   lineHeight: ".6",
+//   verticalAlign: "top",
+//   display: "inline"
+// });
 
 const TitleText = styled(Typography)({
-  color: ({theme, customColor}: { theme: Theme, customColor?: string }) => customColor || theme.palette.text.primary
+  color: "#ffff",
+  fontWeight: 550,
+  lineHeight: ".80"
 })
 
 export const ResponsiveDialog: React.FC<{ open: boolean; onClose: () => void; title?: string; customTitleColor?: string }> = ({
                                                                                                                                 open,
                                                                                                                                 onClose,
-                                                                                                                                customTitleColor,
                                                                                                                                 title,
                                                                                                                                 children,
                                                                                                                               }) => {
@@ -29,16 +34,10 @@ export const ResponsiveDialog: React.FC<{ open: boolean; onClose: () => void; ti
       <Content container direction={"column"} style={{gap: 46}}>
         <Grid item container direction="row" wrap={"nowrap"} justifyContent={"space-between"}>
           <Grid item>
-            {title && <TitleText variant={"h4"} customColor={customTitleColor}>{title}</TitleText>}
+            <TitleText>{title}</TitleText>
           </Grid>
           <Grid item>
-            <CloseButton
-              color="textPrimary"
-              align="right"
-              onClick={onClose}
-            >
-              X
-            </CloseButton>
+            <CloseButton onClose={() => onClose()}/>
           </Grid>
         </Grid>
         <Grid item>
@@ -48,19 +47,13 @@ export const ResponsiveDialog: React.FC<{ open: boolean; onClose: () => void; ti
     </BottomSheet>
   ) : (
     <Dialog open={open} onClose={() => onClose()}>
-      <Content container direction={"column"} style={{gap: 46}}>
+      <Content container direction={"column"} style={{gap: 30}}>
         <Grid item container direction="row" wrap={"nowrap"} justifyContent={"space-between"}>
           <Grid item>
-            {title && <Typography variant={"h4"} color={"textPrimary"}>{title}</Typography>}
+            <TitleText color={"textPrimary"}>{title}</TitleText>
           </Grid>
           <Grid item>
-            <CloseButton
-              color="textPrimary"
-              align="right"
-              onClick={onClose}
-            >
-              x
-            </CloseButton>
+            <CloseButton onClose={() => onClose()} />
           </Grid>
         </Grid>
         <Grid item>
