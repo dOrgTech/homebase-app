@@ -13,6 +13,10 @@ import { TezosProvider } from "services/beacon";
 import { theme } from "theme";
 
 import * as puppeteer from "puppeteer";
+import { fromStateToBaseStorage } from "services/contracts/baseDAO";
+import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy";
+import { generateStorageContract } from "services/baseDAODocker";
+import baseDAOContractCode from "../services/contracts/baseDAO/michelson/baseDAO";
 
 const isDebugging = () => {
   const debugging_mode = {
@@ -179,9 +183,9 @@ let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 
 beforeAll(async () => {
-//   browser = await puppeteer.launch(isDebugging());
-//   page = await browser.newPage();
-//   await page.setViewport({ width: 1366, height: 768 });
+  // browser = await puppeteer.launch(isDebugging());
+  // page = await browser.newPage();
+  // await page.setViewport({ width: 1366, height: 768 });
   await initTezosToolKit(bobPrivKey);
 }, 5000000);
 
@@ -195,10 +199,6 @@ const setTezosSignerProvider = async (pk: string) => {
   const signer = await InMemorySigner.fromSecretKey(pk);
   Tezos.setProvider({ signer });
 };
-
-it("should be true", async () => {
-    expect(true).toBe(true)
-})
 
 // it("Creates a DAO and returns address", async () => {
 //   await setTezosSignerProvider(bobPrivKey);
@@ -241,58 +241,58 @@ it("should be true", async () => {
 //   expect(address).not.toBe(null);
 // }, 500000);
 
-// it("Creates a DAO based on given parameters", async () => {
-//   await setTezosSignerProvider(bobPrivKey);
-//   const treasuryParams = fromStateToBaseStorage(params);
+it("Creates a DAO based on given parameters", async () => {
+  await setTezosSignerProvider(bobPrivKey);
+  const treasuryParams = fromStateToBaseStorage(params);
 
-//   const metadata = await deployMetadataCarrier({
-//     ...metadataParams,
-//     tezos: Tezos,
-//   });
+  const metadata = await deployMetadataCarrier({
+    ...metadataParams,
+    tezos: Tezos,
+  });
 
-//   if (!metadata) {
-//     console.log(
-//       "Error deploying treasury DAO: There's not address of metadata"
-//     );
-//     return;
-//   }
+  if (!metadata) {
+    console.log(
+      "Error deploying treasury DAO: There's not address of metadata"
+    );
+    return;
+  }
 
-//   const account = await Tezos.wallet.pkh();
+  const account = await Tezos.wallet.pkh();
 
-//   const storageCode = await generateStorageContract({
-//     network,
-//     template: "registry",
-//     storage: treasuryParams,
-//     originatorAddress: account,
-//     metadata,
-//   });
+  const storageCode = await generateStorageContract({
+    network,
+    template: "registry",
+    storage: treasuryParams,
+    originatorAddress: account,
+    metadata,
+  });
 
-//   await setTezosSignerProvider(bobPrivKey);
-//   const t = Tezos.wallet.originate({
-//     code: baseDAOContractCode,
-//     init: storageCode,
-//   });
+  await setTezosSignerProvider(bobPrivKey);
+  const t = Tezos.wallet.originate({
+    code: baseDAOContractCode,
+    init: storageCode,
+  });
 
-//   const operation = await t.send();
-//   console.log("Waiting for confirmation on DAO contract...", t);
+  const operation = await t.send();
+  console.log("Waiting for confirmation on DAO contract...", t);
 
-//   const { address } = await operation.contract();
-//   console.log("address: ", address);
+  const { address } = await operation.contract();
+  console.log("address: ", address);
 
-//   expect(address).not.toBe(null);
+  expect(address).not.toBe(null);
 
-//   const daoContract = await Tezos.wallet.at(address);
+  const daoContract = await Tezos.wallet.at(address);
 
-//   const contractStorage = await daoContract.storage();
-//   // console.log("contractStorage: ", contractStorage);
-//   // console.log("addressContract: ", addressContract);
-//   expect(contractStorage).not.toBe(null);
-//   if (contractStorage instanceof Object) {
-//     expect((contractStorage as any).governance_token.address).toBe(
-//       params.orgSettings.governanceToken.address
-//     );
-//   }
-// }, 500000);
+  const contractStorage = await daoContract.storage();
+  console.log("contractStorage: ", contractStorage);
+  // console.log("addressContract: ", addressContract);
+  expect(contractStorage).not.toBe(null);
+  if (contractStorage instanceof Object) {
+    expect((contractStorage as any).governance_token.address).toBe(
+      params.orgSettings.governanceToken.address
+    );
+  }
+}, 500000);
 
 // const customRender = (ui: any, { ...renderOptions }) => {
 //   return render(

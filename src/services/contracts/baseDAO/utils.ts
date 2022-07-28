@@ -61,3 +61,5 @@ export const calculateCycleInfo = (originationTime: string, votingPeriod: number
 export const unpackExtraNumValue = (bytes: string): BigNumber => {
   return new BigNumber((unpackDataBytes({ bytes }) as { int: string }).int);
 };
+
+console.log("asdfadsfadsf", unpackExtraNumValue("0500909c01").toString())
