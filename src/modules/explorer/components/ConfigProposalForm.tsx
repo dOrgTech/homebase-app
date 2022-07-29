@@ -34,9 +34,9 @@ interface Props {
 // });
 
 export const ConfigProposalForm: React.FC<Props> = ({
-                                                      open,
-                                                      handleClose,
-                                                    }) => {
+  open,
+  handleClose,
+}) => {
   const daoId = useDAOID();
   const {data: dao} = useDAO(daoId);
   const {data: daoHoldings} = useDAOHoldings(daoId);
