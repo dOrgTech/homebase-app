@@ -12,7 +12,7 @@ import {useParams} from "react-router";
 import {useAgoraTopic} from "services/agora/hooks/useTopic";
 import {BaseDAO} from "services/contracts/baseDAO";
 import {useDropProposal} from "services/contracts/baseDAO/hooks/useDropProposal";
-import {toShortAddress} from "services/contracts/utils";
+import {formatUnits, parseUnits, toShortAddress} from "services/contracts/utils";
 import {useDAO} from "services/indexer/dao/hooks/useDAO";
 import {useProposal} from "services/indexer/dao/hooks/useProposal";
 import {ContentContainer} from "../../components/ContentContainer";
@@ -171,6 +171,20 @@ export const ProposalDetails: React.FC = () => {
     (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
     proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
     proposal.voters.some(({ address }) => address.toLowerCase() === account.toLowerCase())
+
+  const parseReadableConfigValue = (configKey: keyof Proposal["metadata"]["config"], value: BigNumber) => {
+    if(dao){
+      switch (configKey) {
+        case "frozen_extra_value":
+          return parseUnits(value, dao.data.token.decimals).toString();
+        case "slash_scale_value":
+          return 100 - value.toNumber();
+    
+        default:
+          return value.toString()
+      }
+    }
+  }
 
   return (
     <>
@@ -413,7 +427,7 @@ export const ProposalDetails: React.FC = () => {
                             variant="body1" color="secondary"
                             display={"inline"}>{getReadableConfig(key as keyof Proposal["metadata"]["config"])}
                           </Typography> to <Typography
-                            variant="body1" color="secondary" display={"inline"}>{value.toString()}</Typography>
+                            variant="body1" color="secondary" display={"inline"}>{parseReadableConfigValue(key as keyof Proposal["metadata"]["config"], value)}</Typography>
                           </DetailsText>
                         </Grid>
                       </HighlightedBadge>
