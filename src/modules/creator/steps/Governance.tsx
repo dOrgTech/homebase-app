@@ -209,6 +209,14 @@ const validateForm = (values: VotingSettings) => {
     errors.maxXtzAmount = "Must be greater than 0";
   }
 
+  if (values.minXtzAmount && String(values.maxXtzAmount).length > 255) {
+    errors.maxXtzAmount = "Too big, number must be smaller";
+  }
+
+  if (values.minXtzAmount && String(values.minXtzAmount).length > 255) {
+    errors.minXtzAmount = "Too big, number must be smaller";
+  }
+
   if (values.minXtzAmount > values.maxXtzAmount) {
     errors.maxXtzAmount = "Must be greater than Min. XTZ amount";
   }
@@ -263,6 +271,7 @@ const GovernanceForm = ({
   setFieldValue,
   errors,
   touched,
+  setFieldTouched,
 }: any) => {
   const { network } = useTezos();
   const {
@@ -299,6 +308,14 @@ const GovernanceForm = ({
       }
     })();
   }, [network]);
+
+  const controlMaxFieldLimit = (field: string, value: any) => {
+      const itemValue = value.target.value.split(".");
+      if (itemValue[0] && itemValue[0].length > 18 || itemValue[1] && itemValue[1].length > 8 ) { 
+       return value.preventDefault();
+      }    
+      setFieldValue(field, value.target.value);
+  };
 
   useEffect(() => {
     if (values) {
@@ -518,8 +535,14 @@ const GovernanceForm = ({
                   name="proposeStakeRequired"
                   type="number"
                   placeholder="00"
-                  inputProps={{ min: 0, defaultValue: 0 }}
+                  InputProps={{
+                    inputProps: { min: 0, defaultValue: 0, step: 0.01 },
+                  }}
                   component={TextField}
+                  onClick={() => setFieldTouched("proposeStakeRequired")}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("proposeStakeRequired", e)
+                  }
                 />
               </GridItemCenter>
               <GridItemCenter
@@ -621,6 +644,10 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                onClick={() => setFieldTouched("minXtzAmount")}
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("minXtzAmount", e)
+                }
               />
             </GridItemCenter>
             <GridItemCenter
@@ -656,6 +683,10 @@ const GovernanceForm = ({
                 type="number"
                 placeholder="00"
                 component={TextField}
+                onClick={() => setFieldTouched("maxXtzAmount")}
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("maxXtzAmount", e)
+                }
               />
             </GridItemCenter>
             <GridItemCenter
@@ -714,7 +745,9 @@ export const Governance: React.FC = () => {
       ></TitleBlock>
 
       <Formik
-        enableReinitialize
+        enableReinitialize={true}
+        validateOnChange={true}
+        validateOnBlur={false}
         validate={validateForm}
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
@@ -726,6 +759,7 @@ export const Governance: React.FC = () => {
           values,
           errors,
           touched,
+          setFieldTouched,
         }) => {
           return (
             <Form style={{ width: "100%" }}>
@@ -736,6 +770,7 @@ export const Governance: React.FC = () => {
                 errors={errors}
                 touched={touched}
                 values={values}
+                setFieldTouched={setFieldTouched}
               />
             </Form>
           );
