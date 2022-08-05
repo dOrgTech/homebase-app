@@ -502,8 +502,6 @@ export const DaoSettings = (): JSX.Element => {
         validateOnChange={true}
         validateOnBlur={false}
         validate={validateForm}
-        validateOnChange
-        validateOnBlur
         onSubmit={saveStepInfo}
         initialValues={orgSettings}
       >

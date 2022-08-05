@@ -85,8 +85,6 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
     if (!ledger) {
       return setShowMax(false);
     } else {
-      console.log(tezosBalance?.toNumber());
-      console.log(account);
       const userLedger = ledger.find(
         (l) => l.holder.address.toLowerCase() === account.toLowerCase()
       );
@@ -94,10 +92,9 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
         setMax(userLedger.available_balance.toNumber());
         return setShowMax(true);
       }
-      console.log(userLedger);
       return setShowMax(false);
     }
-  }, [ledger, account, tezosBalance]);
+  }, [ledger, account]);
 
 
   return (
