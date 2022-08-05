@@ -14,7 +14,7 @@ export const theme = createTheme({
     primary: {
       main: "#2F3438",
       dark: "#1C1F23",
-      light: "#41484d",
+      light: "#383e43",
     },
     secondary: {
       main: "#81FEB7",
@@ -387,6 +387,11 @@ export const theme = createTheme({
         background: "rgba(125,140,139, 0.2) !important"
       },
     },
+    MuiPaper: {
+      rounded: {
+        borderRadius: "8px",
+      }
+    }
   },
 });
 

@@ -112,7 +112,7 @@ const ErrorText = styled(Typography)({
 });
 
 const DaoSettingsForm = withRouter(
-  ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+  ({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -171,6 +171,10 @@ const DaoSettingsForm = withRouter(
                 placeholder="KT1...."
                 name="governanceToken.address"
                 component={CustomFormikTextField}
+                onClick={() => setFieldTouched("governanceToken.address")}
+                inputProps={{
+                  maxLength: 36
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
@@ -320,9 +324,14 @@ const DaoSettingsForm = withRouter(
             <CustomInputContainer>
               <Field
                 name="administrator"
+                maxLength={10}
                 type="text"
+                onClick={() => setFieldTouched("administrator")}
                 placeholder="tz1PXn...."
                 component={CustomFormikTextField}
+                inputProps={{
+                  maxLength: 36
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
@@ -334,7 +343,7 @@ const DaoSettingsForm = withRouter(
                 }}
               ></Field>
             </CustomInputContainer>
-            {errors.administrator && touched.administrator ? (
+            {errors.administrator  && touched.administrator ? (
               <ErrorText>{errors.administrator}</ErrorText>
             ) : null}
           </Grid>
@@ -353,6 +362,10 @@ const DaoSettingsForm = withRouter(
                 type="text"
                 placeholder="tz1PXn...."
                 component={CustomFormikTextField}
+                onClick={() => setFieldTouched("guardian")}
+                inputProps={{
+                  maxLength: 36
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
@@ -378,6 +391,7 @@ const isInvalidKtOrTzAddress = (address: string) =>
   validateContractAddress(address) !== 3 && validateAddress(address) !== 3;
 
 const validateForm = (values: OrgSettings) => {
+
   const errors: FormikErrors<OrgSettings> = {};
 
   if (!values.name) {
@@ -438,7 +452,7 @@ const validateForm = (values: OrgSettings) => {
       address: "Could not find token",
     };
   }
-
+  console.log(errors);
   return errors;
 };
 
@@ -484,7 +498,9 @@ export const DaoSettings = (): JSX.Element => {
       ></TitleBlock>
 
       <Formik
-        enableReinitialize
+        enableReinitialize={true}
+        validateOnChange={true}
+        validateOnBlur={false}
         validate={validateForm}
         validateOnChange
         validateOnBlur
@@ -498,6 +514,7 @@ export const DaoSettings = (): JSX.Element => {
           values,
           errors,
           touched,
+          setFieldTouched
         }) => {
           return (
             <Form style={{ width: "100%" }}>
@@ -508,6 +525,7 @@ export const DaoSettings = (): JSX.Element => {
                 errors={errors}
                 touched={touched}
                 values={values}
+                setFieldTouched={setFieldTouched}
               />
             </Form>
           );

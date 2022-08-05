@@ -27,10 +27,17 @@ import {useDAOID} from "../pages/DAO/router";
 
 export type Asset = Token | { symbol: "XTZ" };
 
-const AmountText = styled(Typography)({
-  color: "rgba(255, 255, 255, 0.7)",
+const AmountText = styled(Typography)(({theme}) => ({
+  color: theme.palette.secondary.main,
   fontSize: 14,
   lineHeight: "146.3%",
+  marginRight: 10,
+}));
+
+const DAOBalanceText = styled(Typography)({
+  color: "#ffff",
+  fontSize: 14,
+  lineHeight: "100%",
   marginRight: 10,
 });
 
@@ -61,7 +68,7 @@ const AutoCompleteField = styled(Autocomplete)({
 });
 
 const DaoBalance = styled(Grid)({
-  minHeight: 50,
+  height: 20,
 });
 
 const CurrentAsset = styled(Typography)({
@@ -159,7 +166,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const currentAssetBalance = daoAssets.find(asset => asset.token.symbol === currentTransfer.asset?.symbol)
 
   return (
-    <DialogContent>
+    <DialogContent style={{paddingBottom: 29}}>
       <Grid container direction={"column"} style={{gap: 31}}>
         <Grid item>
           <BatchBar isBatch={isBatch} stateIsBatch={values.transferForm.isBatch}
@@ -279,7 +286,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                     justifyContent="space-between"
                   >
                     <Grid item xs={6}>
-                      <AmountText>DAO Balance</AmountText>
+                      <DAOBalanceText>DAO Balance</DAOBalanceText>
                     </Grid>
                     <Grid item xs={6}>
                       {daoAssets ? (

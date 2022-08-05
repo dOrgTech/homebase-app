@@ -35,9 +35,7 @@ import {
 import {Token} from "models/Token";
 import {useDAOID} from "../pages/DAO/router";
 import {ProposalFormInput} from "./ProposalFormInput";
-import {
-  ProposalFormResponsiveDialog,
-} from "./ResponsiveDialog";
+import { ProposalFormResponsiveDialog } from "./ResponsiveDialog";
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -203,7 +201,7 @@ export const ProposalFormContainer: React.FC<Props> = ({
               </TabPanel>
             ))}
 
-            <Content container direction={"column"} style={{gap: 18}}>
+            <Content container direction={"column"} style={{gap: 10}}>
               <Grid item>
                 <ProposalFormInput label={"Agora Post ID"}>
                   <Controller
@@ -234,13 +232,14 @@ export const ProposalFormContainer: React.FC<Props> = ({
                   variant="subtitle2"
                   color="secondary"
                   display={"inline"}
+                  style={{fontWeight: 300}}
                 >
                   {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
                   {dao ? dao.data.token.symbol : ""}
                 </Typography>
               </Grid>
 
-              <SendButton
+              <SendButton style={{ margin: "10px 0 35px 0"}}
                 onClick={methods.handleSubmit(onSubmit as any)}
                 disabled={!dao || !daoHoldings}
               >

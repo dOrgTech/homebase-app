@@ -10,6 +10,7 @@ import { styled } from "@material-ui/core/styles";
 import { ContentContainer } from "../explorer/components/ContentContainer";
 import Accordion from "@material-ui/core/Accordion";
 import Markdown from "modules/common/Markdown";
+
 const TableContainer = styled(ContentContainer)({
   width: "100%",
 });
@@ -40,7 +41,7 @@ export const FAQItem = ({
       <Grid container direction="column" wrap="nowrap">
         <Accordion style={{background: "transparent"}}>
           <AccordionHeader
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon style={{fill: "rgb(65, 72, 77)"}} />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
