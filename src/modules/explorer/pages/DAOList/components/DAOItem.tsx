@@ -151,12 +151,12 @@ export const DAOItem: React.FC<{
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
   
   return (
-    <Link underline="none" href={`dao/${dao.id}`}>
+    <Link underline="none" href={`dao/${dao.id}`} id={`dao-${dao.id}`}>
       <Container container justifyContent="space-between">
         <SectionNames>
         <Grid>
-          <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
-          <NameText color="textPrimary">{dao.name}</NameText>
+          <SymbolText id="dao-symbol" color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
+          <NameText id="dao-name" color="textPrimary">{dao.name}</NameText>
           </Grid>
         </SectionNames>
         <Grid>

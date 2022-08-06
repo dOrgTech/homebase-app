@@ -236,6 +236,7 @@ export const DAOList: React.FC = () => {
                 container
                 style={{ gap: 18 }}
                 justifyContent={isMobileSmall ? "center" : "flex-start"}
+                id="daos-grid"
               >
                 {!account ? (
                   <ConnectMessage />

@@ -271,13 +271,18 @@ export abstract class BaseDAO {
     tezos: TezosToolkit
   ) {
     const contract = await getContract(tezos, this.data.address);
-    const proposalMetadata = await BaseDAO.encodeProposalMetadata(
-      {
-        configuration_proposal: {
-          frozen_extra_value: configParams.frozen_extra_value,
-          slash_scale_value: configParams.slash_scale_value,
-        },
-      },
+
+    let formatted_frozen_extra_value: number | undefined;
+
+    if (configParams.frozen_extra_value) {
+      formatted_frozen_extra_value = formatUnits(new BigNumber(configParams.frozen_extra_value.toString()), this.data.token.decimals).toNumber()
+    }
+    
+    const proposalMetadata = await BaseDAO.encodeProposalMetadata({
+      configuration_proposal: {
+        frozen_extra_value: formatted_frozen_extra_value,
+        slash_scale_value: configParams.slash_scale_value
+      }},
       proposeCode,
       tezos
     );

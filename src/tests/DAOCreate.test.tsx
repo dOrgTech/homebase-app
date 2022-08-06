@@ -12,6 +12,8 @@ import { Router } from "react-router-dom";
 import { TezosProvider } from "services/beacon";
 import { theme } from "theme";
 
+import { bobPrivKey, alicePrivKey, network, url, metadataParams, params } from "./constants";
+
 import * as puppeteer from "puppeteer";
 
 const isDebugging = () => {
@@ -23,107 +25,6 @@ const isDebugging = () => {
 };
 
 let Tezos: TezosToolkit;
-
-const bobPrivKey = "edsk3RFfvaFaxbHx8BMtEW1rKQcPtDML3LXjNqMNLCzC3wLC1bWbAt";
-const alicePrivKey = "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq";
-
-const network = "devnet";
-
-const url = "http://localhost:3000";
-
-const metadataParams: any = {
-  keyName: "metadataKey",
-  metadata: {
-    frozenToken: {
-      name: "Test DAO",
-      symbol: "TEST",
-      description: "This is the DAO",
-      governanceToken: {
-        address: "KT1QVMpfK12j9v8wy8s4v2EK3EHHH8jvisnW",
-        tokenId: "0",
-        tokenMetadata: {
-          contract: "KT1QVMpfK12j9v8wy8s4v2EK3EHHH8jvisnW",
-          level: 717794,
-          token_id: 0,
-          symbol: "TEST",
-          name: "Test",
-          decimals: 18,
-          network: "ithacanet",
-          supply: "1e+25",
-        },
-      },
-      administrator: "tz1LCFwczMiEuNHcMvpqgNzzEs8f4FNBgyNK",
-      guardian: "tz1LCFwczMiEuNHcMvpqgNzzEs8f4FNBgyNK",
-      decimals: 18,
-    },
-    unfrozenToken: {
-      name: "Test DAO",
-      symbol: "TEST",
-      description: "This is the DAO",
-      governanceToken: {
-        address: "KT1QVMpfK12j9v8wy8s4v2EK3EHHH8jvisnW",
-        tokenId: "0",
-        tokenMetadata: {
-          contract: "KT1QVMpfK12j9v8wy8s4v2EK3EHHH8jvisnW",
-          level: 717794,
-          token_id: 0,
-          symbol: "TEST",
-          name: "Test",
-          decimals: 18,
-          network: "ithacanet",
-          supply: "1e+25",
-        },
-      },
-      administrator: "tz1LCFwczMiEuNHcMvpqgNzzEs8f4FNBgyNK",
-      guardian: "tz1LCFwczMiEuNHcMvpqgNzzEs8f4FNBgyNK",
-      decimals: 18,
-    },
-    description: "This is the DAO",
-    authors: ["tz1LCFwczMiEuNHcMvpqgNzzEs8f4FNBgyNK"],
-    template: "registry",
-  },
-};
-
-const params: MigrationParams = {
-  template: "registry",
-  orgSettings: {
-    name: "Test DAO",
-    symbol: "TEST",
-    description: "This is the DAO",
-    governanceToken: {
-      address: "KT1QVMpfK12j9v8wy8s4v2EK3EHHH8jvisnW",
-      tokenId: "0",
-      tokenMetadata: {
-        contract: "KT1QVMpfK12j9v8wy8s4v2EK3EHHH8jvisnW",
-        level: 717794,
-        token_id: 0,
-        symbol: "TEST",
-        name: "Test",
-        decimals: 18,
-        network: "ithacanet",
-        supply: "1e+25",
-      },
-    },
-    administrator: "tz1LCFwczMiEuNHcMvpqgNzzEs8f4FNBgyNK",
-    guardian: "tz1LCFwczMiEuNHcMvpqgNzzEs8f4FNBgyNK",
-  },
-  votingSettings: {
-    votingBlocks: 10,
-    proposeStakeRequired: 5,
-    returnedTokenPercentage: 25,
-    minXtzAmount: 5,
-    maxXtzAmount: 10,
-    proposalFlushBlocks: 18,
-    proposalExpiryBlocks: 22,
-  },
-  quorumSettings: {
-    quorumThreshold: 2,
-    minQuorumAmount: 1,
-    maxQuorumAmount: 99,
-    quorumChange: 5,
-    quorumMaxChange: 19,
-  },
-};
 
 // const queryClient = new QueryClient({
 //   defaultOptions: {
@@ -195,10 +96,6 @@ const setTezosSignerProvider = async (pk: string) => {
   const signer = await InMemorySigner.fromSecretKey(pk);
   Tezos.setProvider({ signer });
 };
-
-it("should be true", async () => {
-    expect(true).toBe(true)
-})
 
 // it("Creates a DAO and returns address", async () => {
 //   await setTezosSignerProvider(bobPrivKey);
@@ -330,7 +227,7 @@ it("should be true", async () => {
 //     await page.goto(url + "/creator/dao");
 //     await page.waitForSelector(`input[name="governanceToken.address"]`);
 
-//     const governanceTokenAddress = "KT1QVMpfK12j9v8wy8s4v2EK3EHHH8jvisnW";
+//     const governanceTokenAddress = "KT1RZ51CPGAtg3J4QB4HWZ2WitiAj5fandMx";
 //     const daoName = "Test DAO";
 //     const symbol = "TDAO";
 //     const description = "This is Test DAO";

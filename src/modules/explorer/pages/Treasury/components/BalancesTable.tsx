@@ -220,6 +220,7 @@ const DesktopBalancesTable: React.FC<TableProps> = ({
                 color="secondary"
                 onClick={() => openTokenTransferModal(row.address)}
                 disabled={shouldDisable}
+                id={`transfer-${row.address}`}
               >
                 Transfer
               </SmallButton>

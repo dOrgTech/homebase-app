@@ -30,7 +30,7 @@ export const getDAOBalances = async (
   offset = 0,
   balances: DAOBalance[] = []
 ): Promise<DAOBalance[]> => {
-  const url = `${API_URL}/account/${networkNameMap[network]}/${daoId}/token_balances?size=${ELEMENTS_PER_REQUEST}&offset=${offset}`;
+  const url = `${"http://localhost:14000/v1"}/account/sandboxnet/${daoId}/token_balances?size=${ELEMENTS_PER_REQUEST}&offset=${offset}`;
 
   const response = await fetch(url);
 
@@ -92,7 +92,9 @@ export const getTokenMetadata = async (
   }
 
   const resultingTokens: DAOToken[] = await response.json();
+  console.log("resultingTokens: ", resultingTokens);
   const result = resultingTokens[0];
+  console.log("result: ", result);
 
   return isNFTDTO(result) ? new NFT(result) : new Token(result);
 };

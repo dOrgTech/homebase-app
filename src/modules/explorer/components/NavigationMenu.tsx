@@ -248,7 +248,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({
     <Container container>
       <InnerContainer container>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item>
+        <PageItem key={`page-${i}`} id={`page-${page.name}`} isSelected={pathId === page.pathId} item>
           <Link to={page.href}>
             <PageItemBg isSelected={pathId === page.pathId} container>
               <Grid item>
