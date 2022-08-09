@@ -34,6 +34,10 @@ export interface BaseDAOData {
   id: number;
   admin: string;
   address: string;
+  dao_type?:{
+    id: number;
+    name: string;
+  } 
   frozen_token_id: number;
   token: Token;
   guardian: string;

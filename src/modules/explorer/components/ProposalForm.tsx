@@ -85,6 +85,20 @@ const enabledForms: Record<DAOTemplate,
       component: () => <UpdateRegistryDialog/>,
     },
   ],
+  lambda: [
+    {
+      label: "TRANSFER FUNDS",
+      component: () => <NewTreasuryProposalDialog/>,
+    },
+    {
+      label: "TRANSFER NFTs",
+      component: () => <NFTTransferForm/>,
+    },
+    {
+      label: "UPDATE REGISTRY",
+      component: () => <UpdateRegistryDialog/>,
+    },
+  ],
   '':  []
 };
 

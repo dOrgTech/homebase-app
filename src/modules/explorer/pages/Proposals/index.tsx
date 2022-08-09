@@ -18,6 +18,7 @@ import {ProposalSelectionMenu} from "../../components/ProposalSelectionMenu";
 import {useDropAllExpired} from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired";
 import { SmallButton } from '../../../common/SmallButton';
 import { MainButton } from '../../../common/MainButton';
+import { ProposalSelectionMenuLambda } from "modules/explorer/components/ProposalSelectionMenuLambda";
 
 
 const HeroContainer = styled(ContentContainer)({
@@ -42,6 +43,7 @@ export const DropButton = styled(Button)({
 
 export const Proposals: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [openModalLambda, setOpenModalLambda] = useState(false);
   const daoId = useDAOID();
   const { data, cycleInfo } = useDAO(daoId);
   const { mutate } = useFlush();
@@ -74,11 +76,11 @@ export const Proposals: React.FC = () => {
   }, [data, dropAllExpired, expiredProposals]);
 
   const onCloseModal = () => {
-    setOpenModal(false);
+    data?.data.dao_type?.name === "registry" ?  setOpenModalLambda(false) : setOpenModal(false);
   };
 
   const handleProposalModal = () => {
-    setOpenModal(true);
+    data?.data.dao_type?.name === "registry" ?  setOpenModalLambda(true) : setOpenModal(true);
   };
 
   return (
@@ -126,6 +128,7 @@ export const Proposals: React.FC = () => {
               </Grid>
             </Grid>
             <Grid item>
+
               <MainButton
                 variant="contained"
                 color="secondary"
@@ -169,6 +172,7 @@ export const Proposals: React.FC = () => {
       {/*  handleClose={onCloseModal}*/}
       {/*/>*/}
       <ProposalSelectionMenu open={openModal} handleClose={onCloseModal}/>
+      <ProposalSelectionMenuLambda open={openModalLambda} handleClose={onCloseModal} />
     </>
   );
 };
