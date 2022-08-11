@@ -40,7 +40,7 @@ export const TableStatusBadge: React.FC<
   { status: ProposalStatus } & GridProps
 > = ({ status, ...props }) => (
   <Badge status={status} {...props}>
-    <Grid container alignItems="center" justify="center">
+    <Grid container alignItems="center" justifyContent="center">
       <Grid item>
         <Typography> {status.toUpperCase()} </Typography>
       </Grid>

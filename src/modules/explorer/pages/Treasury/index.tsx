@@ -75,7 +75,7 @@ export const Treasury: React.FC = () => {
             {dao && (
               <CopyAddress
                 address={dao.data.address}
-                justify={isMobileSmall ? "center" : "flex-start"}
+                justifyContent={isMobileSmall ? "center" : "flex-start"}
                 typographyProps={{
                   variant: "subtitle2",
                 }}
@@ -112,7 +112,7 @@ export const Treasury: React.FC = () => {
             {dao && (
               <CopyAddress
                 address={dao.data.address}
-                justify={isMobileSmall ? "center" : "flex-start"}
+                justifyContent={isMobileSmall ? "center" : "flex-start"}
                 typographyProps={{
                   variant: "subtitle2",
                 }}

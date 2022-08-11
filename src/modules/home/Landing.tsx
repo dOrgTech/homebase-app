@@ -113,7 +113,7 @@ export const Landing: React.FC = () => {
             <MainContainer item>
               <Grid
                 container
-                justify="space-between"
+                justifyContent="space-between"
                 direction={isExtraSmall ? "column-reverse" : "row"}
                 style={isExtraSmall ? { gap: 50 } : {}}
               >
@@ -168,7 +168,7 @@ export const Landing: React.FC = () => {
                     container
                     direction="column"
                     alignItems="flex-end"
-                    justify="center"
+                    justifyContent="center"
                     style={{ gap: 20 }}
                   >
                     {isExtraSmall && (

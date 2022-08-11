@@ -30,7 +30,7 @@ const CustomContainer = styled(Grid)({
 export const ClaimName: React.FC = () => {
   return (
     <>
-      <Grid container direction="row" justify="space-between">
+      <Grid container direction="row" justifyContent="space-between">
         <Grid item xs={6}>
           <Typography variant="h2">Claim a name</Typography>
         </Grid>

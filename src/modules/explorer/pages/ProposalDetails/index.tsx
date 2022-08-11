@@ -402,7 +402,7 @@ export const ProposalDetails: React.FC = () => {
                       direction={isMobileSmall ? "column" : "row"}
                     >
                       <HighlightedBadge
-                        justify="center"
+                        justifyContent="center"
                         alignItems="center"
                         direction="row"
                         container
@@ -432,7 +432,7 @@ export const ProposalDetails: React.FC = () => {
                       direction={isMobileSmall ? "column" : "row"}
                     >
                       <HighlightedBadge
-                        justify="center"
+                        justifyContent="center"
                         alignItems="center"
                         direction="row"
                         container

@@ -25,7 +25,7 @@ export const ConnectWallet: React.FC = () => {
   const { connect } = useTezos();
 
   return (
-    <PageContainer container justify="flex-start" alignItems="center">
+    <PageContainer container justifyContent="flex-start" alignItems="center">
       <Grid item>
         <SpacingTitle align="left" variant="h3" color="textSecondary">
           Connect your wallet

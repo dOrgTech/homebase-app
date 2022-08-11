@@ -128,7 +128,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
           container
           alignItems="center"
           wrap="wrap"
-          justify={"space-between"}
+          justifyContent={"space-between"}
         >
           <Grid item>
             <Box onClick={() => history.push("/explorer")}>
@@ -148,14 +148,14 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
           <Grid item>
             <Grid
               container
-              justify={isMobileExtraSmall ? "center" : "flex-end"}
+              justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
             >
               {account ? (
                 <Grid
                   container
                   alignItems="center"
                   style={{ gap: 12 }}
-                  justify={isMobileExtraSmall ? "center" : "flex-end"}
+                  justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
                 >
                   {children}
                   <Grid item>
@@ -171,7 +171,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
                           container
                           alignItems="center"
                           wrap="nowrap"
-                          justify="flex-end"
+                          justifyContent="flex-end"
                           style={{ gap: 8 }}
                         >
                           <Grid item>
@@ -190,7 +190,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
               ) : (
                 <Grid
                   container
-                  justify="flex-end"
+                  justifyContent="flex-end"
                   alignItems="center"
                   wrap="nowrap"
                   style={{ gap: 8 }}

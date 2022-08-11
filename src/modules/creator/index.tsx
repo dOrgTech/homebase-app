@@ -173,7 +173,7 @@ export const DAOCreate: React.FC = () => {
           </ProgressContainer>
         )}
 
-        <Grid item xs={12} md={9} container justify="center" alignItems="baseline">
+        <Grid item xs={12} md={9} container justifyContent="center" alignItems="baseline">
           <Grid
             container
             direction="column"
@@ -181,7 +181,7 @@ export const DAOCreate: React.FC = () => {
             style={{ width: "100%", marginBottom: 20 }}
           >
             <Grid item style={{ width: "100%" }} xs>
-              <StepContentContainer item container justify="center">
+              <StepContentContainer item container justifyContent="center">
                 <StepRouter />
               </StepContentContainer>
             </Grid>

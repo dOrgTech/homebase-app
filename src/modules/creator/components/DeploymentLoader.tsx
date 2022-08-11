@@ -132,7 +132,7 @@ export const DeploymentLoader: React.FC<Props> = ({
 
   return (
     <StyledContainer >
-      <Grid container justify="center">
+      <Grid container justifyContent="center">
         <Grid item>
           <WaitingText variant="subtitle1" color="textSecondary">
             {showActiveText

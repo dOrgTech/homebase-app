@@ -83,7 +83,7 @@ export const VoteDialog: React.FC<{ support: boolean; open: boolean; onClose: ()
             container
             direction="row"
             alignItems="center"
-            justify="center"
+            justifyContent="center"
           >
             <Button
               variant="contained"
