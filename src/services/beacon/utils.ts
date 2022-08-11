@@ -1,8 +1,6 @@
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
-import mixpanel from "mixpanel-browser";
-import React, { createContext, useEffect, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
 import { Network } from "./context";
 
