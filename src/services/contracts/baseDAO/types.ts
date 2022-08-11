@@ -104,17 +104,11 @@ export interface BaseStorageParams {
   proposalExpiryPeriod: number;
 }
 
-export type Token = {
-  name: string;
-  symbol: string;
-  decimals: number;
-};
-
 export interface MetadataStorageState {
   keyName: string;
   metadata: {
-    frozenToken: Token;
-    unfrozenToken: Token;
+    frozenToken: string;
+    unfrozenToken: string;
   };
 }
 

@@ -36,20 +36,14 @@ export const Review: React.FC = () => {
     () => ({
       keyName: "metadataKey",
       metadata: {
-        frozenToken,
-        unfrozenToken,
+        frozenToken: { name: unfrozenToken, symbol: unfrozenToken, decimals: 18 },
+        unfrozenToken: { name: frozenToken, symbol: frozenToken, decimals: 18 },
         description: info.orgSettings.description,
         authors: [info.orgSettings.administrator],
         template: state.data.template,
       },
     }),
-    [
-      frozenToken,
-      info.orgSettings.administrator,
-      info.orgSettings.description,
-      state.data.template,
-      unfrozenToken,
-    ]
+    [info.orgSettings.administrator, info.orgSettings.description, state.data.template, unfrozenToken, frozenToken]
   );
 
   const {

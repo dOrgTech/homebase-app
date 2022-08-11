@@ -49,8 +49,6 @@ const DAORouteContent: React.FC = ({ children }) => {
   const [state, setState] = useState<DAOState>(DAOState.FOUND);
   const history = useHistory();
 
-  console.log(history)
-
   useEffect(() => {
     (async () => {
       if (!data && !!error) {

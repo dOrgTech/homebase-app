@@ -1,5 +1,5 @@
-import {BigNumber} from "bignumber.js";
-import {Extra, TransferParams} from "..";
+import { BigNumber } from "bignumber.js";
+import { Extra, TransferParams } from "..";
 
 export interface RegistryItem {
   key: string;
@@ -20,6 +20,13 @@ export interface RegistryExtra extends Extra {
 export interface RegistryProposeArgs {
   transfer_proposal: {
     transfers: TransferParams[];
+    registry_diff: RegistryItem[];
+  };
+  agoraPostId: number;
+}
+export interface RegistryBatchProposeArgs {
+  transfer_proposal: {
+    transfersBatches: TransferParams[][];
     registry_diff: RegistryItem[];
   };
   agoraPostId: number;
@@ -372,26 +379,32 @@ interface ConfigProposalDTO {
   slash_scale_value?: string;
 }
 
-export type PMBaseProposal = {
-  configuration_proposal: ConfigProposalDTO
-} | {
-  update_guardian: string;
-}
+export type PMBaseProposal =
+  | {
+      configuration_proposal: ConfigProposalDTO;
+    }
+  | {
+      update_guardian: string;
+    };
 
-export type PMTreasuryProposal = PMBaseProposal | {
-  transfer_proposal: {
-    agora_post_id: string;
-    transfers: (PMXTZTransferType | PMFA2TransferType)[];
-  }
-}
+export type PMTreasuryProposal =
+  | PMBaseProposal
+  | {
+      transfer_proposal: {
+        agora_post_id: string;
+        transfers: (PMXTZTransferType | PMFA2TransferType)[];
+      };
+    };
 
-export type PMRegistryProposal = PMBaseProposal | {
-  transfer_proposal: {
-    agora_post_id: string;
-    registry_diff: {
-      "0": string;
-      "1": string;
-    }[];
-    transfers: (PMXTZTransferType | PMFA2TransferType)[];
-  };
-}
+export type PMRegistryProposal =
+  | PMBaseProposal
+  | {
+      transfer_proposal: {
+        agora_post_id: string;
+        registry_diff: {
+          "0": string;
+          "1": string;
+        }[];
+        transfers: (PMXTZTransferType | PMFA2TransferType)[];
+      };
+    };

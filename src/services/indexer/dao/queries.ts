@@ -19,6 +19,7 @@ export const GET_DAOS_QUERY = gql`
       network
       period
       staked
+      admin
       start_level
       token {
         contract
@@ -50,6 +51,7 @@ export const GET_DAO_QUERY = gql`
       governance_token_id
       guardian
       id
+      admin
       last_updated_cycle
       ledgers {
         id

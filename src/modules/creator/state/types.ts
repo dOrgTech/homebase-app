@@ -2,7 +2,6 @@ import { Token } from "models/Token";
 
 export type OrgSettings = {
   name: string;
-  symbol: string;
   description: string;
   administrator: string;
   guardian: string;

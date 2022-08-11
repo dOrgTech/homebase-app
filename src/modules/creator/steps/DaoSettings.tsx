@@ -207,7 +207,7 @@ const DaoSettingsForm = withRouter(
             </MetadataContainer>
           )}
 
-          <Grid item xs={isMobile ? 12 : 9}>
+          <Grid item xs={12}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               DAO Name{" "}
@@ -232,37 +232,6 @@ const DaoSettingsForm = withRouter(
             </CustomInputContainer>
             {errors.name && touched.name ? (
               <ErrorText>{errors.name}</ErrorText>
-            ) : null}
-          </Grid>
-
-          <Grid item xs={isMobile ? 12 : 3}>
-            <Typography variant="subtitle1" color="textSecondary">
-              {" "}
-              Token Symbol{" "}
-            </Typography>
-            <CustomInputContainer>
-              <Field
-                name="symbol"
-                type="text"
-                inputProps={{
-                  style: { textTransform: "uppercase" },
-                  maxLength: 6,
-                }}
-                placeholder="MYTOK"
-                component={CustomFormikTextField}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="start">
-                      <Tooltip placement="bottom" title="Token symbol info">
-                        <InfoIconInput color="secondary" />
-                      </Tooltip>
-                    </InputAdornment>
-                  ),
-                }}
-              ></Field>
-            </CustomInputContainer>
-            {errors.symbol && touched.symbol ? (
-              <ErrorText>{errors.symbol}</ErrorText>
             ) : null}
           </Grid>
         </SecondContainer>
@@ -369,10 +338,6 @@ const validateForm = (values: OrgSettings) => {
     errors.name = "Required";
   }
 
-  if (!values.symbol) {
-    errors.symbol = "Required";
-  }
-
   if (!values.description) {
     errors.description = "Required";
   }
@@ -461,7 +426,7 @@ export const DaoSettings = (): JSX.Element => {
         </Grid>
         <Grid item xs={12}>
           <CustomTypography variant="subtitle1" color="textSecondary">
-            These settings will define the name, symbol, and initial
+            These settings will define the name and initial
             distribution of your token. You will need a pre-existing FA2 token
             to use as governance token. To deploy your own governance token you
             can go{" "}

@@ -100,11 +100,6 @@ export const Summary = (): JSX.Element => {
 
         <SecondContainer container direction="row">
           <Grid item xs={12}>
-            <TitleSpacing color="secondary" variant="subtitle1">
-              {state.data.orgSettings.symbol}
-            </TitleSpacing>
-          </Grid>
-          <Grid item xs={12}>
             <TitleSpacing color="textSecondary" variant="h3">
               {state.data.orgSettings.name}
             </TitleSpacing>

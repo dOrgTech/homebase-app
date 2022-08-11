@@ -13,13 +13,12 @@ const deploymentStatus = {
   successful: false,
 };
 
-const LOCAL_STORAGE_KEY = "creatorParams";
+export const CREATOR_LOCAL_STORAGE_KEY = "creatorParams";
 
 export const INITIAL_MIGRATION_STATE: MigrationParams = {
   template: "treasury",
   orgSettings: {
     name: "",
-    symbol: "",
     description: "",
     governanceToken: {
       address: "",
@@ -112,7 +111,7 @@ export const reducer = (
       };
       return state;
     case ActionTypes.CLEAR_CACHE:
-      window.localStorage.removeItem(LOCAL_STORAGE_KEY);
+      window.localStorage.removeItem(CREATOR_LOCAL_STORAGE_KEY);
       state = {
         ...INITIAL_STATE,
         deploymentStatus: {
@@ -135,7 +134,7 @@ export const reducer = (
 
 const CreatorProvider: React.FC = ({ children }) => {
   const [data, updateCache] = useLocalStorage<MigrationParams>(
-    LOCAL_STORAGE_KEY,
+    CREATOR_LOCAL_STORAGE_KEY,
     INITIAL_STATE.data
   );
 

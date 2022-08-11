@@ -12,6 +12,7 @@ import {Ledger} from "services/indexer/types";
 import {Expr, Parser} from "@taquito/michel-codec";
 import {Schema} from "@taquito/michelson-encoder";
 import proposeCode from "./registryDAO/michelson/propose"
+import { BatchWalletOperation } from "@taquito/taquito/dist/types/wallet/batch-operation";
 
 interface DeployParams {
   params: MigrationParams;
@@ -274,4 +275,5 @@ export abstract class BaseDAO {
   }
 
   public abstract propose(...args: any[]): Promise<TransactionWalletOperation>;
+  public abstract batchPropose(...args: any[]): Promise<BatchWalletOperation>;
 }
