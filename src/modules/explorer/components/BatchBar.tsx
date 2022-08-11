@@ -77,7 +77,7 @@ export const BatchBar = ({isBatch, handleIsBatchChange, onClickAdd, items, activ
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <SwitchContainer item xs={12} justify="flex-end">
+          <SwitchContainer item xs={12} justifyContent="flex-end">
             <Switch
               type="checkbox"
               onChange={handleIsBatchChange}

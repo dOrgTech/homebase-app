@@ -236,7 +236,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
 
             {isLoading ? (
               <>
-                <Grid container direction="row" justify="center">
+                <Grid container direction="row" justifyContent="center">
                   <CircularProgress color="secondary" />
                 </Grid>
               </>
@@ -249,7 +249,7 @@ export const UpVotesDialog: React.FC<UpVotesDialogData> = ({
                       {votes.length !== 1 ? " addresses" : " address"}
                     </Typography>
                   </Grid>
-                  <Grid item xs={6} container justify="flex-end">
+                  <Grid item xs={6} container justifyContent="flex-end">
                     <Typography variant="subtitle1" color="textSecondary">
                       Votes
                     </Typography>

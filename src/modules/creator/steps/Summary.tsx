@@ -136,7 +136,7 @@ export const Summary = (): JSX.Element => {
       <Grid
         container
         direction="row"
-        justify="space-between"
+        justifyContent="space-between"
         style={{ height: "fit-content" }}
       >
         <TitleBlock

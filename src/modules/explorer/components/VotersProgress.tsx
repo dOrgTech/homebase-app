@@ -83,7 +83,7 @@ export const VotersProgress: React.FC<VotersData> = ({
           container
           direction="row"
           alignItems="baseline"
-          justify="flex-start"
+          justifyContent="flex-start"
         >
           <Grid
             item
@@ -131,7 +131,7 @@ export const VotersProgress: React.FC<VotersData> = ({
             container
             direction="row"
             alignItems="center"
-            justify="flex-end"
+            justifyContent="flex-end"
           >
             <Button
               variant={"contained"}

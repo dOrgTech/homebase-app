@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
           container
           alignItems="center"
           wrap="wrap"
-          justify={"space-between"}
+          justifyContent={"space-between"}
         >
           <Grid item>
             <Link href="/landing">
