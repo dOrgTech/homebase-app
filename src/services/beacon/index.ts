@@ -1,10 +1,10 @@
-import { NetworkType } from "@airgap/beacon-types";
+import { NetworkType } from "@airgap/beacon-sdk";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { Network } from "services/beacon/context";
 
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.smartpy.io",
-  jakartanet: "https://jakartanet.smartpy.io",
+  hangzhounet: "https://hangzhounet.smartpy.io"
 };
 
 export const connectWithBeacon = async (
@@ -21,8 +21,8 @@ export const connectWithBeacon = async (
   });
 
   switch (envNetwork) {
-    case "jakartanet":
-      networkType = NetworkType.JAKARTANET;
+    case "hangzhounet":
+      networkType = NetworkType.HANGZHOUNET;
       break;
 
     case "mainnet":

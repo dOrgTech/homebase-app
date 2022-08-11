@@ -155,7 +155,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
       ]
     : [];
 
-  const assetOptions = daoAssets.filter((a) => a.token.symbol).map((a) => a.token)
+  const assetOptions = daoAssets.map((a) => a.token);
   const currentAssetBalance = daoAssets.find(asset => asset.token.symbol === currentTransfer.asset?.symbol)
 
   return (
