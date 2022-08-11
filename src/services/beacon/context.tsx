@@ -4,8 +4,9 @@ import { Tzip16Module } from "@taquito/tzip16";
 import mixpanel from "mixpanel-browser";
 import React, { createContext, useEffect, useReducer } from "react";
 import { rpcNodes } from "services/beacon";
+import { createTezos, createWallet, getTezosNetwork } from "./utils";
 
-export type Network = "mainnet" | "hangzhounet" | "ithacanet";
+export type Network = "mainnet" | "jakartanet"
 
 interface TezosState {
   network: Network;
@@ -58,6 +59,30 @@ export const TezosContext = createContext<TezosProvider>({
   dispatch: () => {},
 });
 
+const getSavedState = async (): Promise<TezosState> => {
+  try {
+    const network = getTezosNetwork()
+    const tezos = createTezos(network)
+    const wallet = createWallet()
+    const activeAccount = await wallet.client.getActiveAccount()
+
+    if (!activeAccount?.address) {
+      throw new Error ('No wallet address found')
+    }
+
+    tezos.setProvider({ wallet });
+
+    return {
+      network,
+      tezos,
+      wallet,
+      account: activeAccount.address,
+    }
+  } catch (error) {
+    return INITIAL_STATE
+  }
+}
+
 interface UpdateTezos {
   type: "UPDATE_TEZOS";
   payload: {
@@ -100,6 +125,16 @@ export const TezosProvider: React.FC = ({ children }) => {
   useEffect(() => {
     mixpanel.register({ Network: INITIAL_STATE.network });
   }, []);
+
+  useEffect(() => {
+    getSavedState()
+      .then((tezosState) => {
+          dispatch({
+            type: "UPDATE_TEZOS",
+            payload: tezosState,
+          });
+      })
+  }, [])
 
   return (
     <TezosContext.Provider value={{ state, dispatch }}>

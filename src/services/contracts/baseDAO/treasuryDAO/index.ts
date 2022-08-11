@@ -24,7 +24,10 @@ export class TreasuryDAO extends BaseDAO {
       .toString();
   }
 
-  public propose = async ({ agoraPostId, transfers }: TreasuryProposeArgs, tezos: TezosToolkit) => {
+  public propose = async (
+    { agoraPostId, transfers }: TreasuryProposeArgs,
+    tezos: TezosToolkit
+    ) => {
     const contract = await getContract(tezos, this.data.address);
 
     const michelsonType = parser.parseData(proposeCode);
