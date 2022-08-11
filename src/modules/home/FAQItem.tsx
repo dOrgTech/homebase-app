@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { styled } from "@material-ui/styles";
+import { styled } from "@material-ui/core/styles";
 import { ContentContainer } from "../explorer/components/ContentContainer";
 import Accordion from "@material-ui/core/Accordion";
 import Markdown from "modules/common/Markdown";
@@ -15,16 +15,19 @@ const TableContainer = styled(ContentContainer)({
   width: "100%",
 });
 
-const AccordionHeader = styled(AccordionSummary)({
+const AccordionHeader = styled(AccordionSummary)(({ theme }) => ({
   minHeight: 40,
-  padding: "20px 40px",
-  background: "rgb(47, 52, 56)",
-});
-const AccordionContent = styled(AccordionDetails)({
+  padding: "20px 38px",
+  background: theme.palette.primary.main,
+  borderRadius: "8px",
+}));
+
+const AccordionContent = styled(AccordionDetails)(({ theme }) => ({
   flexDirection: "column",
-  padding: "35px 40px",
-  background: "rgb(47, 52, 56)",
-});
+  padding: "38px 38px",
+  background: theme.palette.primary.light,
+  borderRadius: "0 0 8px 8px",
+}));
 
 export const FAQItem = ({
   question,
@@ -36,9 +39,9 @@ export const FAQItem = ({
   return (
     <TableContainer>
       <Grid container direction="column" wrap="nowrap">
-        <Accordion>
+        <Accordion style={{background: "transparent"}}>
           <AccordionHeader
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<ExpandMoreIcon style={{fill: "rgb(65, 72, 77)"}} />}
             aria-controls="panel1a-content"
             id="panel1a-header"
           >

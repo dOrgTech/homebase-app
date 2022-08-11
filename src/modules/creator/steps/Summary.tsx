@@ -1,55 +1,107 @@
-import { Box, Grid, styled, Typography } from "@material-ui/core";
+import {
+  Box,
+  Grid,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { ActionTypes, CreatorContext } from "modules/creator/state";
-
-const CustomTypography = styled(Typography)({
-  marginTop: 10,
-});
+import { TitleBlock } from "modules/common/TitleBlock";
+import { toShortAddress } from "services/contracts/utils";
 
 const SecondContainer = styled(Grid)({
-  marginTop: 25,
+  marginTop: 42,
+  background: "#2F3438",
+  borderRadius: 8,
+  padding: "26px 48px",
+  boxSizing: "border-box",
+});
+
+const ThirdContainer = styled(Grid)({
+  marginTop: 42,
+  background: "#2F3438",
+  borderRadius: 8,
+  boxSizing: "border-box",
+});
+
+const ThirdContainerFirstRow = styled(Grid)({
+  padding: "19px 48px",
+  borderBottom: "0.3px solid #7D8C8B",
+  alignItems: "center",
+  display: "flex",
+  maxHeight: 70,
+  ["@media (max-width:1167px)"]: {
+    padding: "12px 15px",
+    maxHeight: "inherit",
+  },
+});
+
+const ThirdContainerLastRow = styled(Grid)({
+  padding: "19px 48px",
+  alignItems: "center",
+  display: "flex",
+  maxHeight: 70,
+  ["@media (max-width:1167px)"]: {
+    padding: "12px 15px",
+    maxHeight: "inherit",
+  },
+});
+
+const ThirdContainerRow = styled(Grid)({
+  borderBottom: "0.3px solid #7D8C8B",
+  padding: "24px 48px",
+  maxHeight: 70,
+  ["@media (max-width:1167px)"]: {
+    padding: "12px 15px",
+    maxHeight: "inherit",
+  },
+});
+
+const ThirdContainerSpecialRow = styled(Grid)({
+  borderBottom: "0.3px solid #7D8C8B",
+  borderTop: "0.3px solid #7D8C8B",
+  padding: "24px 48px",
+  maxHeight: 70,
+  ["@media (max-width:1167px)"]: {
+    padding: "12px 15px",
+    maxHeight: "inherit",
+  },
+});
+
+const FirstContainer = styled(Grid)({
+  background: "#2F3438",
+  borderRadius: 8,
+  padding: "22px 48px",
+  boxSizing: "border-box",
+  marginTop: 4,
 });
 
 const TitleSpacing = styled(Typography)({
-  marginTop: 12,
+  marginTop: 8,
 });
 
-const ContainerSpacing = styled(Typography)({
-  marginTop: 24,
-});
-
-const ContainerSpacingButton = styled(Typography)({
-  marginTop: 24,
-  cursor: "pointer",
-});
-
-const ContainerButton = styled(Typography)(({ theme }) => ({
-  paddingBottom: 8,
-  marginTop: 24,
-  borderBottom: `1px solid ${theme.palette.primary.light}`,
-  cursor: "pointer",
-}));
-
-const AdminContainer = styled(Grid)(({ theme }) => ({
-  border: `1px solid ${theme.palette.primary.light}`,
+const DescriptionSpacing = styled(Typography)({
   marginTop: 16,
-  padding: "16px 18px",
-}));
+});
+
+const ContainerEdit = styled(Typography)({
+  cursor: "pointer",
+});
 
 const AdminAddress = styled(Typography)({
   wordBreak: "break-all",
 });
 
-const UnderlinedGrid = styled(Grid)(({ theme }) => ({
-  borderBottom: `1px solid ${theme.palette.primary.light}`,
-  padding: 2,
-}));
-
 export const Summary = (): JSX.Element => {
   const { dispatch, state } = useContext(CreatorContext);
   const history = useHistory();
   const match = useRouteMatch();
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const goToVoting = () => {
     history.push(`voting`);
@@ -70,39 +122,45 @@ export const Summary = (): JSX.Element => {
         handler: () => {
           history.push(`review`);
         },
-        text: "LAUNCH",
+        text: "Launch",
       },
       back: {
         handler: () => history.push(`quorum`),
-        text: "BACK",
+        text: "Back",
       },
     });
   }, [dispatch, history, match.path, match.url]);
 
   return (
-    <Box maxWidth={650}>
+    <Box>
       <Grid
         container
         direction="row"
         justify="space-between"
         style={{ height: "fit-content" }}
       >
-        <Grid item xs={12}>
-          <Typography variant="h3" color="textSecondary">
-            Review information
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <CustomTypography variant="body1" color="textSecondary">
-            Review your settings to ensure you’ve made the correct choices.
-          </CustomTypography>
-        </Grid>
+        <TitleBlock
+          title={"Review information"}
+          description={
+            "Review your settings to ensure you’ve made the correct choices."
+          }
+        ></TitleBlock>
 
-        <SecondContainer container direction="row">
+        <FirstContainer container direction="row">
           <Grid item xs={12}>
-            <TitleSpacing color="secondary" variant="subtitle1">
-              {state.data.orgSettings.symbol}
-            </TitleSpacing>
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TitleSpacing color="secondary" variant="subtitle1">
+                {state.data.orgSettings.symbol}
+              </TitleSpacing>
+              <ContainerEdit color="secondary" onClick={goToSettings}>
+                Edit
+              </ContainerEdit>
+            </Grid>
           </Grid>
           <Grid item xs={12}>
             <TitleSpacing color="textSecondary" variant="h3">
@@ -110,408 +168,382 @@ export const Summary = (): JSX.Element => {
             </TitleSpacing>
           </Grid>
           <Grid item xs={12}>
-            <TitleSpacing color="textSecondary" variant="body1">
+            <DescriptionSpacing color="textSecondary" variant="body1">
               {state.data.orgSettings.description}
-            </TitleSpacing>
+            </DescriptionSpacing>
           </Grid>
-        </SecondContainer>
+        </FirstContainer>
 
-        <SecondContainer container direction="row">
-          <Grid item xs={6}>
-            <ContainerSpacing color="textSecondary" variant="subtitle1">
-              DAO SETTINGS
-            </ContainerSpacing>
-          </Grid>
-          <Grid item xs={6}>
-            <ContainerSpacingButton
-              color="secondary"
-              variant="subtitle1"
-              align="right"
-              onClick={goToSettings}
+        <ThirdContainer container direction="row">
+          <ThirdContainerFirstRow item xs={12}>
+            <Grid
+              container
+              direction={isMobile ? "column" : "row"}
+              alignItems={isMobile ? "baseline" : "center"}
+              justifyContent="space-between"
             >
-              EDIT
-            </ContainerSpacingButton>
-          </Grid>
+              <TitleSpacing color="textSecondary" variant="subtitle1">
+                DAO SETTINGS
+              </TitleSpacing>
+              <ContainerEdit color="secondary" onClick={goToSettings}>
+                Edit
+              </ContainerEdit>
+            </Grid>
+          </ThirdContainerFirstRow>
 
-          <Grid item xs={12}>
-            <AdminContainer container direction="row" alignItems="center">
-              <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle1" color="textSecondary">
+          <ThirdContainerRow item xs={12}>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={5}>
+                <Typography variant="subtitle2" color="textSecondary">
                   Administrator
                 </Typography>
               </Grid>
-              <Grid item xs={6} sm={9}>
+              <Grid item xs={7}>
                 <AdminAddress
-                  variant="subtitle1"
+                  variant="subtitle2"
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.orgSettings.administrator}
+                  {isMobile
+                    ? toShortAddress(state.data.orgSettings.administrator)
+                    : state.data.orgSettings.administrator}
                 </AdminAddress>
               </Grid>
-            </AdminContainer>
-          </Grid>
+            </Grid>
+          </ThirdContainerRow>
 
-          <Grid item xs={12}>
-            <AdminContainer container direction="row" alignItems="center">
-              <Grid item xs={6} sm={3}>
-                <Typography variant="subtitle1" color="textSecondary">
+          <ThirdContainerRow item xs={12}>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={5}>
+                <Typography variant="subtitle2" color="textSecondary">
                   Guardian
                 </Typography>
               </Grid>
-              <Grid item xs={6} sm={9}>
+              <Grid item xs={7}>
                 <AdminAddress
-                  variant="subtitle1"
+                  variant="subtitle2"
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.orgSettings.guardian}
+                  {isMobile
+                    ? toShortAddress(state.data.orgSettings.guardian)
+                    : state.data.orgSettings.guardian}
                 </AdminAddress>
               </Grid>
-            </AdminContainer>
-          </Grid>
-        </SecondContainer>
+            </Grid>
+          </ThirdContainerRow>
 
-        <Grid item xs={12}>
-          <UnderlinedGrid item container direction="row" alignItems="center">
-            <Grid item xs={6} sm={5}>
-              <Typography variant="body2" color="textSecondary">
-                Governance Token Address
-              </Typography>
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={5}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Governance Token Address
+                </Typography>
+              </Grid>
+              <Grid item xs={7}>
+                <AdminAddress
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {isMobile
+                    ? toShortAddress(
+                        state.data.orgSettings.governanceToken.address
+                      )
+                    : state.data.orgSettings.governanceToken.address}
+                </AdminAddress>
+              </Grid>
             </Grid>
-            <Grid item xs={6} sm={7}>
-              <AdminAddress
-                variant="subtitle1"
-                color="textSecondary"
-                align="right"
-              >
-                {state.data.orgSettings.governanceToken.address}
-              </AdminAddress>
-            </Grid>
-          </UnderlinedGrid>
-        </Grid>
+          </ThirdContainerRow>
 
-        <Grid item xs={12}>
-          <UnderlinedGrid item container direction="row" alignItems="center">
-            <Grid item xs={5}>
-              <Typography variant="body2" color="textSecondary">
-                Governance Token ID
-              </Typography>
+          <ThirdContainerLastRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={5}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Governance Token ID
+                </Typography>
+              </Grid>
+              <Grid item xs={7}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.orgSettings.governanceToken.tokenId}
+                </Typography>
+              </Grid>
             </Grid>
-            <Grid item xs={7}>
-              <Typography
-                variant="subtitle1"
-                color="textSecondary"
-                align="right"
-              >
-                {state.data.orgSettings.governanceToken.tokenId}
-              </Typography>
-            </Grid>
-          </UnderlinedGrid>
-        </Grid>
+          </ThirdContainerLastRow>
+        </ThirdContainer>
 
-        <SecondContainer container direction="row">
-          <Grid item xs={6}>
-            <ContainerSpacing color="textSecondary" variant="subtitle1">
-              PROPOSAL & VOTING SETTINGS
-            </ContainerSpacing>
-          </Grid>
-          <Grid item xs={6}>
-            <ContainerButton
-              color="secondary"
-              variant="subtitle1"
-              align="right"
-              onClick={goToVoting}
+        <ThirdContainer container direction="row">
+          <ThirdContainerFirstRow item xs={12}>
+            <Grid
+              container
+              direction={isMobile ? "column" : "row"}
+              alignItems={isMobile ? "baseline" : "center"}
+              justifyContent="space-between"
             >
-              EDIT
-            </ContainerButton>
-          </Grid>
+              <TitleSpacing color="textSecondary" variant="subtitle1">
+                PROPOSAL & VOTING SETTINGS
+              </TitleSpacing>
+              <ContainerEdit color="secondary" onClick={goToVoting}>
+                Edit
+              </ContainerEdit>
+            </Grid>
+          </ThirdContainerFirstRow>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
                   Voting Period Duration
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <Typography
-                  variant="subtitle1"
+                  variant="subtitle2"
                   color="textSecondary"
                   align="right"
                 >
                   {state.data.votingSettings.votingBlocks} blocks
                 </Typography>
               </Grid>
-            </UnderlinedGrid>
-          </Grid>
+            </Grid>
+          </ThirdContainerRow>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
                   Flush Delay Duration
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <Typography
-                  variant="subtitle1"
+                  variant="subtitle2"
                   color="textSecondary"
                   align="right"
                 >
                   {state.data.votingSettings.proposalFlushBlocks} blocks
                 </Typography>
               </Grid>
-            </UnderlinedGrid>
-          </Grid>
+            </Grid>
+          </ThirdContainerRow>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
                   Proposal blocks to expire
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <Typography
-                  variant="subtitle1"
+                  variant="subtitle2"
                   color="textSecondary"
                   align="right"
                 >
                   {state.data.votingSettings.proposalExpiryBlocks} blocks
                 </Typography>
               </Grid>
-            </UnderlinedGrid>
-          </Grid>
+            </Grid>
+          </ThirdContainerRow>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
                   Stake required to propose
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <Typography
-                  variant="subtitle1"
+                  variant="subtitle2"
                   color="textSecondary"
                   align="right"
                 >
                   {state.data.votingSettings.proposeStakeRequired} locked tokens
                 </Typography>
               </Grid>
-            </UnderlinedGrid>
-          </Grid>
+            </Grid>
+          </ThirdContainerRow>
 
-          <Grid item xs={12}>
-            <UnderlinedGrid item container direction="row" alignItems="center">
-              <Grid item xs={6}>
-                <Typography variant="body2" color="textSecondary">
+          <ThirdContainerLastRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
                   Stake returned if rejected
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <Typography
-                  variant="subtitle1"
+                  variant="subtitle2"
                   color="textSecondary"
                   align="right"
                 >
-                  {state.data.votingSettings.returnedTokenPercentage}% of locked tokens
+                  {state.data.votingSettings.returnedTokenPercentage}% of locked
+                  tokens
                 </Typography>
               </Grid>
-            </UnderlinedGrid>
-          </Grid>
+            </Grid>
+          </ThirdContainerLastRow>
 
           {state.data.template === "treasury" && (
-            <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">
+            <ThirdContainerSpecialRow item xs={12}>
+              <Grid item container direction="row" alignItems="center">
+                <Grid item xs={7}>
+                  <Typography variant="subtitle2" color="textSecondary">
                     Transfer maximum XTZ amount
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={5}>
                   <Typography
-                    variant="subtitle1"
+                    variant="subtitle2"
                     color="textSecondary"
                     align="right"
                   >
                     {state.data.votingSettings.maxXtzAmount} XTZ
                   </Typography>
                 </Grid>
-              </UnderlinedGrid>
-            </Grid>
+              </Grid>
+            </ThirdContainerSpecialRow>
           )}
 
           {state.data.template === "treasury" && (
-            <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">
+            <ThirdContainerLastRow item xs={12}>
+              <Grid item container direction="row" alignItems="center">
+                <Grid item xs={7}>
+                  <Typography variant="subtitle2" color="textSecondary">
                     Transfer minimum XTZ amount
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={5}>
                   <Typography
-                    variant="subtitle1"
+                    variant="subtitle2"
                     color="textSecondary"
                     align="right"
                   >
                     {state.data.votingSettings.minXtzAmount} XTZ
                   </Typography>
                 </Grid>
-              </UnderlinedGrid>
-            </Grid>
+              </Grid>
+            </ThirdContainerLastRow>
           )}
+        </ThirdContainer>
 
-          <SecondContainer container direction="row">
-            <Grid item xs={6}>
-              <ContainerSpacing color="textSecondary" variant="subtitle1">
+        <ThirdContainer container direction="row">
+          <ThirdContainerFirstRow item xs={12}>
+            <Grid
+              container
+              direction={isMobile ? "column" : "row"}
+              alignItems={isMobile ? "baseline" : "center"}
+              justifyContent="space-between"
+            >
+              <TitleSpacing color="textSecondary" variant="subtitle1">
                 QUORUM SETTINGS
-              </ContainerSpacing>
+              </TitleSpacing>
+              <ContainerEdit color="secondary" onClick={goToQuorum}>
+                Edit
+              </ContainerEdit>
             </Grid>
-            <Grid item xs={6}>
-              <ContainerButton
-                color="secondary"
-                variant="subtitle1"
-                align="right"
-                onClick={goToQuorum}
-              >
-                EDIT
-              </ContainerButton>
-            </Grid>
-            <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">
-                    Quorum threshold
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
-                    {state.data.quorumSettings.quorumThreshold}%
-                  </Typography>
-                </Grid>
-              </UnderlinedGrid>
-            </Grid>
+          </ThirdContainerFirstRow>
 
-            <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">
-                    Quorum Change
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
-                    {state.data.quorumSettings.quorumChange}%
-                  </Typography>
-                </Grid>
-              </UnderlinedGrid>
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item sm={6} xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Quorum threshold
+                </Typography>
+              </Grid>
+              <Grid item sm={6} xs={5}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.quorumSettings.quorumThreshold}%
+                </Typography>
+              </Grid>
             </Grid>
+          </ThirdContainerRow>
 
-            <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">
-                    Quorum Max Change
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
-                    {state.data.quorumSettings.quorumMaxChange}%
-                  </Typography>
-                </Grid>
-              </UnderlinedGrid>
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item sm={6} xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Quorum Change
+                </Typography>
+              </Grid>
+              <Grid item xs={5} sm={6}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.quorumSettings.quorumChange}%
+                </Typography>
+              </Grid>
             </Grid>
+          </ThirdContainerRow>
 
-            <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">
-                    Quorum Min. Amount
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
-                    {state.data.quorumSettings.minQuorumAmount}%
-                  </Typography>
-                </Grid>
-              </UnderlinedGrid>
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7} sm={6}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Quorum Max Change
+                </Typography>
+              </Grid>
+              <Grid item xs={5} sm={6}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.quorumSettings.quorumMaxChange}%
+                </Typography>
+              </Grid>
             </Grid>
+          </ThirdContainerRow>
 
-            <Grid item xs={12}>
-              <UnderlinedGrid
-                item
-                container
-                direction="row"
-                alignItems="center"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="body2" color="textSecondary">
-                    Quorum Max. Amount
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography
-                    variant="subtitle1"
-                    color="textSecondary"
-                    align="right"
-                  >
-                    {state.data.quorumSettings.maxQuorumAmount}%
-                  </Typography>
-                </Grid>
-              </UnderlinedGrid>
+          <ThirdContainerRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7} sm={6}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Quorum Min. Amount
+                </Typography>
+              </Grid>
+              <Grid item xs={5} sm={6}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.quorumSettings.minQuorumAmount}%
+                </Typography>
+              </Grid>
             </Grid>
+          </ThirdContainerRow>
 
-          </SecondContainer>
-        </SecondContainer>
+          <ThirdContainerLastRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7} sm={6}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Quorum Max. Amount
+                </Typography>
+              </Grid>
+              <Grid item xs={5} sm={6}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.quorumSettings.maxQuorumAmount}%
+                </Typography>
+              </Grid>
+            </Grid>
+          </ThirdContainerLastRow>
+        </ThirdContainer>
       </Grid>
     </Box>
   );

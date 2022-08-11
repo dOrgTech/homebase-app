@@ -3,12 +3,12 @@ import {
     Button,
   } from "@material-ui/core";
 
-export const MainButton = styled(Button)({
+export const MainButton = styled(Button)(({ theme }) => ({
     fontSize: "18px",
     justifyItems: "center",
     boxShadow: "0px 0px 7px -2px rgba(0, 0, 0, 0.2)",
     transition: ".15s ease-in",
-
+    background: theme.palette.secondary.main,
     
     "&$disabled": {
       boxShadow: "none",
@@ -23,4 +23,4 @@ export const MainButton = styled(Button)({
     ["@media (max-width:1030px)"]: { 
         fontSize: "16px",
       },
-  });
+  }));

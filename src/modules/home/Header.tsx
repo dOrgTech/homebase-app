@@ -12,17 +12,23 @@ import { styled } from "@material-ui/styles";
 import HomeButton from "assets/logos/homebase_logo.svg";
 import hexToRgba from "hex-to-rgba";
 import React from "react";
+import { MainButton } from '../common/MainButton';
 
-const StyledAppBar = styled(AppBar)({
+const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
-});
+  background: "none",
+  position: "sticky",
+
+  ["@media (max-height:750px)"]: {
+    position: "static",
+  }
+}));
 
 const LogoItem = styled("img")({
   cursor: "pointer",
   paddingTop: 8,
   height: "30px",
 });
-
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
@@ -32,24 +38,39 @@ const LogoText = styled(Typography)({
 });
 
 const StyledToolbar = styled(Toolbar)({
-  display: "flex",
-  padding: "22px 37px",
+  width: "100%", 
+  padding: 0,
   boxSizing: "border-box",
   justifyContent: "space-between",
   flexWrap: "wrap",
 });
 
+const Head = styled(Grid)(({ theme }) => ({
+  width: "1000px",
+  height: "100%",
+  margin: "auto",
+  padding: "28px 0",
+  flexDirection: "row",
+
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+  },
+
+  ["@media (max-width:645px)"]: {
+    flexDirection: "column",
+
+  }
+}));
+
 export const Header: React.FC = () => {
   return (
-    <StyledAppBar position="sticky" color="transparent">
+    <StyledAppBar>
       <StyledToolbar>
-        <Grid
+        <Head
           container
-          direction="row"
           alignItems="center"
           wrap="wrap"
-          spacing={4}
-          justify="space-between"
+          justify={"space-between"}
         >
           <Grid item>
             <Link href="/landing">
@@ -67,10 +88,10 @@ export const Header: React.FC = () => {
           </Grid>
           <Grid item>
             <Link href="/explorer" underline="none">
-              <Button variant="contained" color="secondary">Enter App</Button>
+              <MainButton variant="contained" color="secondary">Enter App</MainButton>
             </Link>
           </Grid>
-        </Grid>
+        </Head>
       </StyledToolbar>
     </StyledAppBar>
   );

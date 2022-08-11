@@ -7,52 +7,51 @@ import {
   useTheme,
 } from "@material-ui/core";
 import React from "react";
+import { ArrowBackIos } from "@material-ui/icons";
 
 import { NavigationBarProps } from "modules/creator/state";
 
 const Footer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
-  justifyContent: "flex-end",
-  zIndex: 20,
+  marginLeft: 47,
+  marginBottom: 10,
+  ["@media (max-width:1167px)"]: {
+    marginLeft: 0,
+    marginBottom: 50,
+  }
 }));
 
 const BackButton = styled(Paper)({
   boxShadow: "none",
-  width: "121px",
-  height: 31,
+  height: 41,
   background: "inherit",
   color: "#fff",
-  textAlign: "center",
-  marginLeft: "4%",
-  paddingTop: "1%",
+  textAlign: "start",
   cursor: "pointer",
+  display: "flex",
+  alignItems: "baseline",
+  padding: 8,
+  width: "fit-content"
 });
 
-const NextButton = styled(Paper)({
+const NextButton = styled(Paper)(({theme }) => ({
   boxShadow: "none",
-  minWidth: "121px",
-  height: 31,
-  borderRadius: 21,
+  borderRadius: 4,
   textAlign: "center",
-  paddingTop: "1%",
-  background: "inherit",
   float: "right",
-  marginRight: "4%",
   cursor: "pointer",
-  paddingLeft: "3%",
-  paddingRight: "3%",
-});
+  background: theme.palette.secondary.light,
+  padding: 8
+}));
+
+const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
+  color: theme.palette.secondary.light,
+  fontSize: 12,
+  marginRight: 12,
+}));
 
 const FooterContainer = styled(Grid)(({ isMobile }: { isMobile: boolean }) => ({
-  flexGrow: 0,
-  maxWidth: isMobile ? "none" : "calc(75% + 2px)",
-  minHeight: 75,
-  borderTop: "2px solid rgb(61, 61, 61)",
-  borderLeft: "2px solid rgb(61, 61, 61)",
-  padding: 0,
-  margin: 0,
-  height: "100%",
-  zIndex: 20,
+  width: "100%"
 }));
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
@@ -63,27 +62,27 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
     <Footer
       container
       direction="row"
-      justify="space-between"
+
       alignItems="center"
     >
       <FooterContainer
         item
         xs={12}
         container
-        alignItems="center"
         isMobile={isMobile}
       >
         <Grid item xs={6}>
           {back && (
             <BackButton onClick={back.handler}>
-              <Typography>{back.text}</Typography>
+              <BackButtonIcon />
+              <Typography color="secondary">{back.text}</Typography>
             </BackButton>
           )}
         </Grid>
         <Grid item xs={6}>
           {next && (
             <NextButton onClick={next.handler}>
-              <Typography color="secondary">{next.text}</Typography>
+              <Typography color="primary">{next.text}</Typography>
             </NextButton>
           )}
         </Grid>

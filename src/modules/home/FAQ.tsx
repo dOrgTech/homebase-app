@@ -6,20 +6,43 @@ import { FAQItem } from "./FAQItem";
 import { useGenerateFAQ } from "./hooks/useGenerateFAQ";
 
 const PageContainer = styled("div")(({ theme }) => ({
-  width: "100%",
-  maxWidth: 1186,
-  height: "100%",
+  background: theme.palette.primary.dark,
+  width: "1000px",
   margin: "auto",
 
-  [theme.breakpoints.down("md")]: {
-    padding: "18px",
-    boxSizing: "border-box",
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+
   },
+
 }));
 
+const PageGrid = styled(Grid)({
+  gap: 46,
+});
+
 const TextBlock = styled(ContentContainer)({
-  padding: "35px 42px",
+  padding: "38px",
   boxSizing: "border-box",
+  fontWeight: 300,
+});
+
+const TitleText = styled(Typography)(({ theme }) => ({
+  fontSize: 30,
+  fontWeight: 400,
+  lineHeight: .8,
+  marginBottom: 25,
+}));
+
+const BodyText = styled(Typography)(({ theme }) => ({
+  fontSize: 18,
+  fontWeight: 300,
+
+}));
+
+const BodyTextGrid = styled(Grid)({
+  display: "grid",
+  gap: 12,
 });
 
 export const FAQ: React.FC = () => {
@@ -29,33 +52,33 @@ export const FAQ: React.FC = () => {
 
   return (
     <PageContainer>
-      <Grid container direction="column" style={{ gap: 46 }}>
         {!isExtraSmall && (
           <Grid item>
             <Header />
           </Grid>
         )}
+        <PageGrid container direction="column">
         <TextBlock item>
-          <Typography color="textPrimary" variant="h1">
+          <TitleText color="textPrimary" variant="h1">
             Welcome to Homebase FAQ
-            <br />
-            <br />
-          </Typography>
-          <Typography color="textPrimary" variant="body1">
+          </TitleText>
+          <BodyTextGrid container>
+          <BodyText color="textPrimary">
              We strive to make Homebase super user-centered. Feel free to reach out to our team at any time on the{" "}
             <Link color="secondary" target="_blank" href='https://discord.gg/XufcBNu277'>
-              Discord
-            </Link>
-            .<br />
-            <br />
+              Discord 
+            </Link>.
+            </BodyText>
+            <BodyText color="textPrimary">
             Below are questions we’ve received and would like to share the answers to in a direct way for users.
-          </Typography>
+          </BodyText>
+          </BodyTextGrid>
         </TextBlock>
 
         {faqList.map(({ question, answer }, i) => (
           <FAQItem key={`question-${i}`} question={question} answer={answer} />
         ))}
-      </Grid>
+      </PageGrid>
     </PageContainer>
   );
 };

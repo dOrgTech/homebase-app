@@ -16,7 +16,7 @@ const MarkDownImg = styled("img")({
 })
 
 const MarkdownParagraph = (props: { children: ReactNode }) => {
-  return <Typography variant="body1">{props.children}</Typography>;
+  return <Typography style={{fontWeight: 300}}>{props.children}</Typography>;
 };
 
 const MarkdownLink = (props: any) => {
