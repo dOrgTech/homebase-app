@@ -133,7 +133,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTransfer, setActiveTransfer] = React.useState(1);
   const daoId = useDAOID();
-  const {data: daoData} = useDAO(daoId);
+  const {data: daoData, ledger} = useDAO(daoId);
   const dao = daoData as TreasuryDAO | undefined;
   const {tokenHoldings: daoHoldings} = useDAOHoldings(daoId);
   const {data: tezosBalance} = useTezosBalance(daoId);
