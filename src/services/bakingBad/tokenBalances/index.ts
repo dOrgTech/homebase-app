@@ -39,8 +39,6 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
     return balances
   }
 
-  console.log("result", result);
-
   const fetchedBalances = result.balances.map((daoTokenDTO) =>
     isNFTDTO(daoTokenDTO)
       ? {
