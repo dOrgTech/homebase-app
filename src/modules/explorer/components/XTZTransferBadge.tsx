@@ -23,7 +23,7 @@ export const XTZTransferBadge: React.FC<Props> = ({
 
   return (
     <HighlightedBadge
-      justify="center"
+    justifyContent="center"
       alignItems="center"
       direction="row"
       container

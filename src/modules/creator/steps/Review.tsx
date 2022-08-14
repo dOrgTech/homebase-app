@@ -98,13 +98,13 @@ export const Review: React.FC = () => {
 
   return (
     <StyledContainer>
-      <Grid container direction="row" justify="center">
+      <Grid container direction="row" justifyContent="center">
         {account ? (
           <>
             <Grid
               container
               direction="column"
-              justify="center"
+              justifyContent="center"
               alignItems="center"
               style={{ height: "fit-content" }}
             >

@@ -283,7 +283,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                     container
                     direction="row"
                     alignItems="center"
-                    justify="space-between"
+                    justifyContent="space-between"
                   >
                     <Grid item xs={6}>
                       <DAOBalanceText>DAO Balance</DAOBalanceText>
@@ -294,7 +294,7 @@ export const NewTreasuryProposalDialog: React.FC = () => {
                           item
                           container
                           direction="row"
-                          justify="flex-end"
+                          justifyContent="flex-end"
                         >
                           <AmountText>
                             {currentAssetBalance?.balance.toString() || "-"}

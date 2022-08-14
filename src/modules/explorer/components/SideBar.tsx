@@ -112,7 +112,7 @@ const BottomNavBar: React.FC = ({ children }) => {
     <StyledBottomBar
       container
       direction={"row"}
-      justify={"space-evenly"}
+      justifyContent={"space-evenly"}
       visible={visible}
     >
       {children}
@@ -129,7 +129,7 @@ const SideNavBar: React.FC = ({ children }) => {
       <Grid
         container
         direction={isMobileExtraSmall ? "row" : "column"}
-        justify={isMobileExtraSmall ? "space-evenly" : "flex-start"}
+        justifyContent={isMobileExtraSmall ? "space-evenly" : "flex-start"}
       >
         {children}
       </Grid>
