@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 import {
   Grid,
   DialogContent,
@@ -44,12 +44,13 @@ export const updateRegistryFormSchema = Yup.object().shape({
   }),
 });
 
-export const UpdateRegistryDialog: React.FC = () => {
+export const UpdateRegistryDialog: React.FC<{open: boolean}> = ({open}) => {
   const [activeItem, setActiveItem] = React.useState(1);
   const {
     control,
     getValues,
     setValue,
+    reset,
     formState: {errors, touchedFields: touched},
   } = useFormContext<RegistryProposalFormValues>();
   const {fields, append} = useFieldArray({
@@ -70,6 +71,13 @@ export const UpdateRegistryDialog: React.FC = () => {
   const valueError = (errors?.registryUpdateForm?.list?.[activeItem - 1] as any)
     ?.value;
 
+
+    useMemo(() => {
+      if (!open) {
+        reset();
+      }
+    }, [open, reset]);
+  
   return (
     <DialogContent>
       <Grid container direction={"column"} style={{gap: 31}}>
