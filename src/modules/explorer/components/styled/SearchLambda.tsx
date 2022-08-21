@@ -25,7 +25,7 @@ const StyledType = styled(Grid)({
 const StyledInput = withStyles((theme: Theme) => ({
   popperDisablePortal: {
     width: "418px !important",
-    left: 16,
+    left: 46,
     marginTop: -2,
   },
   popper: {

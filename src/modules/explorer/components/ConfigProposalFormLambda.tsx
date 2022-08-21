@@ -5,11 +5,10 @@ import {
   TextField,
   styled,
   makeStyles,
+  CircularProgress,
 } from "@material-ui/core";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { SendButton } from "./ProposalFormSendButton";
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useDAOID } from "../pages/DAO/router";
 import { ProposalFormInput, ProposalFormTextarea } from "./ProposalFormInput";
@@ -20,6 +19,7 @@ import Editor from "react-simple-code-editor";
 import "prism-themes/themes/prism-night-owl.css";
 import { MainButton } from "modules/common/MainButton";
 import { SearchLambda } from "./styled/SearchLambda";
+import { CheckOutlined } from '@material-ui/icons';
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
   width: 101,
@@ -30,46 +30,33 @@ type LambdaValues = {
   label: string;
   code: string;
   type: string;
+  parameters: any;
 };
 
 const StyledRow = styled(Grid)({
   marginTop: 30,
 });
 
-type RecursivePartial<T> = {
-  [P in keyof T]?: RecursivePartial<T[P]>;
-};
-
-type Values = {
-  lambda_name: string;
-  lambda_contract?: string;
-  lambda_token_address?: string;
-};
-
-enum ProposalModalKey {
-  new,
-  remove,
-  execute,
-}
-
-export type ProposalFormDefaultValues = RecursivePartial<Values>;
-
-interface Props {
-  open: boolean;
-  action: any;
-  handleClose: () => void;
-  defaultValues?: ProposalFormDefaultValues;
-  defaultTab?: number;
-}
-
 const ProgressContainer = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  position: "sticky",
-  top: 0,
+  maxHeight: 600,
+  display: "block",
+  overflowY: "scroll",
 }));
 
 const MarginContainer = styled(Grid)({
   marginTop: 32,
+});
+
+const LoadingContainer = styled(Grid)({
+  minHeight: 651,
+});
+
+const LoadingStateLabel = styled(Typography)({
+  marginTop: 40
+});
+
+const ParameterTitle = styled(Typography)({
+  marginBottom: 18,
 });
 
 const CustomEditor = styled(Editor)({
@@ -81,6 +68,10 @@ const CustomEditor = styled(Editor)({
   },
 });
 
+const CheckIcon = styled(CheckOutlined)({
+  fontSize: 169
+});
+
 const styles = makeStyles({
   textarea: {
     minHeight: 500,
@@ -89,6 +80,37 @@ const styles = makeStyles({
   },
 });
 
+type LambdaParameter = {
+  name: string;
+  type: string;
+  value: any;
+  isOptional: boolean;
+};
+
+type Values = {
+  lambda_name: string;
+  lambda_contract?: string;
+  lambda_token_address?: string;
+  lambda_parameters?: Array<LambdaParameter>;
+};
+
+enum ProposalModalKey {
+  new,
+  remove,
+  execute,
+}
+interface Props {
+  open: boolean;
+  action: any;
+  handleClose: () => void;
+}
+
+enum LambdaProposalState {
+  write_action,
+  wallet_action,
+  action_finished,
+}
+
 export const ProposalFormLambda: React.FC<Props> = ({
   open,
   handleClose,
@@ -96,30 +118,33 @@ export const ProposalFormLambda: React.FC<Props> = ({
 }) => {
   const daoId = useDAOID();
   const { data: dao } = useDAO(daoId);
-  const { data: daoHoldings } = useDAOHoldings(daoId);
-
-  const methods = useForm<Values>();
-
-  const lambdaName = methods.watch("lambda_name");
-
   const style = styles();
 
+  const methods = useForm<Values>();
+  const lambdaName = methods.watch("lambda_name");
   const grammar = Prism.languages.javascript;
 
-  const onSubmit = useCallback(
-    (values: Values) => {
-      setCode("");
-      handleClose();
-    },
-    [handleClose]
+  const [lambda, setLambda] = React.useState<LambdaValues | null>(null);
+  const [state, setState] = React.useState<LambdaProposalState>(
+    LambdaProposalState.wallet_action
   );
+  const [code, setCode] = React.useState<string>(
+    action === 0
+      ? `const allowances = new MichelsonMap();
+  const ledger = new MichelsonMap();
+  ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });
 
-  useEffect(() => {
-    if (open) {
-      setCode("");
-      methods.setValue("lambda_name", "");
-    }
-  }, [open, methods]);
+  const opknownBigMapContract = await tezos.contract.originate({
+    code: knownBigMapContract,
+    storage: {
+      ledger,
+      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
+      totalSupply: '100',
+    },
+  });   
+}`
+      : ""
+  );
 
   const lambdaOptions = [
     {
@@ -128,6 +153,13 @@ export const ProposalFormLambda: React.FC<Props> = ({
       const ledger = new MichelsonMap();
       ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });`,
       type: "read",
+      parameters: [
+        {
+          name: "conversionRate",
+          type: "number",
+          value: undefined,
+        },
+      ],
     },
     {
       label: "addPaymentToken",
@@ -135,6 +167,26 @@ export const ProposalFormLambda: React.FC<Props> = ({
       const ledger = new MichelsonMap();
       ledger.set('', { tokens, balance: '100' });`,
       type: "write",
+      parameters: [
+        {
+          name: "conversionRate",
+          type: "number",
+          value: undefined,
+          isOptional: false,
+        },
+        {
+          name: "price",
+          type: "number",
+          value: undefined,
+          isOptional: true,
+        },
+        {
+          name: "gasFee",
+          type: "number",
+          value: undefined,
+          isOptional: true,
+        },
+      ],
     },
     {
       label: "clientProjects",
@@ -186,30 +238,34 @@ export const ProposalFormLambda: React.FC<Props> = ({
     },
   ];
 
-  const [code, setCode] = React.useState<string>(
-    action === 0
-      ? `const allowances = new MichelsonMap();
-  const ledger = new MichelsonMap();
-  ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });
+  useEffect(() => {
+    if (open) {
+      setCode("");
+      setState(LambdaProposalState.write_action);
+      setLambda(null);
+      methods.reset();
+    }
+  }, [open, methods]);
 
-  const opknownBigMapContract = await tezos.contract.originate({
-    code: knownBigMapContract,
-    storage: {
-      ledger,
-      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
-      totalSupply: '100',
-    },
-  });   
-}`
-      : ""
-  );
+  const onSubmit = useCallback((values: Values) => {
+    setState(LambdaProposalState.wallet_action);
+    setCode("");
+
+    setTimeout(() => {
+      setState(LambdaProposalState.action_finished);
+    }, 3000);
+  }, []);
 
   const handleChange = (data: LambdaValues) => {
     if (data?.code) {
+      setLambda(data);
       methods.setValue("lambda_name", data.label);
-      return setCode(data.code);
+      setCode(data.code);
+      return;
     }
-    return setCode("");
+    methods.reset();
+    setCode("");
+    return;
   };
 
   return (
@@ -220,103 +276,151 @@ export const ProposalFormLambda: React.FC<Props> = ({
         title={ProposalModalKey[action] + " Lambda Proposal"}
         template={"lambda"}
       >
-        <Grid container direction={"row"} spacing={4}>
-          <ProgressContainer item xs={6} container direction="column">
-            <Grid item>
-              <ProposalFormInput label={"Lambda Name"}>
-                <Controller
-                  control={methods.control}
-                  name={`lambda_name`}
-                  render={({ field }) =>
-                    action === 0 ? (
-                      <TextField
-                        {...field}
-                        placeholder="Enter Lambda Name"
-                        InputProps={{ disableUnderline: true }}
-                      />
-                    ) : (
-                      <Grid>
-                        <SearchLambda
-                          lambdas={lambdaOptions}
-                          handleChange={handleChange}
+        {state === LambdaProposalState.write_action ? (
+          <>
+            <Grid container direction={"row"} spacing={4}>
+              <ProgressContainer item xs={6} container direction="column">
+                <Grid item>
+                  <ProposalFormInput label={"Lambda Name"}>
+                    <Controller
+                      control={methods.control}
+                      name={`lambda_name`}
+                      render={({ field }) =>
+                        action === 0 ? (
+                          <TextField
+                            {...field}
+                            placeholder="Enter Lambda Name"
+                            InputProps={{ disableUnderline: true }}
+                          />
+                        ) : (
+                          <Grid>
+                            <SearchLambda
+                              lambdas={lambdaOptions}
+                              handleChange={handleChange}
+                            />
+                          </Grid>
+                        )
+                      }
+                    />
+                  </ProposalFormInput>
+                </Grid>
+                {action === 2 &&
+                methods.getValues("lambda_name") !== undefined ? (
+                  <>
+                    <MarginContainer item>
+                      <ProposalFormInput label={"Contract"}>
+                        <Controller
+                          control={methods.control}
+                          name={`lambda_contract`}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              placeholder="Enter Address"
+                              InputProps={{ disableUnderline: true }}
+                            />
+                          )}
                         />
-                      </Grid>
-                    )
-                  }
-                />
-              </ProposalFormInput>
+                      </ProposalFormInput>
+                    </MarginContainer>
+
+                    <MarginContainer item>
+                      <ProposalFormInput label={"Token Address"}>
+                        <Controller
+                          control={methods.control}
+                          name={`lambda_token_address`}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              placeholder="Enter Address"
+                              InputProps={{ disableUnderline: true }}
+                            />
+                          )}
+                        />
+                      </ProposalFormInput>
+                    </MarginContainer>
+
+                    {lambda && lambda.parameters ? (
+                      <>
+                        {lambda.parameters.map(
+                          (valueItem: LambdaParameter, i: number) => (
+                            <MarginContainer item key={valueItem.name + i}>
+                              <ParameterTitle style={{ gap: 18 }}>
+                                {valueItem.name}{" "}
+                                {valueItem.isOptional ? "(optional)" : null}
+                              </ParameterTitle>
+                              <ProposalFormInput>
+                                <Controller
+                                  control={methods.control}
+                                  name={`lambda_parameters.${i}.value`}
+                                  render={({ field }) => (
+                                    <TextField
+                                      required={valueItem.isOptional}
+                                      {...field}
+                                      placeholder={valueItem.type}
+                                      InputProps={{ disableUnderline: true }}
+                                    />
+                                  )}
+                                />
+                              </ProposalFormInput>
+                            </MarginContainer>
+                          )
+                        )}
+                      </>
+                    ) : null}
+                  </>
+                ) : null}
+              </ProgressContainer>
+              <Grid item xs={6} container direction="column">
+                <ProposalFormTextarea label={"Implementation"}>
+                  <CustomEditor
+                    disabled={action !== 0}
+                    textareaClassName={style.textarea}
+                    preClassName={style.textarea}
+                    value={code}
+                    onValueChange={(code) => setCode(code)}
+                    highlight={(code) => highlight(code, grammar, "javascript")}
+                    padding={10}
+                    style={{
+                      fontFamily: "Roboto Mono",
+                      fontSize: 14,
+                      fontWeight: 400,
+                      outlineWidth: 0,
+                    }}
+                  />
+                </ProposalFormTextarea>
+              </Grid>
             </Grid>
 
-            {action === 2 && methods.getValues("lambda_name") ? (
-              <>
-                <MarginContainer item>
-                  <ProposalFormInput label={"Contract"}>
-                    <Controller
-                      control={methods.control}
-                      name={`lambda_contract`}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="Enter Address"
-                          InputProps={{ disableUnderline: true }}
-                        />
-                      )}
-                    />
-                  </ProposalFormInput>
-                </MarginContainer>
+            <StyledRow
+              container
+              direction={"row"}
+              spacing={4}
+              justifyContent="flex-end"
+            >
+              <StyledSendButton
+                onClick={methods.handleSubmit(onSubmit as any)}
+                disabled={!code || !lambdaName}
+              >
+                Submit
+              </StyledSendButton>
+            </StyledRow>
+          </>
+        ) : state === LambdaProposalState.wallet_action ? (
+          <>
+            <LoadingContainer container direction="column" alignItems="center" justifyContent="center">
+              <CircularProgress color="secondary" size={169} />
+              <LoadingStateLabel>Confirm action in wallet</LoadingStateLabel>
+            </LoadingContainer>
+          </>
+        ) : state === LambdaProposalState.action_finished ? (
+          <>
+          <LoadingContainer container direction="column" alignItems="center" justifyContent="center">
+            <CheckIcon color="secondary" />
+            <LoadingStateLabel>Proposal created</LoadingStateLabel>
+          </LoadingContainer>
+        </>
+        ): null}
 
-                <MarginContainer item>
-                  <ProposalFormInput label={"Token Address"}>
-                    <Controller
-                      control={methods.control}
-                      name={`lambda_token_address`}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          placeholder="Enter Address"
-                          InputProps={{ disableUnderline: true }}
-                        />
-                      )}
-                    />
-                  </ProposalFormInput>
-                </MarginContainer>
-              </>
-            ) : null}
-          </ProgressContainer>
-          <Grid item xs={6} container direction="column">
-            <ProposalFormTextarea label={"Implementation"}>
-              <CustomEditor
-                disabled={action !== 0}
-                textareaClassName={style.textarea}
-                preClassName={style.textarea}
-                value={code}
-                onValueChange={(code) => setCode(code)}
-                highlight={(code) => highlight(code, grammar, "javascript")}
-                padding={10}
-                style={{
-                  fontFamily: "Roboto Mono",
-                  fontSize: 14,
-                  fontWeight: 400,
-                  outlineWidth: 0,
-                }}
-              />
-            </ProposalFormTextarea>
-          </Grid>
-        </Grid>
-
-        <StyledRow
-          container
-          direction={"row"}
-          spacing={4}
-          justifyContent="flex-end"
-        >
-          <StyledSendButton
-            onClick={methods.handleSubmit(onSubmit as any)}
-            disabled={!code || !lambdaName}
-          >
-            Submit
-          </StyledSendButton>
-        </StyledRow>
       </ResponsiveDialog>
     </FormProvider>
   );

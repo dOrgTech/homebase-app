@@ -1,26 +1,37 @@
-import {Button, Grid, Theme, Tooltip, Typography, useMediaQuery,} from "@material-ui/core";
-import {styled, useTheme} from "@material-ui/styles";
+import {
+  Button,
+  Grid,
+  Theme,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from "@material-ui/core";
+import { styled, useTheme } from "@material-ui/styles";
 import ReactHtmlParser from "react-html-parser";
-import {BigNumber} from "bignumber.js";
+import { BigNumber } from "bignumber.js";
 import ProgressBar from "react-customizable-progressbar";
-import {StatusBadge} from "modules/explorer/components/StatusBadge";
-import {UserBadge} from "modules/explorer/components/UserBadge";
-import {VotersProgress} from "modules/explorer/components/VotersProgress";
-import {useCanDropProposal} from "modules/explorer/hooks/useCanDropProposal";
-import React, {useCallback, useMemo, useState} from "react";
-import {useParams} from "react-router";
-import {useAgoraTopic} from "services/agora/hooks/useTopic";
-import {BaseDAO} from "services/contracts/baseDAO";
-import {useDropProposal} from "services/contracts/baseDAO/hooks/useDropProposal";
-import {formatUnits, parseUnits, toShortAddress} from "services/contracts/utils";
-import {useDAO} from "services/indexer/dao/hooks/useDAO";
-import {useProposal} from "services/indexer/dao/hooks/useProposal";
-import {ContentContainer} from "../../components/ContentContainer";
-import {useDAOID} from "../DAO/router";
-import {useVotesStats} from "modules/explorer/hooks/useVotesStats";
-import {formatNumber} from "modules/explorer/utils/FormatNumber";
-import {HighlightedBadge} from "modules/explorer/components/styled/HighlightedBadge";
-import {TransferBadge} from "modules/explorer/components/TransferBadge";
+import { StatusBadge } from "modules/explorer/components/StatusBadge";
+import { UserBadge } from "modules/explorer/components/UserBadge";
+import { VotersProgress } from "modules/explorer/components/VotersProgress";
+import { useCanDropProposal } from "modules/explorer/hooks/useCanDropProposal";
+import React, { useCallback, useMemo, useState } from "react";
+import { useParams } from "react-router";
+import { useAgoraTopic } from "services/agora/hooks/useTopic";
+import { BaseDAO } from "services/contracts/baseDAO";
+import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal";
+import {
+  formatUnits,
+  parseUnits,
+  toShortAddress,
+} from "services/contracts/utils";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { useProposal } from "services/indexer/dao/hooks/useProposal";
+import { ContentContainer } from "../../components/ContentContainer";
+import { useDAOID } from "../DAO/router";
+import { useVotesStats } from "modules/explorer/hooks/useVotesStats";
+import { formatNumber } from "modules/explorer/utils/FormatNumber";
+import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge";
+import { TransferBadge } from "modules/explorer/components/TransferBadge";
 import {
   FA2Transfer,
   Proposal,
@@ -28,19 +39,23 @@ import {
   RegistryProposal,
   TreasuryProposal,
 } from "services/indexer/dao/mappers/proposal/types";
-import {useDAOHoldings} from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import {VoteDialog} from "../../components/VoteDialog";
-import {XTZTransferBadge} from "../../components/XTZTransferBadge";
-import {InfoIcon} from "../../components/styled/InfoIcon";
-import {ProposalTransferBadge} from "modules/explorer/components/ProposalTransferBadge";
-import {useUnstakeVotes} from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes";
-import {useTezos} from "../../../../services/beacon/hooks/useTezos";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { VoteDialog } from "../../components/VoteDialog";
+import { XTZTransferBadge } from "../../components/XTZTransferBadge";
+import { InfoIcon } from "../../components/styled/InfoIcon";
+import { ProposalTransferBadge } from "modules/explorer/components/ProposalTransferBadge";
+import { useUnstakeVotes } from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes";
+import { useTezos } from "../../../../services/beacon/hooks/useTezos";
+import { CodeVisor } from "./components/CodeVisor";
+import { FileCopyOutlined } from "@material-ui/icons";
+import { CopyButton } from "modules/common/CopyButton";
+
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px",
 });
 
-const HistoryItem = styled(Grid)(({theme}: { theme: Theme }) => ({
+const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   marginTop: 20,
   paddingBottom: 12,
   display: "flex",
@@ -55,8 +70,13 @@ const QuorumTitle = styled(Typography)(() => ({
   color: "#3866F9",
 }));
 
+const ViewCodeButton = styled(Button)({
+  height: 31,
+  fontSize: 16,
+});
+
 const ProgressText = styled(Typography)(
-  ({textColor}: { textColor: string }) => ({
+  ({ textColor }: { textColor: string }) => ({
     color: textColor,
     display: "flex",
     alignItems: "center",
@@ -77,9 +97,31 @@ const DetailsText = styled(Typography)({
   wordBreak: "break-all",
 });
 
-const VoteButton = styled(Button)(({favor}: { favor: boolean }) => ({
+const VoteButton = styled(Button)(({ favor }: { favor: boolean }) => ({
   backgroundColor: favor ? "#3FE888" : "#FF486E",
 }));
+
+
+const InfoTitle = styled(Typography)({
+  marginTop: 37,
+  fontWeight: 400,
+  fontSize: 18,
+  lineHeight: '27px'
+});
+
+const InfoItem = styled(Typography)({
+  marginTop: 11,
+  fontWeight: 400,
+  fontSize: 16,
+  lineHeight: '24px'
+});
+
+const InfoCopyIcon = styled(CopyButton)({
+    height: 15,
+    "& svg": {
+      height: 15,
+    }
+});
 
 const getReadableConfig = (configKey: keyof Proposal["metadata"]["config"]) => {
   switch (configKey) {
@@ -89,40 +131,84 @@ const getReadableConfig = (configKey: keyof Proposal["metadata"]["config"]) => {
       return "Percentage of tokens returned after rejection";
 
     default:
-      return "Unknown Config parameter"
+      return "Unknown Config parameter";
   }
-}
+};
 
 export const ProposalDetails: React.FC = () => {
-  const {proposalId} = useParams<{
+  const { proposalId } = useParams<{
     proposalId: string;
   }>();
   const daoId = useDAOID();
   const [openVote, setOpenVote] = useState(false);
+  const [openVisor, setOpenVisor] = useState(false);
   const [voteIsSupport, setVoteIsSupport] = useState(false);
   const theme = useTheme<Theme>();
-  const {data: proposal} = useProposal(daoId, proposalId);
-  const {data: dao, cycleInfo} = useDAO(daoId);
+  const { data: proposal } = useProposal(daoId, proposalId);
+  const { data: dao, cycleInfo } = useDAO(daoId);
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const {mutate: dropProposal} = useDropProposal();
-  const {data: holdings} = useDAOHoldings(daoId);
-  const { account } = useTezos()
+  const { mutate: dropProposal } = useDropProposal();
+  const { data: holdings } = useDAOHoldings(daoId);
+  const { account } = useTezos();
   const canDropProposal = useCanDropProposal(daoId, proposalId);
-  const {data: agoraPost} = useAgoraTopic(
+  const { data: agoraPost } = useAgoraTopic(
     Number(proposal?.metadata?.agoraPostId)
   );
 
+  const [code, setCode] = React.useState<string>(`
+  const allowances = new MichelsonMap();
+  const ledger = new MichelsonMap();
+  ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });
+
+  const opknownBigMapContract = await tezos.contract.originate({
+    code: knownBigMapContract,
+    storage: {
+      ledger,
+      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
+      totalSupply: '100',
+    },
+  }); 
+  
+  const opknownBigMapContract = await tezos.contract.originate({
+    code: knownBigMapContract,
+    storage: {
+      ledger,
+      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
+      totalSupply: '100',
+    },
+  }); 
+
+  const opknownBigMapContract = await tezos.contract.originate({
+    code: knownBigMapContract,
+    storage: {
+      ledger,
+      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
+      totalSupply: '100',
+    },
+  }); 
+
+  const opknownBigMapContract = await tezos.contract.originate({
+    code: knownBigMapContract,
+    storage: {
+      ledger,
+      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
+      totalSupply: '100',
+    },
+  }); 
+}`
+  );
+
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
-  const { mutate: mutateUnstake } = useUnstakeVotes()
+  const { mutate: mutateUnstake } = useUnstakeVotes();
 
   const onClickVote = (support: boolean) => {
     setVoteIsSupport(support);
     setOpenVote(true);
-  }
+  };
 
   const onCloseVote = () => {
-    setOpenVote(false)
-  }
+    setOpenVote(false);
+  };
 
   const onDropProposal = useCallback(async () => {
     await dropProposal({
@@ -140,7 +226,7 @@ export const ProposalDetails: React.FC = () => {
 
   const proposalCycle = proposal ? proposal.period : "-";
 
-  const {votesQuorumPercentage} = useVotesStats({
+  const { votesQuorumPercentage } = useVotesStats({
     upVotes: proposal?.upVotes || new BigNumber(0),
     downVotes: proposal?.downVotes || new BigNumber(0),
     quorumThreshold,
@@ -165,33 +251,43 @@ export const ProposalDetails: React.FC = () => {
   const canVote =
     cycleInfo &&
     proposal?.getStatus(cycleInfo.currentLevel).status ===
-    ProposalStatus.ACTIVE;
+      ProposalStatus.ACTIVE;
 
-  const canUnstakeVotes = cycleInfo && proposal && account &&
-    (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
-    proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
-    proposal.voters.some(({ address }) => address.toLowerCase() === account.toLowerCase())
+  const canUnstakeVotes =
+    cycleInfo &&
+    proposal &&
+    account &&
+    (proposal.getStatus(cycleInfo.currentLevel).status ===
+      ProposalStatus.DROPPED ||
+      proposal.getStatus(cycleInfo.currentLevel).status ===
+        ProposalStatus.EXECUTED) &&
+    proposal.voters.some(
+      ({ address }) => address.toLowerCase() === account.toLowerCase()
+    );
 
-  const parseReadableConfigValue = (configKey: keyof Proposal["metadata"]["config"], value: BigNumber) => {
-    if(dao){
+  const parseReadableConfigValue = (
+    configKey: keyof Proposal["metadata"]["config"],
+    value: BigNumber
+  ) => {
+    if (dao) {
       switch (configKey) {
         case "frozen_extra_value":
           return parseUnits(value, dao.data.token.decimals).toString();
         case "slash_scale_value":
           return 100 - value.toNumber();
-    
+
         default:
-          return value.toString()
+          return value.toString();
       }
     }
-  }
+  };
 
   return (
     <>
-      <Grid container direction="column" style={{gap: 42}}>
+      <Grid container direction="column" style={{ gap: 42 }}>
         <Container item>
-          <Grid container direction="column" style={{gap: 18}}>
-            <Grid item container style={{gap: 21}}>
+          <Grid container direction="column" style={{ gap: 18 }}>
+            <Grid item container style={{ gap: 21 }}>
               <Grid item>
                 <Typography
                   variant="h3"
@@ -216,7 +312,7 @@ export const ProposalDetails: React.FC = () => {
                   placement="bottom"
                   title="Guardian and proposer may drop proposal at anytime. Anyone may drop proposal if proposal expired"
                 >
-                  <InfoIcon color="secondary"/>
+                  <InfoIcon color="secondary" />
                 </Tooltip>
               </Grid>
               <Grid>
@@ -232,7 +328,7 @@ export const ProposalDetails: React.FC = () => {
                   placement="bottom"
                   title="Can only unstake if proposal is executed or dropped, and if you have voted and have not called this action on this proposal before"
                 >
-                  <InfoIcon color="secondary"/>
+                  <InfoIcon color="secondary" />
                 </Tooltip>
               </Grid>
             </Grid>
@@ -244,7 +340,7 @@ export const ProposalDetails: React.FC = () => {
               >
                 <Grid item>
                   {proposal && cycleInfo && (
-                    <Grid container style={{gap: 20}}>
+                    <Grid container style={{ gap: 20 }}>
                       <Grid item>
                         <StatusBadge
                           status={
@@ -258,22 +354,38 @@ export const ProposalDetails: React.FC = () => {
                         </Typography>
                       </Grid>
                       <Grid item>
-                        <UserBadge address={proposal.proposer} short={true}/>
+                        <UserBadge address={proposal.proposer} short={true} />
+                      </Grid>
+
+                      <Grid item>
+                        <ViewCodeButton variant="contained" color="secondary" onClick={() => setOpenVisor(true)}> 
+                          View Code
+                        </ViewCodeButton>
+
+                        <CodeVisor open={openVisor} handleClose={() => setOpenVisor(false)} code={code} />
                       </Grid>
                     </Grid>
                   )}
                 </Grid>
                 <Grid item>
-                  <Grid container style={{gap: 28}}>
+                  <Grid container style={{ gap: 28 }}>
                     <Grid item>
-                      <VoteButton variant="contained" favor={true} onClick={() => onClickVote(true)}
-                                  disabled={!canVote}>
+                      <VoteButton
+                        variant="contained"
+                        favor={true}
+                        onClick={() => onClickVote(true)}
+                        disabled={!canVote}
+                      >
                         Vote For
                       </VoteButton>
                     </Grid>
                     <Grid item>
-                      <VoteButton variant="contained" favor={false} onClick={() => onClickVote(false)}
-                                  disabled={!canVote}>
+                      <VoteButton
+                        variant="contained"
+                        favor={false}
+                        onClick={() => onClickVote(false)}
+                        disabled={!canVote}
+                      >
                         Vote Against
                       </VoteButton>
                     </Grid>
@@ -284,11 +396,11 @@ export const ProposalDetails: React.FC = () => {
           </Grid>
         </Container>
         <Grid item>
-          <Grid container style={{gap: 45}}>
+          <Grid container style={{ gap: 45 }}>
             <Container item xs={12} md={7}>
-              <Grid container direction="column" style={{gap: 18}}>
+              <Grid container direction="column" style={{ gap: 18 }}>
                 <Grid item>
-                  <Grid container style={{gap: 18}}>
+                  <Grid container style={{ gap: 18 }}>
                     <Grid item>
                       <Typography color="secondary">Votes</Typography>
                     </Grid>
@@ -312,7 +424,7 @@ export const ProposalDetails: React.FC = () => {
               <Grid
                 container
                 direction="row"
-                style={{height: "100%"}}
+                style={{ height: "100%" }}
                 alignItems="center"
                 wrap="nowrap"
               >
@@ -341,15 +453,23 @@ export const ProposalDetails: React.FC = () => {
                     alignItems="flex-start"
                     justifyContent="center"
                     wrap="nowrap"
-                    style={{height: "100%"}}
+                    style={{ height: "100%" }}
                   >
                     <Grid item>
-                      {proposal && (<Tooltip
-                        placement="bottom"
-                        title={`Amount of ${dao?.data.token.symbol} required to be locked through voting for a proposal to be passed/rejected. ${(proposal.upVotes.gte(proposal.downVotes) ? proposal.upVotes.toString() : proposal.downVotes.toString())}/${quorumThreshold} votes.`}
-                      >
-                        <InfoIcon color="secondary"/>
-                      </Tooltip>)}
+                      {proposal && (
+                        <Tooltip
+                          placement="bottom"
+                          title={`Amount of ${
+                            dao?.data.token.symbol
+                          } required to be locked through voting for a proposal to be passed/rejected. ${
+                            proposal.upVotes.gte(proposal.downVotes)
+                              ? proposal.upVotes.toString()
+                              : proposal.downVotes.toString()
+                          }/${quorumThreshold} votes.`}
+                        >
+                          <InfoIcon color="secondary" />
+                        </Tooltip>
+                      )}
                       <QuorumTitle color="textPrimary">
                         Quorum Threshold:
                       </QuorumTitle>
@@ -366,7 +486,7 @@ export const ProposalDetails: React.FC = () => {
           </Grid>
         </Grid>
         <Container item>
-          <Grid container direction="column" style={{gap: 40}}>
+          <Grid container direction="column" style={{ gap: 40 }}>
             {agoraPost && (
               <Grid item>
                 <Typography
@@ -379,7 +499,7 @@ export const ProposalDetails: React.FC = () => {
               </Grid>
             )}
 
-            <Grid item container style={{gap: 25}}>
+            <Grid item container style={{ gap: 25 }}>
               {proposal ? (
                 <>
                   {transfers.map((transfer, index) => {
@@ -407,7 +527,7 @@ export const ProposalDetails: React.FC = () => {
                       </Grid>
                     );
                   })}
-                  {proposal.metadata.config.map(({key, value}, index) => (
+                  {proposal.metadata.config.map(({ key, value }, index) => (
                     <Grid
                       key={index}
                       item
@@ -423,21 +543,45 @@ export const ProposalDetails: React.FC = () => {
                       >
                         <Grid item>
                           <DetailsText variant="body1" color="textPrimary">
-                            Change <Typography
-                            variant="body1" color="secondary"
-                            display={"inline"}>{getReadableConfig(key as keyof Proposal["metadata"]["config"])}
-                          </Typography> to <Typography
-                            variant="body1" color="secondary" display={"inline"}>{parseReadableConfigValue(key as keyof Proposal["metadata"]["config"], value)}</Typography>
+                            Change{" "}
+                            <Typography
+                              variant="body1"
+                              color="secondary"
+                              display={"inline"}
+                            >
+                              {getReadableConfig(
+                                key as keyof Proposal["metadata"]["config"]
+                              )}
+                            </Typography>{" "}
+                            to{" "}
+                            <Typography
+                              variant="body1"
+                              color="secondary"
+                              display={"inline"}
+                            >
+                              {parseReadableConfigValue(
+                                key as keyof Proposal["metadata"]["config"],
+                                value
+                              )}
+                            </Typography>
                           </DetailsText>
                         </Grid>
                       </HighlightedBadge>
                     </Grid>
                   ))}
-                  {proposal.metadata.update_contract_delegate !== '' &&
-                    <ProposalTransferBadge address={proposal.metadata.update_contract_delegate} label="New Delegate"/>}
-                  {proposal.metadata.update_guardian !== '' &&
-                    <ProposalTransferBadge address={proposal.metadata.update_guardian} label="Update Guardian"/>}
-                  {list.map(({key, value}, index) => (
+                  {proposal.metadata.update_contract_delegate !== "" && (
+                    <ProposalTransferBadge
+                      address={proposal.metadata.update_contract_delegate}
+                      label="New Delegate"
+                    />
+                  )}
+                  {proposal.metadata.update_guardian !== "" && (
+                    <ProposalTransferBadge
+                      address={proposal.metadata.update_guardian}
+                      label="Update Guardian"
+                    />
+                  )}
+                  {list.map(({ key, value }, index) => (
                     <Grid
                       key={index}
                       item
@@ -466,37 +610,59 @@ export const ProposalDetails: React.FC = () => {
         </Container>
         <Grid item>
           <Grid container>
-            <Container item md={7} xs={12}>
+            <Container item md={12} xs={12}>
               {cycleInfo &&
                 proposal
                   ?.getStatus(cycleInfo.currentLevel)
                   .statusHistory.map((item, index) => {
-                  return (
-                    <HistoryItem
-                      container
-                      direction="row"
-                      key={index}
-                      alignItems="baseline"
-                      wrap="nowrap"
-                      xs={12}
-                      style={{gap: 32}}
-                    >
-                      <Grid item>
-                        <StatusBadge item status={item.status}/>
-                      </Grid>
-                      <Grid item>
-                        <Typography color="textPrimary" variant="subtitle2">
-                          {item.timestamp}
-                        </Typography>
-                      </Grid>
-                    </HistoryItem>
-                  );
-                })}
+                    return (
+                      <HistoryItem
+                        container
+                        direction="row"
+                        key={index}
+                        alignItems="baseline"
+                        wrap="nowrap"
+                        xs={12}
+                        style={{ gap: 32 }}
+                      >
+                        <Grid item>
+                          <StatusBadge item status={item.status} />
+                        </Grid>
+                        <Grid item>
+                          <Typography color="textPrimary" variant="subtitle2">
+                            {item.timestamp}
+                          </Typography>
+                        </Grid>
+                      </HistoryItem>
+                    );
+                  })}
+
+                {true ? (
+                  <Grid container direction="column">
+                    <Grid item>
+                      <InfoTitle color="secondary">Information</InfoTitle>
+                    </Grid>
+                    <Grid item container direction="row" alignItems="center">
+                      <InfoItem color="textPrimary">Contract Address: {"tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "} </InfoItem>
+                      <InfoCopyIcon text="tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF"  style={{height: 15, marginLeft: -6}} />
+                    </Grid>
+                    <Grid item container direction="row">
+                      <InfoItem color="textPrimary">Parameter 1: {"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}</InfoItem>
+                    </Grid>
+                    <Grid item container direction="row">
+                      <InfoItem color="textPrimary">Parameter 2: {"1300"}</InfoItem>
+                    </Grid>
+                  </Grid>
+                ) : null}
             </Container>
           </Grid>
         </Grid>
       </Grid>
-      <VoteDialog open={openVote} support={voteIsSupport} onClose={onCloseVote}/>
+      <VoteDialog
+        open={openVote}
+        support={voteIsSupport}
+        onClose={onCloseVote}
+      />
     </>
   );
 };
