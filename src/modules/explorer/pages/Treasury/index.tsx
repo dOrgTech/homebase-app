@@ -21,6 +21,7 @@ import { styled, Typography } from "@material-ui/core";
 import { SmallButton } from '../../../common/SmallButton';
 import { MainButton } from '../../../common/MainButton';
 import { DelegationChangeProposalForm } from "modules/explorer/components/DelegationChangeProposalForm";
+import { useDelegate } from "services/contracts/baseDAO/hooks/useDelegate";
 
 
 const DelegateTitle = styled(Typography)(({ theme }) => ({
@@ -42,6 +43,7 @@ export const Treasury: React.FC = () => {
     setOpenTransfer(false)
   }
   const {data: transfers} = useTransfers(daoId);
+  const {data: delegate} = useDelegate(daoId);
 
   const inboundTransfers = useMemo(() => {
     if (!transfers) {
@@ -109,7 +111,16 @@ export const Treasury: React.FC = () => {
           <Grid container style={{display: "flex", justifyContent: "space-between", marginTop: 25}}>
           <Grid item>
             <DelegateTitle>Current Delegate</DelegateTitle>
-            {dao && (
+            {delegate ? (
+              <CopyAddress
+                address={delegate.address}
+                justifyContent={isMobileSmall ? "center" : "flex-start"}
+                typographyProps={{
+                  variant: "subtitle2",
+                }}
+              />
+            ): (
+              dao &&
               <CopyAddress
                 address={dao.data.address}
                 justifyContent={isMobileSmall ? "center" : "flex-start"}
