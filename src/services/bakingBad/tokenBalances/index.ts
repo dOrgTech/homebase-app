@@ -79,3 +79,26 @@ export const getTokenMetadata = async (
     :
     new Token(result)
 };
+
+export const getUserTokenBalance = async (
+  accountAddress: string,
+  network: Network = "mainnet",
+  tokenAddress = ""
+) => {
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?account=${accountAddress}`;
+
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch user balances");
+  }
+  
+  const userTokens =  await response.json();
+
+  const userTokenBalance = userTokens.filter((token: any) => token.token.contract.address === tokenAddress);
+
+  if (userTokenBalance && userTokenBalance[0]) {
+    return userTokenBalance[0].balance;
+  }
+
+}

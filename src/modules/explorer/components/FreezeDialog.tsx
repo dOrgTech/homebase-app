@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Grid,
   styled,
@@ -7,14 +7,15 @@ import {
   InputAdornment,
   Button,
 } from "@material-ui/core";
-import {useFreeze} from "services/contracts/baseDAO/hooks/useFreeze";
+import { useFreeze } from "services/contracts/baseDAO/hooks/useFreeze";
 import BigNumber from "bignumber.js";
-import {useDAO} from "services/indexer/dao/hooks/useDAO";
-import {ResponsiveDialog} from "./ResponsiveDialog";
-import {useDAOID} from "../pages/DAO/router";
-import {ProposalFormInput} from "./ProposalFormInput";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { ResponsiveDialog } from "./ResponsiveDialog";
+import { useDAOID } from "../pages/DAO/router";
+import { ProposalFormInput } from "./ProposalFormInput";
 import { useTezos } from "services/beacon/hooks/useTezos";
-import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
+import { getUserTokenBalance } from "services/bakingBad/tokenBalances";
+import { xtzToMutez } from "services/contracts/utils";
 
 const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {
@@ -22,19 +23,18 @@ const CustomDialog = styled(ResponsiveDialog)({
   },
 });
 
-const CustomInput = styled(TextField)(({theme}) => ({
+const CustomInput = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-input": {
     color: theme.palette.secondary.main,
   },
 }));
 
-
 const CustomLabelsContainer = styled(Grid)({
-  marginBottom: 12
+  marginBottom: 12,
 });
 
 const CustomAmountLabel = styled(Typography)({
-  fontWeight: 500
+  fontWeight: 500,
 });
 
 const CustomMaxLabel = styled(Typography)({
@@ -42,19 +42,17 @@ const CustomMaxLabel = styled(Typography)({
   paddingBottom: 5,
   textDecoration: "underline",
   textUnderlineOffset: 6,
-  cursor: "pointer"
+  cursor: "pointer",
+  marginLeft: 12
 });
 
-export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
+export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
   const [open, setOpen] = React.useState(false);
   const [amount, setAmount] = React.useState<number>(0);
   const daoId = useDAOID();
-  const {mutate} = useFreeze();
-  const {data: dao, ledger} = useDAO(daoId);
+  const { mutate } = useFreeze();
+  const { data: dao, ledger } = useDAO(daoId);
   const { account } = useTezos();
-
-  const {data: tezosBalance} = useTezosBalance(account.toString());
-
 
   const [showMax, setShowMax] = React.useState<boolean>(false);
   const [max, setMax] = React.useState(0);
@@ -80,22 +78,26 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
     }
   }, [amount, dao, mutate, freeze]);
 
-
-  useMemo(() => {
+  useMemo(async () => {
     if (!ledger) {
       return setShowMax(false);
     } else {
-      const userLedger = ledger.find(
-        (l) => l.holder.address.toLowerCase() === account.toLowerCase()
-      );
-      if (userLedger) {
-        setMax(userLedger.available_balance.toNumber());
-        return setShowMax(true);
+      if (account) {
+        const availableBalance = await getUserTokenBalance(
+          account.toString(),
+          dao?.data.network,
+          dao?.data.token.contract
+        );
+        setShowMax(true);
+        if (availableBalance) {
+          const formattedBalance = xtzToMutez(
+            new BigNumber(availableBalance)
+          ).toNumber();
+          setMax(formattedBalance);
+        }
       }
-      return setShowMax(false);
     }
-  }, [ledger, account]);
-
+  }, [ledger, account, dao]);
 
   return (
     <div>
@@ -107,16 +109,36 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
         onClose={handleClose}
         title={freeze ? "DEPOSIT" : "WITHDRAW"}
       >
-        <Grid container direction={"column"} style={{gap: 36}}>
+        <Grid container direction={"column"} style={{ gap: 36 }}>
           <Grid item>
             <Typography variant="body2" color="textPrimary">
               Confirm the {freeze ? "deposit" : "withdrawal"} of your tokens
             </Typography>
           </Grid>
           <Grid item>
-            <CustomLabelsContainer item container direction="row" justifyContent="space-between" alignItems="center">
+            <CustomLabelsContainer
+              item
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
               <CustomAmountLabel>Amount</CustomAmountLabel>
-             {showMax ? <CustomMaxLabel color="secondary" onClick={() => setAmount(max)}>Use Max</CustomMaxLabel> : null }
+              </Grid>
+              <Grid item container direction="row" xs={9} justifyContent="flex-end">
+                {showMax && freeze ? (
+                  <>
+                <Typography>{max} {dao?.data.token.symbol}</Typography>
+                  <CustomMaxLabel
+                    color="secondary"
+                    onClick={() => setAmount(max)}
+                  >
+                    Use Max
+                  </CustomMaxLabel>
+                  </>
+                ) : null}
+              </Grid>
             </CustomLabelsContainer>
             <ProposalFormInput>
               <CustomInput
@@ -124,7 +146,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({freeze}) => {
                 type="number"
                 placeholder="0"
                 onChange={(newValue: any) => setAmount(newValue.target.value)}
-                inputProps={{min: 0}}
+                inputProps={{ min: 0 }}
                 InputProps={{
                   disableUnderline: true,
                   endAdornment: (

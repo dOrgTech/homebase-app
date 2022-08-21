@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 import {
   Grid,
   styled,
@@ -83,12 +83,13 @@ export const nftTransferFormInitialState: NFTTransferFormValues = {
   },
 };
 
-export const NFTTransferForm: React.FC = () => {
+export const NFTTransferForm: React.FC<{open: boolean}> = ({open}) => {
   const {
     control,
     getValues,
     setValue,
     watch,
+    reset,
     formState: {errors, touchedFields: touched},
   } = useFormContext<NFTTransferFormValues>();
 
@@ -127,6 +128,13 @@ export const NFTTransferForm: React.FC = () => {
     : [];
 
   const nftOptions = nonSelectedNFTs.map((n) => n.token);
+
+  useMemo(() => {
+    if (!open) {
+      reset();
+    }
+  }, [open, reset]);
+
 
   return (
     <DialogContent>

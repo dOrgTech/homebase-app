@@ -59,30 +59,30 @@ interface Props {
 const enabledForms: Record<DAOTemplate,
   {
     label: string;
-    component: React.FC;
+    component: React.FC<{open: boolean}>;
   }[]> = {
   treasury: [
     {
       label: "TRANSFER FUNDS",
-      component: () => <NewTreasuryProposalDialog/>,
+      component: ({open}) => <NewTreasuryProposalDialog  open={open} />,
     },
     {
       label: "TRANSFER NFTs",
-      component: () => <NFTTransferForm/>,
+      component: ({open}) => <NFTTransferForm open={open} />,
     },
   ],
   registry: [
     {
       label: "TRANSFER FUNDS",
-      component: () => <NewTreasuryProposalDialog/>,
+      component: ({open}) => <NewTreasuryProposalDialog  open={open} />,
     },
     {
       label: "TRANSFER NFTs",
-      component: () => <NFTTransferForm/>,
+      component: ({open}) => <NFTTransferForm open={open} />,
     },
     {
       label: "UPDATE REGISTRY",
-      component: () => <UpdateRegistryDialog/>,
+      component: ({open}) => <UpdateRegistryDialog  open={open} />,
     },
   ],
   lambda: [
@@ -211,9 +211,9 @@ export const ProposalFormContainer: React.FC<Props> = ({
             />
             {forms.map((form, i) => (
               <TabPanel key={`tab-${i}`} value={selectedTab} index={i}>
-                <form.component/>
+                <form.component  open={open} />
               </TabPanel>
-            ))}
+            ))} 
 
             <Content container direction={"column"} style={{gap: 10}}>
               <Grid item>
