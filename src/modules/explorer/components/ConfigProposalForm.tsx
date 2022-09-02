@@ -51,7 +51,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
         console.log(values);
 
         const mutateValues = {
-          frozen_extra_value: parseInt(values.frozen_extra_value),
+          frozen_extra_value: values.frozen_extra_value,
           slash_scale_value: !Number.isNaN(parseInt(values.returnedPercentage)) ?
             100 - Number(values.returnedPercentage) : NaN
         }
