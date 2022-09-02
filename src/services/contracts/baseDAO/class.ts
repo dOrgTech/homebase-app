@@ -242,10 +242,10 @@ export abstract class BaseDAO {
   public async proposeConfigChange(configParams: ConfigProposalParams, tezos: TezosToolkit) {
     const contract = await getContract(tezos, this.data.address);
 
-    let formatted_frozen_extra_value: number | undefined;
+    let formatted_frozen_extra_value: string | undefined;
 
     if (configParams.frozen_extra_value) {
-      formatted_frozen_extra_value = formatUnits(new BigNumber(configParams.frozen_extra_value.toString()), this.data.token.decimals).toNumber()
+      formatted_frozen_extra_value = formatUnits(new BigNumber(configParams.frozen_extra_value.toString()), this.data.token.decimals).toString()
     }
     
     const proposalMetadata = await BaseDAO.encodeProposalMetadata({
