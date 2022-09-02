@@ -7,7 +7,7 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 import dayjs from "dayjs";
 import BigNumber from "bignumber.js";
 
-BigNumber.config({ DECIMAL_PLACES: 2 })
+// BigNumber.config({ DECIMAL_PLACES:  })
 
 dayjs.extend(localizedFormat);
 

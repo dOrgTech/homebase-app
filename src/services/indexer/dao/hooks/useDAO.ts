@@ -139,7 +139,7 @@ export const useDAO = (address: string) => {
         setCycleInfo({
           blocksLeft,
           type,
-          timeEstimateForNextBlock: blockTimeAverage / 2,
+          timeEstimateForNextBlock: blockTimeAverage,
           currentCycle: periodsFromStart,
           currentLevel: block,
         });

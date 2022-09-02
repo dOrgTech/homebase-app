@@ -19,7 +19,7 @@ interface Props {
   onClose: () => void;
 }
 
-const SUPPORTED_NETWORKS: Network[] = ["mainnet", "jakartanet"];
+const SUPPORTED_NETWORKS: Network[] = ["mainnet", "ghostnet"];
 
 export const NetworkSheet: React.FC<Props> = (props) => {
   const { network, changeNetwork } = useTezos();
