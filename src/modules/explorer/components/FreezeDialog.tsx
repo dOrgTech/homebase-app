@@ -15,7 +15,7 @@ import { useDAOID } from "../pages/DAO/router";
 import { ProposalFormInput } from "./ProposalFormInput";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { getUserTokenBalance } from "services/bakingBad/tokenBalances";
-import { xtzToMutez } from "services/contracts/utils";
+import { parseUnits, xtzToMutez } from "services/contracts/utils";
 
 const CustomDialog = styled(ResponsiveDialog)({
   "& .MuiDialog-paperWidthSm": {
@@ -82,16 +82,17 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
     if (!ledger) {
       return setShowMax(false);
     } else {
-      if (account) {
+      if (account && dao) {
         const availableBalance = await getUserTokenBalance(
           account.toString(),
-          dao?.data.network,
-          dao?.data.token.contract
+          dao.data.network,
+          dao.data.token.contract
         );
         setShowMax(true);
         if (availableBalance) {
-          const formattedBalance = xtzToMutez(
-            new BigNumber(availableBalance)
+          const formattedBalance = parseUnits(
+            new BigNumber(availableBalance),
+            dao.data.token.decimals
           ).toNumber();
           setMax(formattedBalance);
         }

@@ -46,7 +46,7 @@ export interface ProposeParams {
 }
 
 export interface ConfigProposalParams {
-  frozen_extra_value?: number
+  frozen_extra_value?: string
   frozen_scale_value?: number
   max_proposal_size?: number
   slash_division_value?: number
