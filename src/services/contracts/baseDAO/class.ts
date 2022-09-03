@@ -5,6 +5,7 @@ import { ConfigProposalParams, fromStateToBaseStorage, getContract } from ".";
 import { MetadataDeploymentResult } from "../metadataCarrier/deploy";
 import { generateStorageContract } from "services/baseDAODocker";
 import baseDAOContractCode from "./michelson/baseDAO";
+import lambdaDAOContractCode from "./michelson/lambdaDAO";
 import {formatUnits, xtzToMutez} from "../utils";
 import {BigNumber} from "bignumber.js";
 import {Token} from "models/Token";
@@ -87,12 +88,23 @@ export abstract class BaseDAO {
       });
       console.log("Originating DAO contract...");
 
-      console.log(baseDAOContractCode);
+      let contractMichaelson
+
+      console.log("template: ", template);
+      if (template == "lambda"){
+        console.log("lambda")
+        contractMichaelson = lambdaDAOContractCode
+      } else {
+        console.log("others")
+        contractMichaelson = baseDAOContractCode
+      }
+
+      console.log(contractMichaelson);
       console.log(treasuryParams);
       console.log(storageCode);
 
       const t = tezos.wallet.originate({
-        code: baseDAOContractCode,
+        code: contractMichaelson,
         init: storageCode,
       });
 
