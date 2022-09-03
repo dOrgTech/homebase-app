@@ -113,9 +113,9 @@ export const UserBalances: React.FC<{ daoId: string }> = ({
       return userBalances;
     }
 
-    userBalances.available.balance = userLedger.available_balance.toString();
-    userBalances.pending.balance = userLedger.pending_balance.toString();
-    userBalances.staked.balance = userLedger.staked.toString();
+    userBalances.available.balance = userLedger.available_balance.dp(10).toString();
+    userBalances.pending.balance = userLedger.pending_balance.dp(10).toString();
+    userBalances.staked.balance = userLedger.staked.dp(10).toString();
 
     return userBalances;
   }, [account, ledger]);

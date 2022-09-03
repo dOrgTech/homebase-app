@@ -182,7 +182,7 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({
       ]
     : [];
 
-  const assetOptions = daoAssets.map((a) => a.token);
+  const assetOptions = daoAssets.filter((a) => a.token.symbol).map((a) => a.token);
   const currentAssetBalance = daoAssets.find(
     (asset) =>currentTransfer !== undefined ? asset.token.symbol === currentTransfer.asset?.symbol : null
   );
