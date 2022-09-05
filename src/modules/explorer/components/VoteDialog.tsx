@@ -1,5 +1,5 @@
-import React, {useCallback} from "react";
-import {Grid, Typography, TextField, Button, useTheme} from "@material-ui/core";
+import React, {useCallback, useMemo} from "react";
+import {Grid, Typography, TextField, Button, useTheme, styled} from "@material-ui/core";
 import {useParams} from "react-router-dom";
 import {useVote} from "services/contracts/baseDAO/hooks/useVote";
 import BigNumber from "bignumber.js";
@@ -8,8 +8,29 @@ import {useDAOID} from "../pages/DAO/router";
 import {ResponsiveDialog} from "./ResponsiveDialog";
 import {useAgoraTopic} from "../../../services/agora/hooks/useTopic";
 import {useProposal} from "../../../services/indexer/dao/hooks/useProposal";
-import {toShortAddress} from "../../../services/contracts/utils";
+import {parseUnits, toShortAddress} from "../../../services/contracts/utils";
 import {ProposalFormInput} from "./ProposalFormInput";
+import { getUserTokenBalance } from "services/bakingBad/tokenBalances";
+import { useTezos } from "services/beacon/hooks/useTezos";
+
+const CustomLabelsContainer = styled(Grid)({
+  marginBottom: 12,
+});
+
+const CustomAmountLabel = styled(Typography)({
+  fontWeight: 500,
+});
+
+
+const CustomMaxLabel = styled(Typography)({
+  fontSize: 16,
+  paddingBottom: 5,
+  textDecoration: "underline",
+  textUnderlineOffset: 6,
+  cursor: "pointer",
+  marginLeft: 12
+});
+
 
 export const VoteDialog: React.FC<{ support: boolean; open: boolean; onClose: () => void }> = ({
                                                                                                  support,
@@ -21,12 +42,39 @@ export const VoteDialog: React.FC<{ support: boolean; open: boolean; onClose: ()
     proposalId: string;
   }>();
   const daoId = useDAOID();
-  const {data: dao} = useDAO(daoId);
+  const {data: dao, ledger} = useDAO(daoId);
   const {data: proposal} = useProposal(daoId, proposalId)
   const {data: agoraPost} = useAgoraTopic(Number(proposal?.metadata.agoraPostId));
 
+  const [showMax, setShowMax] = React.useState<boolean>(false);
+  const [max, setMax] = React.useState(0);
+
   const {mutate} = useVote();
   const theme = useTheme();
+  const { account } = useTezos();
+
+
+  useMemo(async () => {
+    if (!ledger) {
+      return setShowMax(false);
+    } else {
+      if (account && dao) {
+        const availableBalance = await getUserTokenBalance(
+          account.toString(),
+          dao.data.network,
+          dao.data.token.contract
+        );
+        setShowMax(true);
+        if (availableBalance) {
+          const formattedBalance = parseUnits(
+            new BigNumber(availableBalance),
+            dao.data.token.decimals
+          ).toNumber();
+          setMax(formattedBalance);
+        }
+      }
+    }
+  }, [ledger, account, dao]);
 
   const onSubmit = useCallback(async () => {
     if (dao) {
@@ -66,7 +114,33 @@ export const VoteDialog: React.FC<{ support: boolean; open: boolean; onClose: ()
 
           <Grid item container direction="row">
             <Grid item xs>
-              <ProposalFormInput label={"Amount"}>
+
+            <CustomLabelsContainer
+              item
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Grid item xs={3}>
+              <CustomAmountLabel>Amount</CustomAmountLabel>
+              </Grid>
+              <Grid item container direction="row" xs={9} justifyContent="flex-end">
+                {showMax ? (
+                  <>
+                <Typography>{max} {dao?.data.token.symbol}</Typography>
+                  <CustomMaxLabel
+                    color="secondary"
+                    onClick={() => setAmount(String(max))}
+                  >
+                    Use Max
+                  </CustomMaxLabel>
+                  </>
+                ) : null}
+              </Grid>
+            </CustomLabelsContainer>
+
+              <ProposalFormInput>
                 <TextField
                   type="number"
                   value={amount}
