@@ -6,7 +6,7 @@ import { storageParamsToBaseDAODockerArgs } from "./mappers"
 import { GeneratorArgs, BaseDAODockerContractsDTO } from "./types"
 import { getTokenMetadata } from 'services/bakingBad/tokenBalances';
 
-export const API_URL = "https://v2-basedao-dockerized.herokuapp.com/steps"
+export const API_URL = "http://localhost:3500/steps"
 
 interface BaseDAODockerParams {
   template: DAOTemplate;

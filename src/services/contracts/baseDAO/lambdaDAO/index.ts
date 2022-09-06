@@ -2,7 +2,7 @@ import { Expr, Parser, unpackDataBytes } from "@taquito/michel-codec";
 import { TezosToolkit } from "@taquito/taquito";
 import { Schema } from "@taquito/michelson-encoder";
 import { BaseDAO, BaseDAOData, getContract } from "..";
-import { LambdaAddArgs, RegistryProposeArgs } from "./types";
+import { RegistryProposeArgs } from "./types";
 import { bytes2Char, char2Bytes } from "@taquito/tzip16";
 import proposeCode from "./michelson/propose";
 import proposelambda from "./michelson/proposelambda";
@@ -10,10 +10,11 @@ import { RegistryExtraDTO } from "services/indexer/types";
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal";
 import { BigNumber } from "bignumber.js";
 import { formatUnits } from "../../utils";
+import { LambdaAddArgs, LambdaRemoveArgs } from "../registryDAO/types";
 
 const parser = new Parser();
 
-interface RegistryDAOData extends BaseDAOData {
+interface LambdaDAOData extends BaseDAOData {
   extra: RegistryExtraDTO;
 }
 
@@ -59,29 +60,29 @@ const mapStorageRegistryAffectedList = (
   }));
 };
 
-export class RegistryDAO extends BaseDAO {
-  public decoded: {
-    decodedRegistry: {
-      key: string;
-      value: string;
-    }[];
-    decodedRegistryAffected: {
-      key: string;
-      proposalId: string;
-    }[];
-  };
+export class LambdaDAO extends BaseDAO {
+  // public decoded: {
+  //   decodedRegistry: {
+  //     key: string;
+  //     value: string;
+  //   }[];
+  //   decodedRegistryAffected: {
+  //     key: string;
+  //     proposalId: string;
+  //   }[];
+  // };
 
-  public constructor(public data: RegistryDAOData) {
+  public constructor(public data: LambdaDAOData) {
     super(data);
 
-    this.decoded = {
-      decodedRegistry: mapStorageRegistryList(this.data.extra.registry),
-      decodedRegistryAffected: mapStorageRegistryAffectedList(this.data.extra.registry_affected),
-    };
+    // this.decoded = {
+    //   decodedRegistry: mapStorageRegistryList(this.data.extra.registry),
+    //   decodedRegistryAffected: mapStorageRegistryAffectedList(this.data.extra.registry_affected),
+    // };
 
-    this.data.extra.returnedPercentage = new BigNumber(100)
-      .minus(new BigNumber(this.data.extra.slash_scale_value))
-      .toString();
+    // this.data.extra.returnedPercentage = new BigNumber(100)
+    //   .minus(new BigNumber(this.data.extra.slash_scale_value))
+    //   .toString();
   }
 
   public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {
@@ -147,10 +148,60 @@ export class RegistryDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     );
 
     return await contractMethod.send();
   };
+
+  public async proposeLambdaAdd({data}: LambdaAddArgs, tezos: TezosToolkit) {
+    console.log("here")
+    console.log("tezos: ", tezos);
+    const contract = await getContract(tezos, this.data.address);
+
+    const proposalMetadata = await BaseDAO.encodeLambdaAddMetadata(
+      data,
+      proposelambda,
+      tezos
+    );
+    console.log("proposalMetadata: ", proposalMetadata);
+
+    const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
+      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      proposalMetadata.bytes
+    );
+
+    return await contractMethod.send();
+  }
+
+  public async proposeLambdaRemove({handler_name}: LambdaRemoveArgs, tezos: TezosToolkit) {
+    console.log("handler_name: ", handler_name);
+    console.log("here remove")
+    console.log("tezos: ", tezos);
+    const contract = await getContract(tezos, this.data.address);
+
+    const michelsonType = parser.parseData(proposelambda);
+    const schema = new Schema(michelsonType as Expr);
+
+    const dataToEncode = {
+      remove_handler: handler_name
+    }
+
+    const data = schema.Encode(dataToEncode);
+
+    const { packed: proposalMetadata } = await tezos.rpc.packData({
+      data,
+      type: michelsonType as Expr,
+    });
+
+    const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
+      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      proposalMetadata
+    );
+
+    return await contractMethod.send();
+  }
 }

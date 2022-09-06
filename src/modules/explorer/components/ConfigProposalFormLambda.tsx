@@ -20,6 +20,10 @@ import "prism-themes/themes/prism-night-owl.css";
 import { MainButton } from "modules/common/MainButton";
 import { SearchLambda } from "./styled/SearchLambda";
 import { CheckOutlined } from '@material-ui/icons';
+import { useLambdaAddPropose } from "services/contracts/baseDAO/hooks/useLambdaAddPropose";
+import { useLambdaRemovePropose } from "services/contracts/baseDAO/hooks/useLambdaRemovePropose";
+import { RegistryDAO } from "services/contracts/baseDAO";
+import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO";
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
   width: 101,
@@ -118,6 +122,7 @@ export const ProposalFormLambda: React.FC<Props> = ({
 }) => {
   const daoId = useDAOID();
   const { data: dao } = useDAO(daoId);
+  console.log("dao: ", dao);
   const style = styles();
 
   const methods = useForm<Values>();
@@ -148,7 +153,7 @@ export const ProposalFormLambda: React.FC<Props> = ({
 
   const lambdaOptions = [
     {
-      label: "_paymentTokenIndex",
+      label: "sample",
       code: `const allowances = new MichelsonMap();
       const ledger = new MichelsonMap();
       ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });`,
@@ -247,14 +252,51 @@ export const ProposalFormLambda: React.FC<Props> = ({
     }
   }, [open, methods]);
 
+  const {mutate: lambdaMutate} = useLambdaAddPropose();
+  const {mutate: lambdaRemoveMutate} = useLambdaRemovePropose();
+
   const onSubmit = useCallback((values: Values) => {
+    console.log("values: ", values);
     setState(LambdaProposalState.wallet_action);
     setCode("");
+    console.log("ProposalModalKey[action]: ", ProposalModalKey[action]);
 
-    setTimeout(() => {
-      setState(LambdaProposalState.action_finished);
-    }, 3000);
-  }, []);
+    if(action === ProposalModalKey.new){
+      const agoraPostId = Number(123);
+      console.log("agoraPostId: ", agoraPostId);
+      console.log("dao: ", dao);
+  
+      lambdaMutate({
+        dao: dao as LambdaDAO,
+        args: {
+          agoraPostId,
+          data: code
+        },
+      });
+    } else if (action === ProposalModalKey.remove) {
+      if(!lambda) {
+        return
+      }
+      const agoraPostId = Number(123);
+      console.log("agoraPostId: ", agoraPostId);
+      console.log("dao: ", dao);
+  
+      lambdaRemoveMutate({
+        dao: dao as LambdaDAO,
+        args: {
+          agoraPostId,
+          handler_name: lambda.label
+        },
+      });
+    } else {
+      console.log("This is else")
+    }
+
+    
+    // setTimeout(() => {
+    //   setState(LambdaProposalState.action_finished);
+    // }, 3000);
+  }, [dao, lambdaMutate, code, action, lambda, lambdaRemoveMutate]);
 
   const handleChange = (data: LambdaValues) => {
     if (data?.code) {

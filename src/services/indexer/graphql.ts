@@ -8,8 +8,10 @@ if (!process.env.REACT_APP_HASURA_ADMIN_SECRET) {
   throw new Error("REACT_APP_HASURA_ADMIN_SECRET is not set");
 }
 
-const BASE_URL = process.env.REACT_APP_HASURA_URL;
-const HASURA_ADMIN_SECRET = process.env.REACT_APP_HASURA_ADMIN_SECRET;
+// const BASE_URL = process.env.REACT_APP_HASURA_URL;
+// const HASURA_ADMIN_SECRET = process.env.REACT_APP_HASURA_ADMIN_SECRET;
+const BASE_URL = "http://localhost:8080/v1/graphql";
+const HASURA_ADMIN_SECRET = "changeme";
 
 export const client = new GraphQLClient(BASE_URL, {
   headers: {

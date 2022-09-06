@@ -25,16 +25,6 @@ export interface RegistryProposeArgs {
   agoraPostId: number;
 }
 
-export interface LambdaAddArgs {
-  data: string
-  agoraPostId: number;
-}
-
-export interface LambdaRemoveArgs {
-  handler_name: string
-  agoraPostId: number;
-}
-
 export type RegistryExtraDTOBCD = [
   {
     data: {

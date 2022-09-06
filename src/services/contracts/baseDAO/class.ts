@@ -10,7 +10,7 @@ import {formatUnits, xtzToMutez} from "../utils";
 import {BigNumber} from "bignumber.js";
 import {Token} from "models/Token";
 import {Ledger} from "services/indexer/types";
-import {Expr, Parser} from "@taquito/michel-codec";
+import {Expr, Parser, packDataBytes, MichelsonType, MichelsonData} from "@taquito/michel-codec";
 import {Schema} from "@taquito/michelson-encoder";
 import proposeCode from "./registryDAO/michelson/propose"
 
@@ -43,7 +43,7 @@ export interface BaseDAOData {
   token: Token;
   guardian: string;
   ledger: Ledger[];
-  max_proposals: string;
+  // max_proposals: string;
   max_quorum_change: string;
   max_quorum_threshold: string;
   min_quorum_threshold: string;
@@ -51,6 +51,7 @@ export interface BaseDAOData {
   proposal_expired_level: string;
   proposal_flush_level: string;
   quorum_change: string;
+  fixed_proposal_fee_in_token: string;
   last_updated_cycle: string;
   quorum_threshold: BigNumber;
   staked: string;
@@ -59,9 +60,9 @@ export interface BaseDAOData {
   description: string;
   type: DAOTemplate;
   network: Network;
-  extra: {
-    frozen_extra_value: string;
-  };
+  // extra: {
+  //   frozen_extra_value: string;
+  // };
 }
 
 export abstract class BaseDAO {
@@ -255,6 +256,22 @@ export abstract class BaseDAO {
     return packed;
   }
 
+  static async encodeLambdaAddMetadata(dataToEncode: any, michelsonSchemaString: string, tezos: TezosToolkit) {
+    console.log("michelsonSchemaString: ", michelsonSchemaString);
+    console.log("dataToEncode: ", dataToEncode);
+    const parser = new Parser();
+
+    const dataJSON = parser.parseMichelineExpression(dataToEncode) as MichelsonData;
+    const typeJSON = parser.parseMichelineExpression(michelsonSchemaString) as MichelsonType;
+
+    const packed = packDataBytes(
+      dataJSON, // as MichelsonData
+      typeJSON // as MichelsonType
+    );
+
+    return packed;
+  }
+
   public async proposeConfigChange(configParams: ConfigProposalParams, tezos: TezosToolkit) {
     const contract = await getContract(tezos, this.data.address);
 
@@ -276,7 +293,7 @@ export abstract class BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
       proposalMetadata
     );
 

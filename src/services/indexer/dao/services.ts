@@ -70,6 +70,9 @@ export const getProposals = async (dao: BaseDAO) => {
       proposals = fetched.proposals.map(
         (proposal) => new RegistryProposal(proposal, dao)
       );
+      break
+    case "lambda":
+      proposals = []
 
       break;
     default:

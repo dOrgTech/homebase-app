@@ -88,17 +88,15 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({
                   Add Lambda
                 </MainButton>
 
-                {dao.data.type === "registry" && (
-                  <MainButton
-                    variant={"contained"}
-                    color={"secondary"}
-                    onClick={() =>
-                      handleOptionSelected(ProposalModalKey.remove)
-                    }
-                  >
-                    Remove Lambda
-                  </MainButton>
-                )}
+                <MainButton
+                  variant={"contained"}
+                  color={"secondary"}
+                  onClick={() =>
+                    handleOptionSelected(ProposalModalKey.remove)
+                  }
+                >
+                  Remove Lambda
+                </MainButton>
 
                 <MainButton
                   variant={"contained"}

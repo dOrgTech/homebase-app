@@ -80,7 +80,9 @@ export const Proposals: React.FC = () => {
   };
 
   const handleProposalModal = () => {
-    data?.data.dao_type?.name === "registry" ?  setOpenModalLambda(true) : setOpenModal(true);
+    // console.log("data?.data.dao_type: ", data?.data.dao_type);
+    // data?.data.dao_type?.name === "registry" ?  setOpenModalLambda(true) : setOpenModal(true);
+    setOpenModalLambda(true)
   };
 
   return (
@@ -133,6 +135,7 @@ export const Proposals: React.FC = () => {
                 variant="contained"
                 color="secondary"
                 onClick={handleProposalModal}
+                // disabled={false}
                 disabled={shouldDisable}
               >
                 New Proposal

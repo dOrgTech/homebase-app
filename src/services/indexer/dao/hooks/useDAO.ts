@@ -11,6 +11,7 @@ import {
   unpackExtraNumValue,
   CycleInfo,
 } from "services/contracts/baseDAO";
+import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO";
 import { parseUnits } from "services/contracts/utils";
 import { getDAO } from "services/indexer/dao/services";
 import { useBlockchainInfo } from "../../../contracts/baseDAO/hooks/useBlockchainInfo";
@@ -29,6 +30,7 @@ export const useDAO = (address: string) => {
       const response = await getDAO(address as string);
 
       const dao = response.daos[0];
+      console.log("dao: ", dao);
       const base = {
         ...dao,
         token: new Token({
@@ -89,16 +91,17 @@ export const useDAO = (address: string) => {
                 slash_scale_value: unpackExtraNumValue((dao.registry_extras[0] as any).slash_scale_value),
               } as any)
             : ({
-                ...dao.treasury_extras[0],
+                // ...dao.treasury_extras[0],
                 frozen_extra_value: parseUnits(
-                  unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_extra_value),
+                  new BigNumber((dao).fixed_proposal_fee_in_token),
+                  // unpackExtraNumValue((dao).fixed_proposal_fee_in_token),
                   dao.token.decimals
                 ),
-                frozen_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_scale_value),
-                slash_division_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_division_value),
-                min_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).min_xtz_amount),
-                max_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).max_xtz_amount),
-                slash_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_scale_value),
+                // frozen_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_scale_value),
+                // slash_division_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_division_value),
+                // min_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).min_xtz_amount),
+                // max_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).max_xtz_amount),
+                // slash_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_scale_value),
               } as any),
         quorum_threshold: parseUnits(
           new BigNumber(dao.quorum_threshold),
@@ -111,6 +114,8 @@ export const useDAO = (address: string) => {
           return new TreasuryDAO(base);
         case "registry":
           return new RegistryDAO(base);
+        case "lambda":
+          return new LambdaDAO(base);
         default:
           throw new Error(
             `DAO with address '${dao.address}' has an unrecognized type '${dao.dao_type.name}'`

@@ -74,7 +74,7 @@ export const GET_DAO_QUERY = gql`
         past_unstaked
         staked
       }
-      max_proposals
+      # max_proposals
       max_quorum_change
       max_quorum_threshold
       min_quorum_threshold
@@ -84,6 +84,7 @@ export const GET_DAO_QUERY = gql`
       proposal_expired_level
       proposal_flush_level
       quorum_change
+      fixed_proposal_fee_in_token
       quorum_threshold
       staked
       start_level
@@ -111,16 +112,6 @@ export const GET_DAO_QUERY = gql`
         symbol
         timestamp
         token_id
-      }
-      treasury_extras {
-        id
-        frozen_extra_value
-        frozen_scale_value
-        id
-        max_xtz_amount
-        min_xtz_amount
-        slash_division_value
-        slash_scale_value
       }
     }
   }

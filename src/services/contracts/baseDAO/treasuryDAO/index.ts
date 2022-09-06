@@ -36,7 +36,7 @@ export class TreasuryDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
       proposalMetadata
     );
 
@@ -56,7 +56,7 @@ export class TreasuryDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
       proposalMetadata
     );
 
@@ -82,7 +82,7 @@ export class TreasuryDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
       proposalMetadata
     );
 

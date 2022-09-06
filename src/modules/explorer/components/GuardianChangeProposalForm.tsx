@@ -103,7 +103,7 @@ export const GuardianChangeProposalForm: React.FC<Props> = ({ open, handleClose,
               Proposal Fee:{" "}
             </Typography>
             <Typography align='left' variant='subtitle2' color='secondary' display={"inline"} style={{ fontWeight: 300 }}>
-              {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
+              {dao && dao.data.fixed_proposal_fee_in_token.toString()} {dao ? dao.data.token.symbol : ""}
             </Typography>
           </Grid>
 

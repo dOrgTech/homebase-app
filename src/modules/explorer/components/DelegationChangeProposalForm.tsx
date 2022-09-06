@@ -96,7 +96,7 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
               Proposal Fee:{" "}
             </Typography>
             <Typography align='left' variant='subtitle2' color='secondary' display={"inline"}>
-              {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
+              {dao && dao.data.fixed_proposal_fee_in_token.toString()} {dao ? dao.data.token.symbol : ""}
             </Typography>
           </Grid>
 

@@ -86,7 +86,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
             <Typography style={{fontWeight: 300, fontSize: "16px"}} color={"secondary"}>All fields are optional. Leave empty what you wish to leave unchanged</Typography>
           </Grid>
           <Grid item>
-            <ProposalFormInput label={`Proposal fee (Current: ${dao?.data.extra.frozen_extra_value.toString()})`}>
+            <ProposalFormInput label={`Proposal fee (Current: ${dao?.data.fixed_proposal_fee_in_token.toString()})`}>
               <Controller
                 control={methods.control}
                 name={`frozen_extra_value`}
@@ -102,7 +102,8 @@ export const ConfigProposalForm: React.FC<Props> = ({
             </ProposalFormInput>
           </Grid>
           <Grid item>
-            <ProposalFormInput label={`Percentage of tokens returned after rejection (Current: ${dao?.data.extra.returnedPercentage.toString()}%)`}>
+            {/* <ProposalFormInput label={`Percentage of tokens returned after rejection (Current: ${dao?.data.extra.returnedPercentage.toString()}%)`}> */}
+            <ProposalFormInput label={`Percentage of tokens returned after rejection (Current:`}>
               <Controller
                 control={methods.control}
                 name={`returnedPercentage`}
@@ -122,7 +123,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
               Fee: </Typography>
             <Typography
               align="left" variant="subtitle2" color="secondary" display={"inline"} style={{fontWeight: 300}}>
-              {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
+              {dao && dao.data.fixed_proposal_fee_in_token.toString()}{" "}
               {dao ? dao.data.token.symbol : ""}
             </Typography>
           </Grid>
