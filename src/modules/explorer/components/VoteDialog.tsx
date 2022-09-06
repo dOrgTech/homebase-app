@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from "react";
+import React, {useCallback, useEffect, useMemo} from "react";
 import {Grid, Typography, TextField, Button, useTheme, styled} from "@material-ui/core";
 import {useParams} from "react-router-dom";
 import {useVote} from "services/contracts/baseDAO/hooks/useVote";
@@ -12,6 +12,8 @@ import {parseUnits, toShortAddress} from "../../../services/contracts/utils";
 import {ProposalFormInput} from "./ProposalFormInput";
 import { getUserTokenBalance } from "services/bakingBad/tokenBalances";
 import { useTezos } from "services/beacon/hooks/useTezos";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance";
 
 const CustomLabelsContainer = styled(Grid)({
   marginBottom: 12,
@@ -45,36 +47,14 @@ export const VoteDialog: React.FC<{ support: boolean; open: boolean; onClose: ()
   const {data: dao, ledger} = useDAO(daoId);
   const {data: proposal} = useProposal(daoId, proposalId)
   const {data: agoraPost} = useAgoraTopic(Number(proposal?.metadata.agoraPostId));
+  const { tokenHoldings: daoHoldings } = useDAOHoldings(daoId);
 
-  const [showMax, setShowMax] = React.useState<boolean>(false);
-  const [max, setMax] = React.useState(0);
 
   const {mutate} = useVote();
   const theme = useTheme();
-  const { account } = useTezos();
-
-
-  useMemo(async () => {
-    if (!ledger) {
-      return setShowMax(false);
-    } else {
-      if (account && dao) {
-        const availableBalance = await getUserTokenBalance(
-          account.toString(),
-          dao.data.network,
-          dao.data.token.contract
-        );
-        setShowMax(true);
-        if (availableBalance) {
-          const formattedBalance = parseUnits(
-            new BigNumber(availableBalance),
-            dao.data.token.decimals
-          ).toNumber();
-          setMax(formattedBalance);
-        }
-      }
-    }
-  }, [ledger, account, dao]);
+  const [showMax, setShowMax] = React.useState<boolean>(false);
+  const { data: tezosBalance } = useTezosBalance(daoId);
+  const [max, setMax] = React.useState(0);
 
   const onSubmit = useCallback(async () => {
     if (dao) {
@@ -88,6 +68,22 @@ export const VoteDialog: React.FC<{ support: boolean; open: boolean; onClose: ()
       onClose();
     }
   }, [amount, dao, mutate, onClose, proposalId, support]);
+
+  const daoAssets = daoHoldings
+  ? [
+      ...daoHoldings,
+      { balance: tezosBalance || new BigNumber(0), token: { symbol: "XTZ" } },
+    ]
+  : [];
+
+  const assetOption = daoAssets.filter((a) => a.token.symbol !== 'XTZ');
+  
+  useEffect(() => {
+    if (assetOption.length > 0) {
+      setShowMax(true);
+      setMax(assetOption[0].balance.toNumber())
+    }
+  }, [assetOption]);
 
   return (
     <>
@@ -145,8 +141,11 @@ export const VoteDialog: React.FC<{ support: boolean; open: boolean; onClose: ()
                   type="number"
                   value={amount}
                   placeholder="Type an Amount"
+                  inputProps={{min: 0, max: max}}
                   InputProps={{disableUnderline: true}}
                   onChange={(newValue) => setAmount(newValue.target.value)}
+                  onKeyPress={(e) => {
+                   e.key === '-' ? e.preventDefault() : null}}
                 />
               </ProposalFormInput>
             </Grid>
