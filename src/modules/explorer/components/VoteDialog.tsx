@@ -202,7 +202,7 @@ export const VoteDialog: React.FC<{
               disabled={!amount || error}
               onClick={onSubmit}
             >
-              SUBMIT
+              Submit
             </Button>
           </Grid>
         </Grid>
