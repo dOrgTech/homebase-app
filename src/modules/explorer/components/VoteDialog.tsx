@@ -102,7 +102,7 @@ export const VoteDialog: React.FC<{
       available_balance: new BigNumber(0),
     };
     
-    setMax(value.available_balance.toNumber() + 2);
+    setMax(value.available_balance.toNumber());
     return value;
   }, [account, ledger]);
 
