@@ -102,13 +102,12 @@ export const VoteDialog: React.FC<{
       available_balance: new BigNumber(0),
     };
     
-    setMax(value.available_balance.toNumber());
+    setMax(value.available_balance.toNumber() + 2);
     return value;
   }, [account, ledger]);
 
   useEffect(() => {
     if (!open) {
-      setMax(0);
       setAmount("0");
       setError(false);
     }
