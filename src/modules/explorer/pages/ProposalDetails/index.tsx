@@ -267,13 +267,13 @@ export const ProposalDetails: React.FC = () => {
                   <Grid container style={{gap: 28}}>
                     <Grid item>
                       <VoteButton variant="contained" favor={true} onClick={() => onClickVote(true)}
-                                  disabled={!true}>
+                                  disabled={!canVote}>
                         Vote For
                       </VoteButton>
                     </Grid>
                     <Grid item>
                       <VoteButton variant="contained" favor={false} onClick={() => onClickVote(false)}
-                                  disabled={!true}>
+                                  disabled={!canVote}>
                         Vote Against
                       </VoteButton>
                     </Grid>
