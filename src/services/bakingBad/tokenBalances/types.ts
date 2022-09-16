@@ -43,7 +43,7 @@ export interface NFTDTO {
   balance: string;
 }
 
-export interface Balance {
+export interface BalanceTZKT {
   id: number
   account: Account
   token: Token
@@ -79,6 +79,7 @@ export interface Metadata {
   decimals: string
   description: string
   thumbnailUri: string
+  isTransferable: boolean
   shouldPreferSymbol: any
   tags?: string[]
   formats?: Format[]
@@ -114,7 +115,7 @@ export interface DataRate {
   value: string
 }
 
-export interface TokenData {
+export interface TokenDataTZKT {
   id: number
   contract: Contract
   tokenId: string

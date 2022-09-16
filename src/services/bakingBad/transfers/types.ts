@@ -3,7 +3,6 @@ import BigNumber from "bignumber.js";
 export interface TransfersDTO {
   transfers: TransferDTO[];
   total: number;
-  last_id: string
 }
 
 export interface TransferDTO {

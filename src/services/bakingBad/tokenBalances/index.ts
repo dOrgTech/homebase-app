@@ -3,10 +3,18 @@ import {NFT, Token} from "models/Token";
 import { Network } from "services/beacon";
 import { parseUnits } from "services/contracts/utils";
 import { API_URL, networkNameMap } from "..";
-import { Balance, DAOToken, FA2TokenDTO, NFTDTO, TokenBalancesDTO, TokenData } from "./types";
+import { BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenBalancesDTO, TokenDataTZKT } from "./types";
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO =>
   value.hasOwnProperty("artifact_uri");
+
+const isBalanceTzktNFT = (value: BalanceTZKT): boolean => {
+  return value.token.metadata?.artifactUri ? true: false
+}
+
+const isTokenTzktNFT = (value: TokenDataTZKT): boolean => {
+  return value.metadata?.artifactUri ? true: false
+}
 
 export interface DAOHolding {
   balance: BigNumber;
@@ -32,51 +40,60 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
     throw new Error("Failed to fetch contract storage from BakingBad API");
   }
 
-  // const result: TokenBalancesDTO = await response.json();
-  const result: Balance[] = await response.json();
+  const result: BalanceTZKT[] = await response.json();
 
   if(offset > result.length) {
     return balances
   }
 
-  const tokenBalances: DAOToken[] = result.map((balance: Balance) => {
-    if (balance.token.metadata?.artifactUri){
+  const tokenBalances: DAOToken[] = []
+  
+  for(const balance of result) {
+    const urlTokenData = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${balance.token.contract.address}&tokenId=${balance.token.tokenId}`
+    const responseTokenData = await fetch(urlTokenData);
+    if (!responseTokenData.ok) {
+      continue
+    }
+    const resultTokenDataTzkt: TokenDataTZKT[] = await responseTokenData.json();
+    const tokenData = resultTokenDataTzkt[0]
+
+    if (isBalanceTzktNFT(balance)){
       const tokenBalance: NFTDTO = {
-        id: balance.id.toString(),
-        supply: balance.balance,
+        id: balance.token.id.toString(),
+        supply: tokenData.totalSupply,
         contract: balance.token.contract.address,
-        token_id: balance.token.id,
+        token_id: parseInt(balance.token.tokenId),
         network: network,
-        symbol: balance.token.metadata?.symbol || "",
+        symbol: tokenData.metadata?.symbol || "",
         level: balance.firstLevel,
-        name: balance.token.metadata?.name || "",
-        decimals: parseInt(balance.token.metadata?.decimals) || 0,
-        description: balance.token.metadata?.description || "",
-        artifact_uri: balance.token.metadata?.artifactUri,
-        thumbnail_uri: balance.token.metadata?.thumbnailUri,
-        is_transferable: true,
-        creators: balance.token.metadata?.creators,
-        tags: balance.token.metadata?.tags,
-        formats: balance.token.metadata?.formats,
+        name: tokenData.metadata?.name || "",
+        decimals: parseInt(tokenData.metadata?.decimals) || 0,
+        description: tokenData.metadata?.description || "",
+        artifact_uri: tokenData.metadata?.artifactUri || "",
+        thumbnail_uri: tokenData.metadata?.thumbnailUri || "",
+        is_transferable: tokenData.metadata?.isTransferable,
+        creators: tokenData.metadata?.creators,
+        tags: tokenData.metadata?.tags,
+        formats: tokenData.metadata?.formats,
         balance: balance.balance,
       }
-      return tokenBalance
+      tokenBalances.push(tokenBalance)
     } else {
       const tokenBalance: FA2TokenDTO = {
-        id: balance.id.toString(),
-        supply: balance.balance,
+        id: balance.token.id.toString(),
+        supply: tokenData.totalSupply,
         contract: balance.token.contract.address,
-        token_id: balance.token.id,
+        token_id: parseInt(balance.token.tokenId),
         network: network,
-        symbol: balance.token.metadata?.symbol || "",
+        symbol: tokenData.metadata?.symbol || "",
         level: balance.firstLevel,
-        name: balance.token.metadata?.name || "",
-        decimals: parseInt(balance.token.metadata?.decimals) || 0,
+        name: tokenData.metadata?.name || "",
+        decimals: parseInt(tokenData.metadata?.decimals) || 0,
         balance: balance.balance,
       }
-      return tokenBalance
+      tokenBalances.push(tokenBalance)
     }
-  })
+  }
 
   const tokenBalancesDTO: TokenBalancesDTO = {  
     balances: tokenBalances,
@@ -116,42 +133,42 @@ export const getTokenMetadata = async (
     throw new Error("Failed to fetch proposals from BakingBad API");
   }
 
-  const resultingTokens: TokenData[] = await response.json();
-  const resultTokenData = resultingTokens[0]
+  const resultTokenDataTzkt: TokenDataTZKT[] = await response.json();
+  const tokenData = resultTokenDataTzkt[0]
 
   let result: DAOToken;
 
-  if(resultTokenData.metadata?.artifactUri){
+  if(isTokenTzktNFT(tokenData)){
     result = {
-      id: resultTokenData.id.toString(),
-      supply: resultTokenData.totalSupply,
-      contract: resultTokenData.contract.address,
-      token_id: parseInt(resultTokenData.tokenId),
+      id: tokenData.id.toString(),
+      supply: tokenData.totalSupply,
+      contract: tokenData.contract.address,
+      token_id: parseInt(tokenData.tokenId),
       network: network,
-      symbol: resultTokenData.metadata?.symbol || "",
-      level: resultTokenData.firstLevel,
-      name: resultTokenData.metadata?.name || "",
-      decimals: parseInt(resultTokenData.metadata?.decimals) || 0,
-      description: resultTokenData.metadata?.description || "",
-      artifact_uri: resultTokenData.metadata?.artifactUri,
-      thumbnail_uri: resultTokenData.metadata?.thumbnailUri,
-      is_transferable: true,
-      creators: resultTokenData.metadata?.creators,
-      tags: resultTokenData.metadata?.tags,
-      formats: resultTokenData.metadata?.formats,
+      symbol: tokenData.metadata?.symbol || "",
+      level: tokenData.firstLevel,
+      name: tokenData.metadata?.name || "",
+      decimals: parseInt(tokenData.metadata?.decimals) || 0,
+      description: tokenData.metadata?.description || "",
+      artifact_uri: tokenData.metadata?.artifactUri || "",
+      thumbnail_uri: tokenData.metadata?.thumbnailUri || "",
+      is_transferable: tokenData.metadata.isTransferable,
+      creators: tokenData.metadata?.creators,
+      tags: tokenData.metadata?.tags,
+      formats: tokenData.metadata?.formats,
       balance: "",
     }
   } else {
     result = {
-      id: resultTokenData.id.toString(),
-      supply: resultTokenData.totalSupply,
-      contract: resultTokenData.contract.address,
-      token_id: parseInt(resultTokenData.tokenId),
+      id: tokenData.id.toString(),
+      supply: tokenData.totalSupply,
+      contract: tokenData.contract.address,
+      token_id: parseInt(tokenData.tokenId),
       network: network,
-      symbol: resultTokenData.metadata?.symbol || "",
-      level: resultTokenData.firstLevel,
-      name: resultTokenData.metadata?.name || "",
-      decimals: parseInt(resultTokenData.metadata?.decimals) || 0,
+      symbol: tokenData.metadata?.symbol || "",
+      level: tokenData.firstLevel,
+      name: tokenData.metadata?.name || "",
+      decimals: parseInt(tokenData.metadata?.decimals) || 0,
       balance: "",
     }
   }

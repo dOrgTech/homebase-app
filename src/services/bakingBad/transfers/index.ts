@@ -2,43 +2,42 @@ import { Network } from "services/beacon";
 import {API_URL, networkNameMap} from "..";
 import { TransactionTzkt, TransferDTO, TransfersDTO, TransferTZKT } from "./types";
 
+const ELEMENTS_PER_REQUEST = 50
+
 export const getDAOTransfers = async (
   daoId: string,
   network: Network
 ): Promise<TransferDTO[]> => {
-  const urlTo = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/transfers?to=${daoId}`
+  const urlTo = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/transfers?to=${daoId}&limit=${ELEMENTS_PER_REQUEST}`
   const responseTo = await fetch(urlTo);
   if (!responseTo.ok) {
     throw new Error("Failed to fetch contract storage from BakingBad API");
   }
-  // const result: TransfersDTO = await response.json();
   const resultsTzktTo: TransferTZKT[] = await responseTo.json();
 
-  const urlFrom = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/transfers?from=${daoId}`
+  const urlFrom = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/transfers?from=${daoId}&limit=${ELEMENTS_PER_REQUEST}`
   const responseFrom = await fetch(urlFrom);
   if (!responseFrom.ok) {
     throw new Error("Failed to fetch contract storage from BakingBad API");
   }
-  // const result: TransfersDTO = await response.json();
   const resultsTzktFrom: TransferTZKT[] = await responseFrom.json();
-
-  const resultsTzktTxId: TransactionTzkt[] = [];
-
+  
   const resultsTzktAggregated = resultsTzktTo.concat(resultsTzktFrom)
-
+  
+  const resultsTzktTxs: TransactionTzkt[] = [];
+  
   for (const result of resultsTzktAggregated) {
     const urlId = `https://api.${networkNameMap[network]}.tzkt.io/v1/operations/transactions?id=${result.transactionId}`
     const responseId = await fetch(urlId);
-    // const result: TransfersDTO = await response.json();
-    const resultTzktTxId: TransactionTzkt[] = await responseId.json();
-    resultsTzktTxId.push(resultTzktTxId[0])
+    const resultTzktTx: TransactionTzkt[] = await responseId.json();
+    resultsTzktTxs.push(resultTzktTx[0])
   }
   
   const transfers: TransferDTO[] = [];
 
   resultsTzktAggregated.forEach((result: TransferTZKT) => {
-    const resultTzktTx = resultsTzktTxId.find((resultTzktTxId: TransactionTzkt) => {
-      return resultTzktTxId.id === result.transactionId
+    const resultTzktTx = resultsTzktTxs.find((resultTzktTx: TransactionTzkt) => {
+      return resultTzktTx.id === result.transactionId
     })
 
     if(!resultTzktTx){
@@ -49,9 +48,9 @@ export const getDAOTransfers = async (
       indexed_time: resultTzktTx.id,
       network: network,
       contract: result.token.contract.address,
-      initiator: result.from.address,
+      initiator: "",
       hash: resultTzktTx.hash,
-      status: resultTzktTx.hash,
+      status: resultTzktTx.status,
       timestamp: result.timestamp,
       level: result.level,
       from: result.from.address,
@@ -65,7 +64,7 @@ export const getDAOTransfers = async (
         token_id: parseInt(result.token.tokenId),
         symbol: result.token.metadata?.symbol || "",
         name: result.token.metadata?.name || "",
-        decimals: parseInt(result.token.metadata?.decimals || "")
+        decimals: parseInt(result.token.metadata?.decimals || "0")
       },
       alias: result.token.metadata?.name || "",
       to_alias: "",
@@ -77,7 +76,6 @@ export const getDAOTransfers = async (
   const result: TransfersDTO = {
     transfers: transfers,
     total: transfers.length,
-    last_id: ""
   }
 
   return result.transfers;
