@@ -45,15 +45,10 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
   if(offset > result.length) {
     return balances
   }
-
-  const tokenBalances: DAOToken[] = []
   
-  for(const balance of result) {
+  const tokenBalances: DAOToken[] = await Promise.all(result.map(async (balance: BalanceTZKT) => {
     const urlTokenData = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${balance.token.contract.address}&tokenId=${balance.token.tokenId}`
     const responseTokenData = await fetch(urlTokenData);
-    if (!responseTokenData.ok) {
-      continue
-    }
     const resultTokenDataTzkt: TokenDataTZKT[] = await responseTokenData.json();
     const tokenData = resultTokenDataTzkt[0]
 
@@ -77,7 +72,7 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
         formats: tokenData.metadata?.formats,
         balance: balance.balance,
       }
-      tokenBalances.push(tokenBalance)
+      return tokenBalance
     } else {
       const tokenBalance: FA2TokenDTO = {
         id: balance.token.id.toString(),
@@ -91,9 +86,9 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
         decimals: parseInt(tokenData.metadata?.decimals) || 0,
         balance: balance.balance,
       }
-      tokenBalances.push(tokenBalance)
+      return tokenBalance
     }
-  }
+  }))
 
   const tokenBalancesDTO: TokenBalancesDTO = {  
     balances: tokenBalances,

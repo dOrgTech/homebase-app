@@ -2,7 +2,7 @@ import { Network } from "services/beacon";
 import { networkNameMap } from "..";
 import { TransactionTzkt, TransferDTO, TransfersDTO, TransferTZKT } from "./types";
 
-const ELEMENTS_PER_REQUEST = 50
+const ELEMENTS_PER_REQUEST = 20
 
 export const getDAOTransfers = async (
   daoId: string,
@@ -24,25 +24,11 @@ export const getDAOTransfers = async (
   
   const resultsTzktAggregated = resultsTzktTo.concat(resultsTzktFrom)
   
-  const resultsTzktTxs: TransactionTzkt[] = [];
-  
-  for (const result of resultsTzktAggregated) {
+  const transfers: TransferDTO[] = await Promise.all(resultsTzktAggregated.map(async (result: TransferTZKT) => {
     const urlId = `https://api.${networkNameMap[network]}.tzkt.io/v1/operations/transactions?id=${result.transactionId}`
     const responseId = await fetch(urlId);
-    const resultTzktTx: TransactionTzkt[] = await responseId.json();
-    resultsTzktTxs.push(resultTzktTx[0])
-  }
-  
-  const transfers: TransferDTO[] = [];
-
-  resultsTzktAggregated.forEach((result: TransferTZKT) => {
-    const resultTzktTx = resultsTzktTxs.find((resultTzktTx: TransactionTzkt) => {
-      return resultTzktTx.id === result.transactionId
-    })
-
-    if(!resultTzktTx){
-      return
-    }
+    const resultTzktTxResult: TransactionTzkt[] = await responseId.json();
+    const resultTzktTx: TransactionTzkt = resultTzktTxResult[0]
 
     const transferDTO: TransferDTO = {
       indexed_time: resultTzktTx.id,
@@ -70,8 +56,8 @@ export const getDAOTransfers = async (
       to_alias: "",
     }
 
-    transfers.push(transferDTO)
-  })
+    return transferDTO
+  }))
 
   const result: TransfersDTO = {
     transfers: transfers,

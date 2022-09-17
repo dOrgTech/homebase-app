@@ -132,5 +132,4 @@ export interface Tx {
   token_id: string
 }
 
-
 export type TokenTransferWithBN = Omit<TransferDTO, "amount"> & { amount: BigNumber }
