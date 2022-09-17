@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import {NFT, Token} from "models/Token";
 import { Network } from "services/beacon";
 import { parseUnits } from "services/contracts/utils";
-import { API_URL, networkNameMap } from "..";
+import { networkNameMap } from "..";
 import { BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenBalancesDTO, TokenDataTZKT } from "./types";
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO =>

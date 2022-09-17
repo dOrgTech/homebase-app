@@ -1,5 +1,5 @@
 import { Network } from "services/beacon";
-import {API_URL, networkNameMap} from "..";
+import { networkNameMap } from "..";
 import { TransactionTzkt, TransferDTO, TransfersDTO, TransferTZKT } from "./types";
 
 const ELEMENTS_PER_REQUEST = 50
