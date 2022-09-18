@@ -3,18 +3,14 @@ import {NFT, Token} from "models/Token";
 import { Network } from "services/beacon";
 import { parseUnits } from "services/contracts/utils";
 import { networkNameMap } from "..";
-import { BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenBalancesDTO, TokenDataTZKT } from "./types";
+import { BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenDataTZKT } from "./types";
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO =>
   value.hasOwnProperty("artifact_uri");
 
-const isBalanceTzktNFT = (value: BalanceTZKT): boolean => {
-  return value.token.metadata?.artifactUri ? true: false
-}
+const isBalanceTzktNFT = (value: BalanceTZKT): boolean => Boolean(value.token.metadata?.artifactUri)
 
-const isTokenTzktNFT = (value: TokenDataTZKT): boolean => {
-  return value.metadata?.artifactUri ? true: false
-}
+const isTokenTzktNFT = (value: TokenDataTZKT): boolean => Boolean(value.metadata?.artifactUri)
 
 export interface DAOHolding {
   balance: BigNumber;
@@ -42,7 +38,7 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
 
   const result: BalanceTZKT[] = await response.json();
 
-  if(offset > result.length) {
+  if(result.length === 0) {  
     return balances
   }
   
@@ -90,12 +86,7 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
     }
   }))
 
-  const tokenBalancesDTO: TokenBalancesDTO = {  
-    balances: tokenBalances,
-    total: tokenBalances.length
-  }
-  
-  const fetchedBalances = tokenBalancesDTO.balances.map((daoTokenDTO) =>
+  const fetchedBalances = tokenBalances.map((daoTokenDTO) =>
     isNFTDTO(daoTokenDTO)
       ? {
         balance: parseUnits(

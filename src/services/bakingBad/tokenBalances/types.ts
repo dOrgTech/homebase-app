@@ -1,10 +1,5 @@
 import { Network } from "services/beacon";
 
-export interface TokenBalancesDTO {
-  balances: DAOToken[];
-  total: number;
-}
-
 export type DAOToken = FA2TokenDTO | NFTDTO;
 
 export interface FA2TokenDTO {
@@ -80,7 +75,7 @@ export interface Metadata {
   description: string
   thumbnailUri: string
   isTransferable: boolean
-  shouldPreferSymbol: any
+  shouldPreferSymbol: boolean
   tags?: string[]
   formats?: Format[]
   creators?: string[]

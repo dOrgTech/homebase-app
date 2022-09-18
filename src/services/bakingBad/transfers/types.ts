@@ -61,7 +61,7 @@ export interface Metadata {
   decimals: string
   description?: string
   thumbnailUri?: string
-  shouldPreferSymbol: any
+  shouldPreferSymbol: boolean
   isTransferable?: boolean
   isBooleanAmount?: boolean
 }
