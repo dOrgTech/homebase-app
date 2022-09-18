@@ -29,12 +29,12 @@ export interface NFTDTO {
   artifact_uri: string;
   thumbnail_uri: string;
   is_transferable: boolean;
-  creators: string[] | undefined;
-  tags: string[] | undefined;
+  creators: string[];
+  tags: string[];
   formats: {
     mimeType: string;
     uri: string;
-  }[] | undefined;
+  }[];
   balance: string;
 }
 

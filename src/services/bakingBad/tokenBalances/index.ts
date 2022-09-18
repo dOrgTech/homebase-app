@@ -63,9 +63,12 @@ export const getDAOBalances = async (daoId: string, network: Network, offset = 0
         artifact_uri: tokenData.metadata?.artifactUri || "",
         thumbnail_uri: tokenData.metadata?.thumbnailUri || "",
         is_transferable: tokenData.metadata?.isTransferable,
-        creators: tokenData.metadata?.creators,
-        tags: tokenData.metadata?.tags,
-        formats: tokenData.metadata?.formats,
+        creators: tokenData.metadata?.creators || [],
+        tags: tokenData.metadata?.tags || [],
+        formats: tokenData.metadata.formats || [{
+          mimeType: "",
+          uri: "",
+        }],
         balance: balance.balance,
       }
       return tokenBalance
