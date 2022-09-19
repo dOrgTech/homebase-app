@@ -72,8 +72,9 @@ export const getProposals = async (dao: BaseDAO) => {
       );
       break
     case "lambda":
-      proposals = []
-
+      proposals = fetched.proposals.map(
+        (proposal) => new TreasuryProposal(proposal, dao)
+      );
       break;
     default:
       throw new Error(

@@ -2,11 +2,12 @@ import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
 import treasuryProposeCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose";
 import registryProposeCode from "services/contracts/baseDAO/registryDAO/michelson/propose";
+import lambdaProposeCode from "services/contracts/baseDAO/registryDAO/michelson/proposelambda";
 import { Schema } from "@taquito/michelson-encoder";
 import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec";
 import { parseUnits } from "services/contracts/utils";
 import { ProposalDTO } from "services/indexer/types";
-import { PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types";
+import { PMLambdaProposal, PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types";
 import { extractTransfersData } from ".";
 import { bytes2Char } from "@taquito/tzip16";
 import { BaseDAO } from "services/contracts/baseDAO";
@@ -286,6 +287,49 @@ export class RegistryProposal extends Proposal {
           }));
         }
       }
+
+      this.cachedMetadata = values;
+    }
+
+    return this.cachedMetadata;
+  }
+}
+
+interface LambdaProposalMetadata extends BaseProposalMetadata {
+  name: string
+}
+
+export class LambdaProposal extends Proposal {
+  private cachedMetadata?: LambdaProposalMetadata;
+
+  get metadata(): LambdaProposalMetadata {
+    let values: LambdaProposalMetadata = {
+      config: [],
+      update_contract_delegate: "",
+      update_guardian: "",
+      agoraPostId: "",
+      name: "",
+    };
+
+    if (!this.cachedMetadata) {
+      const parser = new Parser();
+      const micheline = parser.parseMichelineExpression(registryProposeCode) as Expr;
+      const schema = new Schema(micheline as Expr);
+
+      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;
+      console.log("unpackedMetadata: ", unpackedMetadata);
+      const proposalMetadataDTO: PMLambdaProposal = schema.Execute(unpackedMetadata);
+      console.log("proposalMetadataDTO: ", proposalMetadataDTO);
+      
+      // values = { ...values, ...getBaseMetadata(proposalMetadataDTO) };
+      values = { ...values };
+
+      // if ("transfer_proposal" in proposalMetadataDTO) {
+      //   const { agora_post_id, registry_diff, transfers } = proposalMetadataDTO.transfer_proposal;
+
+      //   values.agoraPostId = agora_post_id;
+                
+      // }
 
       this.cachedMetadata = values;
     }

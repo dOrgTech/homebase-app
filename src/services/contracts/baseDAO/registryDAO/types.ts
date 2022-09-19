@@ -407,3 +407,10 @@ export type PMRegistryProposal = PMBaseProposal | {
     transfers: (PMXTZTransferType | PMFA2TransferType)[];
   };
 }
+
+export type PMLambdaProposal = PMBaseProposal | {
+  transfer_proposal: {
+    agora_post_id: string;
+    name: string
+  };
+}
