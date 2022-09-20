@@ -64,7 +64,6 @@ export const getProposals = async (dao: BaseDAO) => {
       proposals = fetched.proposals.map(
         (proposal) => new TreasuryProposal(proposal, dao)
       );
-
       break;
     case "registry":
       proposals = fetched.proposals.map(
