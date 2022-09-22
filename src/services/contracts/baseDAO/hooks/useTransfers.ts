@@ -45,8 +45,6 @@ export const useTransfers = (contractAddress: string) => {
         })
       );
 
-      console.log(tokenTransfersDTO)
-
       const tokenTransfers: TransferWithBN[] = tokenTransfersDTO.map((t) => ({
         ...t,
         recipient: t.to,
