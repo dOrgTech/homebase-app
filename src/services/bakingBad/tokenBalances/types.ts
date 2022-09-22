@@ -1,10 +1,5 @@
 import { Network } from "services/beacon/context";
 
-export interface TokenBalancesDTO {
-  balances: (DAOToken & { balance: string })[];
-  total: number;
-}
-
 export type DAOToken = FA2TokenDTO | NFTDTO;
 
 export interface FA2TokenDTO {
@@ -17,6 +12,7 @@ export interface FA2TokenDTO {
   decimals: number;
   network: Network;
   supply: string;
+  balance: string;
 }
 
 export interface NFTDTO {
@@ -39,4 +35,95 @@ export interface NFTDTO {
     mimeType: string;
     uri: string;
   }[];
+  balance: string;
+}
+
+export interface BalanceTZKT {
+  id: number
+  account: Account
+  token: Token
+  balance: string
+  transfersCount: number
+  firstLevel: number
+  firstTime: string
+  lastLevel: number
+  lastTime: string
+}
+
+export interface Account {
+  alias: string
+  address: string
+}
+
+export interface Token {
+  id: number
+  contract: Contract
+  tokenId: string
+  standard: string
+  metadata: Metadata
+}
+
+export interface Contract {
+  alias: string
+  address: string
+}
+
+export interface Metadata {
+  name: string
+  symbol: string
+  decimals: string
+  description: string
+  thumbnailUri: string
+  isTransferable: boolean
+  shouldPreferSymbol: boolean
+  tags?: string[]
+  formats?: Format[]
+  creators?: string[]
+  displayUri?: string
+  artifactUri?: string
+  isBooleanAmount?: boolean
+  date?: string
+  image?: string
+  minter?: string
+  rights?: string
+  attributes?: any[]
+  mintingTool?: string
+}
+
+export interface Format {
+  uri: string
+  mimeType: string
+  fileName?: string
+  fileSize?: string
+  dimensions?: Dimensions
+  dataRate?: DataRate
+  duration?: string
+}
+
+export interface Dimensions {
+  unit: string
+  value: string
+}
+
+export interface DataRate {
+  unit: string
+  value: string
+}
+
+export interface TokenDataTZKT {
+  id: number
+  contract: Contract
+  tokenId: string
+  standard: string
+  firstLevel: number
+  firstTime: string
+  lastLevel: number
+  lastTime: string
+  transfersCount: number
+  balancesCount: number
+  holdersCount: number
+  totalMinted: string
+  totalBurned: string
+  totalSupply: string
+  metadata: Metadata
 }
