@@ -38,7 +38,7 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
           <Grid
             container
             alignItems="center"
-            justify="space-between"
+            justifyContent="space-between"
             wrap="nowrap"
           >
             <Grid item>

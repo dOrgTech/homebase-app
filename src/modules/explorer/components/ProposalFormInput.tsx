@@ -9,15 +9,19 @@ const StyledBody = styled(Grid)(({theme}) => ({
   "& input": {
     minHeight: 54,
     padding: 0,
-    textAlign: "start"
+    textAlign: "start",
   },
+
+  "& .MuiInputBase-input" : {
+    fontWeight: 300,
+  }
 }))
 
 export const ProposalFormInput: React.FC<{ label?: string }> = ({label, children}) => {
   return (
     <Grid container direction={"column"} style={{gap: 18}}>
       {label ? <Grid item>
-        <Typography variant={"body1"} style={{fontWeight: 500}} color={"textPrimary"}>{label}</Typography>
+        <Typography style={{fontWeight: 400}} color={"textPrimary"}>{label}</Typography>
       </Grid> : null}
       <StyledBody>
         {children}

@@ -74,7 +74,7 @@ export const ProposalItem: React.FC<{
   const formattedDate = dayjs(proposal.startDate).format("LLL");
 
   return (
-    <ContentBlockItem container justify="space-between" alignItems="center">
+    <ContentBlockItem container justifyContent="space-between" alignItems="center">
       <Grid item sm={8}>
         <Grid container direction="column" style={{ gap: 20 }}>
           <Grid item>
@@ -148,7 +148,7 @@ export const User: React.FC = () => {
         <BalancesHeader item>
           <UserBalances daoId={daoId}>
             <Grid item>
-              <Grid container alignItems="center" justify="space-between" style={{ gap: 20 }}>
+              <Grid container alignItems="center" justifyContent="space-between" style={{ gap: 20 }}>
                 <Grid item>
                   <Grid container spacing={2} alignItems="center" wrap="nowrap">
                     <Grid item>

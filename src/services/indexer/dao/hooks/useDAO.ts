@@ -126,7 +126,7 @@ export const useDAO = (address: string) => {
   useEffect(() => {
     (async () => {
       if (data && blockchainInfo) {
-        const blockTimeAverage = blockchainInfo.minimal_block_delay;
+        const blockTimeAverage = blockchainInfo.constants.timeBetweenBlocks;
         const blocksFromStart = block - data.data.start_level;
         const periodsFromStart = Math.floor(
           blocksFromStart / Number(data.data.period)
@@ -139,7 +139,7 @@ export const useDAO = (address: string) => {
         setCycleInfo({
           blocksLeft,
           type,
-          timeEstimateForNextBlock: blockTimeAverage / 2,
+          timeEstimateForNextBlock: blockTimeAverage,
           currentCycle: periodsFromStart,
           currentLevel: block,
         });

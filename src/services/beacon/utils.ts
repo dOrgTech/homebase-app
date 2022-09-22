@@ -3,11 +3,11 @@ import { BeaconWallet } from "@taquito/beacon-wallet";
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
 
-export type Network = "mainnet" | "jakartanet" | "devnet";
+export type Network = "mainnet" | "ghostnet" | "devnet";
 
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.smartpy.io",
-  jakartanet: "https://jakartanet.ecadinfra.com",
+  ghostnet: "https://ghostnet.ecadinfra.com",
   devnet: "http://localhost:20000",
 };
 
@@ -47,8 +47,8 @@ export const createTezos = (network: Network) => {
 
 export const getNetworkTypeByEnvNetwork = (envNetwork: Network): NetworkType => {
     switch (envNetwork) {
-    case "jakartanet":
-      return NetworkType.JAKARTANET;
+    case "ghostnet":
+      return NetworkType.GHOSTNET;
 
     case "mainnet":
       return NetworkType.MAINNET;

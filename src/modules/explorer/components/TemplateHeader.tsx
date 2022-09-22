@@ -37,7 +37,7 @@ export const TemplateHeader: React.FC<{
 
   return (
     <Grid item xs={12}>
-      <CustomRectangleContainer container justify="space-between">
+      <CustomRectangleContainer container justifyContent="space-between">
         <Grid item xs={12}>
           <Container container direction={isMobileSmall ? "column" : "row"}>
             <Grid item xs={12} sm={6}>
@@ -63,7 +63,7 @@ export const TemplateHeader: React.FC<{
               xs={12}
               sm={6}
               container
-              justify={isMobileSmall ? "center" : "flex-end"}
+              justifyContent={isMobileSmall ? "center" : "flex-end"}
             >
               {children}
             </Grid>
@@ -71,7 +71,7 @@ export const TemplateHeader: React.FC<{
           {dao && !isMobileSmall && (
             <CopyAddress
               address={dao.data.address}
-              justify={isMobileSmall ? "center" : "flex-start"}
+              justifyContent={isMobileSmall ? "center" : "flex-start"}
             />
           )}
         </Grid>

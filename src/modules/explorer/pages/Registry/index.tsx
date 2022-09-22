@@ -102,7 +102,7 @@ export const Registry: React.FC = () => {
             {dao && (
               <CopyAddress
                 address={dao.data.address}
-                justify={isMobileSmall ? "center" : "flex-start"}
+                justifyContent={isMobileSmall ? "center" : "flex-start"}
                 typographyProps={{
                   variant: "subtitle2",
                 }}

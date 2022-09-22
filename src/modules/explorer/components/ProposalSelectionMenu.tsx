@@ -11,7 +11,7 @@ import { ConfigProposalForm } from "./ConfigProposalForm";
 import { ResponsiveDialog } from "./ResponsiveDialog";
 import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm";
 import { DelegationChangeProposalForm } from "./DelegationChangeProposalForm";
-
+import { MainButton } from "../../common/MainButton"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>;
@@ -98,44 +98,39 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) =>
           <>
             <Content container direction={"column"} style={{ gap: 32 }}>
               <Grid item>
-                <Typography variant={"body1"} color={"textPrimary"}>
+                <Typography style={{ fontWeight: 300 }} color={"textPrimary"}>
                   Which proposal would you like to create?
                 </Typography>
               </Grid>
-              <Grid container justifyContent='center' direction={"column"}>
-                <Button
+              <Grid container justifyContent='center' style={{gap: 20}} direction={"column"}>
+                <MainButton
                   variant={"contained"}
-                  color={"secondary"}
-                  style={{ marginBottom: 20 }}
                   onClick={() => handleOptionSelected(ProposalModalKey.transfer)}>
                   Assets / Registry
-                </Button>
+                </MainButton>
 
                 {dao.data.type === "registry" && (
-                  <Button
+                  <MainButton
                     variant={"contained"}
                     color={"secondary"}
-                    style={{ marginBottom: 20 }}
                     onClick={() => handleOptionSelected(ProposalModalKey.config)}>
                     Configuration
-                  </Button>
+                  </MainButton>
                 )} 
 
-                <Button
+                <MainButton
                   variant={"contained"}
                   color={"secondary"}
-                  style={{ marginBottom: 20 }}
                   onClick={() => handleOptionSelected(ProposalModalKey.guardian)}>
                   Change Guardian
-                </Button>
+                </MainButton>
 
-                <Button
+                <MainButton
                   variant={"contained"}
                   color={"secondary"}
-                  style={{ marginBottom: 20 }}
                   onClick={() => handleOptionSelected(ProposalModalKey.delegation)}>
                   Change Delegate
-                </Button>
+                </MainButton>
               </Grid>
             </Content>
           </>

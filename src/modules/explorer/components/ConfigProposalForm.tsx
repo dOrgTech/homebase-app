@@ -51,7 +51,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
         console.log(values);
 
         const mutateValues = {
-          frozen_extra_value: parseInt(values.frozen_extra_value),
+          frozen_extra_value: values.frozen_extra_value,
           slash_scale_value: !Number.isNaN(parseInt(values.returnedPercentage)) ?
             100 - Number(values.returnedPercentage) : NaN
         }
@@ -83,7 +83,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
       >
         <Grid container direction={"column"} style={{gap: 18}}>
           <Grid item>
-            <Typography variant={'body1'} color={"secondary"}>All fields are optional. Leave empty what you wish to leave unchanged</Typography>
+            <Typography style={{fontWeight: 300, fontSize: "16px"}} color={"secondary"}>All fields are optional. Leave empty what you wish to leave unchanged</Typography>
           </Grid>
           <Grid item>
             <ProposalFormInput label={`Proposal fee (Current: ${dao?.data.extra.frozen_extra_value.toString()})`}>
@@ -121,7 +121,7 @@ export const ConfigProposalForm: React.FC<Props> = ({
             <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>Proposal
               Fee: </Typography>
             <Typography
-              align="left" variant="subtitle2" color="secondary" display={"inline"}>
+              align="left" variant="subtitle2" color="secondary" display={"inline"} style={{fontWeight: 300}}>
               {dao && dao.data.extra.frozen_extra_value.toString()}{" "}
               {dao ? dao.data.token.symbol : ""}
             </Typography>

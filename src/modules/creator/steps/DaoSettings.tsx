@@ -18,46 +18,46 @@ import { useHistory, withRouter } from "react-router";
 import { useRouteMatch } from "react-router-dom";
 import { Field, Form, Formik, FormikErrors, getIn } from "formik";
 import { TextField as FormikTextField } from "formik-material-ui";
+import { TitleBlock } from "modules/common/TitleBlock";
 
 import {
   CreatorContext,
   ActionTypes,
   OrgSettings,
 } from "modules/creator/state";
-import { InfoOutlined } from "@material-ui/icons";
+import { InfoRounded } from "@material-ui/icons";
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata";
-
-const CustomTypography = styled(Typography)(({ theme }) => ({
-  paddingBottom: 21,
-  borderBottom: `1px solid ${theme.palette.primary.light}`,
-  marginTop: 10,
-}));
 
 const SecondContainer = styled(Grid)({
   marginTop: 25,
 });
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  border: `1px solid ${theme.palette.primary.light}`,
-  height: 62,
-  marginTop: 14,
-  padding: "18px 21px",
+  height: 54,
   boxSizing: "border-box",
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${theme.palette.secondary.light}`,
-  },
+  marginTop: 14,
+  background: "#2F3438",
+  borderRadius: 8,
+  alignItems: "center",
+  display: "flex",
+  padding: "13px 23px",
 }));
 
-const InfoIcon = styled(InfoOutlined)({
+const InfoIcon = styled(InfoRounded)(({ theme }) => ({
   position: "absolute",
   right: 25,
-  top: "50%",
-});
+  top: "20%",
+  color: theme.palette.secondary.light,
+  height: 18,
+  width: 18
+}));
 
-const InfoIconInput = styled(InfoOutlined)({
+const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
-});
+  color: theme.palette.secondary.light,
+  height: 16,
+  width: 16
+}));
 
 const TextareaContainer = styled(Grid)({
   display: "flex",
@@ -93,20 +93,17 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))((props) => ({
   minHeight: 152,
   boxSizing: "border-box",
   width: "100%",
-  border: `1px solid ${props.theme.palette.primary.light}`,
   marginTop: 14,
   fontWeight: 300,
   padding: "21px 20px",
   fontFamily: "system-ui",
+  border: "none",
   fontSize: 16,
-  background: props.theme.palette.primary.main,
   color: props.theme.palette.text.secondary,
+  background: "#2F3438",
+  borderRadius: 8,
   paddingRight: 40,
-  wordBreak: "break-word",
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)",
-    borderLeft: `2px solid ${props.theme.palette.secondary.light}`,
-  },
+  wordBreak: "break-word"
 }));
 
 const ErrorText = styled(Typography)({
@@ -115,7 +112,7 @@ const ErrorText = styled(Typography)({
 });
 
 const DaoSettingsForm = withRouter(
-  ({ submitForm, values, setFieldValue, errors, touched }: any) => {
+  ({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -150,11 +147,11 @@ const DaoSettingsForm = withRouter(
             handler: () => {
               submitForm(values);
             },
-            text: "CONTINUE",
+            text: "Continue",
           },
           back: {
             handler: () => history.push(`templates`),
-            text: "BACK",
+            text: "Back",
           },
         });
       }
@@ -174,6 +171,19 @@ const DaoSettingsForm = withRouter(
                 placeholder="KT1...."
                 name="governanceToken.address"
                 component={CustomFormikTextField}
+                onClick={() => setFieldTouched("governanceToken.address")}
+                inputProps={{
+                  maxLength: 36
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip placement="bottom" title="Token Address">
+                        <InfoIconInput />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </CustomInputContainer>
             {errors.governanceToken?.address &&
@@ -192,6 +202,15 @@ const DaoSettingsForm = withRouter(
                 placeholder="0"
                 name="governanceToken.tokenId"
                 component={CustomFormikTextField}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip placement="bottom" title="Token ID">
+                        <InfoIconInput />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </CustomInputContainer>
             {errors.governanceToken?.tokenId &&
@@ -223,7 +242,7 @@ const DaoSettingsForm = withRouter(
                   endAdornment: (
                     <InputAdornment position="start">
                       <Tooltip placement="bottom" title="DAO Name info">
-                        <InfoIconInput color="secondary" />
+                        <InfoIconInput />
                       </Tooltip>
                     </InputAdornment>
                   ),
@@ -254,7 +273,7 @@ const DaoSettingsForm = withRouter(
                   endAdornment: (
                     <InputAdornment position="start">
                       <Tooltip placement="bottom" title="Token symbol info">
-                        <InfoIconInput color="secondary" />
+                        <InfoIconInput />
                       </Tooltip>
                     </InputAdornment>
                   ),
@@ -287,7 +306,7 @@ const DaoSettingsForm = withRouter(
               )}
             </Field>
             <Tooltip placement="bottom" title="Description info">
-              <InfoIcon color="secondary" />
+              <InfoIcon />
             </Tooltip>
           </TextareaContainer>
           {errors.description && touched.description ? (
@@ -305,21 +324,26 @@ const DaoSettingsForm = withRouter(
             <CustomInputContainer>
               <Field
                 name="administrator"
+                maxLength={10}
                 type="text"
+                onClick={() => setFieldTouched("administrator")}
                 placeholder="tz1PXn...."
                 component={CustomFormikTextField}
+                inputProps={{
+                  maxLength: 36
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
-                      <Tooltip placement="bottom" title="DAO Name info">
-                        <InfoIconInput color="secondary" />
+                      <Tooltip placement="bottom" title="Address that will make the initial token transfers">
+                        <InfoIconInput />
                       </Tooltip>
                     </InputAdornment>
                   ),
                 }}
               ></Field>
             </CustomInputContainer>
-            {errors.administrator && touched.administrator ? (
+            {errors.administrator  && touched.administrator ? (
               <ErrorText>{errors.administrator}</ErrorText>
             ) : null}
           </Grid>
@@ -338,10 +362,14 @@ const DaoSettingsForm = withRouter(
                 type="text"
                 placeholder="tz1PXn...."
                 component={CustomFormikTextField}
+                onClick={() => setFieldTouched("guardian")}
+                inputProps={{
+                  maxLength: 36
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="start">
-                      <Tooltip placement="bottom" title="DAO Name info">
+                      <Tooltip placement="bottom" title="Address that can drop/cancel any proposals">
                         <InfoIconInput color="secondary" />
                       </Tooltip>
                     </InputAdornment>
@@ -363,6 +391,7 @@ const isInvalidKtOrTzAddress = (address: string) =>
   validateContractAddress(address) !== 3 && validateAddress(address) !== 3;
 
 const validateForm = (values: OrgSettings) => {
+
   const errors: FormikErrors<OrgSettings> = {};
 
   if (!values.name) {
@@ -423,7 +452,7 @@ const validateForm = (values: OrgSettings) => {
       address: "Could not find token",
     };
   }
-
+  console.log(errors);
   return errors;
 };
 
@@ -447,20 +476,11 @@ export const DaoSettings = (): JSX.Element => {
   };
 
   return (
-    <Box maxWidth="620px">
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        style={{ height: "fit-content" }}
-      >
-        <Grid item xs={12}>
-          <Typography variant="h3" color="textSecondary">
-            DAO Settings
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <CustomTypography variant="subtitle1" color="textSecondary">
+    <Box>
+      <TitleBlock
+        title="DAO Settings"
+        description={
+          <Typography variant="subtitle1" color="textSecondary">
             These settings will define the name, symbol, and initial
             distribution of your token. You will need a pre-existing FA2 token
             to use as governance token. To deploy your own governance token you
@@ -473,13 +493,14 @@ export const DaoSettings = (): JSX.Element => {
               here
             </Link>{" "}
             and then come back.
-          </CustomTypography>
-        </Grid>
-        <Grid item xs={12}></Grid>
-      </Grid>
+          </Typography>
+        }
+      ></TitleBlock>
 
       <Formik
-        enableReinitialize
+        enableReinitialize={true}
+        validateOnChange={true}
+        validateOnBlur={false}
         validate={validateForm}
         onSubmit={saveStepInfo}
         initialValues={orgSettings}
@@ -491,6 +512,7 @@ export const DaoSettings = (): JSX.Element => {
           values,
           errors,
           touched,
+          setFieldTouched
         }) => {
           return (
             <Form style={{ width: "100%" }}>
@@ -501,6 +523,7 @@ export const DaoSettings = (): JSX.Element => {
                 errors={errors}
                 touched={touched}
                 values={values}
+                setFieldTouched={setFieldTouched}
               />
             </Form>
           );

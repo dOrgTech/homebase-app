@@ -4,7 +4,7 @@ import {ProposalFormInput} from "./ProposalFormInput";
 
 const BatchBarContainer = styled(Grid)(({theme}) => ({
   height: 47,
-  alignItems: "center",
+  alignItems: "start",
   cursor: "pointer",
   overflowX: "auto",
   [theme.breakpoints.down("sm")]: {
@@ -14,6 +14,20 @@ const BatchBarContainer = styled(Grid)(({theme}) => ({
 
 const SwitchContainer = styled(Grid)({
   textAlign: "end",
+  boxShadow: "none",
+
+  "& .Mui-checked.Mui-checked + .MuiSwitch-track" : {
+    background: "#81FEB7",
+  },
+
+  "& .MuiSwitch-colorSecondary.Mui-checked": {
+    color: "#FFFFFF",
+    marginLeft: "4.1px",
+  },
+
+  "& .MuiSwitch-thumb" : {
+    boxShadow: "none"
+  }
 });
 
 const TransferActive = styled(Grid)({
@@ -31,12 +45,16 @@ const AddButton = styled(Paper)({
   minWidth: 31,
   textAlign: "center",
   padding: 0,
-  background: "#383939",
+  background: "#383e43",
   color: "#fff",
   alignItems: "center",
   display: "flex",
   justifyContent: "center",
   cursor: "pointer",
+
+  "&:hover" : {
+    background: "#3c4349"
+  }
 });
 
 interface Props {
@@ -59,7 +77,7 @@ export const BatchBar = ({isBatch, handleIsBatchChange, onClickAdd, items, activ
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <SwitchContainer item xs={12} justify="flex-end">
+          <SwitchContainer item xs={12} justifyContent="flex-end">
             <Switch
               type="checkbox"
               onChange={handleIsBatchChange}
@@ -78,11 +96,15 @@ export const BatchBar = ({isBatch, handleIsBatchChange, onClickAdd, items, activ
                 onClick={() => setActiveItem(index)}
                 style={
                   Number(index + 1) === activeItem
-                    ? {background: "#4BCF93"}
-                    : undefined
+                    ? {background: "#81FEB7"}
+                    : {background: "#3c4349"}
                 }
               >
-                <Typography variant="subtitle2" color="textPrimary">
+                <Typography variant="subtitle2" style={
+                  Number(index + 1) === activeItem
+                    ? {color: "#1C1F23"}
+                    : {color: "ffff"}
+                }>
                   #{index + 1}
                 </Typography>
               </TransferActive>

@@ -62,6 +62,10 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
     scale: 1.01,
     transition: "0.15s ease-in",
   },
+
+  "& > *": {
+    transform: "scale(1.000001)",
+  }
 }));
 
 const SymbolText = styled(Typography)({

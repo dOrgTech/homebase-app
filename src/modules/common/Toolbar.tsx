@@ -19,44 +19,14 @@ import HomeButton from "assets/logos/homebase_logo.svg";
 import { useTezos } from "services/beacon/hooks/useTezos";
 import { toShortAddress } from "services/contracts/utils";
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons";
-import { ChangeNetworkButton, NetworkMenu } from "./ChangeNetworkButton";
 import { Network } from "services/beacon";
 import { UserProfileName } from "modules/explorer/components/UserProfileName";
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
-import { ViewButton } from "modules/explorer/components/ViewButton";
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
-import { SmallButton } from './SmallButton';
+import { SmallButton } from "./SmallButton";
+import { ChangeNetworkButton } from "./ChangeNetworkButton";
 
-
-const Header = styled(Grid)({
- padding: "28px 125px"
-})
-
-const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
-  boxShadow: "none",
-  background: theme.palette.primary.main,
-}));
-
-const StyledToolbar = styled(Toolbar)({
-  width: "100%",
-  display: "flex",
-  padding: 0,
-  boxSizing: "border-box",
-  justifyContent: "space-between",
-  flexWrap: "wrap",
-});
-
-const AddressContainer = styled(Grid)({
-  cursor: "pointer",
-});
-
-const LogoText = styled(Typography)({
-  fontWeight: "bold",
-  fontSize: "24px",
-  cursor: "pointer",
-  fontFamily: "Roboto",
-  letterSpacing: "initial",
-});
+import { ArrowBackIos } from "@material-ui/icons";
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
@@ -76,6 +46,70 @@ const AddressMenuIcon = styled(Grid)({
   marginBottom: "-4px",
 });
 
+const StyledUserProfileName = styled(Typography)({
+  color: "#ddd",
+});
+
+const StyledPopover = styled(Popover)({
+  ".MuiPaper-root": {
+    borderRadius: 4,
+  },
+});
+
+const Header = styled(Grid)(({ theme }) => ({
+  width: "1000px",
+  height: "100%",
+  margin: "auto",
+  padding: "28px 0",
+  flexDirection: "row",
+
+  ["@media (max-width: 1425px)"]: {},
+
+  ["@media (max-width:1335px)"]: {},
+
+  ["@media (max-width:1167px)"]: {
+    width: "86vw",
+  },
+
+  ["@media (max-width:1030px)"]: {},
+
+  ["@media (max-width:960px)"]: {},
+
+  ["@media (max-width:645px)"]: {
+    flexDirection: "column",
+  },
+}));
+
+const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
+  boxShadow: "none",
+  background: theme.palette.primary.main,
+  position: "sticky",
+
+  ["@media (max-height:750px)"]: {
+    position: "sticky",
+  },
+}));
+
+const StyledToolbar = styled(Toolbar)({
+  width: "100%",
+  padding: 0,
+  boxSizing: "border-box",
+  justifyContent: "space-between",
+  flexWrap: "wrap",
+});
+
+const AddressContainer = styled(Grid)({
+  cursor: "pointer",
+});
+
+const LogoText = styled(Typography)({
+  fontWeight: "bold",
+  fontSize: "24px",
+  cursor: "pointer",
+  fontFamily: "Roboto",
+  letterSpacing: "initial",
+});
+
 const AddressBarWrapper = styled(Grid)({
   boxSizing: "border-box",
   padding: "8px 16px",
@@ -91,24 +125,33 @@ const LogoItem = styled("img")({
   paddingTop: 8,
 });
 
-const StyledPopover = styled(Popover)({
-  ".MuiPaper-root": {
-    borderRadius: 4,
+const ToolbarContainer = styled(Grid)(({ theme }) => ({
+  ["@media (max-width: 645px)"]: {
+    marginBottom: "20px",
   },
+}));
+
+const BackButtonContainer = styled(Grid)({
+  marginTop: 28,
+  alignItems: "baseline",
+
 });
 
-const ToolbarContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    // display: "flex",
-    // justifyContent: "center",
-    // marginLeft: 16,
-  },
-  // [theme.breakpoints.down("md")]: {
-  //   display: "flex",
-  //   justifyContent: "center",
-  //   marginLeft: 0,
-  // },
+const BackButton = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.light,
+  fontSize: 18,
 }));
+
+const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
+  color: theme.palette.secondary.light,
+  fontSize: 12,
+  marginRight: 15,
+}));
+
+const BackButtonText = styled(Grid)({
+  cursor: "pointer",
+  alignItems: "baseline"
+});
 
 export const ConnectWalletButton = ({
   connect,
@@ -120,11 +163,10 @@ export const ConnectWalletButton = ({
   </SmallButton>
 );
 
-export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?: boolean }> = ({
-  mode,
-  children,
-  disableMobileMenu
-}) => {
+export const Navbar: React.FC<{
+  mode: "creator" | "explorer";
+  disableMobileMenu?: boolean;
+}> = ({ mode, children, disableMobileMenu }) => {
   const { connect, account, reset, changeNetwork, network } = useTezos();
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null
@@ -172,59 +214,62 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
       <StyledToolbar>
         <Header
           container
-          direction={isMobileExtraSmall ? "column" : "row"}
           alignItems="center"
           wrap="wrap"
+          justifyContent={"space-between"}
         >
-          {mode === "explorer" && (
-            <Grid item>
-              <Box onClick={() => history.push("/explorer")}>
-                <ToolbarContainer container alignItems="center" wrap="nowrap">
-                  <Grid item>
-                    <LogoItem src={HomeButton} />
-                  </Grid>
-                  <Grid item>
-                    <Box paddingLeft="10px">
-                      <LogoText color="textSecondary">Homebase</LogoText>
-                    </Box>
-                  </Grid>
-                </ToolbarContainer>
-              </Box>
-            </Grid>
-          )}
+          <Grid item>
+            <Box onClick={() => history.push("/explorer")}>
+              <ToolbarContainer container alignItems="center" wrap="nowrap">
+                <Grid item>
+                  <LogoItem src={HomeButton} />
+                </Grid>
+                <Grid item>
+                  <Box paddingLeft="10px">
+                    <LogoText color="textSecondary">Homebase</LogoText>
+                  </Box>
+                </Grid>
+              </ToolbarContainer>
+            </Box>
+          </Grid>
 
           <Grid item>
             <Grid
               container
-              justify={isMobileExtraSmall ? "center" : "flex-end"}
+              justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
             >
               {account ? (
-                <>
-                  <Grid
-                    container
-                    alignItems="center"
-                    justify={isMobileExtraSmall ? "center" : "flex-end"}
-                  >
-                    {children}
-                    <AddressBarWrapper item>
-                      <AddressContainer
-                        container
-                        alignItems="center"
-                        wrap="nowrap"
-                        justify="flex-end"
-                        onClick={handleClick}
-                        style={{ gap: 8 }}
-                      >
-                        <Grid item>
-                          <ProfileAvatar size={22} address={account} />
-                        </Grid>
-                        <Grid item>
-                          <Typography>
-                            <UserProfileName address={account} short={true} />
-                          </Typography>
-                        </Grid>
-                      </AddressContainer>
-                    </AddressBarWrapper>
+                <Grid
+                  container
+                  alignItems="center"
+                  style={{ gap: 12 }}
+                  justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
+                >
+                  {children}
+                  <Grid item>
+                    <Grid container alignItems="center" style={{ gap: 8 }}>
+                      <Grid item>
+                        <ChangeNetworkButton />
+                      </Grid>
+                      <AddressBarWrapper item onClick={handleClick}>
+                        <AddressContainer
+                          container
+                          alignItems="center"
+                          wrap="nowrap"
+                          justifyContent="flex-end"
+                          style={{ gap: 8 }}
+                        >
+                          <Grid item>
+                            <ProfileAvatar size={22} address={account} />
+                          </Grid>
+                          <Grid item>
+                            <StyledUserProfileName>
+                              <UserProfileName address={account} short={true} />
+                            </StyledUserProfileName>
+                          </Grid>
+                        </AddressContainer>
+                      </AddressBarWrapper>
+                    </Grid>
                   </Grid>
 
                   <StyledPopover
@@ -293,38 +338,44 @@ export const Navbar: React.FC<{ mode: "creator" | "explorer", disableMobileMenu?
                       </AddressMenuItem>
                     </AddressMenu>
                   </StyledPopover>
-                </>
-              ) : !isMobileSmall ? (
-                <Grid container justify="flex-end" wrap="nowrap" style={{ gap: 8 }}>
+                </Grid>
+              ) : (
+                <Grid
+                  container
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  wrap="nowrap"
+                  style={{ gap: 8 }}
+                >
                   <Grid item>
                     <ChangeNetworkButton />
                   </Grid>
                   <Grid item>
-                    <ConnectWalletButton connect={() => connect()} />
-                  </Grid>
-                </Grid>
-              ) : (
-                <Grid container>
-                  <Grid item>
-                    <ViewButton variant="outlined" onClick={() => connect()}>
-                      CONNECT
-                    </ViewButton>
+                    <SmallButton
+                      color="secondary"
+                      variant="contained"
+                      style={{ fontSize: "14px" }}
+                      onClick={() => connect()}
+                    >
+                      Connect Wallet
+                    </SmallButton>
                   </Grid>
                 </Grid>
               )}
             </Grid>
           </Grid>
+          <BackButtonContainer
+            container
+            justifyContent="flex-start"
+          >
+            <BackButtonText container item xs={6} md={2}  onClick={() => history.push("/explorer")}> 
+              <BackButtonIcon />
+              <BackButton>Back</BackButton>
+            </BackButtonText>
+          </BackButtonContainer>
         </Header>
-        <NavigationMenu disableMobileMenu={disableMobileMenu}/>
+        {/* <NavigationMenu disableMobileMenu={disableMobileMenu} /> */}
       </StyledToolbar>
-      <NetworkMenu
-        open={networkPopperOpen}
-        anchorEl={networkAnchorEl}
-        onClose={() => {
-          setNetworkPopperOpen(false);
-        }}
-        handleNetworkChange={handleNetworkChange}
-      />
     </StyledAppBar>
   );
 };

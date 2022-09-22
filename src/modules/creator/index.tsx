@@ -17,35 +17,36 @@ import { useHistory } from "react-router";
 
 import { CreatorContext, StepInfo } from "modules/creator/state";
 import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps";
-import HomeButton from "assets/logos/homebase_logo.svg";
 import { NavigationBar } from "modules/creator/components/NavigationBar";
 import { Navbar } from "modules/common/Toolbar";
 import mixpanel from "mixpanel-browser";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
-  minHeight: "100vh",
 }));
 
 const StepContentContainer = styled(Grid)({
-  alignItems: "center",
+  alignItems: "baseline",
   height: "100%",
-  maxHeight: "calc(100vh - 75px - 80px)",
-  paddingTop: 50,
+  paddingTop: 0,
   boxSizing: "border-box",
   overflowY: "auto",
-  padding: "4vw",
+  marginLeft: 47,
   zIndex: 10,
+  width: 'fit-content',
+  ["@media (max-width:1167px)"]: {
+    marginLeft: 0
+  }
 });
 
 const StyledStepper = styled(Stepper)({
   background: "inherit",
-  marginTop: 70,
+  '& .MuiStepLabel-label': {
+    fontSize: 14,
+    lineHeight: 14
+  }
 });
 
-const StepContentHeigth = styled(Grid)({
-  height: "calc(100vh - 75px)",
-});
 
 const IndicatorValue = styled(Paper)(({ theme }) => ({
   display: "flex",
@@ -69,18 +70,19 @@ const FAQClickToAction = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
   fontSize: "14px",
   cursor: "pointer",
+  marginTop: 16,
+  marginBottom: 8
 }));
 
 const ProgressContainer = styled(Grid)(({ theme }) => ({
-  borderRight: `2px solid ${theme.palette.primary.light}`,
+  background: "#2F3438",
   display: "grid",
+  borderRadius: 8,
+  maxHeight: 565,
+  paddingTop: 20,
+  position: "sticky",
+  top: 153
 }));
-
-const LogoText = styled(Typography)({
-  fontWeight: "bold",
-  fontSize: "24px",
-  cursor: "pointer",
-});
 
 const custom = (theme: Theme) => ({
   logo: {
@@ -101,9 +103,16 @@ const custom = (theme: Theme) => ({
   },
 });
 
-const LogoItem = styled("img")({
-  cursor: "pointer",
-  width: "36px",
+const PageContent = styled(Grid)({
+  width: "1000px",
+  height: "100%",
+  margin: "auto",
+  padding: "28px 0",
+  flexDirection: "row",
+  paddingTop: 0,
+  ["@media (max-width:1167px)"]: {
+    width: "86vw",
+  }
 });
 
 export const DAOCreate: React.FC = () => {
@@ -111,7 +120,7 @@ export const DAOCreate: React.FC = () => {
 
   const { back, next } = creator.state;
   const step = useStepNumber();
-  const progress = useMemo(() => step * 25, [step]);
+  const progress = useMemo(() => step * 20, [step]);
   const history = useHistory();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -129,99 +138,57 @@ export const DAOCreate: React.FC = () => {
 
   return (
     <PageContainer container direction="row">
-      {!isMobile && (
-        <ProgressContainer
-          item
-          xs={3}
-          container
-          justify="center"
-          alignItems="center"
-          direction="column"
-        >
+      <Navbar mode="creator" />
+      <PageContent container direction="row">
+        {!isMobile && (
+          <ProgressContainer item xs={3} container direction="column">
+            <Grid item container direction="column" alignItems="center" xs>
+              <ProgressBar
+                progress={progress}
+                radius={52}
+                strokeWidth={5}
+                strokeColor={theme.palette.secondary.main}
+                trackStrokeWidth={4}
+                trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
+              >
+                <Box className="indicator">
+                  <IndicatorValue>
+                    {progress === 0.5 ? 0 : step * 20}%
+                  </IndicatorValue>
+                </Box>
+              </ProgressBar>
+              <Box>
+                <FAQClickToAction onClick={goToFAQ}>
+                  New to DAOs? Read our FAQ
+                </FAQClickToAction>
+              </Box>
+              <StyledStepper activeStep={step} orientation="vertical">
+                {STEPS.map(({ title }: StepInfo, index: number) => (
+                  <Step key={title}>
+                    <StepLabel icon={index + 1}>{title}</StepLabel>
+                  </Step>
+                ))}
+              </StyledStepper>
+            </Grid>
+          </ProgressContainer>
+        )}
+
+        <Grid item xs={12} md={9} container justifyContent="center" alignItems="baseline">
           <Grid
-            item
             container
             direction="column"
             alignItems="center"
-            xs={3}
-            style={{ maxWidth: "unset" }}
+            style={{ width: "100%", marginBottom: 20 }}
           >
-            <Grid item>
-              <Box
-                style={
-                  location.pathname === "/creator"
-                    ? custom(theme).logo
-                    : undefined
-                }
-                onClick={() => history.push("/explorer")}
-                margin="auto"
-                marginTop="22px"
-              >
-                <Grid
-                  container
-                  alignItems="center"
-                  wrap="nowrap"
-                  justify="center"
-                >
-                  <Grid item>
-                    <LogoItem src={HomeButton} />
-                  </Grid>
-                  <Grid item>
-                    <Box paddingLeft="10px">
-                      <LogoText color="textSecondary">Homebase</LogoText>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
+            <Grid item style={{ width: "100%" }} xs>
+              <StepContentContainer item container justifyContent="center">
+                <StepRouter />
+              </StepContentContainer>
             </Grid>
           </Grid>
-          <Grid item container direction="column" alignItems="center" xs>
-            <ProgressBar
-              progress={progress}
-              radius={62}
-              strokeWidth={4}
-              strokeColor={theme.palette.secondary.main}
-              trackStrokeWidth={2}
-              trackStrokeColor={theme.palette.primary.light}
-            >
-              <Box className="indicator">
-                <IndicatorValue>
-                  {progress === 0.5 ? 0 : step * 25}%
-                </IndicatorValue>
-              </Box>
-            </ProgressBar>
-            <Box>
-              <FAQClickToAction onClick={goToFAQ}>
-                New to DAOs? Read our FAQ
-              </FAQClickToAction>
-            </Box>
-            <StyledStepper activeStep={step} orientation="vertical">
-              {STEPS.map(({ title }: StepInfo, index: number) => (
-                <Step key={title}>
-                  <StepLabel icon={index + 1}>{title}</StepLabel>
-                </Step>
-              ))}
-            </StyledStepper>
-          </Grid>
-        </ProgressContainer>
-      )}
-
-      <StepContentHeigth item xs={12} md={9} container justify="center">
-        <Grid
-          container
-          direction="column"
-          alignItems="center"
-          style={{ width: "100%" }}
-        >
-          <Navbar mode="creator" />
-          <Grid item style={{ width: "100%" }} xs>
-            <StepContentContainer item container justify="center">
-              <StepRouter />
-            </StepContentContainer>
-          </Grid>
+          {step < 5 && <NavigationBar back={back} next={next} />}
         </Grid>
-      </StepContentHeigth>
-      {step < 5 && <NavigationBar back={back} next={next} />}
+      </PageContent>
     </PageContainer>
   );
 };
