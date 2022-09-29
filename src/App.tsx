@@ -1,29 +1,26 @@
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
-import mixpanel from "mixpanel-browser";
-import { QueryClient, QueryClientProvider } from "react-query";
-import { Box, makeStyles, ThemeProvider } from "@material-ui/core";
-import { SnackbarProvider } from "notistack";
+import React from 'react';
+import {withLDProvider} from 'launchdarkly-react-client-sdk';
+import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
+import mixpanel from 'mixpanel-browser';
+import {QueryClient, QueryClientProvider} from 'react-query';
+import {Box, makeStyles, ThemeProvider} from '@material-ui/core';
+import {SnackbarProvider} from 'notistack';
 
-import { DAOExplorerRouter } from "modules/explorer/router";
-import { DAOCreate } from "modules/creator";
-import { CreatorProvider } from "modules/creator/state";
-import ScrollToTop from "modules/common/ScrollToTop";
-import { theme } from "theme";
+import {DAOExplorerRouter} from 'modules/explorer/router';
+import {DAOCreate} from 'modules/creator';
+import {CreatorProvider} from 'modules/creator/state';
+import ScrollToTop from 'modules/common/ScrollToTop';
+import {theme} from 'theme';
 
-import "App.css";
-import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions";
-import { Landing } from "modules/home/Landing";
-import { WarningFooter } from "modules/common/WarningFooter";
-import { ActionSheetProvider } from "modules/explorer/context/ActionSheets";
-import { legacyTheme } from "theme/legacy";
-import { Footer } from "modules/common/Footer";
-import { FAQ } from "modules/home/FAQ";
+import 'App.css';
+import {TZKTSubscriptionsProvider} from 'services/bakingBad/context/TZKTSubscriptions';
+import {Landing} from 'modules/home/Landing';
+import {WarningFooter} from 'modules/common/WarningFooter';
+import {ActionSheetProvider} from 'modules/explorer/context/ActionSheets';
+import {legacyTheme} from 'theme/legacy';
+import {Footer} from 'modules/common/Footer';
+import {FAQ} from 'modules/home/FAQ';
+import {EnvKey, getEnv} from 'services/config';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -137,4 +134,10 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+const env = getEnv(EnvKey.REACT_APP_ENV)
+
+export default withLDProvider({
+  clientSideID: env === "PROD" ?
+    getEnv(EnvKey.REACT_APP_LAUNCH_DARKLY_SDK_PROD) :
+    getEnv(EnvKey.REACT_APP_LAUNCH_DARKLY_SDK_DEV),
+})(App);
