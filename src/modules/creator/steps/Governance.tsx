@@ -304,7 +304,7 @@ const GovernanceForm = ({
     (async () => {
       const blockchainInfo = await getNetworkStats(network);
       if (blockchainInfo) {
-        setBlockTimeAverage(blockchainInfo.minimal_block_delay);
+        setBlockTimeAverage(blockchainInfo.constants.timeBetweenBlocks);
       }
     })();
   }, [network]);
