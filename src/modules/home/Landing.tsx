@@ -1,24 +1,14 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Link,
-  styled,
-  Theme,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  SvgIcon,
-} from "@material-ui/core";
-import React from "react";
-import { Header } from "./LandingHeader";
-import HomebaseLogo from "assets/logos/homebase_logo.svg";
-import Vector1 from "assets/vectors/Vector1.svg";
-import Vector2 from "assets/vectors/Vector2.svg";
-import hexToRgba from "hex-to-rgba";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg";
-import { MainButton } from "../common/MainButton";
+import {Box, Grid, Link, styled, SvgIcon, Theme, Typography, useMediaQuery, useTheme} from '@material-ui/core';
+import React from 'react';
+import {Header} from './LandingHeader';
+import HomebaseLogo from 'assets/logos/homebase_logo.svg';
+import Vector1 from 'assets/vectors/Vector1.svg';
+import Vector2 from 'assets/vectors/Vector2.svg';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import {ReactComponent as DiscordIcon} from 'assets/logos/discord.svg';
+import {MainButton} from '../common/MainButton';
+//
+import { useFeatureFlag, FeatureFlag } from 'services/config';
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
@@ -94,6 +84,10 @@ const SubtitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
 export const Landing: React.FC = () => {
   const theme = useTheme();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
+  // *** this is an example erase before merging
+  const isLambdaDao = useFeatureFlag(FeatureFlag.lambdaDao)
+  console.log({ isLambdaDao })
+  // ***
 
   return (
     <Background

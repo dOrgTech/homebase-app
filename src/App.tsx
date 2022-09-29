@@ -1,5 +1,5 @@
 import React from 'react';
-import {withLDProvider} from 'launchdarkly-react-client-sdk';
+import { withLDProvider } from 'launchdarkly-react-client-sdk';
 import {BrowserRouter as Router, Redirect, Route, Switch} from 'react-router-dom';
 import mixpanel from 'mixpanel-browser';
 import {QueryClient, QueryClientProvider} from 'react-query';
@@ -20,7 +20,7 @@ import {ActionSheetProvider} from 'modules/explorer/context/ActionSheets';
 import {legacyTheme} from 'theme/legacy';
 import {Footer} from 'modules/common/Footer';
 import {FAQ} from 'modules/home/FAQ';
-import {EnvKey, getEnv} from 'services/config';
+import { EnvKey, getEnv } from 'services/config';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,16 +63,20 @@ const styles = makeStyles({
   },
 });
 
-if (!process.env.REACT_APP_MIXPANEL_TOKEN) {
-  throw new Error("REACT_APP_MIXPANEL_TOKEN env variable is missing");
+
+const MIXPANEL_TOKEN = getEnv(EnvKey.REACT_APP_MIXPANEL_TOKEN)
+const MIXPANEL_DEBUG_ENABLED = getEnv(EnvKey.REACT_APP_MIXPANEL_DEBUG_ENABLED)
+
+if (!MIXPANEL_TOKEN) {
+  throw new Error(`${EnvKey.REACT_APP_MIXPANEL_TOKEN} env variable is missing`);
 }
 
-if (!process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED) {
-  throw new Error("REACT_APP_MIXPANEL_DEBUG_ENABLED env variable is missing");
+if (!MIXPANEL_DEBUG_ENABLED) {
+  throw new Error(`${EnvKey.REACT_APP_MIXPANEL_DEBUG_ENABLED} env variable is missing`);
 }
 
-mixpanel.init(process.env.REACT_APP_MIXPANEL_TOKEN, {
-  debug: process.env.REACT_APP_MIXPANEL_DEBUG_ENABLED == "true",
+mixpanel.init(MIXPANEL_TOKEN, {
+  debug: MIXPANEL_DEBUG_ENABLED === "true",
 });
 mixpanel.track("Visit");
 
@@ -133,6 +137,7 @@ const App: React.FC = () => {
     </ThemeProvider>
   );
 };
+
 
 const env = getEnv(EnvKey.REACT_APP_ENV)
 
