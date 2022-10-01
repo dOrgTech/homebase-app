@@ -7,8 +7,6 @@ import Vector2 from 'assets/vectors/Vector2.svg';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import {ReactComponent as DiscordIcon} from 'assets/logos/discord.svg';
 import {MainButton} from '../common/MainButton';
-//
-import { useFeatureFlag, FeatureFlag } from 'services/config';
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
@@ -84,10 +82,6 @@ const SubtitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
 export const Landing: React.FC = () => {
   const theme = useTheme();
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
-  // *** this is an example erase before merging
-  const isLambdaDao = useFeatureFlag(FeatureFlag.lambdaDao)
-  console.log({ isLambdaDao })
-  // ***
 
   return (
     <Background
