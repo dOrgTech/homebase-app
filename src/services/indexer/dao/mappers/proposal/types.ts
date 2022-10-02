@@ -221,7 +221,7 @@ export class TreasuryProposal extends Proposal {
 
     if (!this.cachedMetadata) {
       const parser = new Parser();
-      const micheline = parser.parseMichelineExpression(treasuryProposeCode) as Expr;
+      const micheline = parser.parseMichelineExpression(lambdaProposeCode) as Expr;
       const schema = new Schema(micheline as Expr);
 
       const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any;

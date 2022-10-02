@@ -168,6 +168,9 @@ export const RegistryTable: React.FC<{ data: RowData[] }> = ({
   };
 
   const data = useMemo(() => {
+    if(!propsData){
+      return []
+    }
     return propsData.map((rowData) => ({
       row: rowData,
       onClickItem: onClickItem,

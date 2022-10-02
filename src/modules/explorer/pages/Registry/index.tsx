@@ -43,11 +43,11 @@ export const Registry: React.FC = () => {
     const registryProposalsData = proposalsData as RegistryProposal[];
 
     const registryAffectedKeysProposalIds =
-      registryDAO.decoded.decodedRegistryAffected.map((r) => r.proposalId);
+      registryDAO?.decoded?.decodedRegistryAffected.map((r) => r.proposalId);
 
     return registryProposalsData
       .filter((proposal) =>
-        registryAffectedKeysProposalIds.includes(proposal.id)
+        registryAffectedKeysProposalIds?.includes(proposal.id)
       )
       .sort(
         (a, b) =>
@@ -85,7 +85,7 @@ export const Registry: React.FC = () => {
       return [];
     }
 
-    return (dao as RegistryDAO).decoded.decodedRegistry.map((d) => ({
+    return (dao as RegistryDAO)?.decoded?.decodedRegistry.map((d) => ({
       ...d,
       lastUpdated: proposals.find((proposal) => proposal.key === d.key)
         ?.startDate,

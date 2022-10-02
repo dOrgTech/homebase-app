@@ -127,14 +127,23 @@ export class RegistryDAO extends BaseDAO {
   public propose = async ({ agoraPostId, transfer_proposal }: RegistryProposeArgs, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address);
 
-    const michelsonType = parser.parseData(proposeCode);
+    const michelsonType = parser.parseData(proposelambda);
     const schema = new Schema(michelsonType as Expr);
 
-    const dataToEncode = {
-      transfer_proposal: {
+    const lambdaData = char2Bytes(
+      {transfer_proposal: {
         transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
         registry_diff: transfer_proposal.registry_diff.map((item) => [char2Bytes(item.key), char2Bytes(item.value)]),
         agora_post_id: agoraPostId,
+      }}.toString()
+    );
+    console.log("lambdaData: ", lambdaData);
+
+
+    const dataToEncode = {
+      execute_handler: {
+        handler_name: "transfer_proposal",
+        packed_argument: lambdaData,
       },
     };
 

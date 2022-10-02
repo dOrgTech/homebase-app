@@ -192,6 +192,18 @@ export const ProposalFormContainer: React.FC<Props> = ({
           },
         });
       }
+      else if ((dao as BaseDAO).data.type === "lambda") {
+        registryMutate({
+          dao: dao as RegistryDAO,
+          args: {
+            agoraPostId,
+            transfer_proposal: {
+              transfers: mappedTransfers,
+              registry_diff: mappedList,
+            },
+          },
+        });
+      }
 
       methods.reset()
       handleClose();
