@@ -1,24 +1,12 @@
-import {
-  Box,
-  Button,
-  Grid,
-  Link,
-  styled,
-  Theme,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  SvgIcon,
-} from "@material-ui/core";
-import React from "react";
-import { Header } from "./LandingHeader";
-import HomebaseLogo from "assets/logos/homebase_logo.svg";
-import Vector1 from "assets/vectors/Vector1.svg";
-import Vector2 from "assets/vectors/Vector2.svg";
-import hexToRgba from "hex-to-rgba";
-import GitHubIcon from "@material-ui/icons/GitHub";
-import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg";
-import { MainButton } from "../common/MainButton";
+import {Box, Grid, Link, styled, SvgIcon, Theme, Typography, useMediaQuery, useTheme} from '@material-ui/core';
+import React from 'react';
+import {Header} from './LandingHeader';
+import HomebaseLogo from 'assets/logos/homebase_logo.svg';
+import Vector1 from 'assets/vectors/Vector1.svg';
+import Vector2 from 'assets/vectors/Vector2.svg';
+import GitHubIcon from '@material-ui/icons/GitHub';
+import {ReactComponent as DiscordIcon} from 'assets/logos/discord.svg';
+import {MainButton} from '../common/MainButton';
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",

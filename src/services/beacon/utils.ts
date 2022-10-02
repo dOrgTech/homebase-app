@@ -2,6 +2,7 @@ import { NetworkType } from "@airgap/beacon-types";
 import { BeaconWallet } from "@taquito/beacon-wallet";
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito";
 import { Tzip16Module } from "@taquito/tzip16";
+import { EnvKey, getEnv } from 'services/config';
 
 export type Network = "mainnet" | "ghostnet"
 
@@ -17,8 +18,7 @@ export const getTezosNetwork = (): Network => {
     return storageNetwork as Network
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const envNetwork = process.env.REACT_APP_NETWORK!.toString().toLowerCase() as Network
+  const envNetwork = getEnv(EnvKey.REACT_APP_NETWORK).toString().toLowerCase() as Network
 
   if(!envNetwork) {
     throw new Error("No Network ENV set")
