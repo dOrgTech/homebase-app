@@ -1,4 +1,4 @@
-import { Grid, styled } from "@material-ui/core";
+import { Grid, styled } from "@material-ui/core"
 
 export const RowContainer = styled(Grid)(({ theme }) => ({
   minHeight: 155,
@@ -6,6 +6,6 @@ export const RowContainer = styled(Grid)(({ theme }) => ({
   borderBottom: `2px solid ${theme.palette.primary.light}`,
   cursor: "pointer",
   [theme.breakpoints.down("md")]: {
-    padding: "35px 0",
-  },
-}));
+    padding: "35px 0"
+  }
+}))
