@@ -1,16 +1,16 @@
-import React from "react";
-import {Table, TableBody, TableCell, TableHead, TableRow, useMediaQuery, useTheme} from "@material-ui/core";
-import {toShortAddress} from "../../../services/contracts/utils";
+import React from "react"
+import { Table, TableBody, TableCell, TableHead, TableRow, useMediaQuery, useTheme } from "@material-ui/core"
+import { toShortAddress } from "../../../services/contracts/utils"
 
-const titles = ["Address", "Votes"] as const;
+const titles = ["Address", "Votes"] as const
 
 interface RowData {
-  address: string;
-  votes: string;
+  address: string
+  votes: string
 }
 
-export const VotesTable: React.FC<{ data: RowData[] }> = ({data}) => {
-  const theme = useTheme();
+export const VotesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
+  const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   return (
@@ -33,5 +33,5 @@ export const VotesTable: React.FC<{ data: RowData[] }> = ({data}) => {
         </TableBody>
       </Table>
     </>
-  );
-};
+  )
+}

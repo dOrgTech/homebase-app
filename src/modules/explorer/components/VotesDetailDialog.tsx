@@ -1,22 +1,22 @@
-import React, {useMemo} from "react"
-import {Button, Grid, styled, Typography} from "@material-ui/core";
-import {ResponsiveDialog} from "./ResponsiveDialog";
-import {useVotesStats} from "../hooks/useVotesStats";
-import {BigNumber} from "bignumber.js";
-import {useProposal} from "../../../services/indexer/dao/hooks/useProposal";
-import {VotesTable} from "./VotesTable";
-import {roundNumber} from "../../../utils";
-import {VotersProgress} from "./VotersProgress";
+import React, { useMemo } from "react"
+import { Button, Grid, styled, Typography } from "@material-ui/core"
+import { ResponsiveDialog } from "./ResponsiveDialog"
+import { useVotesStats } from "../hooks/useVotesStats"
+import { BigNumber } from "bignumber.js"
+import { useProposal } from "../../../services/indexer/dao/hooks/useProposal"
+import { VotesTable } from "./VotesTable"
+import { roundNumber } from "../../../utils"
+import { VotersProgress } from "./VotersProgress"
 
 const StyledTab = styled(Button)({
-  fontSize: 16,
-});
+  fontSize: 16
+})
 
 interface Props {
-  open: boolean;
-  onClose: () => void;
-  daoAddress: string;
-  proposalAddress: string;
+  open: boolean
+  onClose: () => void
+  daoAddress: string
+  proposalAddress: string
 }
 
 enum SelectedVotes {
@@ -25,71 +25,66 @@ enum SelectedVotes {
   OPPOSE
 }
 
-export const VotesDetailDialog = ({open, onClose, daoAddress, proposalAddress}: Props) => {
-  const [selectedTab, setSelectedTab] = React.useState(SelectedVotes.ALL);
+export const VotesDetailDialog = ({ open, onClose, daoAddress, proposalAddress }: Props) => {
+  const [selectedTab, setSelectedTab] = React.useState(SelectedVotes.ALL)
 
   const handleChangeTab = (newValue: number) => {
-    setSelectedTab(newValue);
-  };
+    setSelectedTab(newValue)
+  }
 
-  const {data: proposal} = useProposal(
-    daoAddress,
-    proposalAddress
-  );
+  const { data: proposal } = useProposal(daoAddress, proposalAddress)
 
-  const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0);
-  const votesData = proposal?.voters;
+  const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
+  const votesData = proposal?.voters
 
-  const {votesSum} = useVotesStats({
+  const { votesSum } = useVotesStats({
     quorumThreshold,
     upVotes: proposal?.upVotes || new BigNumber(0),
-    downVotes: proposal?.downVotes || new BigNumber(0),
-  });
+    downVotes: proposal?.downVotes || new BigNumber(0)
+  })
 
-  const {supportVotes, againstVotes, allVotes} = useMemo(() => {
+  const { supportVotes, againstVotes, allVotes } = useMemo(() => {
     if (!votesData) {
       return {
-        supportVotes: [], againstVotes: [], allVotes: []
+        supportVotes: [],
+        againstVotes: [],
+        allVotes: []
       }
     }
 
     const allVotes = votesData.map(voter => ({
       address: voter.address,
-      votes: roundNumber({number: Number(voter.value.toString()), decimals: 2}).toString(),
-      support: voter.support,
+      votes: roundNumber({ number: Number(voter.value.toString()), decimals: 2 }).toString(),
+      support: voter.support
     }))
 
-    const supportVotes = allVotes.filter(voter => voter.support);
-    const againstVotes = allVotes.filter(voter => !voter.support);
+    const supportVotes = allVotes.filter(voter => voter.support)
+    const againstVotes = allVotes.filter(voter => !voter.support)
 
     return {
       allVotes,
       supportVotes,
       againstVotes
     }
-
   }, [votesData])
 
-  const votesToShow = selectedTab == SelectedVotes.ALL ? allVotes : selectedTab == SelectedVotes.SUPPORT ? supportVotes : againstVotes
+  const votesToShow =
+    selectedTab == SelectedVotes.ALL ? allVotes : selectedTab == SelectedVotes.SUPPORT ? supportVotes : againstVotes
 
   return (
     <ResponsiveDialog open={open} onClose={onClose} title={"Votes"}>
-      <Grid container direction={"column"} style={{gap: 58}}>
-        <Grid item container direction={"column"} style={{gap: 16}}>
+      <Grid container direction={"column"} style={{ gap: 58 }}>
+        <Grid item container direction={"column"} style={{ gap: 16 }}>
           <Grid item>
-            <Typography variant={"h2"} color={"textPrimary"}
-                        style={{fontWeight: "bold"}}>{votesSum.toString()}</Typography>
+            <Typography variant={"h2"} color={"textPrimary"} style={{ fontWeight: "bold" }}>
+              {votesSum.toString()}
+            </Typography>
           </Grid>
           <Grid item>
-            <VotersProgress
-              wrapAll={true}
-              showButton={false}
-              daoId={daoAddress}
-              proposalId={proposalAddress}
-            />
+            <VotersProgress wrapAll={true} showButton={false} daoId={daoAddress} proposalId={proposalAddress} />
           </Grid>
         </Grid>
-        <Grid item container direction={"column"} style={{gap: 40}}>
+        <Grid item container direction={"column"} style={{ gap: 40 }}>
           <Grid item container>
             <Grid item>
               <StyledTab
@@ -126,11 +121,10 @@ export const VotesDetailDialog = ({open, onClose, daoAddress, proposalAddress}: 
             </Grid>
           </Grid>
           <Grid item>
-            <VotesTable data={votesToShow}/>
+            <VotesTable data={votesToShow} />
           </Grid>
         </Grid>
       </Grid>
     </ResponsiveDialog>
-
   )
 }
