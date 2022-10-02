@@ -1,78 +1,79 @@
 /* eslint-disable react/display-name */
-import { Grid, styled, Typography, TextField } from "@material-ui/core";
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { SendButton } from "./ProposalFormSendButton";
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { useDAOID } from "../pages/DAO/router";
-import { ProposalFormInput } from "./ProposalFormInput";
-import { ResponsiveDialog } from "./ResponsiveDialog";
-import { useProposeDelegationChange } from "services/contracts/baseDAO/hooks/useProposeDelegationChange";
+import { Grid, styled, Typography, TextField } from "@material-ui/core"
+import React, { useCallback, useEffect, useMemo } from "react"
+import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { SendButton } from "./ProposalFormSendButton"
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
+import { Controller, FormProvider, useForm } from "react-hook-form"
+import { useDAOID } from "../pages/DAO/router"
+import { ProposalFormInput } from "./ProposalFormInput"
+import { ResponsiveDialog } from "./ResponsiveDialog"
+import { useProposeDelegationChange } from "services/contracts/baseDAO/hooks/useProposeDelegationChange"
 
 type RecursivePartial<T> = {
-  [P in keyof T]?: RecursivePartial<T[P]>;
-};
+  [P in keyof T]?: RecursivePartial<T[P]>
+}
 
 type Values = {
-  newDelegationAddress: string;
-};
+  newDelegationAddress: string
+}
 
-export type ProposalFormDefaultValues = RecursivePartial<Values>;
+export type ProposalFormDefaultValues = RecursivePartial<Values>
 
 interface Props {
-  open: boolean;
-  handleClose: () => void;
-  defaultValues?: ProposalFormDefaultValues;
-  defaultTab?: number;
+  open: boolean
+  handleClose: () => void
+  defaultValues?: ProposalFormDefaultValues
+  defaultTab?: number
 }
 
 const Content = styled(Grid)({
-  padding: "10px 0",
-});
+  padding: "10px 0"
+})
 
 export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClose, defaultValues }) => {
-  const daoId = useDAOID();
-  const { data: dao } = useDAO(daoId);
-  const { data: daoHoldings } = useDAOHoldings(daoId);
+  const daoId = useDAOID()
+  const { data: dao } = useDAO(daoId)
+  const { data: daoHoldings } = useDAOHoldings(daoId)
 
   const methods = useForm<Values>({
     defaultValues: useMemo(
       () => ({
         newDelegationAddress: "",
-        ...defaultValues,
+        ...defaultValues
       }),
       [defaultValues]
-    ),
+    )
     // resolver: yupResolver(validationSchema as any),
-  });
+  })
 
-  const newDelegationAddress = methods.watch("newDelegationAddress");
+  const newDelegationAddress = methods.watch("newDelegationAddress")
 
   useEffect(() => {
-    methods.reset(defaultValues);
-  }, [defaultValues, methods]);
+    methods.reset(defaultValues)
+  }, [defaultValues, methods])
 
-  const { mutate } = useProposeDelegationChange();
+  const { mutate } = useProposeDelegationChange()
 
   const onSubmit = useCallback(
     (values: Values) => {
       if (dao) {
-        mutate({ dao, newDelegationAddress: values.newDelegationAddress });
-        handleClose();
+        mutate({ dao, newDelegationAddress: values.newDelegationAddress })
+        handleClose()
       }
     },
     [dao, handleClose, mutate]
-  );
+  )
 
   return (
     <FormProvider {...methods}>
       <ResponsiveDialog
         open={open}
         onClose={handleClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
-        title={"Change Delegate"}>
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        title={"Change Delegate"}
+      >
         <Content container direction={"column"} style={{ gap: 18 }}>
           <Grid item>
             <ProposalFormInput label={"New Delegate Address"}>
@@ -80,33 +81,29 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
                 control={methods.control}
                 name={`newDelegationAddress`}
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    type='text'
-                    placeholder=' tz1...'
-                    InputProps={{ disableUnderline: true }}
-                  />
+                  <TextField {...field} type="text" placeholder=" tz1..." InputProps={{ disableUnderline: true }} />
                 )}
               />
             </ProposalFormInput>
           </Grid>
 
           <Grid item>
-            <Typography align='left' variant='subtitle2' color='textPrimary' display={"inline"}>
+            <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>
               Proposal Fee:{" "}
             </Typography>
-            <Typography align='left' variant='subtitle2' color='secondary' display={"inline"}>
+            <Typography align="left" variant="subtitle2" color="secondary" display={"inline"}>
               {dao && dao.data.fixed_proposal_fee_in_token.toString()} {dao ? dao.data.token.symbol : ""}
             </Typography>
           </Grid>
 
           <SendButton
             onClick={methods.handleSubmit(onSubmit as any)}
-            disabled={!dao || !daoHoldings || !newDelegationAddress}>
+            disabled={!dao || !daoHoldings || !newDelegationAddress}
+          >
             Submit
           </SendButton>
         </Content>
       </ResponsiveDialog>
     </FormProvider>
-  );
-};
+  )
+}

@@ -1,4 +1,4 @@
-import { gql } from "graphql-request";
+import { gql } from "graphql-request"
 
 export const GET_DAOS_QUERY = gql`
   query getDaos($network: String!) {
@@ -35,7 +35,7 @@ export const GET_DAOS_QUERY = gql`
       }
     }
   }
-`;
+`
 
 export const GET_DAO_QUERY = gql`
   query getDao($address: String!) {
@@ -115,7 +115,7 @@ export const GET_DAO_QUERY = gql`
       }
     }
   }
-`;
+`
 
 export const GET_PROPOSALS_QUERY = gql`
   query getDao($address: String!) {
@@ -158,7 +158,7 @@ export const GET_PROPOSALS_QUERY = gql`
       }
     }
   }
-`;
+`
 
 export const GET_PROPOSAL_QUERY = gql`
   query getDao($address: String!, $proposalKey: String!) {
@@ -201,11 +201,11 @@ export const GET_PROPOSAL_QUERY = gql`
       }
     }
   }
-`;
+`
 
 export const GET_XTZ_TRANSFERS = gql`
   query getTransfers($address: String!) {
-    transfer(where: {dao: {address: {_eq: $address}}}) {
+    transfer(where: { dao: { address: { _eq: $address } } }) {
       decimal_amount
       amount
       from_address
@@ -213,5 +213,4 @@ export const GET_XTZ_TRANSFERS = gql`
       hash
     }
   }
-`;
-
+`

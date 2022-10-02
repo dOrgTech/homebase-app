@@ -1,6 +1,6 @@
-import { styled, Typography } from "@material-ui/core";
+import { styled, Typography } from "@material-ui/core"
 
 export const ErrorText = styled(Typography)({
   fontSize: 14,
-  color: "red",
-});
+  color: "red"
+})
