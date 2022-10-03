@@ -1,5 +1,5 @@
 export interface BlockchainStats {
-  constants: BlockchainStatsConstants;
+  constants: BlockchainStatsConstants
 }
 
 export interface BlockchainStatsConstants {

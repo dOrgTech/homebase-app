@@ -1,5 +1,5 @@
-import { Box, Typography } from "@material-ui/core";
-import React from "react";
+import { Box, Typography } from "@material-ui/core"
+import React from "react"
 
 export const NotFound: React.FC = () => {
   return (
@@ -8,5 +8,5 @@ export const NotFound: React.FC = () => {
         404 Not Found
       </Typography>
     </Box>
-  );
-};
+  )
+}
