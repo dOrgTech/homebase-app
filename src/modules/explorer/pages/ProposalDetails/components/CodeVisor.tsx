@@ -1,51 +1,50 @@
 /* eslint-disable react/display-name */
-import { Grid, styled, makeStyles } from "@material-ui/core";
-import React, { useState } from "react";
-import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog";
-import Prism, { highlight, plugins } from "prismjs";
-import Editor from "react-simple-code-editor";
-import "prism-themes/themes/prism-night-owl.css";
+import { Grid, styled, makeStyles } from "@material-ui/core"
+import React, { useState } from "react"
+import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import Prism, { highlight, plugins } from "prismjs"
+import Editor from "react-simple-code-editor"
+import "prism-themes/themes/prism-night-owl.css"
 
 const Content = styled(Grid)({
   padding: "0 25px",
   background: "#121416",
-  borderRadius: 4,
-});
+  borderRadius: 4
+})
 
 const CustomDialog = styled(ResponsiveDialog)({
-
-    "& .MuiPaper-root": {
-        maxWidth: "900px !important",
-        maxHeight: 200,
-    },
-    "& .MuiDialog-paperWidthSm": {
-      minWidth: "900px !important",
-      maxWidth: "900px !important",
-      maxHeight: 200
-    },
-    "& .MuiDialog-paperScrollPaper": {
-        background: 'red'
-    }
-  });
+  "& .MuiPaper-root": {
+    maxWidth: "900px !important",
+    maxHeight: 200
+  },
+  "& .MuiDialog-paperWidthSm": {
+    minWidth: "900px !important",
+    maxWidth: "900px !important",
+    maxHeight: 200
+  },
+  "& .MuiDialog-paperScrollPaper": {
+    background: "red"
+  }
+})
 
 const CustomEditor = styled(Editor)({
-  maxHeight: 500,
-  overflow: "scroll !important",
+  "maxHeight": 500,
+  "overflow": "scroll !important",
   "& textarea": {
-    outline: "none !important",
+    outline: "none !important"
   },
   "& textarea:focus-visited": {
-    outline: "none !important",
-  },
-});
+    outline: "none !important"
+  }
+})
 interface Props {
-  open: boolean;
-  code: any;
-  handleClose: () => void;
+  open: boolean
+  code: any
+  handleClose: () => void
 }
 
 export const CodeVisor: React.FC<Props> = ({ open, handleClose, code }) => {
-  const grammar = Prism.languages.javascript;
+  const grammar = Prism.languages.javascript
 
   return (
     <>
@@ -57,13 +56,13 @@ export const CodeVisor: React.FC<Props> = ({ open, handleClose, code }) => {
                 disabled={false}
                 onValueChange={() => console.log("changed")}
                 value={code}
-                highlight={(code) => highlight(code, grammar, "javascript")}
+                highlight={code => highlight(code, grammar, "javascript")}
                 padding={10}
                 style={{
                   fontFamily: "Roboto Mono",
                   fontSize: 14,
                   fontWeight: 400,
-                  outlineWidth: 0,
+                  outlineWidth: 0
                 }}
               />
             </Content>
@@ -71,5 +70,5 @@ export const CodeVisor: React.FC<Props> = ({ open, handleClose, code }) => {
         )}
       </CustomDialog>
     </>
-  );
-};
+  )
+}

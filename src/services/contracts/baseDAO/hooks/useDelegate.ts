@@ -1,17 +1,17 @@
-import { useQuery } from "react-query";
-import { useDAO } from "services/indexer/dao/hooks/useDAO";
-import { useTezos } from "services/beacon/hooks/useTezos";
-import { getLatestDelegation } from "services/bakingBad/delegations";
+import { useQuery } from "react-query"
+import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { getLatestDelegation } from "services/bakingBad/delegations"
 
 export const useDelegate = (contractAddress: string) => {
-  const { data: dao } = useDAO(contractAddress);
-  const { tezos, network } = useTezos();
+  const { data: dao } = useDAO(contractAddress)
+  const { tezos, network } = useTezos()
 
   const result = useQuery<{ address: string; alias?: string } | null, Error>(
     ["daoDelegate", contractAddress],
     async () => {
-      const latestDelegation = await getLatestDelegation(contractAddress, network);
-      
+      const latestDelegation = await getLatestDelegation(contractAddress, network)
+
       if (!latestDelegation) {
         return null
       }
@@ -19,9 +19,9 @@ export const useDelegate = (contractAddress: string) => {
       return latestDelegation.newDelegate
     },
     {
-      enabled: !!dao && !!tezos,
+      enabled: !!dao && !!tezos
     }
-  );
+  )
 
-  return result;
-};
+  return result
+}

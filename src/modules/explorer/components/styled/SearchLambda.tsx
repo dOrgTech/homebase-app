@@ -1,98 +1,88 @@
-import React from "react";
-import {
-  Box,
-  Grid,
-  InputAdornment,
-  makeStyles,
-  Popper,
-  styled,
-  TextField,
-  Theme,
-  withStyles,
-} from "@material-ui/core";
-import { SearchOutlined } from "@material-ui/icons";
-import { Autocomplete } from "@material-ui/lab";
+import React from "react"
+import { Box, Grid, InputAdornment, makeStyles, Popper, styled, TextField, Theme, withStyles } from "@material-ui/core"
+import { SearchOutlined } from "@material-ui/icons"
+import { Autocomplete } from "@material-ui/lab"
 
 type LambdaValues = {
-  label: string;
-  code: string;
-};
+  label: string
+  code: string
+}
 
 const StyledType = styled(Grid)({
-    opacity: 0.65
+  opacity: 0.65
 })
 
 const StyledInput = withStyles((theme: Theme) => ({
   popperDisablePortal: {
     width: "418px !important",
     left: 46,
-    marginTop: -2,
+    marginTop: -2
   },
   popper: {
     "& div.MuiPaper-root": {
-      borderTopRightRadius: 0,
-      borderTopLeftRadius: 0,
-      marginTop: -1,
-      background: "#24282b",
+      "borderTopRightRadius": 0,
+      "borderTopLeftRadius": 0,
+      "marginTop": -1,
+      "background": "#24282b",
       "& div.MuiAutocomplete-paper": {
         "& ul": {
-          background: "inherit",
+          "background": "inherit",
 
           "& li": {
             borderBottom: "1px solid gray",
-            paddingBbottom: 12,
-          },
-        },
-      },
-    },
+            paddingBbottom: 12
+          }
+        }
+      }
+    }
   },
   root: {
     "& div.MuiFormControl-root": {
       "& div.MuiInputBase-root": {
-        padding: 0,
-        marginTop: 0,
+        "padding": 0,
+        "marginTop": 0,
         "& div.MuiAutocomplete-endAdornment": {
           "& button.MuiButtonBase-root": {
-            color: theme.palette.text.primary,
-          },
-        },
+            color: theme.palette.text.primary
+          }
+        }
       },
       "& label.MuiFormLabel-root": {
         marginLeft: 36,
         marginTop: -3,
         color: theme.palette.text.primary,
-        opacity: 0.65,
-      },
-    },
-  },
-}))(Autocomplete);
+        opacity: 0.65
+      }
+    }
+  }
+}))(Autocomplete)
 
 const SearchIcon = styled(SearchOutlined)({
-  marginRight: 5,
-});
+  marginRight: 5
+})
 
 const useStyles = makeStyles({
   "@global": {
-    '.MuiAutocomplete-option:not(:last-child)': {
-        borderBottom: "0.3px solid #7d8c8b",
-        paddingTop: 12
+    ".MuiAutocomplete-option:not(:last-child)": {
+      borderBottom: "0.3px solid #7d8c8b",
+      paddingTop: 12
     },
-    '.MuiAutocomplete-option': {
-        paddingBottom: 12,
-        paddingTop: 12
+    ".MuiAutocomplete-option": {
+      paddingBottom: 12,
+      paddingTop: 12
     },
-    '.MuiAutocomplete-listbox': {
-        padding: 0,
-        maxHeight: 442
-    },
-  },
-});
+    ".MuiAutocomplete-listbox": {
+      padding: 0,
+      maxHeight: 442
+    }
+  }
+})
 
 export const SearchLambda: React.FC<{
-  lambdas: Array<LambdaValues>;
-  handleChange?: any;
+  lambdas: Array<LambdaValues>
+  handleChange?: any
 }> = ({ lambdas, handleChange }) => {
-  useStyles();
+  useStyles()
 
   return (
     <>
@@ -102,16 +92,12 @@ export const SearchLambda: React.FC<{
         options={lambdas}
         getOptionLabel={(option: any) => option.label}
         renderOption={(option: any, state: any) => (
-          <Grid container direction="row" justifyContent="space-between"  {...state}>
-            <Grid>
-                {option.label}
-            </Grid>
-            <StyledType>
-                {option.type}
-            </StyledType>
+          <Grid container direction="row" justifyContent="space-between" {...state}>
+            <Grid>{option.label}</Grid>
+            <StyledType>{option.type}</StyledType>
           </Grid>
         )}
-        renderInput={(params) => (
+        renderInput={params => (
           <TextField
             {...params}
             placeholder="Search"
@@ -122,12 +108,12 @@ export const SearchLambda: React.FC<{
                   <SearchIcon color="secondary" />
                 </InputAdornment>
               ),
-              disableUnderline: true,
+              disableUnderline: true
             }}
           />
         )}
         onChange={(e: any, data: any) => handleChange(data)}
       />
     </>
-  );
-};
+  )
+}
