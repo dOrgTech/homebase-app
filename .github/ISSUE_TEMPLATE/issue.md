@@ -15,6 +15,4 @@ assignees: ''
 
 **Supporting information (Figma link, notes, etc)**
 
-**Definition of done**
-
 **When finished, please add Link to the PR or completed Figma / design asset, as a comment to the ticket.**
