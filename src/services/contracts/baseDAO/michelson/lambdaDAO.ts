@@ -6,7 +6,9 @@ export default `parameter
                        (list %params
                           (pair (address %from_) (list %txs (pair (address %to_) (nat %token_id) (nat %amount))))))))
             (address %transfer_ownership))
-        (unit %custom_entrypoints))
+        (or %custom_entrypoints
+           (pair %lookup_registry (string %key) (address %callback))
+           (unit %registryCepDummy)))
     (or (or (or (bytes %drop_proposal) (nat %flush)) (or (nat %freeze) (nat %unfreeze)))
         (or (or (list %unstake_vote bytes)
                 (list %update_delegate (pair (bool %enable) (address %delegate))))
@@ -67,8 +69,17 @@ storage
                (nat %staked))
             (big_map %staked_votes (pair address bytes) nat))
       (nat %start_level)) ;
-code { PUSH nat 1000000 ;
-     PUSH bool True ;
+code { LAMBDA
+       (pair string (map string bytes))
+       nat
+       { UNPAIR ;
+         GET ;
+         IF_NONE
+           { PUSH string "expected nat value was not found" ; FAILWITH }
+           { UNPACK nat ;
+             IF_NONE { PUSH string "decoding of Nat value failed" ; FAILWITH } {} } } ;
+     PUSH nat 1000000 ;
+     PUSH bool False ;
      NIL operation ;
      LAMBDA
        bytes
@@ -571,50 +582,51 @@ code { PUSH nat 1000000 ;
      PAIR 3 ;
      APPLY ;
      LAMBDA
-       (pair (lambda
-                (pair (pair (pair nat nat) address nat)
-                      (pair (pair (pair (pair address (pair (pair (pair (pair nat nat) int int) (pair int nat) nat nat) int))
-                                        (big_map (pair address address) unit)
-                                        (pair (map string bytes)
-                                              (big_map
-                                                 string
-                                                 (pair (pair (lambda
-                                                                (pair (pair (map string bytes) bytes) (pair address nat bytes))
-                                                                (pair (pair (option address) (map string bytes)) (list operation)))
-                                                             (lambda (pair bytes (map string bytes)) unit))
-                                                       bool))))
-                                  (pair (big_map address (pair (pair nat nat) nat nat)) nat)
-                                  nat
-                                  (pair address nat))
-                            (pair (pair address (big_map string bytes))
-                                  (option (pair bytes bytes (big_map (pair bytes bool) bytes)))
-                                  address)
-                            (pair nat
-                                  (big_map bytes (pair (pair (pair nat bytes) address nat) (pair nat nat) nat nat)))
-                            (pair (pair nat nat) nat)
-                            (big_map (pair address bytes) nat))
-                      nat)
-                (pair (pair (pair (pair (pair address (pair (pair (pair (pair nat nat) int int) (pair int nat) nat nat) int))
-                                        (big_map (pair address address) unit)
-                                        (pair (map string bytes)
-                                              (big_map
-                                                 string
-                                                 (pair (pair (lambda
-                                                                (pair (pair (map string bytes) bytes) (pair address nat bytes))
-                                                                (pair (pair (option address) (map string bytes)) (list operation)))
-                                                             (lambda (pair bytes (map string bytes)) unit))
-                                                       bool))))
-                                  (pair (big_map address (pair (pair nat nat) nat nat)) nat)
-                                  nat
-                                  (pair address nat))
-                            (pair (pair address (big_map string bytes))
-                                  (option (pair bytes bytes (big_map (pair bytes bool) bytes)))
-                                  address)
-                            (pair nat
-                                  (big_map bytes (pair (pair (pair nat bytes) address nat) (pair nat nat) nat nat)))
-                            (pair (pair nat nat) nat)
-                            (big_map (pair address bytes) nat))
-                      nat))
+       (pair (pair (lambda
+                      (pair (pair (pair nat nat) address nat)
+                            (pair (pair (pair (pair address (pair (pair (pair (pair nat nat) int int) (pair int nat) nat nat) int))
+                                              (big_map (pair address address) unit)
+                                              (pair (map string bytes)
+                                                    (big_map
+                                                       string
+                                                       (pair (pair (lambda
+                                                                      (pair (pair (map string bytes) bytes) (pair address nat bytes))
+                                                                      (pair (pair (option address) (map string bytes)) (list operation)))
+                                                                   (lambda (pair bytes (map string bytes)) unit))
+                                                             bool))))
+                                        (pair (big_map address (pair (pair nat nat) nat nat)) nat)
+                                        nat
+                                        (pair address nat))
+                                  (pair (pair address (big_map string bytes))
+                                        (option (pair bytes bytes (big_map (pair bytes bool) bytes)))
+                                        address)
+                                  (pair nat
+                                        (big_map bytes (pair (pair (pair nat bytes) address nat) (pair nat nat) nat nat)))
+                                  (pair (pair nat nat) nat)
+                                  (big_map (pair address bytes) nat))
+                            nat)
+                      (pair (pair (pair (pair (pair address (pair (pair (pair (pair nat nat) int int) (pair int nat) nat nat) int))
+                                              (big_map (pair address address) unit)
+                                              (pair (map string bytes)
+                                                    (big_map
+                                                       string
+                                                       (pair (pair (lambda
+                                                                      (pair (pair (map string bytes) bytes) (pair address nat bytes))
+                                                                      (pair (pair (option address) (map string bytes)) (list operation)))
+                                                                   (lambda (pair bytes (map string bytes)) unit))
+                                                             bool))))
+                                        (pair (big_map address (pair (pair nat nat) nat nat)) nat)
+                                        nat
+                                        (pair address nat))
+                                  (pair (pair address (big_map string bytes))
+                                        (option (pair bytes bytes (big_map (pair bytes bool) bytes)))
+                                        address)
+                                  (pair nat
+                                        (big_map bytes (pair (pair (pair nat bytes) address nat) (pair nat nat) nat nat)))
+                                  (pair (pair nat nat) nat)
+                                  (big_map (pair address bytes) nat))
+                            nat))
+                   (lambda (pair string (map string bytes)) nat))
              (pair (pair (pair bool (pair (pair nat bytes) address nat) (pair nat nat) nat nat) nat nat)
                    (pair (pair (pair (pair address (pair (pair (pair (pair nat nat) int int) (pair int nat) nat nat) int))
                                      (big_map (pair address address) unit)
@@ -659,22 +671,52 @@ code { PUSH nat 1000000 ;
                    (big_map (pair address bytes) nat))
              nat)
        { UNPAIR ;
-         SWAP ;
+         UNPAIR ;
+         DIG 2 ;
          UNPAIR ;
          UNPAIR ;
          UNPAIR ;
          DIG 2 ;
          UNPAIR ;
          DIG 2 ;
-         IF { PUSH nat 0 ; DIG 2 ; DUP 4 ; CAR ; CDR ; CDR ; ADD }
-            { DUP 2 ;
-              DUP 4 ;
+         IF { DIG 5 ; DROP ; PUSH nat 0 ; DIG 2 ; DUP 4 ; CAR ; CDR ; CDR ; ADD }
+            { DUP 4 ;
+              CAR ;
+              CAR ;
+              CAR ;
+              CDR ;
+              CDR ;
+              DUP ;
+              CAR ;
+              PUSH string "slash_scale_value" ;
+              PAIR ;
+              DUP 8 ;
+              SWAP ;
+              EXEC ;
+              SWAP ;
+              CAR ;
+              PUSH string "slash_division_value" ;
+              PAIR ;
+              DIG 7 ;
+              SWAP ;
+              EXEC ;
+              DUP 5 ;
+              CAR ;
+              CDR ;
+              CDR ;
+              DIG 2 ;
+              MUL ;
+              EDIV ;
+              IF_NONE { PUSH string "DIV by 0" ; FAILWITH } {} ;
+              CAR ;
+              DUP 3 ;
+              DUP 5 ;
               CAR ;
               CDR ;
               CDR ;
               ADD ;
+              DIG 3 ;
               DIG 2 ;
-              PUSH nat 0 ;
               ADD ;
               DUP ;
               DIG 2 ;
@@ -694,9 +736,11 @@ code { PUSH nat 1000000 ;
          PAIR ;
          PAIR ;
          EXEC } ;
-     DUP 3 ;
+     DUP 18 ;
+     DUP 4 ;
+     PAIR ;
      APPLY ;
-     DIG 17 ;
+     DIG 18 ;
      UNPAIR ;
      IF_LEFT
        { DIG 2 ;
@@ -719,7 +763,8 @@ code { PUSH nat 1000000 ;
                      DIG 9 ;
                      DIG 11 ;
                      DIG 12 ;
-                     DROP 10 ;
+                     DIG 13 ;
+                     DROP 11 ;
                      IF_LEFT
                        { DROP ;
                          SENDER ;
@@ -795,6 +840,45 @@ code { PUSH nat 1000000 ;
                          CAR ;
                          CDR ;
                          CDR ;
+                         DUP 4 ;
+                         GET 4 ;
+                         SIZE ;
+                         DUP 2 ;
+                         CAR ;
+                         PUSH string "frozen_scale_value" ;
+                         PAIR ;
+                         DUP 19 ;
+                         SWAP ;
+                         EXEC ;
+                         DUP 3 ;
+                         CAR ;
+                         PUSH string "frozen_extra_value" ;
+                         PAIR ;
+                         DUP 20 ;
+                         SWAP ;
+                         EXEC ;
+                         DUP 4 ;
+                         CAR ;
+                         PUSH string "max_proposal_size" ;
+                         PAIR ;
+                         DIG 20 ;
+                         SWAP ;
+                         EXEC ;
+                         SWAP ;
+                         DUP 4 ;
+                         DIG 3 ;
+                         MUL ;
+                         ADD ;
+                         DUP 7 ;
+                         GET 3 ;
+                         COMPARE ;
+                         NEQ ;
+                         IF { DROP 2 ; PUSH string "WRONG_TOKEN_AMOUNT" ; SOME }
+                            { SWAP ;
+                              COMPARE ;
+                              GE ;
+                              IF { PUSH string "LARGE_PROPOSAL" ; SOME } { NONE string } } ;
+                         IF_NONE {} { PUSH nat 102 ; PAIR ; FAILWITH } ;
                          DUP 4 ;
                          GET 4 ;
                          DIG 13 ;
@@ -1163,7 +1247,7 @@ code { PUSH nat 1000000 ;
                              GET 4 ;
                              DUP 3 ;
                              GET 3 ;
-                             PUSH bool False ;
+                             DIG 10 ;
                              DUP 10 ;
                              PAIR ;
                              SWAP ;
@@ -1171,7 +1255,7 @@ code { PUSH nat 1000000 ;
                              SWAP ;
                              UPDATE ;
                              DIG 7 ;
-                             DIG 9 ;
+                             PUSH bool True ;
                              DIG 4 ;
                              GET 3 ;
                              PAIR ;
@@ -1206,7 +1290,8 @@ code { PUSH nat 1000000 ;
                          DIG 10 ;
                          DIG 11 ;
                          DIG 12 ;
-                         DROP 11 ;
+                         DIG 13 ;
+                         DROP 12 ;
                          DUP 2 ;
                          CAR ;
                          CAR ;
@@ -1241,7 +1326,8 @@ code { PUSH nat 1000000 ;
                  DIG 9 ;
                  DIG 11 ;
                  DIG 12 ;
-                 DROP 10 ;
+                 DIG 13 ;
+                 DROP 11 ;
                  DUP 2 ;
                  CAR ;
                  CAR ;
@@ -1316,16 +1402,48 @@ code { PUSH nat 1000000 ;
              DIG 7 ;
              DIG 8 ;
              DIG 9 ;
-             DIG 10 ;
              DIG 11 ;
              DIG 12 ;
-             DROP 12 ;
-             NIL operation ;
+             DIG 13 ;
+             DROP 11 ;
+             IF_LEFT
+               { DUP ;
+                 CDR ;
+                 CONTRACT (pair string (option string)) ;
+                 IF_NONE { PUSH nat 116 ; FAILWITH } {} ;
+                 DUP 3 ;
+                 CAR ;
+                 CAR ;
+                 CAR ;
+                 CDR ;
+                 CDR ;
+                 CAR ;
+                 PUSH string "registry" ;
+                 GET ;
+                 IF_NONE
+                   { PUSH string "registry not found" ; FAILWITH }
+                   { UNPACK (map string string) ;
+                     IF_NONE { PUSH string "registry decoding failed" ; FAILWITH } {} } ;
+                 SWAP ;
+                 PUSH mutez 0 ;
+                 DIG 2 ;
+                 DUP 4 ;
+                 CAR ;
+                 GET ;
+                 DIG 3 ;
+                 CAR ;
+                 PAIR ;
+                 TRANSFER_TOKENS ;
+                 SWAP ;
+                 DUG 2 ;
+                 CONS }
+               { DIG 2 ; DROP 2 ; NIL operation } ;
              PAIR } }
        { DIG 5 ;
          DIG 12 ;
          DIG 14 ;
-         DROP 3 ;
+         DIG 19 ;
+         DROP 4 ;
          PUSH mutez 0 ;
          AMOUNT ;
          COMPARE ;
@@ -1366,8 +1484,7 @@ code { PUSH nat 1000000 ;
                               DUP 4 ;
                               COMPARE ;
                               EQ ;
-                              IF { DROP ; PUSH bool True }
-                                 { GET 4 ; PUSH bool False ; DUP 4 ; PAIR ; MEM } } ;
+                              IF { DROP ; PUSH bool True } { GET 4 ; DUP 7 ; DUP 4 ; PAIR ; MEM } } ;
                           IF {} { DROP ; PUSH nat 103 ; FAILWITH } ;
                           DUP 3 ;
                           CAR ;
@@ -1480,25 +1597,25 @@ code { PUSH nat 1000000 ;
                                            { SOME } }
                                       { DUP ;
                                         GET 4 ;
-                                        PUSH bool False ;
+                                        DUP 9 ;
                                         DUP 8 ;
                                         PAIR ;
                                         GET ;
                                         DUP 2 ;
                                         GET 4 ;
-                                        DUP 10 ;
+                                        PUSH bool True ;
                                         DUP 9 ;
                                         PAIR ;
                                         GET ;
                                         DUP 3 ;
                                         GET 4 ;
-                                        DUP 11 ;
+                                        PUSH bool True ;
                                         DUP 10 ;
                                         PAIR ;
                                         NONE bytes ;
                                         SWAP ;
                                         UPDATE ;
-                                        PUSH bool False ;
+                                        DUP 11 ;
                                         DUP 10 ;
                                         PAIR ;
                                         NONE bytes ;
@@ -1506,10 +1623,10 @@ code { PUSH nat 1000000 ;
                                         UPDATE ;
                                         DUP 3 ;
                                         IF_NONE
-                                          { DIG 10 ; DROP ; DUP 4 ; GET 3 }
+                                          { DUP 4 ; GET 3 }
                                           { SWAP ;
                                             DUP 3 ;
-                                            DIG 12 ;
+                                            PUSH bool True ;
                                             DUP 4 ;
                                             PAIR ;
                                             UPDATE ;
@@ -1521,10 +1638,10 @@ code { PUSH nat 1000000 ;
                                             IF { SWAP } { SWAP ; DROP ; DUP 4 ; GET 3 } } ;
                                         DIG 2 ;
                                         IF_NONE
-                                          { DIG 2 ; DIG 8 ; DROP 2 ; SWAP ; DIG 2 ; CAR }
+                                          { DIG 2 ; DIG 8 ; DIG 10 ; DROP 3 ; SWAP ; DIG 2 ; CAR }
                                           { DIG 2 ;
                                             DIG 3 ;
-                                            PUSH bool False ;
+                                            DIG 11 ;
                                             DUP 4 ;
                                             PAIR ;
                                             UPDATE ;
@@ -1596,7 +1713,7 @@ code { PUSH nat 1000000 ;
                                 { NONE (pair bytes bytes (big_map (pair bytes bool) bytes)) ; NONE bytes }
                                 { DUP ;
                                   GET 4 ;
-                                  DUP 13 ;
+                                  PUSH bool True ;
                                   DUP 3 ;
                                   CAR ;
                                   PAIR ;
@@ -1608,14 +1725,14 @@ code { PUSH nat 1000000 ;
                                       UPDATE 1 ;
                                       DUP 3 ;
                                       GET 4 ;
-                                      DUP 15 ;
+                                      PUSH bool True ;
                                       DUP 5 ;
                                       CAR ;
                                       PAIR ;
                                       NONE bytes ;
                                       SWAP ;
                                       UPDATE ;
-                                      PUSH bool False ;
+                                      DUP 15 ;
                                       DIG 3 ;
                                       PAIR ;
                                       NONE bytes ;
@@ -1676,7 +1793,7 @@ code { PUSH nat 1000000 ;
                                       COMPARE ;
                                       EQ ;
                                       IF { DIG 2 ; DROP 2 ; PUSH bool True }
-                                         { GET 4 ; PUSH bool False ; DIG 3 ; PAIR ; MEM } } ;
+                                         { GET 4 ; DUP 15 ; DIG 3 ; PAIR ; MEM } } ;
                                   IF {} { DROP ; PUSH nat 103 ; FAILWITH } ;
                                   DUP 4 ;
                                   CAR ;
@@ -2377,9 +2494,8 @@ code { PUSH nat 1000000 ;
                   DIG 10 ;
                   DIG 11 ;
                   DIG 12 ;
-                  DIG 14 ;
                   DIG 15 ;
-                  DROP 9 ;
+                  DROP 8 ;
                   IF_LEFT
                     { DIG 2 ;
                       DIG 4 ;
@@ -2402,8 +2518,7 @@ code { PUSH nat 1000000 ;
                                      DUP 4 ;
                                      COMPARE ;
                                      EQ ;
-                                     IF { DROP ; PUSH bool True }
-                                        { GET 4 ; PUSH bool False ; DUP 4 ; PAIR ; MEM } } ;
+                                     IF { DROP ; PUSH bool True } { GET 4 ; DUP 7 ; DUP 4 ; PAIR ; MEM } } ;
                                  IF { PUSH nat 123 ; FAILWITH } {} ;
                                  DUP ;
                                  CAR ;
@@ -2476,9 +2591,11 @@ code { PUSH nat 1000000 ;
                                  PAIR } ;
                           SWAP ;
                           DIG 2 ;
-                          DROP 2 }
+                          DIG 4 ;
+                          DROP 3 }
                         { DIG 2 ;
-                          DROP ;
+                          DIG 4 ;
+                          DROP 2 ;
                           DUP 2 ;
                           CDR ;
                           DUP 3 ;
@@ -2628,7 +2745,7 @@ code { PUSH nat 1000000 ;
                                  COMPARE ;
                                  EQ ;
                                  IF { DIG 2 ; DROP 2 ; PUSH bool True }
-                                    { GET 4 ; PUSH bool False ; DIG 3 ; PAIR ; MEM } } ;
+                                    { GET 4 ; DUP 11 ; DIG 3 ; PAIR ; MEM } } ;
                              IF {} { DROP ; PUSH nat 103 ; FAILWITH } ;
                              DUP 4 ;
                              CAR ;
@@ -2814,7 +2931,8 @@ code { PUSH nat 1000000 ;
                       SWAP ;
                       DIG 2 ;
                       DIG 3 ;
-                      DROP 3 } ;
+                      DIG 5 ;
+                      DROP 4 } ;
                   SWAP ;
                   PAIR } } } } 
 `

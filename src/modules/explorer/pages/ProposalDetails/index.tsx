@@ -277,7 +277,8 @@ export const ProposalDetails: React.FC = () => {
                 </Tooltip>
               </Grid>
               <Grid>
-                <Button variant="contained" color="secondary" disabled={!canUnstakeVotes} onClick={onUnstakeVotes}>
+                {/* <Button variant="contained" color="secondary" disabled={!canUnstakeVotes} onClick={onUnstakeVotes}> */}
+                <Button variant="contained" color="secondary" disabled={false} onClick={onUnstakeVotes}>
                   Unstake votes
                 </Button>
                 <Tooltip
@@ -322,7 +323,8 @@ export const ProposalDetails: React.FC = () => {
                         variant="contained"
                         favor={true}
                         onClick={() => onClickVote(true)}
-                        disabled={!canVote}
+                        // disabled={!canVote}
+                        disabled={false}
                       >
                         Vote For
                       </VoteButton>

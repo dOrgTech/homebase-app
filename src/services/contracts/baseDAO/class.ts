@@ -60,9 +60,9 @@ export interface BaseDAOData {
   description: string
   type: DAOTemplate
   network: Network
-  // extra: {
-  //   frozen_extra_value: string;
-  // };
+  extra: {
+    frozen_extra_value: string
+  }
 }
 
 export abstract class BaseDAO {
@@ -288,7 +288,7 @@ export abstract class BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     )
 

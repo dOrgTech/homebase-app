@@ -98,7 +98,7 @@ export class LambdaDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     )
 
@@ -213,7 +213,7 @@ export class LambdaDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     )
 
@@ -221,126 +221,20 @@ export class LambdaDAO extends BaseDAO {
   }
 
   public propose = async ({ agoraPostId, transfer_proposal }: RegistryProposeArgs, tezos: TezosToolkit) => {
+    console.log("transfer_proposal: ", transfer_proposal)
     const contract = await getContract(tezos, this.data.address)
     const p = new Parser()
     // const parser = new Parser();
-    const transfer_arg_type = {
-      prim: "pair",
-      args: [
-        {
-          prim: "pair",
-          args: [
-            {
-              prim: "nat",
-              annots: ["%agora_post_id"]
-            },
-            {
-              prim: "list",
-              annots: ["%registry_diff"],
-              args: [
-                {
-                  prim: "pair",
-                  args: [
-                    {
-                      prim: "string"
-                    },
-                    {
-                      prim: "option",
-                      args: [
-                        {
-                          prim: "string"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          prim: "list",
-          annots: ["%transfers"],
-          args: [
-            {
-              prim: "or",
-              args: [
-                {
-                  prim: "pair",
-                  annots: ["%xtz_transfer_type"],
-                  args: [
-                    {
-                      prim: "mutez",
-                      annots: ["%amount"]
-                    },
-                    {
-                      prim: "address",
-                      annots: ["%recipient"]
-                    }
-                  ]
-                },
-                {
-                  prim: "pair",
-                  annots: ["%token_transfer_type"],
-                  args: [
-                    {
-                      prim: "address",
-                      annots: ["%contract_address"]
-                    },
-                    {
-                      prim: "list",
-                      annots: ["%transfer_list"],
-                      args: [
-                        {
-                          prim: "pair",
-                          args: [
-                            {
-                              prim: "address",
-                              annots: ["%from_"]
-                            },
-                            {
-                              prim: "list",
-                              annots: ["%txs"],
-                              args: [
-                                {
-                                  prim: "pair",
-                                  args: [
-                                    {
-                                      prim: "address",
-                                      annots: ["%to_"]
-                                    },
-                                    {
-                                      prim: "nat",
-                                      annots: ["%token_id"]
-                                    },
-                                    {
-                                      prim: "nat",
-                                      annots: ["%amount"]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
+    const transfer_arg_type = `(pair (pair (nat %agora_post_id) (list %registry_diff (pair string (option string))))
+    (list %transfers
+       (or (pair %xtz_transfer_type (mutez %amount) (address %recipient))
+           (pair %token_transfer_type
+              (address %contract_address)
+              (list %transfer_list
+                 (pair (address %from_) (list %txs (pair (address %to_) (nat %token_id) (nat %amount)))))))))`
 
-    // const transfer_arg_michelson_type = p.parseMichelineExpression(
-    //   transfer_arg_type
-    // ) as MichelsonType;
-    const transfer_arg_schema = new Schema(transfer_arg_type)
-
-    // const michelsonType = parser.parseData(proposelambda);
-    // const schema = new Schema(michelsonType as Expr);
+    const transfer_arg_michelson_type = p.parseMichelineExpression(transfer_arg_type) as MichelsonType
+    const transfer_arg_schema = new Schema(transfer_arg_michelson_type)
 
     const map = {
       transfer_proposal: {
@@ -352,7 +246,12 @@ export class LambdaDAO extends BaseDAO {
     console.log("map: ", map)
 
     const packed_transfer_proposal_arg = packDataBytes(
-      transfer_arg_schema.Encode(map.transfer_proposal) // as MichelsonData
+      transfer_arg_schema.Encode({
+        transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
+        registry_diff: transfer_proposal.registry_diff.map(item => [char2Bytes(item.key), char2Bytes(item.value)]),
+        agora_post_id: agoraPostId
+      }), // as MichelsonData
+      transfer_arg_michelson_type
     )
 
     // Next we encode the proposal metadata for the 'execute proposal'.
@@ -382,48 +281,11 @@ export class LambdaDAO extends BaseDAO {
     )
     console.log("proposalMetadata: ", proposalMetadata)
 
-    // const proposal_data = {
-    //   transfer_proposal: {
-    //     transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
-    //     registry_diff: transfer_proposal.registry_diff.map((item) => [char2Bytes(item.key), char2Bytes(item.value)]),
-    //     agora_post_id: agoraPostId,
-    //   }
-    // }
-    // console.log("proposal_data: ", JSON.stringify(proposal_data));
-
-    // const utf8Encode = new TextEncoder();
-    // const byteArr = utf8Encode.encode(JSON.stringify(proposal_data));
-    // console.log("byteArr: ", byteArr.join(''));
-
-    // const lambdaData = char2Bytes(
-    //   JSON.stringify(proposal_data)
-    // );
-    // console.log("lambdaDataasd: ", lambdaData);
-
-    // const dataJSON = parser.parseMichelineExpression(JSON.stringify(proposal_data)) as MichelsonData;
-    // const packed = packDataBytes(
-    //   dataJSON, // as MichelsonData
-    // );
-    // console.log("packed: ", packed);
-
-    // const dataToEncode = {
-    //   execute_handler: {
-    //     handler_name: "transfer_proposal",
-    //     packed_argument: packed,
-    //   },
-    // };
-
-    // const data = schema.Encode(dataToEncode);
-
-    // const { packed: proposalMetadata } = await tezos.rpc.packData({
-    //   data,
-    //   type: michelsonType as Expr,
-    // });
-
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
+      // formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata
+      proposalMetadata.bytes
     )
 
     return await contractMethod.send()
@@ -439,7 +301,7 @@ export class LambdaDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata.bytes
     )
 
@@ -468,7 +330,7 @@ export class LambdaDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     )
 

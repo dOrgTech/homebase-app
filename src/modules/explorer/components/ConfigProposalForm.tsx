@@ -83,7 +83,7 @@ export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
             </Typography>
           </Grid>
           <Grid item>
-            <ProposalFormInput label={`Proposal fee (Current: ${dao?.data.fixed_proposal_fee_in_token.toString()})`}>
+            <ProposalFormInput label={`Proposal fee (Current: ${dao?.data.extra.frozen_extra_value.toString()})`}>
               <Controller
                 control={methods.control}
                 name={`frozen_extra_value`}
@@ -126,7 +126,7 @@ export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
               display={"inline"}
               style={{ fontWeight: 300 }}
             >
-              {dao && dao.data.fixed_proposal_fee_in_token.toString()} {dao ? dao.data.token.symbol : ""}
+              {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
             </Typography>
           </Grid>
 

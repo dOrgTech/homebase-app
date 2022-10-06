@@ -88,14 +88,13 @@ export const GET_DAO_QUERY = gql`
       quorum_threshold
       staked
       start_level
-      registry_extras {
+      lambda_extras {
         id
         frozen_extra_value
         frozen_scale_value
         max_xtz_amount
         min_xtz_amount
         registry
-        registry_affected
         slash_division_value
         slash_scale_value
       }

@@ -73,18 +73,31 @@ export const useDAO = (address: string) => {
                 max_xtz_amount: unpackExtraNumValue((dao.registry_extras[0] as any).max_xtz_amount),
                 slash_scale_value: unpackExtraNumValue((dao.registry_extras[0] as any).slash_scale_value)
               } as any)
-            : ({
-                // ...dao.treasury_extras[0],
+            : dao.dao_type.name === "lambda"
+            ? ({
+                ...dao.lambda_extras[0],
                 frozen_extra_value: parseUnits(
-                  new BigNumber(dao.fixed_proposal_fee_in_token),
-                  // unpackExtraNumValue((dao).fixed_proposal_fee_in_token),
+                  unpackExtraNumValue((dao.lambda_extras[0] as any).frozen_extra_value),
                   dao.token.decimals
-                )
-                // frozen_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_scale_value),
-                // slash_division_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_division_value),
-                // min_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).min_xtz_amount),
-                // max_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).max_xtz_amount),
-                // slash_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_scale_value),
+                ),
+                frozen_scale_value: unpackExtraNumValue((dao.lambda_extras[0] as any).frozen_scale_value),
+                slash_division_value: unpackExtraNumValue((dao.lambda_extras[0] as any).slash_division_value),
+                min_xtz_amount: unpackExtraNumValue((dao.lambda_extras[0] as any).min_xtz_amount),
+                max_xtz_amount: unpackExtraNumValue((dao.lambda_extras[0] as any).max_xtz_amount),
+                slash_scale_value: unpackExtraNumValue((dao.lambda_extras[0] as any).slash_scale_value),
+                max_proposal_size: (dao.lambda_extras[0] as any).max_proposal_size
+              } as any)
+            : ({
+                ...dao.treasury_extras[0],
+                frozen_extra_value: parseUnits(
+                  unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_extra_value),
+                  dao.token.decimals
+                ),
+                frozen_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).frozen_scale_value),
+                slash_division_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_division_value),
+                min_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).min_xtz_amount),
+                max_xtz_amount: unpackExtraNumValue((dao.treasury_extras[0] as any).max_xtz_amount),
+                slash_scale_value: unpackExtraNumValue((dao.treasury_extras[0] as any).slash_scale_value)
               } as any),
         quorum_threshold: parseUnits(new BigNumber(dao.quorum_threshold), dao.token.decimals)
       }

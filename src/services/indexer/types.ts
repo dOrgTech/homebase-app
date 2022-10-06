@@ -53,6 +53,7 @@ export interface DAODTO {
   network: Network
   treasury_extras: [TreasuryExtraDTO] | []
   registry_extras: [RegistryExtraDTO] | []
+  lambda_extras: [LambdaExtraDTO] | []
 }
 
 export interface RegistryExtraDTO {
@@ -77,6 +78,19 @@ export interface TreasuryExtraDTO {
   max_xtz_amount: string
   slash_scale_value: string
   returnedPercentage: string
+}
+
+export interface LambdaExtraDTO {
+  id: number
+  registry: string
+  registry_affected: string
+  frozen_extra_value: string
+  frozen_scale_value: string
+  slash_division_value: string
+  min_xtz_amount: string
+  max_xtz_amount: string
+  slash_scale_value: string
+  max_proposal_size: string
 }
 
 export interface HolderDTO {
