@@ -1,7 +1,7 @@
 import { client } from "../graphql"
 import { DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
 import { GET_DAOS_QUERY, GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "./queries"
-import { Proposal, RegistryProposal, TreasuryProposal } from "./mappers/proposal/types"
+import { LambdaProposal, Proposal, RegistryProposal, TreasuryProposal } from "./mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
 
@@ -43,10 +43,9 @@ export const getProposals = async (dao: BaseDAO) => {
   const response = await client.request<GetProposalsDTO>(GET_PROPOSALS_QUERY, {
     address: dao.data.address
   })
-
   const fetched = response.daos[0]
-  let proposals: Proposal[]
 
+  let proposals: Proposal[]
   switch (dao.data.type) {
     case "treasury":
       proposals = fetched.proposals.map(proposal => new TreasuryProposal(proposal, dao))
@@ -55,15 +54,13 @@ export const getProposals = async (dao: BaseDAO) => {
       proposals = fetched.proposals.map(proposal => new RegistryProposal(proposal, dao))
       break
     case "lambda":
-      proposals = fetched.proposals.map(proposal => new TreasuryProposal(proposal, dao))
+      proposals = fetched.proposals.map(proposal => new LambdaProposal(proposal, dao))
       break
     default:
       throw new Error(`DAO with address '${dao.data.address}' has an unrecognized type '${dao.data.type}'`)
   }
 
-  const proposalsWithVoters = proposals.sort((a, b) => (dayjs(b.startDate).isAfter(dayjs(a.startDate)) ? 1 : -1))
-
-  return proposalsWithVoters
+  return proposals.sort((a, b) => (dayjs(b.startDate).isAfter(dayjs(a.startDate)) ? 1 : -1))
 }
 
 export const getProposal = async (address: string, proposalKey: string) => {

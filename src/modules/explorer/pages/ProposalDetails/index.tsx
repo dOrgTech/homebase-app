@@ -542,25 +542,25 @@ export const ProposalDetails: React.FC = () => {
                   )
                 })}
 
-              {/*{true ? (*/}
-              {/*  <Grid container direction="column">*/}
-              {/*    <Grid item>*/}
-              {/*      <InfoTitle color="secondary">Information</InfoTitle>*/}
-              {/*    </Grid>*/}
-              {/*    <Grid item container direction="row" alignItems="center">*/}
-              {/*      <InfoItem color="textPrimary">*/}
-              {/*        Contract Address: {"tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "}{" "}*/}
-              {/*      </InfoItem>*/}
-              {/*      <InfoCopyIcon text="tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF" style={{ height: 15, marginLeft: -6 }} />*/}
-              {/*    </Grid>*/}
-              {/*    <Grid item container direction="row">*/}
-              {/*      <InfoItem color="textPrimary">Parameter 1: {"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}</InfoItem>*/}
-              {/*    </Grid>*/}
-              {/*    <Grid item container direction="row">*/}
-              {/*      <InfoItem color="textPrimary">Parameter 2: {"1300"}</InfoItem>*/}
-              {/*    </Grid>*/}
-              {/*  </Grid>*/}
-              {/*) : null}*/}
+              {true ? (
+                <Grid container direction="column">
+                  <Grid item>
+                    <InfoTitle color="secondary">Information</InfoTitle>
+                  </Grid>
+                  <Grid item container direction="row" alignItems="center">
+                    <InfoItem color="textPrimary">
+                      Contract Address: {"tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "}{" "}
+                    </InfoItem>
+                    <InfoCopyIcon text="tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF" style={{ height: 15, marginLeft: -6 }} />
+                  </Grid>
+                  <Grid item container direction="row">
+                    <InfoItem color="textPrimary">Parameter 1: {"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}</InfoItem>
+                  </Grid>
+                  <Grid item container direction="row">
+                    <InfoItem color="textPrimary">Parameter 2: {"1300"}</InfoItem>
+                  </Grid>
+                </Grid>
+              ) : null}
               {proposal?.type === "lambda" ? <LambdaProposalHandler proposal={proposal as LambdaProposal} /> : null}
             </Container>
           </Grid>
