@@ -23,6 +23,7 @@ import { HighlightedBadge } from "modules/explorer/components/styled/Highlighted
 import { TransferBadge } from "modules/explorer/components/TransferBadge"
 import {
   FA2Transfer,
+  LambdaProposal,
   Proposal,
   ProposalStatus,
   RegistryProposal,
@@ -91,7 +92,7 @@ const InfoTitle = styled(Typography)({
   marginTop: 37,
   fontWeight: 400,
   fontSize: 18,
-  lineHeight: "27px"
+  lineHeigh: "27px"
 })
 
 const InfoItem = styled(Typography)({
@@ -118,6 +119,36 @@ const getReadableConfig = (configKey: keyof Proposal["metadata"]["config"]) => {
     default:
       return "Unknown Config parameter"
   }
+}
+
+const LambdaProposalHandler = (props: { proposal: LambdaProposal }) => {
+  const { proposal } = props
+  let title = ""
+  let code = ""
+  if (!!proposal.metadata.add_handler) {
+    title = "Add Handler"
+    code = JSON.stringify(proposal.metadata.add_handler, null, 2)
+  } else if (!!proposal.metadata.remove_handler) {
+    title = "Remove Handler"
+    code = JSON.stringify(proposal.metadata.remove_handler, null, 2)
+  } else if (!!proposal.metadata.execute_handler) {
+    title = "Execute Handler"
+    code = JSON.stringify(proposal.metadata.execute_handler, null, 2)
+  }
+  return (
+    <Grid container direction="column">
+      <Grid item>
+        <InfoTitle color="secondary">{title}</InfoTitle>
+      </Grid>
+      <Grid item>
+        <InfoItem color="textPrimary">
+          <pre>
+            <code>{code}</code>
+          </pre>
+        </InfoItem>
+      </Grid>
+    </Grid>
+  )
 }
 
 export const ProposalDetails: React.FC = () => {
@@ -511,25 +542,26 @@ export const ProposalDetails: React.FC = () => {
                   )
                 })}
 
-              {true ? (
-                <Grid container direction="column">
-                  <Grid item>
-                    <InfoTitle color="secondary">Information</InfoTitle>
-                  </Grid>
-                  <Grid item container direction="row" alignItems="center">
-                    <InfoItem color="textPrimary">
-                      Contract Address: {"tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "}{" "}
-                    </InfoItem>
-                    <InfoCopyIcon text="tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF" style={{ height: 15, marginLeft: -6 }} />
-                  </Grid>
-                  <Grid item container direction="row">
-                    <InfoItem color="textPrimary">Parameter 1: {"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}</InfoItem>
-                  </Grid>
-                  <Grid item container direction="row">
-                    <InfoItem color="textPrimary">Parameter 2: {"1300"}</InfoItem>
-                  </Grid>
-                </Grid>
-              ) : null}
+              {/*{true ? (*/}
+              {/*  <Grid container direction="column">*/}
+              {/*    <Grid item>*/}
+              {/*      <InfoTitle color="secondary">Information</InfoTitle>*/}
+              {/*    </Grid>*/}
+              {/*    <Grid item container direction="row" alignItems="center">*/}
+              {/*      <InfoItem color="textPrimary">*/}
+              {/*        Contract Address: {"tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "}{" "}*/}
+              {/*      </InfoItem>*/}
+              {/*      <InfoCopyIcon text="tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF" style={{ height: 15, marginLeft: -6 }} />*/}
+              {/*    </Grid>*/}
+              {/*    <Grid item container direction="row">*/}
+              {/*      <InfoItem color="textPrimary">Parameter 1: {"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}</InfoItem>*/}
+              {/*    </Grid>*/}
+              {/*    <Grid item container direction="row">*/}
+              {/*      <InfoItem color="textPrimary">Parameter 2: {"1300"}</InfoItem>*/}
+              {/*    </Grid>*/}
+              {/*  </Grid>*/}
+              {/*) : null}*/}
+              {proposal?.type === "lambda" ? <LambdaProposalHandler proposal={proposal as LambdaProposal} /> : null}
             </Container>
           </Grid>
         </Grid>

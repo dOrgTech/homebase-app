@@ -296,21 +296,15 @@ export class RegistryProposal extends Proposal {
 }
 
 interface LambdaProposalMetadata extends BaseProposalMetadata {
-  name: string
+  add_handler?: Record<string, any>
+  remove_handler?: Record<string, any>
+  execute_handler?: Record<string, any>
 }
 
 export class LambdaProposal extends Proposal {
   private cachedMetadata: LambdaProposalMetadata | null = null
 
   get metadata(): LambdaProposalMetadata {
-    const emptyMetadata: LambdaProposalMetadata = {
-      config: [],
-      update_contract_delegate: "",
-      update_guardian: "",
-      agoraPostId: "",
-      name: ""
-    }
-
     if (this.cachedMetadata !== null) {
       return this.cachedMetadata
     }
@@ -322,26 +316,21 @@ export class LambdaProposal extends Proposal {
     const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
     const proposalMetadataDTO: PMLambdaProposal = schema.Execute(unpackedMetadata)
 
-    const metadata = { ...emptyMetadata, ...getBaseMetadata(proposalMetadataDTO) }
-    // if ("transfer_proposal" in proposalMetadataDTO) {
-    //   const { agora_post_id, registry_diff, transfers } = proposalMetadataDTO.transfer_proposal
-    //
-    //   metadata.agoraPostId = agora_post_id
-    //
-    //   if (transfers) {
-    //     metadata.transfers = extractTransfersData(proposalMetadataDTO.transfer_proposal.transfers)
-    //   }
-    //
-    //   if (registry_diff) {
-    //     metadata.list = registry_diff.map(item => ({
-    //       key: bytes2Char(item[0]),
-    //       value: bytes2Char(item[1])
-    //     }))
-    //   }
-    // }
-    console.log({ unpackedMetadata, proposalMetadataDTO, metadata })
+    const lambdaMetadata: LambdaProposalMetadata = getBaseMetadata(proposalMetadataDTO)
 
-    this.cachedMetadata = metadata
+    if ("add_handler" in proposalMetadataDTO) {
+      lambdaMetadata.add_handler = proposalMetadataDTO.add_handler
+    }
+
+    if ("remove_handler" in proposalMetadataDTO) {
+      lambdaMetadata.remove_handler = proposalMetadataDTO.remove_handler
+    }
+
+    if ("execute_handler" in proposalMetadataDTO) {
+      lambdaMetadata.execute_handler = proposalMetadataDTO.execute_handler
+    }
+
+    this.cachedMetadata = { ...lambdaMetadata }
     return this.cachedMetadata
   }
 }

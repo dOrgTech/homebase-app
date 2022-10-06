@@ -418,8 +418,23 @@ export type PMRegistryProposal =
 export type PMLambdaProposal =
   | PMBaseProposal
   | {
-      transfer_proposal: {
-        agora_post_id: string
+      add_handler: {
+        code: Record<string, any>
+        handler_check: Record<string, string>
+        name: string
+      }
+    }
+  | {
+      remove_handler: {
+        code: Record<string, any>
+        handler_check: Record<string, string>
+        name: string
+      }
+    }
+  | {
+      execute_handler: {
+        code: Record<string, any>
+        handler_check: Record<string, string>
         name: string
       }
     }
