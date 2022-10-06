@@ -428,7 +428,7 @@ export const ProposalDetails: React.FC = () => {
             <Grid item container style={{ gap: 25 }}>
               {proposal ? (
                 <>
-                  {transfers.map((transfer, index) => {
+                  {transfers?.map((transfer, index) => {
                     return (
                       <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
                         {transfer.type === "XTZ" ? (

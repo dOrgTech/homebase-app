@@ -221,7 +221,7 @@ export class TreasuryProposal extends Proposal {
 
     if (!this.cachedMetadata) {
       const parser = new Parser()
-      const micheline = parser.parseMichelineExpression(lambdaProposeCode) as Expr
+      const micheline = parser.parseMichelineExpression(treasuryProposeCode) as Expr
       const schema = new Schema(micheline as Expr)
 
       const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
@@ -300,10 +300,10 @@ interface LambdaProposalMetadata extends BaseProposalMetadata {
 }
 
 export class LambdaProposal extends Proposal {
-  private cachedMetadata?: LambdaProposalMetadata
+  private cachedMetadata: LambdaProposalMetadata | null = null
 
   get metadata(): LambdaProposalMetadata {
-    let values: LambdaProposalMetadata = {
+    const emptyMetadata: LambdaProposalMetadata = {
       config: [],
       update_contract_delegate: "",
       update_guardian: "",
@@ -311,29 +311,37 @@ export class LambdaProposal extends Proposal {
       name: ""
     }
 
-    if (!this.cachedMetadata) {
-      const parser = new Parser()
-      const micheline = parser.parseMichelineExpression(registryProposeCode) as Expr
-      const schema = new Schema(micheline as Expr)
-
-      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
-      console.log("unpackedMetadata: ", unpackedMetadata)
-      const proposalMetadataDTO: PMLambdaProposal = schema.Execute(unpackedMetadata)
-      console.log("proposalMetadataDTO: ", proposalMetadataDTO)
-
-      // values = { ...values, ...getBaseMetadata(proposalMetadataDTO) };
-      values = { ...values }
-
-      // if ("transfer_proposal" in proposalMetadataDTO) {
-      //   const { agora_post_id, registry_diff, transfers } = proposalMetadataDTO.transfer_proposal;
-
-      //   values.agoraPostId = agora_post_id;
-
-      // }
-
-      this.cachedMetadata = values
+    if (this.cachedMetadata !== null) {
+      return this.cachedMetadata
     }
 
+    const parser = new Parser()
+    const micheline = parser.parseMichelineExpression(lambdaProposeCode) as Expr
+    const schema = new Schema(micheline as Expr)
+
+    const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
+    const proposalMetadataDTO: PMLambdaProposal = schema.Execute(unpackedMetadata)
+
+    const metadata = { ...emptyMetadata, ...getBaseMetadata(proposalMetadataDTO) }
+    // if ("transfer_proposal" in proposalMetadataDTO) {
+    //   const { agora_post_id, registry_diff, transfers } = proposalMetadataDTO.transfer_proposal
+    //
+    //   metadata.agoraPostId = agora_post_id
+    //
+    //   if (transfers) {
+    //     metadata.transfers = extractTransfersData(proposalMetadataDTO.transfer_proposal.transfers)
+    //   }
+    //
+    //   if (registry_diff) {
+    //     metadata.list = registry_diff.map(item => ({
+    //       key: bytes2Char(item[0]),
+    //       value: bytes2Char(item[1])
+    //     }))
+    //   }
+    // }
+    console.log({ unpackedMetadata, proposalMetadataDTO, metadata })
+
+    this.cachedMetadata = metadata
     return this.cachedMetadata
   }
 }
@@ -356,7 +364,9 @@ interface BaseProposalMetadata {
   agoraPostId: string
 }
 
-function getBaseMetadata(proposalMetadataDTO: PMTreasuryProposal | PMRegistryProposal): BaseProposalMetadata {
+function getBaseMetadata(
+  proposalMetadataDTO: PMTreasuryProposal | PMRegistryProposal | PMLambdaProposal
+): BaseProposalMetadata {
   const values: BaseProposalMetadata = {
     config: [],
     update_guardian: "",
@@ -374,7 +384,6 @@ function getBaseMetadata(proposalMetadataDTO: PMTreasuryProposal | PMRegistryPro
 
   if ("configuration_proposal" in proposalMetadataDTO) {
     values.config = Object.entries(proposalMetadataDTO.configuration_proposal)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .filter(([_, value]) => !!value)
       .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
   }
