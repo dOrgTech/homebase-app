@@ -25,7 +25,6 @@ export const useDAO = (address: string) => {
       const response = await getDAO(address as string)
 
       const dao = response.daos[0]
-      console.log("dao: ", dao)
       const base = {
         ...dao,
         token: new Token({

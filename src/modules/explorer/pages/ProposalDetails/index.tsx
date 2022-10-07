@@ -12,7 +12,7 @@ import { useParams } from "react-router"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { BaseDAO } from "services/contracts/baseDAO"
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal"
-import { formatUnits, parseUnits, toShortAddress } from "services/contracts/utils"
+import { parseUnits, toShortAddress } from "services/contracts/utils"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { useProposal } from "services/indexer/dao/hooks/useProposal"
 import { ContentContainer } from "../../components/ContentContainer"
@@ -23,6 +23,7 @@ import { HighlightedBadge } from "modules/explorer/components/styled/Highlighted
 import { TransferBadge } from "modules/explorer/components/TransferBadge"
 import {
   FA2Transfer,
+  LambdaProposal,
   Proposal,
   ProposalStatus,
   RegistryProposal,
@@ -36,7 +37,6 @@ import { ProposalTransferBadge } from "modules/explorer/components/ProposalTrans
 import { useUnstakeVotes } from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes"
 import { useTezos } from "../../../../services/beacon/hooks/useTezos"
 import { CodeVisor } from "./components/CodeVisor"
-import { FileCopyOutlined } from "@material-ui/icons"
 import { CopyButton } from "modules/common/CopyButton"
 
 const Container = styled(ContentContainer)({
@@ -91,7 +91,7 @@ const InfoTitle = styled(Typography)({
   marginTop: 37,
   fontWeight: 400,
   fontSize: 18,
-  lineHeight: "27px"
+  lineHeigh: "27px"
 })
 
 const InfoItem = styled(Typography)({
@@ -130,6 +130,7 @@ export const ProposalDetails: React.FC = () => {
   const [voteIsSupport, setVoteIsSupport] = useState(false)
   const theme = useTheme<Theme>()
   const { data: proposal } = useProposal(daoId, proposalId)
+  const isLambdaProposal = proposal?.type === "lambda"
   const { data: dao, cycleInfo } = useDAO(daoId)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { mutate: dropProposal } = useDropProposal()
@@ -137,7 +138,6 @@ export const ProposalDetails: React.FC = () => {
   const { account } = useTezos()
   const canDropProposal = useCanDropProposal(daoId, proposalId)
   const { data: agoraPost } = useAgoraTopic(Number(proposal?.metadata?.agoraPostId))
-
   const [code, setCode] = React.useState<string>(`
   const allowances = new MichelsonMap();
   const ledger = new MichelsonMap();
@@ -182,6 +182,36 @@ export const ProposalDetails: React.FC = () => {
 
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const { mutate: mutateUnstake } = useUnstakeVotes()
+
+  const getLambdaProposalInfo = useCallback(() => {
+    const info = {
+      type: "",
+      title: "",
+      code: ""
+    }
+
+    if (!isLambdaProposal) {
+      return info
+    }
+
+    const lambdaProposal = proposal as LambdaProposal
+    if (!!lambdaProposal.metadata.add_handler) {
+      info.type = "add_handler"
+      info.title = "Add Handler"
+      info.code = JSON.stringify(lambdaProposal.metadata.add_handler, null, 2)
+    } else if (!!lambdaProposal.metadata.remove_handler) {
+      info.type = "remove_handler"
+      info.title = "Remove Handler"
+      info.code = JSON.stringify(lambdaProposal.metadata.remove_handler, null, 2)
+    } else if (!!lambdaProposal.metadata.execute_handler) {
+      info.type = "execute_handler"
+      info.title = "Execute Handler"
+      info.code = JSON.stringify(lambdaProposal.metadata.execute_handler, null, 2)
+    }
+
+    return info
+  }, [proposal, isLambdaProposal])
+  const lambdaProposalInfo = getLambdaProposalInfo()
 
   const onClickVote = (support: boolean) => {
     setVoteIsSupport(support)
@@ -306,13 +336,19 @@ export const ProposalDetails: React.FC = () => {
                         <UserBadge address={proposal.proposer} short={true} />
                       </Grid>
 
-                      <Grid item>
-                        <ViewCodeButton variant="contained" color="secondary" onClick={() => setOpenVisor(true)}>
-                          View Code
-                        </ViewCodeButton>
-
-                        <CodeVisor open={openVisor} handleClose={() => setOpenVisor(false)} code={code} />
-                      </Grid>
+                      {isLambdaProposal ? (
+                        <Grid item>
+                          <ViewCodeButton variant="contained" color="secondary" onClick={() => setOpenVisor(true)}>
+                            View Code
+                          </ViewCodeButton>
+                          <CodeVisor
+                            open={openVisor}
+                            code={lambdaProposalInfo.code}
+                            title={lambdaProposalInfo.title}
+                            handleClose={() => setOpenVisor(false)}
+                          />
+                        </Grid>
+                      ) : null}
                     </Grid>
                   )}
                 </Grid>
@@ -430,7 +466,7 @@ export const ProposalDetails: React.FC = () => {
             <Grid item container style={{ gap: 25 }}>
               {proposal ? (
                 <>
-                  {transfers.map((transfer, index) => {
+                  {transfers?.map((transfer, index) => {
                     return (
                       <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
                         {transfer.type === "XTZ" ? (
@@ -513,24 +549,34 @@ export const ProposalDetails: React.FC = () => {
                   )
                 })}
 
-              {true ? (
-                <Grid container direction="column">
-                  <Grid item>
-                    <InfoTitle color="secondary">Information</InfoTitle>
+              {isLambdaProposal ? (
+                <>
+                  <Grid container direction="column">
+                    <Grid item>
+                      <InfoTitle color="secondary">Information</InfoTitle>
+                    </Grid>
+                    <Grid item container direction="row" alignItems="center">
+                      <InfoItem color="textPrimary">
+                        Contract Address: {"Mock tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "}{" "}
+                      </InfoItem>
+                      <InfoCopyIcon
+                        text="Mock tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF"
+                        style={{ height: 15, marginLeft: -6 }}
+                      />
+                    </Grid>
+                    <Grid item container direction="row">
+                      <InfoItem color="textPrimary">
+                        Parameter 1: {"Mock tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}
+                      </InfoItem>
+                    </Grid>
+                    <Grid item container direction="row">
+                      <InfoItem color="textPrimary">Parameter 2: {"Mock 1300"}</InfoItem>
+                    </Grid>
+                    <Grid item container direction="row">
+                      <InfoItem color="textPrimary">Type: {lambdaProposalInfo.title}</InfoItem>
+                    </Grid>
                   </Grid>
-                  <Grid item container direction="row" alignItems="center">
-                    <InfoItem color="textPrimary">
-                      Contract Address: {"tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "}{" "}
-                    </InfoItem>
-                    <InfoCopyIcon text="tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF" style={{ height: 15, marginLeft: -6 }} />
-                  </Grid>
-                  <Grid item container direction="row">
-                    <InfoItem color="textPrimary">Parameter 1: {"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}</InfoItem>
-                  </Grid>
-                  <Grid item container direction="row">
-                    <InfoItem color="textPrimary">Parameter 2: {"1300"}</InfoItem>
-                  </Grid>
-                </Grid>
+                </>
               ) : null}
             </Container>
           </Grid>

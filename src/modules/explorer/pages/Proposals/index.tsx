@@ -11,7 +11,6 @@ import { ContentContainer } from "../../components/ContentContainer"
 import { ProposalsList } from "../../components/ProposalsList"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
-// import { ProposalFormContainer } from "modules/explorer/components/ProposalForm";
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { ProposalSelectionMenu } from "../../components/ProposalSelectionMenu"
@@ -77,14 +76,14 @@ export const Proposals: React.FC = () => {
     }
   }, [data, dropAllExpired, expiredProposals])
 
-  const onCloseModal = () => {
-    data?.data.dao_type?.name === "registry" ? setOpenModalLambda(false) : setOpenModal(false)
-  }
-
-  const handleProposalModal = () => {
-    // console.log("data?.data.dao_type: ", data?.data.dao_type);
-    // data?.data.dao_type?.name === "registry" ?  setOpenModalLambda(true) : setOpenModal(true);
-    setOpenModalLambda(true)
+  const toggleProposalModal = () => {
+    switch (data?.data.dao_type?.name) {
+      case "lambda":
+        setOpenModalLambda(!openModalLambda)
+        break
+      default:
+        setOpenModal(!openModal)
+    }
   }
 
   return (
@@ -127,13 +126,7 @@ export const Proposals: React.FC = () => {
               </Grid>
             </Grid>
             <Grid item>
-              <MainButton
-                variant="contained"
-                color="secondary"
-                onClick={handleProposalModal}
-                // disabled={false}
-                disabled={shouldDisable}
-              >
+              <MainButton variant="contained" color="secondary" onClick={toggleProposalModal} disabled={shouldDisable}>
                 New Proposal
               </MainButton>
               {shouldDisable && (
@@ -155,12 +148,8 @@ export const Proposals: React.FC = () => {
           <ProposalsList title={"All Proposals"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
         )}
       </Grid>
-      {/*<ProposalFormContainer*/}
-      {/*  open={openModal}*/}
-      {/*  handleClose={onCloseModal}*/}
-      {/*/>*/}
-      <ProposalSelectionMenu open={openModal} handleClose={onCloseModal} />
-      <ProposalSelectionMenuLambda open={openModalLambda} handleClose={onCloseModal} />
+      <ProposalSelectionMenu open={openModal} handleClose={toggleProposalModal} />
+      <ProposalSelectionMenuLambda open={openModalLambda} handleClose={toggleProposalModal} />
     </>
   )
 }
