@@ -39,35 +39,34 @@ const CustomEditor = styled(Editor)({
 })
 interface Props {
   open: boolean
-  code: any
+  title?: string
+  code: string
   handleClose: () => void
 }
 
-export const CodeVisor: React.FC<Props> = ({ open, handleClose, code }) => {
+export const CodeVisor: React.FC<Props> = ({ open, title = "View Code", code, handleClose }) => {
   const grammar = Prism.languages.javascript
 
   return (
     <>
-      <CustomDialog open={open} onClose={handleClose} title={"View Code"} template={"lambda"}>
-        {code && (
-          <>
-            <Content container direction={"column"} style={{ gap: 32 }}>
-              <CustomEditor
-                disabled={false}
-                onValueChange={() => console.log("changed")}
-                value={code}
-                highlight={code => highlight(code, grammar, "javascript")}
-                padding={10}
-                style={{
-                  fontFamily: "Roboto Mono",
-                  fontSize: 14,
-                  fontWeight: 400,
-                  outlineWidth: 0
-                }}
-              />
-            </Content>
-          </>
-        )}
+      <CustomDialog open={open} onClose={handleClose} title={title} template="lambda">
+        <>
+          <Content container direction={"column"} style={{ gap: 32 }}>
+            <CustomEditor
+              disabled={false}
+              onValueChange={() => true}
+              value={code}
+              highlight={code => highlight(code, grammar, "javascript")}
+              padding={10}
+              style={{
+                fontFamily: "Roboto Mono",
+                fontSize: 14,
+                fontWeight: 400,
+                outlineWidth: 0
+              }}
+            />
+          </Content>
+        </>
       </CustomDialog>
     </>
   )
