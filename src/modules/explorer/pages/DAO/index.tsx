@@ -79,11 +79,8 @@ export const DAO: React.FC = () => {
   const description = data && data.data.description
 
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
-  console.log("activeProposals: ", activeProposals)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
-  console.log("executableProposals: ", executableProposals)
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
-  console.log("expiredProposals: ", expiredProposals)
 
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {

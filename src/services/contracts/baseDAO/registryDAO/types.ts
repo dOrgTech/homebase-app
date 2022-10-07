@@ -1,4 +1,5 @@
 import { BigNumber } from "bignumber.js"
+import { Lambda, LambdaCode } from "services/bakingBad/lambdas/types"
 import { Extra, TransferParams } from ".."
 
 export interface RegistryItem {
@@ -33,6 +34,14 @@ export interface LambdaAddArgs {
 export interface LambdaRemoveArgs {
   handler_name: string
   agoraPostId: number
+}
+
+export interface LambdaExecuteArgs {
+  handler_name: string
+  agoraPostId: number
+  handler_code: LambdaCode
+  handler_params: string
+  lambda_arguments: string
 }
 
 export type RegistryExtraDTOBCD = [

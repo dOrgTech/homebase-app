@@ -2,6 +2,7 @@ import React from "react"
 import { Box, Grid, InputAdornment, makeStyles, Popper, styled, TextField, Theme, withStyles } from "@material-ui/core"
 import { SearchOutlined } from "@material-ui/icons"
 import { Autocomplete } from "@material-ui/lab"
+import { Lambda } from "services/bakingBad/lambdas/types"
 
 type LambdaValues = {
   label: string
@@ -79,41 +80,43 @@ const useStyles = makeStyles({
 })
 
 export const SearchLambda: React.FC<{
-  lambdas: Array<LambdaValues>
+  lambdas: Array<Lambda> | undefined
   handleChange?: any
 }> = ({ lambdas, handleChange }) => {
   useStyles()
 
   return (
     <>
-      <StyledInput
-        disablePortal
-        id="combo-box-demo"
-        options={lambdas}
-        getOptionLabel={(option: any) => option.label}
-        renderOption={(option: any, state: any) => (
-          <Grid container direction="row" justifyContent="space-between" {...state}>
-            <Grid>{option.label}</Grid>
-            <StyledType>{option.type}</StyledType>
-          </Grid>
-        )}
-        renderInput={params => (
-          <TextField
-            {...params}
-            placeholder="Search"
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon color="secondary" />
-                </InputAdornment>
-              ),
-              disableUnderline: true
-            }}
-          />
-        )}
-        onChange={(e: any, data: any) => handleChange(data)}
-      />
+      {lambdas ? (
+        <StyledInput
+          disablePortal
+          id="combo-box-demo"
+          options={lambdas}
+          getOptionLabel={(option: any) => option.key}
+          renderOption={(option: any, state: any) => (
+            <Grid container direction="row" justifyContent="space-between" {...state}>
+              <Grid>{option.key}</Grid>
+              <StyledType>{option.type}</StyledType>
+            </Grid>
+          )}
+          renderInput={params => (
+            <TextField
+              {...params}
+              placeholder="Search"
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="secondary" />
+                  </InputAdornment>
+                ),
+                disableUnderline: true
+              }}
+            />
+          )}
+          onChange={(e: any, data: any) => handleChange(data)}
+        />
+      ) : null}
     </>
   )
 }

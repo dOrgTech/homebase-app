@@ -10,7 +10,7 @@ import { RegistryExtraDTO } from "services/indexer/types"
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal"
 import { BigNumber } from "bignumber.js"
 import { formatUnits } from "../../utils"
-import { LambdaAddArgs, LambdaRemoveArgs } from "../registryDAO/types"
+import { LambdaAddArgs, LambdaExecuteArgs, LambdaRemoveArgs } from "../registryDAO/types"
 
 const parser = new Parser()
 
@@ -283,7 +283,55 @@ export class LambdaDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      // formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposalMetadata.bytes
+    )
+
+    return await contractMethod.send()
+  }
+
+  public async proposeLambdaExecute(
+    { handler_name, agoraPostId, handler_code, handler_params, lambda_arguments }: LambdaExecuteArgs,
+    tezos: TezosToolkit
+  ) {
+    console.log("tezos: ", tezos)
+    console.log("handler_params: ", handler_params)
+    console.log("handler_code: ", handler_code)
+    console.log("agoraPostId: ", agoraPostId)
+    console.log("handler_name: ", handler_name)
+    console.log("lambda_arguments: ", lambda_arguments)
+
+    const contract = await getContract(tezos, this.data.address)
+    const p = new Parser()
+    // const parser = new Parser();
+    const transfer_arg_type = JSON.parse(lambda_arguments)
+    console.log("transfer_arg_type: ", transfer_arg_type)
+    // const transfer_arg_michelson_type = p.parseMichelineExpression(transfer_arg_type) as MichelsonType
+    const transfer_arg_schema = new Schema(transfer_arg_type as MichelsonData)
+
+    console.log("handler_params: ", handler_params)
+    const handler_params_object = JSON.parse(handler_params)
+    console.log("handler_params_object: ", handler_params_object)
+
+    const packed_transfer_proposal_arg = packDataBytes(
+      transfer_arg_schema.Encode(handler_params_object) // as MichelsonData
+      // transfer_arg_michelson_type
+    )
+
+    const proposal_meta_michelson_type = p.parseMichelineExpression(proposelambda) as MichelsonType
+    const proposal_meta_schema = new Schema(proposal_meta_michelson_type)
+    const proposalMetadata = packDataBytes(
+      proposal_meta_schema.Encode({
+        execute_handler: {
+          handler_name,
+          packed_argument: packed_transfer_proposal_arg.bytes
+        }
+      }),
+      proposal_meta_michelson_type
+    )
+
+    const contractMethod = contract.methods.propose(
+      await tezos.wallet.pkh(),
       formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata.bytes
     )

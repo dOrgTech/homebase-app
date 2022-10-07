@@ -17,6 +17,9 @@ import { useLambdaAddPropose } from "services/contracts/baseDAO/hooks/useLambdaA
 import { useLambdaRemovePropose } from "services/contracts/baseDAO/hooks/useLambdaRemovePropose"
 import { RegistryDAO } from "services/contracts/baseDAO"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
+import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
+import { Lambda } from "services/bakingBad/lambdas/types"
+import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
   width: 101,
@@ -118,8 +121,11 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const lambdaName = methods.watch("lambda_name")
   const grammar = Prism.languages.javascript
 
-  const [lambda, setLambda] = React.useState<LambdaValues | null>(null)
+  const [lambda, setLambda] = React.useState<Lambda | null>(null)
   const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.wallet_action)
+  const [lambdaParams, setLambdaParams] = React.useState<string>("")
+  const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
+
   const [code, setCode] = React.useState<string>(
     action === 0
       ? `const allowances = new MichelsonMap();
@@ -138,97 +144,97 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
       : ""
   )
 
-  const lambdaOptions = [
-    {
-      label: "sample",
-      code: `const allowances = new MichelsonMap();
-      const ledger = new MichelsonMap();
-      ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });`,
-      type: "read",
-      parameters: [
-        {
-          name: "conversionRate",
-          type: "number",
-          value: undefined
-        }
-      ]
-    },
-    {
-      label: "addPaymentToken",
-      code: `const tokens = new MichelsonMap();
-      const ledger = new MichelsonMap();
-      ledger.set('', { tokens, balance: '100' });`,
-      type: "write",
-      parameters: [
-        {
-          name: "conversionRate",
-          type: "number",
-          value: undefined,
-          isOptional: false
-        },
-        {
-          name: "price",
-          type: "number",
-          value: undefined,
-          isOptional: true
-        },
-        {
-          name: "gasFee",
-          type: "number",
-          value: undefined,
-          isOptional: true
-        }
-      ]
-    },
-    {
-      label: "clientProjects",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "write"
-    },
-    {
-      label: "defaultPollValues",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "write"
-    },
-    {
-      label: "setConversionRates",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "write"
-    },
-    {
-      label: "addPaymentToken",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "write"
-    },
-    {
-      label: "clientProjects",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "write"
-    },
-    {
-      label: "defaultPollValues",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "write"
-    },
-    {
-      label: "setConversionRates",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "read"
-    },
-    {
-      label: "clientProjects",
-      code: `const clients = new MichelsonMap();
-      ledger.set('', { clients, balance: '100' });`,
-      type: "write"
-    }
-  ]
+  // const lambdaOptions = [
+  //   {
+  //     label: "sample",
+  //     code: `const allowances = new MichelsonMap();
+  //     const ledger = new MichelsonMap();
+  //     ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });`,
+  //     type: "read",
+  //     parameters: [
+  //       {
+  //         name: "conversionRate",
+  //         type: "number",
+  //         value: undefined
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     label: "addPaymentToken",
+  //     code: `const tokens = new MichelsonMap();
+  //     const ledger = new MichelsonMap();
+  //     ledger.set('', { tokens, balance: '100' });`,
+  //     type: "write",
+  //     parameters: [
+  //       {
+  //         name: "conversionRate",
+  //         type: "number",
+  //         value: undefined,
+  //         isOptional: false
+  //       },
+  //       {
+  //         name: "price",
+  //         type: "number",
+  //         value: undefined,
+  //         isOptional: true
+  //       },
+  //       {
+  //         name: "gasFee",
+  //         type: "number",
+  //         value: undefined,
+  //         isOptional: true
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     label: "clientProjects",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "write"
+  //   },
+  //   {
+  //     label: "defaultPollValues",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "write"
+  //   },
+  //   {
+  //     label: "setConversionRates",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "write"
+  //   },
+  //   {
+  //     label: "addPaymentToken",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "write"
+  //   },
+  //   {
+  //     label: "clientProjects",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "write"
+  //   },
+  //   {
+  //     label: "defaultPollValues",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "write"
+  //   },
+  //   {
+  //     label: "setConversionRates",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "read"
+  //   },
+  //   {
+  //     label: "clientProjects",
+  //     code: `const clients = new MichelsonMap();
+  //     ledger.set('', { clients, balance: '100' });`,
+  //     type: "write"
+  //   }
+  // ]
 
   useEffect(() => {
     if (open) {
@@ -241,18 +247,14 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
 
   const { mutate: lambdaMutate } = useLambdaAddPropose()
   const { mutate: lambdaRemoveMutate } = useLambdaRemovePropose()
+  const { mutate: lambdaExecuteMutate } = useLambdaExecutePropose()
+
+  const daoLambdas = useDAOLambdas(daoId)
 
   const onSubmit = useCallback(
     (values: Values) => {
-      console.log("values: ", values)
-      setState(LambdaProposalState.wallet_action)
-      setCode("")
-      console.log("ProposalModalKey[action]: ", ProposalModalKey[action])
-
       if (action === ProposalModalKey.new) {
         const agoraPostId = Number(123)
-        console.log("agoraPostId: ", agoraPostId)
-        console.log("dao: ", dao)
 
         lambdaMutate({
           dao: dao as LambdaDAO,
@@ -265,33 +267,67 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         if (!lambda) {
           return
         }
+
+        setState(LambdaProposalState.wallet_action)
+        setCode("")
+
         const agoraPostId = Number(123)
-        console.log("agoraPostId: ", agoraPostId)
-        console.log("dao: ", dao)
 
         lambdaRemoveMutate({
           dao: dao as LambdaDAO,
           args: {
             agoraPostId,
-            handler_name: lambda.label
+            handler_name: lambda.key
           }
         })
       } else {
-        console.log("This is else")
+        const agoraPostId = Number(123)
+        if (!lambda || lambdaArguments === "" || lambdaParams === "") {
+          return
+        }
+
+        setState(LambdaProposalState.wallet_action)
+        setCode("")
+
+        const lambdaCode = JSON.parse(code)
+
+        const handler_code = {
+          code: JSON.stringify(lambdaCode.code),
+          handler_check: JSON.stringify(lambdaCode.handler_check),
+          is_active: lambdaCode.is_active
+        }
+
+        lambdaExecuteMutate({
+          dao: dao as LambdaDAO,
+          args: {
+            agoraPostId,
+            handler_name: lambda.key,
+            handler_code,
+            handler_params: lambdaParams,
+            lambda_arguments: lambdaArguments
+          }
+        })
       }
 
       // setTimeout(() => {
       //   setState(LambdaProposalState.action_finished);
       // }, 3000);
     },
-    [dao, lambdaMutate, code, action, lambda, lambdaRemoveMutate]
+    [dao, lambdaMutate, code, action, lambda, lambdaRemoveMutate, lambdaArguments, lambdaExecuteMutate, lambdaParams]
   )
 
-  const handleChange = (data: LambdaValues) => {
-    if (data?.code) {
+  const handleChange = (data: Lambda) => {
+    if (data?.value) {
       setLambda(data)
-      methods.setValue("lambda_name", data.label)
-      setCode(data.code)
+      methods.setValue("lambda_name", data.key)
+
+      const lambdaCode = {
+        code: JSON.parse(data.value.code),
+        handler_check: JSON.parse(data.value.handler_check),
+        is_active: data.value.is_active
+      }
+
+      setCode(JSON.stringify(lambdaCode, null, 2))
       return
     }
     methods.reset()
@@ -325,7 +361,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
                           />
                         ) : (
                           <Grid>
-                            <SearchLambda lambdas={lambdaOptions} handleChange={handleChange} />
+                            <SearchLambda lambdas={daoLambdas} handleChange={handleChange} />
                           </Grid>
                         )
                       }
@@ -334,7 +370,42 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
                 </Grid>
                 {action === 2 && methods.getValues("lambda_name") !== undefined ? (
                   <>
-                    <MarginContainer item>
+                    <ProposalFormTextarea label={"Lambda Arguments Code"}>
+                      <CustomEditor
+                        disabled={!(action === 2)}
+                        textareaClassName={style.textarea}
+                        preClassName={style.textarea}
+                        value={lambdaArguments}
+                        onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
+                        highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
+                        padding={10}
+                        style={{
+                          fontFamily: "Roboto Mono",
+                          fontSize: 14,
+                          fontWeight: 400,
+                          outlineWidth: 0
+                        }}
+                      />
+                    </ProposalFormTextarea>
+
+                    <ProposalFormTextarea label={"Lambda Params"}>
+                      <CustomEditor
+                        disabled={!(action === 2)}
+                        textareaClassName={style.textarea}
+                        preClassName={style.textarea}
+                        value={lambdaParams}
+                        onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
+                        highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
+                        padding={10}
+                        style={{
+                          fontFamily: "Roboto Mono",
+                          fontSize: 14,
+                          fontWeight: 400,
+                          outlineWidth: 0
+                        }}
+                      />
+                    </ProposalFormTextarea>
+                    {/* <MarginContainer item>
                       <ProposalFormInput label={"Contract"}>
                         <Controller
                           control={methods.control}
@@ -356,9 +427,9 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
                           )}
                         />
                       </ProposalFormInput>
-                    </MarginContainer>
+                    </MarginContainer> */}
 
-                    {lambda && lambda.parameters ? (
+                    {/* {lambda && lambda.parameters ? (
                       <>
                         {lambda.parameters.map((valueItem: LambdaParameter, i: number) => (
                           <MarginContainer item key={valueItem.name + i}>
@@ -382,7 +453,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
                           </MarginContainer>
                         ))}
                       </>
-                    ) : null}
+                    ) : null} */}
                   </>
                 ) : null}
               </ProgressContainer>
