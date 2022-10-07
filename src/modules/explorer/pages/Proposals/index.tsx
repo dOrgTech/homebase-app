@@ -97,8 +97,8 @@ export const Proposals: React.FC = () => {
                     variant="contained"
                     color="secondary"
                     onClick={onFlush}
-                    // disabled={!executableProposals || !executableProposals.length}
-                    disabled={false}
+                    disabled={!executableProposals || !executableProposals.length}
+                    // disabled={false}
                   >
                     Execute
                   </SmallButton>
