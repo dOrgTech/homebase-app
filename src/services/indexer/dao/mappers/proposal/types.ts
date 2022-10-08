@@ -296,9 +296,8 @@ export class RegistryProposal extends Proposal {
 }
 
 interface LambdaProposalMetadata extends BaseProposalMetadata {
-  add_handler?: Record<string, any>
-  remove_handler?: Record<string, any>
-  execute_handler?: Record<string, any>
+  lambdaType: "add_handler" | "remove_handler" | "execute_handler" | ""
+  lambdaHandler: Record<string, any>
 }
 
 export class LambdaProposal extends Proposal {
@@ -315,19 +314,26 @@ export class LambdaProposal extends Proposal {
 
     const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
     const proposalMetadataDTO: PMLambdaProposal = schema.Execute(unpackedMetadata)
-
-    const lambdaMetadata: LambdaProposalMetadata = getBaseMetadata(proposalMetadataDTO)
+    const baseMetadata: BaseProposalMetadata = getBaseMetadata(proposalMetadataDTO)
+    const lambdaMetadata: LambdaProposalMetadata = {
+      ...baseMetadata,
+      lambdaType: "",
+      lambdaHandler: {}
+    }
 
     if ("add_handler" in proposalMetadataDTO) {
-      lambdaMetadata.add_handler = proposalMetadataDTO.add_handler
+      lambdaMetadata.lambdaType = "add_handler"
+      lambdaMetadata.lambdaHandler = proposalMetadataDTO.add_handler
     }
 
     if ("remove_handler" in proposalMetadataDTO) {
-      lambdaMetadata.remove_handler = proposalMetadataDTO.remove_handler
+      lambdaMetadata.lambdaType = "remove_handler"
+      lambdaMetadata.lambdaHandler = proposalMetadataDTO.remove_handler
     }
 
     if ("execute_handler" in proposalMetadataDTO) {
-      lambdaMetadata.execute_handler = proposalMetadataDTO.execute_handler
+      lambdaMetadata.lambdaType = "execute_handler"
+      lambdaMetadata.lambdaHandler = proposalMetadataDTO.execute_handler
     }
 
     this.cachedMetadata = { ...lambdaMetadata }
