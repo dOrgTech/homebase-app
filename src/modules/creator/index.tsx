@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from "react"
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -10,20 +10,20 @@ import {
   styled,
   useMediaQuery,
   useTheme,
-  Theme
-} from "@material-ui/core"
-import ProgressBar from "react-customizable-progressbar"
-import { useHistory } from "react-router"
+  Theme,
+} from "@material-ui/core";
+import ProgressBar from "react-customizable-progressbar";
+import { useHistory } from "react-router";
 
-import { CreatorContext, StepInfo } from "modules/creator/state"
-import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps"
-import { NavigationBar } from "modules/creator/components/NavigationBar"
-import { Navbar } from "modules/common/Toolbar"
-import mixpanel from "mixpanel-browser"
+import { CreatorContext, StepInfo } from "modules/creator/state";
+import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps";
+import { NavigationBar } from "modules/creator/components/NavigationBar";
+import { Navbar } from "modules/common/Toolbar";
+import mixpanel from "mixpanel-browser";
 
 const PageContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main
-}))
+  background: theme.palette.primary.main,
+}));
 
 const StepContentContainer = styled(Grid)({
   alignItems: "baseline",
@@ -33,19 +33,20 @@ const StepContentContainer = styled(Grid)({
   overflowY: "auto",
   marginLeft: 47,
   zIndex: 10,
-  width: "fit-content",
+  width: 'fit-content',
   ["@media (max-width:1167px)"]: {
     marginLeft: 0
   }
-})
+});
 
 const StyledStepper = styled(Stepper)({
-  "background": "inherit",
-  "& .MuiStepLabel-label": {
+  background: "inherit",
+  '& .MuiStepLabel-label': {
     fontSize: 14,
     lineHeight: 14
   }
-})
+});
+
 
 const IndicatorValue = styled(Paper)(({ theme }) => ({
   display: "flex",
@@ -62,8 +63,8 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   userSelect: "none",
   boxShadow: "none",
   background: "inherit",
-  fontFamily: "Roboto Mono"
-}))
+  fontFamily: "Roboto Mono",
+}));
 
 const FAQClickToAction = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -71,7 +72,7 @@ const FAQClickToAction = styled(Typography)(({ theme }) => ({
   cursor: "pointer",
   marginTop: 16,
   marginBottom: 8
-}))
+}));
 
 const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
@@ -81,26 +82,26 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   paddingTop: 20,
   position: "sticky",
   top: 153
-}))
+}));
 
 const custom = (theme: Theme) => ({
   logo: {
     height: "100%",
     alignItems: "baseline",
     display: "flex",
-    marginTop: 22
+    marginTop: 22,
   },
   appBorder: {
-    borderBottom: `2px solid ${theme.palette.primary.light}`
+    borderBottom: `2px solid ${theme.palette.primary.light}`,
   },
   appHeight: {
-    height: "inherit"
+    height: "inherit",
   },
   appLogoHeight: {
     height: "inherit",
-    borderRight: `2px solid ${theme.palette.primary.light}`
-  }
-})
+    borderRight: `2px solid ${theme.palette.primary.light}`,
+  },
+});
 
 const PageContent = styled(Grid)({
   width: "1000px",
@@ -110,30 +111,30 @@ const PageContent = styled(Grid)({
   flexDirection: "row",
   paddingTop: 0,
   ["@media (max-width:1167px)"]: {
-    width: "86vw"
+    width: "86vw",
   }
-})
+});
 
 export const DAOCreate: React.FC = () => {
-  const creator = useContext(CreatorContext)
+  const creator = useContext(CreatorContext);
 
-  const { back, next } = creator.state
-  const step = useStepNumber()
-  const progress = useMemo(() => step * 20, [step])
-  const history = useHistory()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const { back, next } = creator.state;
+  const step = useStepNumber();
+  const progress = useMemo(() => step * 20, [step]);
+  const history = useHistory();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const goToFAQ = (): void => {
-    history.push("/faq")
-  }
+    history.push("/faq");
+  };
 
   useEffect(() => {
-    mixpanel.unregister("daoAddress")
-    mixpanel.unregister("daoType")
+    mixpanel.unregister("daoAddress");
+    mixpanel.unregister("daoType");
 
-    mixpanel.track("Visited Creator")
-  }, [])
+    mixpanel.track("Visited Creator");
+  }, []);
 
   return (
     <PageContainer container direction="row">
@@ -151,11 +152,15 @@ export const DAOCreate: React.FC = () => {
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
-                  <IndicatorValue>{progress === 0.5 ? 0 : step * 20}%</IndicatorValue>
+                  <IndicatorValue>
+                    {progress === 0.5 ? 0 : step * 20}%
+                  </IndicatorValue>
                 </Box>
               </ProgressBar>
               <Box>
-                <FAQClickToAction onClick={goToFAQ}>New to DAOs? Read our FAQ</FAQClickToAction>
+                <FAQClickToAction onClick={goToFAQ}>
+                  New to DAOs? Read our FAQ
+                </FAQClickToAction>
               </Box>
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title }: StepInfo, index: number) => (
@@ -169,7 +174,12 @@ export const DAOCreate: React.FC = () => {
         )}
 
         <Grid item xs={12} md={9} container justifyContent="center" alignItems="baseline">
-          <Grid container direction="column" alignItems="center" style={{ width: "100%", marginBottom: 20 }}>
+          <Grid
+            container
+            direction="column"
+            alignItems="center"
+            style={{ width: "100%", marginBottom: 20 }}
+          >
             <Grid item style={{ width: "100%" }} xs>
               <StepContentContainer item container justifyContent="center">
                 <StepRouter />
@@ -180,5 +190,5 @@ export const DAOCreate: React.FC = () => {
         </Grid>
       </PageContent>
     </PageContainer>
-  )
-}
+  );
+};

@@ -1,6 +1,6 @@
-import { TezosToolkit } from "@taquito/taquito"
-import { BeaconWallet } from "@taquito/beacon-wallet"
-import { Network } from "./utils"
+import { TezosToolkit } from '@taquito/taquito';
+import { BeaconWallet } from '@taquito/beacon-wallet';
+import { Network } from './utils';
 
 export enum TezosActionType {
   UPDATE_TEZOS = "UPDATE_TEZOS",
@@ -8,17 +8,18 @@ export enum TezosActionType {
 }
 
 interface UpdateTezos {
-  type: TezosActionType.UPDATE_TEZOS
+  type: TezosActionType.UPDATE_TEZOS;
   payload: {
-    tezos: TezosToolkit
-    network: Network
-    account: string
-    wallet: BeaconWallet | undefined
-  }
+    tezos: TezosToolkit;
+    network: Network;
+    account: string;
+    wallet: BeaconWallet | undefined;
+  };
 }
 
 interface ResetTezos {
-  type: TezosActionType.RESET_TEZOS
+  type: TezosActionType.RESET_TEZOS;
 }
 
-export type TezosAction = UpdateTezos | ResetTezos
+export type TezosAction = UpdateTezos | ResetTezos;
+

@@ -1,34 +1,34 @@
 import React from "react"
-import { Grid, Paper, styled, Switch, Typography } from "@material-ui/core"
-import { ProposalFormInput } from "./ProposalFormInput"
+import {Grid, Paper, styled, Switch, Typography } from "@material-ui/core";
+import {ProposalFormInput} from "./ProposalFormInput";
 
-const BatchBarContainer = styled(Grid)(({ theme }) => ({
+const BatchBarContainer = styled(Grid)(({theme}) => ({
   height: 47,
   alignItems: "start",
   cursor: "pointer",
   overflowX: "auto",
   [theme.breakpoints.down("sm")]: {
-    padding: "24px 24px"
-  }
-}))
+    padding: "24px 24px",
+  },
+}));
 
 const SwitchContainer = styled(Grid)({
-  "textAlign": "end",
-  "boxShadow": "none",
+  textAlign: "end",
+  boxShadow: "none",
 
-  "& .Mui-checked.Mui-checked + .MuiSwitch-track": {
-    background: "#81FEB7"
+  "& .Mui-checked.Mui-checked + .MuiSwitch-track" : {
+    background: "#81FEB7",
   },
 
   "& .MuiSwitch-colorSecondary.Mui-checked": {
     color: "#FFFFFF",
-    marginLeft: "4.1px"
+    marginLeft: "4.1px",
   },
 
-  "& .MuiSwitch-thumb": {
+  "& .MuiSwitch-thumb" : {
     boxShadow: "none"
   }
-})
+});
 
 const TransferActive = styled(Grid)({
   height: 27,
@@ -36,38 +36,38 @@ const TransferActive = styled(Grid)({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  borderRadius: "50%"
-})
+  borderRadius: "50%",
+});
 
 const AddButton = styled(Paper)({
-  "marginLeft": 12,
-  "minHeight": 31,
-  "minWidth": 31,
-  "textAlign": "center",
-  "padding": 0,
-  "background": "#383e43",
-  "color": "#fff",
-  "alignItems": "center",
-  "display": "flex",
-  "justifyContent": "center",
-  "cursor": "pointer",
+  marginLeft: 12,
+  minHeight: 31,
+  minWidth: 31,
+  textAlign: "center",
+  padding: 0,
+  background: "#383e43",
+  color: "#fff",
+  alignItems: "center",
+  display: "flex",
+  justifyContent: "center",
+  cursor: "pointer",
 
-  "&:hover": {
+  "&:hover" : {
     background: "#3c4349"
   }
-})
+});
 
 interface Props {
-  isBatch: boolean
-  stateIsBatch: boolean
-  handleIsBatchChange: () => void
-  onClickAdd: () => void
-  items: any[]
-  activeItem: number
-  setActiveItem: (index: number) => void
+  isBatch: boolean;
+  stateIsBatch: boolean;
+  handleIsBatchChange: () => void;
+  onClickAdd: () => void;
+  items: any[];
+  activeItem: number;
+  setActiveItem: (index: number) => void;
 }
 
-export const BatchBar = ({ isBatch, handleIsBatchChange, onClickAdd, items, activeItem, setActiveItem }: Props) => {
+export const BatchBar = ({isBatch, handleIsBatchChange, onClickAdd, items, activeItem, setActiveItem}: Props) => {
   return (
     <ProposalFormInput>
       <Grid container direction="row" alignItems={"center"}>
@@ -78,31 +78,44 @@ export const BatchBar = ({ isBatch, handleIsBatchChange, onClickAdd, items, acti
         </Grid>
         <Grid item xs={6}>
           <SwitchContainer item xs={12} justifyContent="flex-end">
-            <Switch type="checkbox" onChange={handleIsBatchChange} checked={isBatch} />
+            <Switch
+              type="checkbox"
+              onChange={handleIsBatchChange}
+              checked={isBatch}
+            />
           </SwitchContainer>
         </Grid>
       </Grid>
       {isBatch ? (
-        <BatchBarContainer container direction="row" wrap="nowrap" style={{ gap: 8 }}>
+        <BatchBarContainer container direction="row" wrap="nowrap" style={{gap: 8}}>
           {items.map((_, index) => {
             return (
               <TransferActive
                 item
                 key={index}
                 onClick={() => setActiveItem(index)}
-                style={Number(index + 1) === activeItem ? { background: "#81FEB7" } : { background: "#3c4349" }}
+                style={
+                  Number(index + 1) === activeItem
+                    ? {background: "#81FEB7"}
+                    : {background: "#3c4349"}
+                }
               >
-                <Typography
-                  variant="subtitle2"
-                  style={Number(index + 1) === activeItem ? { color: "#1C1F23" } : { color: "ffff" }}
-                >
+                <Typography variant="subtitle2" style={
+                  Number(index + 1) === activeItem
+                    ? {color: "#1C1F23"}
+                    : {color: "ffff"}
+                }>
                   #{index + 1}
                 </Typography>
               </TransferActive>
-            )
+            );
           })}
 
-          <AddButton onClick={onClickAdd}>+</AddButton>
+          <AddButton
+            onClick={onClickAdd}
+          >
+            +
+          </AddButton>
         </BatchBarContainer>
       ) : null}
     </ProposalFormInput>

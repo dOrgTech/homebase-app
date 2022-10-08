@@ -1,24 +1,31 @@
-import { Box, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import React, { useContext, useEffect } from "react"
-import { useHistory, useRouteMatch } from "react-router-dom"
-import { ActionTypes, CreatorContext } from "modules/creator/state"
-import { TitleBlock } from "modules/common/TitleBlock"
-import { toShortAddress } from "services/contracts/utils"
+import {
+  Box,
+  Grid,
+  styled,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
+import React, { useContext, useEffect } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
+import { ActionTypes, CreatorContext } from "modules/creator/state";
+import { TitleBlock } from "modules/common/TitleBlock";
+import { toShortAddress } from "services/contracts/utils";
 
 const SecondContainer = styled(Grid)({
   marginTop: 42,
   background: "#2F3438",
   borderRadius: 8,
   padding: "26px 48px",
-  boxSizing: "border-box"
-})
+  boxSizing: "border-box",
+});
 
 const ThirdContainer = styled(Grid)({
   marginTop: 42,
   background: "#2F3438",
   borderRadius: 8,
-  boxSizing: "border-box"
-})
+  boxSizing: "border-box",
+});
 
 const ThirdContainerFirstRow = styled(Grid)({
   padding: "19px 48px",
@@ -28,9 +35,9 @@ const ThirdContainerFirstRow = styled(Grid)({
   maxHeight: 70,
   ["@media (max-width:1167px)"]: {
     padding: "12px 15px",
-    maxHeight: "inherit"
-  }
-})
+    maxHeight: "inherit",
+  },
+});
 
 const ThirdContainerLastRow = styled(Grid)({
   padding: "19px 48px",
@@ -39,9 +46,9 @@ const ThirdContainerLastRow = styled(Grid)({
   maxHeight: 70,
   ["@media (max-width:1167px)"]: {
     padding: "12px 15px",
-    maxHeight: "inherit"
-  }
-})
+    maxHeight: "inherit",
+  },
+});
 
 const ThirdContainerRow = styled(Grid)({
   borderBottom: "0.3px solid #7D8C8B",
@@ -49,9 +56,9 @@ const ThirdContainerRow = styled(Grid)({
   maxHeight: 70,
   ["@media (max-width:1167px)"]: {
     padding: "12px 15px",
-    maxHeight: "inherit"
-  }
-})
+    maxHeight: "inherit",
+  },
+});
 
 const ThirdContainerSpecialRow = styled(Grid)({
   borderBottom: "0.3px solid #7D8C8B",
@@ -60,81 +67,93 @@ const ThirdContainerSpecialRow = styled(Grid)({
   maxHeight: 70,
   ["@media (max-width:1167px)"]: {
     padding: "12px 15px",
-    maxHeight: "inherit"
-  }
-})
+    maxHeight: "inherit",
+  },
+});
 
 const FirstContainer = styled(Grid)({
   background: "#2F3438",
   borderRadius: 8,
   padding: "22px 48px",
   boxSizing: "border-box",
-  marginTop: 4
-})
+  marginTop: 4,
+});
 
 const TitleSpacing = styled(Typography)({
-  marginTop: 8
-})
+  marginTop: 8,
+});
 
 const DescriptionSpacing = styled(Typography)({
-  marginTop: 16
-})
+  marginTop: 16,
+});
 
 const ContainerEdit = styled(Typography)({
-  cursor: "pointer"
-})
+  cursor: "pointer",
+});
 
 const AdminAddress = styled(Typography)({
-  wordBreak: "break-all"
-})
+  wordBreak: "break-all",
+});
 
 export const Summary = (): JSX.Element => {
-  const { dispatch, state } = useContext(CreatorContext)
-  const history = useHistory()
-  const match = useRouteMatch()
-  const theme = useTheme()
+  const { dispatch, state } = useContext(CreatorContext);
+  const history = useHistory();
+  const match = useRouteMatch();
+  const theme = useTheme();
 
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const goToVoting = () => {
-    history.push(`voting`)
-  }
+    history.push(`voting`);
+  };
 
   const goToQuorum = () => {
-    history.push(`quorum`)
-  }
+    history.push(`quorum`);
+  };
 
   const goToSettings = () => {
-    history.push(`dao`)
-  }
+    history.push(`dao`);
+  };
 
   useEffect(() => {
     dispatch({
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          history.push(`review`)
+          history.push(`review`);
         },
-        text: "Launch"
+        text: "Launch",
       },
       back: {
         handler: () => history.push(`quorum`),
-        text: "Back"
-      }
-    })
-  }, [dispatch, history, match.path, match.url])
+        text: "Back",
+      },
+    });
+  }, [dispatch, history, match.path, match.url]);
 
   return (
     <Box>
-      <Grid container direction="row" justifyContent="space-between" style={{ height: "fit-content" }}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="space-between"
+        style={{ height: "fit-content" }}
+      >
         <TitleBlock
           title={"Review information"}
-          description={"Review your settings to ensure you’ve made the correct choices."}
+          description={
+            "Review your settings to ensure you’ve made the correct choices."
+          }
         ></TitleBlock>
 
         <FirstContainer container direction="row">
           <Grid item xs={12}>
-            <Grid container direction="row" justifyContent="space-between" alignItems="center">
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <TitleSpacing color="secondary" variant="subtitle1">
                 {state.data.orgSettings.symbol}
               </TitleSpacing>
@@ -180,7 +199,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={7}>
-                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
+                <AdminAddress
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {isMobile
                     ? toShortAddress(state.data.orgSettings.administrator)
                     : state.data.orgSettings.administrator}
@@ -197,8 +220,14 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={7}>
-                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
-                  {isMobile ? toShortAddress(state.data.orgSettings.guardian) : state.data.orgSettings.guardian}
+                <AdminAddress
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {isMobile
+                    ? toShortAddress(state.data.orgSettings.guardian)
+                    : state.data.orgSettings.guardian}
                 </AdminAddress>
               </Grid>
             </Grid>
@@ -212,9 +241,15 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={7}>
-                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
+                <AdminAddress
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {isMobile
-                    ? toShortAddress(state.data.orgSettings.governanceToken.address)
+                    ? toShortAddress(
+                        state.data.orgSettings.governanceToken.address
+                      )
                     : state.data.orgSettings.governanceToken.address}
                 </AdminAddress>
               </Grid>
@@ -229,7 +264,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.orgSettings.governanceToken.tokenId}
                 </Typography>
               </Grid>
@@ -262,7 +301,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.votingSettings.votingBlocks} blocks
                 </Typography>
               </Grid>
@@ -277,7 +320,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.votingSettings.proposalFlushBlocks} blocks
                 </Typography>
               </Grid>
@@ -292,7 +339,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.votingSettings.proposalExpiryBlocks} blocks
                 </Typography>
               </Grid>
@@ -307,7 +358,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.votingSettings.proposeStakeRequired} locked tokens
                 </Typography>
               </Grid>
@@ -322,8 +377,13 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
-                  {state.data.votingSettings.returnedTokenPercentage}% of locked tokens
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
+                  {state.data.votingSettings.returnedTokenPercentage}% of locked
+                  tokens
                 </Typography>
               </Grid>
             </Grid>
@@ -338,7 +398,11 @@ export const Summary = (): JSX.Element => {
                   </Typography>
                 </Grid>
                 <Grid item xs={5}>
-                  <Typography variant="subtitle2" color="textSecondary" align="right">
+                  <Typography
+                    variant="subtitle2"
+                    color="textSecondary"
+                    align="right"
+                  >
                     {state.data.votingSettings.maxXtzAmount} XTZ
                   </Typography>
                 </Grid>
@@ -355,7 +419,11 @@ export const Summary = (): JSX.Element => {
                   </Typography>
                 </Grid>
                 <Grid item xs={5}>
-                  <Typography variant="subtitle2" color="textSecondary" align="right">
+                  <Typography
+                    variant="subtitle2"
+                    color="textSecondary"
+                    align="right"
+                  >
                     {state.data.votingSettings.minXtzAmount} XTZ
                   </Typography>
                 </Grid>
@@ -389,7 +457,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item sm={6} xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.quorumSettings.quorumThreshold}%
                 </Typography>
               </Grid>
@@ -404,7 +476,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.quorumSettings.quorumChange}%
                 </Typography>
               </Grid>
@@ -419,7 +495,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.quorumSettings.quorumMaxChange}%
                 </Typography>
               </Grid>
@@ -434,7 +514,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.quorumSettings.minQuorumAmount}%
                 </Typography>
               </Grid>
@@ -449,7 +533,11 @@ export const Summary = (): JSX.Element => {
                 </Typography>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  align="right"
+                >
                   {state.data.quorumSettings.maxQuorumAmount}%
                 </Typography>
               </Grid>
@@ -458,5 +546,5 @@ export const Summary = (): JSX.Element => {
         </ThirdContainer>
       </Grid>
     </Box>
-  )
-}
+  );
+};

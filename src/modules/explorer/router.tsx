@@ -1,10 +1,10 @@
-import React from "react"
-import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom"
-import { DAOList } from "modules/explorer/pages/DAOList"
-import { DAORouter } from "modules/explorer/pages/DAO/router"
+import React from "react";
+import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
+import { DAOList } from "modules/explorer/pages/DAOList";
+import { DAORouter } from "modules/explorer/pages/DAO/router";
 
 export const DAOExplorerRouter = (): JSX.Element => {
-  const match = useRouteMatch()
+  const match = useRouteMatch();
 
   return (
     <Switch>
@@ -16,5 +16,5 @@ export const DAOExplorerRouter = (): JSX.Element => {
       </Route>
       <Redirect to={`${match.url}/daos`} />
     </Switch>
-  )
-}
+  );
+};

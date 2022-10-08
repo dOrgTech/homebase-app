@@ -1,38 +1,38 @@
-import { styled, Grid, Typography } from "@material-ui/core"
-import { Blockie } from "modules/common/Blockie"
-import React from "react"
-import { useTezos } from "services/beacon/hooks/useTezos"
-import { toShortAddress } from "services/contracts/utils"
-import { ArrowDownwardOutlined, ExitToApp, FileCopyOutlined } from "@material-ui/icons"
-import { BottomSheet } from "./BottomSheet"
+import { styled, Grid, Typography } from "@material-ui/core";
+import { Blockie } from "modules/common/Blockie";
+import React from "react";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { toShortAddress } from "services/contracts/utils";
+import { ArrowDownwardOutlined, ExitToApp, FileCopyOutlined } from "@material-ui/icons";
+import { BottomSheet } from "./BottomSheet";
 
 const SheetContainer = styled(Grid)({
-  paddingTop: 50
-})
+  paddingTop: 50,
+});
 
 const SheetItem = styled(Grid)({
-  "height": 65,
-  "borderTop": "0.25px solid #7D8C8B",
-  "cursor": "pointer",
+  height: 65,
+  borderTop: "0.25px solid #7D8C8B",
+  cursor: "pointer",
   "& > *": {
-    height: "100%"
-  }
-})
+    height: "100%",
+  },
+});
 
 interface Props {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 const MenuText = styled(Typography)({
-  fontSize: 14
-})
+  fontSize: 14,
+});
 
-export const UserMenuSheet: React.FC<Props> = props => {
-  const { account, reset, connect } = useTezos()
+export const UserMenuSheet: React.FC<Props> = (props) => {
+  const { account, reset, connect } = useTezos();
 
   const handleAccountClick = () => {
-    if (account) {
+    if(account) {
       navigator.clipboard.writeText(account)
     } else {
       connect()
@@ -50,14 +50,22 @@ export const UserMenuSheet: React.FC<Props> = props => {
     <BottomSheet open={props.open} onDismiss={props.onClose}>
       <SheetContainer>
         <SheetItem>
-          <Grid container justifyContent="center" style={{ gap: 9 }} alignItems="center" onClick={handleAccountClick}>
+          <Grid
+            container
+            justifyContent="center"
+            style={{ gap: 9 }}
+            alignItems="center"
+            onClick={handleAccountClick}
+          >
             {account ? (
               <>
                 <Grid item>
                   <Blockie address={account} size={24} />
                 </Grid>
                 <Grid item>
-                  <MenuText color="textPrimary">{toShortAddress(account)}</MenuText>
+                  <MenuText color="textPrimary">
+                    {toShortAddress(account)}
+                  </MenuText>
                 </Grid>
                 <Grid item>
                   <FileCopyOutlined htmlColor="#FFF" fontSize="small" />
@@ -76,7 +84,13 @@ export const UserMenuSheet: React.FC<Props> = props => {
           </Grid>
         </SheetItem>
         <SheetItem>
-          <Grid container justifyContent="center" style={{ gap: 9 }} alignItems="center" onClick={handleLogout}>
+          <Grid
+            container
+            justifyContent="center"
+            style={{ gap: 9 }}
+            alignItems="center"
+            onClick={handleLogout}
+          >
             <Grid item>
               <ExitToApp htmlColor="#FFF" fontSize="small" />
             </Grid>
@@ -87,5 +101,5 @@ export const UserMenuSheet: React.FC<Props> = props => {
         </SheetItem>
       </SheetContainer>
     </BottomSheet>
-  )
-}
+  );
+};

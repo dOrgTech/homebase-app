@@ -1,18 +1,28 @@
-import { Grid, Typography, Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, styled } from "@material-ui/core"
-import ImageIcon from "@material-ui/icons/Image"
-import React from "react"
-import { useTezos } from "services/beacon/hooks/useTezos"
+import {
+  Grid,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  styled,
+} from "@material-ui/core";
+import ImageIcon from "@material-ui/icons/Image";
+import React from "react";
+import { useTezos } from "services/beacon/hooks/useTezos";
 
 const PageContainer = styled(Grid)({
-  height: "90%"
-})
+  height: "90%",
+});
 
 const SpacingTitle = styled(Typography)({
-  marginBottom: 15
-})
+  marginBottom: 15,
+});
 
 export const ConnectWallet: React.FC = () => {
-  const { connect } = useTezos()
+  const { connect } = useTezos();
 
   return (
     <PageContainer container justifyContent="flex-start" alignItems="center">
@@ -42,5 +52,5 @@ export const ConnectWallet: React.FC = () => {
         </Box>
       </Grid>
     </PageContainer>
-  )
-}
+  );
+};

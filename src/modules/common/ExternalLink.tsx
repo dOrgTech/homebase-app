@@ -1,25 +1,34 @@
-import React from "react"
-import { styled } from "@material-ui/core"
+import React from "react";
+import { styled } from "@material-ui/core";
 
 const Link = styled("a")({
-  "display": "flex",
-  "textDecoration": "none",
+  display: "flex",
+  textDecoration: "none",
   "&:active": {
-    color: "unset"
-  }
-})
+    color: "unset",
+  },
+});
 
 interface ExternalLinkProps {
-  link: string
-  children: React.ReactNode
+  link: string;
+  children: React.ReactNode;
   // pass className to allowlocal style overrides
-  className?: string
+  className?: string;
 }
 
-export const ExternalLink = ({ link, children, className }: ExternalLinkProps): JSX.Element => {
+export const ExternalLink = ({
+  link,
+  children,
+  className,
+}: ExternalLinkProps): JSX.Element => {
   return (
-    <Link className={className} href={link} rel="noreferrer noopener" target="_blank">
+    <Link
+      className={className}
+      href={link}
+      rel="noreferrer noopener"
+      target="_blank"
+    >
       {children}
     </Link>
-  )
-}
+  );
+};

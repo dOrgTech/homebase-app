@@ -11,8 +11,7 @@
     "eject": "react-scripts eject",
     "lint:ci": "eslint --color 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:check": "eslint --quiet 'src/**/*.{js,jsx,ts,tsx}'",
-    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
-    "prepare": "husky install"
+    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.8.1",
@@ -38,7 +37,6 @@
     "graphql-request": "^3.4.0",
     "hex-to-rgba": "^2.0.1",
     "jsonschema": "^1.4.0",
-    "launchdarkly-react-client-sdk": "2.27.0",
     "mixpanel-browser": "^2.42.0",
     "notistack": "^1.0.3",
     "react": "^17.0.1",
@@ -70,11 +68,10 @@
     "@typescript-eslint/parser": "^4.18.0",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
+    "husky": "^5.1.3",
+    "lint-staged": "^10.5.4",
     "prettier": "^2.2.0",
     "source-map-explorer": "2.5.2",
     "typescript": "^4.2.3"
@@ -96,14 +93,9 @@
       "last 1 safari version"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
-      "yarn lint:check"
+      "yarn lint:fix"
     ]
   }
 }

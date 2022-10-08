@@ -1,16 +1,23 @@
-import { Network } from "services/beacon"
-import { BlockchainStats } from "./types"
-import { networkNameMap } from ".."
+import { Network } from "services/beacon";
+import { BlockchainStats } from "./types";
 
-export const getNetworkStats = async (network: Network): Promise<BlockchainStats> => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/protocols/current`
-  const response = await fetch(url)
+const networkToUrlMap: Record<Network, string> = {
+  mainnet: "",
+  ghostnet: "ghost."
+}
+
+export const getNetworkStats = async (
+  network: Network
+): Promise<BlockchainStats> => {
+  const url = `${process.env.REACT_APP_CORS_PROXY_URL}/https://api.${networkToUrlMap[network]
+  }tzstats.com/explorer/config/head`;
+  const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error("Failed to fetch contract storage from BakingBad API")
+    throw new Error("Failed to fetch contract storage from BakingBad API");
   }
 
-  const result: BlockchainStats = await response.json()
+  const result: BlockchainStats = await response.json();
 
-  return result
-}
+  return result;
+};

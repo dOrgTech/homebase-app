@@ -16,13 +16,13 @@ export interface GeneratorArgs {
   min_xtz_amount: string
   max_xtz_amount: string
   guardian_address: string
-  min_quorum: string
-  max_quorum: string
-  quorum_change: string
-  max_quorum_change: string
-  proposal_flush_level: string
-  proposal_expired_level: string
-  governance_total_supply: string
-  start_level: string
-  period: string
+  min_quorum: string;
+  max_quorum: string;
+  quorum_change: string;
+  max_quorum_change: string;
+  proposal_flush_level: string;
+  proposal_expired_level: string;
+  governance_total_supply: string;
+  start_level: string;
+  period: string;
 }

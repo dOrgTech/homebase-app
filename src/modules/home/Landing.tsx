@@ -1,27 +1,39 @@
-import { Box, Grid, Link, styled, SvgIcon, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import React from "react"
-import { Header } from "./LandingHeader"
-import HomebaseLogo from "assets/logos/homebase_logo.svg"
-import Vector1 from "assets/vectors/Vector1.svg"
-import Vector2 from "assets/vectors/Vector2.svg"
-import GitHubIcon from "@material-ui/icons/GitHub"
-import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg"
-import { MainButton } from "../common/MainButton"
+import {
+  Box,
+  Button,
+  Grid,
+  Link,
+  styled,
+  Theme,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  SvgIcon,
+} from "@material-ui/core";
+import React from "react";
+import { Header } from "./LandingHeader";
+import HomebaseLogo from "assets/logos/homebase_logo.svg";
+import Vector1 from "assets/vectors/Vector1.svg";
+import Vector2 from "assets/vectors/Vector2.svg";
+import hexToRgba from "hex-to-rgba";
+import GitHubIcon from "@material-ui/icons/GitHub";
+import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg";
+import { MainButton } from "../common/MainButton";
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
   boxSizing: "border-box",
-  height: "86px"
-})
+  height: "86px",
+});
 
 const IconContainer = styled("div")({
-  "height": "27px",
-  "width": "33px",
+  height: "27px",
+  width: "33px",
 
   "& > svg": {
-    width: "100%"
-  }
-})
+    width: "100%",
+  },
+});
 
 // const AnimatedLogoContainer = withStyles({
 //   "@global @keyframes float": {
@@ -41,15 +53,15 @@ const Background = styled(Grid)({
   backgroundImage: `url(${Vector1}), url(${Vector2})`,
   backgroundPosition: "top right, bottom right",
   backgroundRepeat: "no-repeat",
-  height: "100vh"
-})
+  height: "100vh",
+});
 
 const MainContainer = styled(Grid)({
   maxWidth: 970,
   padding: 30,
   boxSizing: "border-box",
-  width: "100%"
-})
+  width: "100%",
+});
 
 const LogoContainer = styled(Box)(({ theme }) => ({
   width: 408,
@@ -57,34 +69,39 @@ const LogoContainer = styled(Box)(({ theme }) => ({
 
   [theme.breakpoints.down("xs")]: {
     width: 290,
-    height: 265
-  }
+    height: 265,
+  },
 
   // animation: `float 3s infinite ease-in-out`,
-}))
+}));
 
 const BigLogo = styled("img")({
   width: "100%",
-  height: "100%"
-})
+  height: "100%",
+});
 
 const TitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.text.primary,
   fontSize: 40,
-  fontWeight: "bold"
-}))
+  fontWeight: "bold",
+}));
 
 const SubtitleText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   color: theme.palette.text.primary,
-  fontWeight: 300
-}))
+  fontWeight: 300,
+}));
 
 export const Landing: React.FC = () => {
-  const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const theme = useTheme();
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
   return (
-    <Background container direction="column" justifyContent="space-between" wrap="nowrap">
+    <Background
+      container
+      direction="column"
+      justifyContent="space-between"
+      wrap="nowrap"
+    >
       {!isExtraSmall && (
         <Grid item>
           <Header />
@@ -101,7 +118,12 @@ export const Landing: React.FC = () => {
                 style={isExtraSmall ? { gap: 50 } : {}}
               >
                 <Grid item xs>
-                  <Grid container direction="column" style={{ gap: 32 }} justifyContent="center">
+                  <Grid
+                    container
+                    direction="column"
+                    style={{ gap: 32 }}
+                    justifyContent="center"
+                  >
                     {!isExtraSmall && (
                       <Grid item>
                         <TitleText>Tezos Homebase</TitleText>
@@ -110,9 +132,10 @@ export const Landing: React.FC = () => {
 
                     <Grid item>
                       <SubtitleText align={isExtraSmall ? "center" : "left"}>
-                        Homebase is a web application that enables users to create and manage/use DAOs on the Tezos
-                        blockchain. This application aims to help empower community members and developers to launch and
-                        participate in Tezos-based DAOs
+                        Homebase is a web application that enables users to
+                        create and manage/use DAOs on the Tezos blockchain. This
+                        application aims to help empower community members and
+                        developers to launch and participate in Tezos-based DAOs
                       </SubtitleText>
                     </Grid>
                     <Grid item>
@@ -141,7 +164,13 @@ export const Landing: React.FC = () => {
                   </Grid>
                 </Grid>
                 <Grid item xs>
-                  <Grid container direction="column" alignItems="flex-end" justifyContent="center" style={{ gap: 20 }}>
+                  <Grid
+                    container
+                    direction="column"
+                    alignItems="flex-end"
+                    justifyContent="center"
+                    style={{ gap: 20 }}
+                  >
                     {isExtraSmall && (
                       <Grid item>
                         <TitleText>Tezos Homebase</TitleText>
@@ -170,7 +199,10 @@ export const Landing: React.FC = () => {
           style={{ gap: 25 }}
         >
           <Grid item>
-            <Link target="_blank" href="https://github.com/dOrgTech/homebase-app">
+            <Link
+              target="_blank"
+              href="https://github.com/dOrgTech/homebase-app"
+            >
               <IconContainer>
                 <GitHubIcon color="secondary" />
               </IconContainer>
@@ -188,5 +220,5 @@ export const Landing: React.FC = () => {
         </StyledToolbar>
       </Grid>
     </Background>
-  )
-}
+  );
+};

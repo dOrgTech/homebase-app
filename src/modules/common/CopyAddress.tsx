@@ -1,16 +1,23 @@
-import { Grid, GridProps, Typography, TypographyProps, useMediaQuery, useTheme } from "@material-ui/core"
-import React from "react"
-import { toShortAddress } from "services/contracts/utils"
-import { CopyButton } from "./CopyButton"
+import {
+  Grid,
+  GridProps,
+  Typography,
+  TypographyProps,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
+import React from "react";
+import { toShortAddress } from "services/contracts/utils";
+import { CopyButton } from "./CopyButton";
 
 interface Props extends GridProps {
-  address: string
+  address: string;
   typographyProps?: TypographyProps
 }
 
 export const CopyAddress: React.FC<Props> = ({ address, typographyProps }) => {
-  const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <>
@@ -25,5 +32,5 @@ export const CopyAddress: React.FC<Props> = ({ address, typographyProps }) => {
         </Grid>
       </Grid>
     </>
-  )
-}
+  );
+};

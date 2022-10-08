@@ -1,68 +1,81 @@
-import { Box, Button, Grid, styled, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { NFT as NFTModel } from "models/Token"
-import { CopyAddress } from "modules/common/CopyAddress"
-import { NFT } from "modules/explorer/components/NFT"
-import { NFTDialog } from "modules/explorer/components/NFTDialog"
-import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
-import { UserBadge } from "modules/explorer/components/UserBadge"
+import {
+  Box,
+  Button,
+  Grid,
+  styled,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
+import { NFT as NFTModel } from "models/Token";
+import { CopyAddress } from "modules/common/CopyAddress";
+import { NFT } from "modules/explorer/components/NFT";
+import { NFTDialog } from "modules/explorer/components/NFTDialog";
+import {
+  ProposalFormContainer,
+  ProposalFormDefaultValues,
+} from "modules/explorer/components/ProposalForm";
+import { UserBadge } from "modules/explorer/components/UserBadge";
 
-import React, { useState } from "react"
-import { NFTDAOHolding } from "services/bakingBad/tokenBalances"
-import { useTezos } from "services/beacon/hooks/useTezos"
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { ContentContainer } from "../../components/ContentContainer"
-import { Hero } from "../../components/Hero"
-import { HeroTitle } from "../../components/HeroTitle"
-import { useDAOID } from "../DAO/router"
-import { InfoIcon } from "../../components/styled/InfoIcon"
-import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
-import { SmallButton } from "../../../common/SmallButton"
-import { MainButton } from "../../../common/MainButton"
+import React, { useState } from "react";
+import { NFTDAOHolding } from "services/bakingBad/tokenBalances";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings";
+import { useDAO } from "services/indexer/dao/hooks/useDAO";
+import { ContentContainer } from "../../components/ContentContainer";
+import { Hero } from "../../components/Hero";
+import { HeroTitle } from "../../components/HeroTitle";
+import { useDAOID } from "../DAO/router";
+import { InfoIcon } from "../../components/styled/InfoIcon";
+import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo";
+import { SmallButton } from "../../../common/SmallButton";
+import { MainButton } from "../../../common/MainButton";
 
 const Card = styled(ContentContainer)({
   boxSizing: "border-box",
   padding: 30,
   width: 325,
   minHeight: 500,
-  cursor: "pointer"
-})
+  cursor: "pointer",
+});
 
 const FullWidthContainer = styled(Grid)({
-  width: "100%"
-})
+  width: "100%",
+});
 
 const ImgContainer = styled(Box)({
   height: 246,
-  width: "100%"
-})
+  width: "100%",
+});
 
 const NFTId = styled(Typography)({
-  fontSize: 14
-})
+  fontSize: 14,
+});
 
 const NFTTitle = styled(Typography)({
-  fontWeight: "bold"
-})
+  fontWeight: "bold",
+});
 
 export const NFTs: React.FC = () => {
-  const theme = useTheme()
-  const daoId = useDAOID()
-  const { data: dao } = useDAO(daoId)
-  const { nftHoldings } = useDAOHoldings(daoId)
-  const [openTransfer, setOpenTransfer] = useState(false)
-  const { account } = useTezos()
-  const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
-  const [selectedNFT, setSelectedNFT] = useState<NFTDAOHolding>()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme();
+  const daoId = useDAOID();
+  const { data: dao } = useDAO(daoId);
+  const { nftHoldings } = useDAOHoldings(daoId);
+  const [openTransfer, setOpenTransfer] = useState(false);
+  const { account } = useTezos();
+  const [defaultValues, setDefaultValues] =
+    useState<ProposalFormDefaultValues>();
+  const [selectedNFT, setSelectedNFT] = useState<NFTDAOHolding>();
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   const onClickNFT = (nft: NFTDAOHolding) => {
-    setSelectedNFT(nft)
-  }
+    setSelectedNFT(nft);
+  };
 
   const onCloseDialog = () => {
-    setSelectedNFT(undefined)
-  }
+    setSelectedNFT(undefined);
+  };
 
   const onOpenTransferModal = (nft: NFTModel) => {
     setDefaultValues({
@@ -72,24 +85,24 @@ export const NFTs: React.FC = () => {
           {
             recipient: account,
             amount: 1,
-            asset: nft
-          }
-        ]
-      }
-    })
-    setOpenTransfer(true)
-  }
+            asset: nft,
+          },
+        ],
+      },
+    });
+    setOpenTransfer(true);
+  };
 
   const onClick = (e: any, nft: NFTModel) => {
-    e.stopPropagation()
-    onOpenTransferModal(nft)
-  }
+    e.stopPropagation();
+    onOpenTransferModal(nft);
+  };
 
   const onCloseTransfer = () => {
-    setOpenTransfer(false)
-  }
+    setOpenTransfer(false);
+  };
 
-  const shouldDisable = useIsProposalButtonDisabled(daoId)
+  const shouldDisable = useIsProposalButtonDisabled(daoId);
 
   return (
     <>
@@ -102,7 +115,7 @@ export const NFTs: React.FC = () => {
                 address={dao.data.address}
                 justifyContent={isMobileSmall ? "center" : "flex-start"}
                 typographyProps={{
-                  variant: "subtitle2"
+                  variant: "subtitle2",
                 }}
               />
             )}
@@ -117,14 +130,21 @@ export const NFTs: React.FC = () => {
               New Transfer
             </MainButton>
             {shouldDisable && (
-              <Tooltip placement="bottom" title="Not on proposal creation period">
+              <Tooltip
+                placement="bottom"
+                title="Not on proposal creation period"
+              >
                 <InfoIcon color="secondary" />
               </Tooltip>
             )}
           </Grid>
         </Hero>
         <Grid item>
-          <Grid container justifyContent={isMobileSmall ? "center" : "flex-start"} style={{ gap: 12 }}>
+          <Grid
+            container
+            justifyContent={isMobileSmall ? "center" : "flex-start"}
+            style={{ gap: 12 }}
+          >
             {nftHoldings.map((nft, i) => (
               <Card
                 key={`nft-${i}`}
@@ -136,10 +156,19 @@ export const NFTs: React.FC = () => {
                 onClick={() => onClickNFT(nft)}
               >
                 <Grid item>
-                  <Grid container direction="column" style={{ gap: 18 }} alignItems="center">
+                  <Grid
+                    container
+                    direction="column"
+                    style={{ gap: 18 }}
+                    alignItems="center"
+                  >
                     <FullWidthContainer item>
                       {nft.token.firstCreator ? (
-                        <UserBadge size={35} address={nft.token.firstCreator} short={true} />
+                        <UserBadge
+                          size={35}
+                          address={nft.token.firstCreator}
+                          short={true}
+                        />
                       ) : (
                         <Typography color={"textPrimary"} variant={"body1"}>
                           Unknown
@@ -148,7 +177,11 @@ export const NFTs: React.FC = () => {
                     </FullWidthContainer>
                     <Grid item>
                       <ImgContainer>
-                        <NFT qmHash={nft.token.artifact_hash} mediaType={nft.token.mediaType} name={nft.token.name} />
+                        <NFT
+                          qmHash={nft.token.artifact_hash}
+                          mediaType={nft.token.mediaType}
+                          name={nft.token.name}
+                        />
                       </ImgContainer>
                     </Grid>
                     <FullWidthContainer item>
@@ -170,7 +203,7 @@ export const NFTs: React.FC = () => {
                         variant="contained"
                         color="secondary"
                         size="small"
-                        onClick={e => onClick(e, nft.token)}
+                        onClick={(e) => onClick(e, nft.token)}
                         disabled={shouldDisable}
                       >
                         Propose Transfer
@@ -183,7 +216,11 @@ export const NFTs: React.FC = () => {
           </Grid>
         </Grid>
       </Grid>
-      <NFTDialog open={!!selectedNFT} onClose={onCloseDialog} nft={(selectedNFT as NFTDAOHolding)?.token} />
+      <NFTDialog
+        open={!!selectedNFT}
+        onClose={onCloseDialog}
+        nft={(selectedNFT as NFTDAOHolding)?.token}
+      />
       <ProposalFormContainer
         open={openTransfer}
         handleClose={onCloseTransfer}
@@ -191,5 +228,5 @@ export const NFTs: React.FC = () => {
         defaultTab={1}
       />
     </>
-  )
-}
+  );
+};

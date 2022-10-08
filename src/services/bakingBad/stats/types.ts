@@ -1,7 +1,7 @@
-export interface BlockchainStats {
-  constants: BlockchainStatsConstants
-}
+import { Network } from "services/beacon";
 
-export interface BlockchainStatsConstants {
-  timeBetweenBlocks: number
+export interface BlockchainStats {
+  id: string;
+  network: Network;
+  minimal_block_delay: number;
 }

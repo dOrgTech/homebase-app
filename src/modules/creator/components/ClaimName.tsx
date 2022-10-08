@@ -1,5 +1,5 @@
-import { Grid, Paper, styled, Typography } from "@material-ui/core"
-import React from "react"
+import { Grid, Paper, styled, Typography } from "@material-ui/core";
+import React from "react";
 
 const CustomUrlButton = styled(Paper)({
   border: "1px solid #3866F9",
@@ -15,8 +15,8 @@ const CustomUrlButton = styled(Paper)({
   padding: 5,
   color: "#3866F9",
   marginTop: 12,
-  fontFamily: "system-ui"
-})
+  fontFamily: "system-ui",
+});
 
 const CustomContainer = styled(Grid)({
   height: 62,
@@ -24,8 +24,8 @@ const CustomContainer = styled(Grid)({
   background: "#FFFFFF",
   border: "1px solid #E4E4E4",
   boxSizing: "border-box",
-  marginTop: 14
-})
+  marginTop: 14,
+});
 
 export const ClaimName: React.FC = () => {
   return (
@@ -45,5 +45,5 @@ export const ClaimName: React.FC = () => {
       </Grid>
       <CustomContainer container direction="row"></CustomContainer>
     </>
-  )
-}
+  );
+};

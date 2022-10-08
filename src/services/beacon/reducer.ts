@@ -1,12 +1,12 @@
-import { TezosToolkit } from "@taquito/taquito"
-import { BeaconWallet } from "@taquito/beacon-wallet"
-import { createTezos, getTezosNetwork, Network } from "./utils"
-import { TezosAction, TezosActionType } from "services/beacon/actions"
+import {TezosToolkit} from '@taquito/taquito';
+import {BeaconWallet} from '@taquito/beacon-wallet';
+import {createTezos, getTezosNetwork, Network} from './utils';
+import {TezosAction, TezosActionType} from 'services/beacon/actions';
 
 export interface TezosState {
-  network: Network
-  tezos: TezosToolkit
-  account: string
+  network: Network;
+  tezos: TezosToolkit;
+  account: string;
   wallet: BeaconWallet | undefined
 }
 
@@ -18,8 +18,8 @@ export const INITIAL_STATE: TezosState = {
   network,
   wallet: undefined,
   // @TODO: refactor interface this is actually an address
-  account: ""
-}
+  account: "",
+};
 
 export const reducer = (state: TezosState, action: TezosAction): TezosState => {
   switch (action.type) {
@@ -30,7 +30,7 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
         network: action.payload.network,
         account: action.payload.account,
         wallet: action.payload.wallet
-      }
+      };
     case TezosActionType.RESET_TEZOS:
       return {
         ...state,
@@ -39,4 +39,4 @@ export const reducer = (state: TezosState, action: TezosAction): TezosState => {
         wallet: undefined
       }
   }
-}
+};

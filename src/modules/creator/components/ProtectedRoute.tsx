@@ -1,6 +1,6 @@
-import React, { FC, useContext, useEffect } from "react"
-import { useHistory } from "react-router-dom"
-import { CreatorContext } from "modules/creator/state"
+import React, { FC, useContext, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+import { CreatorContext } from "modules/creator/state";
 // import { useStepNumber } from "modules/creator/steps";
 // import { handleGovernanceFormErrors } from "modules/creator/utils";
 
@@ -39,16 +39,16 @@ export const useCreatorRouteValidation = (): string => {
   // if (needsToFillMembers && !isPreviousStep(["dao", "voting"]))
   //   return match.url + "/token";
 
-  return ""
-}
+  return "";
+};
 
 export const ProtectedRoute: FC = ({ children }) => {
-  const { successful } = useContext(CreatorContext).state.deploymentStatus
-  const history = useHistory()
-  const redirectUrl = useCreatorRouteValidation()
+  const { successful } = useContext(CreatorContext).state.deploymentStatus;
+  const history = useHistory();
+  const redirectUrl = useCreatorRouteValidation();
   useEffect(() => {
-    if (redirectUrl && !successful) history.replace(redirectUrl)
-  }, [history, redirectUrl, successful])
+    if (redirectUrl && !successful) history.replace(redirectUrl);
+  }, [history, redirectUrl, successful]);
 
-  return <React.Fragment>{children}</React.Fragment>
-}
+  return <React.Fragment>{children}</React.Fragment>;
+};

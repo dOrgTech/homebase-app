@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useMemo, useState } from "react";
 import {
   Button,
   Grid,
@@ -10,61 +10,61 @@ import {
   TableRow,
   Typography,
   useMediaQuery,
-  useTheme
-} from "@material-ui/core"
-import dayjs from "dayjs"
-import { RegistryItemDialog } from "modules/explorer/components/ItemDialog"
-import { OverflowCell } from "./OverflowCell"
-import { ContentContainer } from "modules/explorer/components/ContentContainer"
+  useTheme,
+} from "@material-ui/core";
+import dayjs from "dayjs";
+import { RegistryItemDialog } from "modules/explorer/components/ItemDialog";
+import { OverflowCell } from "./OverflowCell";
+import { ContentContainer } from "modules/explorer/components/ContentContainer";
 
-const localizedFormat = require("dayjs/plugin/localizedFormat")
-dayjs.extend(localizedFormat)
+const localizedFormat = require("dayjs/plugin/localizedFormat");
+dayjs.extend(localizedFormat);
 
-const titles = ["Registry Items", "Value", "Last Updated"]
+const titles = ["Registry Items", "Value", "Last Updated"];
 
 interface RowData {
-  key: string
-  value: string
-  lastUpdated?: string
-  onClick: () => void
+  key: string;
+  value: string;
+  lastUpdated?: string;
+  onClick: () => void;
 }
 
 interface Props {
-  data: { row: RowData; onClickItem: (row: RowData) => void }[]
+  data: { row: RowData; onClickItem: (row: RowData) => void }[];
 }
 
 const MobileTableHeader = styled(Grid)({
   width: "100%",
   padding: 20,
-  borderBottom: "0.3px solid #3D3D3D"
-})
+  borderBottom: "0.3px solid #3D3D3D",
+});
 
 const MobileTableRow = styled(Grid)({
   padding: "30px",
-  borderBottom: "0.3px solid #3D3D3D"
-})
+  borderBottom: "0.3px solid #3D3D3D",
+});
 
 const OverflowItem = styled(Grid)({
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-  maxWidth: 300
-})
+  maxWidth: 300,
+});
 
 const TableContainer = styled(ContentContainer)({
-  width: "100%"
-})
+  width: "100%",
+});
 
 const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
   switch (title) {
     case "Registry Items":
-      return rowData.key
+      return rowData.key;
     case "Value":
-      return rowData.value
+      return rowData.value;
     case "Last Updated":
-      return rowData.lastUpdated || "-"
+      return rowData.lastUpdated || "-";
   }
-}
+};
 
 const MobileRegistryTable: React.FC<Props> = ({ data }) => {
   return (
@@ -98,9 +98,9 @@ const MobileRegistryTable: React.FC<Props> = ({ data }) => {
             <Button
               variant="contained"
               color="secondary"
-              onClick={e => {
-                e.stopPropagation()
-                rowData.row.onClick()
+              onClick={(e) => {
+                e.stopPropagation();
+                rowData.row.onClick();
               }}
             >
               Edit
@@ -109,8 +109,8 @@ const MobileRegistryTable: React.FC<Props> = ({ data }) => {
         </MobileTableRow>
       ))}
     </Grid>
-  )
-}
+  );
+};
 
 const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
   return (
@@ -124,17 +124,24 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
       </TableHead>
       <TableBody>
         {data.map((rowData, i) => (
-          <TableRow key={`registryrow-${i}`} onClick={() => rowData.onClickItem(rowData.row)}>
+          <TableRow
+            key={`registryrow-${i}`}
+            onClick={() => rowData.onClickItem(rowData.row)}
+          >
             <TableCell>{rowData.row.key.toUpperCase()}</TableCell>
             <OverflowCell>{rowData.row.value}</OverflowCell>
-            <TableCell>{rowData.row.lastUpdated ? dayjs(rowData.row.lastUpdated).format("L") : "-"}</TableCell>
+            <TableCell>
+              {rowData.row.lastUpdated
+                ? dayjs(rowData.row.lastUpdated).format("L")
+                : "-"}
+            </TableCell>
             <TableCell align="right">
               <Button
                 variant="contained"
                 color="secondary"
-                onClick={e => {
-                  e.stopPropagation()
-                  rowData.row.onClick()
+                onClick={(e) => {
+                  e.stopPropagation();
+                  rowData.row.onClick();
                 }}
               >
                 Edit
@@ -144,31 +151,37 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
         ))}
       </TableBody>
     </Table>
-  )
-}
+  );
+};
 
-export const RegistryTable: React.FC<{ data: RowData[] }> = ({ data: propsData }) => {
-  const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const [selectedItem, setSelectedItem] = useState<RowData>()
-  const [open, setOpen] = useState(false)
+export const RegistryTable: React.FC<{ data: RowData[] }> = ({
+  data: propsData,
+}) => {
+  const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const [selectedItem, setSelectedItem] = useState<RowData>();
+  const [open, setOpen] = useState(false);
 
   const onClickItem = (row: RowData) => {
-    setSelectedItem(row)
-    setOpen(true)
-  }
+    setSelectedItem(row);
+    setOpen(true);
+  };
 
   const data = useMemo(() => {
-    return propsData.map(rowData => ({
+    return propsData.map((rowData) => ({
       row: rowData,
-      onClickItem: onClickItem
-    }))
-  }, [propsData])
+      onClickItem: onClickItem,
+    }));
+  }, [propsData]);
 
   return (
     <>
       <TableContainer item>
-        {isSmall ? <MobileRegistryTable data={data} /> : <DesktopRegistryTable data={data} />}
+        {isSmall ? (
+          <MobileRegistryTable data={data} />
+        ) : (
+          <DesktopRegistryTable data={data} />
+        )}
       </TableContainer>
 
       <RegistryItemDialog
@@ -177,5 +190,5 @@ export const RegistryTable: React.FC<{ data: RowData[] }> = ({ data: propsData }
         handleClose={() => setOpen(false)}
       />
     </>
-  )
-}
+  );
+};

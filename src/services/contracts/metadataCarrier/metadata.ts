@@ -1,12 +1,12 @@
-import { stringToHex } from "services/contracts/utils"
-import { MetadataParams } from "services/contracts/metadataCarrier/types"
+import { stringToHex } from "services/contracts/utils";
+import { MetadataParams } from "services/contracts/metadataCarrier/types";
 
 export const setMetadataJSON = ({
   description,
   authors,
   template,
   frozenToken: { name: fName, symbol: fSymbol, decimals: fDecimals },
-  unfrozenToken: { name: uName, symbol: uSymbol, decimals: uDecimals }
+  unfrozenToken: { name: uName, symbol: uSymbol, decimals: uDecimals },
 }: MetadataParams): Record<string, any> => ({
   homepage: "https://github.com/tqtezos/baseDAO",
   name: uName,
@@ -20,36 +20,36 @@ export const setMetadataJSON = ({
         {
           michelsonStorageView: {
             returnType: {
-              prim: "nat"
+              prim: "nat",
             },
             code: [
               {
-                prim: "DUP"
+                prim: "DUP",
               },
               {
-                prim: "CAR"
+                prim: "CAR",
               },
               {
                 args: [
                   [
                     {
-                      prim: "CDR"
+                      prim: "CDR",
                     },
                     {
-                      prim: "CAR"
+                      prim: "CAR",
                     },
                     {
-                      prim: "CAR"
+                      prim: "CAR",
                     },
                     {
-                      prim: "CAR"
-                    }
-                  ]
+                      prim: "CAR",
+                    },
+                  ],
                 ],
-                prim: "DIP"
+                prim: "DIP",
               },
               {
-                prim: "GET"
+                prim: "GET",
               },
               {
                 args: [
@@ -57,39 +57,39 @@ export const setMetadataJSON = ({
                     {
                       args: [
                         {
-                          prim: "nat"
+                          prim: "nat",
                         },
                         {
-                          int: "0"
-                        }
+                          int: "0",
+                        },
                       ],
-                      prim: "PUSH"
-                    }
+                      prim: "PUSH",
+                    },
                   ],
-                  []
+                  [],
                 ],
-                prim: "IF_NONE"
-              }
+                prim: "IF_NONE",
+              },
             ],
             parameter: {
               args: [
                 {
                   prim: "address",
-                  annots: ["%owner"]
+                  annots: ["%owner"],
                 },
                 {
                   prim: "nat",
-                  annots: ["%token_id"]
-                }
+                  annots: ["%token_id"],
+                },
               ],
-              prim: "pair"
-            }
-          }
-        }
+              prim: "pair",
+            },
+          },
+        },
       ],
       name: "get_balance",
       pure: true,
-      description: "Get balance of an address according to TZIP-12."
+      description: "Get balance of an address according to TZIP-12.",
     },
     {
       implementations: [
@@ -98,139 +98,139 @@ export const setMetadataJSON = ({
             returnType: {
               args: [
                 {
-                  prim: "nat"
-                }
+                  prim: "nat",
+                },
               ],
-              prim: "list"
+              prim: "list",
             },
             code: [
               {
-                prim: "DROP"
+                prim: "DROP",
               },
               {
                 args: [
                   {
                     args: [
                       {
-                        prim: "nat"
-                      }
+                        prim: "nat",
+                      },
                     ],
-                    prim: "list"
+                    prim: "list",
                   },
                   [
                     {
-                      int: "0"
+                      int: "0",
                     },
                     {
-                      int: "1"
-                    }
-                  ]
+                      int: "1",
+                    },
+                  ],
                 ],
-                prim: "PUSH"
-              }
-            ]
-          }
-        }
+                prim: "PUSH",
+              },
+            ],
+          },
+        },
       ],
       name: "all_tokens",
       pure: true,
-      description: "Get all supported tokens according to TZIP-12."
+      description: "Get all supported tokens according to TZIP-12.",
     },
     {
       implementations: [
         {
           michelsonStorageView: {
             returnType: {
-              prim: "bool"
+              prim: "bool",
             },
             code: [
               {
-                prim: "DUP"
+                prim: "DUP",
               },
               {
-                prim: "CAR"
+                prim: "CAR",
               },
               {
                 args: [
                   [
                     {
-                      prim: "CDR"
-                    }
-                  ]
+                      prim: "CDR",
+                    },
+                  ],
                 ],
-                prim: "DIP"
+                prim: "DIP",
               },
               {
-                prim: "DUP"
+                prim: "DUP",
               },
               {
-                prim: "CDR"
+                prim: "CDR",
               },
               {
-                prim: "CDR"
+                prim: "CDR",
               },
               {
                 args: [
                   [
                     {
-                      prim: "DUP"
+                      prim: "DUP",
                     },
                     {
-                      prim: "CDR"
+                      prim: "CDR",
                     },
                     {
-                      prim: "CAR"
+                      prim: "CAR",
                     },
                     {
                       args: [
                         [
                           {
-                            prim: "CAR"
-                          }
-                        ]
+                            prim: "CAR",
+                          },
+                        ],
                       ],
-                      prim: "DIP"
-                    }
-                  ]
+                      prim: "DIP",
+                    },
+                  ],
                 ],
-                prim: "DIP"
+                prim: "DIP",
               },
               {
-                prim: "DUP"
+                prim: "DUP",
               },
               {
-                prim: "INT"
+                prim: "INT",
               },
               {
-                prim: "EQ"
+                prim: "EQ",
               },
               {
                 args: [
                   [
                     {
-                      prim: "DROP"
-                    }
+                      prim: "DROP",
+                    },
                   ],
                   [
                     {
-                      prim: "DUP"
+                      prim: "DUP",
                     },
                     {
                       args: [
                         {
-                          prim: "nat"
+                          prim: "nat",
                         },
                         {
-                          int: "1"
-                        }
+                          int: "1",
+                        },
                       ],
-                      prim: "PUSH"
+                      prim: "PUSH",
                     },
                     {
-                      prim: "COMPARE"
+                      prim: "COMPARE",
                     },
                     {
-                      prim: "EQ"
+                      prim: "EQ",
                     },
                     {
                       args: [
@@ -238,105 +238,105 @@ export const setMetadataJSON = ({
                           {
                             args: [
                               {
-                                prim: "string"
+                                prim: "string",
                               },
                               {
-                                string: "OPERATION_PROHIBITED"
-                              }
+                                string: "OPERATION_PROHIBITED",
+                              },
                             ],
-                            prim: "PUSH"
+                            prim: "PUSH",
                           },
                           {
-                            prim: "FAILWITH"
-                          }
+                            prim: "FAILWITH",
+                          },
                         ],
                         [
                           {
-                            prim: "UNIT"
+                            prim: "UNIT",
                           },
                           {
                             args: [
                               {
-                                prim: "string"
+                                prim: "string",
                               },
                               {
-                                string: "FA2_TOKEN_UNDEFINED"
-                              }
+                                string: "FA2_TOKEN_UNDEFINED",
+                              },
                             ],
-                            prim: "PUSH"
+                            prim: "PUSH",
                           },
                           {
-                            prim: "PAIR"
+                            prim: "PAIR",
                           },
                           {
-                            prim: "FAILWITH"
-                          }
-                        ]
+                            prim: "FAILWITH",
+                          },
+                        ],
                       ],
-                      prim: "IF"
-                    }
-                  ]
+                      prim: "IF",
+                    },
+                  ],
                 ],
-                prim: "IF"
+                prim: "IF",
               },
               {
-                prim: "SWAP"
+                prim: "SWAP",
               },
               {
-                prim: "PAIR"
+                prim: "PAIR",
               },
               {
                 args: [
                   [
                     {
-                      prim: "CAR"
+                      prim: "CAR",
                     },
                     {
-                      prim: "CAR"
+                      prim: "CAR",
                     },
                     {
-                      prim: "CDR"
+                      prim: "CDR",
                     },
                     {
-                      prim: "CAR"
-                    }
-                  ]
+                      prim: "CAR",
+                    },
+                  ],
                 ],
-                prim: "DIP"
+                prim: "DIP",
               },
               {
-                prim: "MEM"
-              }
+                prim: "MEM",
+              },
             ],
             parameter: {
               args: [
                 {
                   prim: "address",
-                  annots: ["%owner"]
+                  annots: ["%owner"],
                 },
                 {
                   args: [
                     {
                       prim: "address",
-                      annots: ["%operator"]
+                      annots: ["%operator"],
                     },
                     {
                       prim: "nat",
-                      annots: ["%token_id"]
-                    }
+                      annots: ["%token_id"],
+                    },
                   ],
-                  prim: "pair"
-                }
+                  prim: "pair",
+                },
               ],
-              prim: "pair"
-            }
-          }
-        }
+              prim: "pair",
+            },
+          },
+        },
       ],
       name: "is_operator",
       pure: true,
       description:
-        "Checks whether given address is allowed to transfer given tokens that belong to given owner - according to TZIP-12."
+        "Checks whether given address is allowed to transfer given tokens that belong to given owner - according to TZIP-12.",
     },
     {
       implementations: [
@@ -345,240 +345,241 @@ export const setMetadataJSON = ({
             returnType: {
               args: [
                 {
-                  prim: "nat"
+                  prim: "nat",
                 },
                 {
                   args: [
                     {
-                      prim: "string"
+                      prim: "string",
                     },
                     {
-                      prim: "bytes"
-                    }
+                      prim: "bytes",
+                    },
                   ],
-                  prim: "map"
-                }
+                  prim: "map",
+                },
               ],
-              prim: "pair"
+              prim: "pair",
             },
             code: [
               {
-                prim: "DUP"
+                prim: "DUP",
               },
               {
-                prim: "CAR"
+                prim: "CAR",
               },
               {
                 args: [
                   [
                     {
-                      prim: "CDR"
+                      prim: "CDR",
                     },
                     {
-                      prim: "DROP"
+                      prim: "DROP",
                     },
                     {
                       args: [
                         {
                           args: [
                             {
-                              prim: "nat"
+                              prim: "nat",
                             },
                             {
                               args: [
                                 {
-                                  prim: "string"
+                                  prim: "string",
                                 },
                                 {
-                                  prim: "bytes"
-                                }
+                                  prim: "bytes",
+                                },
                               ],
-                              prim: "map"
-                            }
+                              prim: "map",
+                            },
                           ],
-                          prim: "map"
+                          prim: "map",
                         },
                         [
                           {
                             args: [
                               {
-                                int: "0"
+                                int: "0",
                               },
                               [
                                 {
                                   args: [
                                     {
-                                      string: "decimals"
+                                      string: "decimals",
                                     },
                                     {
-                                      bytes: stringToHex(uDecimals.toString())
-                                    }
+                                      bytes: stringToHex(uDecimals.toString()),
+                                    },
                                   ],
-                                  prim: "Elt"
+                                  prim: "Elt",
                                 },
                                 {
                                   args: [
                                     {
-                                      string: "name"
+                                      string: "name",
                                     },
                                     {
-                                      bytes: stringToHex(uName)
-                                    }
+                                      bytes: stringToHex(uName),
+                                    },
                                   ],
-                                  prim: "Elt"
+                                  prim: "Elt",
                                 },
                                 {
                                   args: [
                                     {
-                                      string: "symbol"
+                                      string: "symbol",
                                     },
                                     {
-                                      bytes: stringToHex(uSymbol)
-                                    }
+                                      bytes: stringToHex(uSymbol),
+                                    },
                                   ],
-                                  prim: "Elt"
-                                }
-                              ]
+                                  prim: "Elt",
+                                },
+                              ],
                             ],
-                            prim: "Elt"
+                            prim: "Elt",
                           },
                           {
                             args: [
                               {
-                                int: "1"
+                                int: "1",
                               },
                               [
                                 {
                                   args: [
                                     {
-                                      string: "decimals"
+                                      string: "decimals",
                                     },
                                     {
-                                      bytes: stringToHex(fDecimals.toString())
-                                    }
+                                      bytes: stringToHex(fDecimals.toString()),
+                                    },
                                   ],
-                                  prim: "Elt"
+                                  prim: "Elt",
                                 },
                                 {
                                   args: [
                                     {
-                                      string: "name"
+                                      string: "name",
                                     },
                                     {
-                                      bytes: stringToHex(fName)
-                                    }
+                                      bytes: stringToHex(fName),
+                                    },
                                   ],
-                                  prim: "Elt"
+                                  prim: "Elt",
                                 },
                                 {
                                   args: [
                                     {
-                                      string: "symbol"
+                                      string: "symbol",
                                     },
                                     {
-                                      bytes: stringToHex(fSymbol)
-                                    }
+                                      bytes: stringToHex(fSymbol),
+                                    },
                                   ],
-                                  prim: "Elt"
-                                }
-                              ]
+                                  prim: "Elt",
+                                },
+                              ],
                             ],
-                            prim: "Elt"
-                          }
-                        ]
+                            prim: "Elt",
+                          },
+                        ],
                       ],
-                      prim: "PUSH"
-                    }
-                  ]
+                      prim: "PUSH",
+                    },
+                  ],
                 ],
-                prim: "DIP"
+                prim: "DIP",
               },
               {
-                prim: "DUP"
+                prim: "DUP",
               },
               {
                 args: [
                   [
                     {
-                      prim: "GET"
+                      prim: "GET",
                     },
                     {
                       args: [
                         [
                           {
-                            prim: "UNIT"
+                            prim: "UNIT",
                           },
                           {
                             args: [
                               {
-                                prim: "string"
+                                prim: "string",
                               },
                               {
-                                string: "FA2_TOKEN_UNDEFINED"
-                              }
+                                string: "FA2_TOKEN_UNDEFINED",
+                              },
                             ],
-                            prim: "PUSH"
+                            prim: "PUSH",
                           },
                           {
-                            prim: "PAIR"
+                            prim: "PAIR",
                           },
                           {
-                            prim: "FAILWITH"
-                          }
+                            prim: "FAILWITH",
+                          },
                         ],
-                        []
+                        [],
                       ],
-                      prim: "IF_NONE"
-                    }
-                  ]
+                      prim: "IF_NONE",
+                    },
+                  ],
                 ],
-                prim: "DIP"
+                prim: "DIP",
               },
               {
-                prim: "PAIR"
-              }
+                prim: "PAIR",
+              },
             ],
             parameter: {
-              prim: "nat"
-            }
-          }
-        }
+              prim: "nat",
+            },
+          },
+        },
       ],
       name: "token_metadata",
       pure: true,
-      description: "Returns metadata for given token according to TZIP-12."
+      description: "Returns metadata for given token according to TZIP-12.",
     },
     {
       implementations: [
         {
           michelsonStorageView: {
             returnType: {
-              prim: "nat"
+              prim: "nat",
             },
             code: [
               {
-                prim: "CDR"
+                prim: "CDR",
               },
               {
-                prim: "CDR"
+                prim: "CDR",
               },
               {
-                prim: "CDR"
+                prim: "CDR",
               },
               {
-                prim: "CAR"
-              }
-            ]
-          }
-        }
+                prim: "CAR",
+              },
+            ],
+          },
+        },
       ],
       name: "GetCounter",
       pure: true,
-      description: "Returns the next counter value with which a permit should be created."
-    }
+      description:
+        "Returns the next counter value with which a permit should be created.",
+    },
   ],
   version: "1.0.0",
   license: {
-    name: "MIT"
-  }
-})
+    name: "MIT",
+  },
+});

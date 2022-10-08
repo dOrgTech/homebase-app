@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   AppBar,
   Toolbar,
@@ -9,18 +9,19 @@ import {
   Grid,
   useTheme,
   useMediaQuery,
-  Theme
-} from "@material-ui/core"
-import { useHistory } from "react-router-dom"
+  Theme,
+} from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
-import HomeButton from "assets/logos/homebase_logo.svg"
-import { useTezos } from "services/beacon/hooks/useTezos"
-import { ChangeNetworkButton } from "./ChangeNetworkButton"
-import { UserProfileName } from "modules/explorer/components/UserProfileName"
-import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
-import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
-import { ActionSheet, useActionSheet } from "../context/ActionSheets"
-import { SmallButton } from "../../common/SmallButton"
+import HomeButton from "assets/logos/homebase_logo.svg";
+import { useTezos } from "services/beacon/hooks/useTezos";
+import { ChangeNetworkButton } from "./ChangeNetworkButton";
+import { UserProfileName } from "modules/explorer/components/UserProfileName";
+import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar";
+import { NavigationMenu } from "modules/explorer/components/NavigationMenu";
+import { ActionSheet, useActionSheet } from "../context/ActionSheets";
+import { SmallButton } from '../../common/SmallButton';
+
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -29,22 +30,31 @@ const Header = styled(Grid)(({ theme }) => ({
   padding: "28px 0",
   flexDirection: "row",
 
-  ["@media (max-width: 1425px)"]: {},
-
-  ["@media (max-width:1335px)"]: {},
-
-  ["@media (max-width:1167px)"]: {
-    width: "86vw"
+  ["@media (max-width: 1425px)"]: {
+    
   },
 
-  ["@media (max-width:1030px)"]: {},
+  ["@media (max-width:1335px)"]: {
+    
+  },
 
-  ["@media (max-width:960px)"]: {},
+  ["@media (max-width:1167px)"]: { 
+    width: "86vw",
+  },
+
+  ["@media (max-width:1030px)"]: { 
+    
+  },
+
+  ["@media (max-width:960px)"]: { 
+    
+  },
 
   ["@media (max-width:645px)"]: {
-    flexDirection: "column"
+    flexDirection: "column",
+
   }
-}))
+}));
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   boxShadow: "none",
@@ -52,67 +62,77 @@ const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
   position: "sticky",
 
   ["@media (max-height:750px)"]: {
-    position: "static"
+    position: "static",
   }
-}))
+}));
 
 const StyledToolbar = styled(Toolbar)({
-  width: "100%",
+  width: "100%", 
   padding: 0,
   boxSizing: "border-box",
   justifyContent: "space-between",
-  flexWrap: "wrap"
-})
+  flexWrap: "wrap",
+});
 
 const AddressContainer = styled(Grid)({
-  cursor: "pointer"
-})
+  cursor: "pointer",
+});
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
   cursor: "pointer",
   fontFamily: "Roboto",
-  letterSpacing: "initial"
-})
+  letterSpacing: "initial",
+});
 
 const AddressBarWrapper = styled(Grid)({
-  "boxSizing": "border-box",
-  "padding": "8px 16px",
-  "borderRadius": 4,
+  boxSizing: "border-box",
+  padding: "8px 16px",
+  borderRadius: 4,
   "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)"
-  }
-})
+    background: "rgba(129, 254, 183, 0.03)",
+  },
+});
 
 const LogoItem = styled("img")({
   height: "30px",
   cursor: "pointer",
-  paddingTop: 8
-})
+  paddingTop: 8,
+});
 
 const ToolbarContainer = styled(Grid)(({ theme }) => ({
   ["@media (max-width: 645px)"]: {
-    marginBottom: "20px"
-  }
-}))
+    marginBottom: "20px",
+  },
 
-export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu, children }) => {
-  const { connect, account } = useTezos()
-  const theme = useTheme()
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"))
+  
+}));
 
-  const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
+export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({
+  disableMobileMenu,
+  children,
+}) => {
+  const { connect, account } = useTezos();
+  const theme = useTheme();
+  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"));
 
-  const history = useHistory()
+  const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu);
+
+  const history = useHistory();
 
   return (
     <StyledAppBar>
       <StyledToolbar>
-        <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
+        <Header
+          container
+          alignItems="center"
+          wrap="wrap"
+          justifyContent={"space-between"}
+        >
           <Grid item>
             <Box onClick={() => history.push("/explorer")}>
-              <ToolbarContainer container alignItems="center" wrap="nowrap">
+              <ToolbarContainer container alignItems="center" wrap="nowrap" >
                 <Grid item>
                   <LogoItem src={HomeButton} />
                 </Grid>
@@ -126,7 +146,10 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
           </Grid>
 
           <Grid item>
-            <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
+            <Grid
+              container
+              justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
+            >
               {account ? (
                 <Grid
                   container
@@ -140,7 +163,10 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                       <Grid item>
                         <ChangeNetworkButton />
                       </Grid>
-                      <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
+                      <AddressBarWrapper
+                        item
+                        onClick={() => openUserMenuSheet()}
+                      >
                         <AddressContainer
                           container
                           alignItems="center"
@@ -162,7 +188,13 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                   </Grid>
                 </Grid>
               ) : (
-                <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
+                <Grid
+                  container
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  wrap="nowrap"
+                  style={{ gap: 8 }}
+                >
                   <Grid item>
                     <ChangeNetworkButton />
                   </Grid>
@@ -170,7 +202,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                     <SmallButton
                       color="secondary"
                       variant="contained"
-                      style={{ fontSize: "14px" }}
+                      style={{fontSize: "14px"}}
                       onClick={() => connect()}
                     >
                       Connect Wallet
@@ -184,5 +216,5 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
         <NavigationMenu disableMobileMenu={disableMobileMenu} />
       </StyledToolbar>
     </StyledAppBar>
-  )
-}
+  );
+};

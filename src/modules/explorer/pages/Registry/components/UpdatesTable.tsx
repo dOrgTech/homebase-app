@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Grid,
   styled,
@@ -9,46 +9,53 @@ import {
   TableRow,
   Typography,
   useMediaQuery,
-  useTheme
-} from "@material-ui/core"
-import dayjs from "dayjs"
-import { OverflowCell } from "./OverflowCell"
-import { useAgoraTopic } from "services/agora/hooks/useTopic"
-import { toShortAddress } from "services/contracts/utils"
-import { ContentContainer } from "modules/explorer/components/ContentContainer"
+  useTheme,
+} from "@material-ui/core";
+import dayjs from "dayjs";
+import { OverflowCell } from "./OverflowCell";
+import { useAgoraTopic } from "services/agora/hooks/useTopic";
+import { toShortAddress } from "services/contracts/utils";
+import { ContentContainer } from "modules/explorer/components/ContentContainer";
 
-const localizedFormat = require("dayjs/plugin/localizedFormat")
-dayjs.extend(localizedFormat)
+const localizedFormat = require("dayjs/plugin/localizedFormat");
+dayjs.extend(localizedFormat);
 
-const titles = ["Update History", "Proposal Title", "Last Updated", "Proposal"]
+const titles = ["Update History", "Proposal Title", "Last Updated", "Proposal"];
 
 interface RowData {
-  key: string
-  lastUpdated: string
-  proposalId: string
-  agoraPostId: number
+  key: string;
+  lastUpdated: string;
+  proposalId: string;
+  agoraPostId: number;
 }
 
 const MobileTableHeader = styled(Grid)({
   width: "100%",
   padding: 20,
-  borderBottom: "0.3px solid #3D3D3D"
-})
+  borderBottom: "0.3px solid #3D3D3D",
+});
 
 const MobileTableRow = styled(Grid)({
   padding: "30px",
-  borderBottom: "0.3px solid #3D3D3D"
-})
+  borderBottom: "0.3px solid #3D3D3D",
+});
 
-const ProposalTitle: React.FC<{ agoraPostId: number; proposalId: string }> = ({ agoraPostId, proposalId }) => {
-  const { data: agoraPost } = useAgoraTopic(agoraPostId)
+const ProposalTitle: React.FC<{ agoraPostId: number; proposalId: string }> = ({
+  agoraPostId,
+  proposalId,
+}) => {
+  const { data: agoraPost } = useAgoraTopic(agoraPostId);
 
-  return <>{agoraPost ? agoraPost.title : `Proposal ${toShortAddress(proposalId)}`}</>
-}
+  return (
+    <>
+      {agoraPost ? agoraPost.title : `Proposal ${toShortAddress(proposalId)}`}
+    </>
+  );
+};
 
 const TableContainer = styled(ContentContainer)({
-  width: "100%"
-})
+  width: "100%",
+});
 
 const MobileUpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   return (
@@ -80,7 +87,10 @@ const MobileUpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
               Proposal Title
             </Typography>
             <Typography variant="h6" color="textPrimary" align="center">
-              <ProposalTitle proposalId={row.proposalId} agoraPostId={row.agoraPostId} />
+              <ProposalTitle
+                proposalId={row.proposalId}
+                agoraPostId={row.agoraPostId}
+              />
             </Typography>
           </Grid>
           <Grid item>
@@ -102,8 +112,8 @@ const MobileUpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
         </MobileTableRow>
       ))}
     </Grid>
-  )
-}
+  );
+};
 
 const DesktopUpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   return (
@@ -121,7 +131,10 @@ const DesktopUpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
             <TableRow key={`updatesrow-${i}`}>
               <OverflowCell>{row.key.toUpperCase()}</OverflowCell>
               <OverflowCell>
-                <ProposalTitle proposalId={row.proposalId} agoraPostId={row.agoraPostId} />
+                <ProposalTitle
+                  proposalId={row.proposalId}
+                  agoraPostId={row.agoraPostId}
+                />
               </OverflowCell>
               <TableCell>{dayjs(row.lastUpdated).format("L")}</TableCell>
               <OverflowCell>{row.proposalId}</OverflowCell>
@@ -130,16 +143,20 @@ const DesktopUpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
         </TableBody>
       </Table>
     </>
-  )
-}
+  );
+};
 
 export const UpdatesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
-  const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <TableContainer item>
-      {isSmall ? <MobileUpdatesTable data={data} /> : <DesktopUpdatesTable data={data} />}
+      {isSmall ? (
+        <MobileUpdatesTable data={data} />
+      ) : (
+        <DesktopUpdatesTable data={data} />
+      )}
     </TableContainer>
-  )
-}
+  );
+};

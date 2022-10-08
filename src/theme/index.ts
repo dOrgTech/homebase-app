@@ -1,20 +1,20 @@
-import { alpha } from "@material-ui/core"
-import { createTheme } from "@material-ui/core/styles"
-import { ThemeOptions } from "@material-ui/core/styles/createTheme"
+import { alpha } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
+import { ThemeOptions } from "@material-ui/core/styles/createTheme";
 const defaultTheme = createTheme()
 const { breakpoints } = defaultTheme
 
 export const theme = createTheme({
   props: {
     MuiButtonBase: {
-      disableRipple: true
-    }
+      disableRipple: true,
+    },
   },
   palette: {
     primary: {
       main: "#2F3438",
       dark: "#1C1F23",
-      light: "#383e43"
+      light: "#383e43",
     },
     secondary: {
       main: "#81FEB7",
@@ -22,17 +22,17 @@ export const theme = createTheme({
       contrastText: "#1C1F23"
     },
     text: {
-      primary: "#FFFFFF"
+      primary: "#FFFFFF",
     },
     error: {
-      main: "#ED254E"
+      main: "#ED254E",
     },
     info: {
-      main: "#3866F9"
+      main: "#3866F9",
     },
     warning: {
-      main: "#FFC839"
-    }
+      main: "#FFC839",
+    },
   },
   typography: {
     fontFamily: "Roboto Mono",
@@ -43,18 +43,18 @@ export const theme = createTheme({
       }
     },
     subtitle1: {
-      fontSize: 32
+      fontSize: 32,
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 400
+      fontWeight: 400,
     },
     h3: {
       fontSize: 21,
-      fontWeight: 400
+      fontWeight: 400,
     },
     h2: {
-      fontSize: 24
+      fontSize: 24,
     },
     h4: {
       fontSize: 21,
@@ -87,20 +87,20 @@ export const theme = createTheme({
   overrides: {
     MuiTypography: {
       root: {
-        letterSpacing: "-0.03em !important"
+        letterSpacing: "-0.03em !important",
         // lineHeight: "1.5 !important",
         // wordSpacing: "40",
-      }
+      },
     },
     MuiSlider: {
       root: {
-        color: "#3D3D3D"
-      }
+        color: "#3D3D3D",
+      },
     },
     MuiTab: {
       root: {
-        maxWidth: "100%"
-      }
+        maxWidth: "100%",
+      },
     },
     MuiTooltip: {
       tooltip: {
@@ -108,225 +108,225 @@ export const theme = createTheme({
         fontSize: 14,
         padding: "10px 15px",
         color: "#1C1F23"
-      }
+      },
     },
     MuiStepLabel: {
       label: {
-        "color": "#fff",
-        "opacity": 0.5,
-        "marginLeft": 15,
-        "lineHeight": "40px",
+        color: "#fff",
+        opacity: 0.5,
+        marginLeft: 15,
+        lineHeight: "40px",
         "&$completed": {
-          fontWeight: 300
+          fontWeight: 300,
         },
         "&$active": {
-          fontWeight: 300
+          fontWeight: 300,
         },
         "& .MuiStepLabel-completed": {
-          fontWeight: 300
-        }
+          fontWeight: 300,
+        },
       },
       active: {
         color: "#fff !important",
-        opacity: 1
+        opacity: 1,
       },
       completed: {
         color: "#fff !important",
         opacity: 0.5,
-        fontWeight: 300
-      }
+        fontWeight: 300,
+      },
     },
     MuiStepConnector: {
       lineVertical: {
-        display: "none"
-      }
+        display: "none",
+      },
     },
     MuiStepContent: {
       root: {
-        borderLeft: "none"
-      }
+        borderLeft: "none",
+      },
     },
     MuiStep: {
       root: {
-        marginBottom: 15
-      }
+        marginBottom: 15,
+      },
     },
     MuiStepIcon: {
       active: {
-        color: "#1C1F23 !important"
+        color: "#1C1F23 !important",
       },
       completed: {
-        color: "#fff !important"
+        color: "#fff !important",
       },
       root: {
-        "height": 32,
-        "width": 32,
-        "color": "#1C1F23",
-        "border": "1px solid #3D3D3D",
-        "borderRadius": "50%",
+        height: 32,
+        width: 32,
+        color: "#1C1F23",
+        border: "1px solid #3D3D3D",
+        borderRadius: "50%",
         "&$active": {
-          "fill": "#fff",
-          "border": "1px solid #3D3D3D",
-          "borderRadius": "50%",
+          fill: "#fff",
+          border: "1px solid #3D3D3D",
+          borderRadius: "50%",
           "& $text": {
             fill: "#1C1F23",
-            border: "1px solid #3D3D3D"
-          }
-        }
+            border: "1px solid #3D3D3D",
+          },
+        },
       },
       text: {
-        fill: "#fff"
-      }
+        fill: "#fff",
+      },
     },
     MuiInput: {
       underline: {
         "&:after": {
-          borderBottom: "none"
+          borderBottom: "none",
         },
         "&$focused:after": {
-          borderBottom: "none"
+          borderBottom: "none",
         },
         "&$error:after": {
-          borderBottom: "none"
+          borderBottom: "none",
         },
         "&:before": {
-          borderBottom: "none"
+          borderBottom: "none",
         },
         "&:hover:not($disabled):not($focused):not($error):before": {
-          borderBottom: "none"
+          borderBottom: "none",
         },
         "&$disabled:before": {
-          borderBottom: "none"
+          borderBottom: "none",
         },
         "&:active:not($disabled):not($focused):not($error):before": {
-          borderBottom: "none"
-        }
-      }
+          borderBottom: "none",
+        },
+      },
     },
     MuiButton: {
       root: {
-        "textTransform": "capitalize",
-        "fontWeight": 500,
-        "fontSize": 18,
-        "padding": "3px 14px",
-        "letterSpacing": "-0.03em",
-        "boxShadow": "none",
+        textTransform: "capitalize",
+        fontWeight: 500,
+        fontSize: 18,
+        padding: "3px 14px",
+        letterSpacing: "-0.03em",
+        boxShadow: "none",
 
         "&:hover": {
-          boxShadow: "none"
+          boxShadow: "none",
         },
 
         "&$disabled": {
           color: "#2F3438 !important",
-          background: "#41484d !important"
-        }
+          background: "#41484d !important",
+        },
       },
       outlined: {
         "&$disabled": {
-          border: "2px solid #3d3d3d"
+          border: "2px solid #3d3d3d",
         },
-        "borderWidth": "2px !important",
-        "borderRadius": "4px",
-        "padding": "1px 8px",
-        "fontSize": "1rem"
-      }
+        borderWidth: "2px !important",
+        borderRadius: "4px",
+        padding: "1px 8px",
+        fontSize: "1rem",
+      },
     },
     MuiInputBase: {
       input: {
         textAlign: "center",
-        color: "#fff"
-      }
+        color: "#fff",
+      },
     },
     MuiDivider: {
       root: {
         marginTop: 16,
-        marginBottom: 16
-      }
+        marginBottom: 16,
+      },
     },
     MuiDialog: {
       paper: {
         background: "#1C1F23",
         width: 615,
-        maxWidth: "100%"
+        maxWidth: "100%",
       },
       root: {
-        height: "auto"
+        height: "auto",
       },
       paperWidthSm: {
         maxWidth: 615,
-        height: "auto"
-      }
+        height: "auto",
+      },
     },
     MuiFormControl: {
       root: {
-        width: "100%"
-      }
+        width: "100%",
+      },
     },
     MuiDialogContent: {
       root: {
-        "padding": "42px 54px",
+        padding: "42px 54px",
         "&:first-child": {
           paddingTop: "42px"
         }
-      }
+      },
     },
     MuiSelect: {
       selectMenu: {
-        textAlign: "right"
-      }
+        textAlign: "right",
+      },
     },
     MuiDialogContentText: {
       root: {
-        marginBottom: 0
-      }
+        marginBottom: 0,
+      },
     },
     MuiSwitch: {
       root: {
         width: 75,
-        height: 50
+        height: 50,
       },
       switchBase: {
-        "color": "red",
-        "top": 8,
-        "left": 8,
+        color: "red",
+        top: 8,
+        left: 8,
         "$checked$checked + &": {
           opacity: 1,
           backgroundColor: "#1C1F23",
-          color: "#81FEB7"
-        }
+          color: "#81FEB7",
+        },
       },
       track: {
-        "borderRadius": "40px",
-        "backgroundColor": "inherit",
-        "border": "1px solid #fff",
-        "opacity": 0.5,
+        borderRadius: "40px",
+        backgroundColor: "inherit",
+        border: "1px solid #fff",
+        opacity: 0.5,
         "$checked$checked + &": {
           opacity: 1,
           backgroundColor: "#1C1F23",
-          color: "#81FEB7"
-        }
+          color: "#81FEB7",
+        },
       },
       thumb: {
-        "width": 18,
-        "height": 18,
+        width: 18,
+        height: 18,
         "$checked$checked + &": {
-          color: "#81FEB7"
-        }
+          color: "#81FEB7",
+        },
       },
       colorSecondary: {
-        "color": "#fff",
+        color: "#fff",
         "$checked$checked + &": {
-          color: "#81FEB7"
+          color: "#81FEB7",
         },
         "& .Mui-checked": {
-          color: "#81FEB7"
-        }
-      }
+          color: "#81FEB7",
+        },
+      },
     },
     MuiFormHelperText: {
       root: {
-        display: "none"
-      }
+        display: "none",
+      },
     },
     MuiTable: {
       root: {
@@ -354,51 +354,51 @@ export const theme = createTheme({
       }
     },
     MuiTableBody: {
-      root: {
+      "root": {
         "& > *": {
           borderTop: "0.3px solid rgba(125,140,139, 0.2)",
-          minHeight: 90
+          minHeight: 90,
         }
       }
     },
     MuiTableCell: {
-      root: {
+      "root": {
         borderBottom: "unset"
       }
     },
     MuiTableRow: {
       root: {
-        "& th:first-child, & td:first-child": {
-          paddingLeft: 46
-        },
-        "& th:last-child, & td:last-child": {
-          paddingRight: 46
-        }
+          '& th:first-child, & td:first-child': {
+            paddingLeft: 46,
+          },
+          '& th:last-child, & td:last-child': {
+            paddingRight: 46,
+          },
       }
     },
     MuiGrid: {
-      "align-items-xs-center": {
-        alignItems: "center"
-      }
+      'align-items-xs-center': {
+        alignItems: 'center',
+      },
     },
     MuiLinearProgress: {
       root: {
         borderRadius: 50,
         background: "rgba(125,140,139, 0.2) !important"
-      }
+      },
     },
     MuiPaper: {
       rounded: {
-        borderRadius: "8px"
+        borderRadius: "8px",
       }
     }
-  }
-})
+  },
+});
 
-declare module "@material-ui/core/styles/createBreakpoints" {
+declare module '@material-ui/core/styles/createBreakpoints' {
   interface BreakpointOverrides {
-    mobile: true
-    toolbarswitch: true
+    mobile: true;
+    toolbarswitch: true;
   }
 }
 
@@ -413,5 +413,5 @@ export const themeOptions: ThemeOptions = {
       lg: 1200,
       xl: 1536
     }
-  }
+  },
 }

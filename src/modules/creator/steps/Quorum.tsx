@@ -1,24 +1,28 @@
-import { Grid, styled, Typography, Box, Tooltip } from "@material-ui/core"
-import { TextField } from "formik-material-ui"
-import React, { useContext, useEffect } from "react"
-import { Field, Form, Formik, FormikErrors } from "formik"
-import { useHistory } from "react-router"
-import { useRouteMatch } from "react-router-dom"
+import { Grid, styled, Typography, Box, Tooltip } from "@material-ui/core";
+import { TextField } from "formik-material-ui";
+import React, { useContext, useEffect } from "react";
+import { Field, Form, Formik, FormikErrors } from "formik";
+import { useHistory } from "react-router";
+import { useRouteMatch } from "react-router-dom";
 
-import { CreatorContext, ActionTypes, QuorumSettings } from "modules/creator/state"
-import { InfoRounded } from "@material-ui/icons"
-import { TitleBlock } from "modules/common/TitleBlock"
+import {
+  CreatorContext,
+  ActionTypes,
+  QuorumSettings,
+} from "modules/creator/state";
+import { InfoRounded } from "@material-ui/icons";
+import { TitleBlock } from "modules/common/TitleBlock";
 
 const ErrorText = styled(Typography)({
   display: "flex",
   minWidth: "100%",
   fontSize: 14,
-  color: "red"
-})
+  color: "red",
+});
 
 const SpacingContainer = styled(Grid)({
-  marginTop: 25
-})
+  marginTop: 25,
+});
 
 const AdditionContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
@@ -28,67 +32,67 @@ const AdditionContainer = styled(Grid)(({ theme }) => ({
   maxWidth: 150,
   ["@media (max-width:1167px)"]: {
     marginRight: 0,
-    maxWidth: "100%"
-  }
-}))
+    maxWidth: "100%",
+  },
+}));
 
 const GridItemCenter = styled(Grid)({
   textAlign: "center",
   justifyContent: "space-around",
   ["@media (max-width:1167px)"]: {
-    justifyContent: "flex-end"
-  }
-})
+    justifyContent: "flex-end",
+  },
+});
 
 const GridItemCenterBottom = styled(Grid)({
   textAlign: "center",
-  justifyContent: "flex-end"
-})
+  justifyContent: "flex-end",
+});
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
   padding: "12px 25px",
   ["@media (max-width:1167px)"]: {
     paddingLeft: 25,
-    paddingRight: 25
-  }
-}))
+    paddingRight: 25,
+  },
+}));
 
 const ValueText = styled(Typography)({
   fontSize: 14,
   opacity: 0.8,
   ["@media (max-width:1167px)"]: {
-    marginRight: 20
-  }
-})
+    marginRight: 20,
+  },
+});
 
 const GridItemContainer = styled(Grid)(() => ({
   display: "flex",
-  alignItems: "center"
-}))
+  alignItems: "center",
+}));
 
 const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.secondary.light,
   height: 16,
-  width: 16
-}))
+  width: 16,
+}));
 
 const InfoIconInputQuorum = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.secondary.light,
   height: 16,
   width: 16,
-  marginTop: 2
-}))
+  marginTop: 2,
+}));
 
 const ParentContainer = styled(Grid)({
   marginTop: 14,
   maxWidth: "70%",
   ["@media (max-width:1167px)"]: {
-    maxWidth: "100%"
-  }
-})
+    maxWidth: "100%",
+  },
+});
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
   border: "none",
@@ -105,77 +109,84 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
     maxWidth: "100%",
     minWidth: "100%",
     paddingLeft: 25,
-    paddingRight: 25
-  }
-}))
+    paddingRight: 25,
+  },
+}));
 
 const InputContainer = styled(Grid)({
   paddingRight: 15,
   ["@media (max-width:1167px)"]: {
-    paddingRight: 0
-  }
-})
+    paddingRight: 0,
+  },
+});
 
-type QuorumChange = { key: string; preventDefault: () => void }
+type QuorumChange = { key: string; preventDefault: () => void };
 
 const validateForm = (values: QuorumSettings) => {
-  const errors: FormikErrors<QuorumSettings> = {}
+  const errors: FormikErrors<QuorumSettings> = {};
 
-  Object.keys(values).forEach(key => {
+  Object.keys(values).forEach((key) => {
     if ((values[key as keyof QuorumSettings] as number | string) === "") {
-      errors[key as keyof QuorumSettings] = "Required"
+      errors[key as keyof QuorumSettings] = "Required";
     }
 
     if (Number(values[key as keyof QuorumSettings]) < 0) {
-      errors[key as keyof QuorumSettings] = "Cannot be negative"
+      errors[key as keyof QuorumSettings] = "Cannot be negative";
     }
-  })
+  });
 
   if (values.minQuorumAmount <= 0) {
-    errors.minQuorumAmount = "Min Quorum amount must be greater than 0"
+    errors.minQuorumAmount = "Min Quorum amount must be greater than 0";
   }
 
   if (values.maxQuorumAmount >= 100) {
-    errors.maxQuorumAmount = "Max Quorum amount must be lower than 100"
+    errors.maxQuorumAmount = "Max Quorum amount must be lower than 100";
   }
 
   if (values.minQuorumAmount > values.maxQuorumAmount) {
-    errors.maxQuorumAmount = "Max Quorum amount must be greater than Min. Quorum amount"
+    errors.maxQuorumAmount =
+      "Max Quorum amount must be greater than Min. Quorum amount";
   }
 
-  if (values.quorumThreshold >= values.maxQuorumAmount || values.quorumThreshold <= values.minQuorumAmount) {
-    errors.quorumThreshold = "Quorum Threshold must be between Min and Max Quorum amounts"
+  if (
+    values.quorumThreshold >= values.maxQuorumAmount ||
+    values.quorumThreshold <= values.minQuorumAmount
+  ) {
+    errors.quorumThreshold =
+      "Quorum Threshold must be between Min and Max Quorum amounts";
   }
 
   if (values.quorumChange > values.quorumMaxChange) {
-    errors.quorumChange = "Cannot be greater than Max Quorum Change"
+    errors.quorumChange = "Cannot be greater than Max Quorum Change";
   }
 
-  return errors
-}
+  return errors;
+};
 
 const handleChange = (event: QuorumChange) => {
-  return event.key === "." || event.key === "," ? event.preventDefault() : null
-}
+  return event.key === "." || event.key === "," ? event.preventDefault() : null;
+};
+
 
 //TODO: Remove any from this component
 const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
   const {
     dispatch,
     state: {
-      data: { orgSettings }
-    }
-  } = useContext(CreatorContext)
-  const match = useRouteMatch()
-  const history = useHistory()
+      data: { orgSettings },
+    },
+  } = useContext(CreatorContext);
+  const match = useRouteMatch();
+  const history = useHistory();
 
   const controlMaxFieldLimit = (field: string, value: any) => {
-    const itemValue = value.target.value.split(".")
-    if ((itemValue[0] && itemValue[0].length > 18) || (itemValue[1] && itemValue[1].length > 8)) {
-      return value.preventDefault()
-    }
-    setFieldValue(field, value.target.value)
-  }
+    const itemValue = value.target.value.split(".");
+    if (itemValue[0] && itemValue[0].length > 18 || itemValue[1] && itemValue[1].length > 8 ) { 
+     return value.preventDefault();
+    }    
+    setFieldValue(field, value.target.value);
+  };
+  
 
   useEffect(() => {
     if (values) {
@@ -184,16 +195,16 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
         next: {
           text: "Continue",
           handler: () => {
-            submitForm(values)
-          }
+            submitForm(values);
+          },
         },
         back: {
           text: "Back",
-          handler: () => history.push(`voting`)
-        }
-      })
+          handler: () => history.push(`voting`),
+        },
+      });
     }
-  }, [dispatch, errors, history, match.path, match.url, submitForm, values])
+  }, [dispatch, errors, history, match.path, match.url, submitForm, values]);
 
   return (
     <>
@@ -215,13 +226,23 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                   inputProps={{ min: 0, max: 100 }}
                   component={TextField}
                   InputProps={{
-                    endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    endAdornment: (
+                      <ValueText color="textSecondary">%</ValueText>
+                    ),
                   }}
                   onClick={() => setFieldTouched("quorumThreshold")}
-                  onChange={(e: any) => controlMaxFieldLimit("quorumThreshold", e)}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("quorumThreshold", e)
+                  }
                 />
               </GridItemCenter>
-              <GridItemCenterBottom item xs={7} container direction="row" justifyContent="flex-end">
+              <GridItemCenterBottom
+                item
+                xs={7}
+                container
+                direction="row"
+                justifyContent="flex-end"
+              >
                 <Tooltip
                   placement="bottom"
                   title={`Initial % of ${
@@ -247,13 +268,23 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                   placeholder="00"
                   component={TextField}
                   InputProps={{
-                    endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    endAdornment: (
+                      <ValueText color="textSecondary">%</ValueText>
+                    ),
                   }}
                   onClick={() => setFieldTouched("minQuorumAmount")}
-                  onChange={(e: any) => controlMaxFieldLimit("minQuorumAmount", e)}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("minQuorumAmount", e)
+                  }
                 ></Field>
               </GridItemCenter>
-              <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
+              <GridItemCenter
+                item
+                xs={7}
+                container
+                direction="row"
+                justifyContent="space-around"
+              >
                 <ValueText color="textSecondary"> Min</ValueText>
                 <Tooltip
                   placement="bottom"
@@ -275,10 +306,14 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                   placeholder="00"
                   component={TextField}
                   InputProps={{
-                    endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    endAdornment: (
+                      <ValueText color="textSecondary">%</ValueText>
+                    ),
                   }}
                   onClick={() => setFieldTouched("maxQuorumAmount")}
-                  onChange={(e: any) => controlMaxFieldLimit("maxQuorumAmount", e)}
+                  onChange={(e: any) =>
+                    controlMaxFieldLimit("maxQuorumAmount", e)
+                  }
                 ></Field>
               </GridItemCenter>
               <GridItemCenter item xs={7} container direction="row">
@@ -293,9 +328,15 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
             </CustomInputContainer>
           </GridItemContainer>
         </InputContainer>
-        {errors.quorumThreshold && touched.quorumThreshold ? <ErrorText>{errors.quorumThreshold}</ErrorText> : null}
-        {errors.minQuorumAmount && touched.minQuorumAmount ? <ErrorText>{errors.minQuorumAmount}</ErrorText> : null}
-        {errors.maxQuorumAmount && touched.maxQuorumAmount ? <ErrorText>{errors.maxQuorumAmount}</ErrorText> : null}
+        {errors.quorumThreshold && touched.quorumThreshold ? (
+          <ErrorText>{errors.quorumThreshold}</ErrorText>
+        ) : null}
+        {errors.minQuorumAmount && touched.minQuorumAmount ? (
+          <ErrorText>{errors.minQuorumAmount}</ErrorText>
+        ) : null}
+        {errors.maxQuorumAmount && touched.maxQuorumAmount ? (
+          <ErrorText>{errors.maxQuorumAmount}</ErrorText>
+        ) : null}
       </ParentContainer>
 
       <SpacingContainer direction="row" container alignItems="center">
@@ -304,9 +345,19 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
         </Typography>
       </SpacingContainer>
 
-      <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
         <AdditionContainer item xs={12} sm={3}>
-          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+          >
             <GridItemCenter item xs={5}>
               <Field
                 name="quorumChange"
@@ -316,21 +367,28 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
                 InputProps={{
-                  endAdornment: <ValueText color="textSecondary">%</ValueText>
+                  endAdornment: <ValueText color="textSecondary">%</ValueText>,
                 }}
                 onClick={() => setFieldTouched("quorumChange")}
-                onChange={(e: any) => controlMaxFieldLimit("quorumChange", e)}
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("quorumChange", e)
+                }
               />
             </GridItemCenter>
 
             <GridItemCenterBottom item xs={7} container direction="row">
-              <Tooltip placement="bottom" title="Participation adjustment value">
+              <Tooltip
+                placement="bottom"
+                title="Participation adjustment value"
+              >
                 <InfoIconInput />
               </Tooltip>
             </GridItemCenterBottom>
           </ItemContainer>
         </AdditionContainer>
-        {errors.quorumChange && touched.quorumChange ? <ErrorText>{errors.quorumChange}</ErrorText> : null}
+        {errors.quorumChange && touched.quorumChange ? (
+          <ErrorText>{errors.quorumChange}</ErrorText>
+        ) : null}
       </Grid>
 
       <SpacingContainer direction="row" container alignItems="center">
@@ -339,9 +397,19 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
         </Typography>
       </SpacingContainer>
 
-      <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+      <Grid
+        container
+        direction="row"
+        alignItems="center"
+        style={{ marginTop: 14 }}
+      >
         <AdditionContainer item xs={12} sm={3}>
-          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+          <ItemContainer
+            container
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+          >
             <GridItemCenter item xs={5}>
               <Field
                 name="quorumMaxChange"
@@ -350,42 +418,58 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
                 InputProps={{
-                  endAdornment: <ValueText color="textSecondary">%</ValueText>
+                  endAdornment: <ValueText color="textSecondary">%</ValueText>,
                 }}
                 onClick={() => setFieldTouched("quorumMaxChange")}
-                onChange={(e: any) => controlMaxFieldLimit("quorumMaxChange", e)}
+                onChange={(e: any) =>
+                  controlMaxFieldLimit("quorumMaxChange", e)
+                }
               />
             </GridItemCenter>
 
-            <GridItemCenterBottom item xs={7} container direction="row" justifyContent="space-around">
-              <Tooltip placement="bottom" title="Maximum participation adjustment value">
+            <GridItemCenterBottom
+              item
+              xs={7}
+              container
+              direction="row"
+              justifyContent="space-around"
+            >
+              <Tooltip
+                placement="bottom"
+                title="Maximum participation adjustment value"
+              >
                 <InfoIconInput />
               </Tooltip>
             </GridItemCenterBottom>
           </ItemContainer>
         </AdditionContainer>
-        {errors.quorumMaxChange && touched.quorumMaxChange ? <ErrorText>{errors.quorumMaxChange}</ErrorText> : null}
+        {errors.quorumMaxChange && touched.quorumMaxChange ? (
+          <ErrorText>{errors.quorumMaxChange}</ErrorText>
+        ) : null}
       </Grid>
     </>
-  )
-}
+  );
+};
 
 //TODO: Remove any from this component
 export const Quorum: React.FC = () => {
-  const { dispatch, state, updateCache } = useContext(CreatorContext)
-  const { quorumSettings } = state.data
-  const history = useHistory()
+  const { dispatch, state, updateCache } = useContext(CreatorContext);
+  const { quorumSettings } = state.data;
+  const history = useHistory();
 
-  const saveStepInfo = (values: QuorumSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
+  const saveStepInfo = (
+    values: QuorumSettings,
+    { setSubmitting }: { setSubmitting: (b: boolean) => void }
+  ) => {
     const newState = {
       ...state.data,
-      quorumSettings: values
-    }
-    updateCache(newState)
-    setSubmitting(true)
-    dispatch({ type: ActionTypes.UPDATE_QUORUM_SETTINGS, quorum: values })
-    history.push(`summary`)
-  }
+      quorumSettings: values,
+    };
+    updateCache(newState);
+    setSubmitting(true);
+    dispatch({ type: ActionTypes.UPDATE_QUORUM_SETTINGS, quorum: values });
+    history.push(`summary`);
+  };
 
   return (
     <Box>
@@ -405,11 +489,19 @@ export const Quorum: React.FC = () => {
         enableReinitialize={true}
         validateOnChange={true}
         validateOnBlur={false}
-        validate={values => validateForm(values)}
+        validate={(values) => validateForm(values)}
         onSubmit={saveStepInfo}
         initialValues={quorumSettings}
       >
-        {({ submitForm, isSubmitting, setFieldValue, values, errors, touched, setFieldTouched }) => {
+        {({
+          submitForm,
+          isSubmitting,
+          setFieldValue,
+          values,
+          errors,
+          touched,
+          setFieldTouched
+        }) => {
           return (
             <Form style={{ width: "100%" }}>
               <QuorumForm
@@ -422,9 +514,9 @@ export const Quorum: React.FC = () => {
                 setFieldTouched={setFieldTouched}
               />
             </Form>
-          )
+          );
         }}
       </Formik>
     </Box>
-  )
-}
+  );
+};
