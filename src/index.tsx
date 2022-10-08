@@ -1,15 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from "react"
+import ReactDOM from "react-dom"
 
-import App from "App";
-import { TezosProvider } from "services/beacon/context";
-import localizedFormat from "dayjs/plugin/localizedFormat";
-import dayjs from "dayjs";
-import BigNumber from "bignumber.js";
+import App from "App"
+import { TezosProvider } from "services/beacon/context"
+import localizedFormat from "dayjs/plugin/localizedFormat"
+import dayjs from "dayjs"
+import BigNumber from "bignumber.js"
 
 // BigNumber.config({ DECIMAL_PLACES:  })
 
-dayjs.extend(localizedFormat);
+dayjs.extend(localizedFormat)
 
 ReactDOM.render(
   <React.StrictMode>
@@ -18,4 +18,4 @@ ReactDOM.render(
     </TezosProvider>
   </React.StrictMode>,
   document.getElementById("root")
-);
+)

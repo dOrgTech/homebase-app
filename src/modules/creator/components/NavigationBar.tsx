@@ -1,15 +1,8 @@
-import {
-  styled,
-  Grid,
-  Typography,
-  Paper,
-  useMediaQuery,
-  useTheme,
-} from "@material-ui/core";
-import React from "react";
-import { ArrowBackIos } from "@material-ui/icons";
+import { styled, Grid, Typography, Paper, useMediaQuery, useTheme } from "@material-ui/core"
+import React from "react"
+import { ArrowBackIos } from "@material-ui/icons"
 
-import { NavigationBarProps } from "modules/creator/state";
+import { NavigationBarProps } from "modules/creator/state"
 
 const Footer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -17,9 +10,9 @@ const Footer = styled(Grid)(({ theme }) => ({
   marginBottom: 10,
   ["@media (max-width:1167px)"]: {
     marginLeft: 0,
-    marginBottom: 50,
+    marginBottom: 50
   }
-}));
+}))
 
 const BackButton = styled(Paper)({
   boxShadow: "none",
@@ -32,9 +25,9 @@ const BackButton = styled(Paper)({
   alignItems: "baseline",
   padding: 8,
   width: "fit-content"
-});
+})
 
-const NextButton = styled(Paper)(({theme }) => ({
+const NextButton = styled(Paper)(({ theme }) => ({
   boxShadow: "none",
   borderRadius: 4,
   textAlign: "center",
@@ -42,35 +35,25 @@ const NextButton = styled(Paper)(({theme }) => ({
   cursor: "pointer",
   background: theme.palette.secondary.light,
   padding: 8
-}));
+}))
 
 const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
   color: theme.palette.secondary.light,
   fontSize: 12,
-  marginRight: 12,
-}));
+  marginRight: 12
+}))
 
 const FooterContainer = styled(Grid)(({ isMobile }: { isMobile: boolean }) => ({
   width: "100%"
-}));
+}))
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
   return (
-    <Footer
-      container
-      direction="row"
-
-      alignItems="center"
-    >
-      <FooterContainer
-        item
-        xs={12}
-        container
-        isMobile={isMobile}
-      >
+    <Footer container direction="row" alignItems="center">
+      <FooterContainer item xs={12} container isMobile={isMobile}>
         <Grid item xs={6}>
           {back && (
             <BackButton onClick={back.handler}>
@@ -88,5 +71,5 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
         </Grid>
       </FooterContainer>
     </Footer>
-  );
-};
+  )
+}

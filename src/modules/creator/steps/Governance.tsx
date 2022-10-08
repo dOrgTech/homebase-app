@@ -8,75 +8,71 @@ import {
   withTheme,
   Box,
   Tooltip,
-  InputAdornment,
-} from "@material-ui/core";
-import { TextField } from "formik-material-ui";
-import React, { useContext, useEffect, useState } from "react";
-import { Field, Form, Formik, FormikErrors, getIn } from "formik";
-import { useHistory } from "react-router";
-import { useRouteMatch } from "react-router-dom";
+  InputAdornment
+} from "@material-ui/core"
+import { TextField } from "formik-material-ui"
+import React, { useContext, useEffect, useState } from "react"
+import { Field, Form, Formik, FormikErrors, getIn } from "formik"
+import { useHistory } from "react-router"
+import { useRouteMatch } from "react-router-dom"
 
-import {
-  CreatorContext,
-  ActionTypes,
-  VotingSettings,
-} from "modules/creator/state";
-import { InfoOutlined, InfoRounded } from "@material-ui/icons";
-import { getNetworkStats } from "services/bakingBad/stats";
-import { useTezos } from "services/beacon/hooks/useTezos";
-import { EstimatedTime } from "modules/explorer/components/EstimatedTime";
-import { theme } from "../../../theme";
-import dayjs from "dayjs";
-import { TitleBlock } from "modules/common/TitleBlock";
+import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state"
+import { InfoOutlined, InfoRounded } from "@material-ui/icons"
+import { getNetworkStats } from "services/bakingBad/stats"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { EstimatedTime } from "modules/explorer/components/EstimatedTime"
+import { theme } from "../../../theme"
+import dayjs from "dayjs"
+import { TitleBlock } from "modules/common/TitleBlock"
 
 const CustomTooltip = styled(Tooltip)({
-  marginLeft: 8,
-});
+  marginLeft: 8
+})
 
 const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.secondary.light,
   height: 16,
   width: 16,
-  marginLeft: 8,
-}));
+  marginLeft: 8
+}))
 
 const InfoIconDanger = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.error.main,
   height: 16,
-  width: 16,
-}));
+  width: 16
+}))
 
 const CustomSpan = styled("span")({
-  color: theme.palette.secondary.main,
-});
+  color: theme.palette.secondary.main
+})
 
 const ErrorText = styled(Typography)({
   display: "block",
   fontSize: 14,
-  color: "red",
-});
+  color: "red"
+})
 
 const SecondContainer = styled(Grid)({
-  marginTop: 10,
-});
+  marginTop: 10
+})
 
 const SpacingContainer = styled(Grid)({
-  marginTop: 25,
-});
+  marginTop: 25
+})
 
 const StakeContainer = styled(Grid)({
-  display: "block",
-});
+  display: "block"
+})
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
   border: "none",
   height: 54,
   marginTop: 14,
   background: "#2F3438",
-  borderRadius: 8,
-}));
+  borderRadius: 8
+}))
 
 const AdditionContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
@@ -86,54 +82,54 @@ const AdditionContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
   marginRight: 15,
   ["@media (max-width:1167px)"]: {
-    marginRight: 0,
-  },
-}));
+    marginRight: 0
+  }
+}))
 
 const GridItemCenter = styled(Grid)({
   textAlign: "center",
   alignItems: "center",
   display: "flex",
-  justifyContent: "flex-end",
-});
+  justifyContent: "flex-end"
+})
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
-  padding: "12px 25px",
-}));
+  padding: "12px 25px"
+}))
 
 const GridItemContainer = styled(Grid)(() => ({
   display: "flex",
-  alignItems: "center",
-}));
+  alignItems: "center"
+}))
 
 const ValueText = styled(Typography)({
-  fontSize: 14,
-});
+  fontSize: 14
+})
 
 const StyledSlider = withStyles({
   root: {
     textAlign: "center",
-    width: "100%",
+    width: "100%"
   },
   valueLabel: {
-    textAlign: "center",
+    textAlign: "center"
   },
   thumb: {
     height: 20,
     width: 20,
     top: "36.5%",
     backgroundColor: "#fff",
-    border: "3px solid #fff",
+    border: "3px solid #fff"
   },
   track: {
     backgroundColor: "#4BCF93",
     borderRadius: "4px",
-    height: 2,
-  },
-})(Slider);
+    height: 2
+  }
+})(Slider)
 
-const CustomSliderValue = styled(withTheme(Paper))((props) => ({
+const CustomSliderValue = styled(withTheme(Paper))(props => ({
   boxShadow: "none",
   height: 54,
   display: "flex",
@@ -141,117 +137,114 @@ const CustomSliderValue = styled(withTheme(Paper))((props) => ({
   justifyContent: "center",
   background: "#2F3438",
   borderRadius: 8,
-  width: 97,
-}));
+  width: 97
+}))
 
 const Value = styled(Typography)({
   textAlign: "center",
-  padding: "15%",
-});
+  padding: "15%"
+})
 
 const styles = {
   voting: {
-    marginTop: 6,
-  },
-};
+    marginTop: 6
+  }
+}
 
 const InputContainer = styled(Grid)({
   paddingRight: 15,
   ["@media (max-width:1167px)"]: {
-    paddingRight: 0,
-  },
-});
+    paddingRight: 0
+  }
+})
 
 const GridNoPadding = styled(Grid)({
-  paddingLeft: "8px !important",
-});
+  paddingLeft: "8px !important"
+})
 
 const InfoBox = styled(Paper)({
   boxShadow: "none",
   border: "none",
   background: "inherit",
-  marginTop: 20,
-});
+  marginTop: 20
+})
 
 const validateForm = (values: VotingSettings) => {
-  const errors: FormikErrors<VotingSettings> = {};
+  const errors: FormikErrors<VotingSettings> = {}
 
-  Object.keys(values).forEach((key) => {
+  Object.keys(values).forEach(key => {
     if ((values[key as keyof VotingSettings] as number | string) === "") {
-      errors[key as keyof VotingSettings] = "Required";
+      errors[key as keyof VotingSettings] = "Required"
     }
 
     if (Number(values[key as keyof VotingSettings]) < 0) {
-      errors[key as keyof VotingSettings] = "Cannot be negative";
+      errors[key as keyof VotingSettings] = "Cannot be negative"
     }
-  });
+  })
 
   if (!values.votingBlocks || Number(values.votingBlocks) <= 0) {
-    errors.votingBlocks = "Must be greater than 0";
+    errors.votingBlocks = "Must be greater than 0"
   }
 
   if (!values.proposalFlushBlocks || Number(values.proposalFlushBlocks) <= 0) {
-    errors.proposalFlushBlocks = "Must be greater than 0";
+    errors.proposalFlushBlocks = "Must be greater than 0"
   }
 
-  if (
-    !values.proposalExpiryBlocks ||
-    Number(values.proposalExpiryBlocks) <= 0
-  ) {
-    errors.proposalExpiryBlocks = "Must be greater than 0";
+  if (!values.proposalExpiryBlocks || Number(values.proposalExpiryBlocks) <= 0) {
+    errors.proposalExpiryBlocks = "Must be greater than 0"
   }
 
   if (values.proposeStakeRequired <= 0) {
-    errors.proposeStakeRequired = "Must be greater than 0";
+    errors.proposeStakeRequired = "Must be greater than 0"
   }
 
   if (values.maxXtzAmount <= 0) {
-    errors.maxXtzAmount = "Must be greater than 0";
+    errors.maxXtzAmount = "Must be greater than 0"
   }
 
   if (values.minXtzAmount && String(values.maxXtzAmount).length > 255) {
-    errors.maxXtzAmount = "Too big, number must be smaller";
+    errors.maxXtzAmount = "Too big, number must be smaller"
   }
 
   if (values.minXtzAmount && String(values.minXtzAmount).length > 255) {
-    errors.minXtzAmount = "Too big, number must be smaller";
+    errors.minXtzAmount = "Too big, number must be smaller"
   }
 
   if (values.minXtzAmount > values.maxXtzAmount) {
-    errors.maxXtzAmount = "Must be greater than Min. XTZ amount";
+    errors.maxXtzAmount = "Must be greater than Min. XTZ amount"
   }
 
-  return errors;
-};
+  return errors
+}
 
 const secondsToTime = (seconds: number) => ({
   days: Math.floor(seconds / (3600 * 24)),
   hours: Math.floor((seconds % (3600 * 24)) / 3600),
-  minutes: Math.floor((seconds % 3600) / 60),
-});
+  minutes: Math.floor((seconds % 3600) / 60)
+})
 
 const useEstimatedBlockTimes = ({
   votingBlocks,
   proposalFlushBlocks,
   proposalExpiryBlocks,
-  blockTimeAverage,
+  blockTimeAverage
 }: {
-  votingBlocks: number;
-  proposalFlushBlocks: number;
-  proposalExpiryBlocks: number;
-  blockTimeAverage: number;
+  votingBlocks: number
+  proposalFlushBlocks: number
+  proposalExpiryBlocks: number
+  blockTimeAverage: number
 }) => {
-  const now = dayjs();
+  const now = dayjs()
 
-  const periodSeconds = votingBlocks * blockTimeAverage;
-  const flushDelaySeconds = proposalFlushBlocks * blockTimeAverage;
-  const expiryDelaySeconds = proposalExpiryBlocks * blockTimeAverage;
+  const periodSeconds = votingBlocks * blockTimeAverage
+  const flushDelaySeconds = proposalFlushBlocks * blockTimeAverage
+  const expiryDelaySeconds = proposalExpiryBlocks * blockTimeAverage
 
-  const creationMoment = now.add(periodSeconds, "s");
-  const activeMoment = creationMoment.add(periodSeconds, "s");
-  const closeMoment = activeMoment.add(periodSeconds, "s");
-  const flushMoment = closeMoment.add(flushDelaySeconds, "s");
-  const expiryMoment = flushMoment.add(expiryDelaySeconds, "s");
+  const creationMoment = now.add(periodSeconds, "s")
+  const activeMoment = creationMoment.add(periodSeconds, "s")
+  const closeMoment = activeMoment.add(periodSeconds, "s")
+  const flushMoment = closeMoment.add(flushDelaySeconds, "s")
+  const expiryMoment = flushMoment.add(expiryDelaySeconds, "s")
 
   return {
     creationMoment,
@@ -261,29 +254,22 @@ const useEstimatedBlockTimes = ({
     expiryMoment,
     votingTime: secondsToTime(periodSeconds),
     flushDelayTime: secondsToTime(flushDelaySeconds),
-    expiryDelayTime: secondsToTime(expiryDelaySeconds),
-  };
-};
+    expiryDelayTime: secondsToTime(expiryDelaySeconds)
+  }
+}
 
-const GovernanceForm = ({
-  submitForm,
-  values,
-  setFieldValue,
-  errors,
-  touched,
-  setFieldTouched,
-}: any) => {
-  const { network } = useTezos();
+const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
+  const { network } = useTezos()
   const {
     dispatch,
     state: {
-      data: { orgSettings },
-    },
-  } = useContext(CreatorContext);
-  const match = useRouteMatch();
-  const history = useHistory();
-  const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0);
-  const { votingBlocks, proposalFlushBlocks, proposalExpiryBlocks } = values;
+      data: { orgSettings }
+    }
+  } = useContext(CreatorContext)
+  const match = useRouteMatch()
+  const history = useHistory()
+  const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0)
+  const { votingBlocks, proposalFlushBlocks, proposalExpiryBlocks } = values
   const {
     creationMoment,
     closeMoment,
@@ -292,30 +278,30 @@ const GovernanceForm = ({
     votingTime,
     flushDelayTime,
     activeMoment,
-    expiryDelayTime,
+    expiryDelayTime
   } = useEstimatedBlockTimes({
     votingBlocks,
     proposalFlushBlocks,
     proposalExpiryBlocks,
-    blockTimeAverage,
-  });
+    blockTimeAverage
+  })
 
   useEffect(() => {
-    (async () => {
-      const blockchainInfo = await getNetworkStats(network);
+    ;(async () => {
+      const blockchainInfo = await getNetworkStats(network)
       if (blockchainInfo) {
-        setBlockTimeAverage(blockchainInfo.minimal_block_delay);
+        setBlockTimeAverage(blockchainInfo.constants.timeBetweenBlocks)
       }
-    })();
-  }, [network]);
+    })()
+  }, [network])
 
   const controlMaxFieldLimit = (field: string, value: any) => {
-      const itemValue = value.target.value.split(".");
-      if (itemValue[0] && itemValue[0].length > 18 || itemValue[1] && itemValue[1].length > 8 ) { 
-       return value.preventDefault();
-      }    
-      setFieldValue(field, value.target.value);
-  };
+    const itemValue = value.target.value.split(".")
+    if ((itemValue[0] && itemValue[0].length > 18) || (itemValue[1] && itemValue[1].length > 8)) {
+      return value.preventDefault()
+    }
+    setFieldValue(field, value.target.value)
+  }
 
   useEffect(() => {
     if (values) {
@@ -324,39 +310,30 @@ const GovernanceForm = ({
         next: {
           text: "Continue",
           handler: () => {
-            submitForm(values);
-          },
+            submitForm(values)
+          }
         },
         back: {
           text: "Back",
-          handler: () => history.push(`dao`),
-        },
-      });
+          handler: () => history.push(`dao`)
+        }
+      })
     }
-  }, [dispatch, errors, history, match.path, match.url, submitForm, values]);
+  }, [dispatch, errors, history, match.path, match.url, submitForm, values])
 
   return (
     <>
       <Grid container direction="row">
         <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
-            <Typography
-              style={styles.voting}
-              variant="subtitle1"
-              color="textSecondary"
-            >
+            <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Voting Cycle Duration
             </Typography>
           </SecondContainer>
 
           <GridItemContainer>
             <CustomInputContainer item xs={12}>
-              <ItemContainer
-                container
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-              >
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
                 <GridItemCenter item xs={6}>
                   <Field
                     name="votingBlocks"
@@ -374,9 +351,7 @@ const GovernanceForm = ({
           </GridItemContainer>
 
           <Grid item>
-            {errors.votingBlocks && touched.votingBlocks ? (
-              <ErrorText>{errors.votingBlocks}</ErrorText>
-            ) : null}
+            {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
           </Grid>
 
           <Grid item style={{ margin: "14px 15px", height: 62 }}>
@@ -385,23 +360,14 @@ const GovernanceForm = ({
         </InputContainer>
         <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
-            <Typography
-              style={styles.voting}
-              variant="subtitle1"
-              color="textSecondary"
-            >
+            <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Proposal Execution Delay
             </Typography>
           </SecondContainer>
 
           <GridItemContainer>
             <CustomInputContainer item xs={12}>
-              <ItemContainer
-                container
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-              >
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
                 <GridItemCenter item xs={6}>
                   <Field
                     name="proposalFlushBlocks"
@@ -411,13 +377,7 @@ const GovernanceForm = ({
                     inputProps={{ min: 0 }}
                   />
                 </GridItemCenter>
-                <GridItemCenter
-                  item
-                  xs={6}
-                  container
-                  direction="row"
-                  alignItems="center"
-                >
+                <GridItemCenter item xs={6} container direction="row" alignItems="center">
                   <Typography color="textSecondary">blocks</Typography>
                   <CustomTooltip
                     placement="bottom"
@@ -443,23 +403,14 @@ const GovernanceForm = ({
 
         <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
-            <Typography
-              style={styles.voting}
-              variant="subtitle1"
-              color="textSecondary"
-            >
+            <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Proposal Expiry Threshold
             </Typography>
           </SecondContainer>
 
           <GridItemContainer>
             <CustomInputContainer item xs={12}>
-              <ItemContainer
-                container
-                direction="row"
-                alignItems="center"
-                justifyContent="center"
-              >
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
                 <GridItemCenter item xs={6}>
                   <Field
                     name="proposalExpiryBlocks"
@@ -493,17 +444,11 @@ const GovernanceForm = ({
           description={
             <>
               <Typography color={"textSecondary"}>
-                If Jane creates a DAO at{" "}
-                <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she
-                will be able to create a proposal at{" "}
-                <CustomSpan>{creationMoment.format("HH:mm MM/DD")}</CustomSpan>,
-                and the DAO will vote on it from{" "}
-                <CustomSpan>{activeMoment.format("HH:mm MM/DD")} </CustomSpan>
-                through{" "}
-                <CustomSpan>{closeMoment.format("HH:mm MM/DD")}</CustomSpan>. If
-                the proposal passes, it&apos;ll be executable at{" "}
-                <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan> and
-                will expire at{" "}
+                If Jane creates a DAO at <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she will be able to
+                create a proposal at <CustomSpan>{creationMoment.format("HH:mm MM/DD")}</CustomSpan>, and the DAO will
+                vote on it from <CustomSpan>{activeMoment.format("HH:mm MM/DD")} </CustomSpan>
+                through <CustomSpan>{closeMoment.format("HH:mm MM/DD")}</CustomSpan>. If the proposal passes, it&apos;ll
+                be executable at <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan> and will expire at{" "}
                 <CustomSpan>{expiryMoment.format("HH:mm MM/DD")}</CustomSpan>
               </Typography>
             </>
@@ -513,55 +458,34 @@ const GovernanceForm = ({
 
       <Grid item style={{ marginTop: 12 }}>
         <SecondContainer container direction="row">
-          <Typography
-            style={styles.voting}
-            variant="subtitle1"
-            color="textSecondary"
-          >
+          <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
             Required Stake to Propose
           </Typography>
         </SecondContainer>
 
         <StakeContainer container direction="row" alignItems="center">
           <AdditionContainer item xs={12} sm={4}>
-            <ItemContainer
-              container
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-            >
+            <ItemContainer container direction="row" alignItems="center" justifyContent="center">
               <GridItemCenter item xs={5}>
                 <Field
                   name="proposeStakeRequired"
                   type="number"
                   placeholder="00"
                   InputProps={{
-                    inputProps: { min: 0, defaultValue: 0, step: 0.01 },
+                    inputProps: { min: 0, defaultValue: 0, step: 0.01 }
                   }}
                   component={TextField}
                   onClick={() => setFieldTouched("proposeStakeRequired")}
-                  onChange={(e: any) =>
-                    controlMaxFieldLimit("proposeStakeRequired", e)
-                  }
+                  onChange={(e: any) => controlMaxFieldLimit("proposeStakeRequired", e)}
                 />
               </GridItemCenter>
-              <GridItemCenter
-                item
-                xs={7}
-                container
-                direction="row"
-                justifyContent="space-around"
-              >
-                <Typography color="textSecondary">
-                  {orgSettings.governanceToken.tokenMetadata?.symbol || ""}
-                </Typography>
+              <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
+                <Typography color="textSecondary">{orgSettings.governanceToken.tokenMetadata?.symbol || ""}</Typography>
                 <Tooltip
                   placement="bottom"
                   title={`Amount of ${
                     orgSettings.governanceToken.tokenMetadata?.symbol || ""
-                  } required to make a proposal. Total supply: ${
-                    orgSettings.governanceToken.tokenMetadata?.supply
-                  }`}
+                  } required to make a proposal. Total supply: ${orgSettings.governanceToken.tokenMetadata?.supply}`}
                 >
                   <InfoIconInput />
                 </Tooltip>
@@ -569,48 +493,28 @@ const GovernanceForm = ({
             </ItemContainer>
           </AdditionContainer>
           {errors.proposeStakeRequired || errors.proposeStakePercentage ? (
-            <ErrorText>
-              {errors.proposeStakeRequired || errors.proposeStakePercentage}
-            </ErrorText>
+            <ErrorText>{errors.proposeStakeRequired || errors.proposeStakePercentage}</ErrorText>
           ) : null}
         </StakeContainer>
       </Grid>
 
       <SecondContainer container direction="row">
-        <Typography
-          style={styles.voting}
-          variant="subtitle1"
-          color="textSecondary"
-        >
+        <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
           Returned Stake After Proposal Rejection
         </Typography>
 
-        <Grid
-          container
-          direction="row"
-          alignItems="center"
-          style={{ marginTop: 14 }}
-        >
+        <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
           <GridNoPadding item xs={8} sm={10}>
             <Field name="returnedTokenPercentage">
               {() => (
                 <StyledSlider
                   value={getIn(values, "returnedTokenPercentage")}
-                  onChange={(value: any, newValue: any) =>
-                    setFieldValue("returnedTokenPercentage", newValue || 0)
-                  }
+                  onChange={(value: any, newValue: any) => setFieldValue("returnedTokenPercentage", newValue || 0)}
                 />
               )}
             </Field>
           </GridNoPadding>
-          <GridNoPadding
-            item
-            xs={4}
-            sm={2}
-            container
-            direction="row"
-            justifyContent="flex-end"
-          >
+          <GridNoPadding item xs={4} sm={2} container direction="row" justifyContent="flex-end">
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
                 {getIn(values, "returnedTokenPercentage")}%
@@ -625,19 +529,9 @@ const GovernanceForm = ({
           Min & Max Transfer Amounts
         </Typography>
       </SpacingContainer>
-      <Grid
-        container
-        direction="row"
-        alignItems="center"
-        style={{ marginTop: 14 }}
-      >
+      <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
         <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justifyContent="center"
-          >
+          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
             <GridItemCenter item xs={5}>
               <Field
                 name="minXtzAmount"
@@ -645,38 +539,20 @@ const GovernanceForm = ({
                 placeholder="00"
                 component={TextField}
                 onClick={() => setFieldTouched("minXtzAmount")}
-                onChange={(e: any) =>
-                  controlMaxFieldLimit("minXtzAmount", e)
-                }
+                onChange={(e: any) => controlMaxFieldLimit("minXtzAmount", e)}
               />
             </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justifyContent="space-around"
-            >
+            <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
               <ValueText color="textSecondary">Min. XTZ</ValueText>
-              <Tooltip
-                placement="bottom"
-                title="Minimum amount of XTZ that can be transferred"
-              >
+              <Tooltip placement="bottom" title="Minimum amount of XTZ that can be transferred">
                 <InfoIconInput />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.minXtzAmount && touched.minXtzAmount ? (
-            <ErrorText>{errors.minXtzAmount}</ErrorText>
-          ) : null}
+          {errors.minXtzAmount && touched.minXtzAmount ? <ErrorText>{errors.minXtzAmount}</ErrorText> : null}
         </AdditionContainer>
         <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer
-            container
-            direction="row"
-            alignItems="center"
-            justifyContent="center"
-          >
+          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
             <GridItemCenter item xs={5}>
               <Field
                 name="maxXtzAmount"
@@ -684,64 +560,46 @@ const GovernanceForm = ({
                 placeholder="00"
                 component={TextField}
                 onClick={() => setFieldTouched("maxXtzAmount")}
-                onChange={(e: any) =>
-                  controlMaxFieldLimit("maxXtzAmount", e)
-                }
+                onChange={(e: any) => controlMaxFieldLimit("maxXtzAmount", e)}
               />
             </GridItemCenter>
-            <GridItemCenter
-              item
-              xs={7}
-              container
-              direction="row"
-              justifyContent="space-around"
-            >
+            <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
               <ValueText color="textSecondary">Max. XTZ </ValueText>
-              <Tooltip
-                placement="bottom"
-                title="Maximum amount of XTZ that can be transferred"
-              >
+              <Tooltip placement="bottom" title="Maximum amount of XTZ that can be transferred">
                 <InfoIconInput />
               </Tooltip>
             </GridItemCenter>
           </ItemContainer>
-          {errors.maxXtzAmount && touched.maxXtzAmount ? (
-            <ErrorText>{errors.maxXtzAmount}</ErrorText>
-          ) : null}
+          {errors.maxXtzAmount && touched.maxXtzAmount ? <ErrorText>{errors.maxXtzAmount}</ErrorText> : null}
         </AdditionContainer>
       </Grid>
     </>
-  );
-};
+  )
+}
 
 //TODO: Remove any from this component
 export const Governance: React.FC = () => {
-  const { dispatch, state, updateCache } = useContext(CreatorContext);
-  const { votingSettings } = state.data;
-  const history = useHistory();
+  const { dispatch, state, updateCache } = useContext(CreatorContext)
+  const { votingSettings } = state.data
+  const history = useHistory()
 
-  const saveStepInfo = (
-    values: VotingSettings,
-    { setSubmitting }: { setSubmitting: (b: boolean) => void }
-  ) => {
+  const saveStepInfo = (values: VotingSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
     const newState = {
       ...state.data,
-      votingSettings: values,
-    };
-    updateCache(newState);
-    setSubmitting(true);
-    dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values });
-    history.push(`quorum`);
-  };
+      votingSettings: values
+    }
+    updateCache(newState)
+    setSubmitting(true)
+    dispatch({ type: ActionTypes.UPDATE_VOTING_SETTINGS, voting: values })
+    history.push(`quorum`)
+  }
 
   return (
     <Box>
       <TitleBlock
         title={"Proposals & Voting"}
         tooltip={true}
-        description={
-          "These settings will define the duration, support and approval required for proposals."
-        }
+        description={"These settings will define the duration, support and approval required for proposals."}
       ></TitleBlock>
 
       <Formik
@@ -752,15 +610,7 @@ export const Governance: React.FC = () => {
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
       >
-        {({
-          submitForm,
-          isSubmitting,
-          setFieldValue,
-          values,
-          errors,
-          touched,
-          setFieldTouched,
-        }) => {
+        {({ submitForm, isSubmitting, setFieldValue, values, errors, touched, setFieldTouched }) => {
           return (
             <Form style={{ width: "100%" }}>
               <GovernanceForm
@@ -773,9 +623,9 @@ export const Governance: React.FC = () => {
                 setFieldTouched={setFieldTouched}
               />
             </Form>
-          );
+          )
         }}
       </Formik>
     </Box>
-  );
-};
+  )
+}
