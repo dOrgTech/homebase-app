@@ -143,40 +143,6 @@ export const ProposalDetails: React.FC = () => {
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const { mutate: mutateUnstake } = useUnstakeVotes()
 
-  // const getLambdaProposalInfo = useCallback(() => {
-  //   const info = {
-  //     type: "",
-  //     title: "",
-  //     code: ""
-  //   }
-  //
-  //   if (!isLambdaProposal) {
-  //     return info
-  //   }
-  //
-  //   const lambdaProposal = proposal as LambdaProposal
-  //   switch (lambdaProposal.metadata.lambdaType) {
-  //     case "add_handler": {
-  //       info.title = "Add Handler"
-  //     }
-  //   }
-  //
-  //   if (!!lambdaProposal.metadata.add_handler) {
-  //     info.code = JSON.stringify(lambdaProposal.metadata.add_handler, null, 2)
-  //   } else if (!!lambdaProposal.metadata.remove_handler) {
-  //     info.type = "remove_handler"
-  //     info.title = "Remove Handler"
-  //     info.code = JSON.stringify(lambdaProposal.metadata.remove_handler, null, 2)
-  //   } else if (!!lambdaProposal.metadata.execute_handler) {
-  //     info.type = "execute_handler"
-  //     info.title = "Execute Handler"
-  //     info.code = JSON.stringify(lambdaProposal.metadata.execute_handler, null, 2)
-  //   }
-  //
-  //   return info
-  // }, [proposal, isLambdaProposal])
-  // const lambdaProposalInfo = getLambdaProposalInfo()
-
   const onClickVote = (support: boolean) => {
     setVoteIsSupport(support)
     setOpenVote(true)
