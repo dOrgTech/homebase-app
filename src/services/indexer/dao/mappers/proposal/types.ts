@@ -4,7 +4,7 @@ import treasuryProposeCode from "services/contracts/baseDAO/treasuryDAO/michelso
 import registryProposeCode from "services/contracts/baseDAO/registryDAO/michelson/propose"
 import lambdaProposeCode from "services/contracts/baseDAO/registryDAO/michelson/proposelambda"
 import { Schema } from "@taquito/michelson-encoder"
-import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec"
+import { Parser, Expr, unpackDataBytes, MichelsonType } from "@taquito/michel-codec"
 import { parseUnits } from "services/contracts/utils"
 import { ProposalDTO } from "services/indexer/types"
 import { PMLambdaProposal, PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types"
@@ -23,17 +23,60 @@ export enum IndexerStatus {
 export enum ProposalStatus {
   PENDING = "pending",
   ACTIVE = "active",
-
   PASSED = "passed",
   REJECTED = "rejected",
-
   NO_QUORUM = "no quorum",
-
   EXECUTABLE = "executable",
-
   DROPPED = "dropped",
   EXPIRED = "expired",
   EXECUTED = "executed"
+}
+
+export interface Transfer {
+  amount: BigNumber
+  beneficiary: string
+  type: "XTZ" | "FA2"
+}
+
+export interface FA2Transfer extends Transfer {
+  contractAddress: string
+  tokenId: string
+}
+
+interface BaseProposalMetadata {
+  config: { key: "frozen_extra_value" | "slash_scale_value"; value: BigNumber }[]
+  update_guardian: string
+  update_contract_delegate: string
+  agoraPostId: string
+}
+
+const baseProposalMetadata: BaseProposalMetadata = {
+  config: [],
+  update_guardian: "",
+  update_contract_delegate: "",
+  agoraPostId: "-1"
+}
+
+function getBaseMetadata(
+  proposalMetadataDTO: PMTreasuryProposal | PMRegistryProposal | PMLambdaProposal
+): BaseProposalMetadata {
+  const values = { ...baseProposalMetadata }
+
+  if ("update_contract_delegate" in proposalMetadataDTO) {
+    values.update_contract_delegate = proposalMetadataDTO.update_contract_delegate
+  }
+
+  if ("update_guardian" in proposalMetadataDTO) {
+    values.update_guardian = proposalMetadataDTO.update_guardian
+  }
+
+  if ("configuration_proposal" in proposalMetadataDTO) {
+    values.config = Object.entries(proposalMetadataDTO.configuration_proposal)
+      .filter(([_, value]) => !!value)
+      .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
+  }
+
+  return values
 }
 
 const INDEXER_TO_PROPOSAL_STATUS_MAP: Record<IndexerStatus, ProposalStatus> = {
@@ -309,10 +352,10 @@ export class LambdaProposal extends Proposal {
     }
 
     const parser = new Parser()
-    const micheline = parser.parseMichelineExpression(lambdaProposeCode) as Expr
-    const schema = new Schema(micheline as Expr)
+    const typ = parser.parseMichelineExpression(lambdaProposeCode) as Expr
+    const schema = new Schema(typ)
 
-    const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
+    const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, typ as MichelsonType)
     const proposalMetadataDTO: PMLambdaProposal = schema.Execute(unpackedMetadata)
     const baseMetadata: BaseProposalMetadata = getBaseMetadata(proposalMetadataDTO)
     const lambdaMetadata: LambdaProposalMetadata = {
@@ -334,54 +377,19 @@ export class LambdaProposal extends Proposal {
     if ("execute_handler" in proposalMetadataDTO) {
       lambdaMetadata.lambdaType = "execute_handler"
       lambdaMetadata.lambdaHandler = proposalMetadataDTO.execute_handler
+      try {
+        lambdaMetadata.lambdaHandler.unpacked_argument = unpackDataBytes(
+          { bytes: lambdaMetadata.lambdaHandler.packed_argument },
+          parser.parseMichelineExpression(lambdaMetadata.lambdaHandler?.packed_argument) as MichelsonType
+        )
+      } catch (error) {
+        lambdaMetadata.lambdaHandler.unpacked_argument = {}
+      } finally {
+        delete lambdaMetadata.lambdaHandler.packed_argument
+      }
     }
 
     this.cachedMetadata = { ...lambdaMetadata }
     return this.cachedMetadata
   }
-}
-
-export interface Transfer {
-  amount: BigNumber
-  beneficiary: string
-  type: "XTZ" | "FA2"
-}
-
-export interface FA2Transfer extends Transfer {
-  contractAddress: string
-  tokenId: string
-}
-
-interface BaseProposalMetadata {
-  config: { key: "frozen_extra_value" | "slash_scale_value"; value: BigNumber }[]
-  update_guardian: string
-  update_contract_delegate: string
-  agoraPostId: string
-}
-
-function getBaseMetadata(
-  proposalMetadataDTO: PMTreasuryProposal | PMRegistryProposal | PMLambdaProposal
-): BaseProposalMetadata {
-  const values: BaseProposalMetadata = {
-    config: [],
-    update_guardian: "",
-    update_contract_delegate: "",
-    agoraPostId: "-1"
-  }
-
-  if ("update_contract_delegate" in proposalMetadataDTO) {
-    values.update_contract_delegate = proposalMetadataDTO.update_contract_delegate
-  }
-
-  if ("update_guardian" in proposalMetadataDTO) {
-    values.update_guardian = proposalMetadataDTO.update_guardian
-  }
-
-  if ("configuration_proposal" in proposalMetadataDTO) {
-    values.config = Object.entries(proposalMetadataDTO.configuration_proposal)
-      .filter(([_, value]) => !!value)
-      .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
-  }
-
-  return values
 }
