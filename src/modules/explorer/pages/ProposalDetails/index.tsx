@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core"
 import { styled, useTheme } from "@material-ui/styles"
 import ReactHtmlParser from "react-html-parser"
@@ -138,80 +139,9 @@ export const ProposalDetails: React.FC = () => {
   const { account } = useTezos()
   const canDropProposal = useCanDropProposal(daoId, proposalId)
   const { data: agoraPost } = useAgoraTopic(Number(proposal?.metadata?.agoraPostId))
-  const [code, setCode] = React.useState<string>(`
-  const allowances = new MichelsonMap();
-  const ledger = new MichelsonMap();
-  ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });
-
-  const opknownBigMapContract = await tezos.contract.originate({
-    code: knownBigMapContract,
-    storage: {
-      ledger,
-      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
-      totalSupply: '100',
-    },
-  }); 
-  
-  const opknownBigMapContract = await tezos.contract.originate({
-    code: knownBigMapContract,
-    storage: {
-      ledger,
-      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
-      totalSupply: '100',
-    },
-  }); 
-
-  const opknownBigMapContract = await tezos.contract.originate({
-    code: knownBigMapContract,
-    storage: {
-      ledger,
-      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
-      totalSupply: '100',
-    },
-  }); 
-
-  const opknownBigMapContract = await tezos.contract.originate({
-    code: knownBigMapContract,
-    storage: {
-      ledger,
-      owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
-      totalSupply: '100',
-    },
-  }); 
-}`)
 
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const { mutate: mutateUnstake } = useUnstakeVotes()
-
-  const getLambdaProposalInfo = useCallback(() => {
-    const info = {
-      type: "",
-      title: "",
-      code: ""
-    }
-
-    if (!isLambdaProposal) {
-      return info
-    }
-
-    const lambdaProposal = proposal as LambdaProposal
-    if (!!lambdaProposal.metadata.add_handler) {
-      info.type = "add_handler"
-      info.title = "Add Handler"
-      info.code = JSON.stringify(lambdaProposal.metadata.add_handler, null, 2)
-    } else if (!!lambdaProposal.metadata.remove_handler) {
-      info.type = "remove_handler"
-      info.title = "Remove Handler"
-      info.code = JSON.stringify(lambdaProposal.metadata.remove_handler, null, 2)
-    } else if (!!lambdaProposal.metadata.execute_handler) {
-      info.type = "execute_handler"
-      info.title = "Execute Handler"
-      info.code = JSON.stringify(lambdaProposal.metadata.execute_handler, null, 2)
-    }
-
-    return info
-  }, [proposal, isLambdaProposal])
-  const lambdaProposalInfo = getLambdaProposalInfo()
 
   const onClickVote = (support: boolean) => {
     setVoteIsSupport(support)
@@ -343,8 +273,8 @@ export const ProposalDetails: React.FC = () => {
                           </ViewCodeButton>
                           <CodeVisor
                             open={openVisor}
-                            code={lambdaProposalInfo.code}
-                            title={lambdaProposalInfo.title}
+                            code={JSON.stringify((proposal as LambdaProposal).metadata.lambdaHandler, null, 2)}
+                            title={_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
                             handleClose={() => setOpenVisor(false)}
                           />
                         </Grid>
@@ -573,7 +503,9 @@ export const ProposalDetails: React.FC = () => {
                       <InfoItem color="textPrimary">Parameter 2: {"Mock 1300"}</InfoItem>
                     </Grid>
                     <Grid item container direction="row">
-                      <InfoItem color="textPrimary">Type: {lambdaProposalInfo.title}</InfoItem>
+                      <InfoItem color="textPrimary">
+                        Lambda Type: {_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                      </InfoItem>
                     </Grid>
                   </Grid>
                 </>
