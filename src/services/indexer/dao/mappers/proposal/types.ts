@@ -341,12 +341,26 @@ export class RegistryProposal extends Proposal {
 interface LambdaProposalMetadata extends BaseProposalMetadata {
   lambdaType: "add_handler" | "remove_handler" | "execute_handler" | ""
   lambdaHandler: Record<string, any>
+  transfers: Transfer[]
+  list: {
+    key: string
+    value: string
+  }[]
 }
 
 export class LambdaProposal extends Proposal {
   private cachedMetadata: LambdaProposalMetadata | null = null
 
   get metadata(): LambdaProposalMetadata {
+    // let values: RegistryProposalMetadata = {
+    //   config: [],
+    //   transfers: [],
+    //   update_contract_delegate: "",
+    //   update_guardian: "",
+    //   agoraPostId: "",
+    //   list: []
+    // }
+
     if (this.cachedMetadata !== null) {
       return this.cachedMetadata
     }
@@ -361,7 +375,9 @@ export class LambdaProposal extends Proposal {
     const lambdaMetadata: LambdaProposalMetadata = {
       ...baseMetadata,
       lambdaType: "",
-      lambdaHandler: {}
+      lambdaHandler: {},
+      list: [],
+      transfers: []
     }
 
     if ("add_handler" in proposalMetadataDTO) {
@@ -387,7 +403,26 @@ export class LambdaProposal extends Proposal {
       } finally {
         delete lambdaMetadata.lambdaHandler.packed_argument
       }
+
+      // if ( === "transfer_proposal" in ) {
+      // const { agora_post_id, registry_diff, transfers } = proposalMetadataDTO.transfer_proposal
+
+      // values.agoraPostId = agora_post_id
+
+      // if (transfers) {
+      //   values.transfers = extractTransfersData(proposalMetadataDTO.transfer_proposal.transfers)
+      // }
+
+      // if (registry_diff) {
+      //   values.list = registry_diff.map(item => ({
+      //     key: bytes2Char(item[0]),
+      //     value: bytes2Char(item[1])
+      //   }))
+      // }
+      // }
     }
+
+    // values = { ...values, ...getBaseMetadata(proposalMetadataDTO) }
 
     this.cachedMetadata = { ...lambdaMetadata }
     return this.cachedMetadata

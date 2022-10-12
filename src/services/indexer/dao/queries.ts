@@ -95,6 +95,7 @@ export const GET_DAO_QUERY = gql`
         max_xtz_amount
         min_xtz_amount
         registry
+        registry_affected
         slash_division_value
         slash_scale_value
       }
