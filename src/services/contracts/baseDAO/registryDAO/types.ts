@@ -447,3 +447,13 @@ export type PMLambdaProposal =
         name: string
       }
     }
+// | {
+//     transfer_proposal: {
+//       agora_post_id: string
+//       registry_diff: {
+//         "0": string
+//         "1": string
+//       }[]
+//       transfers: (PMXTZTransferType | PMFA2TransferType)[]
+//     }
+//   }

@@ -91,6 +91,7 @@ export interface LambdaExtraDTO {
   max_xtz_amount: string
   slash_scale_value: string
   max_proposal_size: string
+  returnedPercentage: string
 }
 
 export interface HolderDTO {
