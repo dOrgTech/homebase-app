@@ -260,7 +260,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
                       control={lambdaForm.control}
                       name={`lambda_name`}
                       render={({ field }) =>
-                        action === 0 ? (
+                        action === ProposalAction.new ? (
                           <TextField
                             {...field}
                             placeholder="Enter Lambda Name"
@@ -275,11 +275,11 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
                     />
                   </ProposalFormInput>
                 </Grid>
-                {action === 2 && lambdaForm.getValues("lambda_name") !== undefined ? (
+                {action === ProposalAction.execute && lambdaForm.getValues("lambda_name") !== undefined ? (
                   <>
                     <ProposalFormTextarea label={"Lambda Arguments Code"}>
                       <CustomEditor
-                        disabled={!(action === 2)}
+                        disabled={!(action === ProposalAction.execute)}
                         textareaClassName={style.textarea}
                         preClassName={style.textarea}
                         value={lambdaArguments}
@@ -297,7 +297,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
 
                     <ProposalFormTextarea label={"Lambda Params"}>
                       <CustomEditor
-                        disabled={!(action === 2)}
+                        disabled={!(action === ProposalAction.execute)}
                         textareaClassName={style.textarea}
                         preClassName={style.textarea}
                         value={lambdaParams}
@@ -318,7 +318,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
               <Grid item xs={6} container direction="column">
                 <ProposalFormTextarea label={"Implementation"}>
                   <CustomEditor
-                    disabled={action !== 0}
+                    disabled={action !== ProposalAction.new}
                     textareaClassName={style.textarea}
                     preClassName={style.textarea}
                     value={code}
