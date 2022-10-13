@@ -31,7 +31,8 @@ const styles = makeStyles({
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthMd": {
-    width: "-webkit-fill-available"
+    width: "-webkit-fill-available",
+    height: "-webkit-fill-available"
   }
 })
 

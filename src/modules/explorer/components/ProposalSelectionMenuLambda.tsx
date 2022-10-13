@@ -7,7 +7,7 @@ import { NFTTransferFormValues } from "./NFTTransfer"
 import { useDAOID } from "../pages/DAO/router"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { MainButton } from "../../common/MainButton"
-import { ProposalFormLambda } from "./ConfigProposalFormLambda"
+import { ProposalAction, ProposalFormLambda } from "./ConfigProposalFormLambda"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -30,26 +30,20 @@ interface Props {
   handleClose: () => void
 }
 
-enum ProposalModalKey {
-  add,
-  remove,
-  execute
-}
-
 export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
-  const [actionModal, setActionModal] = useState<ProposalModalKey>()
+  const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
   const [openModal, setOpenModal] = useState(false)
 
-  const handleOpenModal = (key: ProposalModalKey) => {
-    setActionModal(key)
+  const handleOpenModal = (key: ProposalAction) => {
+    setProposalAction(key)
     setOpenModal(true)
     handleClose()
   }
 
   const handleCloseModal = () => {
-    setActionModal(undefined)
+    setProposalAction(ProposalAction.none)
     setOpenModal(false)
   }
 
@@ -65,14 +59,14 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
                 </Typography>
               </Grid>
               <Grid container justifyContent="center" style={{ gap: 20 }} direction={"column"}>
-                <MainButton variant={"contained"} onClick={() => handleOpenModal(ProposalModalKey.add)}>
+                <MainButton variant={"contained"} onClick={() => handleOpenModal(ProposalAction.new)}>
                   Add Lambda
                 </MainButton>
 
                 <MainButton
                   variant={"contained"}
                   color={"secondary"}
-                  onClick={() => handleOpenModal(ProposalModalKey.remove)}
+                  onClick={() => handleOpenModal(ProposalAction.remove)}
                 >
                   Remove Lambda
                 </MainButton>
@@ -80,7 +74,7 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
                 <MainButton
                   variant={"contained"}
                   color={"secondary"}
-                  onClick={() => handleOpenModal(ProposalModalKey.execute)}
+                  onClick={() => handleOpenModal(ProposalAction.execute)}
                 >
                   Execute Lambda
                 </MainButton>
@@ -90,7 +84,7 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
         )}
       </ResponsiveDialog>
 
-      <ProposalFormLambda action={actionModal} open={openModal} handleClose={handleCloseModal} />
+      <ProposalFormLambda action={proposalAction} open={openModal} handleClose={handleCloseModal} />
     </>
   )
 }
