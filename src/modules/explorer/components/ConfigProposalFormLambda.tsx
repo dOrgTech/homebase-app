@@ -242,6 +242,18 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
     return
   }
 
+  const renderNewProposal = () => {
+    return <></>
+  }
+
+  const renderRemoveProposal = () => {
+    return <></>
+  }
+
+  const renderExecuteProposal = () => {
+    return <></>
+  }
+
   return (
     <FormProvider {...lambdaForm}>
       <ResponsiveDialog
@@ -252,6 +264,10 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
       >
         {state === LambdaProposalState.write_action ? (
           <>
+            {action === ProposalAction.new ? renderNewProposal() : null}
+            {action === ProposalAction.remove ? renderRemoveProposal() : null}
+            {action === ProposalAction.execute ? renderExecuteProposal() : null}
+
             <Grid container direction={"row"} spacing={4}>
               <ProgressContainer item xs={6} container direction="column">
                 <Grid item>
