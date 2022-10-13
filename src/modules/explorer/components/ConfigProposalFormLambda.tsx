@@ -1,6 +1,5 @@
-/* eslint-disable react/display-name */
 import { Grid, Typography, TextField, styled, makeStyles, CircularProgress } from "@material-ui/core"
-import React, { useCallback, useEffect, useMemo } from "react"
+import React, { useCallback, useEffect } from "react"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
