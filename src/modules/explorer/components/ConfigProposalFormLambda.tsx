@@ -5,9 +5,8 @@ import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalFormInput, ProposalFormTextarea } from "./ProposalFormInput"
-// import { useProposeConfigChange } from "../../../services/contracts/baseDAO/hooks/useProposeConfigChange"
 import { ResponsiveDialog } from "./ResponsiveDialog"
-import Prism, { highlight, plugins } from "prismjs"
+import Prism, { highlight } from "prismjs"
 import Editor from "react-simple-code-editor"
 import "prism-themes/themes/prism-night-owl.css"
 import { MainButton } from "modules/common/MainButton"
@@ -15,7 +14,6 @@ import { SearchLambda } from "./styled/SearchLambda"
 import { CheckOutlined } from "@material-ui/icons"
 import { useLambdaAddPropose } from "services/contracts/baseDAO/hooks/useLambdaAddPropose"
 import { useLambdaRemovePropose } from "services/contracts/baseDAO/hooks/useLambdaRemovePropose"
-// import { RegistryDAO } from "services/contracts/baseDAO"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
 import { Lambda } from "services/bakingBad/lambdas/types"
@@ -26,25 +24,8 @@ const StyledSendButton = styled(MainButton)(({ theme }) => ({
   color: "#1C1F23"
 }))
 
-type LambdaValues = {
-  label: string
-  code: string
-  type: string
-  parameters: any
-}
-
 const StyledRow = styled(Grid)({
   marginTop: 30
-})
-
-const ProgressContainer = styled(Grid)(({ theme }) => ({
-  maxHeight: 600,
-  display: "block",
-  overflowY: "scroll"
-}))
-
-const MarginContainer = styled(Grid)({
-  marginTop: 32
 })
 
 const LoadingContainer = styled(Grid)({
@@ -53,10 +34,6 @@ const LoadingContainer = styled(Grid)({
 
 const LoadingStateLabel = styled(Typography)({
   marginTop: 40
-})
-
-const ParameterTitle = styled(Typography)({
-  marginBottom: 18
 })
 
 const CustomEditor = styled(Editor)({
@@ -79,6 +56,13 @@ const styles = makeStyles({
     overflow: "scroll"
   }
 })
+
+const codeEditorStyles = {
+  fontFamily: "Roboto Mono",
+  fontSize: 14,
+  fontWeight: 400,
+  outlineWidth: 0
+}
 
 type LambdaParameter = {
   name: string
@@ -113,21 +97,10 @@ enum LambdaProposalState {
   action_finished
 }
 
-export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action }) => {
-  const style = styles()
-  const daoId = useDAOID()
-  const { data: dao } = useDAO(daoId)
-  const grammar = Prism.languages.javascript
-
-  const lambdaForm = useForm<Values>()
-  const lambdaName = lambdaForm.watch("lambda_name")
-  const [lambda, setLambda] = React.useState<Lambda | null>(null)
-  const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.wallet_action)
-  const [lambdaParams, setLambdaParams] = React.useState<string>("")
-  const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
-  const [code, setCode] = React.useState<string>(
-    action === ProposalAction.new
-      ? `const allowances = new MichelsonMap();
+const getCodeByProposalAction = (action: ProposalAction) => {
+  switch (action) {
+    case ProposalAction.new: {
+      return `const allowances = new MichelsonMap();
          const ledger = new MichelsonMap();  
          ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });
           
@@ -140,8 +113,25 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             },
          });   
         }`
-      : ""
-  )
+    }
+    default:
+      return ""
+  }
+}
+
+export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action }) => {
+  const style = styles()
+  const daoId = useDAOID()
+  const { data: dao } = useDAO(daoId)
+  const grammar = Prism.languages.javascript
+
+  const lambdaForm = useForm<Values>()
+  const lambdaName = lambdaForm.watch("lambda_name")
+  const [lambda, setLambda] = React.useState<Lambda | null>(null)
+  const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.wallet_action)
+  const [lambdaParams, setLambdaParams] = React.useState<string>("")
+  const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
+  const [code, setCode] = React.useState<string>(getCodeByProposalAction(action))
 
   useEffect(() => {
     if (open) {
@@ -243,7 +233,31 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   }
 
   const renderNewProposal = () => {
-    return <></>
+    return (
+      <>
+        <ProposalFormInput label={"Lambda Name"}>
+          <Controller
+            control={lambdaForm.control}
+            name="lambda_name"
+            render={({ field }) => (
+              <TextField {...field} placeholder="Enter Lambda Name" InputProps={{ disableUnderline: true }} />
+            )}
+          />
+        </ProposalFormInput>
+        <ProposalFormTextarea label={"Implementation"}>
+          <CustomEditor
+            disabled={action !== ProposalAction.new}
+            textareaClassName={style.textarea}
+            preClassName={style.textarea}
+            value={code}
+            onValueChange={code => setCode(code)}
+            highlight={code => highlight(code, grammar, "javascript")}
+            padding={10}
+            style={codeEditorStyles}
+          />
+        </ProposalFormTextarea>
+      </>
+    )
   }
 
   const renderRemoveProposal = () => {
@@ -251,7 +265,49 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   }
 
   const renderExecuteProposal = () => {
-    return <></>
+    return (
+      <>
+        <ProposalFormInput label={"Lambda Name"}>
+          <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
+        </ProposalFormInput>
+        <ProposalFormTextarea label={"Lambda Arguments Code"}>
+          <CustomEditor
+            textareaClassName={style.textarea}
+            preClassName={style.textarea}
+            value={lambdaArguments}
+            onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
+            highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
+            padding={10}
+            style={codeEditorStyles}
+          />
+        </ProposalFormTextarea>
+        <ProposalFormTextarea label={"Lambda Params"}>
+          <CustomEditor
+            textareaClassName={style.textarea}
+            preClassName={style.textarea}
+            value={lambdaParams}
+            onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
+            highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
+            padding={10}
+            style={codeEditorStyles}
+          />
+        </ProposalFormTextarea>
+        {Boolean(lambdaForm.getValues("lambda_name")) ? (
+          <ProposalFormTextarea label={"Implementation"}>
+            <CustomEditor
+              disabled={action !== ProposalAction.new}
+              textareaClassName={style.textarea}
+              preClassName={style.textarea}
+              value={code}
+              onValueChange={code => setCode(code)}
+              highlight={code => highlight(code, grammar, "javascript")}
+              padding={10}
+              style={codeEditorStyles}
+            />
+          </ProposalFormTextarea>
+        ) : null}
+      </>
+    )
   }
 
   return (
@@ -264,92 +320,10 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
       >
         {state === LambdaProposalState.write_action ? (
           <>
-            {action === ProposalAction.new ? renderNewProposal() : null}
-            {action === ProposalAction.remove ? renderRemoveProposal() : null}
-            {action === ProposalAction.execute ? renderExecuteProposal() : null}
-
             <Grid container direction={"row"} spacing={4}>
-              <ProgressContainer item xs={6} container direction="column">
-                <Grid item>
-                  <ProposalFormInput label={"Lambda Name"}>
-                    <Controller
-                      control={lambdaForm.control}
-                      name={`lambda_name`}
-                      render={({ field }) =>
-                        action === ProposalAction.new ? (
-                          <TextField
-                            {...field}
-                            placeholder="Enter Lambda Name"
-                            InputProps={{ disableUnderline: true }}
-                          />
-                        ) : (
-                          <Grid>
-                            <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
-                          </Grid>
-                        )
-                      }
-                    />
-                  </ProposalFormInput>
-                </Grid>
-                {action === ProposalAction.execute && lambdaForm.getValues("lambda_name") !== undefined ? (
-                  <>
-                    <ProposalFormTextarea label={"Lambda Arguments Code"}>
-                      <CustomEditor
-                        disabled={!(action === ProposalAction.execute)}
-                        textareaClassName={style.textarea}
-                        preClassName={style.textarea}
-                        value={lambdaArguments}
-                        onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
-                        highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
-                        padding={10}
-                        style={{
-                          fontFamily: "Roboto Mono",
-                          fontSize: 14,
-                          fontWeight: 400,
-                          outlineWidth: 0
-                        }}
-                      />
-                    </ProposalFormTextarea>
-
-                    <ProposalFormTextarea label={"Lambda Params"}>
-                      <CustomEditor
-                        disabled={!(action === ProposalAction.execute)}
-                        textareaClassName={style.textarea}
-                        preClassName={style.textarea}
-                        value={lambdaParams}
-                        onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
-                        highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
-                        padding={10}
-                        style={{
-                          fontFamily: "Roboto Mono",
-                          fontSize: 14,
-                          fontWeight: 400,
-                          outlineWidth: 0
-                        }}
-                      />
-                    </ProposalFormTextarea>
-                  </>
-                ) : null}
-              </ProgressContainer>
-              <Grid item xs={6} container direction="column">
-                <ProposalFormTextarea label={"Implementation"}>
-                  <CustomEditor
-                    disabled={action !== ProposalAction.new}
-                    textareaClassName={style.textarea}
-                    preClassName={style.textarea}
-                    value={code}
-                    onValueChange={code => setCode(code)}
-                    highlight={code => highlight(code, grammar, "javascript")}
-                    padding={10}
-                    style={{
-                      fontFamily: "Roboto Mono",
-                      fontSize: 14,
-                      fontWeight: 400,
-                      outlineWidth: 0
-                    }}
-                  />
-                </ProposalFormTextarea>
-              </Grid>
+              {action === ProposalAction.new ? renderNewProposal() : null}
+              {action === ProposalAction.remove ? renderRemoveProposal() : null}
+              {action === ProposalAction.execute ? renderExecuteProposal() : null}
             </Grid>
 
             <StyledRow container direction={"row"} spacing={4} justifyContent="flex-end">
