@@ -10,7 +10,11 @@ import { ResponsiveDialog } from "./ResponsiveDialog"
 import { MainButton } from "../../common/MainButton"
 import { ProposalAction, ProposalFormLambda } from "./ConfigProposalFormLambda"
 import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
-import { Lambda } from "services/bakingBad/lambdas/types"
+import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
+import { SupportedLambdaProposalKey } from "services/bakingBad/lambdas"
+import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm"
+import { DelegationChangeProposalForm } from "./DelegationChangeProposalForm"
+import { ConfigProposalForm } from "./ConfigProposalForm"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -33,8 +37,7 @@ interface Props {
   handleClose: () => void
 }
 
-type OpenSupportedExecuteProposalModal = [string, boolean]
-const defaultOpenSupportedExecuteProposalModal: OpenSupportedExecuteProposalModal = ["none", false]
+const defaultOpenSupportedExecuteProposalModal = "none"
 
 export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID()
@@ -43,8 +46,9 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
   const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
   const [isExecuteUI, setIsExecuteUI] = useState(false)
   const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
-  const [openSupportedExecuteProposalModal, setOpenSupportedExecuteProposalModal] =
-    useState<OpenSupportedExecuteProposalModal>(defaultOpenSupportedExecuteProposalModal)
+  const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
+    defaultOpenSupportedExecuteProposalModal
+  )
 
   const toggleExecuteUI = () => {
     setIsExecuteUI(!isExecuteUI)
@@ -61,12 +65,13 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
     setOpenProposalFormLambda(false)
   }
 
-  const handleOpenSupportedExecuteProposalModal = (selectedLambda: Lambda) => {
-    setOpenSupportedExecuteProposalModal([selectedLambda.key, true])
+  const handleOpenSupportedExecuteProposalModal = (lambdaKey: string) => {
+    setOpenSupportedExecuteProposalModal(lambdaKey)
+    handleClose()
   }
 
-  const handleCloseSupportedExecuteProposalModal = (selectedLambda: Lambda) => {
-    setOpenSupportedExecuteProposalModal([selectedLambda.key, false])
+  const handleCloseSupportedExecuteProposalModal = () => {
+    setOpenSupportedExecuteProposalModal(defaultOpenSupportedExecuteProposalModal)
   }
 
   const renderMainMenuContent = () => (
@@ -104,11 +109,18 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
         </Typography>
       </Grid>
       <Grid container justifyContent="center" style={{ gap: 20 }} direction="column">
-        {_.map(daoLambdas, lambda => (
-          <MainButton variant="contained" onClick={() => console.log({ lambda })}>
-            {_.startCase(lambda.key)}
-          </MainButton>
-        ))}
+        {_.map(daoLambdas, lambda => {
+          // @TODO: Remove when support for SupportedLambdaProposalKey.UpdateReceiversProposal is added
+          if (lambda.key === SupportedLambdaProposalKey.UpdateReceiversProposal) {
+            return null
+          }
+
+          return (
+            <MainButton variant="contained" onClick={() => handleOpenSupportedExecuteProposalModal(lambda.key)}>
+              {_.startCase(lambda.key)}
+            </MainButton>
+          )
+        })}
 
         <MainButton
           variant="contained"
@@ -136,6 +148,24 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
         action={proposalAction}
         open={openProposalFormLambda}
         handleClose={handleCloseCustomProposalModal}
+      />
+
+      <ProposalFormContainer
+        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.TransferProposal}
+        handleClose={handleCloseSupportedExecuteProposalModal}
+        defaultTab={0}
+      />
+      <ConfigProposalForm
+        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal}
+        handleClose={handleCloseSupportedExecuteProposalModal}
+      />
+      <DelegationChangeProposalForm
+        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal}
+        handleClose={handleCloseSupportedExecuteProposalModal}
+      />
+      <GuardianChangeProposalForm
+        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateGuardianProposal}
+        handleClose={handleCloseSupportedExecuteProposalModal}
       />
     </>
   )
