@@ -120,12 +120,19 @@ const getCodeByProposalAction = (action: ProposalAction) => {
 
 export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action }) => {
   const style = styles()
+  const grammar = Prism.languages.javascript
+
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
-  const grammar = Prism.languages.javascript
+  const daoLambdas = useDAOLambdas(daoId)
+
+  const { mutate: lambdaAdd } = useLambdaAddPropose()
+  const { mutate: lambdaRemove } = useLambdaRemovePropose()
+  const { mutate: lambdaExecute } = useLambdaExecutePropose()
 
   const lambdaForm = useForm<Values>()
   const lambdaName = lambdaForm.watch("lambda_name")
+
   const [lambda, setLambda] = React.useState<Lambda | null>(null)
   const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.wallet_action)
   const [lambdaParams, setLambdaParams] = React.useState<string>("")
@@ -141,19 +148,13 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
     }
   }, [open, lambdaForm])
 
-  const { mutate: lambdaMutate } = useLambdaAddPropose()
-  const { mutate: lambdaRemoveMutate } = useLambdaRemovePropose()
-  const { mutate: lambdaExecuteMutate } = useLambdaExecutePropose()
-
-  const daoLambdas = useDAOLambdas(daoId)
-
   const onSubmit = useCallback(
     (_: Values) => {
       const agoraPostId = Number(123)
 
       switch (action) {
         case ProposalAction.new: {
-          lambdaMutate({
+          lambdaAdd({
             dao: dao as LambdaDAO,
             args: {
               agoraPostId,
@@ -172,7 +173,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           setState(LambdaProposalState.wallet_action)
           setCode("")
 
-          lambdaRemoveMutate({
+          lambdaRemove({
             dao: dao as LambdaDAO,
             args: {
               agoraPostId,
@@ -199,7 +200,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             is_active: lambdaCode.is_active
           }
 
-          lambdaExecuteMutate({
+          lambdaExecute({
             dao: dao as LambdaDAO,
             args: {
               agoraPostId,
@@ -215,7 +216,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         // @TODO: Display Error
       }
     },
-    [dao, lambdaMutate, code, action, lambda, lambdaRemoveMutate, lambdaArguments, lambdaExecuteMutate, lambdaParams]
+    [dao, lambdaAdd, code, action, lambda, lambdaRemove, lambdaArguments, lambdaExecute, lambdaParams]
   )
 
   const handleSearchChange = (data: Lambda) => {
@@ -255,7 +256,6 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         </ProposalFormInput>
         <ProposalFormTextarea label={"Implementation"}>
           <CustomEditor
-            disabled={action !== ProposalAction.new}
             textareaClassName={style.textarea}
             preClassName={style.textarea}
             value={code}
@@ -270,15 +270,39 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   }
 
   const renderRemoveProposal = () => {
-    return <></>
-  }
-
-  const renderExecuteProposal = () => {
     return (
       <>
         <ProposalFormInput label={"Lambda Name"}>
           <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
         </ProposalFormInput>
+        <ProposalFormInput label={"Lambda Name"}>
+          <Controller
+            control={lambdaForm.control}
+            name="lambda_name"
+            render={({ field }) => (
+              <TextField {...field} placeholder="Enter Lambda Name" InputProps={{ disableUnderline: true }} />
+            )}
+          />
+        </ProposalFormInput>
+        <ProposalFormTextarea label={"Implementation"}>
+          <CustomEditor
+            disabled
+            textareaClassName={style.textarea}
+            preClassName={style.textarea}
+            value={code}
+            onValueChange={code => setCode(code)}
+            highlight={code => highlight(code, grammar, "javascript")}
+            padding={10}
+            style={codeEditorStyles}
+          />
+        </ProposalFormTextarea>
+      </>
+    )
+  }
+
+  const renderExecuteProposal = () => {
+    return (
+      <>
         <ProposalFormTextarea label={"Lambda Arguments Code"}>
           <CustomEditor
             textareaClassName={style.textarea}
@@ -304,7 +328,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         {Boolean(lambdaForm.getValues("lambda_name")) ? (
           <ProposalFormTextarea label={"Implementation"}>
             <CustomEditor
-              disabled={action !== ProposalAction.new}
+              disabled
               textareaClassName={style.textarea}
               preClassName={style.textarea}
               value={code}

@@ -54,10 +54,15 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
     setIsExecuteUI(!isExecuteUI)
   }
 
+  const onClose = () => {
+    setIsExecuteUI(false)
+    handleClose()
+  }
+
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
     setOpenProposalFormLambda(true)
-    handleClose()
+    onClose()
   }
 
   const handleCloseCustomProposalModal = () => {
@@ -67,7 +72,7 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
 
   const handleOpenSupportedExecuteProposalModal = (lambdaKey: string) => {
     setOpenSupportedExecuteProposalModal(lambdaKey)
-    handleClose()
+    onClose()
   }
 
   const handleCloseSupportedExecuteProposalModal = () => {
@@ -135,7 +140,7 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
 
   return (
     <>
-      <ResponsiveDialog open={open} onClose={handleClose} title="Add New Proposal">
+      <ResponsiveDialog open={open} onClose={onClose} title="Add New Proposal">
         {dao ? (
           <Content container direction="column" style={{ gap: 32 }}>
             {isExecuteUI ? renderExecuteMenuContent() : null}
