@@ -149,60 +149,70 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
 
   const onSubmit = useCallback(
     (_: Values) => {
-      if (action === ProposalAction.new) {
-        const agoraPostId = Number(123)
+      const agoraPostId = Number(123)
 
-        lambdaMutate({
-          dao: dao as LambdaDAO,
-          args: {
-            agoraPostId,
-            data: code
-          }
-        })
-      } else if (action === ProposalAction.remove) {
-        if (!lambda) {
-          return
+      switch (action) {
+        case ProposalAction.new: {
+          lambdaMutate({
+            dao: dao as LambdaDAO,
+            args: {
+              agoraPostId,
+              data: code
+            }
+          })
+          break
         }
 
-        setState(LambdaProposalState.wallet_action)
-        setCode("")
-
-        const agoraPostId = Number(123)
-
-        lambdaRemoveMutate({
-          dao: dao as LambdaDAO,
-          args: {
-            agoraPostId,
-            handler_name: lambda.key
+        case ProposalAction.remove: {
+          if (!lambda) {
+            // @TODO: Display Error
+            return
           }
-        })
-      } else {
-        const agoraPostId = Number(123)
-        if (!lambda || lambdaArguments === "" || lambdaParams === "") {
-          return
+
+          setState(LambdaProposalState.wallet_action)
+          setCode("")
+
+          lambdaRemoveMutate({
+            dao: dao as LambdaDAO,
+            args: {
+              agoraPostId,
+              handler_name: lambda.key
+            }
+          })
+          break
         }
 
-        setState(LambdaProposalState.wallet_action)
-        setCode("")
-
-        const lambdaCode = JSON.parse(code)
-
-        const handler_code = {
-          code: JSON.stringify(lambdaCode.code),
-          handler_check: JSON.stringify(lambdaCode.handler_check),
-          is_active: lambdaCode.is_active
-        }
-
-        lambdaExecuteMutate({
-          dao: dao as LambdaDAO,
-          args: {
-            agoraPostId,
-            handler_name: lambda.key,
-            handler_code,
-            handler_params: lambdaParams,
-            lambda_arguments: lambdaArguments
+        case ProposalAction.execute: {
+          if (!lambda || lambdaArguments === "" || lambdaParams === "") {
+            // @TODO: Display Error
+            return
           }
-        })
+
+          setState(LambdaProposalState.wallet_action)
+          setCode("")
+
+          const lambdaCode = JSON.parse(code)
+
+          const handler_code = {
+            code: JSON.stringify(lambdaCode.code),
+            handler_check: JSON.stringify(lambdaCode.handler_check),
+            is_active: lambdaCode.is_active
+          }
+
+          lambdaExecuteMutate({
+            dao: dao as LambdaDAO,
+            args: {
+              agoraPostId,
+              handler_name: lambda.key,
+              handler_code,
+              handler_params: lambdaParams,
+              lambda_arguments: lambdaArguments
+            }
+          })
+          break
+        }
+        default:
+        // @TODO: Display Error
       }
     },
     [dao, lambdaMutate, code, action, lambda, lambdaRemoveMutate, lambdaArguments, lambdaExecuteMutate, lambdaParams]
