@@ -61,13 +61,13 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
     setOpenProposalFormLambda(false)
   }
 
-  // const handleOpenSupportedExecuteProposalModal = (selectedLambda: Lambda) => {
-  //   setOpenSupportedExecuteProposalModal([selectedLambda.key, true])
-  // }
-  //
-  // const handleCloseSupportedExecuteProposalModal = (selectedLambda: Lambda) => {
-  //   setOpenSupportedExecuteProposalModal([selectedLambda.key, false])
-  // }
+  const handleOpenSupportedExecuteProposalModal = (selectedLambda: Lambda) => {
+    setOpenSupportedExecuteProposalModal([selectedLambda.key, true])
+  }
+
+  const handleCloseSupportedExecuteProposalModal = (selectedLambda: Lambda) => {
+    setOpenSupportedExecuteProposalModal([selectedLambda.key, false])
+  }
 
   const renderMainMenuContent = () => (
     <>
