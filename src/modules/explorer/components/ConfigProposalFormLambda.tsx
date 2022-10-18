@@ -131,7 +131,6 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const { mutate: lambdaExecute } = useLambdaExecutePropose()
 
   const lambdaForm = useForm<Values>()
-  const lambdaName = lambdaForm.watch("lambda_name")
 
   const [lambda, setLambda] = React.useState<Lambda | null>(null)
   const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.wallet_action)
@@ -245,7 +244,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderNewProposal = () => {
     return (
       <>
-        <ProposalFormInput label={"Lambda Name"}>
+        <ProposalFormInput label="Lambda Name">
           <Controller
             control={lambdaForm.control}
             name="lambda_name"
@@ -254,7 +253,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             )}
           />
         </ProposalFormInput>
-        <ProposalFormTextarea label={"Implementation"}>
+        <ProposalFormTextarea label="Implementation">
           <CustomEditor
             textareaClassName={style.textarea}
             preClassName={style.textarea}
@@ -272,19 +271,10 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderRemoveProposal = () => {
     return (
       <>
-        <ProposalFormInput label={"Lambda Name"}>
+        <ProposalFormInput label="Lambda Name">
           <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
         </ProposalFormInput>
-        <ProposalFormInput label={"Lambda Name"}>
-          <Controller
-            control={lambdaForm.control}
-            name="lambda_name"
-            render={({ field }) => (
-              <TextField {...field} placeholder="Enter Lambda Name" InputProps={{ disableUnderline: true }} />
-            )}
-          />
-        </ProposalFormInput>
-        <ProposalFormTextarea label={"Implementation"}>
+        <ProposalFormTextarea label="Implementation">
           <CustomEditor
             disabled
             textareaClassName={style.textarea}
@@ -303,7 +293,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderExecuteProposal = () => {
     return (
       <>
-        <ProposalFormTextarea label={"Lambda Arguments Code"}>
+        <ProposalFormTextarea label="Lambda Arguments Code">
           <CustomEditor
             textareaClassName={style.textarea}
             preClassName={style.textarea}
@@ -314,7 +304,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             style={codeEditorStyles}
           />
         </ProposalFormTextarea>
-        <ProposalFormTextarea label={"Lambda Params"}>
+        <ProposalFormTextarea label="Lambda Params">
           <CustomEditor
             textareaClassName={style.textarea}
             preClassName={style.textarea}
@@ -325,20 +315,17 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             style={codeEditorStyles}
           />
         </ProposalFormTextarea>
-        {Boolean(lambdaForm.getValues("lambda_name")) ? (
-          <ProposalFormTextarea label={"Implementation"}>
-            <CustomEditor
-              disabled
-              textareaClassName={style.textarea}
-              preClassName={style.textarea}
-              value={code}
-              onValueChange={code => setCode(code)}
-              highlight={code => highlight(code, grammar, "javascript")}
-              padding={10}
-              style={codeEditorStyles}
-            />
-          </ProposalFormTextarea>
-        ) : null}
+        <ProposalFormTextarea label="Implementation">
+          <CustomEditor
+            textareaClassName={style.textarea}
+            preClassName={style.textarea}
+            value={code}
+            onValueChange={code => setCode(code)}
+            highlight={code => highlight(code, grammar, "javascript")}
+            padding={10}
+            style={codeEditorStyles}
+          />
+        </ProposalFormTextarea>
       </>
     )
   }
@@ -349,18 +336,18 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         open={open}
         onClose={handleClose}
         title={ProposalAction[action] + " Lambda Proposal"}
-        template={"lambda"}
+        template="lambda"
       >
         {state === LambdaProposalState.write_action ? (
           <>
-            <Grid container direction={"row"} spacing={4}>
+            <Grid container direction="row" spacing={4}>
               {action === ProposalAction.new ? renderNewProposal() : null}
               {action === ProposalAction.remove ? renderRemoveProposal() : null}
               {action === ProposalAction.execute ? renderExecuteProposal() : null}
             </Grid>
 
-            <StyledRow container direction={"row"} spacing={4} justifyContent="flex-end">
-              <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit as any)} disabled={!code || !lambdaName}>
+            <StyledRow container direction="row" spacing={4} justifyContent="flex-end">
+              <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={!code}>
                 Submit
               </StyledSendButton>
             </StyledRow>
