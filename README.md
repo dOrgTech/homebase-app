@@ -179,6 +179,11 @@ At a contract level, there is no such distinction, but in the UI it exists to le
 ```
 
 # Contributing
+## Developer Docs
+
+- [Tezos Homebase Docs](https://docs.google.com/document/d/1zZwcvX0jNE8PycOMNSULy2i-mcjg1LJ9FFYbGP4m9TM/edit?usp=sharing)
+- [Tezos Homebase - Local Env Setup](https://docs.google.com/document/d/1GDnJzwezXXEGiwZAWioOlfvmcSuHuREpO7GIKMLjYmk/edit?usp=sharing)
+
 ## Running the project
 
 To run the project:
