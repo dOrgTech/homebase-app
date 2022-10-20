@@ -1,12 +1,11 @@
-import { Grid, Typography, TextField, styled, makeStyles, CircularProgress } from "@material-ui/core"
+import { Grid, Typography, TextField, styled, CircularProgress } from "@material-ui/core"
 import React, { useCallback, useEffect } from "react"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
-import { ProposalFormInput, ProposalFormTextarea } from "./ProposalFormInput"
+import { ProposalCodeEditorInput, ProposalFormInput } from "./ProposalFormInput"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import Prism, { highlight } from "prismjs"
-import Editor from "react-simple-code-editor"
 import "prism-themes/themes/prism-night-owl.css"
 import { MainButton } from "modules/common/MainButton"
 import { SearchLambda } from "./styled/SearchLambda"
@@ -35,28 +34,12 @@ const LoadingStateLabel = styled(Typography)({
   marginTop: 40
 })
 
-const CustomEditor = styled(Editor)({
-  "& textarea": {
-    outline: "none !important"
-  },
-  "& textarea:focus-visited": {
-    outline: "none !important"
-  }
-})
-
 const CheckIcon = styled(CheckOutlined)({
   fontSize: 169
 })
 
-const styles = makeStyles({
-  textarea: {
-    minHeight: 500,
-    maxHeight: 500,
-    overflow: "scroll"
-  }
-})
-
 const codeEditorStyles = {
+  minHeight: 500,
   fontFamily: "Roboto Mono",
   fontSize: 14,
   fontWeight: 400,
@@ -119,7 +102,6 @@ const getCodeByProposalAction = (action: ProposalAction) => {
 }
 
 export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action }) => {
-  const style = styles()
   const grammar = Prism.languages.javascript
 
   const daoId = useDAOID()
@@ -253,17 +235,17 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             )}
           />
         </ProposalFormInput>
-        <ProposalFormTextarea label="Implementation">
-          <CustomEditor
-            textareaClassName={style.textarea}
-            preClassName={style.textarea}
-            value={code}
-            onValueChange={code => setCode(code)}
-            highlight={code => highlight(code, grammar, "javascript")}
-            padding={10}
-            style={codeEditorStyles}
-          />
-        </ProposalFormTextarea>
+        <ProposalCodeEditorInput
+          label="Implementation"
+          insertSpaces
+          ignoreTabKey={false}
+          tabSize={4}
+          padding={10}
+          style={codeEditorStyles}
+          value={code}
+          onValueChange={code => setCode(code)}
+          highlight={code => highlight(code, grammar, "javascript")}
+        />
       </>
     )
   }
@@ -274,18 +256,17 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         <ProposalFormInput label="Lambda Name">
           <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
         </ProposalFormInput>
-        <ProposalFormTextarea label="Implementation">
-          <CustomEditor
-            disabled
-            textareaClassName={style.textarea}
-            preClassName={style.textarea}
-            value={code}
-            onValueChange={code => setCode(code)}
-            highlight={code => highlight(code, grammar, "javascript")}
-            padding={10}
-            style={codeEditorStyles}
-          />
-        </ProposalFormTextarea>
+        <ProposalCodeEditorInput
+          label="Implementation"
+          insertSpaces
+          ignoreTabKey={false}
+          tabSize={4}
+          padding={10}
+          style={codeEditorStyles}
+          value={code}
+          onValueChange={code => setCode(code)}
+          highlight={code => highlight(code, grammar, "javascript")}
+        />
       </>
     )
   }
@@ -293,39 +274,39 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderExecuteProposal = () => {
     return (
       <>
-        <ProposalFormTextarea label="Lambda Arguments Code">
-          <CustomEditor
-            textareaClassName={style.textarea}
-            preClassName={style.textarea}
-            value={lambdaArguments}
-            onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
-            highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
-            padding={10}
-            style={codeEditorStyles}
-          />
-        </ProposalFormTextarea>
-        <ProposalFormTextarea label="Lambda Params">
-          <CustomEditor
-            textareaClassName={style.textarea}
-            preClassName={style.textarea}
-            value={lambdaParams}
-            onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
-            highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
-            padding={10}
-            style={codeEditorStyles}
-          />
-        </ProposalFormTextarea>
-        <ProposalFormTextarea label="Implementation">
-          <CustomEditor
-            textareaClassName={style.textarea}
-            preClassName={style.textarea}
-            value={code}
-            onValueChange={code => setCode(code)}
-            highlight={code => highlight(code, grammar, "javascript")}
-            padding={10}
-            style={codeEditorStyles}
-          />
-        </ProposalFormTextarea>
+        <ProposalCodeEditorInput
+          label="Lambda Arguments Code"
+          insertSpaces
+          ignoreTabKey={false}
+          tabSize={4}
+          padding={10}
+          value={lambdaArguments}
+          onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
+          highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
+          style={codeEditorStyles}
+        />
+        <ProposalCodeEditorInput
+          label="Lambda Params"
+          insertSpaces
+          ignoreTabKey={false}
+          tabSize={4}
+          padding={10}
+          style={codeEditorStyles}
+          value={lambdaParams}
+          onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
+          highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
+        />
+        <ProposalCodeEditorInput
+          label="Implementation"
+          insertSpaces
+          ignoreTabKey={false}
+          tabSize={4}
+          padding={10}
+          style={codeEditorStyles}
+          value={code}
+          onValueChange={code => setCode(code)}
+          highlight={code => highlight(code, grammar, "javascript")}
+        />
       </>
     )
   }

@@ -154,7 +154,6 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
         open={openProposalFormLambda}
         handleClose={handleCloseCustomProposalModal}
       />
-
       <ProposalFormContainer
         open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.TransferProposal}
         handleClose={handleCloseSupportedExecuteProposalModal}
