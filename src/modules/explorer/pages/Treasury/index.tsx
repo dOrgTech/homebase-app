@@ -1,4 +1,4 @@
-import { Button, Grid, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
 
