@@ -14,6 +14,9 @@ import { Expr, Parser, packDataBytes, MichelsonType, MichelsonData } from "@taqu
 import { Schema } from "@taquito/michelson-encoder"
 import proposeCode from "./registryDAO/michelson/propose"
 
+import configuration_type_michelson from "./lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
+import proposelambda from "./registryDAO/michelson/proposelambda"
+
 interface DeployParams {
   params: MigrationParams
   metadata: MetadataDeploymentResult
@@ -265,6 +268,8 @@ export abstract class BaseDAO {
 
   public async proposeConfigChange(configParams: ConfigProposalParams, tezos: TezosToolkit) {
     const contract = await getContract(tezos, this.data.address)
+    const p = new Parser()
+    const configuration_arg_schema = new Schema(configuration_type_michelson as MichelsonData)
 
     let formatted_frozen_extra_value: string | undefined
 
@@ -275,21 +280,31 @@ export abstract class BaseDAO {
       ).toString()
     }
 
-    const proposalMetadata = await BaseDAO.encodeProposalMetadata(
-      {
-        configuration_proposal: {
-          frozen_extra_value: formatted_frozen_extra_value,
-          slash_scale_value: configParams.slash_scale_value
+    const configuration_proposal_args = {
+      frozen_extra_value: formatted_frozen_extra_value,
+      slash_scale_value: configParams.slash_scale_value
+    }
+
+    const packed_configuration_proposal_arg = packDataBytes(
+      configuration_arg_schema.Encode(configuration_proposal_args) // as MichelsonData
+    )
+
+    const proposal_meta_michelson_type = p.parseMichelineExpression(proposelambda) as MichelsonType
+    const proposal_meta_schema = new Schema(proposal_meta_michelson_type)
+    const proposalMetadata = packDataBytes(
+      proposal_meta_schema.Encode({
+        execute_handler: {
+          handler_name: "configuration_proposal",
+          packed_argument: packed_configuration_proposal_arg.bytes
         }
-      },
-      proposeCode,
-      tezos
+      }),
+      proposal_meta_michelson_type
     )
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
       formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata
+      proposalMetadata.bytes
     )
 
     return await contractMethod.send()

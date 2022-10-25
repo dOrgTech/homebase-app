@@ -122,7 +122,8 @@ export const Proposals: React.FC = () => {
               </Grid>
             </Grid>
             <Grid item>
-              <MainButton variant="contained" color="secondary" onClick={toggleProposalModal} disabled={shouldDisable}>
+              {/* <MainButton variant="contained" color="secondary" onClick={toggleProposalModal} disabled={shouldDisable}> */}
+              <MainButton variant="contained" color="secondary" onClick={toggleProposalModal} disabled={false}>
                 New Proposal
               </MainButton>
               {shouldDisable && (
