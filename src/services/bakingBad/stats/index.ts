@@ -1,12 +1,11 @@
 import { Network } from "services/beacon/context";
 import { BlockchainStats } from "./types";
+import { networkNameMap } from "..";
 
 export const getNetworkStats = async (
   network: Network
 ): Promise<BlockchainStats> => {
-  const url = `${process.env.REACT_APP_CORS_PROXY_URL}/https://api.${
-    network !== "mainnet" ? "jakarta." : ""
-  }tzstats.com/explorer/config/head`;
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/protocols/current`;
   const response = await fetch(url);
 
   if (!response.ok) {
