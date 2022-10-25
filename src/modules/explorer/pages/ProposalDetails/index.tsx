@@ -290,7 +290,6 @@ export const ProposalDetails: React.FC = () => {
                         favor={true}
                         onClick={() => onClickVote(true)}
                         disabled={!canVote}
-                        // disabled={false}
                       >
                         Vote For
                       </VoteButton>
