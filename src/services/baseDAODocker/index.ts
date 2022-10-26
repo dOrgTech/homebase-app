@@ -5,8 +5,9 @@ import { MetadataDeploymentResult } from "services/contracts/metadataCarrier/dep
 import { storageParamsToBaseDAODockerArgs } from "./mappers"
 import { GeneratorArgs, BaseDAODockerContractsDTO } from "./types"
 import { getTokenMetadata } from "services/bakingBad/tokenBalances"
+import { EnvKey, getEnv } from "services/config"
 
-export const API_URL = "http://localhost:3500/steps"
+export const API_URL = getEnv(EnvKey.REACT_APP_BASEDAO_DOCKERISED_URL)
 
 interface BaseDAODockerParams {
   template: DAOTemplate
