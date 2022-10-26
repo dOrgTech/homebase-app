@@ -38,6 +38,10 @@ const CheckIcon = styled(CheckOutlined)({
   fontSize: 169
 })
 
+const codeEditorContainerStyles = {
+  marginTop: "8px"
+}
+
 const codeEditorStyles = {
   minHeight: 500,
   fontFamily: "Roboto Mono",
@@ -237,6 +241,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         </ProposalFormInput>
         <ProposalCodeEditorInput
           label="Implementation"
+          containerStyle={codeEditorContainerStyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -258,6 +263,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         </ProposalFormInput>
         <ProposalCodeEditorInput
           label="Implementation"
+          containerStyle={codeEditorContainerStyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -274,8 +280,24 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderExecuteProposal = () => {
     return (
       <>
+        <ProposalFormInput label="Lambda Name">
+          <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
+        </ProposalFormInput>
+        <ProposalCodeEditorInput
+          label="Implementation"
+          containerStyle={codeEditorContainerStyles}
+          insertSpaces
+          ignoreTabKey={false}
+          tabSize={4}
+          padding={10}
+          style={codeEditorStyles}
+          value={code}
+          onValueChange={code => setCode(code)}
+          highlight={code => highlight(code, grammar, "javascript")}
+        />
         <ProposalCodeEditorInput
           label="Lambda Arguments Code"
+          containerStyle={codeEditorContainerStyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -287,6 +309,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         />
         <ProposalCodeEditorInput
           label="Lambda Params"
+          containerStyle={codeEditorContainerStyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -295,17 +318,6 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           value={lambdaParams}
           onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
           highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
-        />
-        <ProposalCodeEditorInput
-          label="Implementation"
-          insertSpaces
-          ignoreTabKey={false}
-          tabSize={4}
-          padding={10}
-          style={codeEditorStyles}
-          value={code}
-          onValueChange={code => setCode(code)}
-          highlight={code => highlight(code, grammar, "javascript")}
         />
       </>
     )
