@@ -59,6 +59,10 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
     handleClose()
   }
 
+  const handleGoBack = () => {
+    setIsExecuteUI(false)
+  }
+
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
     setOpenProposalFormLambda(true)
@@ -140,13 +144,26 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
 
   return (
     <>
-      <ResponsiveDialog open={open} onClose={onClose} title="Add New Proposal">
-        {dao ? (
-          <Content container direction="column" style={{ gap: 32 }}>
-            {isExecuteUI ? renderExecuteMenuContent() : null}
-            {!isExecuteUI ? renderMainMenuContent() : null}
-          </Content>
-        ) : null}
+      <ResponsiveDialog
+        open={open}
+        onClose={onClose}
+        onGoBack={isExecuteUI ? handleGoBack : undefined}
+        title="Add New Proposal"
+      >
+        <Content container direction="column" style={{ gap: 32 }}>
+          {dao ? (
+            <>
+              {isExecuteUI ? renderExecuteMenuContent() : null}
+              {!isExecuteUI ? renderMainMenuContent() : null}
+            </>
+          ) : (
+            <>
+              <Grid container justifyContent="center" style={{ gap: 20 }} direction="column">
+                <Typography color="textPrimary">Something went wrong! please try again later.</Typography>
+              </Grid>
+            </>
+          )}
+        </Content>
       </ResponsiveDialog>
 
       <ProposalFormLambda
