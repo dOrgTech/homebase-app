@@ -102,8 +102,8 @@ export const DAO: React.FC = () => {
       .sort((a, b) => b.available_balance.minus(a.available_balance).toNumber())
       .map(p => ({
         address: p.holder.address,
-        totalStaked: new BigNumber(p.total_balance).dp(10).toString(),
-        availableStaked: new BigNumber(p.available_balance).dp(10).toString(),
+        totalStaked: new BigNumber(p.total_balance).dp(10, 1).toString(),
+        availableStaked: new BigNumber(p.available_balance).dp(10, 1).toString(),
         votes: p.holder.votes_cast.toString(),
         proposalsVoted: p.holder.proposals_voted.toString()
       }))

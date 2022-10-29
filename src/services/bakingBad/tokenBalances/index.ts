@@ -3,7 +3,7 @@ import { NFT, Token } from "models/Token"
 import { Network } from "services/beacon"
 import { parseUnits } from "services/contracts/utils"
 import { networkNameMap } from ".."
-import { BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenDataTZKT } from "./types"
+import { BalanceDataDTO, BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenDataTZKT } from "./types"
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO => value.hasOwnProperty("artifact_uri")
 
@@ -164,7 +164,7 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
 }
 
 export const getUserTokenBalance = async (accountAddress: string, network: Network = "mainnet", tokenAddress = "") => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?account=${accountAddress}`
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?account=${accountAddress}&token.contract=${tokenAddress}`
 
   const response = await fetch(url)
 
@@ -172,9 +172,7 @@ export const getUserTokenBalance = async (accountAddress: string, network: Netwo
     throw new Error("Failed to fetch user balances")
   }
 
-  const userTokens = await response.json()
-
-  const userTokenBalance = userTokens.filter((token: any) => token.token.contract.address === tokenAddress)
+  const userTokenBalance: BalanceDataDTO[] = await response.json()
 
   if (userTokenBalance && userTokenBalance[0]) {
     return userTokenBalance[0].balance
