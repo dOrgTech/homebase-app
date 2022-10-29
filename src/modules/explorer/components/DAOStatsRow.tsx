@@ -201,7 +201,7 @@ export const DAOStatsRow: React.FC = () => {
                   <ProposalInfoTitle color="secondary">{symbol} Locked</ProposalInfoTitle>
                 </Grid>
                 <Grid item>
-                  <LargeNumber>{amountLocked.dp(10).toString()}</LargeNumber>
+                  <LargeNumber>{amountLocked.dp(10, 1).toString()}</LargeNumber>
                 </Grid>
                 <Grid item>
                   <LockedTokensBar variant="determinate" value={amountLockedPercentage.toNumber()} color="secondary" />

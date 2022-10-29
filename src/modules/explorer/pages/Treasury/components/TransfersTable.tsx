@@ -36,7 +36,7 @@ const createData = (transfer: TransferWithBN, isInbound: boolean) => {
   return {
     token: transfer.name,
     date: dayjs(transfer.date).format("ll"),
-    amount: transfer.amount.dp(10).toString(),
+    amount: transfer.amount.dp(10, 1).toString(),
     address: isInbound ? transfer.sender : transfer.recipient,
     hash: transfer.hash
   }

@@ -48,7 +48,8 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
   const { account } = useTezos()
 
   const [showMax, setShowMax] = React.useState<boolean>(false)
-  const [max, setMax] = React.useState(0)
+  const [maxDeposit, setMaxDeposit] = React.useState(0)
+  const [maxWithdraw, setMaxWithdraw] = React.useState(0)
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -83,8 +84,18 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
         )
         setShowMax(true)
         if (availableBalance) {
-          const formattedBalance = parseUnits(new BigNumber(availableBalance), dao.data.token.decimals).toNumber()
-          setMax(formattedBalance)
+          const formattedBalance = parseUnits(new BigNumber(availableBalance), dao.data.token.decimals)
+            .dp(10, 1)
+            .toNumber()
+          setMaxDeposit(formattedBalance)
+        }
+
+        const userLedger = ledger.find(l => l.holder.address.toLowerCase() === account.toLowerCase())
+        if (userLedger) {
+          if (userLedger.available_balance) {
+            console.log("userLedger.available_balance: ", userLedger.available_balance.toString())
+            setMaxWithdraw(userLedger.available_balance.dp(10, 1).toNumber())
+          }
         }
       }
     }
@@ -111,9 +122,19 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
                 {showMax && freeze ? (
                   <>
                     <Typography>
-                      {max} {dao?.data.token.symbol}
+                      {maxDeposit} {dao?.data.token.symbol}
                     </Typography>
-                    <CustomMaxLabel color="secondary" onClick={() => setAmount(max)}>
+                    <CustomMaxLabel color="secondary" onClick={() => setAmount(maxDeposit)}>
+                      Use Max
+                    </CustomMaxLabel>
+                  </>
+                ) : null}
+                {showMax && !freeze ? (
+                  <>
+                    <Typography>
+                      {maxWithdraw} {dao?.data.token.symbol}
+                    </Typography>
+                    <CustomMaxLabel color="secondary" onClick={() => setAmount(maxWithdraw)}>
                       Use Max
                     </CustomMaxLabel>
                   </>
