@@ -93,7 +93,6 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
         const userLedger = ledger.find(l => l.holder.address.toLowerCase() === account.toLowerCase())
         if (userLedger) {
           if (userLedger.available_balance) {
-            console.log("userLedger.available_balance: ", userLedger.available_balance.toString())
             setMaxWithdraw(userLedger.available_balance.dp(10, 1).toNumber())
           }
         }
