@@ -27,7 +27,6 @@ export const useLambdaRemovePropose = () => {
           tezosToolkit = await connect()
         }
 
-        console.log("tezosToolkit: ", tezosToolkit)
         const data = await dao.proposeLambdaRemove(args, tezosToolkit)
 
         mixpanel.track("Proposal Created", {

@@ -39,6 +39,8 @@ import { useUnstakeVotes } from "../../../../services/contracts/baseDAO/hooks/us
 import { useTezos } from "../../../../services/beacon/hooks/useTezos"
 import { CodeVisor } from "./components/CodeVisor"
 import { CopyButton } from "modules/common/CopyButton"
+import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
+import Prism, { highlight } from "prismjs"
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px"
@@ -175,7 +177,7 @@ export const ProposalDetails: React.FC = () => {
   })
 
   const list = useMemo(() => {
-    if (!proposal || !(proposal instanceof RegistryProposal)) {
+    if (!proposal || !(proposal instanceof LambdaProposal)) {
       return []
     }
 
@@ -395,6 +397,20 @@ export const ProposalDetails: React.FC = () => {
             <Grid item container style={{ gap: 25 }}>
               {proposal ? (
                 <>
+                  {(proposal as LambdaProposal).metadata.lambdaType === "execute_handler" && (
+                    <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                      <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
+                        <Grid item>
+                          <DetailsText variant="body1" color="textPrimary">
+                            Execute Lambda{" "}
+                            <Typography variant="body1" color="secondary" display={"inline"}>
+                              {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler.handler_name)}
+                            </Typography>{" "}
+                          </DetailsText>
+                        </Grid>
+                      </HighlightedBadge>
+                    </Grid>
+                  )}
                   {transfers?.map((transfer, index) => {
                     return (
                       <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
@@ -446,6 +462,55 @@ export const ProposalDetails: React.FC = () => {
                       </HighlightedBadge>
                     </Grid>
                   ))}
+                  {(proposal as LambdaProposal).metadata.lambdaType === "add_handler" && (
+                    <>
+                      <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                        <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
+                          <Grid item>
+                            <DetailsText variant="body1" color="textPrimary">
+                              Add Lambda{" "}
+                              <Typography variant="body1" color="secondary" display={"inline"}>
+                                {(proposal as LambdaProposal).metadata.lambdaHandler.name}
+                              </Typography>{" "}
+                            </DetailsText>
+                          </Grid>
+                        </HighlightedBadge>
+                      </Grid>
+                      <ProposalCodeEditorInput
+                        label="Lambda Code"
+                        containerStyle={{ marginTop: "8px" }}
+                        insertSpaces
+                        ignoreTabKey={false}
+                        tabSize={4}
+                        padding={10}
+                        style={{
+                          minHeight: 500,
+                          fontFamily: "Roboto Mono",
+                          fontSize: 14,
+                          fontWeight: 400,
+                          outlineWidth: 0
+                        }}
+                        value={JSON.stringify((proposal as LambdaProposal).metadata.lambdaHandler, null, 2)}
+                        onValueChange={code => true}
+                        highlight={code => highlight(code, Prism.languages.javascript, "javascript")}
+                        title={_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                      />
+                    </>
+                  )}
+                  {(proposal as LambdaProposal).metadata.lambdaType === "remove_handler" && (
+                    <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                      <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
+                        <Grid item>
+                          <DetailsText variant="body1" color="textPrimary">
+                            Remove Lambda{" "}
+                            <Typography variant="body1" color="secondary" display={"inline"}>
+                              {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler)}
+                            </Typography>{" "}
+                          </DetailsText>
+                        </Grid>
+                      </HighlightedBadge>
+                    </Grid>
+                  )}
                 </>
               ) : null}
             </Grid>
@@ -478,37 +543,20 @@ export const ProposalDetails: React.FC = () => {
                   )
                 })}
 
-              {isLambdaProposal ? (
+              {/* {isLambdaProposal ? (
                 <>
                   <Grid container direction="column">
                     <Grid item>
                       <InfoTitle color="secondary">Information</InfoTitle>
                     </Grid>
-                    <Grid item container direction="row" alignItems="center">
-                      <InfoItem color="textPrimary">
-                        Contract Address: {"Mock tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF "}{" "}
-                      </InfoItem>
-                      <InfoCopyIcon
-                        text="Mock tz1XJcu9baEFdsgtawB7Twas6VxtetwJZcVF"
-                        style={{ height: 15, marginLeft: -6 }}
-                      />
-                    </Grid>
                     <Grid item container direction="row">
                       <InfoItem color="textPrimary">
-                        Parameter 1: {"Mock tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"}
-                      </InfoItem>
-                    </Grid>
-                    <Grid item container direction="row">
-                      <InfoItem color="textPrimary">Parameter 2: {"Mock 1300"}</InfoItem>
-                    </Grid>
-                    <Grid item container direction="row">
-                      <InfoItem color="textPrimary">
-                        Lambda Type: {_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                        Proposal Type: {_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
                       </InfoItem>
                     </Grid>
                   </Grid>
                 </>
-              ) : null}
+              ) : null} */}
             </Container>
           </Grid>
         </Grid>

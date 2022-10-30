@@ -54,7 +54,6 @@ export class TreasuryDAO extends BaseDAO {
         update_contract_delegate: newDelegationAddress
       }.toString()
     )
-    console.log("lambdaData: ", lambdaData)
 
     const parser = new Parser()
 

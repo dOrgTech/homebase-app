@@ -171,12 +171,11 @@ export class LambdaDAO extends BaseDAO {
       }),
       proposal_meta_michelson_type
     )
-    console.log("proposalMetadata: ", proposalMetadata)
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
-      formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
-      proposalMetadata
+      formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
+      proposalMetadata.bytes
     )
 
     return await contractMethod.send()
@@ -191,7 +190,6 @@ export class LambdaDAO extends BaseDAO {
     const packed_transfer_proposal_arg = packDataBytes(
       transfer_arg_schema.Encode(newDelegationAddress) // as MichelsonData
     )
-    console.log("packed_transfer_proposal_arg: ", packed_transfer_proposal_arg.bytes)
 
     // const michelsonType = parser.parseData(proposelambda);
     // const schema = new Schema(michelsonType as Expr);
@@ -224,7 +222,6 @@ export class LambdaDAO extends BaseDAO {
       }),
       proposal_meta_michelson_type
     )
-    console.log("proposalMetadata: ", proposalMetadata)
 
     // const proposalMetadata = await BaseDAO.encodeProposalMetadata(
     //   {
@@ -240,20 +237,18 @@ export class LambdaDAO extends BaseDAO {
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
       formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-      proposalMetadata
+      proposalMetadata.bytes
     )
 
     return await contractMethod.send()
   }
 
   public propose = async ({ agoraPostId, transfer_proposal }: RegistryProposeArgs, tezos: TezosToolkit) => {
-    console.log("transfer_proposal: ", transfer_proposal)
     const contract = await getContract(tezos, this.data.address)
     const p = new Parser()
     // const parser = new Parser();
 
     const transfer_arg_schema = new Schema(transfer_arg_type_michelson as MichelsonData)
-
     const transfer_proposal_args = {
       transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
       registry_diff: transfer_proposal.registry_diff.map(item => [char2Bytes(item.key), char2Bytes(item.value)]),
@@ -275,7 +270,6 @@ export class LambdaDAO extends BaseDAO {
       }),
       proposal_meta_michelson_type
     )
-    console.log("proposalMetadata: ", proposalMetadata)
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
@@ -290,24 +284,14 @@ export class LambdaDAO extends BaseDAO {
     { handler_name, agoraPostId, handler_code, handler_params, lambda_arguments }: LambdaExecuteArgs,
     tezos: TezosToolkit
   ) {
-    console.log("tezos: ", tezos)
-    console.log("handler_params: ", handler_params)
-    console.log("handler_code: ", handler_code)
-    console.log("agoraPostId: ", agoraPostId)
-    console.log("handler_name: ", handler_name)
-    console.log("lambda_arguments: ", lambda_arguments)
-
     const contract = await getContract(tezos, this.data.address)
     const p = new Parser()
     // const parser = new Parser();
     const transfer_arg_type = JSON.parse(lambda_arguments)
-    console.log("transfer_arg_type: ", transfer_arg_type)
     // const transfer_arg_michelson_type = p.parseMichelineExpression(transfer_arg_type) as MichelsonType
     const transfer_arg_schema = new Schema(transfer_arg_type as MichelsonData)
 
-    console.log("handler_params: ", handler_params)
     const handler_params_object = JSON.parse(handler_params)
-    console.log("handler_params_object: ", handler_params_object)
 
     const packed_transfer_proposal_arg = packDataBytes(
       transfer_arg_schema.Encode(handler_params_object) // as MichelsonData
@@ -336,12 +320,9 @@ export class LambdaDAO extends BaseDAO {
   }
 
   public async proposeLambdaAdd({ data }: LambdaAddArgs, tezos: TezosToolkit) {
-    console.log("here")
-    console.log("tezos: ", tezos)
     const contract = await getContract(tezos, this.data.address)
 
     const proposalMetadata = await BaseDAO.encodeLambdaAddMetadata(data, proposelambda, tezos)
-    console.log("proposalMetadata: ", proposalMetadata)
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
@@ -353,9 +334,6 @@ export class LambdaDAO extends BaseDAO {
   }
 
   public async proposeLambdaRemove({ handler_name }: LambdaRemoveArgs, tezos: TezosToolkit) {
-    console.log("handler_name: ", handler_name)
-    console.log("here remove")
-    console.log("tezos: ", tezos)
     const contract = await getContract(tezos, this.data.address)
 
     const michelsonType = parser.parseData(proposelambda)

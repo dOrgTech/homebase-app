@@ -27,7 +27,6 @@ export const useLambdaExecutePropose = () => {
           tezosToolkit = await connect()
         }
 
-        console.log("tezosToolkit: ", tezosToolkit)
         const data = await dao.proposeLambdaExecute(args, tezosToolkit)
 
         mixpanel.track("Proposal Created", {

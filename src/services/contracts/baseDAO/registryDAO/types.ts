@@ -428,23 +428,26 @@ export type PMLambdaProposal =
   | PMBaseProposal
   | {
       add_handler: {
-        code: Record<string, any>
-        handler_check: Record<string, string>
-        name: string
+        code?: Record<string, any>
+        handler_check?: Record<string, string>
+        name?: string
       }
     }
   | {
       remove_handler: {
-        code: Record<string, any>
-        handler_check: Record<string, string>
-        name: string
+        code?: Record<string, any>
+        handler_check?: Record<string, string>
+        name?: string
       }
     }
   | {
       execute_handler: {
-        code: Record<string, any>
-        handler_check: Record<string, string>
-        name: string
+        code?: Record<string, any>
+        handler_check?: Record<string, string>
+        name?: string
+        handler_name?: string
+        unpacked_argument?: any
+        packed_argument?: any
       }
     }
 // | {

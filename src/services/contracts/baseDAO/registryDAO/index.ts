@@ -139,7 +139,6 @@ export class RegistryDAO extends BaseDAO {
         }
       }.toString()
     )
-    console.log("lambdaData: ", lambdaData)
 
     const dataToEncode = {
       execute_handler: {
