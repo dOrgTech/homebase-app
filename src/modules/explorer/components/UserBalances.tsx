@@ -108,9 +108,9 @@ export const UserBalances: React.FC<{ daoId: string }> = ({ daoId, children }) =
       return userBalances
     }
 
-    userBalances.available.balance = userLedger.available_balance.dp(10).toString()
-    userBalances.pending.balance = userLedger.pending_balance.dp(10).toString()
-    userBalances.staked.balance = userLedger.staked.dp(10).toString()
+    userBalances.available.balance = userLedger.available_balance.dp(10, 1).toString()
+    userBalances.pending.balance = userLedger.pending_balance.dp(10, 1).toString()
+    userBalances.staked.balance = userLedger.staked.dp(10, 1).toString()
 
     return userBalances
   }, [account, ledger])

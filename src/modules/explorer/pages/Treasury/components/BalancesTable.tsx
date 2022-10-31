@@ -57,7 +57,7 @@ const createData = (daoHolding: DAOHolding): RowData => {
   return {
     symbol: daoHolding.token.symbol,
     address: daoHolding.token.contract,
-    amount: daoHolding.balance.dp(10).toString()
+    amount: daoHolding.balance.dp(10, 1).toString()
   }
 }
 
