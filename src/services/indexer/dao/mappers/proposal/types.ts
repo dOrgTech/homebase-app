@@ -2,15 +2,20 @@ import BigNumber from "bignumber.js"
 import dayjs from "dayjs"
 import treasuryProposeCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose"
 import registryProposeCode from "services/contracts/baseDAO/registryDAO/michelson/propose"
+import lambdaProposeCode from "services/contracts/baseDAO/registryDAO/michelson/proposelambda"
 import { Schema } from "@taquito/michelson-encoder"
-import { Parser, Expr, unpackDataBytes } from "@taquito/michel-codec"
+import { Parser, Expr, unpackDataBytes, MichelsonType, MichelsonData } from "@taquito/michel-codec"
 import { parseUnits } from "services/contracts/utils"
 import { ProposalDTO } from "services/indexer/types"
-import { PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types"
+import { PMLambdaProposal, PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types"
 import { extractTransfersData } from "."
 import { bytes2Char } from "@taquito/tzip16"
 import { BaseDAO } from "services/contracts/baseDAO"
 import { DAOTemplate } from "modules/creator/state"
+import transfer_arg_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/transfer_proposal_type.json"
+import update_contract_delegate_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/update_contract_delegate_proposal.json"
+import update_guardian_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/update_guardian_proposal.json"
+import configuration_proposal_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
 
 export enum IndexerStatus {
   CREATED = "created",
@@ -22,17 +27,72 @@ export enum IndexerStatus {
 export enum ProposalStatus {
   PENDING = "pending",
   ACTIVE = "active",
-
   PASSED = "passed",
   REJECTED = "rejected",
-
   NO_QUORUM = "no quorum",
-
   EXECUTABLE = "executable",
-
   DROPPED = "dropped",
   EXPIRED = "expired",
   EXECUTED = "executed"
+}
+
+export interface Transfer {
+  amount: BigNumber
+  beneficiary: string
+  type: "XTZ" | "FA2"
+}
+
+export interface FA2Transfer extends Transfer {
+  contractAddress: string
+  tokenId: string
+}
+
+interface BaseProposalMetadata {
+  config: { key: "frozen_extra_value" | "slash_scale_value"; value: any }[]
+  update_guardian: string
+  update_contract_delegate: string
+  agoraPostId: string
+}
+
+const baseProposalMetadata: BaseProposalMetadata = {
+  config: [],
+  update_guardian: "",
+  update_contract_delegate: "",
+  agoraPostId: "-1"
+}
+
+function getBaseMetadata(
+  proposalMetadataDTO: PMTreasuryProposal | PMRegistryProposal | PMLambdaProposal
+): BaseProposalMetadata {
+  const values = { ...baseProposalMetadata }
+
+  if ("execute_handler" in proposalMetadataDTO && proposalMetadataDTO.execute_handler.packed_argument) {
+    const parser = new Parser()
+    const unpacked_argument = unpackDataBytes(
+      { bytes: proposalMetadataDTO.execute_handler.packed_argument },
+      parser.parseMichelineExpression(proposalMetadataDTO.execute_handler.packed_argument) as MichelsonType
+    )
+
+    if (proposalMetadataDTO.execute_handler.handler_name === "update_contract_delegate_proposal") {
+      const update_contract_delegate_schema = new Schema(update_contract_delegate_type_michelson as MichelsonData)
+      const update_contract_delegate_data = update_contract_delegate_schema.Execute(unpacked_argument)
+      values.update_contract_delegate = update_contract_delegate_data
+    }
+    if (proposalMetadataDTO.execute_handler.handler_name === "update_guardian_proposal") {
+      const update_guardian_schema = new Schema(update_guardian_type_michelson as MichelsonData)
+      const update_guardian_data = update_guardian_schema.Execute(unpacked_argument)
+      values.update_guardian = update_guardian_data
+    }
+    if (proposalMetadataDTO.execute_handler.handler_name === "configuration_proposal") {
+      const configuration_proposal_schema = new Schema(configuration_proposal_type_michelson as MichelsonData)
+      const configuration_proposal_data = configuration_proposal_schema.Execute(unpacked_argument)
+      values.config = Object.entries(configuration_proposal_data)
+        .filter(([_, value]) => !!value)
+        .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
+    }
+  }
+
+  return values
 }
 
 const INDEXER_TO_PROPOSAL_STATUS_MAP: Record<IndexerStatus, ProposalStatus> = {
@@ -294,46 +354,95 @@ export class RegistryProposal extends Proposal {
   }
 }
 
-export interface Transfer {
-  amount: BigNumber
-  beneficiary: string
-  type: "XTZ" | "FA2"
+interface LambdaProposalMetadata extends BaseProposalMetadata {
+  lambdaType: "add_handler" | "remove_handler" | "execute_handler" | ""
+  lambdaHandler: any
+  transfers: Transfer[]
+  list: {
+    key: string
+    value: string
+  }[]
 }
 
-export interface FA2Transfer extends Transfer {
-  contractAddress: string
-  tokenId: string
-}
+export class LambdaProposal extends Proposal {
+  private cachedMetadata: LambdaProposalMetadata | null = null
 
-interface BaseProposalMetadata {
-  config: { key: "frozen_extra_value" | "slash_scale_value"; value: BigNumber }[]
-  update_guardian: string
-  update_contract_delegate: string
-  agoraPostId: string
-}
+  get metadata(): LambdaProposalMetadata {
+    let lambdaMetadata: LambdaProposalMetadata = {
+      lambdaType: "",
+      lambdaHandler: {},
+      config: [],
+      transfers: [],
+      update_contract_delegate: "",
+      update_guardian: "",
+      agoraPostId: "",
+      list: []
+    }
 
-function getBaseMetadata(proposalMetadataDTO: PMTreasuryProposal | PMRegistryProposal): BaseProposalMetadata {
-  const values: BaseProposalMetadata = {
-    config: [],
-    update_guardian: "",
-    update_contract_delegate: "",
-    agoraPostId: "-1"
+    if (this.cachedMetadata !== null) {
+      return this.cachedMetadata
+    }
+
+    const parser = new Parser()
+    const typ = parser.parseMichelineExpression(lambdaProposeCode) as Expr
+    const schema = new Schema(typ)
+
+    const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, typ as MichelsonType)
+    const proposalMetadataDTO: PMLambdaProposal = schema.Execute(unpackedMetadata)
+    const baseMetadata: BaseProposalMetadata = getBaseMetadata(proposalMetadataDTO)
+    lambdaMetadata = {
+      ...baseMetadata,
+      lambdaType: "",
+      lambdaHandler: {},
+      list: [],
+      transfers: []
+    }
+
+    if ("add_handler" in proposalMetadataDTO) {
+      lambdaMetadata.lambdaType = "add_handler"
+      lambdaMetadata.lambdaHandler = proposalMetadataDTO.add_handler
+    }
+
+    if ("remove_handler" in proposalMetadataDTO) {
+      lambdaMetadata.lambdaType = "remove_handler"
+      lambdaMetadata.lambdaHandler = proposalMetadataDTO.remove_handler
+    }
+
+    if ("execute_handler" in proposalMetadataDTO) {
+      lambdaMetadata.lambdaType = "execute_handler"
+      lambdaMetadata.lambdaHandler = proposalMetadataDTO.execute_handler
+      try {
+        lambdaMetadata.lambdaHandler.unpacked_argument = unpackDataBytes(
+          { bytes: lambdaMetadata.lambdaHandler.packed_argument },
+          parser.parseMichelineExpression(lambdaMetadata.lambdaHandler?.packed_argument) as MichelsonType
+        )
+
+        if (lambdaMetadata.lambdaHandler.handler_name === "transfer_proposal") {
+          const transfer_arg_schema = new Schema(transfer_arg_type_michelson as MichelsonData)
+          const transfer_proposal_data = transfer_arg_schema.Execute(lambdaMetadata.lambdaHandler.unpacked_argument)
+
+          const { agora_post_id, registry_diff, transfers } = transfer_proposal_data
+          lambdaMetadata.agoraPostId = agora_post_id
+
+          if (transfers) {
+            lambdaMetadata.transfers = extractTransfersData(transfers)
+          }
+
+          if (registry_diff) {
+            lambdaMetadata.list = registry_diff.map((item: any) => ({
+              key: bytes2Char(item[0]),
+              value: bytes2Char(item[1])
+            }))
+          }
+        }
+      } catch (error) {
+        lambdaMetadata.lambdaHandler.unpacked_argument = {}
+      } finally {
+        delete lambdaMetadata.lambdaHandler.packed_argument
+      }
+    }
+
+    this.cachedMetadata = { ...lambdaMetadata }
+    return this.cachedMetadata
   }
-
-  if ("update_contract_delegate" in proposalMetadataDTO) {
-    values.update_contract_delegate = proposalMetadataDTO.update_contract_delegate
-  }
-
-  if ("update_guardian" in proposalMetadataDTO) {
-    values.update_guardian = proposalMetadataDTO.update_guardian
-  }
-
-  if ("configuration_proposal" in proposalMetadataDTO) {
-    values.config = Object.entries(proposalMetadataDTO.configuration_proposal)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .filter(([_, value]) => !!value)
-      .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
-  }
-
-  return values
 }

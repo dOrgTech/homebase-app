@@ -1,0 +1,70 @@
+{
+   "prim": "pair",
+   "args": [
+     {
+       "prim": "pair",
+       "args": [
+         {
+           "prim": "pair",
+           "args": [
+             {
+               "prim": "option",
+               "annots": [
+                 "%frozen_extra_value"
+               ],
+               "args": [
+                 {
+                   "prim": "nat"
+                 }
+               ]
+             },
+             {
+               "prim": "option",
+               "annots": [
+                 "%frozen_scale_value"
+               ],
+               "args": [
+                 {
+                   "prim": "nat"
+                 }
+               ]
+             }
+           ]
+         },
+         {
+           "prim": "option",
+           "annots": [
+             "%max_proposal_size"
+           ],
+           "args": [
+             {
+               "prim": "nat"
+             }
+           ]
+         },
+         {
+           "prim": "option",
+           "annots": [
+             "%slash_division_value"
+           ],
+           "args": [
+             {
+               "prim": "nat"
+             }
+           ]
+         }
+       ]
+     },
+     {
+       "prim": "option",
+       "annots": [
+         "%slash_scale_value"
+       ],
+       "args": [
+         {
+           "prim": "nat"
+         }
+       ]
+     }
+   ]
+ }

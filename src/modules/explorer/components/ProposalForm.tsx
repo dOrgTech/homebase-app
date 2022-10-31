@@ -78,6 +78,20 @@ const enabledForms: Record<
       component: ({ open }) => <UpdateRegistryDialog open={open} />
     }
   ],
+  "lambda": [
+    {
+      label: "TRANSFER FUNDS",
+      component: ({ open }) => <NewTreasuryProposalDialog open={open} />
+    },
+    {
+      label: "TRANSFER NFTs",
+      component: ({ open }) => <NFTTransferForm open={open} />
+    },
+    {
+      label: "UPDATE REGISTRY",
+      component: ({ open }) => <UpdateRegistryDialog open={open} />
+    }
+  ],
   "": []
 }
 
@@ -147,6 +161,17 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
           }
         })
       } else if ((dao as BaseDAO).data.type === "registry") {
+        registryMutate({
+          dao: dao as RegistryDAO,
+          args: {
+            agoraPostId,
+            transfer_proposal: {
+              transfers: mappedTransfers,
+              registry_diff: mappedList
+            }
+          }
+        })
+      } else if ((dao as BaseDAO).data.type === "lambda") {
         registryMutate({
           dao: dao as RegistryDAO,
           args: {

@@ -1,6 +1,7 @@
 import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles } from "@material-ui/core"
 import React, { useContext, useEffect, useState } from "react"
 import { useHistory, withRouter } from "react-router"
+import { ReactComponent as LambdaIcon } from "assets/img/lambda.svg"
 
 import { AccountBalance, FormatListBulleted } from "@material-ui/icons"
 import { ActionTypes, CreatorContext, DAOTemplate } from "modules/creator/state"
@@ -13,23 +14,47 @@ const CustomBox = styled(Grid)(({ theme }) => ({
   "borderRadius": 8,
   "maxWidth": 320,
   "width": "-webkit-fill-available",
-  "padding": "40px 50px",
+  "padding": "40px 44px",
   "textAlign": "start",
   "cursor": "pointer",
   "paddingBottom": 0,
   "&:hover": {
     border: "3px solid rgba(129, 254, 183, 0.4)",
-    padding: "37px 47px"
+    padding: "37px 41px"
   },
   ["@media (max-width:1167px)"]: {
     marginBottom: 20
   }
 }))
 
+const LambdaCustomBox = styled(Grid)(({ theme }) => ({
+  "height": 273,
+  "marginTop": 30,
+  "background": "#2F3438",
+  "borderRadius": 8,
+  "maxWidth": 320,
+  "width": "-webkit-fill-available",
+  "padding": "40px 44px",
+  "textAlign": "start",
+  "cursor": "pointer",
+  "paddingBottom": 0,
+  "&:hover": {
+    border: "3px solid rgba(129, 254, 183, 0.4)",
+    paddingTop: 37,
+    paddingBottom: 0,
+    paddingRight: 41,
+    paddingLeft: 41
+  },
+  ["@media (max-width:1167px)"]: {
+    marginBottom: 20,
+    marginTop: 0
+  }
+}))
+
 const styles = makeStyles({
   selected: {
     border: "3px solid rgba(129, 254, 183, 0.4)",
-    padding: "37px 47px"
+    padding: "37px 41px"
   }
 })
 
@@ -48,6 +73,13 @@ const CustomBalance = styled(AccountBalance)(({ theme }) => ({
 }))
 
 const CustomList = styled(FormatListBulleted)(({ theme }) => ({
+  width: 64,
+  height: 64,
+  color: theme.palette.secondary.light,
+  marginBottom: 16
+}))
+
+const Lambda = styled(LambdaIcon)(({ theme }) => ({
   width: 64,
   height: 64,
   color: theme.palette.secondary.light,
@@ -144,6 +176,22 @@ export const Template = (): JSX.Element => {
             Govern arbitrary smart contracts, curate marketplaces, and more
           </BoxDescription>
         </CustomBox>{" "}
+        <LambdaCustomBox
+          item
+          container
+          direction="column"
+          justifyContent="flex-start"
+          alignItems="center"
+          xs={isMobileSmall ? 12 : 6}
+          onClick={() => update("lambda")}
+          className={selectedTemplate === "lambda" ? style.selected : ""}
+        >
+          <Lambda />
+          <BoxTitle color="textSecondary">Lambda</BoxTitle>
+          <BoxDescription color="textSecondary">
+            Safe with multi-sig. List of key-value pairs. Contract interaction.
+          </BoxDescription>
+        </LambdaCustomBox>{" "}
       </Grid>
       {error ? <ErrorText>{"Must select a template in order to continue"}</ErrorText> : null}
     </Box>

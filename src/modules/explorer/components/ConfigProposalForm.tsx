@@ -99,9 +99,8 @@ export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
             </ProposalFormInput>
           </Grid>
           <Grid item>
-            <ProposalFormInput
-              label={`Percentage of tokens returned after rejection (Current: ${dao?.data.extra.returnedPercentage.toString()}%)`}
-            >
+            {/* <ProposalFormInput label={`Percentage of tokens returned after rejection (Current: ${dao?.data.extra.returnedPercentage.toString()}%)`}> */}
+            <ProposalFormInput label={`Percentage of tokens returned after rejection (Current:`}>
               <Controller
                 control={methods.control}
                 name={`returnedPercentage`}

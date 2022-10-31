@@ -11,13 +11,17 @@ import {
 } from "@material-ui/core"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs"
 import { ConnectMessage } from "./components/ConnectMessage"
 import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
 import { MainButton } from "../../../common/MainButton"
+import { BaseDAO, getContract } from "services/contracts/baseDAO"
+import proposelambda from "../../../../services/contracts/baseDAO/registryDAO/michelson/proposelambda"
+import { formatUnits } from "services/contracts/utils"
+import BigNumber from "bignumber.js"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -82,7 +86,7 @@ const DAOItemCard = styled(Grid)({
 })
 
 export const DAOList: React.FC = () => {
-  const { network, account } = useTezos()
+  const { network, account, tezos } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()
@@ -124,6 +128,56 @@ export const DAOList: React.FC = () => {
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
   }
+
+  useEffect(() => {
+    // (async () => {
+    //   const contract = await getContract(tezos, "KT1Je26VLhis2X8FaTda7SQT4PsstmCZL2ez");
+    //   const proposalMetadata = await BaseDAO.encodeProposalMetadata(
+    //     {
+    //       add_handler: {
+    //         handler_name: "Lambda 1",
+    //         code: {
+    //           handler_storage: {
+    //             "hello": "hellllo"
+    //           },
+    //           packed_argument: "hello",
+    //           proposal_info: {
+    //             from: "KT1Je26VLhis2X8FaTda7SQT4PsstmCZL2ez",
+    //             frozen_token: 10,
+    //             proposal_metadata: "hello"
+    //           }
+    //         },
+    //         handler_check: `(or (or (or (pair %configuration_proposal
+    //           (pair (pair (option %frozen_extra_value nat) (option %frozen_scale_value nat))
+    //                 (pair (option %max_proposal_size nat) (option %slash_division_value nat)))
+    //           (option %slash_scale_value nat))
+    //       (pair %transfer_proposal
+    //           (pair (nat %agora_post_id) (list %registry_diff (pair string (option string))))
+    //           (list %transfers
+    //  (or (pair %xtz_transfer_type (mutez %amount) (address %recipient))
+    //                 (pair %token_transfer_type
+    //                     (address %contract_address)
+    //                     (list %transfer_list
+    //                       (pair (address %from_)
+    //                             (list %txs (pair (address %to_) (pair (nat %token_id) (nat %amount)))))))))))
+    //             (or (option %update_contract_delegate key_hash) (address %update_guardian)))
+    //         (or %update_receivers_proposal
+    //             (list %add_receivers address)
+    //             (list %remove_receivers address)))`
+    //       },
+    //     },
+    //     proposelambda,
+    //     tezos
+    //   );
+    //   console.log("proposalMetadata: ", proposalMetadata);
+    // })();
+    // const contractMethod = contract.methods.propose(
+    //   await tezos.wallet.pkh(),
+    //   formatUnits(new BigNumber(this.data.fixed_proposal_fee_in_token), this.data.token.decimals),
+    //   proposalMetadata
+    // );
+    // return await contractMethod.send();
+  }, [])
 
   return (
     <>

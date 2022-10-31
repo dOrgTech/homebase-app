@@ -4,11 +4,12 @@ import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
 import { Tzip16Module } from "@taquito/tzip16"
 import { EnvKey, getEnv } from "services/config"
 
-export type Network = "mainnet" | "ghostnet"
+export type Network = "mainnet" | "ghostnet" | "kathmandunet"
 
 export const rpcNodes: Record<Network, string> = {
-  mainnet: "https://mainnet.api.tez.ie",
-  ghostnet: "https://ghostnet.ecadinfra.com"
+  mainnet: "https://mainnet.smartpy.io",
+  ghostnet: "https://ghostnet.ecadinfra.com",
+  kathmandunet: "https://kathmandunet.ecadinfra.com"
 }
 
 export const getTezosNetwork = (): Network => {
@@ -49,6 +50,9 @@ export const getNetworkTypeByEnvNetwork = (envNetwork: Network): NetworkType => 
 
     case "mainnet":
       return NetworkType.MAINNET
+
+    case "kathmandunet":
+      return NetworkType.KATHMANDUNET
 
     default:
       return NetworkType.MAINNET

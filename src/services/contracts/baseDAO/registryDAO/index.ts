@@ -2,9 +2,10 @@ import { Expr, Parser, unpackDataBytes } from "@taquito/michel-codec"
 import { TezosToolkit } from "@taquito/taquito"
 import { Schema } from "@taquito/michelson-encoder"
 import { BaseDAO, BaseDAOData, getContract } from ".."
-import { RegistryProposeArgs } from "./types"
+import { LambdaAddArgs, RegistryProposeArgs } from "./types"
 import { bytes2Char, char2Bytes } from "@taquito/tzip16"
 import proposeCode from "./michelson/propose"
+import proposelambda from "./michelson/proposelambda"
 import { RegistryExtraDTO } from "services/indexer/types"
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal"
 import { BigNumber } from "bignumber.js"
@@ -126,14 +127,23 @@ export class RegistryDAO extends BaseDAO {
   public propose = async ({ agoraPostId, transfer_proposal }: RegistryProposeArgs, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address)
 
-    const michelsonType = parser.parseData(proposeCode)
+    const michelsonType = parser.parseData(proposelambda)
     const schema = new Schema(michelsonType as Expr)
 
+    const lambdaData = char2Bytes(
+      {
+        transfer_proposal: {
+          transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
+          registry_diff: transfer_proposal.registry_diff.map(item => [char2Bytes(item.key), char2Bytes(item.value)]),
+          agora_post_id: agoraPostId
+        }
+      }.toString()
+    )
+
     const dataToEncode = {
-      transfer_proposal: {
-        transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
-        registry_diff: transfer_proposal.registry_diff.map(item => [char2Bytes(item.key), char2Bytes(item.value)]),
-        agora_post_id: agoraPostId
+      execute_handler: {
+        handler_name: "transfer_proposal",
+        packed_argument: lambdaData
       }
     }
 

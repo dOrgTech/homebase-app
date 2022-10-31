@@ -1,3 +1,4 @@
+import _ from "lodash"
 import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core"
 import { styled, useTheme } from "@material-ui/styles"
 import ReactHtmlParser from "react-html-parser"
@@ -12,7 +13,7 @@ import { useParams } from "react-router"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { BaseDAO } from "services/contracts/baseDAO"
 import { useDropProposal } from "services/contracts/baseDAO/hooks/useDropProposal"
-import { formatUnits, parseUnits, toShortAddress } from "services/contracts/utils"
+import { parseUnits, toShortAddress } from "services/contracts/utils"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { useProposal } from "services/indexer/dao/hooks/useProposal"
 import { ContentContainer } from "../../components/ContentContainer"
@@ -23,6 +24,7 @@ import { HighlightedBadge } from "modules/explorer/components/styled/Highlighted
 import { TransferBadge } from "modules/explorer/components/TransferBadge"
 import {
   FA2Transfer,
+  LambdaProposal,
   Proposal,
   ProposalStatus,
   RegistryProposal,
@@ -35,6 +37,10 @@ import { InfoIcon } from "../../components/styled/InfoIcon"
 import { ProposalTransferBadge } from "modules/explorer/components/ProposalTransferBadge"
 import { useUnstakeVotes } from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes"
 import { useTezos } from "../../../../services/beacon/hooks/useTezos"
+import { CodeVisor } from "./components/CodeVisor"
+import { CopyButton } from "modules/common/CopyButton"
+import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
+import Prism, { highlight } from "prismjs"
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px"
@@ -54,6 +60,11 @@ const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
 const QuorumTitle = styled(Typography)(() => ({
   color: "#3866F9"
 }))
+
+const ViewCodeButton = styled(Button)({
+  height: 31,
+  fontSize: 16
+})
 
 const ProgressText = styled(Typography)(({ textColor }: { textColor: string }) => ({
   color: textColor,
@@ -79,6 +90,27 @@ const VoteButton = styled(Button)(({ favor }: { favor: boolean }) => ({
   backgroundColor: favor ? "#3FE888" : "#FF486E"
 }))
 
+const InfoTitle = styled(Typography)({
+  marginTop: 37,
+  fontWeight: 400,
+  fontSize: 18,
+  lineHeigh: "27px"
+})
+
+const InfoItem = styled(Typography)({
+  marginTop: 11,
+  fontWeight: 400,
+  fontSize: 16,
+  lineHeight: "24px"
+})
+
+const InfoCopyIcon = styled(CopyButton)({
+  "height": 15,
+  "& svg": {
+    height: 15
+  }
+})
+
 const getReadableConfig = (configKey: keyof Proposal["metadata"]["config"]) => {
   switch (configKey) {
     case "frozen_extra_value":
@@ -97,9 +129,11 @@ export const ProposalDetails: React.FC = () => {
   }>()
   const daoId = useDAOID()
   const [openVote, setOpenVote] = useState(false)
+  const [openVisor, setOpenVisor] = useState(false)
   const [voteIsSupport, setVoteIsSupport] = useState(false)
   const theme = useTheme<Theme>()
   const { data: proposal } = useProposal(daoId, proposalId)
+  const isLambdaProposal = proposal?.type === "lambda"
   const { data: dao, cycleInfo } = useDAO(daoId)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { mutate: dropProposal } = useDropProposal()
@@ -143,7 +177,7 @@ export const ProposalDetails: React.FC = () => {
   })
 
   const list = useMemo(() => {
-    if (!proposal || !(proposal instanceof RegistryProposal)) {
+    if (!proposal || !(proposal instanceof LambdaProposal)) {
       return []
     }
 
@@ -206,6 +240,7 @@ export const ProposalDetails: React.FC = () => {
               </Grid>
               <Grid>
                 <Button variant="contained" color="secondary" disabled={!canUnstakeVotes} onClick={onUnstakeVotes}>
+                  {/* <Button variant="contained" color="secondary" disabled={false} onClick={onUnstakeVotes}> */}
                   Unstake votes
                 </Button>
                 <Tooltip
@@ -232,6 +267,20 @@ export const ProposalDetails: React.FC = () => {
                       <Grid item>
                         <UserBadge address={proposal.proposer} short={true} />
                       </Grid>
+
+                      {isLambdaProposal ? (
+                        <Grid item>
+                          <ViewCodeButton variant="contained" color="secondary" onClick={() => setOpenVisor(true)}>
+                            View Code
+                          </ViewCodeButton>
+                          <CodeVisor
+                            open={openVisor}
+                            code={JSON.stringify((proposal as LambdaProposal).metadata.lambdaHandler, null, 2)}
+                            title={_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                            handleClose={() => setOpenVisor(false)}
+                          />
+                        </Grid>
+                      ) : null}
                     </Grid>
                   )}
                 </Grid>
@@ -348,7 +397,21 @@ export const ProposalDetails: React.FC = () => {
             <Grid item container style={{ gap: 25 }}>
               {proposal ? (
                 <>
-                  {transfers.map((transfer, index) => {
+                  {(proposal as LambdaProposal).metadata.lambdaType === "execute_handler" && (
+                    <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                      <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
+                        <Grid item>
+                          <DetailsText variant="body1" color="textPrimary">
+                            Execute Lambda{" "}
+                            <Typography variant="body1" color="secondary" display={"inline"}>
+                              {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler.handler_name)}
+                            </Typography>{" "}
+                          </DetailsText>
+                        </Grid>
+                      </HighlightedBadge>
+                    </Grid>
+                  )}
+                  {transfers?.map((transfer, index) => {
                     return (
                       <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
                         {transfer.type === "XTZ" ? (
@@ -399,6 +462,55 @@ export const ProposalDetails: React.FC = () => {
                       </HighlightedBadge>
                     </Grid>
                   ))}
+                  {(proposal as LambdaProposal).metadata.lambdaType === "add_handler" && (
+                    <>
+                      <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                        <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
+                          <Grid item>
+                            <DetailsText variant="body1" color="textPrimary">
+                              Add Lambda{" "}
+                              <Typography variant="body1" color="secondary" display={"inline"}>
+                                {(proposal as LambdaProposal).metadata.lambdaHandler.name}
+                              </Typography>{" "}
+                            </DetailsText>
+                          </Grid>
+                        </HighlightedBadge>
+                      </Grid>
+                      <ProposalCodeEditorInput
+                        label="Lambda Code"
+                        containerStyle={{ marginTop: "8px" }}
+                        insertSpaces
+                        ignoreTabKey={false}
+                        tabSize={4}
+                        padding={10}
+                        style={{
+                          minHeight: 500,
+                          fontFamily: "Roboto Mono",
+                          fontSize: 14,
+                          fontWeight: 400,
+                          outlineWidth: 0
+                        }}
+                        value={JSON.stringify((proposal as LambdaProposal).metadata.lambdaHandler, null, 2)}
+                        onValueChange={code => true}
+                        highlight={code => highlight(code, Prism.languages.javascript, "javascript")}
+                        title={_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                      />
+                    </>
+                  )}
+                  {(proposal as LambdaProposal).metadata.lambdaType === "remove_handler" && (
+                    <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                      <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
+                        <Grid item>
+                          <DetailsText variant="body1" color="textPrimary">
+                            Remove Lambda{" "}
+                            <Typography variant="body1" color="secondary" display={"inline"}>
+                              {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler)}
+                            </Typography>{" "}
+                          </DetailsText>
+                        </Grid>
+                      </HighlightedBadge>
+                    </Grid>
+                  )}
                 </>
               ) : null}
             </Grid>
@@ -406,7 +518,7 @@ export const ProposalDetails: React.FC = () => {
         </Container>
         <Grid item>
           <Grid container>
-            <Container item md={7} xs={12}>
+            <Container item md={12} xs={12}>
               {cycleInfo &&
                 proposal?.getStatus(cycleInfo.currentLevel).statusHistory.map((item, index) => {
                   return (
@@ -430,6 +542,21 @@ export const ProposalDetails: React.FC = () => {
                     </HistoryItem>
                   )
                 })}
+
+              {/* {isLambdaProposal ? (
+                <>
+                  <Grid container direction="column">
+                    <Grid item>
+                      <InfoTitle color="secondary">Information</InfoTitle>
+                    </Grid>
+                    <Grid item container direction="row">
+                      <InfoItem color="textPrimary">
+                        Proposal Type: {_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                      </InfoItem>
+                    </Grid>
+                  </Grid>
+                </>
+              ) : null} */}
             </Container>
           </Grid>
         </Grid>

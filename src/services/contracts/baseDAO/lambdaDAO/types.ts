@@ -1,5 +1,4 @@
 import { BigNumber } from "bignumber.js"
-import { Lambda, LambdaCode } from "services/bakingBad/lambdas/types"
 import { Extra, TransferParams } from ".."
 
 export interface RegistryItem {
@@ -24,24 +23,6 @@ export interface RegistryProposeArgs {
     registry_diff: RegistryItem[]
   }
   agoraPostId: number
-}
-
-export interface LambdaAddArgs {
-  data: string
-  agoraPostId: number
-}
-
-export interface LambdaRemoveArgs {
-  handler_name: string
-  agoraPostId: number
-}
-
-export interface LambdaExecuteArgs {
-  handler_name: string
-  agoraPostId: number
-  handler_code: LambdaCode
-  handler_params: string
-  lambda_arguments: string
 }
 
 export type RegistryExtraDTOBCD = [
@@ -423,40 +404,3 @@ export type PMRegistryProposal =
         transfers: (PMXTZTransferType | PMFA2TransferType)[]
       }
     }
-
-export type PMLambdaProposal =
-  | PMBaseProposal
-  | {
-      add_handler: {
-        code?: Record<string, any>
-        handler_check?: Record<string, string>
-        name?: string
-      }
-    }
-  | {
-      remove_handler: {
-        code?: Record<string, any>
-        handler_check?: Record<string, string>
-        name?: string
-      }
-    }
-  | {
-      execute_handler: {
-        code?: Record<string, any>
-        handler_check?: Record<string, string>
-        name?: string
-        handler_name?: string
-        unpacked_argument?: any
-        packed_argument?: any
-      }
-    }
-// | {
-//     transfer_proposal: {
-//       agora_post_id: string
-//       registry_diff: {
-//         "0": string
-//         "1": string
-//       }[]
-//       transfers: (PMXTZTransferType | PMFA2TransferType)[]
-//     }
-//   }
