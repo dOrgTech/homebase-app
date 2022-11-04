@@ -1,7 +1,7 @@
 import { client } from "../graphql"
 import { DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
 import { GET_DAOS_QUERY, GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "./queries"
-import { LambdaProposal, Proposal, RegistryProposal, TreasuryProposal } from "./mappers/proposal/types"
+import { LambdaProposal, Proposal } from "./mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
 
@@ -47,12 +47,6 @@ export const getProposals = async (dao: BaseDAO) => {
 
   let proposals: Proposal[]
   switch (dao.data.type) {
-    case "treasury":
-      proposals = fetched.proposals.map(proposal => new TreasuryProposal(proposal, dao))
-      break
-    case "registry":
-      proposals = fetched.proposals.map(proposal => new RegistryProposal(proposal, dao))
-      break
     case "lambda":
       proposals = fetched.proposals.map(proposal => new LambdaProposal(proposal, dao))
       break

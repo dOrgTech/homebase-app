@@ -11,7 +11,6 @@ import {
   useMediaQuery
 } from "@material-ui/core"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { TreasuryDAO } from "services/contracts/baseDAO"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { ErrorText } from "modules/explorer/components/styled/ErrorText"
 import * as Yup from "yup"
@@ -24,6 +23,7 @@ import { Token } from "models/Token"
 import { ProposalFormInput } from "./ProposalFormInput"
 import { BatchBar } from "./BatchBar"
 import { useDAOID } from "../pages/DAO/router"
+import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 
 export type Asset = Token | { symbol: "XTZ" }
 
@@ -145,7 +145,7 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
   const [activeTransfer, setActiveTransfer] = React.useState(1)
   const daoId = useDAOID()
   const { data: daoData, ledger } = useDAO(daoId)
-  const dao = daoData as TreasuryDAO | undefined
+  const dao = daoData as LambdaDAO | undefined
   const { tokenHoldings: daoHoldings } = useDAOHoldings(daoId)
   const { data: tezosBalance } = useTezosBalance(daoId)
 

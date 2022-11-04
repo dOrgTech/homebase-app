@@ -146,36 +146,6 @@ export const Template = (): JSX.Element => {
     <Box>
       <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />
       <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} direction="row">
-        <CustomBox
-          item
-          container
-          direction="column"
-          justifyContent="flex-start"
-          alignItems="center"
-          xs={isMobileSmall ? 12 : 6}
-          onClick={() => update("treasury")}
-          className={selectedTemplate === "treasury" ? style.selected : ""}
-        >
-          <CustomBalance />
-          <BoxTitle color="textSecondary">Treasury</BoxTitle>
-          <BoxDescription color="textSecondary">Manage resources (tez, FA2, NFT) collectively</BoxDescription>
-        </CustomBox>
-        <CustomBox
-          item
-          container
-          direction="column"
-          justifyContent="flex-start"
-          alignItems="center"
-          xs={isMobileSmall ? 12 : 6}
-          onClick={() => update("registry")}
-          className={selectedTemplate === "registry" ? style.selected : ""}
-        >
-          <CustomList />
-          <BoxTitle color="textSecondary">Registry</BoxTitle>
-          <BoxDescription color="textSecondary">
-            Govern arbitrary smart contracts, curate marketplaces, and more
-          </BoxDescription>
-        </CustomBox>{" "}
         <LambdaCustomBox
           item
           container

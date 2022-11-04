@@ -107,15 +107,13 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) =>
                   Assets / Registry
                 </MainButton>
 
-                {dao.data.type === "registry" && (
-                  <MainButton
-                    variant={"contained"}
-                    color={"secondary"}
-                    onClick={() => handleOptionSelected(ProposalModalKey.config)}
-                  >
-                    Configuration
-                  </MainButton>
-                )}
+                <MainButton
+                  variant={"contained"}
+                  color={"secondary"}
+                  onClick={() => handleOptionSelected(ProposalModalKey.config)}
+                >
+                  Configuration
+                </MainButton>
 
                 <MainButton
                   variant={"contained"}

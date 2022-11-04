@@ -193,10 +193,6 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
     if (dao) {
       const disabledPages: string[] = []
 
-      if (dao.data.type === "treasury") {
-        disabledPages.push("Registry")
-      }
-
       if (!account) {
         disabledPages.push("User")
       }

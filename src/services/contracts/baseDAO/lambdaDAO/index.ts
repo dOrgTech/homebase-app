@@ -10,7 +10,7 @@ import { LambdaExtraDTO, RegistryExtraDTO } from "services/indexer/types"
 import { mapTransfersArgs } from "services/indexer/dao/mappers/proposal"
 import { BigNumber } from "bignumber.js"
 import { formatUnits } from "../../utils"
-import { LambdaAddArgs, LambdaExecuteArgs, LambdaRemoveArgs } from "../registryDAO/types"
+import { LambdaAddArgs, LambdaExecuteArgs, LambdaRemoveArgs } from "../lambdaDAO/types"
 
 import transfer_arg_type_michelson from "./michelson/supported_lambda_types/transfer_proposal_type.json"
 import update_contract_delegate_type_michelson from "./michelson/supported_lambda_types/update_contract_delegate_proposal.json"

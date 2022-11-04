@@ -230,15 +230,6 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderNewProposal = () => {
     return (
       <>
-        <ProposalFormInput label="Lambda Name">
-          <Controller
-            control={lambdaForm.control}
-            name="lambda_name"
-            render={({ field }) => (
-              <TextField {...field} placeholder="Enter Lambda Name" InputProps={{ disableUnderline: true }} />
-            )}
-          />
-        </ProposalFormInput>
         <ProposalCodeEditorInput
           label="Implementation"
           containerStyle={codeEditorContainerStyles}

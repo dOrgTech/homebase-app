@@ -5,7 +5,7 @@ import { useQuery } from "react-query"
 import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions"
 import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { TreasuryDAO, RegistryDAO, unpackExtraNumValue, CycleInfo } from "services/contracts/baseDAO"
+import { unpackExtraNumValue, CycleInfo } from "services/contracts/baseDAO"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import { parseUnits } from "services/contracts/utils"
 import { getDAO } from "services/indexer/dao/services"
@@ -59,20 +59,7 @@ export const useDAO = (address: string) => {
         }),
         type: dao.dao_type.name,
         extra:
-          dao.dao_type.name === "registry"
-            ? ({
-                ...dao.registry_extras[0],
-                frozen_extra_value: parseUnits(
-                  unpackExtraNumValue((dao.registry_extras[0] as any).frozen_extra_value),
-                  dao.token.decimals
-                ),
-                frozen_scale_value: unpackExtraNumValue((dao.registry_extras[0] as any).frozen_scale_value),
-                slash_division_value: unpackExtraNumValue((dao.registry_extras[0] as any).slash_division_value),
-                min_xtz_amount: unpackExtraNumValue((dao.registry_extras[0] as any).min_xtz_amount),
-                max_xtz_amount: unpackExtraNumValue((dao.registry_extras[0] as any).max_xtz_amount),
-                slash_scale_value: unpackExtraNumValue((dao.registry_extras[0] as any).slash_scale_value)
-              } as any)
-            : dao.dao_type.name === "lambda"
+          dao.dao_type.name === "lambda"
             ? ({
                 ...dao.lambda_extras[0],
                 frozen_extra_value: parseUnits(
@@ -102,10 +89,6 @@ export const useDAO = (address: string) => {
       }
 
       switch (dao.dao_type.name) {
-        case "treasury":
-          return new TreasuryDAO(base)
-        case "registry":
-          return new RegistryDAO(base)
         case "lambda":
           return new LambdaDAO(base)
         default:

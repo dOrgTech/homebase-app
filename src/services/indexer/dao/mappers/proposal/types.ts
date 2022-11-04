@@ -1,13 +1,10 @@
 import BigNumber from "bignumber.js"
 import dayjs from "dayjs"
-import treasuryProposeCode from "services/contracts/baseDAO/treasuryDAO/michelson/propose"
-import registryProposeCode from "services/contracts/baseDAO/registryDAO/michelson/propose"
-import lambdaProposeCode from "services/contracts/baseDAO/registryDAO/michelson/proposelambda"
+import lambdaProposeCode from "services/contracts/baseDAO/lambdaDAO/michelson/proposelambda"
 import { Schema } from "@taquito/michelson-encoder"
 import { Parser, Expr, unpackDataBytes, MichelsonType, MichelsonData } from "@taquito/michel-codec"
 import { parseUnits } from "services/contracts/utils"
 import { ProposalDTO } from "services/indexer/types"
-import { PMLambdaProposal, PMRegistryProposal, PMTreasuryProposal } from "services/contracts/baseDAO/registryDAO/types"
 import { extractTransfersData } from "."
 import { bytes2Char } from "@taquito/tzip16"
 import { BaseDAO } from "services/contracts/baseDAO"
@@ -16,6 +13,7 @@ import transfer_arg_type_michelson from "../../../../contracts/baseDAO/lambdaDAO
 import update_contract_delegate_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/update_contract_delegate_proposal.json"
 import update_guardian_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/update_guardian_proposal.json"
 import configuration_proposal_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
+import { PMLambdaProposal } from "services/contracts/baseDAO/lambdaDAO/types"
 
 export enum IndexerStatus {
   CREATED = "created",
@@ -61,9 +59,7 @@ const baseProposalMetadata: BaseProposalMetadata = {
   agoraPostId: "-1"
 }
 
-function getBaseMetadata(
-  proposalMetadataDTO: PMTreasuryProposal | PMRegistryProposal | PMLambdaProposal
-): BaseProposalMetadata {
+function getBaseMetadata(proposalMetadataDTO: PMLambdaProposal): BaseProposalMetadata {
   const values = { ...baseProposalMetadata }
 
   if ("execute_handler" in proposalMetadataDTO && proposalMetadataDTO.execute_handler.packed_argument) {
@@ -259,98 +255,6 @@ export abstract class Proposal {
     }
 
     return this.cachedStatus
-  }
-}
-
-interface TreasuryProposalMetadata extends BaseProposalMetadata {
-  transfers: Transfer[]
-}
-
-export class TreasuryProposal extends Proposal {
-  private cachedMetadata?: TreasuryProposalMetadata
-
-  get metadata(): TreasuryProposalMetadata {
-    let values: TreasuryProposalMetadata = {
-      config: [],
-      transfers: [],
-      update_guardian: "",
-      update_contract_delegate: "",
-      agoraPostId: ""
-    }
-
-    if (!this.cachedMetadata) {
-      const parser = new Parser()
-      const micheline = parser.parseMichelineExpression(treasuryProposeCode) as Expr
-      const schema = new Schema(micheline as Expr)
-
-      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
-      const proposalMetadataDTO: PMTreasuryProposal = schema.Execute(unpackedMetadata)
-      values = { ...values, ...getBaseMetadata(proposalMetadataDTO) }
-
-      if ("transfer_proposal" in proposalMetadataDTO) {
-        values.transfers = extractTransfersData(proposalMetadataDTO.transfer_proposal.transfers)
-        values.agoraPostId = proposalMetadataDTO.transfer_proposal.agora_post_id.toString()
-      }
-
-      this.cachedMetadata = values
-    }
-
-    return this.cachedMetadata
-  }
-}
-
-interface RegistryProposalMetadata extends BaseProposalMetadata {
-  transfers: Transfer[]
-  list: {
-    key: string
-    value: string
-  }[]
-}
-
-export class RegistryProposal extends Proposal {
-  private cachedMetadata?: RegistryProposalMetadata
-
-  get metadata(): RegistryProposalMetadata {
-    let values: RegistryProposalMetadata = {
-      config: [],
-      transfers: [],
-      update_contract_delegate: "",
-      update_guardian: "",
-      agoraPostId: "",
-      list: []
-    }
-
-    if (!this.cachedMetadata) {
-      const parser = new Parser()
-      const micheline = parser.parseMichelineExpression(registryProposeCode) as Expr
-      const schema = new Schema(micheline as Expr)
-
-      const unpackedMetadata = unpackDataBytes({ bytes: this.packedMetadata }, micheline as any) as any
-      const proposalMetadataDTO: PMRegistryProposal = schema.Execute(unpackedMetadata)
-
-      values = { ...values, ...getBaseMetadata(proposalMetadataDTO) }
-
-      if ("transfer_proposal" in proposalMetadataDTO) {
-        const { agora_post_id, registry_diff, transfers } = proposalMetadataDTO.transfer_proposal
-
-        values.agoraPostId = agora_post_id
-
-        if (transfers) {
-          values.transfers = extractTransfersData(proposalMetadataDTO.transfer_proposal.transfers)
-        }
-
-        if (registry_diff) {
-          values.list = registry_diff.map(item => ({
-            key: bytes2Char(item[0]),
-            value: bytes2Char(item[1])
-          }))
-        }
-      }
-
-      this.cachedMetadata = values
-    }
-
-    return this.cachedMetadata
   }
 }
 

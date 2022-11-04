@@ -54,7 +54,7 @@ export interface NavigationBarProps {
   }
 }
 
-export type DAOTemplate = "treasury" | "registry" | "lambda" | ""
+export type DAOTemplate = "lambda" | ""
 
 type DeploymentStatus = {
   deploying: boolean

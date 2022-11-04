@@ -12,10 +12,9 @@ import { Token } from "models/Token"
 import { Ledger } from "services/indexer/types"
 import { Expr, Parser, packDataBytes, MichelsonType, MichelsonData } from "@taquito/michel-codec"
 import { Schema } from "@taquito/michelson-encoder"
-import proposeCode from "./registryDAO/michelson/propose"
 
 import configuration_type_michelson from "./lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
-import proposelambda from "./registryDAO/michelson/proposelambda"
+import proposelambda from "./lambdaDAO/michelson/proposelambda"
 
 interface DeployParams {
   params: MigrationParams

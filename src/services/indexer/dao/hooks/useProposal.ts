@@ -1,6 +1,6 @@
 import { useQuery } from "react-query"
 import { BaseDAO } from "services/contracts/baseDAO"
-import { LambdaProposal, Proposal, RegistryProposal, TreasuryProposal } from "../mappers/proposal/types"
+import { LambdaProposal } from "../mappers/proposal/types"
 import { getProposal } from "../services"
 import { useDAO } from "./useDAO"
 
@@ -14,10 +14,6 @@ export const useProposal = (contractAddress: string, proposalKey: string) => {
       const proposal = response.daos[0].proposals[0]
 
       switch (dao?.data.type) {
-        case "treasury":
-          return new TreasuryProposal(proposal, dao)
-        case "registry":
-          return new RegistryProposal(proposal, dao)
         case "lambda":
           return new LambdaProposal(proposal, dao)
         default:

@@ -22,14 +22,7 @@ import { useVotesStats } from "modules/explorer/hooks/useVotesStats"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge"
 import { TransferBadge } from "modules/explorer/components/TransferBadge"
-import {
-  FA2Transfer,
-  LambdaProposal,
-  Proposal,
-  ProposalStatus,
-  RegistryProposal,
-  TreasuryProposal
-} from "services/indexer/dao/mappers/proposal/types"
+import { FA2Transfer, LambdaProposal, Proposal, ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { VoteDialog } from "../../components/VoteDialog"
 import { XTZTransferBadge } from "../../components/XTZTransferBadge"
@@ -189,7 +182,7 @@ export const ProposalDetails: React.FC = () => {
       return []
     }
 
-    return (proposal as TreasuryProposal | RegistryProposal).metadata.transfers
+    return (proposal as LambdaProposal).metadata.transfers
   }, [holdings, proposal])
 
   const canVote = cycleInfo && proposal?.getStatus(cycleInfo.currentLevel).status === ProposalStatus.ACTIVE
