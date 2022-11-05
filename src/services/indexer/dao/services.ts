@@ -1,6 +1,13 @@
-import { client } from "../graphql"
+import { client, client_v2 } from "../graphql"
 import { DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
-import { GET_DAOS_QUERY, GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "./queries"
+import {
+  GET_DAOS_QUERY,
+  GET_DAOS_QUERY_V2,
+  GET_DAO_QUERY,
+  GET_PROPOSALS_QUERY,
+  GET_PROPOSAL_QUERY,
+  GET_XTZ_TRANSFERS
+} from "./queries"
 import { LambdaProposal, Proposal } from "./mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
@@ -36,7 +43,15 @@ export const getDAOs = async (network: string) => {
     network
   })
 
-  return response.daos
+  const response_v2 = await client_v2.request<GetAllDAOsDTO>(GET_DAOS_QUERY_V2, {
+    network
+  })
+  console.log("response_v2: ", response_v2)
+
+  const daos = response.daos
+  const daos_v2 = response_v2.daos
+
+  return [...daos, ...daos_v2]
 }
 
 export const getProposals = async (dao: BaseDAO) => {

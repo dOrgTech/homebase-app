@@ -1,6 +1,7 @@
 import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery } from "@material-ui/core"
 import { createTheme } from "@material-ui/core/styles"
 import React from "react"
+import { EnvKey, getEnv } from "services/config"
 
 const SectionNames = styled(Grid)(({ theme }: { theme: Theme }) => ({
   width: "55%",
@@ -129,13 +130,16 @@ export const DAOItem: React.FC<{
     name: string
     symbol: string
     votingAddresses: string[]
+    dao_type: { name: string }
   }
 }> = ({ dao }) => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const daoHref =
+    dao.dao_type.name !== "lambda" ? `${getEnv(EnvKey.REACT_APP_V2_URL)}/explorer/dao/${dao.id}` : `dao/${dao.id}`
 
   return (
-    <Link underline="none" href={`dao/${dao.id}`}>
+    <Link underline="none" href={daoHref}>
       <Container container justifyContent="space-between">
         <SectionNames>
           <Grid>

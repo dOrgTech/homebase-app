@@ -37,6 +37,43 @@ export const GET_DAOS_QUERY = gql`
   }
 `
 
+export const GET_DAOS_QUERY_V2 = gql`
+  query getDaos($network: String!) {
+    daos(where: { network: { _eq: $network } }) {
+      dao_type {
+        name
+      }
+      description
+      address
+      frozen_token_id
+      governance_token_id
+      ledgers {
+        holder {
+          address
+        }
+      }
+      name
+      network
+      period
+      staked
+      start_level
+      token {
+        contract
+        decimals
+        is_transferable
+        level
+        name
+        network
+        should_prefer_symbol
+        supply
+        symbol
+        timestamp
+        token_id
+      }
+    }
+  }
+`
+
 export const GET_DAO_QUERY = gql`
   query getDao($address: String!) {
     daos(where: { address: { _eq: $address } }) {
