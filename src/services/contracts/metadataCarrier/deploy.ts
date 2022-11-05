@@ -35,7 +35,7 @@ export const deployMetadataCarrier = async ({
   try {
     console.log("Originating Metadata Carrier contract...")
 
-    const t = await tezos.wallet.originate({
+    const t = tezos.wallet.originate({
       code,
       storage: {
         metadata: metadataMap
