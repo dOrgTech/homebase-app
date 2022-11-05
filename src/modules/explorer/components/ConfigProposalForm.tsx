@@ -45,8 +45,6 @@ export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
   const onSubmit = useCallback(
     (values: Values) => {
       if (dao) {
-        console.log(values)
-
         const mutateValues = {
           frozen_extra_value: values.frozen_extra_value,
           slash_scale_value: !Number.isNaN(parseInt(values.returnedPercentage))
@@ -59,8 +57,6 @@ export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
             delete mutateValues[key as keyof typeof mutateValues]
           }
         })
-
-        console.log(mutateValues)
 
         mutate({
           dao,

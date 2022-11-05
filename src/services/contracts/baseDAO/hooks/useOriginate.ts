@@ -111,8 +111,6 @@ export const useOriginate = (template: DAOTemplate) => {
         daoName: params.orgSettings.name
       })
 
-      console.log(params, network, metadata)
-
       const contract = await BaseDAO.baseDeploy(template, {
         tezos: tezosToolkit,
         metadata,
@@ -172,8 +170,6 @@ export const useOriginate = (template: DAOTemplate) => {
       }
     }
   )
-
-  console.log(result)
 
   return { mutation: result, states, activeState }
 }

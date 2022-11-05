@@ -34,7 +34,6 @@ export interface DAODTO {
   guardian: string
   ledgers?: LedgerDTO[]
   proposals?: ProposalDTO[]
-  // max_proposals: string;
   max_quorum_change: string
   max_quorum_threshold: string
   min_quorum_threshold: string

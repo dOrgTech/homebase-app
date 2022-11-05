@@ -6,8 +6,6 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ children, ...props }) 
   return (
     <SpringBottomSheet
       snapPoints={({ minHeight }) => {
-        console.log(minHeight)
-
         return minHeight
       }}
       {...props}

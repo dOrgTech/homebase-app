@@ -98,7 +98,6 @@ export const Proposals: React.FC = () => {
                     color="secondary"
                     onClick={onFlush}
                     disabled={!executableProposals || !executableProposals.length}
-                    // disabled={false}
                   >
                     Execute
                   </SmallButton>

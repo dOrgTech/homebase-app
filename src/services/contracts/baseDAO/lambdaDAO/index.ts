@@ -90,66 +90,7 @@ export class LambdaDAO extends BaseDAO {
   }
 
   public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {
-    // const contract = await getContract(tezos, this.data.address)
-
-    // const proposalMetadata = await BaseDAO.encodeProposalMetadata(
-    //   {
-    //     update_guardian: newGuardianAddress
-    //   },
-    //   proposeCode,
-    //   tezos
-    // )
-
-    // const contractMethod = contract.methods.propose(
-    //   await tezos.wallet.pkh(),
-    //   formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
-    //   proposalMetadata
-    // )
-
     const contract = await getContract(tezos, this.data.address)
-
-    // const lambdaData = char2Bytes(JSON.stringify(proposal_data));
-    // console.log("lambdaData: ", lambdaData);
-
-    // const transfer_arg_michelson_type = p.parseMichelineExpression(
-    //   proposeDelegationType
-    // ) as MichelsonType;
-    // const transfer_arg_schema = new Schema(transfer_arg_michelson_type);
-
-    // const packed_transfer_proposal_arg = packDataBytes(
-    //   transfer_arg_schema.Encode(newDelegationAddress), // as MichelsonData
-    // );
-
-    // const michelsonType = parser.parseData(proposelambda);
-    // const schema = new Schema(michelsonType as Expr);
-
-    // const parser = new Parser();
-
-    // const dataToEncode = {
-    //   execute_handler: {
-    //     handler_name: "update_contract_delegate_proposal",
-    //     packed_argument: lambdaData,
-    //   },
-    // }
-
-    // const dataJSON = parser.parseMichelineExpression(dataToEncode.toString()) as MichelsonData;
-    // const typeJSON = parser.parseMichelineExpression(proposeLambdaCode) as MichelsonType;
-
-    // const proposalMetadata = packDataBytes(
-    //   dataJSON, // as MichelsonData
-    //   typeJSON // as MichelsonType
-    // );
-
-    // const proposalMetadata = await BaseDAO.encodeProposalMetadata(
-    //   {
-    //     execute_handler: {
-    //       handler_name: "update_guardian_proposal",
-    //       packed_argument: packed_transfer_proposal_arg.bytes,
-    //     },
-    //   },
-    //   proposelambda,
-    //   tezos
-    // );
 
     const p = new Parser()
 
@@ -191,26 +132,6 @@ export class LambdaDAO extends BaseDAO {
       transfer_arg_schema.Encode(newDelegationAddress) // as MichelsonData
     )
 
-    // const michelsonType = parser.parseData(proposelambda);
-    // const schema = new Schema(michelsonType as Expr);
-
-    // const parser = new Parser();
-
-    // const dataToEncode = {
-    //   execute_handler: {
-    //     handler_name: "update_contract_delegate_proposal",
-    //     packed_argument: lambdaData,
-    //   },
-    // }
-
-    // const dataJSON = parser.parseMichelineExpression(dataToEncode.toString()) as MichelsonData;
-    // const typeJSON = parser.parseMichelineExpression(proposeLambdaCode) as MichelsonType;
-
-    // const proposalMetadata = packDataBytes(
-    //   dataJSON, // as MichelsonData
-    //   typeJSON // as MichelsonType
-    // );
-
     const proposal_meta_michelson_type = p.parseMichelineExpression(proposelambda) as MichelsonType
     const proposal_meta_schema = new Schema(proposal_meta_michelson_type)
     const proposalMetadata = packDataBytes(
@@ -222,17 +143,6 @@ export class LambdaDAO extends BaseDAO {
       }),
       proposal_meta_michelson_type
     )
-
-    // const proposalMetadata = await BaseDAO.encodeProposalMetadata(
-    //   {
-    //     execute_handler: {
-    //       handler_name: "update_contract_delegate_proposal",
-    //       packed_argument: packed_transfer_proposal_arg.bytes
-    //     }
-    //   },
-    //   proposelambda,
-    //   tezos
-    // )
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
@@ -246,7 +156,6 @@ export class LambdaDAO extends BaseDAO {
   public propose = async ({ agoraPostId, transfer_proposal }: RegistryProposeArgs, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address)
     const p = new Parser()
-    // const parser = new Parser();
 
     const transfer_arg_schema = new Schema(transfer_arg_type_michelson as MichelsonData)
     const transfer_proposal_args = {
@@ -286,16 +195,13 @@ export class LambdaDAO extends BaseDAO {
   ) {
     const contract = await getContract(tezos, this.data.address)
     const p = new Parser()
-    // const parser = new Parser();
     const transfer_arg_type = JSON.parse(lambda_arguments)
-    // const transfer_arg_michelson_type = p.parseMichelineExpression(transfer_arg_type) as MichelsonType
     const transfer_arg_schema = new Schema(transfer_arg_type as MichelsonData)
 
     const handler_params_object = JSON.parse(handler_params)
 
     const packed_transfer_proposal_arg = packDataBytes(
       transfer_arg_schema.Encode(handler_params_object) // as MichelsonData
-      // transfer_arg_michelson_type
     )
 
     const proposal_meta_michelson_type = p.parseMichelineExpression(proposelambda) as MichelsonType

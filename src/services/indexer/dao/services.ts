@@ -46,7 +46,6 @@ export const getDAOs = async (network: string) => {
   const response_v2 = await client_v2.request<GetAllDAOsDTO>(GET_DAOS_QUERY_V2, {
     network
   })
-  console.log("response_v2: ", response_v2)
 
   const daos = response.daos
   const daos_v2 = response_v2.daos
