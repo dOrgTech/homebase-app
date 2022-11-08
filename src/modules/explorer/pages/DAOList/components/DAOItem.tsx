@@ -157,6 +157,7 @@ export const DAOItem: React.FC<{
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const daoHref =
     dao.dao_type.name !== "lambda" ? `${getEnv(EnvKey.REACT_APP_V2_URL)}/explorer/dao/${dao.id}` : `dao/${dao.id}`
+  const daoType = dao.dao_type.name !== "lambda" ? `V2` : `V3`
 
   return (
     <Link underline="none" href={daoHref}>
@@ -169,7 +170,7 @@ export const DAOItem: React.FC<{
         </SectionNames>
         <Grid>
           <Grid item xs={12} sm>
-            <Badge dao_type={dao.dao_type.name}>{startCase(dao.dao_type.name)}</Badge>
+            <Badge dao_type={dao.dao_type.name}>{daoType}</Badge>
             <NumberText color="textPrimary">{dao.votingAddresses.length}</NumberText>
             <VotingAddressesText color="textPrimary">Voting Addresses</VotingAddressesText>
           </Grid>
