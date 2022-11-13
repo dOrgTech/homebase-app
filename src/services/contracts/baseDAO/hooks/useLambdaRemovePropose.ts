@@ -12,8 +12,12 @@ export const useLambdaRemovePropose = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: LambdaDAO; args: LambdaRemoveArgs }>(
-    async ({ dao, args }) => {
+  return useMutation<
+    TransactionWalletOperation | Error,
+    Error,
+    { dao: LambdaDAO; args: LambdaRemoveArgs; handleClose: () => void }
+  >(
+    async ({ dao, args, handleClose }) => {
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Proposal is being created...",
         persist: true,
@@ -42,6 +46,8 @@ export const useLambdaRemovePropose = () => {
           variant: "success",
           detailsLink: `https://${networkNameMap[network]}.tzkt.io/` + data.opHash
         })
+
+        handleClose()
         return data
       } catch (e) {
         console.log(e)

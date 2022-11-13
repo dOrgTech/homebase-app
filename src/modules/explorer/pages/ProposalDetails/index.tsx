@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery } from "@material-ui/core"
+import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, Collapse } from "@material-ui/core"
 import { styled, useTheme } from "@material-ui/styles"
 import ReactHtmlParser from "react-html-parser"
 import { BigNumber } from "bignumber.js"
@@ -34,6 +34,10 @@ import { CodeVisor } from "./components/CodeVisor"
 import { CopyButton } from "modules/common/CopyButton"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
+import { CodeCollapse } from "modules/explorer/components/CodeCollapse"
+import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
+import { useDAOLambda } from "services/contracts/baseDAO/hooks/useDAOLambda"
+import { parseLambdaCode } from "utils"
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px"
@@ -137,6 +141,8 @@ export const ProposalDetails: React.FC = () => {
 
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const { mutate: mutateUnstake } = useUnstakeVotes()
+  const daoLambdas = useDAOLambdas(daoId)
+  const proposalLambda = useDAOLambda(daoId, (proposal as LambdaProposal)?.metadata.lambdaHandler.handler_name)
 
   const onClickVote = (support: boolean) => {
     setVoteIsSupport(support)
@@ -268,8 +274,8 @@ export const ProposalDetails: React.FC = () => {
                           </ViewCodeButton>
                           <CodeVisor
                             open={openVisor}
-                            code={JSON.stringify((proposal as LambdaProposal).metadata.lambdaHandler, null, 2)}
-                            title={_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                            code={parseLambdaCode(proposalLambda?.value)}
+                            title={"Lambda Code"}
                             handleClose={() => setOpenVisor(false)}
                           />
                         </Grid>
@@ -455,6 +461,7 @@ export const ProposalDetails: React.FC = () => {
                       </HighlightedBadge>
                     </Grid>
                   ))}
+                  <CodeCollapse code={JSON.stringify((proposal as LambdaProposal).metadata.lambdaHandler, null, 2)} />
                   {(proposal as LambdaProposal).metadata.lambdaType === "add_handler" && (
                     <>
                       <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>

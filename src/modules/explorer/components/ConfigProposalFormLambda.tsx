@@ -16,6 +16,7 @@ import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
 import { Lambda } from "services/bakingBad/lambdas/types"
 import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
+import { parseLambdaCode } from "utils"
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
   width: 101,
@@ -83,26 +84,58 @@ enum LambdaProposalState {
   action_finished
 }
 
-const getCodeByProposalAction = (action: ProposalAction) => {
-  switch (action) {
-    case ProposalAction.new: {
-      return `const allowances = new MichelsonMap();
-         const ledger = new MichelsonMap();  
-         ledger.set('tz1btkXVkVFWLgXa66sbRJa8eeUSwvQFX4kP', { allowances, balance: '100' });
-          
-         const opknownBigMapContract = await tezos.contract.originate({
-          code: knownBigMapContract,
-            storage: {
-              ledger,
-              owner: 'tz1gvF4cD2dDtqitL3ZTraggSR1Mju2BKFEM',
-              totalSupply: '100',
-            },
-         });   
-        }`
+const codeEditorPlaceholder = {
+  addLambda: `Write Michelson Code for Lambda's Implementation
+
+Eg:- 
+
+(Left (Left (Pair (Pair { DROP ;
+    NIL operation ;
+    EMPTY_MAP string bytes ;
+    NONE address ;
+    PAIR ;
+    PAIR }
+  { DROP ; UNIT })
+"sample")))
+  `,
+  existingLambda: `Choose a Lambda from the Dropdown, the implementation will appear here
+  `,
+  lambdaExecuteArgumentsCode: `Write Michelson Code for the input Paramerers of your Lambda
+
+Eg:- 
+
+{
+  "prim": "pair",
+  "annots": [
+    "%xtz_transfer_type"
+  ],
+  "args": [
+    {
+      "prim": "mutez",
+      "annots": [
+        "%amount"
+      ]
+    },
+    {
+      "prim": "address",
+      "annots": [
+        "%recipient"
+      ]
     }
-    default:
-      return ""
+  ]
+},
+`,
+  lambdaExecuteParams: `Enter the values for the given params in a JSON/JavaScript Object format.
+
+Eg:- 
+
+{
+  xtz_transfer_type: {
+    amount: 10000000000000000000,
+    recipient: "tz1VSUr8wwNhLAzempoch5d6hLRiTh8Cjcjb"
   }
+}
+  `
 }
 
 export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action }) => {
@@ -119,10 +152,10 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const lambdaForm = useForm<Values>()
 
   const [lambda, setLambda] = React.useState<Lambda | null>(null)
-  const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.wallet_action)
+  const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.write_action)
   const [lambdaParams, setLambdaParams] = React.useState<string>("")
   const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
-  const [code, setCode] = React.useState<string>(getCodeByProposalAction(action))
+  const [code, setCode] = React.useState<string>("")
 
   useEffect(() => {
     if (open) {
@@ -135,7 +168,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
 
   const onSubmit = useCallback(
     (_: Values) => {
-      const agoraPostId = Number(123)
+      const agoraPostId = Number(0)
 
       switch (action) {
         case ProposalAction.new: {
@@ -144,8 +177,10 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             args: {
               agoraPostId,
               data: code
-            }
+            },
+            handleClose
           })
+
           break
         }
 
@@ -155,7 +190,6 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             return
           }
 
-          setState(LambdaProposalState.wallet_action)
           setCode("")
 
           lambdaRemove({
@@ -163,8 +197,10 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             args: {
               agoraPostId,
               handler_name: lambda.key
-            }
+            },
+            handleClose
           })
+
           break
         }
 
@@ -174,7 +210,6 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             return
           }
 
-          setState(LambdaProposalState.wallet_action)
           setCode("")
 
           const lambdaCode = JSON.parse(code)
@@ -193,15 +228,17 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
               handler_code,
               handler_params: lambdaParams,
               lambda_arguments: lambdaArguments
-            }
+            },
+            handleClose
           })
+
           break
         }
         default:
         // @TODO: Display Error
       }
     },
-    [dao, lambdaAdd, code, action, lambda, lambdaRemove, lambdaArguments, lambdaExecute, lambdaParams]
+    [dao, lambdaAdd, code, action, lambda, lambdaRemove, lambdaArguments, lambdaExecute, lambdaParams, handleClose]
   )
 
   const handleSearchChange = (data: Lambda) => {
@@ -213,17 +250,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
 
     lambdaForm.setValue("lambda_name", data.key)
     setLambda(data)
-    setCode(
-      JSON.stringify(
-        {
-          code: JSON.parse(data.value.code),
-          handler_check: JSON.parse(data.value.handler_check),
-          is_active: data.value.is_active
-        },
-        null,
-        2
-      )
-    )
+    setCode(parseLambdaCode(data.value))
     return
   }
 
@@ -241,6 +268,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           value={code}
           onValueChange={code => setCode(code)}
           highlight={code => highlight(code, grammar, "javascript")}
+          placeholder={codeEditorPlaceholder.addLambda}
         />
       </>
     )
@@ -263,6 +291,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           value={code}
           onValueChange={code => setCode(code)}
           highlight={code => highlight(code, grammar, "javascript")}
+          placeholder={codeEditorPlaceholder.lambdaExecuteArgumentsCode}
         />
       </>
     )
@@ -285,6 +314,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           value={code}
           onValueChange={code => setCode(code)}
           highlight={code => highlight(code, grammar, "javascript")}
+          placeholder={codeEditorPlaceholder.existingLambda}
         />
         <ProposalCodeEditorInput
           label="Lambda Arguments Code"
@@ -297,6 +327,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
           highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
           style={codeEditorStyles}
+          placeholder={codeEditorPlaceholder.lambdaExecuteArgumentsCode}
         />
         <ProposalCodeEditorInput
           label="Lambda Params"
@@ -309,6 +340,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           value={lambdaParams}
           onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
           highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
+          placeholder={codeEditorPlaceholder.lambdaExecuteParams}
         />
       </>
     )

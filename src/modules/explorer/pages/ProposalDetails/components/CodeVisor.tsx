@@ -18,9 +18,9 @@ const CustomDialog = styled(ResponsiveDialog)({
     maxHeight: 200
   },
   "& .MuiDialog-paperWidthSm": {
-    minWidth: "900px !important",
     maxWidth: "900px !important",
-    maxHeight: 200
+    maxHeight: 200,
+    height: "fit-content !important"
   },
   "& .MuiDialog-paperScrollPaper": {
     background: "red"
