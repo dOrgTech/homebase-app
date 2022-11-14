@@ -88,6 +88,7 @@ export const useTezos = (): WalletConnectReturn => {
         await connect(newNetwork)
       }
       queryClient.resetQueries()
+      location.reload()
     },
     account,
     network
