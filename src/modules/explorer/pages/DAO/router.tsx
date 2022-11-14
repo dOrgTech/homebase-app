@@ -6,6 +6,7 @@ import { User } from "modules/explorer/pages/User"
 import React, { useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
 import { Redirect, Route, RouteProps, Switch, useParams, useRouteMatch } from "react-router-dom"
+import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { Navbar } from "../../components/Toolbar"
@@ -43,7 +44,7 @@ enum DAOState {
 
 const DAORouteContent: React.FC = ({ children }) => {
   const daoId = useDAOID()
-  const { tezos, network } = useTezos()
+  const { tezos, network, changeNetwork } = useTezos()
   const { data, error } = useDAO(daoId)
   const [state, setState] = useState<DAOState>(DAOState.FOUND)
   const history = useHistory()
@@ -63,9 +64,9 @@ const DAORouteContent: React.FC = ({ children }) => {
 
   useEffect(() => {
     if (history && data && data.data.network.toLowerCase() !== network.toLowerCase()) {
-      history.push("/explorer")
+      changeNetwork(data.data.network.toLowerCase() as Network)
     }
-  }, [data, history, network])
+  }, [data, history, network, changeNetwork])
 
   return (
     <>
