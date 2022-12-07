@@ -152,7 +152,7 @@ export const DAOList: React.FC = () => {
                     </Grid>
                   </Grid>
                   <Grid item>
-                    <Link underline="none" href={`/creator`}>
+                    <Link underline="none" href={`https://tezos-homebase.io/creator`}>
                       <MainButton variant="contained" color="secondary">
                         Create DAO
                       </MainButton>
