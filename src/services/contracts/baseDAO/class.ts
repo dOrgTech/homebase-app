@@ -122,6 +122,12 @@ export abstract class BaseDAO {
     }
   }
 
+  public static transfer_ownership = async (newOwner: string, address: string, tezos: TezosToolkit) => {
+    const contract = await getContract(tezos, address)
+
+    return await contract.methods.transfer_ownership(newOwner).send()
+  }
+
   protected constructor(public data: BaseDAOData) {}
 
   public flush = async (numerOfProposalsToFlush: number, expiredProposalIds: string[], tezos: TezosToolkit) => {
