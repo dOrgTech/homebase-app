@@ -1,13 +1,18 @@
-import { createMuiTheme } from "@material-ui/core/styles"
-export const legacyTheme = createMuiTheme({
+import { createTheme } from "@material-ui/core/styles"
+export const legacyTheme = createTheme({
+  props: {
+    MuiButtonBase: {
+      disableRipple: true
+    }
+  },
   palette: {
     primary: {
       main: "#1C1F23",
-      light: "#3D3D3D"
+      light: "#2F3438"
     },
     secondary: {
-      main: "#4BCF93",
-      light: "#81FEB7"
+      main: "#81FEB7",
+      dark: "#6AE9A720"
     },
     text: {
       primary: "#000000",
@@ -26,20 +31,17 @@ export const legacyTheme = createMuiTheme({
   typography: {
     fontFamily: "Roboto Mono",
     h1: {
-      fontSize: 35,
-      letterSpacing: "-0.01em"
+      fontSize: 35
     },
     subtitle1: {
       fontSize: 18,
-      fontWeight: 400,
-      lineHeight: "26.33px",
-      letterSpacing: "-0.01em"
+      fontWeight: 300,
+      lineHeight: "26.33px"
     },
     subtitle2: {
       fontSize: 16,
       fontWeight: 400,
-      lineHeight: "26.33px",
-      letterSpacing: "-0.01em"
+      lineHeight: "26.33px"
     },
     h3: {
       fontSize: 35,
@@ -58,7 +60,8 @@ export const legacyTheme = createMuiTheme({
       fontSize: 35
     },
     body1: {
-      fontSize: 16
+      fontSize: 16,
+      fontWeight: 300
     },
     body2: {
       fontSize: 16,
@@ -68,6 +71,11 @@ export const legacyTheme = createMuiTheme({
     }
   },
   overrides: {
+    MuiTypography: {
+      root: {
+        letterSpacing: "-0.03em !important"
+      }
+    },
     MuiSlider: {
       root: {
         color: "#3D3D3D"
@@ -80,9 +88,10 @@ export const legacyTheme = createMuiTheme({
     },
     MuiTooltip: {
       tooltip: {
-        backgroundColor: "#4BCF93",
+        backgroundColor: "#62eda5",
         fontSize: 14,
-        padding: "10px 15px"
+        padding: "10px 15px",
+        color: "#1C1F23"
       }
     },
     MuiStepLabel: {
@@ -218,8 +227,20 @@ export const legacyTheme = createMuiTheme({
     },
     MuiButton: {
       root: {
+        "textTransform": "capitalize",
+        "fontWeight": 500,
+        "fontSize": 18,
+        "padding": "3px 14px",
+        "letterSpacing": "-0.03em",
+        "boxShadow": "none",
+
+        "&:hover": {
+          boxShadow: "none"
+        },
+
         "&$disabled": {
-          color: "#3d3d3d"
+          color: "#2F3438 !important",
+          background: "#41484d !important"
         }
       },
       outlined: {
@@ -228,7 +249,6 @@ export const legacyTheme = createMuiTheme({
         },
         "borderWidth": "2px !important",
         "borderRadius": "4px",
-        "padding": "1px 8px",
         "fontSize": "1rem"
       }
     },

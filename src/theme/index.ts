@@ -43,7 +43,8 @@ export const theme = createTheme({
       }
     },
     subtitle1: {
-      fontSize: 32
+      fontSize: 18,
+      fontWeight: 300
     },
     subtitle2: {
       fontSize: 16,
@@ -227,7 +228,6 @@ export const theme = createTheme({
         },
         "borderWidth": "2px !important",
         "borderRadius": "4px",
-        "padding": "1px 8px",
         "fontSize": "1rem"
       }
     },

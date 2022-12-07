@@ -1,14 +1,14 @@
 import { Box, capitalize, Grid, styled, Typography, Theme } from "@material-ui/core"
-import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
 import React from "react"
 import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
+import { ActionSheet, useActionSheet } from "../explorer/context/ActionSheets"
 
 const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {
     height: "100%"
   },
-  "background": theme.palette.primary.dark,
+  "background": theme.palette.primary.main,
   "borderRadius": 4,
   "padding": "5px 10px",
   "cursor": "pointer",
@@ -33,8 +33,7 @@ export const ColorDot = styled(Box)({
 })
 
 const NetworkText = styled(Typography)({
-  fontSize: "14px",
-  color: "#ddd"
+  fontSize: "14px"
 })
 
 export const ChangeNetworkButton = () => {
@@ -48,7 +47,7 @@ export const ChangeNetworkButton = () => {
           <ColorDot color={networkDotColorMap[network]} />
         </Grid>
         <Grid item>
-          <NetworkText>{capitalize(network)}</NetworkText>
+          <NetworkText color="textPrimary">{capitalize(network)}</NetworkText>
         </Grid>
       </Grid>
     </StyledConnectedButton>

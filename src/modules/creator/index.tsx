@@ -68,6 +68,7 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
 const FAQClickToAction = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
   fontSize: "14px",
+  fontWeight: 400,
   cursor: "pointer",
   marginTop: 16,
   marginBottom: 8
