@@ -111,7 +111,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
       <StyledToolbar>
         <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Box onClick={() => history.push("/explorer")}>
+            <Box onClick={() => (location.href = "https://tezos-homebase.io/explorer")}>
               <ToolbarContainer container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />

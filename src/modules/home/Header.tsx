@@ -58,7 +58,7 @@ export const Header: React.FC = () => {
       <StyledToolbar>
         <Head container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Link href="/landing">
+            <Link href="https://tezos-homebase.io/landing">
               <Grid container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />
