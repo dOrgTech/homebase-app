@@ -11,7 +11,7 @@ const deploymentStatus = {
 const LOCAL_STORAGE_KEY = "creatorParams"
 
 export const INITIAL_MIGRATION_STATE: MigrationParams = {
-  template: "",
+  template: "lambda",
   orgSettings: {
     name: "",
     symbol: "",

@@ -86,20 +86,23 @@ const MetadataContainer = styled(Grid)({
 })
 
 const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
-  minHeight: 152,
-  boxSizing: "border-box",
-  width: "100%",
-  marginTop: 14,
-  fontWeight: 300,
-  padding: "21px 20px",
-  fontFamily: "system-ui",
-  border: "none",
-  fontSize: 16,
-  color: props.theme.palette.text.secondary,
-  background: "#2F3438",
-  borderRadius: 8,
-  paddingRight: 40,
-  wordBreak: "break-word"
+  "minHeight": 152,
+  "boxSizing": "border-box",
+  "width": "100%",
+  "marginTop": 14,
+  "fontWeight": 300,
+  "padding": "21px 20px",
+  "fontFamily": "system-ui",
+  "border": "none",
+  "fontSize": 16,
+  "color": props.theme.palette.text.secondary,
+  "background": "#2F3438",
+  "borderRadius": 8,
+  "paddingRight": 40,
+  "wordBreak": "break-word",
+  "&:focus-visible": {
+    outline: "none"
+  }
 }))
 
 const ErrorText = styled(Typography)({
@@ -120,10 +123,12 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
   useEffect(() => {
     if (tokenMetadata) {
       setFieldValue("governanceToken.tokenMetadata", tokenMetadata)
+      setFieldValue("symbol", tokenMetadata.symbol)
     }
 
     if (error) {
       setFieldValue("governanceToken.tokenMetadata", undefined)
+      setFieldValue("symbol", undefined)
     }
   }, [error, setFieldValue, tokenMetadata])
 
@@ -140,10 +145,6 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
             submitForm(values)
           },
           text: "Continue"
-        },
-        back: {
-          handler: () => history.push(`templates`),
-          text: "Back"
         }
       })
     }
@@ -167,15 +168,15 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
               inputProps={{
                 maxLength: 36
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    <Tooltip placement="bottom" title="Token Address">
-                      <InfoIconInput />
-                    </Tooltip>
-                  </InputAdornment>
-                )
-              }}
+              // InputProps={{
+              //   endAdornment: (
+              //     <InputAdornment position="start">
+              //       <Tooltip placement="bottom" title="Token Address">
+              //         <InfoIconInput />
+              //       </Tooltip>
+              //     </InputAdornment>
+              //   )
+              // }}
             />
           </CustomInputContainer>
           {errors.governanceToken?.address && touched.governanceToken?.address ? (
@@ -193,15 +194,15 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
               placeholder="0"
               name="governanceToken.tokenId"
               component={CustomFormikTextField}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    <Tooltip placement="bottom" title="Token ID">
-                      <InfoIconInput />
-                    </Tooltip>
-                  </InputAdornment>
-                )
-              }}
+              // InputProps={{
+              //   endAdornment: (
+              //     <InputAdornment position="start">
+              //       <Tooltip placement="bottom" title="Token ID">
+              //         <InfoIconInput />
+              //       </Tooltip>
+              //     </InputAdornment>
+              //   )
+              // }}
             />
           </CustomInputContainer>
           {errors.governanceToken?.tokenId && touched.governanceToken?.tokenId ? (
@@ -216,7 +217,7 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
           </MetadataContainer>
         )}
 
-        <Grid item xs={isMobile ? 12 : 9}>
+        <Grid item xs={isMobile ? 12 : 12}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
             DAO Name{" "}
@@ -228,21 +229,21 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
               type="text"
               placeholder="My Group’s Token"
               component={CustomFormikTextField}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    <Tooltip placement="bottom" title="DAO Name info">
-                      <InfoIconInput />
-                    </Tooltip>
-                  </InputAdornment>
-                )
-              }}
+              // InputProps={{
+              //   endAdornment: (
+              //     <InputAdornment position="start">
+              //       <Tooltip placement="bottom" title="DAO Name info">
+              //         <InfoIconInput />
+              //       </Tooltip>
+              //     </InputAdornment>
+              //   )
+              // }}
             ></Field>
           </CustomInputContainer>
           {errors.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
         </Grid>
 
-        <Grid item xs={isMobile ? 12 : 3}>
+        {/* <Grid item xs={isMobile ? 12 : 3}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
             Token Symbol{" "}
@@ -269,7 +270,7 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
             ></Field>
           </CustomInputContainer>
           {errors.symbol && touched.symbol ? <ErrorText>{errors.symbol}</ErrorText> : null}
-        </Grid>
+        </Grid> */}
       </SecondContainer>
       <SecondContainer container direction="row" alignItems="center">
         <Grid item xs={12}>
