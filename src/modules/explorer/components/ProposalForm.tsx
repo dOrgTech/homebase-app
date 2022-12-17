@@ -19,14 +19,14 @@ import { TabPanel } from "./TabPanel"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { DAOTemplate } from "modules/creator/state"
-import { useTreasuryPropose } from "services/contracts/baseDAO/hooks/useTreasuryPropose"
 import { useRegistryPropose } from "services/contracts/baseDAO/hooks/useRegistryPropose"
-import { BaseDAO, RegistryDAO, TreasuryDAO } from "services/contracts/baseDAO"
+import { BaseDAO } from "services/contracts/baseDAO"
 import { NFTTransferForm, nftTransferFormInitialState, NFTTransferFormValues } from "./NFTTransfer"
 import { Token } from "models/Token"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalFormInput } from "./ProposalFormInput"
 import { ProposalFormResponsiveDialog } from "./ResponsiveDialog"
+import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -54,17 +54,7 @@ const enabledForms: Record<
     component: React.FC<{ open: boolean }>
   }[]
 > = {
-  "treasury": [
-    {
-      label: "TRANSFER FUNDS",
-      component: ({ open }) => <NewTreasuryProposalDialog open={open} />
-    },
-    {
-      label: "TRANSFER NFTs",
-      component: ({ open }) => <NFTTransferForm open={open} />
-    }
-  ],
-  "registry": [
+  "lambda": [
     {
       label: "TRANSFER FUNDS",
       component: ({ open }) => <NewTreasuryProposalDialog open={open} />
@@ -115,8 +105,7 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
     })
   }, [defaultValues, methods])
 
-  const forms = enabledForms[dao?.data.type || "treasury"]
-  const { mutate: treasuryMutate } = useTreasuryPropose()
+  const forms = enabledForms[dao?.data.type || "lambda"]
   const { mutate: registryMutate } = useRegistryPropose()
 
   const onSubmit = useCallback(
@@ -138,17 +127,9 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
 
       const mappedList = values.registryUpdateForm.list.filter(item => !!item.key && !!item.value)
 
-      if ((dao as BaseDAO).data.type === "treasury") {
-        treasuryMutate({
-          dao: dao as TreasuryDAO,
-          args: {
-            agoraPostId,
-            transfers: mappedTransfers
-          }
-        })
-      } else if ((dao as BaseDAO).data.type === "registry") {
+      if ((dao as BaseDAO).data.type === "lambda") {
         registryMutate({
-          dao: dao as RegistryDAO,
+          dao: dao as LambdaDAO,
           args: {
             agoraPostId,
             transfer_proposal: {
@@ -162,7 +143,7 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
       methods.reset()
       handleClose()
     },
-    [dao, handleClose, methods, registryMutate, treasuryMutate]
+    [dao, handleClose, methods, registryMutate]
   )
 
   return (

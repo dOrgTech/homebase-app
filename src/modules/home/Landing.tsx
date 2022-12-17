@@ -123,7 +123,7 @@ export const Landing: React.FC = () => {
                         justifyContent={isExtraSmall ? "center" : "flex-start"}
                       >
                         <Grid item>
-                          <Link href="/explorer" underline="none">
+                          <Link href="https://tezos-homebase.io/explorer" underline="none">
                             <MainButton variant="contained" color="secondary">
                               Enter App
                             </MainButton>

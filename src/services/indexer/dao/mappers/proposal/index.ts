@@ -1,8 +1,8 @@
 import { Transfer } from "./types"
-import { PMFA2TransferType, PMXTZTransferType } from "services/contracts/baseDAO/registryDAO/types"
 import { formatUnits, xtzToMutez } from "services/contracts/utils"
 import BigNumber from "bignumber.js"
 import { FA2TransferParams, TransferParams, XTZTransferParams } from "services/contracts/baseDAO"
+import { PMFA2TransferType, PMXTZTransferType } from "services/contracts/baseDAO/lambdaDAO/types"
 
 export const extractTransfersData = (transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]): Transfer[] => {
   const transfers = transfersDTO.map((transfer: any) => {

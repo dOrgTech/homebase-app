@@ -1,9 +1,9 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
 import { useMutation, useQueryClient } from "react-query"
-import { RegistryProposeArgs } from "../registryDAO/types"
+import { RegistryProposeArgs } from "../lambdaDAO/types"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { RegistryDAO } from "../registryDAO"
+import { LambdaDAO } from "../lambdaDAO"
 import mixpanel from "mixpanel-browser"
 import { networkNameMap } from "../../../bakingBad"
 
@@ -12,7 +12,7 @@ export const useRegistryPropose = () => {
   const openNotification = useNotification()
   const { network, tezos, account, connect } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: RegistryDAO; args: RegistryProposeArgs }>(
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: LambdaDAO; args: RegistryProposeArgs }>(
     async ({ dao, args }) => {
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Proposal is being created...",

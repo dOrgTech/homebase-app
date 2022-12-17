@@ -351,7 +351,10 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
-                    <Tooltip placement="bottom" title="Address that can drop/cancel any proposals">
+                    <Tooltip
+                      placement="bottom"
+                      title="Address that can drop/cancel any proposals, Should be a contract like multisig or another DAO"
+                    >
                       <InfoIconInput color="secondary" />
                     </Tooltip>
                   </InputAdornment>

@@ -42,41 +42,6 @@ enum ProposalModalKey {
   delegation
 }
 
-// const enabledOptions = {
-//   registry: [
-//     {
-//       name: "Change DAO configuration",
-//       key: ProposalModalKey.config,
-//     },
-//     {
-//       name: "Update Guardian",
-//       key: ProposalModalKey.guardian,
-//     },
-//     {
-//       name: "Transfer funds/tokens/NFTs",
-//       key: ProposalModalKey.transfer,
-//     },
-//     {
-//       name: "Update registry",
-//       key: ProposalModalKey.registry,
-//     },
-//   ],
-//   treasury: [
-//     {
-//       name: "Change DAO configuration",
-//       key: ProposalModalKey.config,
-//     },
-//     {
-//       name: "Update Guardian",
-//       key: ProposalModalKey.guardian,
-//     },
-//     {
-//       name: "Transfer funds/tokens/NFTs",
-//       key: ProposalModalKey.transfer,
-//     },
-//   ],
-// };
-
 export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
@@ -107,15 +72,13 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) =>
                   Assets / Registry
                 </MainButton>
 
-                {dao.data.type === "registry" && (
-                  <MainButton
-                    variant={"contained"}
-                    color={"secondary"}
-                    onClick={() => handleOptionSelected(ProposalModalKey.config)}
-                  >
-                    Configuration
-                  </MainButton>
-                )}
+                <MainButton
+                  variant={"contained"}
+                  color={"secondary"}
+                  onClick={() => handleOptionSelected(ProposalModalKey.config)}
+                >
+                  Configuration
+                </MainButton>
 
                 <MainButton
                   variant={"contained"}

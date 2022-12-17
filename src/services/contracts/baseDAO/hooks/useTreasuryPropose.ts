@@ -1,18 +1,18 @@
-import { TreasuryDAO } from "services/contracts/baseDAO"
 import { TransactionWalletOperation } from "@taquito/taquito"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useMutation, useQueryClient } from "react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { TreasuryProposeArgs } from "../treasuryDAO/types"
+import { RegistryProposeArgs } from "../lambdaDAO/types"
 import mixpanel from "mixpanel-browser"
 import { networkNameMap } from "../../../bakingBad"
+import { LambdaDAO } from "../lambdaDAO"
 
 export const useTreasuryPropose = () => {
   const queryClient = useQueryClient()
   const openNotification = useNotification()
   const { network, tezos, connect, account } = useTezos()
 
-  return useMutation<TransactionWalletOperation | Error, Error, { dao: TreasuryDAO; args: TreasuryProposeArgs }>(
+  return useMutation<TransactionWalletOperation | Error, Error, { dao: LambdaDAO; args: RegistryProposeArgs }>(
     async ({ dao, args }) => {
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Treasury proposal is being created...",
