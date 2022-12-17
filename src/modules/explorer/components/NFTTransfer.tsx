@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react"
 import { Grid, styled, Paper, DialogContent, TextField } from "@material-ui/core"
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
+import { useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { ErrorText } from "modules/explorer/components/styled/ErrorText"
 import * as Yup from "yup"
 import { Autocomplete } from "@material-ui/lab"
@@ -93,7 +93,7 @@ export const NFTTransferForm: React.FC<{ open: boolean }> = ({ open }) => {
   const [isBatch, setIsBatch] = useState(values.nftTransferForm.isBatch)
   const [activeTransfer, setActiveTransfer] = React.useState(1)
   const daoId = useDAOID()
-  const { nftHoldings } = useDAOHoldings(daoId)
+  const { nftHoldings } = useDAONFTHoldings(daoId)
 
   const handleIsBatchChange = () => {
     setIsBatch(!isBatch)

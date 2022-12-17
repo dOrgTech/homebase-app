@@ -61,6 +61,7 @@ export interface Token {
   tokenId: string
   standard: string
   metadata: Metadata
+  totalSupply: string
 }
 
 export interface Contract {
