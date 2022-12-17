@@ -34,7 +34,6 @@ const Content = styled(Grid)({
 export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClose, defaultValues }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
-  const { data: daoHoldings } = useDAOHoldings(daoId)
 
   const methods = useForm<Values>({
     defaultValues: useMemo(
@@ -96,10 +95,7 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
             </Typography>
           </Grid>
 
-          <SendButton
-            onClick={methods.handleSubmit(onSubmit as any)}
-            disabled={!dao || !daoHoldings || !newDelegationAddress}
-          >
+          <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao || !newDelegationAddress}>
             Submit
           </SendButton>
         </Content>
