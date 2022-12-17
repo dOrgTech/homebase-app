@@ -128,3 +128,15 @@ export interface TokenDataTZKT {
   totalSupply: string
   metadata: Metadata
 }
+
+export interface BalanceDataDTO {
+  id: number
+  account: Account
+  token: Token
+  balance: string
+  transfersCount: number
+  firstLevel: number
+  firstTime: string
+  lastLevel: number
+  lastTime: string
+}
