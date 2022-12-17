@@ -3,7 +3,6 @@ import { Grid, Typography, TextField } from "@material-ui/core"
 import React, { useCallback } from "react"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { SendButton } from "./ProposalFormSendButton"
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalFormInput } from "./ProposalFormInput"
@@ -36,7 +35,6 @@ interface Props {
 export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
-  const { data: daoHoldings } = useDAOHoldings(daoId)
 
   const methods = useForm<Values>()
 
@@ -126,7 +124,7 @@ export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
             </Typography>
           </Grid>
 
-          <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao || !daoHoldings}>
+          <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao}>
             Submit
           </SendButton>
         </Grid>
