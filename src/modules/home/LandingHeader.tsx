@@ -51,7 +51,7 @@ export const Header: React.FC = () => {
             </Link>
           </Grid>
           <Grid item>
-            <Link href="/explorer" underline="none">
+            <Link href="https://tezos-homebase.io/explorer" underline="none">
               <MainButton variant="contained" color="secondary">
                 Enter App
               </MainButton>

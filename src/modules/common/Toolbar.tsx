@@ -206,7 +206,7 @@ export const Navbar: React.FC<{
       <StyledToolbar>
         <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Box onClick={() => history.push("/explorer")}>
+            <Box onClick={() => (location.href = "https://tezos-homebase.io/explorer")}>
               <ToolbarContainer container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />
@@ -329,7 +329,13 @@ export const Navbar: React.FC<{
             </Grid>
           </Grid>
           <BackButtonContainer container justifyContent="flex-start">
-            <BackButtonText container item xs={6} md={2} onClick={() => history.push("/explorer")}>
+            <BackButtonText
+              container
+              item
+              xs={6}
+              md={2}
+              onClick={() => (location.href = "https://tezos-homebase.io/explorer")}
+            >
               <BackButtonIcon />
               <BackButton>Back</BackButton>
             </BackButtonText>

@@ -7,7 +7,7 @@ import { EnvKey, getEnv } from "services/config"
 export type Network = "mainnet" | "ghostnet"
 
 export const rpcNodes: Record<Network, string> = {
-  mainnet: "https://mainnet.smartpy.io",
+  mainnet: "https://mainnet.api.tez.ie",
   ghostnet: "https://ghostnet.ecadinfra.com"
 }
 
