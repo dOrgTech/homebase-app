@@ -1,4 +1,14 @@
-import { Box, Button, Grid, styled, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  styled,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from "@material-ui/core"
 import { NFT as NFTModel } from "models/Token"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { NFT } from "modules/explorer/components/NFT"
@@ -9,7 +19,7 @@ import { UserBadge } from "modules/explorer/components/UserBadge"
 import React, { useState } from "react"
 import { NFTDAOHolding } from "services/bakingBad/tokenBalances"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
+import { useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { ContentContainer } from "../../components/ContentContainer"
 import { Hero } from "../../components/Hero"
@@ -49,7 +59,7 @@ export const NFTs: React.FC = () => {
   const theme = useTheme()
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
-  const { nftHoldings } = useDAOHoldings(daoId)
+  const { nftHoldings } = useDAONFTHoldings(daoId)
   const [openTransfer, setOpenTransfer] = useState(false)
   const { account } = useTezos()
   const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
@@ -125,61 +135,75 @@ export const NFTs: React.FC = () => {
         </Hero>
         <Grid item>
           <Grid container justifyContent={isMobileSmall ? "center" : "flex-start"} style={{ gap: 12 }}>
-            {nftHoldings.map((nft, i) => (
-              <Card
-                key={`nft-${i}`}
-                item
-                container
-                xs={isMobileSmall ? 12 : undefined}
-                direction="column"
-                style={{ gap: 20 }}
-                onClick={() => onClickNFT(nft)}
-              >
-                <Grid item>
-                  <Grid container direction="column" style={{ gap: 18 }} alignItems="center">
-                    <FullWidthContainer item>
-                      {nft.token.firstCreator ? (
-                        <UserBadge size={35} address={nft.token.firstCreator} short={true} />
-                      ) : (
-                        <Typography color={"textPrimary"} variant={"body1"}>
-                          Unknown
-                        </Typography>
-                      )}
-                    </FullWidthContainer>
-                    <Grid item>
-                      <ImgContainer>
-                        <NFT qmHash={nft.token.artifact_hash} mediaType={nft.token.mediaType} name={nft.token.name} />
-                      </ImgContainer>
-                    </Grid>
-                    <FullWidthContainer item>
-                      <NFTId color="textPrimary">
-                        {nft.token.symbol} #{nft.token.token_id}
-                      </NFTId>
-                    </FullWidthContainer>
-                  </Grid>
+            {!nftHoldings ? (
+              <>
+                <Grid container direction="row" justifyContent="center">
+                  <CircularProgress color="secondary" />
                 </Grid>
-                <Grid item>
-                  <Grid container direction="column" style={{ gap: 20 }}>
+              </>
+            ) : (
+              <>
+                {nftHoldings.map((nft, i) => (
+                  <Card
+                    key={`nft-${i}`}
+                    item
+                    container
+                    xs={isMobileSmall ? 12 : undefined}
+                    direction="column"
+                    style={{ gap: 20 }}
+                    onClick={() => onClickNFT(nft)}
+                  >
                     <Grid item>
-                      <NFTTitle color="textPrimary" variant="h4">
-                        {nft.token.name}
-                      </NFTTitle>
+                      <Grid container direction="column" style={{ gap: 18 }} alignItems="center">
+                        <FullWidthContainer item>
+                          {nft.token.firstCreator ? (
+                            <UserBadge size={35} address={nft.token.firstCreator} short={true} />
+                          ) : (
+                            <Typography color={"textPrimary"} variant={"body1"}>
+                              Unknown
+                            </Typography>
+                          )}
+                        </FullWidthContainer>
+                        <Grid item>
+                          <ImgContainer>
+                            <NFT
+                              qmHash={nft.token.artifact_hash}
+                              mediaType={nft.token.mediaType}
+                              name={nft.token.name}
+                            />
+                          </ImgContainer>
+                        </Grid>
+                        <FullWidthContainer item>
+                          <NFTId color="textPrimary">
+                            {nft.token.symbol} #{nft.token.token_id}
+                          </NFTId>
+                        </FullWidthContainer>
+                      </Grid>
                     </Grid>
                     <Grid item>
-                      <SmallButton
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={e => onClick(e, nft.token)}
-                        disabled={shouldDisable}
-                      >
-                        Propose Transfer
-                      </SmallButton>
+                      <Grid container direction="column" style={{ gap: 20 }}>
+                        <Grid item>
+                          <NFTTitle color="textPrimary" variant="h4">
+                            {nft.token.name}
+                          </NFTTitle>
+                        </Grid>
+                        <Grid item>
+                          <SmallButton
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            onClick={e => onClick(e, nft.token)}
+                            disabled={shouldDisable}
+                          >
+                            Propose Transfer
+                          </SmallButton>
+                        </Grid>
+                      </Grid>
                     </Grid>
-                  </Grid>
-                </Grid>
-              </Card>
-            ))}
+                  </Card>
+                ))}
+              </>
+            )}
           </Grid>
         </Grid>
       </Grid>

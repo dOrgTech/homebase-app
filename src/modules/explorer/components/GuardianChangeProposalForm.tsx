@@ -3,7 +3,6 @@ import { Grid, styled, Typography, TextField } from "@material-ui/core"
 import React, { useCallback, useEffect, useMemo } from "react"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { SendButton } from "./ProposalFormSendButton"
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalFormInput } from "./ProposalFormInput"
@@ -32,7 +31,6 @@ const Content = styled(Grid)({})
 export const GuardianChangeProposalForm: React.FC<Props> = ({ open, handleClose, defaultValues }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
-  const { data: daoHoldings } = useDAOHoldings(daoId)
 
   const methods = useForm<Values>({
     defaultValues: useMemo(
@@ -108,10 +106,7 @@ export const GuardianChangeProposalForm: React.FC<Props> = ({ open, handleClose,
             </Typography>
           </Grid>
 
-          <SendButton
-            onClick={methods.handleSubmit(onSubmit as any)}
-            disabled={!dao || !daoHoldings || !newGuardianAddress}
-          >
+          <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao || !newGuardianAddress}>
             Submit
           </SendButton>
         </Content>
