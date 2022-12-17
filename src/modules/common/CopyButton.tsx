@@ -6,7 +6,7 @@ const CopyIcon = styled(FileCopyOutlined)({
   cursor: "pointer"
 })
 
-export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
+export const CopyButton: React.FC<{ text: string; style?: any }> = ({ text, style }) => {
   const [copied, setCopied] = useState(false)
   return (
     <Box
@@ -22,7 +22,7 @@ export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
         }, 2000)
       }}
     >
-      <Tooltip placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
+      <Tooltip style={style} placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
         <CopyIcon color="secondary" fontSize="small" />
       </Tooltip>
     </Box>

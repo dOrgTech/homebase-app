@@ -329,39 +329,35 @@ export const Summary = (): JSX.Element => {
             </Grid>
           </ThirdContainerLastRow>
 
-          {state.data.template === "treasury" && (
-            <ThirdContainerSpecialRow item xs={12}>
-              <Grid item container direction="row" alignItems="center">
-                <Grid item xs={7}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Transfer maximum XTZ amount
-                  </Typography>
-                </Grid>
-                <Grid item xs={5}>
-                  <Typography variant="subtitle2" color="textSecondary" align="right">
-                    {state.data.votingSettings.maxXtzAmount} XTZ
-                  </Typography>
-                </Grid>
+          <ThirdContainerSpecialRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Transfer maximum XTZ amount
+                </Typography>
               </Grid>
-            </ThirdContainerSpecialRow>
-          )}
+              <Grid item xs={5}>
+                <Typography variant="subtitle2" color="textSecondary" align="right">
+                  {state.data.votingSettings.maxXtzAmount} XTZ
+                </Typography>
+              </Grid>
+            </Grid>
+          </ThirdContainerSpecialRow>
 
-          {state.data.template === "treasury" && (
-            <ThirdContainerLastRow item xs={12}>
-              <Grid item container direction="row" alignItems="center">
-                <Grid item xs={7}>
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Transfer minimum XTZ amount
-                  </Typography>
-                </Grid>
-                <Grid item xs={5}>
-                  <Typography variant="subtitle2" color="textSecondary" align="right">
-                    {state.data.votingSettings.minXtzAmount} XTZ
-                  </Typography>
-                </Grid>
+          <ThirdContainerLastRow item xs={12}>
+            <Grid item container direction="row" alignItems="center">
+              <Grid item xs={7}>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Transfer minimum XTZ amount
+                </Typography>
               </Grid>
-            </ThirdContainerLastRow>
-          )}
+              <Grid item xs={5}>
+                <Typography variant="subtitle2" color="textSecondary" align="right">
+                  {state.data.votingSettings.minXtzAmount} XTZ
+                </Typography>
+              </Grid>
+            </Grid>
+          </ThirdContainerLastRow>
         </ThirdContainer>
 
         <ThirdContainer container direction="row">

@@ -1,7 +1,14 @@
-import { client } from "../graphql"
+import { client, client_v2 } from "../graphql"
 import { DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
-import { GET_DAOS_QUERY, GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "./queries"
-import { Proposal, RegistryProposal, TreasuryProposal } from "./mappers/proposal/types"
+import {
+  GET_DAOS_QUERY,
+  GET_DAOS_QUERY_V2,
+  GET_DAO_QUERY,
+  GET_PROPOSALS_QUERY,
+  GET_PROPOSAL_QUERY,
+  GET_XTZ_TRANSFERS
+} from "./queries"
+import { LambdaProposal, Proposal } from "./mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
 
@@ -36,33 +43,32 @@ export const getDAOs = async (network: string) => {
     network
   })
 
-  return response.daos
+  const response_v2 = await client_v2.request<GetAllDAOsDTO>(GET_DAOS_QUERY_V2, {
+    network
+  })
+
+  const daos = response.daos
+  const daos_v2 = response_v2.daos
+
+  return [...daos, ...daos_v2]
 }
 
 export const getProposals = async (dao: BaseDAO) => {
   const response = await client.request<GetProposalsDTO>(GET_PROPOSALS_QUERY, {
     address: dao.data.address
   })
-
   const fetched = response.daos[0]
+
   let proposals: Proposal[]
-
   switch (dao.data.type) {
-    case "treasury":
-      proposals = fetched.proposals.map(proposal => new TreasuryProposal(proposal, dao))
-
-      break
-    case "registry":
-      proposals = fetched.proposals.map(proposal => new RegistryProposal(proposal, dao))
-
+    case "lambda":
+      proposals = fetched.proposals.map(proposal => new LambdaProposal(proposal, dao))
       break
     default:
       throw new Error(`DAO with address '${dao.data.address}' has an unrecognized type '${dao.data.type}'`)
   }
 
-  const proposalsWithVoters = proposals.sort((a, b) => (dayjs(b.startDate).isAfter(dayjs(a.startDate)) ? 1 : -1))
-
-  return proposalsWithVoters
+  return proposals.sort((a, b) => (dayjs(b.startDate).isAfter(dayjs(a.startDate)) ? 1 : -1))
 }
 
 export const getProposal = async (address: string, proposalKey: string) => {

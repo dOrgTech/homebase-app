@@ -156,7 +156,7 @@ export const SideBar: React.FC = () => {
       }
     ]
 
-    if (dao.data.type === "registry") {
+    if (dao.data.type === "lambda") {
       if (account) {
         return [
           ...commonButons,

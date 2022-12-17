@@ -22,6 +22,10 @@ const INITIAL_STATES = [
   {
     activeText: "",
     completedText: ""
+  },
+  {
+    activeText: "",
+    completedText: ""
   }
 ]
 
@@ -111,8 +115,6 @@ export const useOriginate = (template: DAOTemplate) => {
         daoName: params.orgSettings.name
       })
 
-      console.log(params, network, metadata)
-
       const contract = await BaseDAO.baseDeploy(template, {
         tezos: tezosToolkit,
         metadata,
@@ -130,11 +132,30 @@ export const useOriginate = (template: DAOTemplate) => {
       }
 
       updatedStates[2] = {
-        activeText: `Waiting for DAO to be indexed`,
+        activeText: `Waiting for DAO ownership to be transferred`,
         completedText: ""
       }
 
       setActiveState(2)
+      setStates(updatedStates)
+
+      const tx = await BaseDAO.transfer_ownership(contract.address, contract.address, tezos)
+
+      if (!tx) {
+        throw new Error(`Error transferring ownership of ${template}DAO to itself`)
+      }
+
+      updatedStates[2] = {
+        ...updatedStates[2],
+        completedText: `Ownership of ${template} DAO transferred to the DAO "${contract.address}"`
+      }
+
+      updatedStates[3] = {
+        activeText: `Waiting for DAO to be indexed`,
+        completedText: ""
+      }
+
+      setActiveState(3)
       setStates(updatedStates)
 
       mixpanel.track("Completed DAO creation", {
@@ -149,14 +170,14 @@ export const useOriginate = (template: DAOTemplate) => {
 
       const indexed = await waitForIndexation(contract.address)
 
-      updatedStates[2] = {
-        ...updatedStates[2],
+      updatedStates[3] = {
+        ...updatedStates[3],
         completedText: indexed
           ? `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`
           : `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully, but metadata has not been indexed yet. This usually takes a few minutes, your DAO page may not be available yet.`
       }
 
-      setActiveState(3)
+      setActiveState(4)
       setStates(updatedStates)
 
       mixpanel.track("Completed DAO indexation", {
@@ -172,8 +193,6 @@ export const useOriginate = (template: DAOTemplate) => {
       }
     }
   )
-
-  console.log(result)
 
   return { mutation: result, states, activeState }
 }

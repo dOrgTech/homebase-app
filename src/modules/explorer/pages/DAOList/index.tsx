@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs"
 import { ConnectMessage } from "./components/ConnectMessage"
@@ -82,7 +82,7 @@ const DAOItemCard = styled(Grid)({
 })
 
 export const DAOList: React.FC = () => {
-  const { network, account } = useTezos()
+  const { network, account, tezos } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()
@@ -99,7 +99,10 @@ export const DAOList: React.FC = () => {
           id: dao.address,
           name: dao.name,
           symbol: dao.token.symbol,
-          votingAddresses: dao.ledgers.map(l => l.holder.address)
+          votingAddresses: dao.ledgers.map(l => l.holder.address),
+          dao_type: {
+            name: dao.dao_type.name
+          }
         }))
         .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
 

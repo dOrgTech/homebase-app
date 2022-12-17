@@ -1,6 +1,9 @@
 import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery } from "@material-ui/core"
 import { createTheme } from "@material-ui/core/styles"
+import hexToRgba from "hex-to-rgba"
+import { startCase } from "lodash"
 import React from "react"
+import { EnvKey, getEnv } from "services/config"
 
 const SectionNames = styled(Grid)(({ theme }: { theme: Theme }) => ({
   width: "55%",
@@ -123,19 +126,41 @@ const VotingAddressesText = styled(Typography)({
   }
 })
 
+const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
+  "borderRadius": 4,
+  "height": "auto",
+  "boxSizing": "border-box",
+  "width": "fit-content",
+  "textAlign": "center",
+  "padding": "0 7px",
+  "float": "right",
+  "background":
+    dao_type === "lambda" ? hexToRgba(theme.palette.secondary.main, 0.4) : hexToRgba(theme.palette.warning.main, 0.4),
+  "color": dao_type === "lambda" ? theme.palette.secondary.main : theme.palette.warning.main,
+  "& > div": {
+    height: "100%"
+  },
+  "fontFamily": "Roboto Mono",
+  "fontWeight": "bold"
+}))
+
 export const DAOItem: React.FC<{
   dao: {
     id: string
     name: string
     symbol: string
     votingAddresses: string[]
+    dao_type: { name: string }
   }
 }> = ({ dao }) => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const daoHref =
+    dao.dao_type.name !== "lambda" ? `${getEnv(EnvKey.REACT_APP_V2_URL)}/explorer/dao/${dao.id}` : `dao/${dao.id}`
+  const daoType = dao.dao_type.name !== "lambda" ? `V2` : `V3`
 
   return (
-    <Link underline="none" href={`dao/${dao.id}`}>
+    <Link underline="none" href={daoHref}>
       <Container container justifyContent="space-between">
         <SectionNames>
           <Grid>
@@ -145,8 +170,8 @@ export const DAOItem: React.FC<{
         </SectionNames>
         <Grid>
           <Grid item xs={12} sm>
+            <Badge dao_type={dao.dao_type.name}>{daoType}</Badge>
             <NumberText color="textPrimary">{dao.votingAddresses.length}</NumberText>
-
             <VotingAddressesText color="textPrimary">Voting Addresses</VotingAddressesText>
           </Grid>
         </Grid>
