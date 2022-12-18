@@ -21,6 +21,7 @@ import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { SmallButton } from "../../common/SmallButton"
+import { EnvKey, getEnv } from "services/config"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -111,7 +112,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
       <StyledToolbar>
         <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Box onClick={() => (location.href = "https://tezos-homebase.io/explorer")}>
+            <Box onClick={() => (location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`)}>
               <ToolbarContainer container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />
