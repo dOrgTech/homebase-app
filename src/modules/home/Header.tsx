@@ -3,6 +3,7 @@ import { styled } from "@material-ui/styles"
 import HomeButton from "assets/logos/homebase_logo.svg"
 import hexToRgba from "hex-to-rgba"
 import React from "react"
+import { EnvKey, getEnv } from "services/config"
 import { MainButton } from "../common/MainButton"
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({
@@ -58,7 +59,7 @@ export const Header: React.FC = () => {
       <StyledToolbar>
         <Head container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Link href="https://tezos-homebase.io/landing">
+            <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/landing`}>
               <Grid container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />
@@ -72,7 +73,7 @@ export const Header: React.FC = () => {
             </Link>
           </Grid>
           <Grid item>
-            <Link href="https://tezos-homebase.io/explorer" underline="none">
+            <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/explorer`} underline="none">
               <MainButton variant="contained" color="secondary">
                 Enter App
               </MainButton>
