@@ -4,6 +4,7 @@ import HomeButton from "assets/logos/homebase_logo.svg"
 import hexToRgba from "hex-to-rgba"
 import { MainButton } from "../common/MainButton"
 import React from "react"
+import { EnvKey, getEnv } from "services/config"
 
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none"
@@ -51,7 +52,7 @@ export const Header: React.FC = () => {
             </Link>
           </Grid>
           <Grid item>
-            <Link href="https://tezos-homebase.io/explorer" underline="none">
+            <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/explorer`} underline="none">
               <MainButton variant="contained" color="secondary">
                 Enter App
               </MainButton>
