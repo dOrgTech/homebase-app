@@ -7,6 +7,7 @@ import Vector2 from "assets/vectors/Vector2.svg"
 import GitHubIcon from "@material-ui/icons/GitHub"
 import { ReactComponent as DiscordIcon } from "assets/logos/discord.svg"
 import { MainButton } from "../common/MainButton"
+import { EnvKey, getEnv } from "services/config"
 
 const StyledToolbar = styled(Grid)({
   padding: "22px 37px",
@@ -123,7 +124,7 @@ export const Landing: React.FC = () => {
                         justifyContent={isExtraSmall ? "center" : "flex-start"}
                       >
                         <Grid item>
-                          <Link href="/explorer" underline="none">
+                          <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/explorer`} underline="none">
                             <MainButton variant="contained" color="secondary">
                               Enter App
                             </MainButton>

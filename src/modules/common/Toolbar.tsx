@@ -27,6 +27,7 @@ import { SmallButton } from "./SmallButton"
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
 
 import { ArrowBackIos } from "@material-ui/icons"
+import { EnvKey, getEnv } from "services/config"
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
@@ -206,7 +207,7 @@ export const Navbar: React.FC<{
       <StyledToolbar>
         <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Box onClick={() => history.push("/explorer")}>
+            <Box onClick={() => (location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`)}>
               <ToolbarContainer container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />
@@ -329,7 +330,13 @@ export const Navbar: React.FC<{
             </Grid>
           </Grid>
           <BackButtonContainer container justifyContent="flex-start">
-            <BackButtonText container item xs={6} md={2} onClick={() => history.push("/explorer")}>
+            <BackButtonText
+              container
+              item
+              xs={6}
+              md={2}
+              onClick={() => (location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`)}
+            >
               <BackButtonIcon />
               <BackButton>Back</BackButton>
             </BackButtonText>
