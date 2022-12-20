@@ -41,6 +41,7 @@ const StepContentContainer = styled(Grid)({
 
 const StyledStepper = styled(Stepper)({
   "background": "inherit",
+  "paddingTop": 48,
   "& .MuiStepLabel-label": {
     fontSize: 14,
     lineHeight: 14
@@ -176,7 +177,7 @@ export const DAOCreate: React.FC = () => {
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 5 && <NavigationBar back={back} next={next} />}
+          {step < 4 && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>
