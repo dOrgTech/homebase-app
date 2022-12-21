@@ -19,6 +19,7 @@ import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
 import { MainButton } from "../../../common/MainButton"
 import { EnvKey, getEnv } from "services/config"
+import { LaunchOutlined } from "@material-ui/icons"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -82,6 +83,43 @@ const DAOItemCard = styled(Grid)({
   }
 })
 
+const BannerContainer = styled(Grid)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  padding: "30px 48px",
+  borderRadius: 8,
+  display: "inline-block",
+  [theme.breakpoints.down("md")]: {
+    padding: "28px 38px"
+  }
+}))
+
+const LinkText = styled(Typography)(({ theme }) => ({
+  fontSize: 18,
+  fontWeight: 200,
+  lineHeight: "146.3%",
+  cursor: "default",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 16
+  },
+  [theme.breakpoints.down("xs")]: {
+    fontSize: 13
+  }
+}))
+
+const ExternalLink = styled(Typography)({
+  "display": "inline",
+  "cursor": "pointer",
+  "fontWeight": 200,
+  "&:hover": {
+    textDecoration: "underline"
+  }
+})
+
+const ExternalLinkIcon = styled(LaunchOutlined)({
+  fontSize: 14,
+  marginBottom: 2
+})
+
 export const DAOList: React.FC = () => {
   const { network, account, tezos } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
@@ -129,11 +167,28 @@ export const DAOList: React.FC = () => {
     setSelectedTab(newValue)
   }
 
+  const goToHomebaseLite = () => {
+    window.open("https://lite.tezos-homebase.io/")
+  }
+
   return (
     <>
       <Navbar disableMobileMenu />
       <PageContainer>
         <Grid container style={{ gap: 42 }} direction="column">
+          <Grid item>
+            <BannerContainer container alignItems="center" direction="row">
+              <LinkText color="textPrimary" style={{ display: "inline" }}>
+                For off-chain token-weighted polls, try{" "}
+              </LinkText>{" "}
+              <ExternalLink color="secondary" onClick={goToHomebaseLite}>
+                {" "}
+                Homebase Lite
+                <ExternalLinkIcon color="secondary" />{" "}
+              </ExternalLink>
+            </BannerContainer>
+          </Grid>
+
           <Grid item>
             <Grid
               container
