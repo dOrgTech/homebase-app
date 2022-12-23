@@ -86,9 +86,9 @@ Please note, you cannot use an NFT token for voting on Homebase. If you enter an
 &nbsp;
 ### **Configure Proposal and Voting**
 &nbsp;
-**Voting Cycle Duration** - levels = blocks, if you’re familiar with that term from other blockchains. In Tezos levels are at least 60 seconds long, so this roughly equates to time. 7,000 levels would be approximately 5 days.
+**Voting Cycle Duration** - In Tezos levels are 30 seconds long, so this roughly equates to time. 14,000 levels would be approximately 5 days.
 &nbsp;
-**Proposal Execution Delay** - This is the time, expressed in blocks/levels that need to pass for a proposal to become "executable". It should always be more than double the duration of a cycle, to ensure
+**Proposal Execution Delay** - This is the time, expressed in blocks/levels that need to pass for a proposal to become "executable". It should always be more than double the duration of a cycle, to ensure the proposal will not become executable in the cycle it was created in, nor the one it was voted on. In otherwords, it's important that the proposal is not executed before the voting period is up.
 &nbsp;
 **Proposal Expiration Threshold** - The time in levels/blocks required before a proposal becomes expired. **This amount has to be bigger than the proposal execution delay**, because if it’s not, then your proposals would never be executable, because they would expire before they could be executed.
 &nbsp;
