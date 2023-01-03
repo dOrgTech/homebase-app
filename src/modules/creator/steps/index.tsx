@@ -11,10 +11,10 @@ import mixpanel from "mixpanel-browser"
 import { Template } from "./Template"
 
 export const STEPS: StepInfo[] = [
-  { title: "Configure DAO settings", index: 0 },
-  { title: "Configure Proposal & Voting", index: 1 },
-  { title: "Adjust Quorum", index: 2 },
-  { title: "Review information", index: 3 }
+  { title: "Configure DAO settings", index: 0, path: "dao" },
+  { title: "Configure Proposal & Voting", index: 1, path: "voting" },
+  { title: "Adjust Quorum", index: 2, path: "quorum" },
+  { title: "Review information", index: 3, path: "summary" }
 ]
 
 const urlToStepMap: Record<string, number> = {
