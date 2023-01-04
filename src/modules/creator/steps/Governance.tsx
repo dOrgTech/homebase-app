@@ -341,6 +341,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placeholder="00"
                     component={TextField}
                     inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "votingBlocks") === 0) {
+                        setFieldValue("votingBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("votingBlocks", newValue.target.value)
+                    }}
                   />
                 </GridItemCenter>
                 <GridItemCenter item xs={6}>
@@ -375,6 +383,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placeholder="00"
                     component={TextField}
                     inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "proposalFlushBlocks") === 0) {
+                        setFieldValue("proposalFlushBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("proposalFlushBlocks", newValue.target.value)
+                    }}
                   />
                 </GridItemCenter>
                 <GridItemCenter item xs={6} container direction="row" alignItems="center">
@@ -418,6 +434,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placeholder="00"
                     component={TextField}
                     inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "proposalExpiryBlocks") === 0) {
+                        setFieldValue("proposalExpiryBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("proposalExpiryBlocks", newValue.target.value)
+                    }}
                   />
                 </GridItemCenter>
                 <GridItemCenter item xs={6}>
