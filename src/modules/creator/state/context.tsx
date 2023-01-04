@@ -35,7 +35,7 @@ export const INITIAL_MIGRATION_STATE: MigrationParams = {
   quorumSettings: {
     quorumThreshold: 2,
     minQuorumAmount: 1,
-    maxQuorumAmount: 99,
+    maxQuorumAmount: 90,
     quorumChange: 5,
     quorumMaxChange: 19
   }

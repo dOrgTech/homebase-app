@@ -330,16 +330,18 @@ export const Navbar: React.FC<{
             </Grid>
           </Grid>
           <BackButtonContainer container justifyContent="flex-start">
-            <BackButtonText
-              container
-              item
-              xs={6}
-              md={2}
-              onClick={() => (location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`)}
-            >
-              <BackButtonIcon />
-              <BackButton>Back</BackButton>
-            </BackButtonText>
+            {mode !== "creator" ? (
+              <BackButtonText
+                container
+                item
+                xs={6}
+                md={2}
+                onClick={() => (location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`)}
+              >
+                <BackButtonIcon />
+                <BackButton>Back</BackButton>
+              </BackButtonText>
+            ) : null}
           </BackButtonContainer>
         </Header>
         {/* <NavigationMenu disableMobileMenu={disableMobileMenu} /> */}

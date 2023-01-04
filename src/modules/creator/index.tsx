@@ -26,6 +26,7 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const StepContentContainer = styled(Grid)({
+  marginTop: 28,
   alignItems: "baseline",
   height: "100%",
   paddingTop: 0,
