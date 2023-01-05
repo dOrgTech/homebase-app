@@ -23,6 +23,7 @@ import { TitleBlock } from "modules/common/TitleBlock"
 import { CreatorContext, ActionTypes, OrgSettings } from "modules/creator/state"
 import { InfoRounded } from "@material-ui/icons"
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const SecondContainer = styled(Grid)({
   marginTop: 25
@@ -302,39 +303,6 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
         <Grid item xs={12}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
-            Administrator{" "}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <CustomInputContainer>
-            <Field
-              name="administrator"
-              maxLength={10}
-              type="text"
-              onClick={() => setFieldTouched("administrator")}
-              placeholder="tz1PXn...."
-              component={CustomFormikTextField}
-              inputProps={{
-                maxLength: 36
-              }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    <Tooltip placement="bottom" title="Address that will make the initial token transfers">
-                      <InfoIconInput />
-                    </Tooltip>
-                  </InputAdornment>
-                )
-              }}
-            ></Field>
-          </CustomInputContainer>
-          {errors.administrator && touched.administrator ? <ErrorText>{errors.administrator}</ErrorText> : null}
-        </Grid>
-      </SecondContainer>
-      <SecondContainer item container direction="row" alignItems="center">
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
             Guardian{" "}
           </Typography>
         </Grid>
@@ -388,14 +356,6 @@ const validateForm = (values: OrgSettings) => {
     errors.description = "Required"
   }
 
-  if (!values.administrator) {
-    errors.administrator = "Required"
-  }
-
-  if (values.administrator && isInvalidKtOrTzAddress(values.administrator)) {
-    errors.administrator = "Invalid address"
-  }
-
   if (!values.guardian) {
     errors.guardian = "Required"
   }
@@ -439,15 +399,17 @@ export const DaoSettings = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext)
   const { orgSettings } = state.data
   const history = useHistory()
+  const { account } = useTezos()
 
   const saveStepInfo = (values: OrgSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
+    const newValues: OrgSettings = { ...values, administrator: account }
     const newState = {
       ...state.data,
-      orgSettings: values
+      orgSettings: newValues
     }
     updateCache(newState)
     setSubmitting(true)
-    dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: values })
+    dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: newValues })
     history.push(`voting`)
   }
 
