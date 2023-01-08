@@ -510,9 +510,13 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
               <Typography color={"textSecondary"}>
                 You will need to wait for a full cycle before making your first proposal.
               </Typography>
-              <Typography color={"textSecondary"}>
-                A proposal will accept votes for {formatDate(votingTime)} after it is created. Once the voting cycle
-                ends, if the proposal is accepted, it will become executable after another {formatDate(flushDelayTime)}.
+              <Typography color={"textSecondary"} style={{ marginTop: 10 }}>
+                {`A proposal will accept votes for ${formatDate(votingTime)} after it is created. Once the voting cycle
+                ends, if the proposal is accepted, it will become executable after another ${formatDate(
+                  flushDelayTime
+                )}.`}
+              </Typography>
+              <Typography color={"textSecondary"} style={{ marginTop: 10 }}>
                 If not executed within {formatDate(expiryDelayTime)} after voting ends, the proposal will expire and
                 won&apos;t be available for execution anymore.
               </Typography>
