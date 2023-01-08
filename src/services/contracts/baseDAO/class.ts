@@ -15,6 +15,7 @@ import { Schema } from "@taquito/michelson-encoder"
 
 import configuration_type_michelson from "./lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
 import proposelambda from "./lambdaDAO/michelson/proposelambda"
+import { getNetworkHead } from "services/bakingBad/stats"
 
 interface DeployParams {
   params: MigrationParams
@@ -82,25 +83,19 @@ export abstract class BaseDAO {
 
     try {
       console.log("Making storage contract...")
+      const currentLevel = await getNetworkHead(network)
+
       const storageCode = await generateStorageContract({
         network,
         template,
         storage: treasuryParams,
         originatorAddress: account,
-        metadata
+        metadata,
+        currentLevel
       })
       console.log("Originating DAO contract...")
 
-      let contractMichaelson
-
-      console.log("template: ", template)
-      if (template == "lambda") {
-        console.log("lambda")
-        contractMichaelson = lambdaDAOContractCode
-      } else {
-        console.log("others")
-        contractMichaelson = baseDAOContractCode
-      }
+      const contractMichaelson = lambdaDAOContractCode
 
       console.log(contractMichaelson)
       console.log(treasuryParams)
