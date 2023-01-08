@@ -273,7 +273,8 @@ const useEstimatedBlockTimes = ({
     expiryMoment,
     votingTime: secondsToTime(periodSeconds),
     flushDelayTime: secondsToTime(flushDelaySeconds),
-    expiryDelayTime: secondsToTime(expiryDelaySeconds)
+    expiryDelayTime: secondsToTime(expiryDelaySeconds),
+    periodSeconds
   }
 }
 
@@ -297,7 +298,8 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     votingTime,
     flushDelayTime,
     activeMoment,
-    expiryDelayTime
+    expiryDelayTime,
+    periodSeconds
   } = useEstimatedBlockTimes({
     votingBlocks,
     proposalFlushBlocks,
@@ -313,6 +315,19 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
       }
     })()
   }, [network])
+
+  const formatDate = (timeInfo: any) => {
+    const values = []
+    for (const property in timeInfo) {
+      if (timeInfo[property] !== 0) {
+        values.push(`${timeInfo[property]} ${property}`)
+      }
+    }
+    if (values.length > 0) {
+      return values.toString().replace(",", " and ")
+    }
+    return "0 minutes"
+  }
 
   const controlMaxFieldLimit = (field: string, value: any) => {
     const itemValue = value.target.value.split(".")
@@ -496,9 +511,10 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 You will need to wait for a full cycle before making your first proposal.
               </Typography>
               <Typography color={"textSecondary"}>
-                A proposal will accept votes for one hour after it is created.. Once the voting cycle ends, if the
-                proposal is accepted, it will become executable after another 10 minutes. If not executed within 50
-                minutes after voting ends, the proposal will expire and won&apos;t be available for execution anymore.
+                A proposal will accept votes for {formatDate(votingTime)} after it is created. Once the voting cycle
+                ends, if the proposal is accepted, it will become executable after another {formatDate(flushDelayTime)}.
+                If not executed within {formatDate(expiryDelayTime)} after voting ends, the proposal will expire and
+                won&apos;t be available for execution anymore.
               </Typography>
             </>
           }
