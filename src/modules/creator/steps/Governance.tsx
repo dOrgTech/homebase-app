@@ -44,9 +44,12 @@ const InfoIconDanger = styled(InfoRounded)(({ theme }) => ({
   width: 16
 }))
 
-const CustomSpan = styled("span")({
-  color: theme.palette.secondary.main
-})
+const InfoIconCorrect = styled(InfoRounded)(({ theme }) => ({
+  cursor: "default",
+  color: theme.palette.secondary.main,
+  height: 16,
+  width: 16
+}))
 
 const ErrorText = styled(Typography)({
   display: "block",
@@ -188,6 +191,22 @@ const validateForm = (values: VotingSettings) => {
 
   if (!values.proposalFlushBlocks || Number(values.proposalFlushBlocks) <= 0) {
     errors.proposalFlushBlocks = "Must be greater than 0"
+  }
+
+  if (
+    values.proposalFlushBlocks &&
+    values.votingBlocks &&
+    Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
+  ) {
+    errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
+  }
+
+  if (
+    values.proposalExpiryBlocks &&
+    values.proposalFlushBlocks &&
+    Number(values.proposalExpiryBlocks) <= Number(values.proposalFlushBlocks)
+  ) {
+    errors.proposalExpiryBlocks = "Must be greater than Proposal Execution Delay"
   }
 
   if (!values.proposalExpiryBlocks || Number(values.proposalExpiryBlocks) <= 0) {
@@ -383,7 +402,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placement="bottom"
                     title="This should always be more than double the duration of a cycle, to ensure the proposal will not become executable in the cycle it was created, nor in the one it was voted on"
                   >
-                    <InfoIconDanger />
+                    {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
                   </CustomTooltip>
                 </GridItemCenter>
               </ItemContainer>
@@ -420,8 +439,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     inputProps={{ min: 0 }}
                   />
                 </GridItemCenter>
-                <GridItemCenter item xs={6}>
+                <GridItemCenter item xs={6} container direction="row" alignItems="center">
                   <Typography color="textSecondary">blocks</Typography>
+                  <CustomTooltip
+                    placement="bottom"
+                    title="This value must be larger than the proposal execution delay, because if it’s not, then your proposals would never be executable, because they would expire before they could be executed"
+                  >
+                    {errors.proposalExpiryBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
+                  </CustomTooltip>
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
