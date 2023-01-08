@@ -273,7 +273,7 @@ export const Summary = (): JSX.Element => {
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
                 <Typography variant="subtitle2" color="textSecondary">
-                  Flush Delay Duration
+                  Proposal Execution Delay
                 </Typography>
               </Grid>
               <Grid item xs={5}>

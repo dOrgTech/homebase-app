@@ -9,7 +9,8 @@ import { Token } from "models/Token"
 export const storageParamsToBaseDAODockerArgs = (
   storage: BaseStorageParams,
   metadata: MetadataDeploymentResult,
-  token: Token
+  token: Token,
+  currentLevel: number
 ): GeneratorArgs => ({
   admin_address: storage.adminAddress,
   guardian_address: storage.guardian,
@@ -30,7 +31,7 @@ export const storageParamsToBaseDAODockerArgs = (
   proposal_expired_level: `${storage.proposalExpiryPeriod}n`,
   governance_total_supply: `${token.supply.toFixed()}n`,
   period: `${storage.votingPeriod}n`,
-  start_level: "100n",
+  start_level: `${currentLevel}n`,
   min_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.minXtzAmount)).toFixed()}mutez`,
   max_xtz_amount: `${xtzToMutez(new BigNumber(storage.extra.maxXtzAmount)).toFixed()}mutez`
 })

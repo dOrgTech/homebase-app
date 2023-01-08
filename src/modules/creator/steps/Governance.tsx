@@ -468,12 +468,12 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           description={
             <>
               <Typography color={"textSecondary"}>
-                If Jane creates a DAO at <CustomSpan>{dayjs().format("HH:mm MM/DD")}</CustomSpan>, she will be able to
-                create a proposal at <CustomSpan>{creationMoment.format("HH:mm MM/DD")}</CustomSpan>, and the DAO will
-                vote on it from <CustomSpan>{activeMoment.format("HH:mm MM/DD")} </CustomSpan>
-                through <CustomSpan>{closeMoment.format("HH:mm MM/DD")}</CustomSpan>. If the proposal passes, it&apos;ll
-                be executable at <CustomSpan>{flushMoment.format("HH:mm MM/DD")}</CustomSpan> and will expire at{" "}
-                <CustomSpan>{expiryMoment.format("HH:mm MM/DD")}</CustomSpan>
+                You will need to wait for a full cycle before making your first proposal.
+              </Typography>
+              <Typography color={"textSecondary"}>
+                A proposal will accept votes for one hour after it is created.. Once the voting cycle ends, if the
+                proposal is accepted, it will become executable after another 10 minutes. If not executed within 50
+                minutes after voting ends, the proposal will expire and won&apos;t be available for execution anymore.
               </Typography>
             </>
           }
