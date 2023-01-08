@@ -120,7 +120,11 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
       <Grid container justifyContent="center" style={{ gap: 20 }} direction="column">
         {_.map(daoLambdas, lambda => {
           // @TODO: Remove when support for SupportedLambdaProposalKey.UpdateReceiversProposal is added
-          if (lambda.key === SupportedLambdaProposalKey.UpdateReceiversProposal) {
+          if (
+            lambda.key === SupportedLambdaProposalKey.UpdateReceiversProposal ||
+            lambda.key === SupportedLambdaProposalKey.TransferProposal ||
+            lambda.key === SupportedLambdaProposalKey.UpdateContractDelegateProposal
+          ) {
             return null
           }
 
@@ -171,17 +175,8 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
         open={openProposalFormLambda}
         handleClose={handleCloseCustomProposalModal}
       />
-      <ProposalFormContainer
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.TransferProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-        defaultTab={0}
-      />
       <ConfigProposalForm
         open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-      />
-      <DelegationChangeProposalForm
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal}
         handleClose={handleCloseSupportedExecuteProposalModal}
       />
       <GuardianChangeProposalForm
