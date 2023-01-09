@@ -207,7 +207,7 @@ export const Navbar: React.FC<{
       <StyledToolbar>
         <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Box onClick={() => (location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`)}>
+            <Box onClick={() => (location.href = `/explorer`)}>
               <ToolbarContainer container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />
@@ -331,13 +331,7 @@ export const Navbar: React.FC<{
           </Grid>
           <BackButtonContainer container justifyContent="flex-start">
             {mode !== "creator" ? (
-              <BackButtonText
-                container
-                item
-                xs={6}
-                md={2}
-                onClick={() => (location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`)}
-              >
+              <BackButtonText container item xs={6} md={2} onClick={() => (location.href = `/explorer`)}>
                 <BackButtonIcon />
                 <BackButton>Back</BackButton>
               </BackButtonText>
