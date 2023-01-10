@@ -103,21 +103,21 @@ const App: React.FC = () => {
                         <DAOCreate />
                       </ThemeProvider>
                     </CreatorProvider>
-                    <WarningFooter
+                    {/* <WarningFooter
                       text={
                         "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
                       }
-                    />
+                    /> */}
                   </Route>
                   <Route path="/explorer">
                     <TZKTSubscriptionsProvider>
                       <DAOExplorerRouter />
                     </TZKTSubscriptionsProvider>
-                    <WarningFooter
+                    {/* <WarningFooter
                       text={
                         "Homebase is highly experimental, and changes are to be expected in the coming weeks. Please use at your own risk. The DAO you created will not be deprecated."
                       }
-                    />
+                    /> */}
                     <Footer></Footer>
                   </Route>
                   <Route path="/faq">
