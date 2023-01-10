@@ -44,9 +44,12 @@ const InfoIconDanger = styled(InfoRounded)(({ theme }) => ({
   width: 16
 }))
 
-const CustomSpan = styled("span")({
-  color: theme.palette.secondary.main
-})
+const InfoIconCorrect = styled(InfoRounded)(({ theme }) => ({
+  cursor: "default",
+  color: theme.palette.secondary.main,
+  height: 16,
+  width: 16
+}))
 
 const ErrorText = styled(Typography)({
   display: "block",
@@ -190,6 +193,22 @@ const validateForm = (values: VotingSettings) => {
     errors.proposalFlushBlocks = "Must be greater than 0"
   }
 
+  if (
+    values.proposalFlushBlocks &&
+    values.votingBlocks &&
+    Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
+  ) {
+    errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
+  }
+
+  if (
+    values.proposalExpiryBlocks &&
+    values.proposalFlushBlocks &&
+    Number(values.proposalExpiryBlocks) <= Number(values.proposalFlushBlocks)
+  ) {
+    errors.proposalExpiryBlocks = "Must be greater than Proposal Execution Delay"
+  }
+
   if (!values.proposalExpiryBlocks || Number(values.proposalExpiryBlocks) <= 0) {
     errors.proposalExpiryBlocks = "Must be greater than 0"
   }
@@ -254,7 +273,8 @@ const useEstimatedBlockTimes = ({
     expiryMoment,
     votingTime: secondsToTime(periodSeconds),
     flushDelayTime: secondsToTime(flushDelaySeconds),
-    expiryDelayTime: secondsToTime(expiryDelaySeconds)
+    expiryDelayTime: secondsToTime(expiryDelaySeconds),
+    periodSeconds
   }
 }
 
@@ -278,7 +298,8 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     votingTime,
     flushDelayTime,
     activeMoment,
-    expiryDelayTime
+    expiryDelayTime,
+    periodSeconds
   } = useEstimatedBlockTimes({
     votingBlocks,
     proposalFlushBlocks,
@@ -294,6 +315,19 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
       }
     })()
   }, [network])
+
+  const formatDate = (timeInfo: any) => {
+    const values = []
+    for (const property in timeInfo) {
+      if (timeInfo[property] !== 0) {
+        values.push(`${timeInfo[property]} ${property}`)
+      }
+    }
+    if (values.length > 0) {
+      return values.toString().replace(",", " and ")
+    }
+    return "0 minutes"
+  }
 
   const controlMaxFieldLimit = (field: string, value: any) => {
     const itemValue = value.target.value.split(".")
@@ -341,6 +375,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placeholder="00"
                     component={TextField}
                     inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "votingBlocks") === 0) {
+                        setFieldValue("votingBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("votingBlocks", newValue.target.value)
+                    }}
                   />
                 </GridItemCenter>
                 <GridItemCenter item xs={6}>
@@ -375,6 +417,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placeholder="00"
                     component={TextField}
                     inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "proposalFlushBlocks") === 0) {
+                        setFieldValue("proposalFlushBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("proposalFlushBlocks", newValue.target.value)
+                    }}
                   />
                 </GridItemCenter>
                 <GridItemCenter item xs={6} container direction="row" alignItems="center">
@@ -383,7 +433,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placement="bottom"
                     title="This should always be more than double the duration of a cycle, to ensure the proposal will not become executable in the cycle it was created, nor in the one it was voted on"
                   >
-                    <InfoIconDanger />
+                    {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
                   </CustomTooltip>
                 </GridItemCenter>
               </ItemContainer>
@@ -418,10 +468,24 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     placeholder="00"
                     component={TextField}
                     inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "proposalExpiryBlocks") === 0) {
+                        setFieldValue("proposalExpiryBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("proposalExpiryBlocks", newValue.target.value)
+                    }}
                   />
                 </GridItemCenter>
-                <GridItemCenter item xs={6}>
+                <GridItemCenter item xs={6} container direction="row" alignItems="center">
                   <Typography color="textSecondary">blocks</Typography>
+                  <CustomTooltip
+                    placement="bottom"
+                    title="This value must be larger than the proposal execution delay, because if it’s not, then your proposals would never be executable, because they would expire before they could be executed"
+                  >
+                    {errors.proposalExpiryBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
+                  </CustomTooltip>
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
@@ -446,10 +510,15 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
               <Typography color={"textSecondary"}>
                 You will need to wait for a full cycle before making your first proposal.
               </Typography>
-              <Typography color={"textSecondary"}>
-                A proposal will accept votes for one hour after it is created.. Once the voting cycle ends, if the
-                proposal is accepted, it will become executable after another 10 minutes. If not executed within 50
-                minutes after voting ends, the proposal will expire and won&apos;t be available for execution anymore.
+              <Typography color={"textSecondary"} style={{ marginTop: 10 }}>
+                {`A proposal will accept votes for ${formatDate(votingTime)} after it is created. Once the voting cycle
+                ends, if the proposal is accepted, it will become executable after another ${formatDate(
+                  flushDelayTime
+                )}.`}
+              </Typography>
+              <Typography color={"textSecondary"} style={{ marginTop: 10 }}>
+                If not executed within {formatDate(expiryDelayTime)} after voting ends, the proposal will expire and
+                won&apos;t be available for execution anymore.
               </Typography>
             </>
           }

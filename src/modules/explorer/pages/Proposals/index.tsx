@@ -132,7 +132,7 @@ export const Proposals: React.FC = () => {
             </Grid>
           </Grid>
         </HeroContainer>
-        <DAOStatsRow />
+        {/* <DAOStatsRow /> */}
         <UserBalancesBox daoId={daoId} />
 
         {data && cycleInfo && activeProposals && (
