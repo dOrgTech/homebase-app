@@ -149,7 +149,7 @@ export const Treasury: React.FC = () => {
           <TransfersTable isInbound={false} transfers={outboundTransfers} />
         </Grid>
       </Grid>
-      <ProposalFormContainer open={openTransfer} handleClose={onCloseTransfer} defaultTab={1} />
+      <ProposalFormContainer open={openTransfer} handleClose={onCloseTransfer} defaultTab={0} />
       <DelegationChangeProposalForm open={openDelegationChange} handleClose={() => setOpenDelegationChange(false)} />
     </>
   )

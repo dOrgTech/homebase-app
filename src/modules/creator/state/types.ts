@@ -77,6 +77,7 @@ export enum StepperIndex {
 export interface StepInfo {
   title: string
   index: number
+  path: string
 }
 
 function updateNavigationBar(props: NavigationBarProps) {

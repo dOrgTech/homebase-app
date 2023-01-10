@@ -27,6 +27,17 @@ import { useDAOID } from "../pages/DAO/router"
 import { ProposalFormInput } from "./ProposalFormInput"
 import { ProposalFormResponsiveDialog } from "./ResponsiveDialog"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
+import CloseButton from "modules/common/CloseButton"
+
+const CustomContainer = styled(Grid)({
+  padding: "42px 54px 0px 54px"
+})
+
+const DialogTitle = styled(Typography)({
+  fontSize: 20,
+  fontWeight: 500,
+  textTransform: "capitalize"
+})
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -151,7 +162,14 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
       <ProposalFormResponsiveDialog open={open} onClose={handleClose}>
         {dao && daoHoldings && (
           <>
-            <AppTabBar value={selectedTab} setValue={setSelectedTab} labels={forms.map(form => form.label)} />
+            <CustomContainer container direction="row" justifyContent="space-between" alignItems="center">
+              <Grid item>
+                <DialogTitle>{forms[selectedTab].label.toLowerCase()}</DialogTitle>
+              </Grid>
+              <Grid item>
+                <CloseButton onClose={handleClose} />
+              </Grid>
+            </CustomContainer>
             {forms.map((form, i) => (
               <TabPanel key={`tab-${i}`} value={selectedTab} index={i}>
                 <form.component open={open} />
