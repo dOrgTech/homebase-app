@@ -124,7 +124,7 @@ export const Landing: React.FC = () => {
                         justifyContent={isExtraSmall ? "center" : "flex-start"}
                       >
                         <Grid item>
-                          <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/explorer`} underline="none">
+                          <Link href={`/explorer`} underline="none">
                             <MainButton variant="contained" color="secondary">
                               Enter App
                             </MainButton>

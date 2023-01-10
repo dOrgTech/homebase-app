@@ -15,6 +15,7 @@ interface BaseDAODockerParams {
   originatorAddress: string
   metadata: MetadataDeploymentResult
   network: Network
+  currentLevel: number
 }
 
 export const generateStorageContract = async ({
@@ -22,14 +23,15 @@ export const generateStorageContract = async ({
   template,
   originatorAddress,
   metadata,
-  network
+  network,
+  currentLevel
 }: BaseDAODockerParams): Promise<string> => {
   const tokenMetadata = await getTokenMetadata(
     storage.governanceToken.address,
     network,
     storage.governanceToken.tokenId
   )
-  const args = storageParamsToBaseDAODockerArgs(storage, metadata, tokenMetadata)
+  const args = storageParamsToBaseDAODockerArgs(storage, metadata, tokenMetadata, currentLevel)
 
   const url = `${API_URL}/${originatorAddress}/${template}?${Object.keys(args)
     .map(key => `${key}=${args[key as keyof GeneratorArgs]}`)

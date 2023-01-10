@@ -26,6 +26,7 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const StepContentContainer = styled(Grid)({
+  marginTop: 28,
   alignItems: "baseline",
   height: "100%",
   paddingTop: 0,
@@ -45,7 +46,8 @@ const StyledStepper = styled(Stepper)({
   "& .MuiStepLabel-label": {
     fontSize: 14,
     lineHeight: 14
-  }
+  },
+  "cursor": "pointer"
 })
 
 const IndicatorValue = styled(Paper)(({ theme }) => ({
@@ -159,9 +161,11 @@ export const DAOCreate: React.FC = () => {
                 <FAQClickToAction onClick={goToFAQ}>New to DAOs? Read our FAQ</FAQClickToAction>
               </Box>
               <StyledStepper activeStep={step} orientation="vertical">
-                {STEPS.map(({ title }: StepInfo, index: number) => (
+                {STEPS.map(({ title, path }: StepInfo, index: number) => (
                   <Step key={title}>
-                    <StepLabel icon={index + 1}>{title}</StepLabel>
+                    <StepLabel onClick={() => (index < step ? history.push(path) : null)} icon={index + 1}>
+                      {title}
+                    </StepLabel>
                   </Step>
                 ))}
               </StyledStepper>

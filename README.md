@@ -3,7 +3,7 @@
 
 Homebase is a platform designed to let users create and manage DAOs on the Tezos blockchain.
  
-# Prequisites
+# Prerequisites
 The following dependencies are required to run homebase-app:
 
 | Dependency | Version             |
@@ -132,7 +132,7 @@ All DAOs, regardless of their template, have:
 
 ### DAO Template specific pages and details:
 
-Each DAO template has unique pages related to template specific actions. Also, the proposal creation modals are different accross templates.
+Each DAO template has unique pages related to template specific actions. Also, the proposal creation modals are different across templates.
 
 ### **Registry**
 
