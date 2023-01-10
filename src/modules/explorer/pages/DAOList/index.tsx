@@ -19,7 +19,6 @@ import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
 import { MainButton } from "../../../common/MainButton"
 import { EnvKey, getEnv } from "services/config"
-import { LaunchOutlined } from "@material-ui/icons"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -211,7 +210,7 @@ export const DAOList: React.FC = () => {
                     </Grid>
                   </Grid>
                   <Grid item>
-                    <Link underline="none" href={`/creator`}>
+                    <Link underline="none" href={`${getEnv(EnvKey.REACT_APP_URL)}/creator`}>
                       <MainButton variant="contained" color="secondary">
                         Create DAO
                       </MainButton>

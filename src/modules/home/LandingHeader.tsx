@@ -52,7 +52,7 @@ export const Header: React.FC = () => {
             </Link>
           </Grid>
           <Grid item>
-            <Link href={`/explorer`} underline="none">
+            <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/explorer`} underline="none">
               <MainButton variant="contained" color="secondary">
                 Enter App
               </MainButton>

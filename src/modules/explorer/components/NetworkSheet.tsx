@@ -37,7 +37,7 @@ export const NetworkSheet: React.FC<Props> = props => {
             onClick={() => {
               props.onClose()
               changeNetwork(networkOption)
-              window.location.href = `/explorer`
+              window.location.href = `${getEnv(EnvKey.REACT_APP_URL)}/explorer`
             }}
           >
             <Grid container justifyContent="center" alignItems="center" style={{ gap: 8 }}>
