@@ -163,7 +163,7 @@ export const DAOCreate: React.FC = () => {
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title, path }: StepInfo, index: number) => (
                   <Step key={title}>
-                    <StepLabel onClick={() => history.push(path)} icon={index + 1}>
+                    <StepLabel onClick={() => (index < step ? history.push(path) : null)} icon={index + 1}>
                       {title}
                     </StepLabel>
                   </Step>
