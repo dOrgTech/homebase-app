@@ -59,7 +59,7 @@ export const Header: React.FC = () => {
       <StyledToolbar>
         <Head container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
           <Grid item>
-            <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/landing`}>
+            <Link href={`/landing`}>
               <Grid container alignItems="center" wrap="nowrap">
                 <Grid item>
                   <LogoItem src={HomeButton} />
@@ -73,7 +73,7 @@ export const Header: React.FC = () => {
             </Link>
           </Grid>
           <Grid item>
-            <Link href={`${getEnv(EnvKey.REACT_APP_URL)}/explorer`} underline="none">
+            <Link href={`/explorer`} underline="none">
               <MainButton variant="contained" color="secondary">
                 Enter App
               </MainButton>

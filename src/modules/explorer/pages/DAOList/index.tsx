@@ -211,7 +211,7 @@ export const DAOList: React.FC = () => {
                     </Grid>
                   </Grid>
                   <Grid item>
-                    <Link underline="none" href={`${getEnv(EnvKey.REACT_APP_URL)}/creator`}>
+                    <Link underline="none" href={`/creator`}>
                       <MainButton variant="contained" color="secondary">
                         Create DAO
                       </MainButton>
