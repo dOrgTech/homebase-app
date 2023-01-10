@@ -138,7 +138,6 @@ export const DAO: React.FC = () => {
           </Grid>
         </Grid>
       </HeroContainer>
-      <UserBalancesBox daoId={daoId} />
       <DAOStatsRow />
 
       {data && cycleInfo && activeProposals && (
