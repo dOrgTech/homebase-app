@@ -112,6 +112,7 @@ export const theme = createTheme({
     },
     MuiStepLabel: {
       label: {
+        "cursor": "pointer",
         "color": "#fff",
         "opacity": 0.5,
         "marginLeft": 15,
