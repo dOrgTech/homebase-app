@@ -132,8 +132,6 @@ export const Proposals: React.FC = () => {
             </Grid>
           </Grid>
         </HeroContainer>
-        {/* <DAOStatsRow /> */}
-        <UserBalancesBox daoId={daoId} />
 
         {data && cycleInfo && activeProposals && (
           <ProposalsList title={"Active Proposals"} currentLevel={cycleInfo.currentLevel} proposals={activeProposals} />
