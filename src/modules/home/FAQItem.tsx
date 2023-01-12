@@ -41,6 +41,7 @@ export const FAQItem = ({ question, answer, id }: { question: string; answer: st
       const element = document.getElementById(`${id}`)
       element?.scrollIntoView({ behavior: "smooth", block: "start" })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
