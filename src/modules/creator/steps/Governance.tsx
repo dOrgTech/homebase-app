@@ -653,6 +653,9 @@ export const Governance: React.FC = () => {
   const history = useHistory()
 
   const saveStepInfo = (values: VotingSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
+    values.proposalExpiryBlocks = Number(values.proposalExpiryBlocks)
+    values.proposalFlushBlocks = Number(values.proposalFlushBlocks)
+    values.votingBlocks = Number(values.votingBlocks)
     const newState = {
       ...state.data,
       votingSettings: values
