@@ -670,6 +670,7 @@ export const Governance: React.FC = () => {
     <Box>
       <TitleBlock
         title={"Proposals & Voting"}
+        tooltipText={"Configure Proposals and Voting"}
         tooltip={true}
         description={"These settings will define the duration, support and approval required for proposals."}
       ></TitleBlock>

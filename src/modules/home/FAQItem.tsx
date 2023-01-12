@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { AccordionDetails, AccordionSummary, Grid, Typography } from "@material-ui/core"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import { styled } from "@material-ui/core/styles"
 import { ContentContainer } from "../explorer/components/ContentContainer"
 import Accordion from "@material-ui/core/Accordion"
 import Markdown from "modules/common/Markdown"
+import { useLocation } from "react-router-dom"
 
 const TableContainer = styled(ContentContainer)({
   width: "100%"
@@ -24,12 +25,30 @@ const AccordionContent = styled(AccordionDetails)(({ theme }) => ({
   borderRadius: "0 0 8px 8px"
 }))
 
-export const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
+export const FAQItem = ({ question, answer, id }: { question: string; answer: string; id: string }) => {
+  const [open, setOpen] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.hash === "#" + id) {
+      setOpen(true)
+    }
+  }, [location, id])
+
+  useEffect(() => {
+    if (location.hash === "#" + id) {
+      setOpen(true)
+      const element = document.getElementById(`${id}`)
+      element?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }, [])
+
   return (
-    <TableContainer>
+    <TableContainer id={id}>
       <Grid container direction="column" wrap="nowrap">
-        <Accordion style={{ background: "transparent" }}>
+        <Accordion style={{ background: "transparent" }} expanded={open}>
           <AccordionHeader
+            onClick={() => setOpen(!open)}
             expandIcon={<ExpandMoreIcon style={{ fill: "rgb(65, 72, 77)" }} />}
             aria-controls="panel1a-content"
             id="panel1a-header"

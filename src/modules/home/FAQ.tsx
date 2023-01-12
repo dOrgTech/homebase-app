@@ -74,7 +74,7 @@ export const FAQ: React.FC = () => {
         </TextBlock>
 
         {faqList.map(({ question, answer }, i) => (
-          <FAQItem key={`question-${i}`} question={question} answer={answer} />
+          <FAQItem key={`question-${i}`} id={`question-${i}`} question={question} answer={answer} />
         ))}
       </PageGrid>
     </PageContainer>

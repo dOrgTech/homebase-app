@@ -2,6 +2,7 @@ import { Grid, Paper, styled, Tooltip, Typography } from "@material-ui/core"
 import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
 import { InfoRounded } from "@material-ui/icons"
+import { HashLink } from "react-router-hash-link"
 
 const StyledGrid = styled(Grid)({
   height: "fit-content",
@@ -61,10 +62,12 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
         </CustomTextContainer>
         {tooltip ? (
           <CustomTextContainer>
-            <CustomTooltip placement="bottom" title={tooltipText}>
+            <CustomTooltip placement="bottom" title={description}>
               <InfoIconInput />
             </CustomTooltip>
-            <CustomTooltipText color="secondary">Configure Proposals and Voting </CustomTooltipText>
+            <HashLink smooth to="/faq#question-2">
+              <CustomTooltipText color="secondary">{tooltipText} </CustomTooltipText>
+            </HashLink>
           </CustomTextContainer>
         ) : null}
       </Grid>
