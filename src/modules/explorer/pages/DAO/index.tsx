@@ -124,6 +124,7 @@ export const DAO: React.FC = () => {
                   size={isExtraSmall ? "small" : "medium"}
                   onClick={onFlush}
                   disabled={!executableProposals || !executableProposals.length}
+                  id="home-execute-button"
                 >
                   Execute
                 </SmallButton>

@@ -102,7 +102,12 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
 
   return (
     <div>
-      <Button onClick={handleClickOpen} variant="contained" color="secondary">
+      <Button
+        onClick={handleClickOpen}
+        id={freeze ? "deposit-dao" : "withdraw-dao"}
+        variant="contained"
+        color="secondary"
+      >
         {freeze ? "Deposit" : "Withdraw"}
       </Button>
       <CustomDialog open={open} onClose={handleClose} title={freeze ? "DEPOSIT" : "WITHDRAW"}>
@@ -142,6 +147,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
             </CustomLabelsContainer>
             <ProposalFormInput>
               <CustomInput
+                name="amount-field"
                 value={amount}
                 type="number"
                 placeholder="0"
@@ -159,7 +165,7 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
             </ProposalFormInput>
           </Grid>
           <Grid item container direction="row" alignItems="center" justifyContent="center">
-            <Button variant="contained" color={"secondary"} disabled={!amount} onClick={onSubmit}>
+            <Button id="amount-submit" variant="contained" color={"secondary"} disabled={!amount} onClick={onSubmit}>
               Submit
             </Button>
           </Grid>

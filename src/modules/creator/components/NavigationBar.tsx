@@ -56,7 +56,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
       <FooterContainer item xs={12} container isMobile={isMobile}>
         <Grid item xs={6}>
           {back && (
-            <BackButton onClick={back.handler}>
+            <BackButton id="back-button" onClick={back.handler}>
               <BackButtonIcon />
               <Typography color="secondary">{back.text}</Typography>
             </BackButton>
@@ -64,7 +64,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
         </Grid>
         <Grid item xs={6}>
           {next && (
-            <NextButton onClick={next.handler}>
+            <NextButton id="next-button" onClick={next.handler}>
               <Typography color="primary">{next.text}</Typography>
             </NextButton>
           )}

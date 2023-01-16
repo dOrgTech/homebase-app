@@ -173,6 +173,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                       variant="contained"
                       style={{ fontSize: "14px" }}
                       onClick={() => connect()}
+                      id="nav-connect-wallet"
                     >
                       Connect Wallet
                     </SmallButton>

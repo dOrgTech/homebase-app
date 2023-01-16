@@ -98,6 +98,7 @@ export const Proposals: React.FC = () => {
                     color="secondary"
                     onClick={onFlush}
                     disabled={!executableProposals || !executableProposals.length}
+                    id="execute-button"
                   >
                     Execute
                   </SmallButton>
@@ -111,6 +112,7 @@ export const Proposals: React.FC = () => {
                     color="secondary"
                     onClick={onDropAllExpired}
                     disabled={!expiredProposals || !expiredProposals.length}
+                    id="drop-all-expired"
                   >
                     Drop All Expired
                   </DropButton>

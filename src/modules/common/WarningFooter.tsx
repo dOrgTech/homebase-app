@@ -44,7 +44,7 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
               <ContainerText align="center">{text}</ContainerText>
             </Grid>
             <Grid item>
-              <IconButton onClick={() => setOpen(false)}>
+              <IconButton id="warning-close-button" onClick={() => setOpen(false)}>
                 <CloseIcon htmlColor="#FFC839" />
               </IconButton>
             </Grid>
