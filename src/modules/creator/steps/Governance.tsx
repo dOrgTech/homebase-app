@@ -193,21 +193,21 @@ const validateForm = (values: VotingSettings) => {
     errors.proposalFlushBlocks = "Must be greater than 0"
   }
 
-  if (
-    values.proposalFlushBlocks &&
-    values.votingBlocks &&
-    Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
-  ) {
-    errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
-  }
+  // if (
+  //   values.proposalFlushBlocks &&
+  //   values.votingBlocks &&
+  //   Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
+  // ) {
+  //   errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
+  // }
 
-  if (
-    values.proposalExpiryBlocks &&
-    values.proposalFlushBlocks &&
-    Number(values.proposalExpiryBlocks) <= Number(values.proposalFlushBlocks)
-  ) {
-    errors.proposalExpiryBlocks = "Must be greater than Proposal Execution Delay"
-  }
+  // if (
+  //   values.proposalExpiryBlocks &&
+  //   values.proposalFlushBlocks &&
+  //   Number(values.proposalExpiryBlocks) <= Number(values.proposalFlushBlocks)
+  // ) {
+  //   errors.proposalExpiryBlocks = "Must be greater than Proposal Execution Delay"
+  // }
 
   if (!values.proposalExpiryBlocks || Number(values.proposalExpiryBlocks) <= 0) {
     errors.proposalExpiryBlocks = "Must be greater than 0"
