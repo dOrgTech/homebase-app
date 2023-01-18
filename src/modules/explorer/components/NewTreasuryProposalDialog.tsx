@@ -41,6 +41,10 @@ const DAOBalanceText = styled(Typography)({
   marginRight: 10
 })
 
+const CustomErrorText = styled(ErrorText)({
+  textTransform: "capitalize"
+})
+
 const AutoCompletePaper = styled(Paper)({
   background: "#24282B"
 })
@@ -161,6 +165,7 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
 
   const recipientError = (errors.transferForm?.transfers?.[activeTransfer - 1] as any)?.recipient
   const amountError = (errors.transferForm?.transfers?.[activeTransfer - 1] as any)?.amount
+  const assetsError = (errors.transferForm?.transfers?.[activeTransfer - 1] as any)?.asset
 
   const { transfers } = watch("transferForm")
 
@@ -216,32 +221,35 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
           (field, index) =>
             index === activeTransfer - 1 && (
               <>
-                <ProposalFormInput label={"Recipient"}>
-                  <Controller
-                    key={field.id}
-                    name={`transferForm.transfers.${index}.recipient`}
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        type="string"
-                        InputProps={{ disableUnderline: true }}
-                        placeholder="Type an Address Here"
-                      />
-                    )}
-                  />
-
-                  {recipientError && touched.transferForm?.transfers?.[activeTransfer - 1]?.recipient ? (
-                    <ErrorText>{recipientError}</ErrorText>
+                <Grid container direction="column">
+                  <ProposalFormInput label={"Recipient"}>
+                    <Controller
+                      key={field.id}
+                      name={`transferForm.transfers.${index}.recipient`}
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          type="string"
+                          InputProps={{ disableUnderline: true }}
+                          placeholder="Type an Address Here"
+                        />
+                      )}
+                    />
+                  </ProposalFormInput>
+                  {recipientError && errors.transferForm?.transfers?.[activeTransfer - 1]?.recipient ? (
+                    <CustomErrorText>{recipientError.type}</CustomErrorText>
                   ) : null}
-                </ProposalFormInput>
-                <Grid container alignItems="center" style={{ gap: 26 }}>
+                </Grid>
+                <Grid container style={{ gap: 26 }}>
                   <Grid item xs={isMobileSmall ? 12 : 6}>
                     <ProposalFormInput label={"Asset"}>
                       <Controller
                         key={field.id}
                         name={`transferForm.transfers.${index}.asset`}
                         control={control}
+                        rules={{ required: true }}
                         render={({ field: { onChange, ...props } }) => (
                           <AutoCompleteField
                             options={assetOptions || []}
@@ -276,6 +284,9 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
                         )}
                       />
                     </ProposalFormInput>
+                    {assetsError && errors.transferForm?.transfers?.[activeTransfer - 1]?.asset ? (
+                      <CustomErrorText>{assetsError.type}</CustomErrorText>
+                    ) : null}
                   </Grid>
 
                   <Grid item xs={isMobileSmall ? 12 : true}>
@@ -297,6 +308,11 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
                         key={field.id}
                         name={`transferForm.transfers.${index}.amount`}
                         control={control}
+                        rules={{
+                          validate: () => {
+                            return getValues(`transferForm.transfers.${index}.amount`) > 0
+                          }
+                        }}
                         render={({ field }) => (
                           <TextField
                             {...field}
@@ -321,11 +337,10 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
                           />
                         )}
                       />
-
-                      {amountError && touched.transferForm?.transfers?.[activeTransfer - 1]?.amount ? (
-                        <ErrorText>{amountError}</ErrorText>
-                      ) : null}
                     </ProposalFormInput>
+                    {amountError && errors.transferForm?.transfers?.[activeTransfer - 1]?.amount ? (
+                      <ErrorText>{"Must be greater than zero"}</ErrorText>
+                    ) : null}
                   </Grid>
                   <DaoBalance container direction="row" alignItems="center" justifyContent="space-between">
                     <Grid item xs={6}>
