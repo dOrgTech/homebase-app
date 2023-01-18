@@ -3,12 +3,13 @@ import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
 import { InfoRounded } from "@material-ui/icons"
 import { HashLink } from "react-router-hash-link"
+import { CopyButton } from "./CopyButton"
 
 const StyledGrid = styled(Grid)({
   height: "fit-content",
   background: "#2F3438",
   borderRadius: 8,
-  padding: "30px 40px",
+  padding: "30px 31px",
   marginBottom: 38
 })
 
@@ -41,7 +42,7 @@ const CustomTextContainer = styled(Paper)({
   background: "inherit",
   boxShadow: "none",
   display: "flex",
-  alignItems: "flex-end"
+  alignItems: "center"
 })
 
 interface Props {
@@ -52,6 +53,8 @@ interface Props {
 }
 
 export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip = false, tooltipText = "" }) => {
+  const location = process.env.REACT_APP_URL
+
   return (
     <StyledGrid container direction="row" justifyContent="space-between">
       <Grid item xs={12} container direction="row" alignItems="flex-end">
@@ -65,9 +68,10 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
             <CustomTooltip placement="bottom" title={description}>
               <InfoIconInput />
             </CustomTooltip>
-            <HashLink smooth to="/faq#question-2">
+            <HashLink smooth to="/faq#question-2" target={"_blank"}>
               <CustomTooltipText color="secondary">{tooltipText} </CustomTooltipText>
             </HashLink>
+            <CopyButton text={location + "/faq#question-2"} style={{ marginLeft: -4, fontSize: 14 }} />
           </CustomTextContainer>
         ) : null}
       </Grid>
