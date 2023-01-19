@@ -25,36 +25,78 @@ const AccordionContent = styled(AccordionDetails)(({ theme }) => ({
   borderRadius: "0 0 8px 8px"
 }))
 
+const Hash = styled(Typography)({
+  marginLeft: 8
+})
+
 export const FAQItem = ({ question, answer, id }: { question: string; answer: string; id: string }) => {
   const [open, setOpen] = useState(false)
+  const [style, setStyle] = useState({ display: "none" })
+
   const location = useLocation()
 
-  useEffect(() => {
-    if (location.hash === "#" + id) {
-      setOpen(true)
-    }
-  }, [location, id])
+  const formatQuestion = (question: string) => {
+    return question.replaceAll(" ", "-").toLowerCase()
+  }
+  const questionId = formatQuestion(question)
 
   useEffect(() => {
-    if (location.hash === "#" + id) {
+    if (location.hash === "#" + questionId) {
       setOpen(true)
-      const element = document.getElementById(`${id}`)
-      element?.scrollIntoView({ behavior: "smooth", block: "start" })
+      setStyle({ display: "block" })
+      return
     }
+    setOpen(false)
+    setStyle({ display: "none" })
+  }, [location, questionId])
+
+  useEffect(() => {
+    if (location.hash === "#" + questionId) {
+      setOpen(true)
+      const element = document.getElementById(`${questionId}`)
+      element?.scrollIntoView({ behavior: "smooth", block: "start" })
+      setStyle({ display: "block" })
+      return
+    }
+    setOpen(false)
+    setStyle({ display: "none" })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const updateLocationHash = () => {
+    window.location.hash = "#" + questionId
+  }
+
   return (
-    <TableContainer id={id}>
+    <TableContainer id={questionId}>
       <Grid container direction="column" wrap="nowrap">
         <Accordion style={{ background: "transparent" }} expanded={open}>
           <AccordionHeader
-            onClick={() => setOpen(!open)}
-            expandIcon={<ExpandMoreIcon style={{ fill: "rgb(65, 72, 77)" }} />}
+            expandIcon={<ExpandMoreIcon onClick={() => setOpen(!open)} style={{ fill: "rgb(65, 72, 77)" }} />}
             aria-controls="panel1a-content"
             id="panel1a-header"
+            onMouseEnter={e => {
+              setStyle({ display: "block" })
+            }}
+            onMouseLeave={e => {
+              if (window.location.hash !== "#" + questionId) {
+                setStyle({ display: "none" })
+              }
+            }}
           >
-            <Typography>{question}</Typography>
+            <Typography
+              style={{ display: "flex" }}
+              onClick={e => {
+                e.preventDefault()
+                updateLocationHash()
+              }}
+            >
+              {question}
+              <Hash style={style} color="secondary">
+                {" "}
+                #{" "}
+              </Hash>
+            </Typography>
           </AccordionHeader>
           <AccordionContent>
             <Markdown>{answer}</Markdown>

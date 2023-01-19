@@ -9,7 +9,7 @@ const StyledGrid = styled(Grid)({
   height: "fit-content",
   background: "#2F3438",
   borderRadius: 8,
-  padding: "30px 31px",
+  padding: "30px 40px",
   marginBottom: 38
 })
 
@@ -53,8 +53,6 @@ interface Props {
 }
 
 export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip = false, tooltipText = "" }) => {
-  const location = process.env.REACT_APP_URL
-
   return (
     <StyledGrid container direction="row" justifyContent="space-between">
       <Grid item xs={12} container direction="row" alignItems="flex-end">
@@ -68,10 +66,9 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
             <CustomTooltip placement="bottom" title={description}>
               <InfoIconInput />
             </CustomTooltip>
-            <HashLink smooth to="/faq#question-2" target={"_blank"}>
+            <HashLink smooth to="/faq#how-to-create-a-dao-on-homebase" target={"_blank"}>
               <CustomTooltipText color="secondary">{tooltipText} </CustomTooltipText>
             </HashLink>
-            <CopyButton text={location + "/faq#question-2"} style={{ marginLeft: -4, fontSize: 14 }} />
           </CustomTextContainer>
         ) : null}
       </Grid>
