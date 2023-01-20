@@ -2,6 +2,8 @@ import { Grid, Paper, styled, Tooltip, Typography } from "@material-ui/core"
 import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
 import { InfoRounded } from "@material-ui/icons"
+import { HashLink } from "react-router-hash-link"
+import { CopyButton } from "./CopyButton"
 
 const StyledGrid = styled(Grid)({
   height: "fit-content",
@@ -40,7 +42,7 @@ const CustomTextContainer = styled(Paper)({
   background: "inherit",
   boxShadow: "none",
   display: "flex",
-  alignItems: "flex-end"
+  alignItems: "center"
 })
 
 interface Props {
@@ -61,10 +63,12 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
         </CustomTextContainer>
         {tooltip ? (
           <CustomTextContainer>
-            <CustomTooltip placement="bottom" title={tooltipText}>
+            <CustomTooltip placement="bottom" title={description}>
               <InfoIconInput />
             </CustomTooltip>
-            <CustomTooltipText color="secondary">Configure Proposals and Voting </CustomTooltipText>
+            <HashLink smooth to="/faq#how-to-create-a-dao-on-homebase" target={"_blank"}>
+              <CustomTooltipText color="secondary">{tooltipText} </CustomTooltipText>
+            </HashLink>
           </CustomTextContainer>
         ) : null}
       </Grid>

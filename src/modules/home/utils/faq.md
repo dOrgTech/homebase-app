@@ -1,4 +1,4 @@
-<question>Why create a DAO ?<question>
+<question>Why create a DAO?<question>
 <answer>
 A DAO is a way to collectively manage resources in a community, in a way that is fair, transparent, and participatory. Instead of relying on top-down decision making, a DAO is led by a community. Founders put in funds and receive shares. As the DAO grows, new members are voted in, and members can receive shares for work, funds, or whatever else the community decides. Members can make proposals and vote. DAOs tend to be more creative, collaborative, agile, and fair.
 &nbsp;
@@ -53,7 +53,7 @@ From here you will Create DAO.
 &nbsp;
 ![Homebase DAO - Creating a DAO on Tezos](~local/dao_create.png)
 &nbsp;
-Connect your wallet to proceed. 
+Connect your wallet to proceed.
 &nbsp;
 There are two types of DAOs on Homebase. Treasury DAOs and Registry DAOs. Select which one is the type of DAO you are creating. The most common type of DAO is a Treasury DAO, to collectively manage shared resources, so this tutorial will walk you through that.
 &nbsp;
@@ -100,7 +100,7 @@ Please note, you cannot use an NFT token for voting on Homebase. If you enter an
 &nbsp;
 Set your quorum to be low if it’s important that low participation doesn’t interfere with community governance. If your community is making highly consequential proposals, you might consider having a higher quorum.
 &nbsp;
-The next two numbers are the minimum and maximum amount the quorum threshold can get adjusted to after a period change. 
+The next two numbers are the minimum and maximum amount the quorum threshold can get adjusted to after a period change.
 &nbsp;
 **Quorum Change** - A value that gets computed internally in the formula that calculates quorum adjustment.
 &nbsp;
@@ -120,7 +120,7 @@ The next two numbers are the minimum and maximum amount the quorum threshold can
 &nbsp;
 ### **Review Information**
 &nbsp;
-If you click on next, you will be taken to the review information page, where you will be able to see everything you have configured so far; and if you see anything that you would like to change, you can just click on the edit button and you will be taken to that part of the creator and you will be able to change your settings. 
+If you click on next, you will be taken to the review information page, where you will be able to see everything you have configured so far; and if you see anything that you would like to change, you can just click on the edit button and you will be taken to that part of the creator and you will be able to change your settings.
 &nbsp;
 If everything looks correct. And you can click on the launch button.
 &nbsp;
@@ -132,7 +132,7 @@ After your DAO has been properly indexed, you will see a button that says, "go t
 
 <question>What is a registry?<question>
 <answer>
-A registry is a token-curated list of anything that DAO chooses. Examples might include marketplaces, a map of highly ranked places, or approved companies for placing ads on a blockchain-based media network. 
+A registry is a token-curated list of anything that DAO chooses. Examples might include marketplaces, a map of highly ranked places, or approved companies for placing ads on a blockchain-based media network.
 &nbsp;
 &nbsp;
 ### **How does it work?**
@@ -167,7 +167,7 @@ Assets can be directly transferred to the DAO's address. There is no special pro
 <answer>
 **Levels** - Are equivalent to blocks on the Tezos blockchain. The time between blocks is at least one minute, and varies somewhat. A cycle is 4,096 blocks.
 &nbsp;
-**FA2** - Is a token standard on Tezos, which supports standardization of permissions, and different token types including NFT’s. [Read more on the Tezos Developer Portal](https://tezos.b9lab.com/fa2). 
+**FA2** - Is a token standard on Tezos, which supports standardization of permissions, and different token types including NFT’s. [Read more on the Tezos Developer Portal](https://tezos.b9lab.com/fa2).
 <answer>
 
 
