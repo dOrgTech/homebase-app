@@ -431,7 +431,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                   <Typography color="textSecondary">blocks</Typography>
                   <CustomTooltip
                     placement="bottom"
-                    title="This should always be more than double the duration of a cycle, to ensure the proposal will not become executable in the cycle it was created, nor in the one it was voted on"
+                    title="The time for which the proposal execution will be paused, after this time has passed the proposal will be executable"
                   >
                     {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
                   </CustomTooltip>
@@ -482,7 +482,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                   <Typography color="textSecondary">blocks</Typography>
                   <CustomTooltip
                     placement="bottom"
-                    title="This value must be larger than the proposal execution delay, because if it’s not, then your proposals would never be executable, because they would expire before they could be executed"
+                    title="This is the time after which if you still haven't executed your proposal it will become expired and non-executable"
                   >
                     {errors.proposalExpiryBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
                   </CustomTooltip>
