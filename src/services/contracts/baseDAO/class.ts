@@ -135,6 +135,17 @@ export abstract class BaseDAO {
     return await batch.send()
   }
 
+  public unstakeFromAllProposals = async (proposals: string[], account: string, tezos: TezosToolkit) => {
+    const daoContract = await getContract(tezos, this.data.address)
+    const initialBatch = await tezos.wallet.batch()
+
+    const batch = proposals.reduce((prev, current) => {
+      return prev.withContractCall(daoContract.methods.unstake_vote([current]))
+    }, initialBatch)
+
+    return await batch.send()
+  }
+
   public sendXtz = async (xtzAmount: BigNumber, tezos: TezosToolkit) => {
     const contract = await getContract(tezos, this.data.address)
 
