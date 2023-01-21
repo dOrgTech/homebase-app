@@ -120,6 +120,7 @@ export abstract class Proposal {
     address: string
     value: BigNumber
     support: boolean
+    staked: boolean
   }[]
   type: DAOTemplate
 
@@ -143,7 +144,8 @@ export abstract class Proposal {
     this.voters = dto.votes.map(vote => ({
       address: vote.holder.address,
       value: parseUnits(new BigNumber(vote.amount), this.dao.data.token.decimals),
-      support: Boolean(vote.support)
+      support: Boolean(vote.support),
+      staked: vote.staked
     }))
     this.upVotes = this.voters.reduce((acc, voter) => {
       if (voter.support) {

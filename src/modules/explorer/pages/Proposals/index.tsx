@@ -10,7 +10,7 @@ import { UserBalancesBox } from "../../components/UserBalances"
 import { ContentContainer } from "../../components/ContentContainer"
 import { ProposalsList } from "../../components/ProposalsList"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { Proposal, ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { ProposalSelectionMenu } from "../../components/ProposalSelectionMenu"
@@ -18,6 +18,8 @@ import { useDropAllExpired } from "../../../../services/contracts/baseDAO/hooks/
 import { SmallButton } from "../../../common/SmallButton"
 import { MainButton } from "../../../common/MainButton"
 import { ProposalSelectionMenuLambda } from "modules/explorer/components/ProposalSelectionMenuLambda"
+import { useUnstakeFromAllProposals } from "services/contracts/baseDAO/hooks/useUnstakeFromAllProposals"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 38px"
@@ -45,11 +47,22 @@ export const Proposals: React.FC = () => {
   const { data, cycleInfo } = useDAO(daoId)
   const { mutate } = useFlush()
   const { mutate: dropAllExpired } = useDropAllExpired()
+  const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
   const shouldDisable = useIsProposalButtonDisabled(daoId)
   const { data: proposals } = useProposals(daoId)
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
+  const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
+  const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
+  const { account } = useTezos()
+
+  const canUnstakeVotes: boolean | undefined =
+    executedProposals &&
+    droppedProposals &&
+    executedProposals
+      .concat(droppedProposals)
+      .some(proposal => proposal.voters.find(vote => vote.address === account)?.staked)
 
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {
@@ -71,6 +84,27 @@ export const Proposals: React.FC = () => {
       return
     }
   }, [data, dropAllExpired, expiredProposals])
+
+  const onUnstakeFromAllProposals = useCallback(async () => {
+    if (droppedProposals && executedProposals && data) {
+      const allProposals = droppedProposals.concat(executedProposals)
+
+      const proposalsWithStakedTokens: Proposal[] = []
+
+      allProposals.forEach((proposal: Proposal) => {
+        const userVote = proposal.voters.find(voter => voter.address === account)
+        if (userVote && userVote.staked) {
+          proposalsWithStakedTokens.push(proposal)
+        }
+      })
+
+      unstakeFromAllProposals({
+        dao: data,
+        allProposals: proposalsWithStakedTokens.map(p => p.id)
+      })
+      return
+    }
+  }, [data, account, unstakeFromAllProposals, droppedProposals, executedProposals])
 
   const toggleProposalModal = () => {
     switch (data?.data.dao_type?.name) {
@@ -113,6 +147,19 @@ export const Proposals: React.FC = () => {
                     disabled={!expiredProposals || !expiredProposals.length}
                   >
                     Drop All Expired
+                  </DropButton>
+                  <Tooltip placement="bottom" title="Drop all expired proposals">
+                    <InfoIcon color="secondary" />
+                  </Tooltip>
+                </Grid>
+                <Grid item>
+                  <DropButton
+                    variant="contained"
+                    color="secondary"
+                    onClick={onUnstakeFromAllProposals}
+                    disabled={!canUnstakeVotes}
+                  >
+                    Unstake From Proposals
                   </DropButton>
                   <Tooltip placement="bottom" title="Drop all expired proposals">
                     <InfoIcon color="secondary" />
