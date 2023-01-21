@@ -1,8 +1,8 @@
 import { GraphQLClient } from "graphql-request"
 import { EnvKey, getEnv } from "services/config"
 
-const BASE_URL = getEnv(EnvKey.REACT_APP_HASURA_URL)
-const HASURA_ADMIN_SECRET = getEnv(EnvKey.REACT_APP_HASURA_ADMIN_SECRET)
+const BASE_URL = getEnv(EnvKey.REACT_APP_HASURA_URL_V2)
+const HASURA_ADMIN_SECRET = getEnv(EnvKey.REACT_APP_HASURA_ADMIN_SECRET_V2)
 
 if (!BASE_URL) {
   throw new Error(`${EnvKey.REACT_APP_HASURA_URL} env variable is missing`)
