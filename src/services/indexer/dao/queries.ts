@@ -163,6 +163,7 @@ export const GET_PROPOSALS_QUERY = gql`
           }
           id
           support
+          staked
         }
       }
     }
@@ -206,6 +207,7 @@ export const GET_PROPOSAL_QUERY = gql`
           }
           id
           support
+          staked
         }
       }
     }

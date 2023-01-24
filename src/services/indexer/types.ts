@@ -166,6 +166,7 @@ export interface VoteDTO {
   amount: string
   support: boolean
   holder: HolderDTO
+  staked: boolean
 }
 
 export interface DAOListItem {

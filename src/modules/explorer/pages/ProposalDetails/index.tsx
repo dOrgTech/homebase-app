@@ -127,12 +127,12 @@ export const ProposalDetails: React.FC = () => {
     })
   }, [dao, dropProposal, proposalId])
 
-  const onUnstakeVotes = useCallback(async () => {
-    await mutateUnstake({
-      dao: dao as BaseDAO,
-      proposalId
-    })
-  }, [dao, mutateUnstake, proposalId])
+  // const onUnstakeVotes = useCallback(async () => {
+  //   await mutateUnstake({
+  //     dao: dao as BaseDAO,
+  //     proposalId
+  //   })
+  // }, [dao, mutateUnstake, proposalId])
 
   const proposalCycle = proposal ? proposal.period : "-"
 
@@ -160,13 +160,13 @@ export const ProposalDetails: React.FC = () => {
 
   const canVote = cycleInfo && proposal?.getStatus(cycleInfo.currentLevel).status === ProposalStatus.ACTIVE
 
-  const canUnstakeVotes =
-    cycleInfo &&
-    proposal &&
-    account &&
-    (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
-      proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
-    proposal.voters.some(({ address }) => address.toLowerCase() === account.toLowerCase())
+  // const canUnstakeVotes =
+  //   cycleInfo &&
+  //   proposal &&
+  //   account &&
+  //   (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
+  //     proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
+  //   proposal.voters.some(({ address }) => address.toLowerCase() === account.toLowerCase())
 
   const parseReadableConfigValue = (configKey: keyof Proposal["metadata"]["config"], value: BigNumber) => {
     if (dao) {
@@ -204,7 +204,7 @@ export const ProposalDetails: React.FC = () => {
                   <InfoIcon color="secondary" />
                 </Tooltip>
               </Grid>
-              <Grid>
+              {/* <Grid>
                 <Button variant="contained" color="secondary" disabled={!canUnstakeVotes} onClick={onUnstakeVotes}>
                   Unstake votes
                 </Button>
@@ -214,7 +214,7 @@ export const ProposalDetails: React.FC = () => {
                 >
                   <InfoIcon color="secondary" />
                 </Tooltip>
-              </Grid>
+              </Grid> */}
             </Grid>
             <Grid item>
               <Grid container justifyContent="space-between" alignItems="center">
