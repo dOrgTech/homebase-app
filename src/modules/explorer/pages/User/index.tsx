@@ -1,7 +1,7 @@
 import { Box, Grid, Theme, Typography } from "@material-ui/core"
 import { styled } from "@material-ui/styles"
 import dayjs from "dayjs"
-import React, { useEffect, useMemo } from "react"
+import React, { useCallback, useEffect, useMemo } from "react"
 import { useHistory } from "react-router"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -16,6 +16,8 @@ import { FreezeDialog } from "../../components/FreezeDialog"
 import { UserBalances } from "../../components/UserBalances"
 import { StatusBadge } from "../../components/StatusBadge"
 import { ProposalsList } from "../../components/ProposalsList"
+import { useUnstakeFromAllProposals } from "services/indexer/dao/hooks/useUnstakeFromAllProposals"
+import { DropButton } from "../Proposals"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -36,7 +38,7 @@ const MainContainer = styled(Box)({
 })
 
 const UsernameText = styled(Typography)({
-  fontSize: 28,
+  fontSize: 18,
   wordBreak: "break-all"
 })
 
@@ -94,9 +96,13 @@ export const ProposalItem: React.FC<{
 export const User: React.FC = () => {
   const { account } = useTezos()
   const daoId = useDAOID()
-  const { cycleInfo } = useDAO(daoId)
+  const { data, cycleInfo } = useDAO(daoId)
   const { data: proposals } = useProposals(daoId)
   const history = useHistory()
+
+  const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
+  const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
+  const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
 
   useEffect(() => {
     if (!account) {
@@ -119,6 +125,34 @@ export const User: React.FC = () => {
 
     return proposals.filter(p => p.voters.map(voter => voter.address.toLowerCase()).includes(account.toLowerCase()))
   }, [account, proposals])
+
+  const onUnstakeFromAllProposals = useCallback(async () => {
+    if (droppedProposals && executedProposals && data) {
+      const allProposals = droppedProposals.concat(executedProposals)
+
+      const proposalsWithStakedTokens: Proposal[] = []
+
+      allProposals.forEach((proposal: Proposal) => {
+        const userVote = proposal.voters.find(voter => voter.address === account)
+        if (userVote && userVote.staked) {
+          proposalsWithStakedTokens.push(proposal)
+        }
+      })
+
+      unstakeFromAllProposals({
+        dao: data,
+        allProposals: proposalsWithStakedTokens.map(p => p.id)
+      })
+      return
+    }
+  }, [data, account, unstakeFromAllProposals, droppedProposals, executedProposals])
+
+  const canUnstakeVotes: boolean | undefined =
+    executedProposals &&
+    droppedProposals &&
+    executedProposals
+      .concat(droppedProposals)
+      .some(proposal => proposal.voters.find(vote => vote.address === account)?.staked)
 
   const getVoteDecision = (proposal: Proposal) =>
     proposal.voters.find(voter => voter.address.toLowerCase())?.support as boolean
@@ -149,6 +183,16 @@ export const User: React.FC = () => {
                     </Grid>
                     <Grid item>
                       <FreezeDialog freeze={false} />
+                    </Grid>
+                    <Grid item>
+                      <DropButton
+                        variant="contained"
+                        color="secondary"
+                        onClick={onUnstakeFromAllProposals}
+                        disabled={!canUnstakeVotes}
+                      >
+                        Unstake Votes
+                      </DropButton>
                     </Grid>
                   </Grid>
                 </Grid>
