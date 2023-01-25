@@ -21,7 +21,7 @@ import { DropButton } from "../Proposals"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
-  borderTop: `0.3px solid #5E6969`
+  borderTop: `0.3px solid #4a4e4e`
 })
 
 const BalancesHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
