@@ -1,23 +1,23 @@
+import { Button, Grid, styled, Tooltip, Typography } from "@material-ui/core"
 import React, { useCallback, useState } from "react"
-import { Grid, styled, Typography, Button, Tooltip } from "@material-ui/core"
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { useProposals } from "services/indexer/dao/hooks/useProposals"
 import { useDAOID } from "../DAO/router"
 
-import { UserBalancesBox } from "../../components/UserBalances"
-import { ContentContainer } from "../../components/ContentContainer"
-import { ProposalsList } from "../../components/ProposalsList"
-import { DAOStatsRow } from "../../components/DAOStatsRow"
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
-import { InfoIcon } from "../../components/styled/InfoIcon"
-import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
-import { ProposalSelectionMenu } from "../../components/ProposalSelectionMenu"
-import { useDropAllExpired } from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired"
-import { SmallButton } from "../../../common/SmallButton"
-import { MainButton } from "../../../common/MainButton"
 import { ProposalSelectionMenuLambda } from "modules/explorer/components/ProposalSelectionMenuLambda"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { useUnstakeFromAllProposals } from "services/contracts/baseDAO/hooks/useUnstakeFromAllProposals"
+import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
+import { useDropAllExpired } from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired"
+import { MainButton } from "../../../common/MainButton"
+import { SmallButton } from "../../../common/SmallButton"
+import { ContentContainer } from "../../components/ContentContainer"
+import { ProposalSelectionMenu } from "../../components/ProposalSelectionMenu"
+import { ProposalsList } from "../../components/ProposalsList"
+import { InfoIcon } from "../../components/styled/InfoIcon"
 
 const HeroContainer = styled(ContentContainer)({
   padding: "38px 38px"
@@ -45,11 +45,15 @@ export const Proposals: React.FC = () => {
   const { data, cycleInfo } = useDAO(daoId)
   const { mutate } = useFlush()
   const { mutate: dropAllExpired } = useDropAllExpired()
+  const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
   const shouldDisable = useIsProposalButtonDisabled(daoId)
   const { data: proposals } = useProposals(daoId)
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
+  const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
+  const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
+  const { account } = useTezos()
 
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {

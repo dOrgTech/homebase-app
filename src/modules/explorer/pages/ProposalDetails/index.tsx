@@ -193,13 +193,13 @@ export const ProposalDetails: React.FC = () => {
 
   const canVote = cycleInfo && proposal?.getStatus(cycleInfo.currentLevel).status === ProposalStatus.ACTIVE
 
-  const canUnstakeVotes =
-    cycleInfo &&
-    proposal &&
-    account &&
-    (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
-      proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
-    proposal.voters.some(({ address }) => address.toLowerCase() === account.toLowerCase())
+  // const canUnstakeVotes =
+  //   cycleInfo &&
+  //   proposal &&
+  //   account &&
+  //   (proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED ||
+  //     proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
+  //   !dao?.data.ledger.find(l => l.holder.address.toLowerCase() === account.toLowerCase())?.staked.isZero()
 
   const parseReadableConfigValue = (configKey: keyof Proposal["metadata"]["config"], value: BigNumber) => {
     if (dao) {
@@ -237,9 +237,8 @@ export const ProposalDetails: React.FC = () => {
                   <InfoIcon color="secondary" />
                 </Tooltip>
               </Grid>
-              <Grid>
+              {/* <Grid>
                 <Button variant="contained" color="secondary" disabled={!canUnstakeVotes} onClick={onUnstakeVotes}>
-                  {/* <Button variant="contained" color="secondary" disabled={false} onClick={onUnstakeVotes}> */}
                   Unstake votes
                 </Button>
                 <Tooltip
@@ -248,7 +247,7 @@ export const ProposalDetails: React.FC = () => {
                 >
                   <InfoIcon color="secondary" />
                 </Tooltip>
-              </Grid>
+              </Grid> */}
             </Grid>
             <Grid item>
               <Grid container justifyContent="space-between" alignItems="center">
