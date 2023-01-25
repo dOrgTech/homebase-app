@@ -57,6 +57,10 @@ const VotedText = styled(Typography)({
   fontSize: 18
 })
 
+const CreatedText = styled(Typography)({
+  fontWeight: 300
+})
+
 export const ProposalItem: React.FC<{
   proposal: Proposal
   status: ProposalStatus
@@ -80,9 +84,9 @@ export const ProposalItem: React.FC<{
                 <StatusBadge status={status} />
               </Grid>
               <Grid item>
-                <Typography variant="body1" color="textPrimary">
+                <CreatedText variant="body1" color="textPrimary">
                   Created {formattedDate}
-                </Typography>
+                </CreatedText>
               </Grid>
             </Grid>
           </Grid>
