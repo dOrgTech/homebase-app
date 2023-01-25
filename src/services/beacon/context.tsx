@@ -19,7 +19,7 @@ const getSavedState = async (): Promise<TezosState> => {
   try {
     const network = getTezosNetwork()
     const tezos = createTezos(network)
-    const wallet = createWallet()
+    const wallet = createWallet(network)
     const activeAccount = await wallet.client.getActiveAccount()
 
     if (!activeAccount?.address) {
