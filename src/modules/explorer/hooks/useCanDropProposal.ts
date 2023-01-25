@@ -20,12 +20,14 @@ export const useCanDropProposal = (daoId: string, proposalId: string) => {
 
     const isGuardian = dao.data.guardian.toLowerCase() === account.toLowerCase()
 
-    const isNotExecutedOrDropped = true
+    const isNotExecutedOrDropped =
+      (cycleInfo && proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.DROPPED) ||
+      (cycleInfo && proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED)
 
     // dao.data.proposalsToFlush.find(
     //   (id) => id.toLowerCase() === proposal.id.toLowerCase()
     // );
 
-    return isNotExecutedOrDropped && (isProposer || hasExpired || isGuardian)
+    return !isNotExecutedOrDropped && (isProposer || hasExpired || isGuardian)
   }, [account, cycleInfo, dao, proposal])
 }

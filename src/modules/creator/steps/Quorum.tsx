@@ -398,6 +398,7 @@ export const Quorum: React.FC = () => {
           "\u0027" +
           "s total supply"
         }
+        tooltipText={"Quorum Settings"}
         tooltip={true}
       ></TitleBlock>
 
