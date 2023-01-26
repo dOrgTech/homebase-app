@@ -1,6 +1,6 @@
 import { Box, Grid, IconButton, Typography } from "@material-ui/core"
 import { styled } from "@material-ui/styles"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { ReactComponent as WarningIcon } from "assets/logos/warning.svg"
 import CloseIcon from "@material-ui/icons/Close"
 import hexToRgba from "hex-to-rgba"
@@ -31,9 +31,17 @@ const ContainerText = styled(Typography)({
 export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
   const [open, setOpen] = useState(true)
 
+  const isWarningClosed = localStorage.getItem("warning-closed")
+
+  const closeButton = () => {
+    localStorage.setItem("warning-closed", "true")
+    console.log("warning-closed")
+    setOpen(false)
+  }
+
   return (
     <>
-      {open && (
+      {open && !isWarningClosed && isWarningClosed !== "true" && (
         <Container>
           <Grid container alignItems="center" justifyContent="space-between" wrap="nowrap">
             <Grid item>
@@ -44,7 +52,7 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
               <ContainerText align="center">{text}</ContainerText>
             </Grid>
             <Grid item>
-              <IconButton onClick={() => setOpen(false)}>
+              <IconButton onClick={closeButton}>
                 <CloseIcon htmlColor="#FFC839" />
               </IconButton>
             </Grid>

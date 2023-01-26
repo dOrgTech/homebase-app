@@ -23,6 +23,7 @@ export interface TokenDTO {
   should_prefer_symbol: boolean
   supply: string
   daos?: DAODTO[]
+  standard: string
 }
 
 export interface DAODTO {
