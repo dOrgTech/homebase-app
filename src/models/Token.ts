@@ -53,7 +53,6 @@ export class Token {
   standard: string
 
   constructor(params: TokenParams) {
-    console.log("params: ", params)
     this.id = params.id
     this.contract = params.contract
     this.level = params.level
