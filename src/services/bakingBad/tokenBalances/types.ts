@@ -13,6 +13,7 @@ export interface FA2TokenDTO {
   network: Network
   supply: string
   balance: string
+  standard: string
 }
 
 export interface NFTDTO {
@@ -36,6 +37,7 @@ export interface NFTDTO {
     uri: string
   }[]
   balance: string
+  standard: string
 }
 
 export interface BalanceTZKT {
