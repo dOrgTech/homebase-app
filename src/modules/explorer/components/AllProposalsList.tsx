@@ -5,8 +5,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { Proposal, ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
 import { ContentContainer } from "./ContentContainer"
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { Dropdown } from "./Dropdown"
 
 const TableContainer = styled(ContentContainer)({
