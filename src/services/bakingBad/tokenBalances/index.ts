@@ -33,7 +33,7 @@ export const getDAOBalances = async (
   offset = 0,
   balances: DAOBalance[] = []
 ): Promise<DAOBalance[]> => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=true`
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=true&token.standard=fa2`
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -60,7 +60,8 @@ export const getDAOBalances = async (
         level: balance.firstLevel,
         name: tokenData.metadata?.name || "",
         decimals: parseInt(tokenData.metadata?.decimals) || 0,
-        balance: balance.balance
+        balance: balance.balance,
+        standard: tokenData.standard
       }
       return tokenBalance
     })
@@ -82,7 +83,7 @@ export const getDAONFTBalances = async (
   offset = 0,
   balances: DAOBalance[] = []
 ): Promise<DAOBalance[]> => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=false`
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=false&token.standard=fa2`
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -121,7 +122,8 @@ export const getDAONFTBalances = async (
             uri: ""
           }
         ],
-        balance: balance.balance
+        balance: balance.balance,
+        standard: tokenData.standard
       }
       return tokenBalance
     })
@@ -139,6 +141,7 @@ export const getDAONFTBalances = async (
 
 export const getTokenMetadata = async (contractAddress: string, network: Network, tokenId: string) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}&tokenId=${tokenId}`
+  console.log("url: ", url)
 
   const response = await fetch(url)
   if (!response.ok) {
@@ -168,7 +171,8 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
       creators: tokenData.metadata?.creators,
       tags: tokenData.metadata?.tags,
       formats: tokenData.metadata?.formats,
-      balance: ""
+      balance: "",
+      standard: tokenData.standard
     }
   } else {
     result = {
@@ -181,7 +185,8 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
       level: tokenData.firstLevel,
       name: tokenData.metadata?.name || "",
       decimals: parseInt(tokenData.metadata?.decimals) || 0,
-      balance: ""
+      balance: "",
+      standard: tokenData.standard
     }
   }
 
