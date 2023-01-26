@@ -11,6 +11,7 @@ interface TokenParams {
   decimals: number
   network: Network
   supply: string
+  standard: string
 }
 
 export const SUPPORTED_MIME_TYPES = [
@@ -49,6 +50,7 @@ export class Token {
   decimals: number
   network: Network
   supply: BigNumber
+  standard: string
 
   constructor(params: TokenParams) {
     this.id = params.id
@@ -60,6 +62,7 @@ export class Token {
     this.decimals = params.decimals
     this.network = params.network
     this.supply = new BigNumber(params.supply)
+    this.standard = params.standard ? params.standard : ""
   }
 }
 
