@@ -391,6 +391,14 @@ const validateForm = (values: OrgSettings) => {
       address: "Could not find token"
     }
   }
+
+  if (values.governanceToken.tokenMetadata?.standard === "fa1.2") {
+    errors.governanceToken = {
+      ...errors.governanceToken,
+      address: "FA1.2 Tokens Not Supported"
+    }
+  }
+
   console.log(errors)
   return errors
 }
