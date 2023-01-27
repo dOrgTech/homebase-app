@@ -60,7 +60,7 @@ const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
   height: "100%",
   margin: "auto",
-  padding: "28px 0",
+  padding: "28px 0 0 0",
   flexDirection: "row",
 
   ["@media (max-width: 1425px)"]: {},
@@ -133,18 +133,20 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
 
 const BackButtonContainer = styled(Grid)({
   marginTop: 28,
+  marginBottom: 15,
   alignItems: "baseline"
 })
 
 const BackButton = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.light,
-  fontSize: 18
+  fontSize: 16,
+  fontWeight: 400
 }))
 
 const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
   color: theme.palette.secondary.light,
   fontSize: 12,
-  marginRight: 15
+  marginRight: 12
 }))
 
 const BackButtonText = styled(Grid)({

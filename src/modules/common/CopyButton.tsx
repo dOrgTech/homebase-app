@@ -3,7 +3,14 @@ import { Box, styled, Tooltip } from "@material-ui/core"
 import { FileCopyOutlined } from "@material-ui/icons"
 
 const CopyIcon = styled(FileCopyOutlined)({
-  cursor: "pointer"
+  "cursor": "pointer",
+  "fontSize": 16,
+  "transition": ".15s ease-out",
+
+  "&:hover": {
+    color: "#62eda5 !important",
+    transition: ".15s ease-in"
+  }
 })
 
 export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
@@ -19,10 +26,10 @@ export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
 
         setTimeout(() => {
           setCopied(false)
-        }, 2000)
+        }, 500)
       }}
     >
-      <Tooltip placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
+      <Tooltip placement="right" title={!copied ? "" /*"Copy to Clipboard"*/ : "Copied!"}>
         <CopyIcon color="secondary" fontSize="small" />
       </Tooltip>
     </Box>

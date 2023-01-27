@@ -40,7 +40,7 @@ export const legacyTheme = createTheme({
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 400,
+      fontWeight: 300,
       lineHeight: "26.33px"
     },
     h3: {
@@ -78,7 +78,7 @@ export const legacyTheme = createTheme({
     },
     MuiSlider: {
       root: {
-        color: "#3D3D3D"
+        color: "#7d8c8b33"
       }
     },
     MuiTab: {
@@ -90,6 +90,7 @@ export const legacyTheme = createTheme({
       tooltip: {
         backgroundColor: "#62eda5",
         fontSize: 14,
+        fontWeight: 400,
         padding: "10px 15px",
         color: "#1C1F23"
       }
@@ -111,7 +112,7 @@ export const legacyTheme = createTheme({
           fontWeight: 300
         },
         "&$active": {
-          fontWeight: 300
+          fontWeight: 400
         },
         "& .MuiStepLabel-completed": {
           fontWeight: 300
@@ -119,7 +120,8 @@ export const legacyTheme = createTheme({
       },
       active: {
         color: "#fff !important",
-        opacity: 1
+        opacity: 1,
+        fontWeight: 400
       },
       completed: {
         color: "#fff !important",
@@ -138,8 +140,8 @@ export const legacyTheme = createTheme({
         marginTop: -16
       },
       line: {
-        borderColor: "#fff",
-        opacity: 0.2
+        borderColor: "#7d8c8b33",
+        opacity: 1
       },
       active: {
         "& span": {
@@ -174,8 +176,8 @@ export const legacyTheme = createTheme({
       root: {
         "height": 32,
         "width": 32,
-        "color": "#2f3438",
-        "border": "2px solid rgba(255, 255, 255, 0.2)",
+        "color": "transparent",
+        "border": "2px solid #7d8c8b33",
         "borderRadius": "50%",
         "&$active": {
           "fill": "#81feb7",

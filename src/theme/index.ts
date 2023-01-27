@@ -48,7 +48,7 @@ export const theme = createTheme({
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 400
+      fontWeight: 300
     },
     h3: {
       fontSize: 21,
@@ -95,7 +95,7 @@ export const theme = createTheme({
     },
     MuiSlider: {
       root: {
-        color: "#3D3D3D"
+        color: "#7d8c8b33"
       }
     },
     MuiTab: {
@@ -107,7 +107,8 @@ export const theme = createTheme({
       tooltip: {
         backgroundColor: "#62eda5",
         fontSize: 14,
-        padding: "10px 15px",
+        fontWeight: 400,
+        padding: "8px 15px",
         color: "#1C1F23"
       }
     },
@@ -224,7 +225,7 @@ export const theme = createTheme({
       },
       outlined: {
         "&$disabled": {
-          border: "2px solid #3d3d3d"
+          border: "2px solid #41484d"
         },
         "borderWidth": "2px !important",
         "borderRadius": "4px",

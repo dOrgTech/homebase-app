@@ -9,7 +9,7 @@ const StyledInput = withStyles((theme: Theme) => ({
     },
     "& div.MuiInputBase-root": {
       "fontSize": 18,
-      "height": 54,
+      "height": 50,
       "boxSizing": "border-box",
       "background": theme.palette.primary.main,
       "padding": "18px 22px",

@@ -127,8 +127,25 @@ export const DAO: React.FC = () => {
                 >
                   Execute
                 </SmallButton>
-                <Tooltip title="Execute all passed proposals and drop all expired or rejected">
-                  <InfoIcon color="secondary" />
+                <Tooltip
+                  placement="bottom"
+                  title={
+                    !executableProposals || !executableProposals.length
+                      ? ""
+                      : "Execute all passed proposals and drop all expired or rejected"
+                  }
+                >
+                  <InfoIcon
+                    style={
+                      !executableProposals || !executableProposals.length
+                        ? {
+                            color: "#41484d"
+                          }
+                        : {
+                            color: "#81FEB7"
+                          }
+                    }
+                  />
                 </Tooltip>
               </Grid>
             </Grid>

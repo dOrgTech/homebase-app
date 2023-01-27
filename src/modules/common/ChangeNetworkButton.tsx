@@ -8,7 +8,7 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {
     height: "100%"
   },
-  "background": theme.palette.primary.main,
+  "background": theme.palette.primary.light,
   "borderRadius": 4,
   "padding": "5px 10px",
   "cursor": "pointer",
@@ -33,7 +33,8 @@ export const ColorDot = styled(Box)({
 })
 
 const NetworkText = styled(Typography)({
-  fontSize: "14px"
+  fontSize: "14px",
+  fontWeight: 400
 })
 
 export const ChangeNetworkButton = () => {
@@ -47,7 +48,7 @@ export const ChangeNetworkButton = () => {
           <ColorDot color={networkDotColorMap[network]} />
         </Grid>
         <Grid item>
-          <NetworkText color="textPrimary">{capitalize(network)}</NetworkText>
+          <NetworkText color="textSecondary">{capitalize(network)}</NetworkText>
         </Grid>
       </Grid>
     </StyledConnectedButton>

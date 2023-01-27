@@ -85,11 +85,11 @@ export const Treasury: React.FC = () => {
                   >
                     New Transfer
                   </MainButton>
-                  {shouldDisable && (
+                  {/* {shouldDisable && (
                     <Tooltip placement="bottom" title="Not on proposal creation period">
                       <InfoIcon color="secondary" />
                     </Tooltip>
-                  )}
+                  )} */}
                 </Grid>
               </Grid>
             </Grid>
@@ -101,19 +101,15 @@ export const Treasury: React.FC = () => {
               {delegate ? (
                 <CopyAddress
                   address={delegate.address}
+                  typographyProps={{ variant: "subtitle2" }}
                   justifyContent={isMobileSmall ? "center" : "flex-start"}
-                  typographyProps={{
-                    variant: "subtitle2"
-                  }}
                 />
               ) : (
                 dao && (
                   <CopyAddress
                     address={dao.data.address}
+                    typographyProps={{ variant: "subtitle2" }}
                     justifyContent={isMobileSmall ? "center" : "flex-start"}
-                    typographyProps={{
-                      variant: "subtitle2"
-                    }}
                   />
                 )
               )}
@@ -129,11 +125,11 @@ export const Treasury: React.FC = () => {
                   >
                     Change Delegate
                   </SmallButton>
-                  {shouldDisable && (
+                  {/* {shouldDisable && (
                     <Tooltip placement="bottom" title="Not on proposal creation period">
                       <InfoIcon color="secondary" />
                     </Tooltip>
-                  )}
+                  )} */}
                 </Grid>
               </Grid>
             </Grid>

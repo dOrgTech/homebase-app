@@ -171,8 +171,16 @@ export const DAOList: React.FC = () => {
                       variant="contained"
                       style={
                         selectedTab !== 0
-                          ? { borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex: 0 }
-                          : { borderRadius: 4, zIndex: 1 }
+                          ? {
+                              borderTopRightRadius: 0,
+                              borderBottomRightRadius: 0,
+                              fontWeight: 400,
+                              zIndex: 0
+                            }
+                          : {
+                              borderRadius: 4,
+                              zIndex: 1
+                            }
                       }
                       disableElevation={true}
                       onClick={() => handleChangeTab(0)}
@@ -187,8 +195,18 @@ export const DAOList: React.FC = () => {
                       variant="contained"
                       style={
                         selectedTab !== 1
-                          ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0 }
-                          : { borderRadius: 4, marginLeft: -1, zIndex: 1 }
+                          ? {
+                              borderTopLeftRadius: 0,
+                              borderBottomLeftRadius: 0,
+                              marginLeft: -1,
+                              fontWeight: 400,
+                              zIndex: 0
+                            }
+                          : {
+                              borderRadius: 4,
+                              marginLeft: -1,
+                              zIndex: 1
+                            }
                       }
                       onClick={() => handleChangeTab(1)}
                       isSelected={selectedTab === 1}

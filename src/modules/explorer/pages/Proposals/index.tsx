@@ -33,11 +33,6 @@ const TitleText = styled(Typography)({
   }
 })
 
-export const DropButton = styled(Button)({
-  verticalAlign: "text-bottom",
-  fontSize: "16px"
-})
-
 export const Proposals: React.FC = () => {
   const [openModal, setOpenModal] = useState(false)
   const daoId = useDAOID()
@@ -98,21 +93,51 @@ export const Proposals: React.FC = () => {
                   >
                     Execute
                   </SmallButton>
-                  <Tooltip placement="bottom" title="Execute all passed proposals and drop all expired or rejected">
-                    <InfoIcon color="secondary" />
+                  <Tooltip
+                    placement="bottom"
+                    title={
+                      !executableProposals || !executableProposals.length
+                        ? ""
+                        : "Execute all passed proposals and drop all expired or rejected"
+                    }
+                  >
+                    <InfoIcon
+                      style={
+                        !executableProposals || !executableProposals.length
+                          ? {
+                              color: "#41484d"
+                            }
+                          : {
+                              color: "#81FEB7"
+                            }
+                      }
+                    />
                   </Tooltip>
                 </Grid>
                 <Grid item>
-                  <DropButton
+                  <SmallButton
                     variant="contained"
                     color="secondary"
                     onClick={onDropAllExpired}
                     disabled={!expiredProposals || !expiredProposals.length}
                   >
-                    Drop All Expired
-                  </DropButton>
-                  <Tooltip placement="bottom" title="Drop all expired proposals">
-                    <InfoIcon color="secondary" />
+                    Drop Expired
+                  </SmallButton>
+                  <Tooltip
+                    placement="bottom"
+                    title={!expiredProposals || !expiredProposals.length ? "" : "Drop all expired proposals"}
+                  >
+                    <InfoIcon
+                      style={
+                        !expiredProposals || !expiredProposals.length
+                          ? {
+                              color: "#41484d"
+                            }
+                          : {
+                              color: "#81FEB7"
+                            }
+                      }
+                    />
                   </Tooltip>
                 </Grid>
               </Grid>
@@ -121,11 +146,11 @@ export const Proposals: React.FC = () => {
               <MainButton variant="contained" color="secondary" onClick={handleProposalModal} disabled={shouldDisable}>
                 New Proposal
               </MainButton>
-              {shouldDisable && (
+              {/* {shouldDisable && (
                 <Tooltip placement="bottom" title="Not on proposal creation period">
                   <InfoIcon color="secondary" />
                 </Tooltip>
-              )}
+              )} */}
             </Grid>
           </Grid>
         </HeroContainer>

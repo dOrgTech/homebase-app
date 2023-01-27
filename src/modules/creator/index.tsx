@@ -81,7 +81,7 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   maxHeight: 565,
   paddingTop: 20,
   position: "sticky",
-  top: 153
+  top: 138
 }))
 
 const custom = (theme: Theme) => ({
@@ -149,7 +149,7 @@ export const DAOCreate: React.FC = () => {
                 strokeWidth={5}
                 strokeColor={theme.palette.secondary.main}
                 trackStrokeWidth={4}
-                trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
+                trackStrokeColor={"#7d8c8b33"}
               >
                 <Box className="indicator">
                   <IndicatorValue>{progress === 0.5 ? 0 : step * 20}%</IndicatorValue>
