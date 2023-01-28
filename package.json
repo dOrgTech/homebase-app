@@ -19,6 +19,7 @@
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
+    "@material-ui/styles": "^4.11.5",
     "@microsoft/signalr": "^5.0.9",
     "@taquito/beacon-wallet": "13.0.1",
     "@taquito/signer": "13.0.1",
@@ -84,6 +85,9 @@
     "prettier": "^2.2.0",
     "source-map-explorer": "2.5.2",
     "typescript": "^4.2.3"
+  },
+  "resolutions": {
+    "@types/react": "~17.0.3"
   },
   "eslintConfig": {
     "extends": [

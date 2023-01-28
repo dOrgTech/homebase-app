@@ -375,6 +375,7 @@ export const theme = createTheme({
     },
     MuiTableRow: {
       root: {
+        "height": 70,
         "& th:first-child, & td:first-child": {
           paddingLeft: 46
         },

@@ -1,5 +1,4 @@
-import { Box, Grid, Theme, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Box, Grid, Theme, Typography, styled } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo } from "react"
@@ -74,7 +73,7 @@ export const ProposalItem: React.FC<{
       <Grid item sm={8}>
         <Grid container direction="column" style={{ gap: 20 }}>
           <Grid item>
-            <ProposalTitle color="textPrimary" variant="h4">
+            <ProposalTitle color="textPrimary" variant="body1">
               {agoraPost ? agoraPost.title : `Proposal ${toShortAddress(proposal.id)}`}
             </ProposalTitle>
           </Grid>
