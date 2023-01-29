@@ -75,7 +75,7 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Stake Required to Propose</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>1 locked token</RowValue>
+                    <RowValue>{new BigNumber(dao.data.extra.frozen_extra_value).toNumber()} locked token</RowValue>
                   </TableCell>
                 </TableRow>
                 <TableRow>
