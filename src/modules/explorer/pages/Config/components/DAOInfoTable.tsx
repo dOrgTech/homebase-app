@@ -1,22 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import _ from "lodash"
-import {
-  Grid,
-  Paper,
-  styled,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography
-} from "@material-ui/core"
-import React, { useState } from "react"
+import { styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core"
+import React from "react"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { useDAOID } from "../../DAO/router"
 import BigNumber from "bignumber.js"
-import { parseUnits } from "services/contracts/utils"
 
 const RowValue = styled(Typography)({
   fontWeight: 300,
@@ -31,7 +18,7 @@ const TableTitle = styled(Typography)({
 export const DaoInfoTables: React.FC = () => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
-  console.log(dao)
+
   return (
     <>
       <TableContainer>
