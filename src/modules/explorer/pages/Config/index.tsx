@@ -171,16 +171,6 @@ export const Config: React.FC = () => {
     }
   }, [data, dropAllExpired, expiredProposals])
 
-  const toggleProposalModal = () => {
-    switch (data?.data.dao_type?.name) {
-      case "lambda":
-        setOpenModalLambda(!openModalLambda)
-        break
-      default:
-        setOpenModal(!openModal)
-    }
-  }
-
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>

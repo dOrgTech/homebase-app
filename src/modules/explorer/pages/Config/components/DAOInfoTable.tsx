@@ -15,17 +15,23 @@ const TableTitle = styled(Typography)({
   fontSize: 18
 })
 
+const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    maxWidth: 390
+  }
+}))
+
 export const DaoInfoTables: React.FC = () => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
 
   return (
     <>
-      <TableContainer>
-        <Table style={{ minWidth: 650, marginTop: 32 }} aria-label="simple table">
+      <CustomTableContainer>
+        <Table style={{ marginTop: 32 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell colSpan={2}>
                 <TableTitle>Proposal & Voting Settings</TableTitle>
               </TableCell>
             </TableRow>
@@ -93,13 +99,13 @@ export const DaoInfoTables: React.FC = () => {
             ) : null}
           </TableBody>
         </Table>
-      </TableContainer>
+      </CustomTableContainer>
 
-      <TableContainer>
-        <Table style={{ minWidth: 650, marginTop: 32 }} aria-label="simple table">
+      <CustomTableContainer>
+        <Table style={{ marginTop: 32 }} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell colSpan={2}>
                 <TableTitle>Quorum Settings</TableTitle>
               </TableCell>
             </TableRow>
@@ -151,7 +157,7 @@ export const DaoInfoTables: React.FC = () => {
             ) : null}
           </TableBody>
         </Table>
-      </TableContainer>
+      </CustomTableContainer>
     </>
   )
 }
