@@ -1,15 +1,4 @@
-import {
-  Grid,
-  Paper,
-  styled,
-  Typography,
-  Slider,
-  withStyles,
-  withTheme,
-  Box,
-  Tooltip,
-  InputAdornment
-} from "@material-ui/core"
+import { Grid, Paper, styled, Typography, Slider, withStyles, withTheme, Box, Tooltip } from "@material-ui/core"
 import { TextField } from "formik-material-ui"
 import React, { useContext, useEffect, useState } from "react"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
@@ -21,9 +10,23 @@ import { InfoOutlined, InfoRounded } from "@material-ui/icons"
 import { getNetworkStats } from "services/bakingBad/stats"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EstimatedTime } from "modules/explorer/components/EstimatedTime"
-import { theme } from "../../../theme"
 import dayjs from "dayjs"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { networkNameMap } from "services/bakingBad"
+
+const TimeBox = styled(Grid)(({ theme }) => ({
+  background: theme.palette.primary.dark,
+  borderRadius: 8,
+  width: 72,
+  minHeight: 59,
+  marginBottom: 16,
+  display: "grid"
+}))
+
+const TimeText = styled(Typography)({
+  marginTop: -20,
+  marginLeft: 16
+})
 
 const CustomTooltip = styled(Tooltip)({
   marginLeft: 8
@@ -150,7 +153,8 @@ const Value = styled(Typography)({
 
 const styles = {
   voting: {
-    marginTop: 6
+    marginTop: 6,
+    marginBottom: 16
   }
 }
 
@@ -160,6 +164,14 @@ const InputContainer = styled(Grid)({
     paddingRight: 0
   }
 })
+
+const CustomFormikTextField = withStyles({
+  root: {
+    "& input": {
+      textAlign: "center"
+    }
+  }
+})(TextField)
 
 const GridNoPadding = styled(Grid)({
   paddingLeft: "8px !important"
@@ -171,6 +183,20 @@ const InfoBox = styled(Paper)({
   background: "inherit",
   marginTop: 20
 })
+
+const getNetworkVotingSettings = (network: string, values: VotingSettings) => {
+  values.votingBlocksDay = network === networkNameMap.ghostnet ? 0 : 3
+  values.votingBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
+  values.votingBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+  values.proposalFlushBlocksDay = network === networkNameMap.ghostnet ? 0 : 1
+  values.proposalFlushBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
+  values.proposalFlushBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+  values.proposalExpiryBlocksDay = network === networkNameMap.ghostnet ? 0 : 6
+  values.proposalExpiryBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
+  values.proposalExpiryBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+
+  return values
+}
 
 const validateForm = (values: VotingSettings) => {
   const errors: FormikErrors<VotingSettings> = {}
@@ -192,22 +218,6 @@ const validateForm = (values: VotingSettings) => {
   if (!values.proposalFlushBlocks || Number(values.proposalFlushBlocks) <= 0) {
     errors.proposalFlushBlocks = "Must be greater than 0"
   }
-
-  // if (
-  //   values.proposalFlushBlocks &&
-  //   values.votingBlocks &&
-  //   Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
-  // ) {
-  //   errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
-  // }
-
-  // if (
-  //   values.proposalExpiryBlocks &&
-  //   values.proposalFlushBlocks &&
-  //   Number(values.proposalExpiryBlocks) <= Number(values.proposalFlushBlocks)
-  // ) {
-  //   errors.proposalExpiryBlocks = "Must be greater than Proposal Execution Delay"
-  // }
 
   if (!values.proposalExpiryBlocks || Number(values.proposalExpiryBlocks) <= 0) {
     errors.proposalExpiryBlocks = "Must be greater than 0"
@@ -311,7 +321,9 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     ;(async () => {
       const blockchainInfo = await getNetworkStats(network)
       if (blockchainInfo) {
+        console.log(blockchainInfo)
         setBlockTimeAverage(blockchainInfo.constants.timeBetweenBlocks)
+        console.log(blockchainInfo.constants.timeBetweenBlocks)
       }
     })()
   }, [network])
@@ -357,6 +369,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
 
   return (
     <>
+      {console.log(values)}
       <Grid container direction="row">
         <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
@@ -365,10 +378,76 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container direction="column">
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="votingBlocksDay"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "votingBlocksDay") === 0) {
+                      setFieldValue("votingBlocksDay", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("votingBlocksDay", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">days</TimeText>
+            </Grid>
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="votingBlocksHours"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "votingBlocksHours") === 0) {
+                      setFieldValue("votingBlocksHours", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("votingBlocksHours", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">hours</TimeText>
+            </Grid>
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="votingBlocksMinutes"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "votingBlocksMinutes") === 0) {
+                      setFieldValue("votingBlocksMinutes", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("votingBlocksMinutes", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">minutes</TimeText>
+            </Grid>
+          </Grid>
+          {/* <GridItemContainer>
             <CustomInputContainer item xs={12}>
-              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
-                <GridItemCenter item xs={6}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center"> */}
+
+          {/* <GridItemCenter item xs={6}>
                   <Field
                     name="votingBlocks"
                     type="number"
@@ -387,16 +466,16 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 </GridItemCenter>
                 <GridItemCenter item xs={6}>
                   <Typography color="textSecondary">blocks</Typography>
-                </GridItemCenter>
-              </ItemContainer>
+                </GridItemCenter> */}
+          {/* </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </GridItemContainer> */}
 
           <Grid item>
             {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
           </Grid>
 
-          <Grid item style={{ margin: "14px 15px", height: 62 }}>
+          <Grid item style={{ margin: "14px 15px", marginLeft: 0, height: 62 }}>
             <EstimatedTime {...votingTime} />
           </Grid>
         </InputContainer>
@@ -404,10 +483,82 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           <SecondContainer container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Proposal Execution Delay
+              <CustomTooltip
+                placement="bottom"
+                title="The time for which the proposal execution will be paused, after this time has passed the proposal will be executable"
+              >
+                {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
+              </CustomTooltip>
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container direction="column">
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="proposalFlushBlocksDay"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "proposalFlushBlocksDay") === 0) {
+                      setFieldValue("proposalFlushBlocksDay", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("proposalFlushBlocksDay", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">days</TimeText>
+            </Grid>
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="proposalFlushBlocksHours"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "proposalFlushBlocksHours") === 0) {
+                      setFieldValue("proposalFlushBlocksHours", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("proposalFlushBlocksHours", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">hours</TimeText>
+            </Grid>
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="proposalFlushBlocksMinutes"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "proposalFlushBlocksMinutes") === 0) {
+                      setFieldValue("proposalFlushBlocksMinutes", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("proposalFlushBlocksMinutes", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">minutes</TimeText>
+            </Grid>
+          </Grid>
+
+          {/* <GridItemContainer>
             <CustomInputContainer item xs={12}>
               <ItemContainer container direction="row" alignItems="center" justifyContent="center">
                 <GridItemCenter item xs={6}>
@@ -429,16 +580,10 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 </GridItemCenter>
                 <GridItemCenter item xs={6} container direction="row" alignItems="center">
                   <Typography color="textSecondary">blocks</Typography>
-                  <CustomTooltip
-                    placement="bottom"
-                    title="The time for which the proposal execution will be paused, after this time has passed the proposal will be executable"
-                  >
-                    {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
-                  </CustomTooltip>
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </GridItemContainer> */}
 
           <Grid item>
             {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
@@ -446,7 +591,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
             ) : null}
           </Grid>
 
-          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
+          <Grid item style={{ marginLeft: 0, height: 62, marginTop: 14 }}>
             <EstimatedTime {...flushDelayTime} />
           </Grid>
         </InputContainer>
@@ -455,10 +600,82 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           <SecondContainer container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Proposal Expiry Threshold
+              <CustomTooltip
+                placement="bottom"
+                title="This is the time after which if you still haven't executed your proposal it will become expired and non-executable"
+              >
+                {errors.proposalExpiryBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
+              </CustomTooltip>
             </Typography>
           </SecondContainer>
 
-          <GridItemContainer>
+          <Grid container direction="column">
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="proposalExpiryBlocksDay"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "proposalExpiryBlocksDay") === 0) {
+                      setFieldValue("proposalExpiryBlocksDay", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("proposalExpiryBlocksDay", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">days</TimeText>
+            </Grid>
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="proposalExpiryBlocksHours"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "proposalExpiryBlocksHours") === 0) {
+                      setFieldValue("proposalExpiryBlocksHours", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("proposalExpiryBlocksHours", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">hours</TimeText>
+            </Grid>
+            <Grid item container direction="row" alignItems="center">
+              <TimeBox item>
+                <Field
+                  style={{ margin: "auto" }}
+                  id="outlined-basic"
+                  name="proposalExpiryBlocksMinutes"
+                  type="number"
+                  component={CustomFormikTextField}
+                  inputProps={{ min: 0 }}
+                  onClick={() => {
+                    if (getIn(values, "proposalExpiryBlocksMinutes") === 0) {
+                      setFieldValue("proposalExpiryBlocksMinutes", "")
+                    }
+                  }}
+                  onChange={(newValue: any) => {
+                    setFieldValue("proposalExpiryBlocksMinutes", newValue.target.value)
+                  }}
+                />
+              </TimeBox>
+              <TimeText color="textSecondary">minutes</TimeText>
+            </Grid>
+          </Grid>
+
+          {/* <GridItemContainer>
             <CustomInputContainer item xs={12}>
               <ItemContainer container direction="row" alignItems="center" justifyContent="center">
                 <GridItemCenter item xs={6}>
@@ -480,16 +697,10 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 </GridItemCenter>
                 <GridItemCenter item xs={6} container direction="row" alignItems="center">
                   <Typography color="textSecondary">blocks</Typography>
-                  <CustomTooltip
-                    placement="bottom"
-                    title="This is the time after which if you still haven't executed your proposal it will become expired and non-executable"
-                  >
-                    {errors.proposalExpiryBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
-                  </CustomTooltip>
                 </GridItemCenter>
               </ItemContainer>
             </CustomInputContainer>
-          </GridItemContainer>
+          </GridItemContainer> */}
 
           <Grid item>
             {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
@@ -497,7 +708,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
             ) : null}
           </Grid>
 
-          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
+          <Grid item style={{ marginLeft: 0, height: 62, marginTop: 14 }}>
             <EstimatedTime {...expiryDelayTime} />
           </Grid>
         </InputContainer>
@@ -651,8 +862,11 @@ export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext)
   const { votingSettings } = state.data
   const history = useHistory()
+  const { network } = useTezos()
 
-  const saveStepInfo = (values: VotingSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
+  const customVotingSettings = getNetworkVotingSettings(network, votingSettings)
+
+  const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
     values.proposalExpiryBlocks = Number(values.proposalExpiryBlocks)
     values.proposalFlushBlocks = Number(values.proposalFlushBlocks)
     values.votingBlocks = Number(values.votingBlocks)
@@ -681,7 +895,7 @@ export const Governance: React.FC = () => {
         validateOnBlur={false}
         validate={validateForm}
         onSubmit={saveStepInfo}
-        initialValues={votingSettings}
+        initialValues={customVotingSettings}
       >
         {({ submitForm, isSubmitting, setFieldValue, values, errors, touched, setFieldTouched }) => {
           return (
