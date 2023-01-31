@@ -288,6 +288,50 @@ const useEstimatedBlockTimes = ({
   }
 }
 
+const useEstimatedBlocks = ({
+  proposalFlushBlocksDay,
+  proposalFlushBlocksHours,
+  proposalFlushBlocksMinutes,
+  proposalExpiryBlocksDay,
+  proposalExpiryBlocksHours,
+  proposalExpiryBlocksMinutes,
+  blockTimeAverage
+}: {
+  proposalFlushBlocksDay: number
+  proposalFlushBlocksHours: number
+  proposalFlushBlocksMinutes: number
+  proposalExpiryBlocksDay: number
+  proposalExpiryBlocksHours: number
+  proposalExpiryBlocksMinutes: number
+  blockTimeAverage: number
+}) => {
+  const now = dayjs()
+
+  let periodSeconds = (proposalFlushBlocksDay * 86400) / blockTimeAverage
+  periodSeconds += (proposalFlushBlocksHours * 3600) / blockTimeAverage
+  periodSeconds += (proposalFlushBlocksMinutes * 60) / blockTimeAverage
+  const flushDelaySeconds = proposalFlushBlocksDay * blockTimeAverage
+  const expiryDelaySeconds = proposalFlushBlocksDay * blockTimeAverage
+
+  const creationMoment = now.add(periodSeconds, "s")
+  const activeMoment = creationMoment.add(periodSeconds, "s")
+  const closeMoment = activeMoment.add(periodSeconds, "s")
+  const flushMoment = closeMoment.add(flushDelaySeconds, "s")
+  const expiryMoment = flushMoment.add(expiryDelaySeconds, "s")
+
+  return {
+    creationMoment,
+    activeMoment,
+    closeMoment,
+    flushMoment,
+    expiryMoment,
+    votingTime: secondsToTime(periodSeconds),
+    flushDelayTime: secondsToTime(flushDelaySeconds),
+    expiryDelayTime: secondsToTime(expiryDelaySeconds),
+    periodSeconds
+  }
+}
+
 const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
   const { network } = useTezos()
   const {
@@ -301,6 +345,18 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
   const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0)
   const { votingBlocks, proposalFlushBlocks, proposalExpiryBlocks } = values
   const {
+    votingBlocksDays,
+    votingBlocksMinutes,
+    votingBlocksHours,
+    proposalFlushBlocksDay,
+    proposalFlushBlocksHours,
+    proposalFlushBlocksMinutes,
+    proposalExpiryBlocksDay,
+    proposalExpiryBlocksHours,
+    proposalExpiryBlocksMinutes
+  } = values
+
+  const {
     creationMoment,
     closeMoment,
     flushMoment,
@@ -310,10 +366,13 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     activeMoment,
     expiryDelayTime,
     periodSeconds
-  } = useEstimatedBlockTimes({
-    votingBlocks,
-    proposalFlushBlocks,
-    proposalExpiryBlocks,
+  } = useEstimatedBlocks({
+    proposalFlushBlocksDay,
+    proposalFlushBlocksHours,
+    proposalFlushBlocksMinutes,
+    proposalExpiryBlocksDay,
+    proposalExpiryBlocksHours,
+    proposalExpiryBlocksMinutes,
     blockTimeAverage
   })
 
