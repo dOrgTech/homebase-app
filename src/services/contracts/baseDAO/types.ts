@@ -12,7 +12,7 @@ export interface TokenHolder {
   balance: number
 }
 
-export type TransferParams = XTZTransferParams | FA2TransferParams
+export type TransferParams = XTZTransferParams | FA2TransferParams | FA12TransferParams
 
 export interface XTZTransferParams {
   amount: number
@@ -23,7 +23,14 @@ export interface XTZTransferParams {
 export interface FA2TransferParams {
   amount: number
   recipient: string
-  type: "FA2"
+  type: string
+  asset: TokenModel
+}
+
+export interface FA12TransferParams {
+  amount: number
+  recipient: string
+  type: string
   asset: TokenModel
 }
 

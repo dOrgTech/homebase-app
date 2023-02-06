@@ -33,7 +33,7 @@ export const getDAOBalances = async (
   offset = 0,
   balances: DAOBalance[] = []
 ): Promise<DAOBalance[]> => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=true&token.standard=fa2`
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=true`
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -83,7 +83,7 @@ export const getDAONFTBalances = async (
   offset = 0,
   balances: DAOBalance[] = []
 ): Promise<DAOBalance[]> => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=false&token.standard=fa2`
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${daoId}&limit=${ELEMENTS_PER_REQUEST}&offset=${offset}&token.metadata.artifactUri.null=false`
   const response = await fetch(url)
 
   if (!response.ok) {

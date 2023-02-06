@@ -365,6 +365,17 @@ export interface PMFA2TransferType {
   ]
 }
 
+export interface PMFA12TransferType {
+  contract_address: string
+  transfer: {
+    from: string
+    target: {
+      to: string
+      value: BigNumber
+    }
+  }
+}
+
 interface ConfigProposalDTO {
   frozen_extra_value?: string
   frozen_scale_value?: string
@@ -389,7 +400,7 @@ export type PMTreasuryProposal =
   | {
       transfer_proposal: {
         agora_post_id: string
-        transfers: (PMXTZTransferType | PMFA2TransferType)[]
+        transfers: (PMXTZTransferType | PMFA2TransferType | PMFA12TransferType)[]
       }
     }
 
@@ -402,7 +413,7 @@ export type PMRegistryProposal =
           "0": string
           "1": string
         }[]
-        transfers: (PMXTZTransferType | PMFA2TransferType)[]
+        transfers: (PMXTZTransferType | PMFA2TransferType | PMFA12TransferType)[]
       }
     }
 
