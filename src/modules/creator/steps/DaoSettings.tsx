@@ -355,7 +355,6 @@ const validateForm = (values: OrgSettings) => {
     }
   }
 
-  console.log(errors)
   return errors
 }
 

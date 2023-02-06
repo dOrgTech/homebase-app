@@ -184,20 +184,6 @@ const InfoBox = styled(Paper)({
   marginTop: 20
 })
 
-const getNetworkVotingSettings = (network: string, values: VotingSettings) => {
-  values.votingBlocksDay = network === networkNameMap.ghostnet ? 0 : 3
-  values.votingBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  values.votingBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
-  values.proposalFlushBlocksDay = network === networkNameMap.ghostnet ? 0 : 1
-  values.proposalFlushBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  values.proposalFlushBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
-  values.proposalExpiryBlocksDay = network === networkNameMap.ghostnet ? 0 : 6
-  values.proposalExpiryBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
-  values.proposalExpiryBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
-
-  return values
-}
-
 const validateForm = (values: VotingSettings) => {
   const errors: FormikErrors<VotingSettings> = {}
 
@@ -923,7 +909,8 @@ export const Governance: React.FC = () => {
   const history = useHistory()
   const { network } = useTezos()
 
-  const customVotingSettings = getNetworkVotingSettings(network, votingSettings)
+  console.log(state)
+  // const customVotingSettings = getNetworkVotingSettings(network, votingSettings)
 
   const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
     values.proposalExpiryBlocks = Number(values.proposalExpiryBlocks)
@@ -954,7 +941,7 @@ export const Governance: React.FC = () => {
         validateOnBlur={false}
         validate={validateForm}
         onSubmit={saveStepInfo}
-        initialValues={customVotingSettings}
+        initialValues={votingSettings}
       >
         {({ submitForm, isSubmitting, setFieldValue, values, errors, touched, setFieldTouched }) => {
           return (

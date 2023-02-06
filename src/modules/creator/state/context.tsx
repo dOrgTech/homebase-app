@@ -2,6 +2,8 @@ import React, { createContext, useReducer, Dispatch, useMemo } from "react"
 
 import useLocalStorage from "modules/common/hooks/useLocalStorage"
 import { CreatorAction, CreatorState, ActionTypes, MigrationParams } from "modules/creator/state/types"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { networkNameMap } from "services/bakingBad"
 
 const deploymentStatus = {
   deploying: false,
@@ -125,12 +127,30 @@ export const reducer = (state: CreatorState, action: CreatorAction): CreatorStat
   }
 }
 
+const updateInitialState = (network: string, values: MigrationParams) => {
+  values.votingSettings.votingBlocksDay = network === networkNameMap.ghostnet ? 0 : 3
+  values.votingSettings.votingBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
+  values.votingSettings.votingBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+  values.votingSettings.proposalFlushBlocksDay = network === networkNameMap.ghostnet ? 0 : 1
+  values.votingSettings.proposalFlushBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
+  values.votingSettings.proposalFlushBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+  values.votingSettings.proposalExpiryBlocksDay = network === networkNameMap.ghostnet ? 0 : 6
+  values.votingSettings.proposalExpiryBlocksHours = network === networkNameMap.ghostnet ? 0 : 0
+  values.votingSettings.proposalExpiryBlocksMinutes = network === networkNameMap.ghostnet ? 5 : 0
+
+  return values
+}
+
 const CreatorProvider: React.FC = ({ children }) => {
   const [data, updateCache] = useLocalStorage<MigrationParams>(LOCAL_STORAGE_KEY, INITIAL_STATE.data)
 
+  const { network } = useTezos()
+
+  const updatedData = updateInitialState(network, data)
+
   const stateWithCache = {
     ...INITIAL_STATE,
-    data
+    updatedData
   }
 
   const [state, dispatch] = useReducer(reducer, stateWithCache)
