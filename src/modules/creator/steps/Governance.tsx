@@ -275,6 +275,9 @@ const useEstimatedBlockTimes = ({
 }
 
 const useEstimatedBlocks = ({
+  votingBlocksDays,
+  votingBlocksMinutes,
+  votingBlocksHours,
   proposalFlushBlocksDay,
   proposalFlushBlocksHours,
   proposalFlushBlocksMinutes,
@@ -283,6 +286,9 @@ const useEstimatedBlocks = ({
   proposalExpiryBlocksMinutes,
   blockTimeAverage
 }: {
+  votingBlocksDays: number
+  votingBlocksHours: number
+  votingBlocksMinutes: number
   proposalFlushBlocksDay: number
   proposalFlushBlocksHours: number
   proposalFlushBlocksMinutes: number
@@ -293,11 +299,27 @@ const useEstimatedBlocks = ({
 }) => {
   const now = dayjs()
 
-  let periodSeconds = (proposalFlushBlocksDay * 86400) / blockTimeAverage
-  periodSeconds += (proposalFlushBlocksHours * 3600) / blockTimeAverage
-  periodSeconds += (proposalFlushBlocksMinutes * 60) / blockTimeAverage
-  const flushDelaySeconds = proposalFlushBlocksDay * blockTimeAverage
-  const expiryDelaySeconds = proposalFlushBlocksDay * blockTimeAverage
+  console.log(votingBlocksDays)
+
+  let periodSeconds = votingBlocksDays * 86400
+  periodSeconds += votingBlocksHours * 3600
+  periodSeconds += votingBlocksMinutes * 60
+
+  console.log(periodSeconds)
+
+  const periodBlocks = periodSeconds / blockTimeAverage
+
+  let flushDelaySeconds = proposalFlushBlocksDay * 86400
+  flushDelaySeconds += proposalFlushBlocksHours * 3600
+  flushDelaySeconds += proposalFlushBlocksMinutes * 60
+
+  const flushBlocks = flushDelaySeconds / blockTimeAverage
+
+  let expiryDelaySeconds = proposalExpiryBlocksDay * 86400
+  expiryDelaySeconds += proposalExpiryBlocksHours * 3600
+  expiryDelaySeconds += proposalExpiryBlocksMinutes * 60
+
+  const expiryBlocks = expiryDelaySeconds / blockTimeAverage
 
   const creationMoment = now.add(periodSeconds, "s")
   const activeMoment = creationMoment.add(periodSeconds, "s")
@@ -306,6 +328,9 @@ const useEstimatedBlocks = ({
   const expiryMoment = flushMoment.add(expiryDelaySeconds, "s")
 
   return {
+    periodBlocks,
+    flushBlocks,
+    expiryBlocks,
     creationMoment,
     activeMoment,
     closeMoment,
@@ -351,8 +376,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     flushDelayTime,
     activeMoment,
     expiryDelayTime,
-    periodSeconds
+    periodSeconds,
+    periodBlocks,
+    flushBlocks,
+    expiryBlocks
   } = useEstimatedBlocks({
+    votingBlocksDays,
+    votingBlocksMinutes,
+    votingBlocksHours,
     proposalFlushBlocksDay,
     proposalFlushBlocksHours,
     proposalFlushBlocksMinutes,
@@ -414,7 +445,6 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
 
   return (
     <>
-      {console.log(values)}
       <Grid container direction="row">
         <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
@@ -521,7 +551,8 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           </Grid>
 
           <Grid item style={{ margin: "14px 15px", marginLeft: 0, height: 62 }}>
-            <EstimatedTime {...votingTime} />
+            <Typography color="secondary">{periodBlocks}</Typography>
+            {/* <EstimatedTime {...votingTime} /> */}
           </Grid>
         </InputContainer>
         <InputContainer item sm={4} xs={12}>
@@ -909,7 +940,6 @@ export const Governance: React.FC = () => {
   const history = useHistory()
   const { network } = useTezos()
 
-  console.log(state)
   // const customVotingSettings = getNetworkVotingSettings(network, votingSettings)
 
   const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
