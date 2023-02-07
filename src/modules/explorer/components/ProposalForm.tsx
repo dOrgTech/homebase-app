@@ -125,16 +125,17 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
 
       const mappedTransfers = [...values.transferForm.transfers, ...values.nftTransferForm.transfers]
         .filter(transfer => !!transfer.amount && !!transfer.asset && !!transfer.recipient)
-        .map(transfer =>
-          (transfer.asset as Asset).symbol === "XTZ"
+        .map(transfer => {
+          const type = (transfer.asset as Token).standard === "fa2" ? "FA2" : "FA1.2"
+          return (transfer.asset as Asset).symbol === "XTZ"
             ? { ...transfer, amount: transfer.amount, type: "XTZ" as const }
             : {
                 ...transfer,
                 amount: transfer.amount,
                 asset: transfer.asset as Token,
-                type: "FA2" as const
+                type: type
               }
-        )
+        })
 
       const mappedList = values.registryUpdateForm.list.filter(item => !!item.key && !!item.value)
 

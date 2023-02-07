@@ -37,7 +37,7 @@ export enum ProposalStatus {
 export interface Transfer {
   amount: BigNumber
   beneficiary: string
-  type: "XTZ" | "FA2"
+  type: "XTZ" | "FA2" | "FA1.2"
 }
 
 export interface FA2Transfer extends Transfer {

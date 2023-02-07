@@ -1,10 +1,12 @@
 import { Transfer } from "./types"
 import { formatUnits, xtzToMutez } from "services/contracts/utils"
 import BigNumber from "bignumber.js"
-import { FA2TransferParams, TransferParams, XTZTransferParams } from "services/contracts/baseDAO"
-import { PMFA2TransferType, PMXTZTransferType } from "services/contracts/baseDAO/lambdaDAO/types"
+import { FA12TransferParams, FA2TransferParams, TransferParams, XTZTransferParams } from "services/contracts/baseDAO"
+import { PMFA12TransferType, PMFA2TransferType, PMXTZTransferType } from "services/contracts/baseDAO/lambdaDAO/types"
 
-export const extractTransfersData = (transfersDTO: (PMXTZTransferType | PMFA2TransferType)[]): Transfer[] => {
+export const extractTransfersData = (
+  transfersDTO: (PMXTZTransferType | PMFA2TransferType | PMFA12TransferType)[]
+): Transfer[] => {
   const transfers = transfersDTO.map((transfer: any) => {
     if (transfer.hasOwnProperty("xtz_transfer_type")) {
       const xtzTransfer = transfer
@@ -14,7 +16,7 @@ export const extractTransfersData = (transfersDTO: (PMXTZTransferType | PMFA2Tra
         beneficiary: xtzTransfer.xtz_transfer_type.recipient,
         type: "XTZ" as const
       }
-    } else {
+    } else if (transfer.hasOwnProperty("token_transfer_type")) {
       const fa2Transfer = transfer
 
       return {
@@ -23,6 +25,17 @@ export const extractTransfersData = (transfersDTO: (PMXTZTransferType | PMFA2Tra
         contractAddress: fa2Transfer.token_transfer_type.contract_address,
         tokenId: fa2Transfer.token_transfer_type.transfer_list[0].txs[0].token_id,
         type: "FA2" as const
+      }
+    } else {
+      const fa12Transfer = transfer
+      console.log("fa12Transfer: ", fa12Transfer)
+
+      return {
+        amount: fa12Transfer.legacy_token_transfer_type.transfer.target.value,
+        beneficiary: fa12Transfer.legacy_token_transfer_type.transfer.target.to,
+        contractAddress: fa12Transfer.legacy_token_transfer_type.contract_address,
+        type: "FA1.2" as const,
+        tokenId: "0"
       }
     }
   })
@@ -59,12 +72,31 @@ const mapFA2TransfersArgs = (transfer: FA2TransferParams, daoAddress: string) =>
   }
 }
 
+const mapFA12TransfersArgs = (transfer: FA12TransferParams, daoAddress: string) => {
+  return {
+    legacy_token_transfer_type: {
+      contract_address: transfer.asset.contract,
+      transfer: {
+        from: daoAddress,
+        target: {
+          to: transfer.recipient,
+          value: formatUnits(new BigNumber(transfer.amount), transfer.asset.decimals).toNumber()
+        }
+      }
+    }
+  }
+}
+
 export const mapTransfersArgs = (transfers: TransferParams[], daoAddress: string) => {
   return transfers.map(transfer => {
     if (transfer.type === "FA2") {
       return mapFA2TransfersArgs(transfer, daoAddress)
     }
 
-    return mapXTZTransfersArgs(transfer)
+    if (transfer.type === "FA1.2") {
+      return mapFA12TransfersArgs(transfer as FA12TransferParams, daoAddress)
+    }
+
+    return mapXTZTransfersArgs(transfer as XTZTransferParams)
   })
 }
