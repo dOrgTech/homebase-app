@@ -103,21 +103,21 @@ const App: React.FC = () => {
                         <DAOCreate />
                       </ThemeProvider>
                     </CreatorProvider>
-                    <WarningFooter
+                    {/* <WarningFooter
                       text={
                         "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
                       }
-                    />
+                    /> */}
                   </Route>
                   <Route path="/explorer">
                     <TZKTSubscriptionsProvider>
                       <DAOExplorerRouter />
                     </TZKTSubscriptionsProvider>
-                    <WarningFooter
+                    {/* <WarningFooter
                       text={
                         "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
                       }
-                    />
+                    /> */}
                     <Footer></Footer>
                   </Route>
                   <Route path="/faq">
