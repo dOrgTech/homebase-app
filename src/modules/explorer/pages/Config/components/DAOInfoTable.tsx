@@ -27,7 +27,6 @@ export const DaoInfoTables: React.FC = () => {
 
   return (
     <>
-      {console.log(dao)}
       <CustomTableContainer>
         <Table style={{ marginTop: 32 }} aria-label="simple table">
           <TableHead>
