@@ -27,6 +27,7 @@ export const DaoInfoTables: React.FC = () => {
 
   return (
     <>
+      {console.log(dao)}
       <CustomTableContainer>
         <Table style={{ marginTop: 32 }} aria-label="simple table">
           <TableHead>
@@ -68,7 +69,9 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Stake Required to Propose</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>{new BigNumber(dao.data.extra.frozen_extra_value).toNumber()} locked token</RowValue>
+                    <RowValue>
+                      {new BigNumber(dao.data.extra.frozen_extra_value).toNumber()} locked {dao.data.token.symbol}
+                    </RowValue>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -76,7 +79,9 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Stake Returned if Rejected</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>{dao.data.extra.returnedPercentage}% of locked tokens</RowValue>
+                    <RowValue>
+                      {dao.data.extra.returnedPercentage}% of locked {dao.data.token.symbol}
+                    </RowValue>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -84,7 +89,7 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Transfer Maximum XTZ Amount</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>{new BigNumber(dao.data.extra.max_xtz_amount).toNumber()} XTZ</RowValue>
+                    <RowValue>{new BigNumber(dao.data.extra.max_xtz_amount).div(10 ** 6).toNumber()} XTZ</RowValue>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -92,7 +97,7 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Transfer Minimum XTZ Amount</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>{new BigNumber(dao.data.extra.min_xtz_amount).toNumber()} XTZ</RowValue>
+                    <RowValue>{new BigNumber(dao.data.extra.min_xtz_amount).div(10 ** 6).toNumber()} XTZ</RowValue>
                   </TableCell>
                 </TableRow>
               </>
@@ -118,7 +123,9 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Quorum Threshold</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>{dao.data.quorum_threshold.toNumber()}%</RowValue>
+                    <RowValue>
+                      {dao.data.quorum_threshold.toNumber()} {dao.data.token.symbol}
+                    </RowValue>
                   </TableCell>
                 </TableRow>
                 <TableRow>
