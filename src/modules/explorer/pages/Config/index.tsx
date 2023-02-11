@@ -41,8 +41,8 @@ const getActions = (): Action[] => [
     isLambda: true
   },
   {
-    name: "Customize Lambda",
-    description: "Choose which Lambda to customize",
+    name: "Execute Lambda",
+    description: "Execute a Lambda already installed on DAO",
     id: ProposalAction.execute,
     isLambda: true
   },
