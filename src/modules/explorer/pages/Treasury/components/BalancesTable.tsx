@@ -63,7 +63,7 @@ const createData = (daoHolding: DAOHolding): RowData => {
 
 const titles = ["Token Balances", "Address", "Balance"] as const
 
-const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
+const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
   switch (title) {
     case "Token Balances":
       return rowData.symbol

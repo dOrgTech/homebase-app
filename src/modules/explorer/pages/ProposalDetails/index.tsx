@@ -30,7 +30,6 @@ import { InfoIcon } from "../../components/styled/InfoIcon"
 import { ProposalTransferBadge } from "modules/explorer/components/ProposalTransferBadge"
 import { useUnstakeVotes } from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes"
 import { useTezos } from "../../../../services/beacon/hooks/useTezos"
-import { CodeVisor } from "./components/CodeVisor"
 import { CopyButton } from "modules/common/CopyButton"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
@@ -265,20 +264,6 @@ export const ProposalDetails: React.FC = () => {
                       <Grid item>
                         <UserBadge address={proposal.proposer} short={true} />
                       </Grid>
-
-                      {isLambdaProposal ? (
-                        <Grid item>
-                          <ViewCodeButton variant="contained" color="secondary" onClick={() => setOpenVisor(true)}>
-                            View Code
-                          </ViewCodeButton>
-                          <CodeVisor
-                            open={openVisor}
-                            code={parseLambdaCode(proposalLambda?.value)}
-                            title={"Lambda Code"}
-                            handleClose={() => setOpenVisor(false)}
-                          />
-                        </Grid>
-                      ) : null}
                     </Grid>
                   )}
                 </Grid>
