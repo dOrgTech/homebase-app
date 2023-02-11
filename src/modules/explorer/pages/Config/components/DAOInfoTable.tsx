@@ -52,7 +52,11 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Flush Delay Duration</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>{dao.data.proposal_flush_level} blocks</RowValue>
+                    <RowValue>
+                      {new BigNumber(dao.data.proposal_flush_level).toNumber() -
+                        2 * new BigNumber(dao.data.period).toNumber()}{" "}
+                      blocks
+                    </RowValue>
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -60,7 +64,11 @@ export const DaoInfoTables: React.FC = () => {
                     <Typography variant="body1">Proposal Blocks to Expire</Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <RowValue>{dao.data.proposal_expired_level} blocks</RowValue>
+                    <RowValue>
+                      {new BigNumber(dao.data.proposal_expired_level).toNumber() -
+                        new BigNumber(dao.data.proposal_flush_level).toNumber()}{" "}
+                      blocks
+                    </RowValue>
                   </TableCell>
                 </TableRow>
                 <TableRow>
