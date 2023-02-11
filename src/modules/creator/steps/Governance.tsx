@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Grid, Paper, styled, Typography, Slider, withStyles, withTheme, Box, Tooltip } from "@material-ui/core"
 import { TextField } from "formik-material-ui"
 import React, { useContext, useEffect, useState } from "react"
@@ -57,6 +58,13 @@ const ErrorText = styled(Typography)({
   display: "block",
   fontSize: 14,
   color: "red"
+})
+
+const ErrorTextTime = styled(Typography)({
+  display: "block",
+  fontSize: 14,
+  color: "red",
+  marginTop: -14
 })
 
 const SecondContainer = styled(Grid)({
@@ -172,7 +180,6 @@ const InfoBox = styled(Paper)({
 
 const validateForm = (values: VotingSettings) => {
   const errors: FormikErrors<VotingSettings> = {}
-  console.log(values)
 
   Object.keys(values).forEach(key => {
     if ((values[key as keyof VotingSettings] as number | string) === "") {
@@ -184,7 +191,7 @@ const validateForm = (values: VotingSettings) => {
     }
   })
 
-  if (!values.votingBlocks || Number(values.votingBlocks) <= 0) {
+  if (!values.votingBlocks || values.votingBlocks <= 0) {
     errors.votingBlocks = "Must be greater than 0"
   }
 
@@ -203,13 +210,6 @@ const validateForm = (values: VotingSettings) => {
   if (values.maxXtzAmount <= 0) {
     errors.maxXtzAmount = "Must be greater than 0"
   }
-  if (
-    values.proposalFlushBlocks &&
-    values.votingBlocks &&
-    Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
-  ) {
-    errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
-  }
 
   if (values.minXtzAmount && String(values.maxXtzAmount).length > 255) {
     errors.maxXtzAmount = "Too big, number must be smaller"
@@ -222,7 +222,6 @@ const validateForm = (values: VotingSettings) => {
   if (values.minXtzAmount > values.maxXtzAmount) {
     errors.maxXtzAmount = "Must be greater than Min. XTZ amount"
   }
-
   return errors
 }
 
@@ -309,15 +308,12 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
   const history = useHistory()
   const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0)
   const {
-    votingBlocks,
     votingBlocksDay,
     votingBlocksMinutes,
     votingBlocksHours,
-    proposalFlushBlocks,
     proposalFlushBlocksDay,
     proposalFlushBlocksHours,
     proposalFlushBlocksMinutes,
-    proposalExpiryBlocks,
     proposalExpiryBlocksDay,
     proposalExpiryBlocksHours,
     proposalExpiryBlocksMinutes
@@ -346,13 +342,14 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
   })
 
   useEffect(() => {
-    console.log(periodBlocks, flushBlocks)
     values.votingBlocks = periodBlocks
     values.proposalFlushBlocks = flushBlocks
     values.proposalExpiryBlocks = expiryBlocks
-    console.log(values)
-    return
-  }, [values, periodBlocks, flushBlocks, expiryBlocks])
+
+    // setTimeout(() => {
+    //   validateForm(values)
+    // }, 1000)
+  }, [periodBlocks, flushBlocks, expiryBlocks])
 
   useEffect(() => {
     ;(async () => {
@@ -426,10 +423,15 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                   onClick={() => {
                     if (getIn(values, "votingBlocksDay") === 0) {
                       setFieldValue("votingBlocksDay", "")
+                      setFieldTouched("votingBlocksDay")
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("votingBlocksDay", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("votingBlocksDay", "")
+                    } else {
+                      setFieldValue("votingBlocksDay", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -450,7 +452,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("votingBlocksHours", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("votingBlocksHours", "")
+                    } else {
+                      setFieldValue("votingBlocksHours", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -471,14 +477,9 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    console.log(newValue.target.value)
                     if (newValue.target.value === "") {
-                      setFieldValue("votingBlocksMinutes", 0)
+                      setFieldValue("votingBlocksMinutes", "")
                     } else {
-                      console.log(getIn(values, "votingBlocksMinutes"))
-                      if (getIn(values, "votingBlocksMinutes") === 0) {
-                        setFieldValue("votingBlocksMinutes", "")
-                      }
                       setFieldValue("votingBlocksMinutes", parseInt(newValue.target.value, 10))
                     }
                   }}
@@ -488,13 +489,15 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
             </Grid>
           </Grid>
 
-          <Grid item>
-            {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
+          <Grid item style={{ marginTop: 10, marginLeft: 0, height: 42 }}>
+            <EstimatedBlocks blocks={periodBlocks} />
           </Grid>
 
-          <Grid item style={{ margin: "14px 15px", marginLeft: 0, height: 62 }}>
-            {/* <Typography color="secondary">{periodBlocks}</Typography> */}
-            <EstimatedBlocks blocks={periodBlocks} />
+          <Grid item>
+            {errors.votingBlocks &&
+            (touched.votingBlocksDay || touched.votingBlocksMinutes || touched.votingBlocksHours) ? (
+              <ErrorTextTime>{errors.votingBlocks}</ErrorTextTime>
+            ) : null}
           </Grid>
         </InputContainer>
         <InputContainer item sm={4} xs={12}>
@@ -526,7 +529,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalFlushBlocksDay", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("proposalFlushBlocksDay", "")
+                    } else {
+                      setFieldValue("proposalFlushBlocksDay", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -547,7 +554,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalFlushBlocksHours", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("proposalFlushBlocksHours", "")
+                    } else {
+                      setFieldValue("proposalFlushBlocksHours", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -568,7 +579,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalFlushBlocksMinutes", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("proposalFlushBlocksMinutes", "")
+                    } else {
+                      setFieldValue("proposalFlushBlocksMinutes", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -576,41 +591,17 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
             </Grid>
           </Grid>
 
-          {/* <GridItemContainer>
-            <CustomInputContainer item xs={12}>
-              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
-                <GridItemCenter item xs={6}>
-                  <Field
-                    name="proposalFlushBlocks"
-                    type="number"
-                    placeholder="00"
-                    component={TextField}
-                    inputProps={{ min: 0 }}
-                    onClick={() => {
-                      if (getIn(values, "proposalFlushBlocks") === 0) {
-                        setFieldValue("proposalFlushBlocks", "")
-                      }
-                    }}
-                    onChange={(newValue: any) => {
-                      setFieldValue("proposalFlushBlocks", newValue.target.value)
-                    }}
-                  />
-                </GridItemCenter>
-                <GridItemCenter item xs={6} container direction="row" alignItems="center">
-                  <Typography color="textSecondary">blocks</Typography>
-                </GridItemCenter>
-              </ItemContainer>
-            </CustomInputContainer>
-          </GridItemContainer> */}
-
-          <Grid item>
-            {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
-              <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
-            ) : null}
+          <Grid item style={{ marginLeft: 0, height: 42, marginTop: 10 }}>
+            <EstimatedBlocks blocks={flushBlocks} />
           </Grid>
 
-          <Grid item style={{ marginLeft: 0, height: 62, marginTop: 14 }}>
-            <EstimatedBlocks blocks={flushBlocks} />
+          <Grid item>
+            {errors.proposalFlushBlocks &&
+            (touched.proposalFlushBlocksDay ||
+              touched.proposalFlushBlocksMinutes ||
+              touched.proposalFlushBlocksHours) ? (
+              <ErrorTextTime>{errors.proposalFlushBlocks}</ErrorTextTime>
+            ) : null}
           </Grid>
         </InputContainer>
 
@@ -643,7 +634,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalExpiryBlocksDay", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("proposalExpiryBlocksDay", "")
+                    } else {
+                      setFieldValue("proposalExpiryBlocksDay", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -664,7 +659,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalExpiryBlocksHours", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("proposalExpiryBlocksHours", "")
+                    } else {
+                      setFieldValue("proposalExpiryBlocksHours", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -685,7 +684,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalExpiryBlocksMinutes", Number(newValue.target.value))
+                    if (newValue.target.value === "") {
+                      setFieldValue("proposalExpiryBlocksMinutes", "")
+                    } else {
+                      setFieldValue("proposalExpiryBlocksMinutes", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
@@ -693,41 +696,16 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
             </Grid>
           </Grid>
 
-          {/* <GridItemContainer>
-            <CustomInputContainer item xs={12}>
-              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
-                <GridItemCenter item xs={6}>
-                  <Field
-                    name="proposalExpiryBlocks"
-                    type="number"
-                    placeholder="00"
-                    component={TextField}
-                    inputProps={{ min: 0 }}
-                    onClick={() => {
-                      if (getIn(values, "proposalExpiryBlocks") === 0) {
-                        setFieldValue("proposalExpiryBlocks", "")
-                      }
-                    }}
-                    onChange={(newValue: any) => {
-                      setFieldValue("proposalExpiryBlocks", newValue.target.value)
-                    }}
-                  />
-                </GridItemCenter>
-                <GridItemCenter item xs={6} container direction="row" alignItems="center">
-                  <Typography color="textSecondary">blocks</Typography>
-                </GridItemCenter>
-              </ItemContainer>
-            </CustomInputContainer>
-          </GridItemContainer> */}
-
-          <Grid item>
-            {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
-              <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
-            ) : null}
-          </Grid>
-
-          <Grid item style={{ marginLeft: 0, height: 62, marginTop: 14 }}>
+          <Grid item style={{ marginLeft: 0, height: 42, marginTop: 10 }}>
             <EstimatedBlocks blocks={expiryBlocks} />
+          </Grid>
+          <Grid item>
+            {errors.proposalExpiryBlocks &&
+            (touched.proposalExpiryBlocksDay ||
+              touched.proposalExpiryBlocksHours ||
+              touched.proposalExpiryBlocksMinutes) ? (
+              <ErrorTextTime>{errors.proposalExpiryBlocks}</ErrorTextTime>
+            ) : null}
           </Grid>
         </InputContainer>
       </Grid>
@@ -907,7 +885,7 @@ export const Governance: React.FC = () => {
       <Formik
         enableReinitialize={true}
         validateOnChange={true}
-        validateOnBlur={false}
+        validateOnBlur={true}
         validate={validateForm}
         onSubmit={saveStepInfo}
         initialValues={votingSettings}
