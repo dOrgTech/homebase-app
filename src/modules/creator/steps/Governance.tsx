@@ -6,13 +6,12 @@ import { useHistory } from "react-router"
 import { useRouteMatch } from "react-router-dom"
 
 import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state"
-import { InfoOutlined, InfoRounded } from "@material-ui/icons"
+import { InfoRounded } from "@material-ui/icons"
 import { getNetworkStats } from "services/bakingBad/stats"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { EstimatedTime } from "modules/explorer/components/EstimatedTime"
+import { EstimatedBlocks } from "modules/explorer/components/EstimatedTime"
 import dayjs from "dayjs"
 import { TitleBlock } from "modules/common/TitleBlock"
-import { networkNameMap } from "services/bakingBad"
 
 const TimeBox = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -72,14 +71,6 @@ const StakeContainer = styled(Grid)({
   display: "block"
 })
 
-const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  border: "none",
-  height: 54,
-  marginTop: 14,
-  background: "#2F3438",
-  borderRadius: 8
-}))
-
 const AdditionContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
   border: "none",
@@ -102,11 +93,6 @@ const GridItemCenter = styled(Grid)({
 const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
   padding: "12px 25px"
-}))
-
-const GridItemContainer = styled(Grid)(() => ({
-  display: "flex",
-  alignItems: "center"
 }))
 
 const ValueText = styled(Typography)({
@@ -186,6 +172,7 @@ const InfoBox = styled(Paper)({
 
 const validateForm = (values: VotingSettings) => {
   const errors: FormikErrors<VotingSettings> = {}
+  console.log(values)
 
   Object.keys(values).forEach(key => {
     if ((values[key as keyof VotingSettings] as number | string) === "") {
@@ -216,6 +203,13 @@ const validateForm = (values: VotingSettings) => {
   if (values.maxXtzAmount <= 0) {
     errors.maxXtzAmount = "Must be greater than 0"
   }
+  if (
+    values.proposalFlushBlocks &&
+    values.votingBlocks &&
+    Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
+  ) {
+    errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
+  }
 
   if (values.minXtzAmount && String(values.maxXtzAmount).length > 255) {
     errors.maxXtzAmount = "Too big, number must be smaller"
@@ -238,44 +232,8 @@ const secondsToTime = (seconds: number) => ({
   minutes: Math.floor((seconds % 3600) / 60)
 })
 
-const useEstimatedBlockTimes = ({
-  votingBlocks,
-  proposalFlushBlocks,
-  proposalExpiryBlocks,
-  blockTimeAverage
-}: {
-  votingBlocks: number
-  proposalFlushBlocks: number
-  proposalExpiryBlocks: number
-  blockTimeAverage: number
-}) => {
-  const now = dayjs()
-
-  const periodSeconds = votingBlocks * blockTimeAverage
-  const flushDelaySeconds = proposalFlushBlocks * blockTimeAverage
-  const expiryDelaySeconds = proposalExpiryBlocks * blockTimeAverage
-
-  const creationMoment = now.add(periodSeconds, "s")
-  const activeMoment = creationMoment.add(periodSeconds, "s")
-  const closeMoment = activeMoment.add(periodSeconds, "s")
-  const flushMoment = closeMoment.add(flushDelaySeconds, "s")
-  const expiryMoment = flushMoment.add(expiryDelaySeconds, "s")
-
-  return {
-    creationMoment,
-    activeMoment,
-    closeMoment,
-    flushMoment,
-    expiryMoment,
-    votingTime: secondsToTime(periodSeconds),
-    flushDelayTime: secondsToTime(flushDelaySeconds),
-    expiryDelayTime: secondsToTime(expiryDelaySeconds),
-    periodSeconds
-  }
-}
-
 const useEstimatedBlocks = ({
-  votingBlocksDays,
+  votingBlocksDay,
   votingBlocksMinutes,
   votingBlocksHours,
   proposalFlushBlocksDay,
@@ -286,7 +244,7 @@ const useEstimatedBlocks = ({
   proposalExpiryBlocksMinutes,
   blockTimeAverage
 }: {
-  votingBlocksDays: number
+  votingBlocksDay: number
   votingBlocksHours: number
   votingBlocksMinutes: number
   proposalFlushBlocksDay: number
@@ -299,13 +257,9 @@ const useEstimatedBlocks = ({
 }) => {
   const now = dayjs()
 
-  console.log(votingBlocksDays)
-
-  let periodSeconds = votingBlocksDays * 86400
+  let periodSeconds = votingBlocksDay * 86400
   periodSeconds += votingBlocksHours * 3600
   periodSeconds += votingBlocksMinutes * 60
-
-  console.log(periodSeconds)
 
   const periodBlocks = periodSeconds / blockTimeAverage
 
@@ -354,24 +308,22 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
   const match = useRouteMatch()
   const history = useHistory()
   const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0)
-  const { votingBlocks, proposalFlushBlocks, proposalExpiryBlocks } = values
   const {
-    votingBlocksDays,
+    votingBlocks,
+    votingBlocksDay,
     votingBlocksMinutes,
     votingBlocksHours,
+    proposalFlushBlocks,
     proposalFlushBlocksDay,
     proposalFlushBlocksHours,
     proposalFlushBlocksMinutes,
+    proposalExpiryBlocks,
     proposalExpiryBlocksDay,
     proposalExpiryBlocksHours,
     proposalExpiryBlocksMinutes
   } = values
 
   const {
-    creationMoment,
-    closeMoment,
-    flushMoment,
-    expiryMoment,
     votingTime,
     flushDelayTime,
     activeMoment,
@@ -381,7 +333,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     flushBlocks,
     expiryBlocks
   } = useEstimatedBlocks({
-    votingBlocksDays,
+    votingBlocksDay,
     votingBlocksMinutes,
     votingBlocksHours,
     proposalFlushBlocksDay,
@@ -394,12 +346,19 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
   })
 
   useEffect(() => {
+    console.log(periodBlocks, flushBlocks)
+    values.votingBlocks = periodBlocks
+    values.proposalFlushBlocks = flushBlocks
+    values.proposalExpiryBlocks = expiryBlocks
+    console.log(values)
+    return
+  }, [values, periodBlocks, flushBlocks, expiryBlocks])
+
+  useEffect(() => {
     ;(async () => {
       const blockchainInfo = await getNetworkStats(network)
       if (blockchainInfo) {
-        console.log(blockchainInfo)
         setBlockTimeAverage(blockchainInfo.constants.timeBetweenBlocks)
-        console.log(blockchainInfo.constants.timeBetweenBlocks)
       }
     })()
   }, [network])
@@ -461,6 +420,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                   id="outlined-basic"
                   name="votingBlocksDay"
                   type="number"
+                  placeholder="0"
                   component={CustomFormikTextField}
                   inputProps={{ min: 0 }}
                   onClick={() => {
@@ -469,7 +429,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("votingBlocksDay", newValue.target.value)
+                    setFieldValue("votingBlocksDay", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -490,7 +450,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("votingBlocksHours", newValue.target.value)
+                    setFieldValue("votingBlocksHours", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -511,48 +471,30 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("votingBlocksMinutes", newValue.target.value)
+                    console.log(newValue.target.value)
+                    if (newValue.target.value === "") {
+                      setFieldValue("votingBlocksMinutes", 0)
+                    } else {
+                      console.log(getIn(values, "votingBlocksMinutes"))
+                      if (getIn(values, "votingBlocksMinutes") === 0) {
+                        setFieldValue("votingBlocksMinutes", "")
+                      }
+                      setFieldValue("votingBlocksMinutes", parseInt(newValue.target.value, 10))
+                    }
                   }}
                 />
               </TimeBox>
               <TimeText color="textSecondary">minutes</TimeText>
             </Grid>
           </Grid>
-          {/* <GridItemContainer>
-            <CustomInputContainer item xs={12}>
-              <ItemContainer container direction="row" alignItems="center" justifyContent="center"> */}
-
-          {/* <GridItemCenter item xs={6}>
-                  <Field
-                    name="votingBlocks"
-                    type="number"
-                    placeholder="00"
-                    component={TextField}
-                    inputProps={{ min: 0 }}
-                    onClick={() => {
-                      if (getIn(values, "votingBlocks") === 0) {
-                        setFieldValue("votingBlocks", "")
-                      }
-                    }}
-                    onChange={(newValue: any) => {
-                      setFieldValue("votingBlocks", newValue.target.value)
-                    }}
-                  />
-                </GridItemCenter>
-                <GridItemCenter item xs={6}>
-                  <Typography color="textSecondary">blocks</Typography>
-                </GridItemCenter> */}
-          {/* </ItemContainer>
-            </CustomInputContainer>
-          </GridItemContainer> */}
 
           <Grid item>
             {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
           </Grid>
 
           <Grid item style={{ margin: "14px 15px", marginLeft: 0, height: 62 }}>
-            <Typography color="secondary">{periodBlocks}</Typography>
-            {/* <EstimatedTime {...votingTime} /> */}
+            {/* <Typography color="secondary">{periodBlocks}</Typography> */}
+            <EstimatedBlocks blocks={periodBlocks} />
           </Grid>
         </InputContainer>
         <InputContainer item sm={4} xs={12}>
@@ -584,7 +526,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalFlushBlocksDay", newValue.target.value)
+                    setFieldValue("proposalFlushBlocksDay", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -605,7 +547,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalFlushBlocksHours", newValue.target.value)
+                    setFieldValue("proposalFlushBlocksHours", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -626,7 +568,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalFlushBlocksMinutes", newValue.target.value)
+                    setFieldValue("proposalFlushBlocksMinutes", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -668,7 +610,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           </Grid>
 
           <Grid item style={{ marginLeft: 0, height: 62, marginTop: 14 }}>
-            <EstimatedTime {...flushDelayTime} />
+            <EstimatedBlocks blocks={flushBlocks} />
           </Grid>
         </InputContainer>
 
@@ -701,7 +643,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalExpiryBlocksDay", newValue.target.value)
+                    setFieldValue("proposalExpiryBlocksDay", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -722,7 +664,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalExpiryBlocksHours", newValue.target.value)
+                    setFieldValue("proposalExpiryBlocksHours", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -743,7 +685,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                     }
                   }}
                   onChange={(newValue: any) => {
-                    setFieldValue("proposalExpiryBlocksMinutes", newValue.target.value)
+                    setFieldValue("proposalExpiryBlocksMinutes", Number(newValue.target.value))
                   }}
                 />
               </TimeBox>
@@ -785,7 +727,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           </Grid>
 
           <Grid item style={{ marginLeft: 0, height: 62, marginTop: 14 }}>
-            <EstimatedTime {...expiryDelayTime} />
+            <EstimatedBlocks blocks={expiryBlocks} />
           </Grid>
         </InputContainer>
       </Grid>
@@ -938,9 +880,6 @@ export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext)
   const { votingSettings } = state.data
   const history = useHistory()
-  const { network } = useTezos()
-
-  // const customVotingSettings = getNetworkVotingSettings(network, votingSettings)
 
   const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
     values.proposalExpiryBlocks = Number(values.proposalExpiryBlocks)
