@@ -1,5 +1,4 @@
-import { Box, Grid, IconButton, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Box, Grid, IconButton, Typography, styled } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
 import { ReactComponent as WarningIcon } from "assets/logos/warning.svg"
 import CloseIcon from "@material-ui/icons/Close"
