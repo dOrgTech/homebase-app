@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Grid, Paper, styled, Typography, Slider, withStyles, withTheme, Box, Tooltip } from "@material-ui/core"
 import { TextField } from "formik-material-ui"
 import React, { useContext, useEffect, useState } from "react"
@@ -342,14 +341,10 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
   })
 
   useEffect(() => {
-    values.votingBlocks = periodBlocks
-    values.proposalFlushBlocks = flushBlocks
-    values.proposalExpiryBlocks = expiryBlocks
-
-    // setTimeout(() => {
-    //   validateForm(values)
-    // }, 1000)
-  }, [periodBlocks, flushBlocks, expiryBlocks])
+    setFieldValue("votingBlocks", periodBlocks)
+    setFieldValue("proposalFlushBlocks", flushBlocks)
+    setFieldValue("proposalExpiryBlocks", expiryBlocks)
+  }, [values, periodBlocks, flushBlocks, expiryBlocks, setFieldValue])
 
   useEffect(() => {
     ;(async () => {
@@ -858,11 +853,7 @@ export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext)
   const { votingSettings } = state.data
   const history = useHistory()
-
   const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
-    values.proposalExpiryBlocks = Number(values.proposalExpiryBlocks)
-    values.proposalFlushBlocks = Number(values.proposalFlushBlocks)
-    values.votingBlocks = Number(values.votingBlocks)
     const newState = {
       ...state.data,
       votingSettings: values

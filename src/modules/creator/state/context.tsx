@@ -105,6 +105,7 @@ export const reducer = (state: CreatorState, action: CreatorAction): CreatorStat
       }
       return state
     case ActionTypes.UPDATE_ORGANIZATION_SETTINGS:
+      localStorage.setItem("creator-started", "true")
       state = {
         ...state,
         data: {
@@ -142,6 +143,7 @@ export const reducer = (state: CreatorState, action: CreatorAction): CreatorStat
       return state
     case ActionTypes.CLEAR_CACHE:
       window.localStorage.removeItem(LOCAL_STORAGE_KEY)
+      window.localStorage.removeItem("creator-started")
       state = {
         ...INITIAL_STATE,
         deploymentStatus: {
@@ -169,10 +171,11 @@ const updateInitialState = (network: string, values: MigrationParams) => {
 
 const CreatorProvider: React.FC = ({ children }) => {
   const [data, updateCache] = useLocalStorage<MigrationParams>(LOCAL_STORAGE_KEY, INITIAL_STATE.data)
+  const isCreatorStarted = localStorage.getItem("creator-started")
 
   const { network } = useTezos()
 
-  const updatedData = updateInitialState(network, data)
+  const updatedData = isCreatorStarted ? data : updateInitialState(network, data)
 
   const stateWithCache = {
     ...INITIAL_STATE,
