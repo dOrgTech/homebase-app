@@ -3,7 +3,8 @@ export const legacyTheme = createMuiTheme({
   palette: {
     primary: {
       main: "#1C1F23",
-      light: "#3D3D3D"
+      light: "#3D3D3D",
+      dark: "#2F3438"
     },
     secondary: {
       main: "#4BCF93",

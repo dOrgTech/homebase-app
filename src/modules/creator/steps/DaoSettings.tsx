@@ -169,15 +169,6 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
               inputProps={{
                 maxLength: 36
               }}
-              // InputProps={{
-              //   endAdornment: (
-              //     <InputAdornment position="start">
-              //       <Tooltip placement="bottom" title="Token Address">
-              //         <InfoIconInput />
-              //       </Tooltip>
-              //     </InputAdornment>
-              //   )
-              // }}
             />
           </CustomInputContainer>
           {errors.governanceToken?.address && touched.governanceToken?.address ? (
@@ -195,15 +186,18 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
               placeholder="0"
               name="governanceToken.tokenId"
               component={CustomFormikTextField}
-              // InputProps={{
-              //   endAdornment: (
-              //     <InputAdornment position="start">
-              //       <Tooltip placement="bottom" title="Token ID">
-              //         <InfoIconInput />
-              //       </Tooltip>
-              //     </InputAdornment>
-              //   )
-              // }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">
+                    <Tooltip
+                      placement="bottom"
+                      title="Homebase will only track your governance token at a certain ID index, which is a parameter specified upon deploying the token contract. Fungible tokens usually have the ID of 0 (zero)."
+                    >
+                      <InfoIconInput />
+                    </Tooltip>
+                  </InputAdornment>
+                )
+              }}
             />
           </CustomInputContainer>
           {errors.governanceToken?.tokenId && touched.governanceToken?.tokenId ? (
@@ -230,48 +224,10 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
               type="text"
               placeholder="My Group’s Token"
               component={CustomFormikTextField}
-              // InputProps={{
-              //   endAdornment: (
-              //     <InputAdornment position="start">
-              //       <Tooltip placement="bottom" title="DAO Name info">
-              //         <InfoIconInput />
-              //       </Tooltip>
-              //     </InputAdornment>
-              //   )
-              // }}
             ></Field>
           </CustomInputContainer>
           {errors.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
         </Grid>
-
-        {/* <Grid item xs={isMobile ? 12 : 3}>
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
-            Token Symbol{" "}
-          </Typography>
-          <CustomInputContainer>
-            <Field
-              name="symbol"
-              type="text"
-              inputProps={{
-                style: { textTransform: "uppercase" },
-                maxLength: 6
-              }}
-              placeholder="MYTOK"
-              component={CustomFormikTextField}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    <Tooltip placement="bottom" title="Token symbol info">
-                      <InfoIconInput />
-                    </Tooltip>
-                  </InputAdornment>
-                )
-              }}
-            ></Field>
-          </CustomInputContainer>
-          {errors.symbol && touched.symbol ? <ErrorText>{errors.symbol}</ErrorText> : null}
-        </Grid> */}
       </SecondContainer>
       <SecondContainer container direction="row" alignItems="center">
         <Grid item xs={12}>
@@ -399,7 +355,6 @@ const validateForm = (values: OrgSettings) => {
     }
   }
 
-  console.log(errors)
   return errors
 }
 
