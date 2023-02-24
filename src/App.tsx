@@ -113,11 +113,17 @@ const App: React.FC = () => {
                     <TZKTSubscriptionsProvider>
                       <DAOExplorerRouter />
                     </TZKTSubscriptionsProvider>
-                    {/* <WarningFooter
-                      text={
-                        "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                      }
-                    /> */}
+
+                    {window.location.href.indexOf("KT1PY9PXm8NMAgSEZg7bUtFjmV2Sj64bKuVV") !== -1 ? (
+                      <>
+                        {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
+                        <WarningFooter
+                          text={
+                            "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
+                          }
+                        />
+                      </>
+                    ) : null}
                     <Footer></Footer>
                   </Route>
                   <Route path="/faq">
