@@ -211,7 +211,7 @@ export const DAOList: React.FC = () => {
                     </Grid>
                   </Grid>
                   <Grid item>
-                    <Link underline="none" href={`/creator`}>
+                    <Link underline="none" href={`/creator/deployment`}>
                       <MainButton variant="contained" color="secondary">
                         Create DAO
                       </MainButton>
