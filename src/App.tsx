@@ -21,6 +21,7 @@ import { legacyTheme } from "theme/legacy"
 import { Footer } from "modules/common/Footer"
 import { FAQ } from "modules/home/FAQ"
 import { EnvKey, getEnv } from "services/config"
+import { DAOCreatorRouter } from "modules/creator/router"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,7 +101,7 @@ const App: React.FC = () => {
                   <Route path="/creator">
                     <CreatorProvider>
                       <ThemeProvider theme={legacyTheme}>
-                        <DAOCreate />
+                        <DAOCreatorRouter />
                       </ThemeProvider>
                     </CreatorProvider>
                     {/* <WarningFooter
