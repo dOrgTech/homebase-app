@@ -11,6 +11,7 @@ import { AddCircleOutline, RemoveCircle } from "@material-ui/icons"
 import BigNumber from "bignumber.js"
 import { parseUnits } from "services/contracts/utils"
 import { numberWithCommas } from "../state/utils"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 const Title = styled(Typography)({
   fontSize: 24,
@@ -189,6 +190,7 @@ export const ContractDistribution: React.FC = () => {
   const { state, dispatch, updateCache } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
   const history = useHistory()
+  const openNotification = useNotification()
 
   const totalAmount = parseUnits(new BigNumber(Number(tokenSettings.totalSupply)), Number(tokenSettings.decimals))
 
@@ -196,12 +198,19 @@ export const ContractDistribution: React.FC = () => {
     values: TokenDistributionSettings,
     { setSubmitting }: { setSubmitting: (b: boolean) => void }
   ) => {
+    if (totalAmount.minus(new BigNumber(getTotal(values.holders))) < new BigNumber(0)) {
+      openNotification({
+        message: "Available balance has to be greater that the total supply",
+        variant: "error",
+        autoHideDuration: 2000
+      })
+      return
+    }
     const newValues: TokenDistributionSettings = { ...values }
     const newState = {
       ...state.data,
       tokenDistribution: newValues
     }
-    console.log(newState)
     updateCache(newState)
     setSubmitting(true)
     dispatch({ type: ActionTypes.UPDATE_TOKEN_DISTRIBUTION, distribution: newValues })

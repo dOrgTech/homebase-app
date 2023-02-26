@@ -111,7 +111,6 @@ export const ContractSummary: React.FC = () => {
   }
 
   const submitForm = () => {
-    console.log("deploy token")
     history.push("/creator/build")
     dispatch({ type: ActionTypes.CLEAR_CACHE })
   }

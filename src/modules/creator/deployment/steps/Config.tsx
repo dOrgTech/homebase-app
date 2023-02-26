@@ -217,7 +217,6 @@ export const ConfigContract: React.FC = () => {
       ...state.data,
       tokenSettings: newValues
     }
-    console.log(newState)
     updateCache(newState)
     setSubmitting(true)
     dispatch({ type: ActionTypes.UPDATE_TOKEN_SETTINGS, contractInfo: newValues })
