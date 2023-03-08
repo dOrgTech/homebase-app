@@ -33,7 +33,7 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
 
   // use this to make the warning come only once
   // const isWarningClosed = localStorage.getItem("warning-closed")
-  const isWarningClosed = null
+  const isWarningClosed = localStorage.getItem("warning-closed")
 
   const closeButton = () => {
     localStorage.setItem("warning-closed", "true")
