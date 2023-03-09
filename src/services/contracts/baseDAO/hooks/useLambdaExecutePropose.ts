@@ -41,7 +41,7 @@ export const useLambdaExecutePropose = () => {
         closeProposalNotification(proposalNotification)
 
         openNotification({
-          message: "Registry proposal transaction confirmed!",
+          message: "New proposal transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: `https://${networkNameMap[network]}.tzkt.io/` + data.opHash

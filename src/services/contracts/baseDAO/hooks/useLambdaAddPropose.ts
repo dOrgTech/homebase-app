@@ -42,7 +42,7 @@ export const useLambdaAddPropose = () => {
         // setProposalDone()
 
         openNotification({
-          message: "Registry proposal transaction confirmed!",
+          message: "Add Lambda proposal transaction confirmed!",
           autoHideDuration: 10000,
           variant: "success",
           detailsLink: `https://${networkNameMap[network]}.tzkt.io/` + data.opHash

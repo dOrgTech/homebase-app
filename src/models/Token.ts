@@ -24,8 +24,8 @@ export const SUPPORTED_MIME_TYPES = [
 ] as const
 export const SUPPORTED_MEDIA_TYPES = ["image", "audio", "video"] as const
 
-export type NFTMimeType = typeof SUPPORTED_MIME_TYPES[number] | "unknown"
-export type NFTMediaType = typeof SUPPORTED_MEDIA_TYPES[number] | "unknown"
+export type NFTMimeType = (typeof SUPPORTED_MIME_TYPES)[number] | "unknown"
+export type NFTMediaType = (typeof SUPPORTED_MEDIA_TYPES)[number] | "unknown"
 
 interface NFTParams extends TokenParams {
   description: string
