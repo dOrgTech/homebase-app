@@ -31,6 +31,8 @@ const ContainerText = styled(Typography)({
 export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
   const [open, setOpen] = useState(true)
 
+  // use this to make the warning come only once
+  // const isWarningClosed = localStorage.getItem("warning-closed")
   const isWarningClosed = localStorage.getItem("warning-closed")
 
   const closeButton = () => {
