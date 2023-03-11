@@ -55,7 +55,7 @@ const TableContainer = styled(ContentContainer)({
   width: "100%"
 })
 
-const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
+const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
   switch (title) {
     case "Registry Items":
       return rowData.key

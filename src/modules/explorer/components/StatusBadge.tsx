@@ -62,11 +62,11 @@ const statusColors = (status: ProposalStatus) => {
 }
 
 const Badge = styled(Grid)(({ status }: { status: ProposalStatus; theme: Theme }) => ({
-  borderRadius: 50,
+  borderRadius: 4,
   textAlign: "center",
   minHeight: 24,
   minWidth: 105,
-  padding: "2px 8px",
+  padding: "2px 5px",
   background: statusColors(status).background,
   color: statusColors(status).color,
   whiteSpace: "nowrap"
