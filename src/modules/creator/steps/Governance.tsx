@@ -1,4 +1,15 @@
-import { Grid, Paper, styled, Typography, Slider, withStyles, withTheme, Box, Tooltip } from "@material-ui/core"
+import {
+  Grid,
+  Paper,
+  styled,
+  Typography,
+  Slider,
+  withStyles,
+  withTheme,
+  Box,
+  Tooltip,
+  InputAdornment
+} from "@material-ui/core"
 import { TextField } from "formik-material-ui"
 import React, { useContext, useEffect, useState } from "react"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
@@ -6,26 +17,13 @@ import { useHistory } from "react-router"
 import { useRouteMatch } from "react-router-dom"
 
 import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state"
-import { InfoRounded } from "@material-ui/icons"
+import { InfoOutlined, InfoRounded } from "@material-ui/icons"
 import { getNetworkStats } from "services/bakingBad/stats"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { EstimatedBlocks } from "modules/explorer/components/EstimatedTime"
+import { EstimatedTime } from "modules/explorer/components/EstimatedTime"
+import { theme } from "../../../theme"
 import dayjs from "dayjs"
 import { TitleBlock } from "modules/common/TitleBlock"
-
-const TimeBox = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.dark,
-  borderRadius: 8,
-  width: 72,
-  minHeight: 59,
-  marginBottom: 16,
-  display: "grid"
-}))
-
-const TimeText = styled(Typography)({
-  marginTop: -20,
-  marginLeft: 16
-})
 
 const CustomTooltip = styled(Tooltip)({
   marginLeft: 8
@@ -59,13 +57,6 @@ const ErrorText = styled(Typography)({
   color: "red"
 })
 
-const ErrorTextTime = styled(Typography)({
-  display: "block",
-  fontSize: 14,
-  color: "red",
-  marginTop: -14
-})
-
 const SecondContainer = styled(Grid)({
   marginTop: 10
 })
@@ -77,6 +68,14 @@ const SpacingContainer = styled(Grid)({
 const StakeContainer = styled(Grid)({
   display: "block"
 })
+
+const CustomInputContainer = styled(Grid)(({ theme }) => ({
+  border: "none",
+  height: 54,
+  marginTop: 14,
+  background: "#2F3438",
+  borderRadius: 8
+}))
 
 const AdditionContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
@@ -100,6 +99,11 @@ const GridItemCenter = styled(Grid)({
 const ItemContainer = styled(Grid)(({ theme }) => ({
   height: "100%",
   padding: "12px 25px"
+}))
+
+const GridItemContainer = styled(Grid)(() => ({
+  display: "flex",
+  alignItems: "center"
 }))
 
 const ValueText = styled(Typography)({
@@ -146,8 +150,7 @@ const Value = styled(Typography)({
 
 const styles = {
   voting: {
-    marginTop: 6,
-    marginBottom: 16
+    marginTop: 6
   }
 }
 
@@ -157,14 +160,6 @@ const InputContainer = styled(Grid)({
     paddingRight: 0
   }
 })
-
-const CustomFormikTextField = withStyles({
-  root: {
-    "& input": {
-      textAlign: "center"
-    }
-  }
-})(TextField)
 
 const GridNoPadding = styled(Grid)({
   paddingLeft: "8px !important"
@@ -190,13 +185,29 @@ const validateForm = (values: VotingSettings) => {
     }
   })
 
-  if (!values.votingBlocks || values.votingBlocks <= 0) {
+  if (!values.votingBlocks || Number(values.votingBlocks) <= 0) {
     errors.votingBlocks = "Must be greater than 0"
   }
 
   if (!values.proposalFlushBlocks || Number(values.proposalFlushBlocks) <= 0) {
     errors.proposalFlushBlocks = "Must be greater than 0"
   }
+
+  // if (
+  //   values.proposalFlushBlocks &&
+  //   values.votingBlocks &&
+  //   Number(values.votingBlocks) * 2 >= Number(values.proposalFlushBlocks)
+  // ) {
+  //   errors.proposalFlushBlocks = "Must be greater than more than twice the voting cycle duration"
+  // }
+
+  // if (
+  //   values.proposalExpiryBlocks &&
+  //   values.proposalFlushBlocks &&
+  //   Number(values.proposalExpiryBlocks) <= Number(values.proposalFlushBlocks)
+  // ) {
+  //   errors.proposalExpiryBlocks = "Must be greater than Proposal Execution Delay"
+  // }
 
   if (!values.proposalExpiryBlocks || Number(values.proposalExpiryBlocks) <= 0) {
     errors.proposalExpiryBlocks = "Must be greater than 0"
@@ -221,6 +232,7 @@ const validateForm = (values: VotingSettings) => {
   if (values.minXtzAmount > values.maxXtzAmount) {
     errors.maxXtzAmount = "Must be greater than Min. XTZ amount"
   }
+
   return errors
 }
 
@@ -230,48 +242,22 @@ const secondsToTime = (seconds: number) => ({
   minutes: Math.floor((seconds % 3600) / 60)
 })
 
-const useEstimatedBlocks = ({
-  votingBlocksDay,
-  votingBlocksMinutes,
-  votingBlocksHours,
-  proposalFlushBlocksDay,
-  proposalFlushBlocksHours,
-  proposalFlushBlocksMinutes,
-  proposalExpiryBlocksDay,
-  proposalExpiryBlocksHours,
-  proposalExpiryBlocksMinutes,
+const useEstimatedBlockTimes = ({
+  votingBlocks,
+  proposalFlushBlocks,
+  proposalExpiryBlocks,
   blockTimeAverage
 }: {
-  votingBlocksDay: number
-  votingBlocksHours: number
-  votingBlocksMinutes: number
-  proposalFlushBlocksDay: number
-  proposalFlushBlocksHours: number
-  proposalFlushBlocksMinutes: number
-  proposalExpiryBlocksDay: number
-  proposalExpiryBlocksHours: number
-  proposalExpiryBlocksMinutes: number
+  votingBlocks: number
+  proposalFlushBlocks: number
+  proposalExpiryBlocks: number
   blockTimeAverage: number
 }) => {
   const now = dayjs()
 
-  let periodSeconds = votingBlocksDay * 86400
-  periodSeconds += votingBlocksHours * 3600
-  periodSeconds += votingBlocksMinutes * 60
-
-  const periodBlocks = periodSeconds / blockTimeAverage
-
-  let flushDelaySeconds = proposalFlushBlocksDay * 86400
-  flushDelaySeconds += proposalFlushBlocksHours * 3600
-  flushDelaySeconds += proposalFlushBlocksMinutes * 60
-
-  const flushBlocks = flushDelaySeconds / blockTimeAverage
-
-  let expiryDelaySeconds = proposalExpiryBlocksDay * 86400
-  expiryDelaySeconds += proposalExpiryBlocksHours * 3600
-  expiryDelaySeconds += proposalExpiryBlocksMinutes * 60
-
-  const expiryBlocks = expiryDelaySeconds / blockTimeAverage
+  const periodSeconds = votingBlocks * blockTimeAverage
+  const flushDelaySeconds = proposalFlushBlocks * blockTimeAverage
+  const expiryDelaySeconds = proposalExpiryBlocks * blockTimeAverage
 
   const creationMoment = now.add(periodSeconds, "s")
   const activeMoment = creationMoment.add(periodSeconds, "s")
@@ -280,9 +266,6 @@ const useEstimatedBlocks = ({
   const expiryMoment = flushMoment.add(expiryDelaySeconds, "s")
 
   return {
-    periodBlocks,
-    flushBlocks,
-    expiryBlocks,
     creationMoment,
     activeMoment,
     closeMoment,
@@ -306,45 +289,23 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
   const match = useRouteMatch()
   const history = useHistory()
   const [blockTimeAverage, setBlockTimeAverage] = useState<number>(0)
+  const { votingBlocks, proposalFlushBlocks, proposalExpiryBlocks } = values
   const {
-    votingBlocksDay,
-    votingBlocksMinutes,
-    votingBlocksHours,
-    proposalFlushBlocksDay,
-    proposalFlushBlocksHours,
-    proposalFlushBlocksMinutes,
-    proposalExpiryBlocksDay,
-    proposalExpiryBlocksHours,
-    proposalExpiryBlocksMinutes
-  } = values
-
-  const {
+    creationMoment,
+    closeMoment,
+    flushMoment,
+    expiryMoment,
     votingTime,
     flushDelayTime,
     activeMoment,
     expiryDelayTime,
-    periodSeconds,
-    periodBlocks,
-    flushBlocks,
-    expiryBlocks
-  } = useEstimatedBlocks({
-    votingBlocksDay,
-    votingBlocksMinutes,
-    votingBlocksHours,
-    proposalFlushBlocksDay,
-    proposalFlushBlocksHours,
-    proposalFlushBlocksMinutes,
-    proposalExpiryBlocksDay,
-    proposalExpiryBlocksHours,
-    proposalExpiryBlocksMinutes,
+    periodSeconds
+  } = useEstimatedBlockTimes({
+    votingBlocks,
+    proposalFlushBlocks,
+    proposalExpiryBlocks,
     blockTimeAverage
   })
-
-  useEffect(() => {
-    setFieldValue("votingBlocks", periodBlocks)
-    setFieldValue("proposalFlushBlocks", flushBlocks)
-    setFieldValue("proposalExpiryBlocks", expiryBlocks)
-  }, [values, periodBlocks, flushBlocks, expiryBlocks, setFieldValue])
 
   useEffect(() => {
     ;(async () => {
@@ -404,199 +365,89 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
             </Typography>
           </SecondContainer>
 
-          <Grid container direction="column">
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="votingBlocksDay"
-                  type="number"
-                  placeholder="0"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "votingBlocksDay") === 0) {
-                      setFieldValue("votingBlocksDay", "")
-                      setFieldTouched("votingBlocksDay")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("votingBlocksDay", "")
-                    } else {
-                      setFieldValue("votingBlocksDay", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">days</TimeText>
-            </Grid>
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="votingBlocksHours"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "votingBlocksHours") === 0) {
-                      setFieldValue("votingBlocksHours", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("votingBlocksHours", "")
-                    } else {
-                      setFieldValue("votingBlocksHours", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">hours</TimeText>
-            </Grid>
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="votingBlocksMinutes"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "votingBlocksMinutes") === 0) {
-                      setFieldValue("votingBlocksMinutes", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("votingBlocksMinutes", "")
-                    } else {
-                      setFieldValue("votingBlocksMinutes", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">minutes</TimeText>
-            </Grid>
-          </Grid>
-
-          <Grid item style={{ marginTop: 10, marginLeft: 0, height: 42 }}>
-            <EstimatedBlocks blocks={periodBlocks} />
-          </Grid>
+          <GridItemContainer>
+            <CustomInputContainer item xs={12}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={6}>
+                  <Field
+                    name="votingBlocks"
+                    type="number"
+                    placeholder="00"
+                    component={TextField}
+                    inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "votingBlocks") === 0) {
+                        setFieldValue("votingBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("votingBlocks", newValue.target.value)
+                    }}
+                  />
+                </GridItemCenter>
+                <GridItemCenter item xs={6}>
+                  <Typography color="textSecondary">blocks</Typography>
+                </GridItemCenter>
+              </ItemContainer>
+            </CustomInputContainer>
+          </GridItemContainer>
 
           <Grid item>
-            {errors.votingBlocks &&
-            (touched.votingBlocksDay || touched.votingBlocksMinutes || touched.votingBlocksHours) ? (
-              <ErrorTextTime>{errors.votingBlocks}</ErrorTextTime>
-            ) : null}
+            {errors.votingBlocks && touched.votingBlocks ? <ErrorText>{errors.votingBlocks}</ErrorText> : null}
+          </Grid>
+
+          <Grid item style={{ margin: "14px 15px", height: 62 }}>
+            <EstimatedTime {...votingTime} />
           </Grid>
         </InputContainer>
         <InputContainer item sm={4} xs={12}>
           <SecondContainer container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Proposal Execution Delay
-              <CustomTooltip
-                placement="bottom"
-                title="The time for which the proposal execution will be paused, after this time has passed the proposal will be executable"
-              >
-                {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
-              </CustomTooltip>
             </Typography>
           </SecondContainer>
 
-          <Grid container direction="column">
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="proposalFlushBlocksDay"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "proposalFlushBlocksDay") === 0) {
-                      setFieldValue("proposalFlushBlocksDay", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("proposalFlushBlocksDay", "")
-                    } else {
-                      setFieldValue("proposalFlushBlocksDay", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">days</TimeText>
-            </Grid>
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="proposalFlushBlocksHours"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "proposalFlushBlocksHours") === 0) {
-                      setFieldValue("proposalFlushBlocksHours", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("proposalFlushBlocksHours", "")
-                    } else {
-                      setFieldValue("proposalFlushBlocksHours", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">hours</TimeText>
-            </Grid>
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="proposalFlushBlocksMinutes"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "proposalFlushBlocksMinutes") === 0) {
-                      setFieldValue("proposalFlushBlocksMinutes", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("proposalFlushBlocksMinutes", "")
-                    } else {
-                      setFieldValue("proposalFlushBlocksMinutes", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">minutes</TimeText>
-            </Grid>
-          </Grid>
-
-          <Grid item style={{ marginLeft: 0, height: 42, marginTop: 10 }}>
-            <EstimatedBlocks blocks={flushBlocks} />
-          </Grid>
+          <GridItemContainer>
+            <CustomInputContainer item xs={12}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={6}>
+                  <Field
+                    name="proposalFlushBlocks"
+                    type="number"
+                    placeholder="00"
+                    component={TextField}
+                    inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "proposalFlushBlocks") === 0) {
+                        setFieldValue("proposalFlushBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("proposalFlushBlocks", newValue.target.value)
+                    }}
+                  />
+                </GridItemCenter>
+                <GridItemCenter item xs={6} container direction="row" alignItems="center">
+                  <Typography color="textSecondary">blocks</Typography>
+                  <CustomTooltip
+                    placement="bottom"
+                    title="The time for which the proposal execution will be paused, after this time has passed the proposal will be executable"
+                  >
+                    {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
+                  </CustomTooltip>
+                </GridItemCenter>
+              </ItemContainer>
+            </CustomInputContainer>
+          </GridItemContainer>
 
           <Grid item>
-            {errors.proposalFlushBlocks &&
-            (touched.proposalFlushBlocksDay ||
-              touched.proposalFlushBlocksMinutes ||
-              touched.proposalFlushBlocksHours) ? (
-              <ErrorTextTime>{errors.proposalFlushBlocks}</ErrorTextTime>
+            {errors.proposalFlushBlocks && touched.proposalFlushBlocks ? (
+              <ErrorText>{errors.proposalFlushBlocks}</ErrorText>
             ) : null}
+          </Grid>
+
+          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
+            <EstimatedTime {...flushDelayTime} />
           </Grid>
         </InputContainer>
 
@@ -604,103 +455,50 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           <SecondContainer container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Proposal Expiry Threshold
-              <CustomTooltip
-                placement="bottom"
-                title="This is the time after which if you still haven't executed your proposal it will become expired and non-executable"
-              >
-                {errors.proposalExpiryBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
-              </CustomTooltip>
             </Typography>
           </SecondContainer>
 
-          <Grid container direction="column">
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="proposalExpiryBlocksDay"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "proposalExpiryBlocksDay") === 0) {
-                      setFieldValue("proposalExpiryBlocksDay", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("proposalExpiryBlocksDay", "")
-                    } else {
-                      setFieldValue("proposalExpiryBlocksDay", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">days</TimeText>
-            </Grid>
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="proposalExpiryBlocksHours"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "proposalExpiryBlocksHours") === 0) {
-                      setFieldValue("proposalExpiryBlocksHours", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("proposalExpiryBlocksHours", "")
-                    } else {
-                      setFieldValue("proposalExpiryBlocksHours", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">hours</TimeText>
-            </Grid>
-            <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="proposalExpiryBlocksMinutes"
-                  type="number"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "proposalExpiryBlocksMinutes") === 0) {
-                      setFieldValue("proposalExpiryBlocksMinutes", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("proposalExpiryBlocksMinutes", "")
-                    } else {
-                      setFieldValue("proposalExpiryBlocksMinutes", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeText color="textSecondary">minutes</TimeText>
-            </Grid>
+          <GridItemContainer>
+            <CustomInputContainer item xs={12}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={6}>
+                  <Field
+                    name="proposalExpiryBlocks"
+                    type="number"
+                    placeholder="00"
+                    component={TextField}
+                    inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "proposalExpiryBlocks") === 0) {
+                        setFieldValue("proposalExpiryBlocks", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      setFieldValue("proposalExpiryBlocks", newValue.target.value)
+                    }}
+                  />
+                </GridItemCenter>
+                <GridItemCenter item xs={6} container direction="row" alignItems="center">
+                  <Typography color="textSecondary">blocks</Typography>
+                  <CustomTooltip
+                    placement="bottom"
+                    title="This is the time after which if you still haven't executed your proposal it will become expired and non-executable"
+                  >
+                    {errors.proposalExpiryBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
+                  </CustomTooltip>
+                </GridItemCenter>
+              </ItemContainer>
+            </CustomInputContainer>
+          </GridItemContainer>
+
+          <Grid item>
+            {errors.proposalExpiryBlocks && touched.proposalExpiryBlocks ? (
+              <ErrorText>{errors.proposalExpiryBlocks}</ErrorText>
+            ) : null}
           </Grid>
 
-          <Grid item style={{ marginLeft: 0, height: 42, marginTop: 10 }}>
-            <EstimatedBlocks blocks={expiryBlocks} />
-          </Grid>
-          <Grid item>
-            {errors.proposalExpiryBlocks &&
-            (touched.proposalExpiryBlocksDay ||
-              touched.proposalExpiryBlocksHours ||
-              touched.proposalExpiryBlocksMinutes) ? (
-              <ErrorTextTime>{errors.proposalExpiryBlocks}</ErrorTextTime>
-            ) : null}
+          <Grid item style={{ marginLeft: 15, height: 62, marginTop: 14 }}>
+            <EstimatedTime {...expiryDelayTime} />
           </Grid>
         </InputContainer>
       </Grid>
@@ -853,7 +651,11 @@ export const Governance: React.FC = () => {
   const { dispatch, state, updateCache } = useContext(CreatorContext)
   const { votingSettings } = state.data
   const history = useHistory()
-  const saveStepInfo = (values: VotingSettings, { setSubmitting }: any) => {
+
+  const saveStepInfo = (values: VotingSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
+    values.proposalExpiryBlocks = Number(values.proposalExpiryBlocks)
+    values.proposalFlushBlocks = Number(values.proposalFlushBlocks)
+    values.votingBlocks = Number(values.votingBlocks)
     const newState = {
       ...state.data,
       votingSettings: values
@@ -876,7 +678,7 @@ export const Governance: React.FC = () => {
       <Formik
         enableReinitialize={true}
         validateOnChange={true}
-        validateOnBlur={true}
+        validateOnBlur={false}
         validate={validateForm}
         onSubmit={saveStepInfo}
         initialValues={votingSettings}

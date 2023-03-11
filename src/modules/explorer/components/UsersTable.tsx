@@ -57,7 +57,7 @@ const TableText = styled(Typography)({
   }
 })
 
-const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
+const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
   switch (title) {
     case "Rank":
       return rowData.address

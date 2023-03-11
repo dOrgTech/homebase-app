@@ -30,18 +30,6 @@ export type VotingSettings = {
   votingBlocks: number
   proposalFlushBlocks: number
   proposalExpiryBlocks: number
-
-  votingBlocksDay?: number
-  votingBlocksHours?: number
-  votingBlocksMinutes?: number
-
-  proposalFlushBlocksDay?: number
-  proposalFlushBlocksHours?: number
-  proposalFlushBlocksMinutes?: number
-
-  proposalExpiryBlocksDay?: number
-  proposalExpiryBlocksHours?: number
-  proposalExpiryBlocksMinutes?: number
 }
 
 export interface MigrationParams {
