@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles, withTheme } from "@material-ui/core"
 import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
-import React, { useContext } from "react"
-import { useHistory } from "react-router-dom"
+import React, { useContext, useEffect } from "react"
+import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, Holder, TokenContractSettings, TokenDistributionSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
@@ -12,24 +12,17 @@ import BigNumber from "bignumber.js"
 import { parseUnits } from "services/contracts/utils"
 import { numberWithCommas } from "../state/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
+import { TitleBlock } from "modules/common/TitleBlock"
 
-const Title = styled(Typography)({
-  fontSize: 24,
-  marginBottom: 20
-})
+const SupplyContainer = styled(Grid)(({ theme }) => ({
+  background: theme.palette.primary.dark,
+  padding: "30px 40px",
+  borderRadius: 8
+}))
 
 const RemoveButton = styled(RemoveCircle)({
   marginTop: 13
 })
-
-const FormContainer = styled(Grid)(({ theme }) => ({
-  paddingLeft: "20%",
-  paddingRight: "20%",
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "2%",
-    paddingRight: "2%"
-  }
-}))
 
 const AmountText = styled(Typography)({
   fontWeight: 200
@@ -90,11 +83,32 @@ const validateForm = (values: TokenDistributionSettings) => {
 }
 
 const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
-  const history = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   const newValue: Holder = { walletAddress: "", amount: null }
+
+  const { dispatch } = useContext(DeploymentContext)
+  const match = useRouteMatch()
+  const history = useHistory()
+
+  useEffect(() => {
+    if (values) {
+      dispatch({
+        type: ActionTypes.UPDATE_NAVIGATION_BAR,
+        next: {
+          text: "Continue",
+          handler: () => {
+            submitForm(values)
+          }
+        },
+        back: {
+          text: "Back",
+          handler: () => history.push(`config`)
+        }
+      })
+    }
+  }, [dispatch, errors, history, match.path, match.url, submitForm, values])
 
   return (
     <>
@@ -171,11 +185,6 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
           )}
         />
       </Grid>
-      <Grid container direction="row" justifyContent="flex-end">
-        <SmallButton color="secondary" variant="contained" style={{ fontSize: "14px" }} onClick={submitForm}>
-          Continue
-        </SmallButton>
-      </Grid>
     </>
   )
 }
@@ -191,6 +200,9 @@ export const ContractDistribution: React.FC = () => {
   const { tokenDistribution, tokenSettings } = state.data
   const history = useHistory()
   const openNotification = useNotification()
+
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   const totalAmount = parseUnits(new BigNumber(Number(tokenSettings.totalSupply)), Number(tokenSettings.decimals))
 
@@ -214,12 +226,12 @@ export const ContractDistribution: React.FC = () => {
     updateCache(newState)
     setSubmitting(true)
     dispatch({ type: ActionTypes.UPDATE_TOKEN_DISTRIBUTION, distribution: newValues })
-    history.push(`token-summary`)
+    history.push(`summary`)
   }
 
   return (
     <>
-      <FormContainer container direction="column">
+      <Grid container direction="column">
         <Formik
           enableReinitialize={true}
           validateOnChange={true}
@@ -232,17 +244,34 @@ export const ContractDistribution: React.FC = () => {
             return (
               <Form style={{ width: "100%" }}>
                 <Grid>
-                  <Title color="textSecondary">Initial token distribution</Title>
+                  <TitleBlock title="Initial token distribution" description={""}></TitleBlock>
                 </Grid>
 
-                <Grid item container direction="column" style={{ gap: "12px" }}>
-                  <Grid item direction="row">
-                    <AmountText color="textSecondary">Total supply: {numberWithCommas(totalAmount)} </AmountText>
+                <SupplyContainer item container direction="column" style={{ gap: "12px" }}>
+                  <Grid container item direction="row" style={{ gap: 10 }}>
+                    <AmountText color="textSecondary">Total supply: </AmountText>
+                    <Typography color="secondary"> {numberWithCommas(totalAmount)} </Typography>
                   </Grid>
-                  <Grid item direction="row">
-                    <AmountText color="textSecondary">
-                      Available: {numberWithCommas(totalAmount.minus(new BigNumber(getTotal(values.holders))))}
-                    </AmountText>
+                  <Grid container item direction="row" style={{ gap: 10 }}>
+                    <AmountText color="textSecondary">Available:</AmountText>
+                    <Typography color="secondary">
+                      {" "}
+                      {numberWithCommas(totalAmount.minus(new BigNumber(getTotal(values.holders))))}
+                    </Typography>
+                  </Grid>
+                </SupplyContainer>
+
+                <Grid
+                  container
+                  direction={isMobile ? "column" : "row"}
+                  alignItems={isMobile ? "flex-start" : "center"}
+                  style={{ marginTop: 35 }}
+                >
+                  <Grid item xs={6}>
+                    <Typography color="textSecondary">Wallet address</Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography color="textSecondary">Amount</Typography>
                   </Grid>
                 </Grid>
                 <TokenSettingsForm
@@ -258,7 +287,7 @@ export const ContractDistribution: React.FC = () => {
             )
           }}
         </Formik>
-      </FormContainer>
+      </Grid>
     </>
   )
 }

@@ -1,3 +1,5 @@
+import { NavigationBarProps } from "modules/creator/state/types"
+
 export type TokenContractSettings = {
   name: string
   description: string
@@ -32,7 +34,7 @@ type DeploymentStatus = {
 export type DeploymentState = {
   data: TokenContractParams
   deploymentStatus: DeploymentStatus
-}
+} & NavigationBarProps
 
 export interface StepInfo {
   title: string
@@ -61,6 +63,13 @@ function updateDeploymentStatus({ deploying, contract }: DeploymentStatus) {
   }
 }
 
+function updateNavigationBar(props: NavigationBarProps) {
+  return <const>{
+    type: ActionTypes.UPDATE_NAVIGATION_BAR,
+    ...props
+  }
+}
+
 function clearCache() {
   return <const>{
     type: ActionTypes.CLEAR_CACHE
@@ -68,10 +77,15 @@ function clearCache() {
 }
 
 export type DeploymentAction = ReturnType<
-  typeof updateTokenSettings | typeof updateDeploymentStatus | typeof clearCache | typeof updateTokenDistribution
+  | typeof updateTokenSettings
+  | typeof updateDeploymentStatus
+  | typeof clearCache
+  | typeof updateTokenDistribution
+  | typeof updateNavigationBar
 >
 
 export enum ActionTypes {
+  UPDATE_NAVIGATION_BAR = "UPDATE_NAVIGATION_BAR",
   UPDATE_TOKEN_SETTINGS = "UPDATE_TOKEN_SETTINGS",
   UPDATE_TOKEN_DISTRIBUTION = "UPDATE_TOKEN_DISTRIBUTION",
   UPDATE_DEPLOYMENT_STATUS = "UPDATE_DEPLOYMENT_STATUS",

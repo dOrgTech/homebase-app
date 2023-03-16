@@ -1,6 +1,6 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { useHistory } from "react-router-dom"
+import { useHistory, useRouteMatch } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
 import { DeploymentContext } from "../state/context"
 import { numberWithCommas } from "../state/utils"
@@ -9,15 +9,7 @@ import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "modules/common/CopyButton"
 import { SmallButton } from "modules/common/SmallButton"
 import { ActionTypes } from "../state/types"
-
-const FormContainer = styled(Grid)(({ theme }) => ({
-  paddingLeft: "20%",
-  paddingRight: "20%",
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "2%",
-    paddingRight: "2%"
-  }
-}))
+import { TitleBlock } from "modules/common/TitleBlock"
 
 const Title = styled(Typography)({
   fontSize: 24
@@ -98,29 +90,45 @@ export const ContractSummary: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const history = useHistory()
+  const match = useRouteMatch()
 
   const { state, dispatch } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
 
   const goToSettings = () => {
-    history.push(`token-config`)
+    history.push(`config`)
   }
 
   const goToDistribution = () => {
-    history.push(`token-distribution`)
+    history.push(`distribution`)
   }
 
-  const submitForm = () => {
-    history.push("/creator/build")
-    dispatch({ type: ActionTypes.CLEAR_CACHE })
-  }
+  useEffect(() => {
+    dispatch({
+      type: ActionTypes.UPDATE_NAVIGATION_BAR,
+      back: {
+        handler: () => history.push(`distribution`),
+
+        text: "Back"
+      },
+      next: {
+        handler: () => {
+          history.push("/creator/build/template")
+          dispatch({ type: ActionTypes.CLEAR_CACHE })
+        },
+        text: "Launch"
+      }
+    })
+  }, [dispatch, history, match.path, match.url])
 
   return (
     <>
-      <FormContainer container direction="column">
-        <Grid item container direction="column">
-          <Title color="textSecondary">Review information</Title>
-          <Subtitle>and make sure you&apos;ve set up your token right.</Subtitle>
+      <Grid container direction="column">
+        <Grid>
+          <TitleBlock
+            title="Review information"
+            description={"and make sure you've set up your token right."}
+          ></TitleBlock>
         </Grid>
 
         <ThirdContainer container direction="row">
@@ -261,13 +269,7 @@ export const ContractSummary: React.FC = () => {
               })
             : null}
         </ThirdContainer>
-
-        <Grid container direction="row" justifyContent="flex-end" style={{ marginTop: 40 }}>
-          <SmallButton color="secondary" variant="contained" style={{ fontSize: "14px" }} onClick={submitForm}>
-            Submit
-          </SmallButton>
-        </Grid>
-      </FormContainer>
+      </Grid>
     </>
   )
 }

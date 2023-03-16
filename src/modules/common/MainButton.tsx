@@ -6,6 +6,7 @@ export const MainButton = styled(Button)(({ theme }) => ({
   "boxShadow": "0px 0px 7px -2px rgba(0, 0, 0, 0.2)",
   "transition": ".15s ease-in",
   "background": theme.palette.secondary.main,
+  "textTransform": "none",
 
   "&$disabled": {
     boxShadow: "none"

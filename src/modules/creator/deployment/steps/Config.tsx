@@ -9,26 +9,13 @@ import {
   withTheme
 } from "@material-ui/core"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
-import React, { useContext } from "react"
-import { useHistory } from "react-router-dom"
+import React, { useContext, useEffect } from "react"
+import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, TokenContractSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { SmallButton } from "modules/common/SmallButton"
-
-const Title = styled(Typography)({
-  fontSize: 24,
-  marginBottom: 20
-})
-
-const FormContainer = styled(Grid)(({ theme }) => ({
-  paddingLeft: "20%",
-  paddingRight: "20%",
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "2%",
-    paddingRight: "2%"
-  }
-}))
+import { TitleBlock } from "modules/common/TitleBlock"
 
 const ButtonContainer = styled(Grid)({
   marginTop: 40
@@ -124,39 +111,67 @@ const validateForm = (values: TokenContractSettings) => {
 }
 
 const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
+  const { dispatch } = useContext(DeploymentContext)
+  const match = useRouteMatch()
   const history = useHistory()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+
+  useEffect(() => {
+    if (values) {
+      dispatch({
+        type: ActionTypes.UPDATE_NAVIGATION_BAR,
+        next: {
+          handler: () => {
+            submitForm(values)
+          },
+          text: "Continue"
+        }
+      })
+    }
+  }, [dispatch, errors, history, match.path, match.url, submitForm, values])
 
   return (
     <>
-      <Grid item xs={12} container direction="row">
+      <Grid item xs={12} container direction="row" style={{ gap: 32 }}>
         <Grid item xs={12}>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Contract name{" "}
+          </Typography>
           <CustomInputContainer>
             <Field id="outlined-basic" placeholder="Contract name" name="name" component={CustomFormikTextField} />
           </CustomInputContainer>
           {errors.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
         </Grid>
 
-        <TextareaContainer item xs={12}>
-          <Field name="description">
-            {() => (
-              <CustomTextarea
-                maxLength={1500}
-                aria-label="empty textarea"
-                placeholder="Description"
-                value={getIn(values, "description")}
-                onChange={(newValue: any) => {
-                  setFieldValue("description", newValue.target.value)
-                }}
-              />
-            )}
-          </Field>
-        </TextareaContainer>
-        {errors.description && touched.description ? <ErrorText>{errors.description}</ErrorText> : null}
+        <Grid item xs={12}>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            Description{" "}
+          </Typography>
 
+          <TextareaContainer item xs={12}>
+            <Field name="description">
+              {() => (
+                <CustomTextarea
+                  maxLength={1500}
+                  aria-label="empty textarea"
+                  placeholder="Description"
+                  value={getIn(values, "description")}
+                  onChange={(newValue: any) => {
+                    setFieldValue("description", newValue.target.value)
+                  }}
+                />
+              )}
+            </Field>
+          </TextareaContainer>
+          {errors.description && touched.description ? <ErrorText>{errors.description}</ErrorText> : null}
+        </Grid>
         <Grid item container direction="row" spacing={2}>
           <Grid item xs={6}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Supply{" "}
+            </Typography>
             <CustomInputContainer>
               <Field
                 id="outlined-basic"
@@ -169,6 +184,10 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
             {errors.totalSupply && touched.totalSupply ? <ErrorText>{errors.totalSupply}</ErrorText> : null}
           </Grid>
           <Grid item xs={6}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Decimals{" "}
+            </Typography>
             <CustomInputContainer>
               <Field
                 id="outlined-basic"
@@ -184,23 +203,25 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
 
         <Grid item container direction="row" spacing={2}>
           <Grid item xs={6}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Symbol{" "}
+            </Typography>
             <CustomInputContainer>
               <Field id="outlined-basic" placeholder="Symbol" name="symbol" component={CustomFormikTextField} />
             </CustomInputContainer>
             {errors.symbol && touched.symbol ? <ErrorText>{errors.symbol}</ErrorText> : null}
           </Grid>
           <Grid item xs={6}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Icon{" "}
+            </Typography>
             <CustomInputContainer>
               <Field id="outlined-basic" placeholder="Icon" name="icon" component={CustomFormikTextField} />
             </CustomInputContainer>
           </Grid>
         </Grid>
-
-        <ButtonContainer container direction="row" justifyContent="flex-end">
-          <SmallButton color="secondary" variant="contained" style={{ fontSize: "14px" }} onClick={submitForm}>
-            Continue
-          </SmallButton>
-        </ButtonContainer>
       </Grid>
     </>
   )
@@ -220,15 +241,16 @@ export const ConfigContract: React.FC = () => {
     updateCache(newState)
     setSubmitting(true)
     dispatch({ type: ActionTypes.UPDATE_TOKEN_SETTINGS, contractInfo: newValues })
-    history.push(`token-distribution`)
+    history.push(`distribution`)
   }
 
   return (
     <>
-      <FormContainer container direction="column">
+      <Grid container direction="column">
         <Grid>
-          <Title color="textSecondary">Configure token contract</Title>
+          <TitleBlock title="Configure token contract" description={""}></TitleBlock>
         </Grid>
+
         <Formik
           enableReinitialize={true}
           validateOnChange={true}
@@ -253,7 +275,7 @@ export const ConfigContract: React.FC = () => {
             )
           }}
         </Formik>
-      </FormContainer>
+      </Grid>
     </>
   )
 }

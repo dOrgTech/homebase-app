@@ -56,6 +56,13 @@ export const reducer = (state: DeploymentState, action: DeploymentAction): Deplo
         }
       }
       return state
+    case ActionTypes.UPDATE_NAVIGATION_BAR:
+      state = {
+        ...state,
+        next: action.next,
+        back: action.back
+      }
+      return state
     case ActionTypes.UPDATE_TOKEN_SETTINGS:
       state = {
         ...state,

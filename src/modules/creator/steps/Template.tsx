@@ -1,31 +1,14 @@
-import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles } from "@material-ui/core"
 import React, { useContext, useEffect, useState } from "react"
-import { useHistory, withRouter } from "react-router"
+import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles } from "@material-ui/core"
+import { useHistory } from "react-router"
 import { ReactComponent as LambdaIcon } from "assets/img/lambda.svg"
 
-import { AccountBalance, FormatListBulleted } from "@material-ui/icons"
+import { ReactComponent as LiteIcon } from "assets/img/lite-dao.svg"
+import { ReactComponent as FullIcon } from "assets/img/full-dao.svg"
+
 import { ActionTypes, CreatorContext, DAOTemplate } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { useRouteMatch } from "react-router-dom"
-
-const CustomBox = styled(Grid)(({ theme }) => ({
-  "height": 273,
-  "background": "#2F3438",
-  "borderRadius": 8,
-  "maxWidth": 320,
-  "width": "-webkit-fill-available",
-  "padding": "40px 44px",
-  "textAlign": "start",
-  "cursor": "pointer",
-  "paddingBottom": 0,
-  "&:hover": {
-    border: "3px solid rgba(129, 254, 183, 0.4)",
-    padding: "37px 41px"
-  },
-  ["@media (max-width:1167px)"]: {
-    marginBottom: 20
-  }
-}))
 
 const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   "height": 273,
@@ -65,27 +48,6 @@ const ErrorText = styled(Typography)({
   marginTop: 8
 })
 
-const CustomBalance = styled(AccountBalance)(({ theme }) => ({
-  width: 64,
-  height: 64,
-  color: theme.palette.secondary.light,
-  marginBottom: 16
-}))
-
-const CustomList = styled(FormatListBulleted)(({ theme }) => ({
-  width: 64,
-  height: 64,
-  color: theme.palette.secondary.light,
-  marginBottom: 16
-}))
-
-const Lambda = styled(LambdaIcon)(({ theme }) => ({
-  width: 64,
-  height: 64,
-  color: theme.palette.secondary.light,
-  marginBottom: 16
-}))
-
 const BoxTitle = styled(Typography)({
   fontSize: 18,
   fontWeight: 500,
@@ -94,7 +56,7 @@ const BoxTitle = styled(Typography)({
 })
 
 const BoxDescription = styled(Typography)({
-  fontWeight: 400,
+  fontWeight: 300,
   fontSize: 16
 })
 
@@ -156,10 +118,26 @@ export const Template = (): JSX.Element => {
           onClick={() => update("lambda")}
           className={selectedTemplate === "lambda" ? style.selected : ""}
         >
-          <Lambda />
-          <BoxTitle color="textSecondary">Lambda</BoxTitle>
+          <FullIcon style={{ marginBottom: 14 }} />
+          <BoxTitle color="textSecondary">Full DAO</BoxTitle>
           <BoxDescription color="textSecondary">
-            Safe with multi-sig. List of key-value pairs. Contract interaction.
+            Contract interaction. Transfer assets based on vote outcomes.
+          </BoxDescription>
+        </LambdaCustomBox>{" "}
+        <LambdaCustomBox
+          item
+          container
+          direction="column"
+          justifyContent="flex-start"
+          alignItems="center"
+          xs={isMobileSmall ? 12 : 6}
+          onClick={() => update("")}
+          className={selectedTemplate === "" ? style.selected : ""}
+        >
+          <LiteIcon style={{ marginBottom: 14 }} />
+          <BoxTitle color="textSecondary">Lite DAO</BoxTitle>
+          <BoxDescription color="textSecondary">
+            Off-chain weighted voting. Multiple voting strategies. No treasury.{" "}
           </BoxDescription>
         </LambdaCustomBox>{" "}
       </Grid>
