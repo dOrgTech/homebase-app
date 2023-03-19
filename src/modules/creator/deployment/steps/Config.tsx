@@ -1,20 +1,10 @@
-import {
-  Grid,
-  styled,
-  TextareaAutosize,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  withStyles,
-  withTheme
-} from "@material-ui/core"
-import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import React, { useContext, useEffect } from "react"
+import { Grid, styled, TextareaAutosize, Typography, withStyles, withTheme } from "@material-ui/core"
+import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, TokenContractSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
-import { SmallButton } from "modules/common/SmallButton"
 import { TitleBlock } from "modules/common/TitleBlock"
 
 const ButtonContainer = styled(Grid)({
@@ -110,7 +100,7 @@ const validateForm = (values: TokenContractSettings) => {
   return errors
 }
 
-const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
+const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue }: any) => {
   const { dispatch } = useContext(DeploymentContext)
   const match = useRouteMatch()
   const history = useHistory()

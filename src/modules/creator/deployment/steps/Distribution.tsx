@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles, withTheme } from "@material-ui/core"
-import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
 import React, { useContext, useEffect } from "react"
+import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles } from "@material-ui/core"
+import { Field, FieldArray, Form, Formik, FormikErrors } from "formik"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
-import { ActionTypes, Holder, TokenContractSettings, TokenDistributionSettings } from "../state/types"
+import { ActionTypes, Holder, TokenDistributionSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
-import { SmallButton } from "modules/common/SmallButton"
 import { AddCircleOutline, RemoveCircle } from "@material-ui/icons"
 import BigNumber from "bignumber.js"
 import { parseUnits } from "services/contracts/utils"
@@ -21,15 +20,12 @@ const SupplyContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const RemoveButton = styled(RemoveCircle)({
-  marginTop: 13
+  marginTop: 0,
+  cursor: "pointer"
 })
 
 const AmountText = styled(Typography)({
   fontWeight: 200
-})
-
-const ButtonContainer = styled(Grid)({
-  marginTop: 40
 })
 
 const CustomFormikTextField = withStyles({
@@ -142,21 +138,24 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                           name={`holders.[${index}].amount`}
                           placeholder={`Amount`}
                           component={CustomFormikTextField}
-                        />
-                      </CustomInputContainer>
-
-                      {index !== 0 ? (
-                        <RemoveButton
-                          color="error"
-                          onClick={() => {
-                            if (index !== 0) {
-                              arrayHelpers.remove(index)
-                            }
+                          InputProps={{
+                            endAdornment:
+                              index !== 0 ? (
+                                <RemoveButton
+                                  color="error"
+                                  onClick={() => {
+                                    if (index !== 0) {
+                                      arrayHelpers.remove(index)
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <RemoveButton color="error" style={{ visibility: "hidden" }} />
+                              ),
+                            disableUnderline: true
                           }}
                         />
-                      ) : (
-                        <RemoveButton color="error" style={{ visibility: "hidden" }} />
-                      )}
+                      </CustomInputContainer>
                     </div>
                   ))
                 : null}

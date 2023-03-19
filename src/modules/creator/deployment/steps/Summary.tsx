@@ -7,19 +7,8 @@ import { numberWithCommas } from "../state/utils"
 import BigNumber from "bignumber.js"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "modules/common/CopyButton"
-import { SmallButton } from "modules/common/SmallButton"
 import { ActionTypes } from "../state/types"
 import { TitleBlock } from "modules/common/TitleBlock"
-
-const Title = styled(Typography)({
-  fontSize: 24
-})
-
-const Subtitle = styled(Typography)({
-  color: "gray",
-  fontWeight: 200,
-  marginBottom: 20
-})
 
 const ThirdContainer = styled(Grid)({
   marginTop: 22,

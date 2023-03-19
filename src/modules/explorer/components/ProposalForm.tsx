@@ -79,7 +79,8 @@ const enabledForms: Record<
       component: ({ open }) => <UpdateRegistryDialog open={open} />
     }
   ],
-  "": []
+  "": [],
+  "lite": []
 }
 
 const Content = styled(Grid)({

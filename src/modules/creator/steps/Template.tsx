@@ -91,10 +91,6 @@ export const Template = (): JSX.Element => {
           return history.push(`dao`)
         },
         text: "Continue"
-      },
-      back: {
-        handler: () => history.push("/explorer"),
-        text: "Back"
       }
     })
   }, [dispatch, history, match.path, match.url, selectedTemplate])
@@ -131,8 +127,8 @@ export const Template = (): JSX.Element => {
           justifyContent="flex-start"
           alignItems="center"
           xs={isMobileSmall ? 12 : 6}
-          onClick={() => update("")}
-          className={selectedTemplate === "" ? style.selected : ""}
+          onClick={() => update("lite")}
+          className={selectedTemplate === "lite" ? style.selected : ""}
         >
           <LiteIcon style={{ marginBottom: 14 }} />
           <BoxTitle color="textSecondary">Lite DAO</BoxTitle>

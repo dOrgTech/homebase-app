@@ -146,6 +146,10 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
             submitForm(values)
           },
           text: "Continue"
+        },
+        back: {
+          handler: () => history.push(`template`),
+          text: "Back"
         }
       })
     }

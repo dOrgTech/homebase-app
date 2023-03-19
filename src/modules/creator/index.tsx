@@ -80,7 +80,7 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 565,
+  maxHeight: 585,
   paddingTop: 20,
   position: "sticky",
   top: 153
@@ -175,7 +175,7 @@ export const DAOCreate: React.FC = () => {
 
         <Grid item xs={12} md={9} container justifyContent="center" alignItems="baseline">
           <Grid container direction="column" alignItems="center" style={{ width: "100%", marginBottom: 20 }}>
-            <Grid item style={{ width: "100%" }} xs>
+            <Grid item style={{ width: "100%", margin: "inherit" }} xs>
               <StepContentContainer item container justifyContent="center">
                 <StepRouter />
               </StepContentContainer>
