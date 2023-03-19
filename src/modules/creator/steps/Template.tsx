@@ -88,7 +88,11 @@ export const Template = (): JSX.Element => {
             type: ActionTypes.UPDATE_TEMPLATE,
             template: selectedTemplate
           })
-          return history.push(`dao`)
+
+          if (selectedTemplate === "lambda") {
+            return history.push(`dao`)
+          }
+          return history.push("/lite")
         },
         text: "Continue"
       },
@@ -131,8 +135,8 @@ export const Template = (): JSX.Element => {
           justifyContent="flex-start"
           alignItems="center"
           xs={isMobileSmall ? 12 : 6}
-          onClick={() => update("")}
-          className={selectedTemplate === "" ? style.selected : ""}
+          onClick={() => update("lite")}
+          className={selectedTemplate === "lite" ? style.selected : ""}
         >
           <LiteIcon style={{ marginBottom: 14 }} />
           <BoxTitle color="textSecondary">Lite DAO</BoxTitle>
