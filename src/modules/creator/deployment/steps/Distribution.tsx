@@ -8,7 +8,7 @@ import { ActionTypes, Holder, TokenDistributionSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { AddCircleOutline, RemoveCircle } from "@material-ui/icons"
 import BigNumber from "bignumber.js"
-import { parseUnits } from "services/contracts/utils"
+import { formatUnits, parseUnits } from "services/contracts/utils"
 import { numberWithCommas } from "../state/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { TitleBlock } from "modules/common/TitleBlock"
@@ -203,7 +203,7 @@ export const ContractDistribution: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const totalAmount = parseUnits(new BigNumber(Number(tokenSettings.totalSupply)), Number(tokenSettings.decimals))
+  const totalAmount = new BigNumber(Number(tokenSettings.totalSupply))
 
   const saveStepInfo = (
     values: TokenDistributionSettings,

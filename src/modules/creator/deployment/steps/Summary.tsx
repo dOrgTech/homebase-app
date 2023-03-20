@@ -9,6 +9,7 @@ import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "modules/common/CopyButton"
 import { ActionTypes } from "../state/types"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { useTokenOriginate } from "services/contracts/token/hooks/useToken"
 
 const ThirdContainer = styled(Grid)({
   marginTop: 22,
@@ -92,6 +93,10 @@ export const ContractSummary: React.FC = () => {
     history.push(`distribution`)
   }
 
+  const {
+    mutation: { mutate, data, error }
+  } = useTokenOriginate(state.data)
+
   useEffect(() => {
     dispatch({
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
@@ -102,13 +107,16 @@ export const ContractSummary: React.FC = () => {
       },
       next: {
         handler: () => {
+          mutate({
+            ...state.data
+          })
           history.push("/creator/build/template")
           dispatch({ type: ActionTypes.CLEAR_CACHE })
         },
         text: "Launch"
       }
     })
-  }, [dispatch, history, match.path, match.url])
+  }, [dispatch, history, match.path, match.url, mutate, state.data])
 
   return (
     <>
