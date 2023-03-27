@@ -112,6 +112,7 @@ const ErrorText = styled(Typography)({
 })
 
 const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
+  console.log("values: ", values)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
 
@@ -122,16 +123,17 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
   } = useTokenMetadata(values?.governanceToken?.address, values?.governanceToken?.tokenId)
 
   useEffect(() => {
+    console.log("tokenMetadata: ", tokenMetadata)
     if (tokenMetadata) {
       setFieldValue("governanceToken.tokenMetadata", tokenMetadata)
-      setFieldValue("symbol", tokenMetadata.symbol)
+      setFieldValue("symbol", tokenMetadata?.symbol)
     }
 
     if (error) {
       setFieldValue("governanceToken.tokenMetadata", undefined)
       setFieldValue("symbol", undefined)
     }
-  }, [error, setFieldValue, tokenMetadata])
+  }, [tokenMetadata, error, setFieldValue])
 
   const { dispatch } = useContext(CreatorContext)
   const match = useRouteMatch()
@@ -183,7 +185,7 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
           <CustomInputContainer>
             <Field
               id="outlined-basic"
-              placeholder="0"
+              // placeholder="0"
               name="governanceToken.tokenId"
               component={CustomFormikTextField}
               InputProps={{

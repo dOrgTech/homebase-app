@@ -320,6 +320,7 @@ export const Navbar: React.FC<{
                       color="secondary"
                       variant="contained"
                       style={{ fontSize: "14px" }}
+                      id="navbar-connect-wallet"
                       onClick={() => connect()}
                     >
                       Connect Wallet

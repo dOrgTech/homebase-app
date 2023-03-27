@@ -95,7 +95,11 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
             </Typography>
           </Grid>
 
-          <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao || !newDelegationAddress}>
+          <SendButton
+            id="submit-delegate-proposal"
+            onClick={methods.handleSubmit(onSubmit as any)}
+            disabled={!dao || !newDelegationAddress}
+          >
             Submit
           </SendButton>
         </Content>

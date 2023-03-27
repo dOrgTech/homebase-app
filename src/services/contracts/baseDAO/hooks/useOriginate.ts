@@ -65,7 +65,10 @@ export const useOriginate = (template: DAOTemplate) => {
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params }) => {
+      console.log("metadataParams: ", metadataParams)
       const updatedStates = INITIAL_STATES
+
+      const mathfloor = Math.floor(new Date().getTime() / 1000)
 
       updatedStates[0] = {
         activeText: "Deploying Metadata Carrier Contract",
@@ -86,12 +89,14 @@ export const useOriginate = (template: DAOTemplate) => {
         daoName: params.orgSettings.name,
         daoType: params.template
       })
+      console.log("mathfloor1", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
         tezos: tezosToolkit,
         connect
       })
+      console.log("mathfloor1", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       if (!metadata) {
         throw new Error(`Could not deploy ${template}DAO because MetadataCarrier contract deployment failed`)
@@ -114,6 +119,7 @@ export const useOriginate = (template: DAOTemplate) => {
         contract: "BaseDAO",
         daoName: params.orgSettings.name
       })
+      console.log("mathfloor1", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       const contract = await BaseDAO.baseDeploy(template, {
         tezos: tezosToolkit,
@@ -121,6 +127,7 @@ export const useOriginate = (template: DAOTemplate) => {
         params,
         network
       })
+      console.log("mathfloor1", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       if (!contract) {
         throw new Error(`Error deploying ${template}DAO`)
@@ -138,8 +145,10 @@ export const useOriginate = (template: DAOTemplate) => {
 
       setActiveState(2)
       setStates(updatedStates)
+      console.log("mathfloor1", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       const tx = await BaseDAO.transfer_ownership(contract.address, contract.address, tezos)
+      console.log("mathfloor1", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       if (!tx) {
         throw new Error(`Error transferring ownership of ${template}DAO to itself`)

@@ -5,6 +5,8 @@ import { getTokenMetadata } from "services/bakingBad/tokenBalances"
 import { useTezos } from "services/beacon/hooks/useTezos"
 
 export const useTokenMetadata = (address?: string, tokenId?: string) => {
+  console.log("tokenId: ", tokenId)
+  console.log("address: ", address)
   const { tezos, network } = useTezos()
 
   const result = useQuery<Token, Error>(

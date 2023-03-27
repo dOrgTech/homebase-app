@@ -101,6 +101,7 @@ export const Registry: React.FC = () => {
               color="secondary"
               onClick={() => setUpdateRegistryOpen(true)}
               disabled={shouldDisable}
+              id="new-item"
             >
               New Item
             </MainButton>

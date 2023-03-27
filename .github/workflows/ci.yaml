@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@master
         with:
-          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+          node-version: "${{ steps.nvm.outputs.NVMRC }}"
 
       - name: Check for cached node_modules
         uses: actions/cache@v2
@@ -40,5 +40,5 @@ jobs:
         run: yarn run build
 
       # TO-DO: Uncomment when tests are ready to be run on CI (such as those in issues #129-#131)
-      # - name: Test
-      #  run: yarn test:ci
+      - name: Test
+        run: yarn test:ci
