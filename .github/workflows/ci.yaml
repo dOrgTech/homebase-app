@@ -42,7 +42,7 @@ jobs:
       # TO-DO: Uncomment when tests are ready to be run on CI (such as those in issues #129-#131)
       - name: Run App
         run: yarn run dev &
-          sleep 20
+          sleep 30
 
       - name: Test
         run: yarn test
