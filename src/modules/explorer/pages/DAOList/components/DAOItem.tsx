@@ -160,12 +160,14 @@ export const DAOItem: React.FC<{
   const daoType = dao.dao_type.name !== "lambda" ? `V2` : `V3`
 
   return (
-    <Link underline="none" href={daoHref}>
+    <Link underline="none" href={daoHref} id={`dao-${dao.id}`}>
       <Container container justifyContent="space-between">
         <SectionNames>
           <Grid>
             <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
-            <NameText color="textPrimary">{dao.name}</NameText>
+            <NameText color="textPrimary" id="dao-name">
+              {dao.name}
+            </NameText>
           </Grid>
         </SectionNames>
         <Grid>

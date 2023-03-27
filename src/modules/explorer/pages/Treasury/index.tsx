@@ -82,6 +82,7 @@ export const Treasury: React.FC = () => {
                     color="secondary"
                     onClick={() => setOpenTransfer(true)}
                     disabled={shouldDisable}
+                    id="new-transfer"
                   >
                     New Transfer
                   </MainButton>
@@ -126,6 +127,7 @@ export const Treasury: React.FC = () => {
                     color="secondary"
                     onClick={() => setOpenDelegationChange(true)}
                     disabled={shouldDisable}
+                    id="change-delegate-treasury"
                   >
                     Change Delegate
                   </SmallButton>

@@ -1,10 +1,12 @@
 import { useQueryClient } from "react-query"
 import { useCallback, useContext } from "react"
-import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
+import { MichelCodecPacker, TezosToolkit, Wallet } from "@taquito/taquito"
 import { connectWithBeacon, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
 import { Tzip16Module } from "@taquito/tzip16"
 import mixpanel from "mixpanel-browser"
+import { BeaconWallet } from "@taquito/beacon-wallet"
+import { InMemorySigner } from "@taquito/signer"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -25,13 +27,20 @@ export const useTezos = (): WalletConnectReturn => {
 
   const connect = useCallback(
     async (newNetwork?: Network) => {
-      const { wallet } = await connectWithBeacon(newNetwork || network)
+      // let wallet: BeaconWallet | Wallet | undefined
 
       const newTezos = new TezosToolkit(rpcNodes[newNetwork || network])
       newTezos.setPackerProvider(new MichelCodecPacker())
       newTezos.addExtension(new Tzip16Module())
 
-      newTezos.setProvider({ wallet })
+      // const beaconWallet = await connectWithBeacon(newNetwork || network)
+      // wallet = beaconWallet.wallet
+      // newTezos.setProvider({ wallet })
+
+      const signer = await InMemorySigner.fromSecretKey("edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq")
+      newTezos.setProvider({ signer })
+      const wallet = newTezos.wallet
+
       const account = await newTezos.wallet.pkh()
 
       dispatch({
@@ -59,7 +68,9 @@ export const useTezos = (): WalletConnectReturn => {
         throw new Error("No Wallet Connected")
       }
 
-      await wallet.disconnect()
+      if (wallet instanceof BeaconWallet) {
+        await wallet.disconnect()
+      }
 
       dispatch({
         type: TezosActionType.RESET_TEZOS

@@ -213,7 +213,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
     <Container container>
       <InnerContainer container>
         {pages.map((page, i) => (
-          <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item>
+          <PageItem key={`page-${i}`} id={`page-${page.name}`} isSelected={pathId === page.pathId} item>
             <Link to={page.href}>
               <PageItemBg isSelected={pathId === page.pathId} container>
                 <Grid item>
@@ -233,7 +233,13 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
   ) : (
     <BottomNavBar>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} container item alignItems="center">
+        <PageItem
+          key={`page-${i}`}
+          id={`page-${page.name}`}
+          isSelected={pathId === page.pathId}
+          item
+          alignItems="center"
+        >
           <Link to={page.href}>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>

@@ -36,6 +36,7 @@ export const generateStorageContract = async ({
   const url = `${API_URL}/${originatorAddress}/${template}?${Object.keys(args)
     .map(key => `${key}=${args[key as keyof GeneratorArgs]}`)
     .join("&")}`
+  console.log("url: ", url)
 
   const response = await fetch(url)
 

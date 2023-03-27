@@ -30,6 +30,7 @@ export const deployMetadataCarrier = async ({
   metadata,
   tezos
 }: MetadataCarrierParameters & Tezos): Promise<MetadataDeploymentResult | undefined> => {
+  console.log("metadata: ", metadata)
   const metadataMap = setMetadataMap(keyName, metadata)
 
   try {

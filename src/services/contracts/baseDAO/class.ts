@@ -74,6 +74,7 @@ export abstract class BaseDAO {
     { params, metadata, tezos, network }: DeployParams
   ): Promise<ContractAbstraction<Wallet>> => {
     const treasuryParams = fromStateToBaseStorage(params)
+    console.log("params: ", params)
 
     if (!metadata.deployAddress) {
       throw new Error("Error deploying treasury DAO: There's not address of metadata")
@@ -82,18 +83,20 @@ export abstract class BaseDAO {
     const account = await tezos.wallet.pkh()
 
     try {
+      const mathfloor = Math.floor(new Date().getTime() / 1000)
       console.log("Making storage contract...")
       const currentLevel = await getNetworkHead(network)
-
+      console.log("mathfloor", Math.floor(new Date().getTime() / 1000) - mathfloor)
       const storageCode = await generateStorageContract({
         network,
         template,
         storage: treasuryParams,
         originatorAddress: account,
         metadata,
-        currentLevel
+        currentLevel: currentLevel + 30
       })
       console.log("Originating DAO contract...")
+      console.log("mathfloor", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       const contractMichaelson = lambdaDAOContractCode
 
@@ -105,10 +108,15 @@ export abstract class BaseDAO {
         code: contractMichaelson,
         init: storageCode
       })
+      console.log("mathfloor", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
+      console.log("t: ", t)
       const operation = await t.send()
+      console.log("operation: ", operation)
       console.log("Waiting for confirmation on DAO contract...", t)
+      console.log("mathfloor", Math.floor(new Date().getTime() / 1000) - mathfloor)
       const { address } = await operation.contract()
+      console.log("mathfloor", Math.floor(new Date().getTime() / 1000) - mathfloor)
 
       return await tezos.wallet.at(address)
     } catch (e) {

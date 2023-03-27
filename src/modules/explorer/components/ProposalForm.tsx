@@ -213,6 +213,7 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
                 style={{ margin: "10px 0 35px 0" }}
                 onClick={methods.handleSubmit(onSubmit as any)}
                 disabled={!dao || !daoHoldings}
+                id="submit-proposal"
               >
                 Submit
               </SendButton>

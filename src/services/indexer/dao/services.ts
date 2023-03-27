@@ -53,7 +53,7 @@ export const getDAOs = async (network: string) => {
   return [...daos, ...daos_v2]
 }
 
-export const getProposals = async (dao: BaseDAO) => {
+export const getProposals = async (dao: any) => {
   const response = await client.request<GetProposalsDTO>(GET_PROPOSALS_QUERY, {
     address: dao.data.address
   })

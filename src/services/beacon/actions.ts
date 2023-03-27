@@ -1,4 +1,4 @@
-import { TezosToolkit } from "@taquito/taquito"
+import { TezosToolkit, Wallet } from "@taquito/taquito"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { Network } from "./utils"
 
@@ -13,7 +13,7 @@ interface UpdateTezos {
     tezos: TezosToolkit
     network: Network
     account: string
-    wallet: BeaconWallet | undefined
+    wallet: BeaconWallet | Wallet | undefined
   }
 }
 
