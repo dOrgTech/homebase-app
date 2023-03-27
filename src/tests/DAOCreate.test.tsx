@@ -143,7 +143,7 @@ const setTezosSignerProvider = async (pk: string) => {
 // }, 5000000)
 
 it("shows a success message after submitting a form", async () => {
-  await page.goto(process.env.BASE_URL + "/creator/dao")
+  await page.goto(url + "/creator/dao")
   await page.waitForSelector(`input[name="governanceToken.address"]`)
   await page.click("#navbar-connect-wallet")
 
