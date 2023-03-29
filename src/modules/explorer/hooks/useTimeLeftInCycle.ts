@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useDAO } from "../../../services/indexer/dao/hooks/useDAO"
+import { useDAO } from "../../../services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 
 export const useTimeLeftInCycle = () => {

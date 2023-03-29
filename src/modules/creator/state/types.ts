@@ -54,7 +54,7 @@ export interface NavigationBarProps {
   }
 }
 
-export type DAOTemplate = "lambda" | ""
+export type DAOTemplate = "lambda" | "lite" | ""
 
 type DeploymentStatus = {
   deploying: boolean

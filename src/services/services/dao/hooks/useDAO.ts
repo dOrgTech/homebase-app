@@ -8,7 +8,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { unpackExtraNumValue, CycleInfo } from "services/contracts/baseDAO"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import { parseUnits } from "services/contracts/utils"
-import { getDAO } from "services/indexer/dao/services"
+import { getDAO } from "services/services/dao/services"
 import { useBlockchainInfo } from "../../../contracts/baseDAO/hooks/useBlockchainInfo"
 
 export const useDAO = (address: string) => {

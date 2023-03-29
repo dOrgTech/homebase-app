@@ -3,7 +3,7 @@ import { CopyAddress } from "modules/common/CopyAddress"
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
 
 import React, { useMemo, useState } from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { Hero } from "../../components/Hero"
 import { HeroTitle } from "../../components/HeroTitle"
 import { useDAOID } from "../DAO/router"

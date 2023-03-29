@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import { Grid, Typography, TextField } from "@material-ui/core"
 import React, { useCallback } from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { SendButton } from "./ProposalFormSendButton"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"

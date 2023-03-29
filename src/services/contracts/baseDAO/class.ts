@@ -9,7 +9,7 @@ import lambdaDAOContractCode from "./michelson/lambdaDAO"
 import { formatUnits, xtzToMutez } from "../utils"
 import { BigNumber } from "bignumber.js"
 import { Token } from "models/Token"
-import { Ledger } from "services/indexer/types"
+import { Ledger } from "services/services/types"
 import { Expr, Parser, packDataBytes, MichelsonType, MichelsonData } from "@taquito/michel-codec"
 import { Schema } from "@taquito/michelson-encoder"
 

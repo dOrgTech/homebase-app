@@ -12,7 +12,7 @@ import {
   TreasuryProposalFormValues
 } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { AppTabBar } from "./AppTabBar"
 import { SendButton } from "./ProposalFormSendButton"
 import { TabPanel } from "./TabPanel"
@@ -79,7 +79,8 @@ const enabledForms: Record<
       component: ({ open }) => <UpdateRegistryDialog open={open} />
     }
   ],
-  "": []
+  "": [],
+  "lite": []
 }
 
 const Content = styled(Grid)({

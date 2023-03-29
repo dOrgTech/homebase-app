@@ -4,7 +4,7 @@ import lambdaProposeCode from "services/contracts/baseDAO/lambdaDAO/michelson/pr
 import { Schema } from "@taquito/michelson-encoder"
 import { Parser, Expr, unpackDataBytes, MichelsonType, MichelsonData } from "@taquito/michel-codec"
 import { parseUnits } from "services/contracts/utils"
-import { ProposalDTO } from "services/indexer/types"
+import { ProposalDTO } from "services/services/types"
 import { extractTransfersData } from "."
 import { bytes2Char } from "@taquito/tzip16"
 import { BaseDAO } from "services/contracts/baseDAO"

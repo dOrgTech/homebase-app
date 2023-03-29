@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "react-query"
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
-import { getDAO } from "services/indexer/dao/services"
+import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
 
 const INITIAL_STATES = [
