@@ -3,6 +3,7 @@ import { Token } from "models/Token"
 import { useState, useContext, useEffect, useMemo } from "react"
 import { useQuery } from "react-query"
 import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions"
+import { getTokenMetadata } from "services/bakingBad/tokenBalances"
 import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { unpackExtraNumValue, CycleInfo } from "services/contracts/baseDAO"
@@ -25,13 +26,16 @@ export const useDAO = (address: string) => {
       const response = await getDAO(address as string)
 
       const dao = response.daos[0]
+
+      const token = await getTokenMetadata(
+        dao.token.contract,
+        dao.token.network as Network,
+        dao.token.token_id.toString()
+      )
+
       const base = {
         ...dao,
-        token: new Token({
-          ...dao.token,
-          id: dao.token.id.toString(),
-          network: dao.token.network as Network
-        }),
+        token,
         ledger: dao.ledgers.map(ledger => {
           const current_unstaked = parseUnits(new BigNumber(ledger.current_unstaked), dao.token.decimals)
 

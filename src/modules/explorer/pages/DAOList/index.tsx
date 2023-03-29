@@ -138,7 +138,7 @@ export const DAOList: React.FC = () => {
           id: dao.address,
           name: dao.name,
           symbol: dao.token.symbol,
-          votingAddresses: dao.ledgers.map(l => l.holder.address),
+          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
           dao_type: {
             name: dao.dao_type.name
           }

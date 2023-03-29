@@ -48,11 +48,9 @@ export const getLiteDAOs = async (network: string) => {
   const response = await axios.post<Community[]>(`${REACT_APP_LITE_API_URL}/daos/`, {
     network
   })
-  console.log("response: ", response.data)
   const daos = response.data
 
   const new_daos = daos.map(dao => {
-    console.log("dao: ", dao)
     const new_dao: DAOListItem = {
       dao_type: {
         name: "lite"
@@ -61,33 +59,22 @@ export const getLiteDAOs = async (network: string) => {
       address: dao._id,
       frozen_token_id: dao.tokenID,
       governance_token_id: dao.tokenID,
-      ledgers: [],
       name: dao.name,
       network: dao.network,
-      period: "0",
-      staked: "0",
-      start_level: 0,
       token: {
         id: Number(dao.tokenID),
         contract: dao.tokenAddress,
         network: network,
-        level: 0,
-        timestamp: "",
         token_id: Number(dao.tokenID),
         symbol: dao.symbol,
         name: dao.name,
         decimals: Number(dao.decimals),
-        is_transferable: true,
-        should_prefer_symbol: true,
-        supply: "0",
-        daos: [],
         standard: dao.tokenType
       }
     }
     return new_dao
   })
 
-  console.log("new_daos: ", new_daos)
   return [...new_daos]
 }
 

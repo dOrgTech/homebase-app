@@ -13,17 +13,14 @@ export interface TokenDTO {
   id: number
   contract: string
   network: string
-  level: number
-  timestamp: string
   token_id: number
   symbol: string
   name: string
   decimals: number
-  is_transferable: boolean
-  should_prefer_symbol: boolean
-  supply: string
-  daos?: DAODTO[]
+  supply?: string
   standard: string
+  daos?: DAODTO[]
+  timestamp?: string
 }
 
 export interface DAODTO {
@@ -193,16 +190,16 @@ export interface DAOListItem {
   address: string
   frozen_token_id: string
   governance_token_id: string
-  ledgers: {
+  ledgers?: {
     holder: {
       address: string
     }
   }[]
   name: string
   network: Network
-  period: string
-  staked: string
-  start_level: number
+  period?: string
+  staked?: string
+  start_level?: number
   token: TokenDTO
 }
 

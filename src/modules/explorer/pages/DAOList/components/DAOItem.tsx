@@ -157,7 +157,7 @@ export const DAOItem: React.FC<{
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const daoHref =
     dao.dao_type.name !== "lambda" ? `${getEnv(EnvKey.REACT_APP_V2_URL)}/explorer/dao/${dao.id}` : `dao/${dao.id}`
-  const daoType = dao.dao_type.name !== "lambda" ? `V2` : `V3`
+  const daoType = dao.dao_type.name
 
   return (
     <Link underline="none" href={daoHref}>
