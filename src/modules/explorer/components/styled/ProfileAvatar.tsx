@@ -1,6 +1,5 @@
 import React from "react"
-import { Avatar } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Avatar, styled } from "@material-ui/core"
 import { Blockie } from "modules/common/Blockie"
 import { useProfileClaim } from "services/tzprofiles/hooks/useProfileClaim"
 

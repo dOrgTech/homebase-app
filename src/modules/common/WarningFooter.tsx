@@ -1,5 +1,4 @@
-import { Box, Grid, IconButton, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Box, Grid, IconButton, Typography, styled } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
 import { ReactComponent as WarningIcon } from "assets/logos/warning.svg"
 import CloseIcon from "@material-ui/icons/Close"
@@ -31,7 +30,9 @@ const ContainerText = styled(Typography)({
 export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
   const [open, setOpen] = useState(true)
 
-  const isWarningClosed = localStorage.getItem("warning-closed")
+  // use this to make the warning come only once
+  // const isWarningClosed = localStorage.getItem("warning-closed")
+  const isWarningClosed = null
 
   const closeButton = () => {
     localStorage.setItem("warning-closed", "true")

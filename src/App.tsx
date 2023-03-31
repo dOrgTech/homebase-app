@@ -21,6 +21,10 @@ import { legacyTheme } from "theme/legacy"
 import { Footer } from "modules/common/Footer"
 import { FAQ } from "modules/home/FAQ"
 import { EnvKey, getEnv } from "services/config"
+import { DAOCreatorRouter } from "modules/creator/router"
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
+import { CommunityCreator } from "modules/lite/creator"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -93,43 +97,56 @@ const App: React.FC = () => {
       >
         <QueryClientProvider client={queryClient}>
           <ActionSheetProvider>
-            <Box bgcolor="primary.dark" position="absolute" width="100%">
-              <Router>
-                <ScrollToTop />
-                <Switch>
-                  <Route path="/creator">
-                    <CreatorProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Box bgcolor="primary.dark" position="absolute" width="100%">
+                <Router>
+                  <ScrollToTop />
+                  <Switch>
+                    <Route path="/creator">
+                      <CreatorProvider>
+                        <ThemeProvider theme={legacyTheme}>
+                          <DAOCreatorRouter />
+                        </ThemeProvider>
+                      </CreatorProvider>
+                      {/* <WarningFooter
+                      text={
+                        "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
+                      }
+                    /> */}
+                    </Route>
+                    <Route path="/lite">
                       <ThemeProvider theme={legacyTheme}>
-                        <DAOCreate />
+                        <CommunityCreator />
                       </ThemeProvider>
-                    </CreatorProvider>
-                    {/* <WarningFooter
-                      text={
-                        "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                      }
-                    /> */}
-                  </Route>
-                  <Route path="/explorer">
-                    <TZKTSubscriptionsProvider>
-                      <DAOExplorerRouter />
-                    </TZKTSubscriptionsProvider>
-                    {/* <WarningFooter
-                      text={
-                        "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                      }
-                    /> */}
-                    <Footer></Footer>
-                  </Route>
-                  <Route path="/faq">
-                    <FAQ />
-                  </Route>
-                  <Route path="/">
-                    <Landing />
-                  </Route>
-                  <Redirect to="/" />
-                </Switch>
-              </Router>
-            </Box>
+                    </Route>
+                    <Route path="/explorer">
+                      <TZKTSubscriptionsProvider>
+                        <DAOExplorerRouter />
+                      </TZKTSubscriptionsProvider>
+
+                      {window.location.href.indexOf("KT1PY9PXm8NMAgSEZg7bUtFjmV2Sj64bKuVV") !== -1 ? (
+                        <>
+                          {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
+                          <WarningFooter
+                            text={
+                              "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
+                            }
+                          />
+                        </>
+                      ) : null}
+                      <Footer></Footer>
+                    </Route>
+                    <Route path="/faq">
+                      <FAQ />
+                    </Route>
+                    <Route path="/">
+                      <Landing />
+                    </Route>
+                    <Redirect to="/" />
+                  </Switch>
+                </Router>
+              </Box>
+            </LocalizationProvider>
           </ActionSheetProvider>
         </QueryClientProvider>
       </SnackbarProvider>

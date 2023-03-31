@@ -1,5 +1,4 @@
-import { Button, Grid, Theme, Tooltip, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Button, Grid, styled, Theme, Tooltip, Typography } from "@material-ui/core"
 import hexToRgba from "hex-to-rgba"
 import React, { useState } from "react"
 import { NFT } from "./NFT"

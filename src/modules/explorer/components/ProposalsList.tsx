@@ -1,5 +1,4 @@
-import { Collapse, Grid, IconButton, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Collapse, Grid, IconButton, styled, Typography } from "@material-ui/core"
 import { ProposalItem } from "modules/explorer/pages/User"
 import React, { useState } from "react"
 import { Link } from "react-router-dom"

@@ -1,5 +1,4 @@
-import { Grid, styled, Theme, Typography } from "@material-ui/core"
-import { useTheme } from "@material-ui/styles"
+import { Grid, styled, Theme, Typography, useTheme } from "@material-ui/core"
 import BigNumber from "bignumber.js"
 import hexToRgba from "hex-to-rgba"
 import React, { useMemo } from "react"

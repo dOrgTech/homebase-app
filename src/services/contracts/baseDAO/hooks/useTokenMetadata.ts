@@ -7,11 +7,12 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 export const useTokenMetadata = (address?: string, tokenId?: string) => {
   const { tezos, network } = useTezos()
 
+  console.log(tokenId, "tokenId")
   const result = useQuery<Token, Error>(
     ["tokenMetadata", address, tokenId],
     () => getTokenMetadata(address as string, network, tokenId as string),
     {
-      enabled: !!tezos && !!address && !!tokenId
+      enabled: !!tezos && !!address
     }
   )
 

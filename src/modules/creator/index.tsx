@@ -181,7 +181,7 @@ export const DAOCreate: React.FC = () => {
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 4 && <NavigationBar back={back} next={next} />}
+          {step < 5 && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>
