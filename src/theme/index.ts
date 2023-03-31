@@ -371,6 +371,9 @@ export const theme = createTheme({
     MuiTableCell: {
       root: {
         borderBottom: "unset"
+      },
+      head: {
+        fontWeight: 300
       }
     },
     MuiTableRow: {

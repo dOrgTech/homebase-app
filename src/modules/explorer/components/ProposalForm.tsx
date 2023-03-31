@@ -187,7 +187,7 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
             <CustomContainer container direction="row" justifyContent="space-between" alignItems="center">
               <Grid item container direction="row" alignItems="center" style={{ width: "80%" }}>
                 <DialogTitle>{forms[selectedTab].label.toLowerCase()}</DialogTitle>
-                <IconSwap />
+                {selectedTab === 0 || selectedTab === 1 ? <IconSwap /> : null}
                 <SwapText>{getLabel(selectedTab)}</SwapText>
               </Grid>
               <Grid item>

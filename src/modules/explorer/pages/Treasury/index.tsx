@@ -46,22 +46,6 @@ export const Treasury: React.FC = () => {
   }
   const { data: transfers } = useTransfers(daoId)
 
-  const inboundTransfers = useMemo(() => {
-    if (!transfers) {
-      return []
-    }
-
-    return transfers.filter(t => t.recipient.toLowerCase() === daoId.toLowerCase())
-  }, [transfers, daoId])
-
-  const outboundTransfers = useMemo(() => {
-    if (!transfers) {
-      return []
-    }
-
-    return transfers.filter(t => t.recipient.toLowerCase() !== daoId.toLowerCase())
-  }, [transfers, daoId])
-
   const shouldDisable = useIsProposalButtonDisabled(daoId)
 
   const handleChangeTab = (newValue: number) => {
@@ -172,8 +156,7 @@ export const Treasury: React.FC = () => {
           </TabPanel>
 
           <TabPanel value={selectedTab} index={2}>
-            <TransfersTable isInbound={true} transfers={inboundTransfers} />
-            <TransfersTable isInbound={false} transfers={outboundTransfers} />
+            <TransfersTable transfers={transfers || []} />
           </TabPanel>
         </ItemGrid>
       </Grid>
