@@ -2145,7 +2145,7 @@
     bignumber.js "^9.1.0"
     rxjs "^6.6.3"
 
-"@taquito/tezbridge-signer@^16.0.1":
+"@taquito/tezbridge-signer@^14.2.0":
   version "14.2.0"
   resolved "https://registry.yarnpkg.com/@taquito/tezbridge-signer/-/tezbridge-signer-14.2.0.tgz#870ea4726c128af551b08f80e45af9fda37ec14e"
   integrity sha512-v33AUqEpRzet5Flf8n6/HYYkxfE3cHALBKpCgcJVX3zQHN8UCfvLWV/DcEFScjEGkIVHORllzNszLNl+kooglQ==
@@ -2153,7 +2153,7 @@
     "@taquito/utils" "*"
     typedarray-to-buffer "^4.0.0"
 
-"@taquito/tezbridge-wallet@^16.0.1":
+"@taquito/tezbridge-wallet@^14.2.0":
   version "14.2.0"
   resolved "https://registry.yarnpkg.com/@taquito/tezbridge-wallet/-/tezbridge-wallet-14.2.0.tgz#d6c4ba24823b2aec26bd6afadc512a8c9ae9b4ac"
   integrity sha512-7Lf+bPGkD/dZ/rlxxXCvQK43ObdyzFJGB0NxIgd0/f5rdoUzNeGtAZt5ODUuew8fSSN/PCK1Td4cW5JKzMUkiw==
