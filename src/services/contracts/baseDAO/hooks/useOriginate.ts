@@ -75,12 +75,6 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(0)
       setStates(updatedStates)
 
-      let tezosToolkit = tezos
-
-      if (!account) {
-        tezosToolkit = await connect()
-      }
-
       mixpanel.track("Started DAO origination", {
         contract: "MetadataCarrier",
         daoName: params.orgSettings.name,
@@ -89,7 +83,7 @@ export const useOriginate = (template: DAOTemplate) => {
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
-        tezos: tezosToolkit,
+        tezos,
         connect
       })
 
@@ -116,7 +110,7 @@ export const useOriginate = (template: DAOTemplate) => {
       })
 
       const contract = await BaseDAO.baseDeploy(template, {
-        tezos: tezosToolkit,
+        tezos,
         metadata,
         params,
         network
