@@ -39,7 +39,7 @@ export const ResponsiveDialog: React.FC<{
     <BottomSheet open={open} onDismiss={onClose}>
       <Content container direction="column" style={{ gap: 46 }}>
         <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
-          <Grid item>{Boolean(onGoBack) ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
+          <Grid item>{onGoBack ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
           <Grid item>
             <TitleText>{title}</TitleText>
           </Grid>
@@ -54,7 +54,7 @@ export const ResponsiveDialog: React.FC<{
     <CustomDialog open={open} onClose={onClose} maxWidth={template ? "md" : "sm"}>
       <Content container direction="column" style={{ gap: 30 }}>
         <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
-          <Grid item>{Boolean(onGoBack) ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
+          <Grid item>{onGoBack ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
           <Grid item>
             <TitleText color="textPrimary">{title}</TitleText>
           </Grid>

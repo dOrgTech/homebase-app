@@ -57,7 +57,10 @@ interface RowData {
 const outboundTitles = ["Outbound Transfers", "Date", "Recipient", "Amount"]
 const inboundTitles = ["Inbound Transfers", "Date", "Sender", "Amount"]
 
-const titleDataMatcher = (title: typeof outboundTitles[number] | typeof inboundTitles[number], rowData: RowData) => {
+const titleDataMatcher = (
+  title: (typeof outboundTitles)[number] | (typeof inboundTitles)[number],
+  rowData: RowData
+) => {
   switch (title) {
     case "Outbound Transfers":
       return rowData.token
