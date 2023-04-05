@@ -24,6 +24,9 @@ import { EstimatedTime } from "modules/explorer/components/EstimatedTime"
 import { theme } from "../../../theme"
 import dayjs from "dayjs"
 import { TitleBlock } from "modules/common/TitleBlock"
+import BigNumber from "bignumber.js"
+import { mutezToXtz, parseUnits } from "services/contracts/utils"
+import { formatUnits } from "services/contracts/utils"
 
 const CustomTooltip = styled(Tooltip)({
   marginLeft: 8
@@ -213,7 +216,7 @@ const validateForm = (values: VotingSettings) => {
     errors.proposalExpiryBlocks = "Must be greater than 0"
   }
 
-  if (values.proposeStakeRequired <= 0) {
+  if (new BigNumber(values.proposeStakeRequired).lte(new BigNumber(0))) {
     errors.proposeStakeRequired = "Must be greater than 0"
   }
 
@@ -221,7 +224,11 @@ const validateForm = (values: VotingSettings) => {
     errors.maxXtzAmount = "Must be greater than 0"
   }
 
-  if (values.minXtzAmount && String(values.maxXtzAmount).length > 255) {
+  if (values.minXtzAmount && new BigNumber(values.minXtzAmount).lt(mutezToXtz(new BigNumber(1)))) {
+    errors.minXtzAmount = "Too small, number must be bigger"
+  }
+
+  if (values.maxXtzAmount && String(values.maxXtzAmount).length > 255) {
     errors.maxXtzAmount = "Too big, number must be smaller"
   }
 
@@ -329,13 +336,13 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     return "0 minutes"
   }
 
-  const controlMaxFieldLimit = (field: string, value: any) => {
-    const itemValue = value.target.value.split(".")
-    if ((itemValue[0] && itemValue[0].length > 18) || (itemValue[1] && itemValue[1].length > 8)) {
-      return value.preventDefault()
-    }
-    setFieldValue(field, value.target.value)
-  }
+  // const controlMaxFieldLimit = (field: string, value: any) => {
+  //   const itemValue = value.target.value.split(".")
+  //   if ((itemValue[0] && itemValue[0].length > 18) || (itemValue[1] && itemValue[1].length > 8)) {
+  //     return value.preventDefault()
+  //   }
+  //   setFieldValue(field, value.target.value)
+  // }
 
   useEffect(() => {
     if (values) {
@@ -538,14 +545,24 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
               <GridItemCenter item xs={5}>
                 <Field
                   name="proposeStakeRequired"
-                  type="number"
+                  type="string"
                   placeholder="00"
-                  InputProps={{
-                    inputProps: { min: 0, defaultValue: 0, step: 0.01 }
-                  }}
+                  inputProps={{ min: 0, defaultValue: 0, step: 0.01 }}
                   component={TextField}
+                  validate={(value: string) => {
+                    let error
+                    if (
+                      orgSettings.governanceToken.tokenMetadata?.decimals &&
+                      new BigNumber(value).lt(
+                        parseUnits(new BigNumber(1), orgSettings.governanceToken.tokenMetadata?.decimals)
+                      )
+                    ) {
+                      error = "Token value lower than smallest valid token value"
+                    }
+                    return error
+                  }}
                   onClick={() => setFieldTouched("proposeStakeRequired")}
-                  onChange={(e: any) => controlMaxFieldLimit("proposeStakeRequired", e)}
+                  // onChange={(e: any) => controlMaxFieldLimit("proposeStakeRequired", e)}
                 />
               </GridItemCenter>
               <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
@@ -605,10 +622,11 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
               <Field
                 name="minXtzAmount"
                 type="number"
+                inputProps={{ min: 0.000001, defaultValue: 0, step: 0.01 }}
                 placeholder="00"
                 component={TextField}
                 onClick={() => setFieldTouched("minXtzAmount")}
-                onChange={(e: any) => controlMaxFieldLimit("minXtzAmount", e)}
+                // onChange={(e: any) => controlMaxFieldLimit("minXtzAmount", e)}
               />
             </GridItemCenter>
             <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
@@ -628,8 +646,9 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 type="number"
                 placeholder="00"
                 component={TextField}
+                inputProps={{ min: 0.000001, defaultValue: 0, step: 0.01 }}
                 onClick={() => setFieldTouched("maxXtzAmount")}
-                onChange={(e: any) => controlMaxFieldLimit("maxXtzAmount", e)}
+                // onChange={(e: any) => controlMaxFieldLimit("maxXtzAmount", e)}
               />
             </GridItemCenter>
             <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
