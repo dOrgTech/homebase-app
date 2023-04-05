@@ -8,6 +8,7 @@ import { useRouteMatch } from "react-router-dom"
 import { CreatorContext, ActionTypes, QuorumSettings } from "modules/creator/state"
 import { InfoRounded } from "@material-ui/icons"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { FieldChange, handleChange } from "."
 
 const ErrorText = styled(Typography)({
   display: "flex",
@@ -116,8 +117,6 @@ const InputContainer = styled(Grid)({
   }
 })
 
-type QuorumChange = { key: string; preventDefault: () => void }
-
 const validateForm = (values: QuorumSettings) => {
   const errors: FormikErrors<QuorumSettings> = {}
 
@@ -152,10 +151,6 @@ const validateForm = (values: QuorumSettings) => {
   }
 
   return errors
-}
-
-const handleChange = (event: QuorumChange) => {
-  return event.key === "." || event.key === "," ? event.preventDefault() : null
 }
 
 //TODO: Remove any from this component
@@ -211,7 +206,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 <Field
                   name="quorumThreshold"
                   type="number"
-                  onKeyDown={(e: QuorumChange) => handleChange(e)}
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   placeholder="00"
                   inputProps={{ min: 0, max: 100, step: 1 }}
                   component={TextField}
@@ -245,7 +240,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 <Field
                   name="minQuorumAmount"
                   type="number"
-                  onKeyDown={(e: QuorumChange) => handleChange(e)}
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   placeholder="00"
                   inputProps={{ min: 0, max: 100, step: 1 }}
                   component={TextField}
@@ -275,7 +270,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 <Field
                   name="maxQuorumAmount"
                   type="number"
-                  onKeyDown={(e: QuorumChange) => handleChange(e)}
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   placeholder="00"
                   inputProps={{ min: 0, max: 100, step: 1 }}
                   component={TextField}
@@ -316,7 +311,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
               <Field
                 name="quorumChange"
                 type="number"
-                onKeyDown={(e: QuorumChange) => handleChange(e)}
+                onKeyDown={(e: FieldChange) => handleChange(e)}
                 placeholder="00"
                 inputProps={{ min: 0, max: 100, step: 1 }}
                 component={TextField}
@@ -351,7 +346,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
               <Field
                 name="quorumMaxChange"
                 type="number"
-                onKeyDown={(e: QuorumChange) => handleChange(e)}
+                onKeyDown={(e: FieldChange) => handleChange(e)}
                 placeholder="00"
                 inputProps={{ min: 0, max: 100, step: 1 }}
                 component={TextField}

@@ -15,6 +15,7 @@ import { TitleBlock } from "modules/common/TitleBlock"
 import BigNumber from "bignumber.js"
 import { mutezToXtz, parseUnits } from "services/contracts/utils"
 import { formatUnits } from "services/contracts/utils"
+import { FieldChange, handleChange } from "."
 
 const TimeBox = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -417,6 +418,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="votingBlocksDay"
                   type="number"
                   placeholder="0"
@@ -444,6 +446,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="votingBlocksHours"
                   type="number"
                   component={CustomFormikTextField}
@@ -469,6 +472,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="votingBlocksMinutes"
                   type="number"
                   component={CustomFormikTextField}
@@ -521,6 +525,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="proposalFlushBlocksDay"
                   type="number"
                   component={CustomFormikTextField}
@@ -546,6 +551,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="proposalFlushBlocksHours"
                   type="number"
                   component={CustomFormikTextField}
@@ -571,6 +577,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="proposalFlushBlocksMinutes"
                   type="number"
                   component={CustomFormikTextField}
@@ -626,6 +633,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="proposalExpiryBlocksDay"
                   type="number"
                   component={CustomFormikTextField}
@@ -651,6 +659,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="proposalExpiryBlocksHours"
                   type="number"
                   component={CustomFormikTextField}
@@ -676,6 +685,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 <Field
                   style={{ margin: "auto" }}
                   id="outlined-basic"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   name="proposalExpiryBlocksMinutes"
                   type="number"
                   component={CustomFormikTextField}
