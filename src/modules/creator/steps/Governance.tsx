@@ -267,19 +267,19 @@ const useEstimatedBlocks = ({
   periodSeconds += votingBlocksHours * 3600
   periodSeconds += votingBlocksMinutes * 60
 
-  const periodBlocks = periodSeconds / blockTimeAverage
+  const periodBlocks = Math.round(periodSeconds / blockTimeAverage)
 
   let flushDelaySeconds = proposalFlushBlocksDay * 86400
   flushDelaySeconds += proposalFlushBlocksHours * 3600
   flushDelaySeconds += proposalFlushBlocksMinutes * 60
 
-  const flushBlocks = flushDelaySeconds / blockTimeAverage
+  const flushBlocks = Math.round(flushDelaySeconds / blockTimeAverage)
 
   let expiryDelaySeconds = proposalExpiryBlocksDay * 86400
   expiryDelaySeconds += proposalExpiryBlocksHours * 3600
   expiryDelaySeconds += proposalExpiryBlocksMinutes * 60
 
-  const expiryBlocks = expiryDelaySeconds / blockTimeAverage
+  const expiryBlocks = Math.round(expiryDelaySeconds / blockTimeAverage)
 
   const creationMoment = now.add(periodSeconds, "s")
   const activeMoment = creationMoment.add(periodSeconds, "s")
