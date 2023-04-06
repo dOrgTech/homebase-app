@@ -11,7 +11,7 @@ import {
   useTheme,
   useMediaQuery
 } from "@material-ui/core"
-import BackButton from "modules/common/BackButton"
+
 import { Choices } from "../../components/Choices"
 import { useHistory, useParams } from "react-router-dom"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
@@ -23,6 +23,7 @@ import dayjs from "dayjs"
 import { useNotification } from "modules/common/hooks/useNotification"
 import duration from "dayjs/plugin/duration"
 import { CommunityBadge } from "../../components/CommunityBadge"
+import { BackButton } from "modules/lite/components/BackButton"
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -39,7 +40,13 @@ const CustomFormikTextField = withStyles({
       textAlign: "initial"
     },
     "& .MuiInputBase-input": {
-      textAlign: "initial"
+      textAlign: "initial",
+      paddingTop: 19,
+      paddingLeft: 26,
+      borderRadius: 4,
+      paddingBottom: 19,
+      fontSize: 18,
+      background: "#2f3438"
     },
     "& .MuiInput-underline:before": {
       borderBottom: "none !important"
@@ -80,7 +87,6 @@ const PageContainer = styled("div")({
 })
 
 const Header = styled(Grid)(({ theme }) => ({
-  marginBottom: 26,
   [theme.breakpoints.down("sm")]: {
     marginBottom: 6
   }
@@ -99,7 +105,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "paddingLeft": 26,
   "border": "none",
   "fontSize": 17,
-  "color": props.theme.palette.text.secondary,
+  "color": props.theme.palette.text.primary,
   "background": props.theme.palette.primary.main,
   "borderRadius": 4,
   "paddingRight": 40,
@@ -144,7 +150,7 @@ const ErrorTextChoices = styled(Typography)({
 })
 
 const TimeBox = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.dark,
+  background: theme.palette.primary.main,
   borderRadius: 8,
   width: 72,
   minHeight: 59,
@@ -242,7 +248,8 @@ export const ProposalForm = ({
   errors,
   touched,
   isSubmitting,
-  setFieldTouched
+  setFieldTouched,
+  id
 }: any) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
@@ -258,7 +265,7 @@ export const ProposalForm = ({
       <Grid container>
         <Header container direction="column">
           <CommunityLabel container direction="row" justifyContent="center" alignItems="center">
-            <CommunityBadge />
+            <CommunityBadge id={id} />
           </CommunityLabel>
           <Typography color="textPrimary" variant="subtitle1">
             New Proposal
@@ -367,7 +374,7 @@ export const ProposalForm = ({
                 getIn(values, "endTimeMinutes") !== null &&
                 !hasErrors ? (
                   <Grid container direction="row">
-                    <Typography color="textSecondary" variant={"body2"}>
+                    <Typography color="textPrimary" variant={"body2"}>
                       End date:
                     </Typography>
                     <Typography color="secondary" variant="body2" style={{ marginLeft: 10 }}>
@@ -474,7 +481,7 @@ export const ProposalForm = ({
               getIn(values, "endTimeMinutes") !== null &&
               !hasErrors ? (
                 <Grid container direction="row" style={{ marginTop: -70 }}>
-                  <Typography color="textSecondary" variant={"body2"}>
+                  <Typography color="textPrimary" variant={"body2"}>
                     End date:
                   </Typography>
                   <Typography color="secondary" variant="body2" style={{ marginLeft: 10 }}>
@@ -502,16 +509,12 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
   return String(time.valueOf())
 }
 
-export const ProposalCreator: React.FC = () => {
+export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
   const navigate = useHistory()
   const { network, account, wallet } = useTezos()
   const [tokenAddress, setTokenAddress] = useState<string>("")
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
-
-  const { id } = useParams<{
-    id: string
-  }>()
 
   useEffect(() => {
     async function fetchData() {
@@ -595,7 +598,7 @@ export const ProposalCreator: React.FC = () => {
               variant: "success"
             })
             setIsLoading(false)
-            navigate.push(`/explorer/community/${id}`)
+            navigate.push(`/explorer/lite/dao/${id}/community`)
           } else {
             openNotification({
               message: "Proposal could not be created",
@@ -644,6 +647,7 @@ export const ProposalCreator: React.FC = () => {
                 touched={touched}
                 values={values}
                 setFieldTouched={setFieldTouched}
+                id={id}
               />
             </Form>
           )

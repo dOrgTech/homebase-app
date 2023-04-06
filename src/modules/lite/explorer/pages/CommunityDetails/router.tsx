@@ -4,21 +4,21 @@ import { CommunityDetails } from "./index"
 import { ProposalCreator } from "../CreateProposal"
 import { ProposalDetails } from "../ProposalDetails"
 
-export const CommunityDetailsRouter: React.FC = (): JSX.Element => {
+export const CommunityDetailsRouter: React.FC<{ id: any }> = ({ id }): JSX.Element => {
   const match = useRouteMatch()
 
   return (
     <Switch>
-      <Route exact={true} path={`${match.url}/:id`}>
-        <CommunityDetails />
+      <Route exact={true} path={`${match.url}`}>
+        <CommunityDetails id={id} />
       </Route>
-      <Route exact={true} path={`${match.url}/:id/proposal`}>
-        <ProposalCreator />
+      <Route exact={true} path={`${match.url}/proposal`}>
+        <ProposalCreator id={id} />
       </Route>
-      <Route exact={true} path={`${match.url}/:id/proposal/:proposalId`}>
-        <ProposalDetails />
+      <Route exact={true} path={`${match.url}/proposal/:proposalId`}>
+        <ProposalDetails id={id} />
       </Route>
-      <Redirect to={`${match.url}/:id`} />
+      <Redirect to={`${match.url}`} />
     </Switch>
   )
 }

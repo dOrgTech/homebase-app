@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useMemo, useState } from "react"
-import { Divider, Grid, Typography, styled } from "@material-ui/core"
+import { Divider, Grid, Typography, styled, useTheme, useMediaQuery } from "@material-ui/core"
 import { ProposalTableRow } from "./ProposalTableRow"
 import { ProposalStatus } from "./ProposalTableRowStatusBadge"
 import { Poll } from "models/Polls"
@@ -20,12 +20,14 @@ const ProposalListContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const Header = styled(Grid)({
-  paddingLeft: 41,
-  paddingRight: 41
+  padding: "24px 41px"
 })
 
 const StyledDivider = styled(Divider)({
-  height: 0
+  height: 0.3,
+  backgroundColor: "#7d8c8b",
+  marginTop: 0,
+  marginBottom: 0
 })
 
 const NoProposalsText = styled(Typography)({
@@ -33,17 +35,23 @@ const NoProposalsText = styled(Typography)({
   paddingBottom: 20
 })
 
-export const ProposalList: React.FC<{ polls: Poll[] }> = ({ polls }) => {
-  const { id } = useParams<{
-    id: string
-  }>()
+const Title = styled(Typography)(({ theme }) => ({
+  [theme.breakpoints.down("sm")]: {
+    marginBottom: 14,
+    fontSize: 16,
+    marginLeft: -2
+  }
+}))
+export const ProposalList: React.FC<{ polls: Poll[]; id: string }> = ({ polls, id }) => {
   const communityId = id.toString()
   const openNotification = useNotification()
   const [communityPolls, setCommunityPolls] = useState<Poll[]>()
   const [isFilter, setIsFilter] = useState(false)
   const [isFilterByStatus, setIsFilterByStatus] = useState(1)
   const [statusFilter, setStatusFilter] = useState("")
-  const [shouldFilter, setShowFilter] = useState(false)
+
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   useEffect(() => {
     setCommunityPolls(polls)
@@ -164,12 +172,12 @@ export const ProposalList: React.FC<{ polls: Poll[] }> = ({ polls }) => {
   return (
     <ProposalListContainer container direction="column">
       <Header container justifyContent="space-between" alignItems="center">
-        <Grid item xs>
-          <Typography variant={"body2"} color="textPrimary">
+        <Grid item xs={isMobileSmall ? 12 : 3}>
+          <Title variant={"body2"} color="textPrimary">
             Proposals
-          </Typography>
+          </Title>
         </Grid>
-        <Grid item xs={4} container direction="row" justifyContent="flex-end">
+        <Grid item xs={isMobileSmall ? 6 : 4} container direction="row" justifyContent="flex-end">
           <Dropdown
             options={[
               { name: "Most recent", value: "recent" },
@@ -179,7 +187,7 @@ export const ProposalList: React.FC<{ polls: Poll[] }> = ({ polls }) => {
             onSelected={filterProposalByPopularity}
           />
         </Grid>
-        <Grid item xs={3} container direction="row" justifyContent="flex-end">
+        <Grid item xs={isMobileSmall ? 6 : 3} container direction="row" justifyContent="flex-end">
           <Dropdown
             options={[
               { name: "All", value: "all" },

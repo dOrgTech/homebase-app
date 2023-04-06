@@ -138,11 +138,6 @@ const ErrorText = styled(Typography)({
   marginTop: -16
 })
 
-const MetadataContainer = styled(Grid)({
-  marginTop: 5,
-  marginBottom: -20
-})
-
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main
 }))

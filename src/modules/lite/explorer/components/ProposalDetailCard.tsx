@@ -70,7 +70,7 @@ const CustomPopover = withStyles({
   }
 })(Popover)
 
-export const ProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ poll }) => {
+export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: string }> = ({ poll, daoId }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -127,7 +127,7 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ poll 
                       onClick={handleClick}
                     >
                       <LogoItem src={Share} />
-                      <Typography color="secondary" variant="h5">
+                      <Typography color="secondary" variant="body2">
                         Share
                       </Typography>
                     </Grid>
@@ -158,7 +158,7 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ poll 
                     <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} />
                   </Grid>
                   <Grid item>
-                    <CommunityBadge />
+                    <CommunityBadge id={daoId} />
                   </Grid>
                   <Grid item>
                     <CreatorBadge address={poll?.author} />

@@ -53,7 +53,7 @@ export const ProposalTableRow: React.FC<{ poll: Poll }> = ({ poll }) => {
       item
       container
       alignItems="center"
-      onClick={() => navigate.push(`/explorer/community/${poll.daoID}/proposal/${poll._id}`, { poll: poll })}
+      onClick={() => navigate.push(`/explorer/lite/dao/${poll.daoID}/community/proposal/${poll._id}`, { poll: poll })}
     >
       <BlockieContainer container direction="row">
         <Blockie address={"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"} size={24} />
@@ -62,7 +62,7 @@ export const ProposalTableRow: React.FC<{ poll: Poll }> = ({ poll }) => {
         </Address>
       </BlockieContainer>
       <Grid container item style={{ gap: 25 }} xs={12} md={12} justifyContent={isMobile ? "center" : "flex-start"}>
-        <Typography variant="h4" color="textSecondary" align={isMobile ? "center" : "left"}>
+        <Typography variant="h4" color="textPrimary" align={isMobile ? "center" : "left"}>
           {poll.name}
         </Typography>
 
@@ -74,7 +74,7 @@ export const ProposalTableRow: React.FC<{ poll: Poll }> = ({ poll }) => {
           style={{ gap: 18 }}
         >
           <TableStatusBadge status={poll.isActive || ProposalStatus.ACTIVE} />
-          <ArrowInfo color="textSecondary">{poll.timeFormatted}</ArrowInfo>
+          <ArrowInfo color="textPrimary">{poll.timeFormatted}</ArrowInfo>
         </Grid>
 
         <Grid>

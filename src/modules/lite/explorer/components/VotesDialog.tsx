@@ -20,13 +20,18 @@ const CustomContent = styled(DialogContent)({
   padding: "0px 54px 22px 54px !important"
 })
 
+const CustomDialogActions = styled(DialogActions)({
+  justifyContent: "center !important",
+  paddingBottom: 20
+})
+
 const CopyIcon = styled(FileCopyOutlined)({
   marginLeft: 8,
   cursor: "pointer"
 })
 
 const CustomTitle = styled(Typography)(({ theme }) => ({
-  borderBottom: `0.3px solid ${theme.palette.primary.light}`,
+  borderBottom: `0.3px solid ${theme.palette.primary.main}`,
   paddingBottom: 16
 }))
 
@@ -82,14 +87,17 @@ export const VotesDialog: React.FC<{
                   return (
                     <Grid container direction="row" alignItems="baseline" key={`'row-'${index}${num}`}>
                       <Grid item xs={6} md={4} lg={4} xl={4} container direction="row" alignItems="center">
-                        <Typography> {toShortAddress(choice.address)}</Typography>
+                        <Typography color="textPrimary"> {toShortAddress(choice.address)}</Typography>
                         <CopyIcon onClick={() => copyAddress(choice.address)} color="secondary" fontSize="inherit" />
                       </Grid>
                       <Grid item xs={6} md={4} lg={4} xl={4} container justifyContent="center">
-                        <Typography variant="body1"> {elem.name} </Typography>
+                        <Typography color="textPrimary" variant="body1">
+                          {" "}
+                          {elem.name}{" "}
+                        </Typography>
                       </Grid>
                       <Grid item xs={6} md={4} lg={4} xl={4} container justifyContent="flex-end">
-                        <Typography variant="body1">
+                        <Typography color="textPrimary" variant="body1">
                           {" "}
                           {formatByDecimals(choice.balanceAtReferenceBlock, decimals)} {symbol}{" "}
                         </Typography>
@@ -101,11 +109,11 @@ export const VotesDialog: React.FC<{
             })}
           </DialogContentText>
         </CustomContent>
-        <DialogActions>
+        <CustomDialogActions>
           <Button variant="contained" color="secondary" onClick={handleClose}>
             Close
           </Button>
-        </DialogActions>
+        </CustomDialogActions>
       </Dialog>
     </div>
   )

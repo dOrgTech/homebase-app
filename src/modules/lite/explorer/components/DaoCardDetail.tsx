@@ -86,7 +86,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
             variant="contained"
             color="secondary"
             size="small"
-            onClick={() => navigate.push(`/explorer/community/${community?._id}/proposal`)}
+            onClick={() => navigate.push(`/explorer/lite/dao/${community?._id}/community/proposal`)}
           >
             New Proposal
           </ProposalButton>

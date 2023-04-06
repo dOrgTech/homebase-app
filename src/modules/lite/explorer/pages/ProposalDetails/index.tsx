@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Button, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core"
-import BackButton from "modules/common/BackButton"
 import { ProposalDetailCard } from "../../components/ProposalDetailCard"
 import { GridContainer } from "modules/common/GridContainer"
 import { ChoiceItemSelected } from "../../components/ChoiceItemSelected"
@@ -9,15 +8,15 @@ import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Poll } from "models/Polls"
 import { Choice } from "models/Choice"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { getCurrentBlock, getSignature, getUserTotalSupplyAtReferenceBlock } from "services/lite/utils"
+import { getSignature } from "services/lite/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
-import { DashboardContext } from "../../context/ActionSheets/explorer"
 import { useHasVoted } from "../../hooks/useHasVoted"
 import { usePollChoices } from "../../hooks/usePollChoices"
 import { useCommunity } from "../../hooks/useCommunity"
 import { useIsMembers } from "../../hooks/useIsMember"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
+import { BackButton } from "modules/lite/components/BackButton"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -45,9 +44,8 @@ const PageContainer = styled("div")({
   }
 })
 
-export const ProposalDetails: React.FC = () => {
-  const { id, proposalId } = useParams<{
-    id: string
+export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
+  const { proposalId } = useParams<{
     proposalId: string
   }>()
 
@@ -60,7 +58,7 @@ export const ProposalDetails: React.FC = () => {
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const { hasVoted, vote } = useHasVoted(refresh)
-  const community = useCommunity()
+  const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
   const isMember = useIsMembers(account, community?.members)
@@ -139,7 +137,7 @@ export const ProposalDetails: React.FC = () => {
       </Grid>
       <Grid container style={{ gap: 30 }}>
         <Grid item>
-          <ProposalDetailCard poll={poll} />
+          <ProposalDetailCard poll={poll} daoId={id} />
         </Grid>
         <Grid container item xs={12}>
           {choices && choices.length > 0 ? (

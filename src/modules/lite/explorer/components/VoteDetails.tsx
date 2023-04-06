@@ -19,7 +19,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { useCommunityToken } from "../hooks/useCommunityToken"
 
 const Container = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.light,
+  background: theme.palette.primary.main,
   borderRadius: 8
 }))
 

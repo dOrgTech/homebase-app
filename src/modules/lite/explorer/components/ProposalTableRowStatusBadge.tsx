@@ -12,7 +12,7 @@ export enum ProposalStatus {
 const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
   const statusToColor = {
     [ProposalStatus.ACTIVE]: theme.palette.secondary.main,
-    [ProposalStatus.CLOSED]: theme.palette.secondary.light
+    [ProposalStatus.CLOSED]: "#7e496f"
   }
 
   return statusToColor[status]

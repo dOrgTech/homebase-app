@@ -7,8 +7,8 @@ const StyledAvatar = styled(Avatar)({
   width: 27
 })
 
-export const CommunityBadge: React.FC = () => {
-  const community = useCommunity()
+export const CommunityBadge: React.FC<{ id: string }> = ({ id }) => {
+  const community = useCommunity(id)
   return (
     <Grid container style={{ gap: 11 }}>
       <Grid item>

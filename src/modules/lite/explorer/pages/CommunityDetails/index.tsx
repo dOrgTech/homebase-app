@@ -41,12 +41,9 @@ const PageContainer = styled("div")({
   }
 })
 
-export const CommunityDetails: React.FC = () => {
-  const { id } = useParams<{
-    id: string
-  }>()
+export const CommunityDetails: React.FC<{ id: string }> = ({ id }) => {
   const [isUpdated, setIsUpdated] = useState(1)
-  const community = useCommunity(isUpdated)
+  const community = useCommunity(id, isUpdated)
   const polls = usePolls(community?.polls, id, community)
 
   return (
@@ -57,7 +54,7 @@ export const CommunityDetails: React.FC = () => {
         </CommunityDetailsContainer>
         <CommunityDetailsContainer container justifyContent="center" item xs={12} lg={8} md={8}>
           {polls.length > 0 ? (
-            <ProposalList polls={polls} />
+            <ProposalList polls={polls} id={id} />
           ) : (
             <Typography style={{ width: "inherit" }} color="textPrimary">
               0 proposals found

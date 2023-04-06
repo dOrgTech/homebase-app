@@ -4,19 +4,14 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
-export const useCommunity = (isUpdated?: number) => {
+export const useCommunity = (daoId: string, isUpdated?: number) => {
   const [community, setCommunity] = useState<Community>()
   const openNotification = useNotification()
 
-  const { id } = useParams<{
-    id: string
-  }>()
-
   useEffect(() => {
     async function fetchData() {
-      const communityId = id.toString()
       try {
-        await fetch(`${process.env.REACT_APP_API_URL}/daos/${communityId}`).then(async response => {
+        await fetch(`${process.env.REACT_APP_API_URL}/daos/${daoId.toString()}`).then(async response => {
           if (!response.ok) {
             openNotification({
               message: "An error has occurred",
@@ -39,6 +34,6 @@ export const useCommunity = (isUpdated?: number) => {
     fetchData()
 
     return
-  }, [id, isUpdated, setCommunity])
+  }, [daoId, isUpdated, setCommunity])
   return community
 }

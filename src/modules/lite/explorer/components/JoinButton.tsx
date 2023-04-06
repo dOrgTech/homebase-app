@@ -10,8 +10,13 @@ import { useCommunityToken } from "../hooks/useCommunityToken"
 const CustomButton = styled(Button)(({ theme }) => ({
   "width": 67,
   "height": 34,
+  "backgroundColor": theme.palette.secondary.main,
+  "&:hover": {
+    backgroundColor: theme.palette.secondary.main,
+    opacity: 0.8
+  },
   ".MuiButton-containedSecondary:hover": {
-    backgroundColor: `${theme.palette.secondary.main} !important`
+    backgroundColor: "#ff486e !important"
   }
 }))
 
@@ -100,7 +105,7 @@ export const JoinButton: React.FC<JoinButtonProps> = ({ account, setIsUpdated, c
       onMouseOver={() => setHover(true)}
       onMouseOut={() => setHover(false)}
       variant="contained"
-      color={!isMember ? "secondary" : "inherit"}
+      color={!isMember ? "default" : "secondary"}
       size="small"
       onClick={e => {
         joinCommunity()
