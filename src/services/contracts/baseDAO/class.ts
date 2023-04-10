@@ -106,7 +106,9 @@ export abstract class BaseDAO {
         init: storageCode
       })
 
+      console.log("t: ", t)
       const operation = await t.send()
+      console.log("operation: ", operation)
       console.log("Waiting for confirmation on DAO contract...", t)
       const { address } = await operation.contract()
 
