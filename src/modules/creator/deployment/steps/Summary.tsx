@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
@@ -10,6 +10,7 @@ import { CopyButton } from "modules/common/CopyButton"
 import { ActionTypes } from "../state/types"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { useTokenOriginate } from "services/contracts/token/hooks/useToken"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 const ThirdContainer = styled(Grid)({
   marginTop: 22,
@@ -81,9 +82,12 @@ export const ContractSummary: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const history = useHistory()
   const match = useRouteMatch()
+  const openNotification = useNotification()
 
   const { state, dispatch } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const goToSettings = () => {
     history.push(`config`)
@@ -98,11 +102,30 @@ export const ContractSummary: React.FC = () => {
   } = useTokenOriginate(state.data)
 
   useEffect(() => {
+    if (data && data.address) {
+      dispatch({
+        type: ActionTypes.CLEAR_CACHE
+      })
+      history.push("/creator/success", { address: data.address })
+    }
+  }, [data, dispatch, history])
+
+  useEffect(() => {
+    if (error) {
+      setIsLoading(false)
+      openNotification({
+        message: "Error deploying token... try again later",
+        variant: "error",
+        autoHideDuration: 2000
+      })
+    }
+  }, [error, openNotification])
+
+  useEffect(() => {
     dispatch({
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       back: {
         handler: () => history.push(`distribution`),
-
         text: "Back"
       },
       next: {
@@ -110,13 +133,12 @@ export const ContractSummary: React.FC = () => {
           mutate({
             ...state.data
           })
-          history.push("/creator/build/template")
-          dispatch({ type: ActionTypes.CLEAR_CACHE })
+          setIsLoading(true)
         },
-        text: "Launch"
+        text: isLoading ? "Deploying..." : "Launch"
       }
     })
-  }, [dispatch, history, match.path, match.url, mutate, state.data])
+  }, [dispatch, history, match.path, match.url, mutate, state.data, isLoading])
 
   return (
     <>
