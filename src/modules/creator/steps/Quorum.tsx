@@ -212,6 +212,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                   name="quorumThreshold"
                   type="number"
                   placeholder="00"
+                  onKeyDown={(e: QuorumChange) => handleChange(e)}
                   inputProps={{ min: 0, max: 100 }}
                   component={TextField}
                   InputProps={{
@@ -245,6 +246,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                   name="minQuorumAmount"
                   type="number"
                   placeholder="00"
+                  onKeyDown={(e: QuorumChange) => handleChange(e)}
                   component={TextField}
                   InputProps={{
                     endAdornment: <ValueText color="textSecondary">%</ValueText>
@@ -273,6 +275,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                   name="maxQuorumAmount"
                   type="number"
                   placeholder="00"
+                  onKeyDown={(e: QuorumChange) => handleChange(e)}
                   component={TextField}
                   InputProps={{
                     endAdornment: <ValueText color="textSecondary">%</ValueText>
@@ -311,8 +314,8 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
               <Field
                 name="quorumChange"
                 type="number"
-                onKeyDown={(e: QuorumChange) => handleChange(e)}
                 placeholder="00"
+                onKeyDown={(e: QuorumChange) => handleChange(e)}
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
                 InputProps={{
@@ -347,6 +350,7 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 name="quorumMaxChange"
                 type="number"
                 placeholder="00"
+                onKeyDown={(e: QuorumChange) => handleChange(e)}
                 inputProps={{ min: 0, max: 100 }}
                 component={TextField}
                 InputProps={{
