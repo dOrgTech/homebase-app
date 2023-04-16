@@ -177,19 +177,6 @@ export const DAOList: React.FC = () => {
       <PageContainer>
         <Grid container style={{ gap: 42 }} direction="column">
           <Grid item>
-            <BannerContainer container alignItems="center" direction="row">
-              <LinkText color="textPrimary" style={{ display: "inline" }}>
-                For off-chain token-weighted polls, try{" "}
-              </LinkText>{" "}
-              <ExternalLink color="secondary" onClick={goToHomebaseLite}>
-                {" "}
-                Homebase Lite
-                <ExternalLinkIcon color="secondary" />{" "}
-              </ExternalLink>
-            </BannerContainer>
-          </Grid>
-
-          <Grid item>
             <Grid
               container
               justifyContent={isMobileExtraSmall ? "center" : "space-between"}
