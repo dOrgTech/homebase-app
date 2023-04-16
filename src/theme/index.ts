@@ -402,6 +402,16 @@ export const theme = createTheme({
       rounded: {
         borderRadius: "8px"
       }
+    },
+    MuiAccordionSummary: {
+      root: {
+        "minHeight": 91,
+        "& .Mui-expanded": {
+          minHeight: 91,
+          display: "flex",
+          alignItems: "center"
+        }
+      }
     }
   }
 })
