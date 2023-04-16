@@ -46,7 +46,7 @@ export const theme = createTheme({
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 400
+      fontWeight: 300
     },
     h3: {
       fontSize: 21,
@@ -371,6 +371,9 @@ export const theme = createTheme({
     MuiTableCell: {
       root: {
         borderBottom: "unset"
+      },
+      head: {
+        fontWeight: 300
       }
     },
     MuiTableRow: {
