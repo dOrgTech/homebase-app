@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   Box,
   Button,
@@ -29,6 +30,7 @@ import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { SmallButton } from "../../../common/SmallButton"
 import { MainButton } from "../../../common/MainButton"
+import { parseUnits } from "services/contracts/utils"
 
 const Card = styled(ContentContainer)({
   boxSizing: "border-box",
@@ -48,11 +50,12 @@ const ImgContainer = styled(Box)({
 })
 
 const NFTId = styled(Typography)({
-  fontSize: 14
+  fontSize: 14,
+  fontWeight: 300
 })
 
 const NFTTitle = styled(Typography)({
-  fontWeight: "bold"
+  fontWeight: 500
 })
 
 export const NFTs: React.FC = () => {
@@ -104,35 +107,6 @@ export const NFTs: React.FC = () => {
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
-        <Hero>
-          <Grid item>
-            <HeroTitle>NFT Treasury</HeroTitle>
-            {dao && (
-              <CopyAddress
-                address={dao.data.address}
-                justifyContent={isMobileSmall ? "center" : "flex-start"}
-                typographyProps={{
-                  variant: "subtitle2"
-                }}
-              />
-            )}
-          </Grid>
-          <Grid item>
-            <MainButton
-              variant="contained"
-              color="secondary"
-              onClick={() => setOpenTransfer(true)}
-              disabled={shouldDisable}
-            >
-              New Transfer
-            </MainButton>
-            {shouldDisable && (
-              <Tooltip placement="bottom" title="Not on proposal creation period">
-                <InfoIcon color="secondary" />
-              </Tooltip>
-            )}
-          </Grid>
-        </Hero>
         <Grid item>
           <Grid container justifyContent={isMobileSmall ? "center" : "flex-start"} style={{ gap: 12 }}>
             {!nftHoldings ? (
@@ -173,10 +147,11 @@ export const NFTs: React.FC = () => {
                             />
                           </ImgContainer>
                         </Grid>
-                        <FullWidthContainer item>
+                        <FullWidthContainer item container direction="row" justifyContent="space-between">
                           <NFTId color="textPrimary">
-                            {nft.token.symbol} #{nft.token.token_id}
+                            {nft.token.symbol}#{nft.token.id}
                           </NFTId>
+                          <NFTId color="textPrimary">#{nft.token.token_id}</NFTId>
                         </FullWidthContainer>
                       </Grid>
                     </Grid>
@@ -188,6 +163,11 @@ export const NFTs: React.FC = () => {
                           </NFTTitle>
                         </Grid>
                         <Grid item>
+                          <Typography color="secondary" style={{ marginBottom: 16 }}>
+                            {parseUnits(nft.token.supply, nft.token.decimals).toString()} {nft.token.symbol}
+                          </Typography>
+                        </Grid>
+                        <Grid item container direction="row" justifyContent="center">
                           <SmallButton
                             variant="contained"
                             color="secondary"
@@ -195,7 +175,7 @@ export const NFTs: React.FC = () => {
                             onClick={e => onClick(e, nft.token)}
                             disabled={shouldDisable}
                           >
-                            Propose Transfer
+                            Transfer
                           </SmallButton>
                         </Grid>
                       </Grid>

@@ -28,9 +28,15 @@ import { ProposalFormInput } from "./ProposalFormInput"
 import { ProposalFormResponsiveDialog } from "./ResponsiveDialog"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import CloseButton from "modules/common/CloseButton"
+import { ReactComponent as SwapIcon } from "assets/img/swap.svg"
 
 const CustomContainer = styled(Grid)({
   padding: "42px 54px 0px 54px"
+})
+
+const IconSwap = styled(SwapIcon)({
+  marginLeft: 16,
+  marginRight: 16
 })
 
 const DialogTitle = styled(Typography)({
@@ -85,6 +91,10 @@ const enabledForms: Record<
 
 const Content = styled(Grid)({
   padding: "0 54px"
+})
+
+const SwapText = styled(Typography)({
+  opacity: 0.65
 })
 
 export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defaultValues, defaultTab }) => {
@@ -159,14 +169,27 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
     [dao, handleClose, methods, registryMutate]
   )
 
+  const getLabel = (selectedTab: number) => {
+    switch (selectedTab) {
+      case 0:
+        return "NFT"
+      case 1:
+        return "Funds"
+      case 2:
+        return ""
+    }
+  }
+
   return (
     <FormProvider {...methods}>
       <ProposalFormResponsiveDialog open={open} onClose={handleClose}>
         {dao && daoHoldings && (
           <>
             <CustomContainer container direction="row" justifyContent="space-between" alignItems="center">
-              <Grid item>
+              <Grid item container direction="row" alignItems="center" style={{ width: "80%" }}>
                 <DialogTitle>{forms[selectedTab].label.toLowerCase()}</DialogTitle>
+                {selectedTab === 0 || selectedTab === 1 ? <IconSwap /> : null}
+                <SwapText>{getLabel(selectedTab)}</SwapText>
               </Grid>
               <Grid item>
                 <CloseButton onClose={handleClose} />

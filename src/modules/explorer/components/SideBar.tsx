@@ -148,11 +148,6 @@ export const SideBar: React.FC = () => {
         Icon: TreasuryIcon,
         handler: () => history.push(`/explorer/dao/${daoId}/treasury`),
         name: "treasury"
-      },
-      {
-        Icon: NFTIcon,
-        handler: () => history.push(`/explorer/dao/${daoId}/nft`),
-        name: "nft"
       }
     ]
 

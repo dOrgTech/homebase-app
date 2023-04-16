@@ -126,12 +126,6 @@ const getPages = (daoId: string): Page[] => [
     href: `/explorer/dao/${daoId}/registry`
   },
   {
-    pathId: "nfts",
-    name: "NFT",
-    icon: NFTIcon,
-    href: `/explorer/dao/${daoId}/nfts`
-  },
-  {
     pathId: "user",
     name: "User",
     icon: UserIcon,

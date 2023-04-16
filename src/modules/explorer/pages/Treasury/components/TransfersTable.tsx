@@ -19,6 +19,8 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network } from "services/beacon"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { networkNameMap } from "services/bakingBad"
+import { Blockie } from "modules/common/Blockie"
+import { toShortAddress } from "services/contracts/utils"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
@@ -32,18 +34,23 @@ const TokenSymbol = styled(Typography)(({ theme }) => ({
   width: "min-content"
 }))
 
-const createData = (transfer: TransferWithBN, isInbound: boolean) => {
+const createData = (transfer: TransferWithBN) => {
   return {
     token: transfer.name,
     date: dayjs(transfer.date).format("ll"),
+    address: transfer.recipient,
     amount: transfer.amount.dp(10, 1).toString(),
-    address: isInbound ? transfer.sender : transfer.recipient,
     hash: transfer.hash
   }
 }
 
 const TableContainer = styled(ContentContainer)({
   width: "100%"
+})
+
+const RecipientText = styled(Typography)({
+  marginLeft: 8,
+  marginTop: 8
 })
 
 interface RowData {
@@ -54,17 +61,11 @@ interface RowData {
   hash: string
 }
 
-const outboundTitles = ["Outbound Transfers", "Date", "Recipient", "Amount"]
-const inboundTitles = ["Inbound Transfers", "Date", "Sender", "Amount"]
+const Titles = ["Transfer History", "Date", "Recipient", "Amount"]
 
-const titleDataMatcher = (
-  title: (typeof outboundTitles)[number] | (typeof inboundTitles)[number],
-  rowData: RowData
-) => {
+const titleDataMatcher = (title: (typeof Titles)[number], rowData: RowData) => {
   switch (title) {
-    case "Outbound Transfers":
-      return rowData.token
-    case "Inbound Transfers":
+    case "Transfer History":
       return rowData.token
     case "Date":
       return rowData.date
@@ -89,12 +90,12 @@ const MobileTableRow = styled(Grid)({
 
 //TODO: Should mobile table items also redirect to block explorer on click?
 
-const MobileTransfersTable: React.FC<{ data: RowData[]; isInbound: boolean }> = ({ isInbound, data }) => {
+const MobileTransfersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   return (
     <Grid container direction="column" alignItems="center">
       <MobileTableHeader item>
         <Typography align="center" variant="h4" color="textPrimary">
-          {isInbound ? "Inbound" : "Outbound"} Transfer History
+          Transfer History
         </Typography>
       </MobileTableHeader>
       {data.map((row, i) => (
@@ -106,7 +107,7 @@ const MobileTransfersTable: React.FC<{ data: RowData[]; isInbound: boolean }> = 
           alignItems="center"
           style={{ gap: 19 }}
         >
-          {(isInbound ? inboundTitles : outboundTitles).map((title, j) => (
+          {Titles.map((title, j) => (
             <Grid item key={`transfersMobileItem-${j}`}>
               <Typography variant="h6" color="secondary" align="center">
                 {title === "Outbound Transfers" || title === "Inbound Transfers" ? "Token:" : title}
@@ -122,17 +123,13 @@ const MobileTransfersTable: React.FC<{ data: RowData[]; isInbound: boolean }> = 
   )
 }
 
-const DesktopTransfersTable: React.FC<{ isInbound: boolean; data: RowData[]; network: Network }> = ({
-  isInbound,
-  data: rows,
-  network
-}) => {
+const DesktopTransfersTable: React.FC<{ data: RowData[]; network: Network }> = ({ data: rows, network }) => {
   return (
     <>
       <Table>
         <TableHead>
           <TableRow>
-            {(isInbound ? inboundTitles : outboundTitles).map((title, i) => (
+            {Titles.map((title, i) => (
               <TableCell key={`tokentitle-${i}`}>{title}</TableCell>
             ))}
           </TableRow>
@@ -149,7 +146,10 @@ const DesktopTransfersTable: React.FC<{ isInbound: boolean; data: RowData[]; net
                 <TokenSymbol>{row.token}</TokenSymbol>
               </TableCell>
               <TableCell>{row.date}</TableCell>
-              <TableCell>{row.address}</TableCell>
+              <TableCell style={{ display: "flex", alignItems: "center" }}>
+                <Blockie address={row.address} size={24} style={{ marginTop: 8 }} />
+                <RecipientText variant="body2">{toShortAddress(row.address)}</RecipientText>
+              </TableCell>
               <TableCell>{row.amount}</TableCell>
             </TableRow>
           ))}
@@ -159,10 +159,7 @@ const DesktopTransfersTable: React.FC<{ isInbound: boolean; data: RowData[]; net
   )
 }
 
-export const TransfersTable: React.FC<{ transfers: TransferWithBN[]; isInbound: boolean }> = ({
-  isInbound,
-  transfers
-}) => {
+export const TransfersTable: React.FC<{ transfers: TransferWithBN[] }> = ({ transfers }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
@@ -171,18 +168,14 @@ export const TransfersTable: React.FC<{ transfers: TransferWithBN[]; isInbound: 
       return []
     }
 
-    return transfers.map(t => createData(t, isInbound))
-  }, [isInbound, transfers])
+    return transfers.map(t => createData(t))
+  }, [transfers])
 
   const { network } = useTezos()
 
   return (
     <TableContainer>
-      {isSmall ? (
-        <MobileTransfersTable data={rows} isInbound={isInbound} />
-      ) : (
-        <DesktopTransfersTable data={rows} network={network} isInbound={isInbound} />
-      )}
+      {isSmall ? <MobileTransfersTable data={rows} /> : <DesktopTransfersTable data={rows} network={network} />}
     </TableContainer>
   )
 }
