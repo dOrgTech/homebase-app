@@ -1,4 +1,4 @@
-import { Grid, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, Theme, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
 
@@ -12,17 +12,25 @@ import { TransfersTable } from "./components/TransfersTable"
 import { useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
-import { styled, Typography } from "@material-ui/core"
-import { SmallButton } from "../../../common/SmallButton"
+import { styled } from "@material-ui/core"
 import { MainButton } from "../../../common/MainButton"
-import { DelegationChangeProposalForm } from "modules/explorer/components/DelegationChangeProposalForm"
-import { useDelegate } from "services/contracts/baseDAO/hooks/useDelegate"
+import { TabPanel } from "modules/explorer/components/TabPanel"
+import { NFTs } from "../NFTs"
 
-const DelegateTitle = styled(Typography)(({ theme }) => ({
-  fontSize: 18,
-  fontWeight: 500,
-  color: theme.palette.text.primary,
-  marginBottom: 3
+const ItemGrid = styled(Grid)({
+  width: "inherit"
+})
+
+const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+  "fontSize": 16,
+  "fontWeight": 400,
+  "color": isSelected ? theme.palette.primary.dark : "#fff",
+
+  "backgroundColor": isSelected ? theme.palette.secondary.main : theme.palette.primary.main,
+
+  "&:hover": {
+    backgroundColor: isSelected ? theme.palette.secondary.main : theme.palette.secondary.dark
+  }
 }))
 
 export const Treasury: React.FC = () => {
@@ -31,31 +39,18 @@ export const Treasury: React.FC = () => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const [openTransfer, setOpenTransfer] = useState(false)
-  const [openDelegationChange, setOpenDelegationChange] = useState(false)
+  const [selectedTab, setSelectedTab] = React.useState(0)
 
   const onCloseTransfer = () => {
     setOpenTransfer(false)
   }
   const { data: transfers } = useTransfers(daoId)
-  const { data: delegate } = useDelegate(daoId)
-
-  const inboundTransfers = useMemo(() => {
-    if (!transfers) {
-      return []
-    }
-
-    return transfers.filter(t => t.recipient.toLowerCase() === daoId.toLowerCase())
-  }, [transfers, daoId])
-
-  const outboundTransfers = useMemo(() => {
-    if (!transfers) {
-      return []
-    }
-
-    return transfers.filter(t => t.recipient.toLowerCase() !== daoId.toLowerCase())
-  }, [transfers, daoId])
 
   const shouldDisable = useIsProposalButtonDisabled(daoId)
+
+  const handleChangeTab = (newValue: number) => {
+    setSelectedTab(newValue)
+  }
 
   return (
     <>
@@ -94,63 +89,78 @@ export const Treasury: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
+        </Hero>
 
-          <Grid container style={{ display: "flex", justifyContent: "space-between", marginTop: 25 }}>
+        <Grid item>
+          <Grid container>
             <Grid item>
-              <DelegateTitle>Current Delegate</DelegateTitle>
-              {delegate ? (
-                <CopyAddress
-                  address={delegate.address}
-                  justifyContent={isMobileSmall ? "center" : "flex-start"}
-                  typographyProps={{
-                    variant: "subtitle2"
-                  }}
-                />
-              ) : (
-                dao && (
-                  <CopyAddress
-                    address={dao.data.address}
-                    justifyContent={isMobileSmall ? "center" : "flex-start"}
-                    typographyProps={{
-                      variant: "subtitle2"
-                    }}
-                  />
-                )
-              )}
-            </Grid>
-            <Grid item style={{ display: "flex", alignItems: "center" }}>
               <Grid container>
                 <Grid item>
-                  <SmallButton
+                  <StyledTab
                     variant="contained"
-                    color="secondary"
-                    onClick={() => setOpenDelegationChange(true)}
-                    disabled={shouldDisable}
+                    style={
+                      selectedTab !== 0
+                        ? { borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex: 0 }
+                        : { borderRadius: 4, zIndex: 1 }
+                    }
+                    disableElevation={true}
+                    onClick={() => handleChangeTab(0)}
+                    isSelected={selectedTab === 0}
                   >
-                    Change Delegate
-                  </SmallButton>
-                  {shouldDisable && (
-                    <Tooltip placement="bottom" title="Not on proposal creation period">
-                      <InfoIcon color="secondary" />
-                    </Tooltip>
-                  )}
+                    Tokens
+                  </StyledTab>
+                </Grid>
+                <Grid item>
+                  <StyledTab
+                    disableElevation={true}
+                    variant="contained"
+                    style={
+                      selectedTab !== 1
+                        ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0 }
+                        : { borderRadius: 4, marginLeft: -1, zIndex: 1 }
+                    }
+                    onClick={() => handleChangeTab(1)}
+                    isSelected={selectedTab === 1}
+                  >
+                    NFTs
+                  </StyledTab>
+                </Grid>
+
+                <Grid item>
+                  <StyledTab
+                    disableElevation={true}
+                    variant="contained"
+                    style={
+                      selectedTab !== 1
+                        ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0 }
+                        : { borderRadius: 4, marginLeft: -1, zIndex: 1 }
+                    }
+                    onClick={() => handleChangeTab(2)}
+                    isSelected={selectedTab === 2}
+                  >
+                    History
+                  </StyledTab>
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
-        </Hero>
-        <Grid item>
-          <BalancesTable />
         </Grid>
-        <Grid item>
-          <TransfersTable isInbound={true} transfers={inboundTransfers} />
-        </Grid>
-        <Grid item>
-          <TransfersTable isInbound={false} transfers={outboundTransfers} />
-        </Grid>
+
+        <ItemGrid item>
+          <TabPanel value={selectedTab} index={0}>
+            <BalancesTable />
+          </TabPanel>
+
+          <TabPanel value={selectedTab} index={1}>
+            <NFTs />
+          </TabPanel>
+
+          <TabPanel value={selectedTab} index={2}>
+            <TransfersTable transfers={transfers || []} />
+          </TabPanel>
+        </ItemGrid>
       </Grid>
       <ProposalFormContainer open={openTransfer} handleClose={onCloseTransfer} defaultTab={0} />
-      <DelegationChangeProposalForm open={openDelegationChange} handleClose={() => setOpenDelegationChange(false)} />
     </>
   )
 }
