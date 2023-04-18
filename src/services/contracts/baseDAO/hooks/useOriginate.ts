@@ -1,14 +1,16 @@
 import { OriginateParams } from "../types"
 import { DAOTemplate } from "../../../../modules/creator/state/types"
 import { useState } from "react"
-import { ContractAbstraction, ContractProvider, Wallet } from "@taquito/taquito"
+import { ContractAbstraction, ContractProvider, TezosToolkit, Wallet } from "@taquito/taquito"
 import { useMutation, useQueryClient } from "react-query"
 
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
-import { useTezos } from "services/beacon/hooks/useTezos"
+import { initTezosInstance, useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { getDAO } from "services/indexer/dao/services"
 import mixpanel from "mixpanel-browser"
+import { InMemorySigner } from "@taquito/signer"
+import { ALICE_PRIV_KEY } from "services/beacon"
 
 const INITIAL_STATES = [
   {
@@ -75,6 +77,14 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(0)
       setStates(updatedStates)
 
+      let newTezos: TezosToolkit = tezos
+
+      if (network !== "mainnet") {
+        newTezos = initTezosInstance(network)
+        const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
+        newTezos.setProvider({ signer })
+      }
+
       mixpanel.track("Started DAO origination", {
         contract: "MetadataCarrier",
         daoName: params.orgSettings.name,
@@ -83,7 +93,7 @@ export const useOriginate = (template: DAOTemplate) => {
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
-        tezos,
+        tezos: newTezos,
         connect
       })
 
@@ -110,7 +120,7 @@ export const useOriginate = (template: DAOTemplate) => {
       })
 
       const contract = await BaseDAO.baseDeploy(template, {
-        tezos,
+        tezos: newTezos,
         metadata,
         params,
         network
@@ -133,7 +143,7 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(2)
       setStates(updatedStates)
 
-      const tx = await BaseDAO.transfer_ownership(contract.address, contract.address, tezos)
+      const tx = await BaseDAO.transfer_ownership(contract.address, contract.address, newTezos)
 
       if (!tx) {
         throw new Error(`Error transferring ownership of ${template}DAO to itself`)
