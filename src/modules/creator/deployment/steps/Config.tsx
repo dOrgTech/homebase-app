@@ -6,6 +6,7 @@ import { DeploymentContext } from "../state/context"
 import { ActionTypes, TokenContractSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { FieldChange, handleChange } from "modules/creator/utils"
 
 const ButtonContainer = styled(Grid)({
   marginTop: 40
@@ -165,6 +166,8 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue 
             <CustomInputContainer>
               <Field
                 id="outlined-basic"
+                onKeyDown={(e: FieldChange) => handleChange(e)}
+                inputProps={{ min: 0 }}
                 type="number"
                 placeholder="Supply"
                 name="totalSupply"
@@ -181,6 +184,8 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue 
             <CustomInputContainer>
               <Field
                 id="outlined-basic"
+                onKeyDown={(e: FieldChange) => handleChange(e)}
+                inputProps={{ min: 0 }}
                 type="number"
                 placeholder="Decimals"
                 name="decimals"
@@ -205,7 +210,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue 
           <Grid item xs={6}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
-              Icon{" "}
+              Icon Link{" "}
             </Typography>
             <CustomInputContainer>
               <Field id="outlined-basic" placeholder="Icon" name="icon" component={CustomFormikTextField} />

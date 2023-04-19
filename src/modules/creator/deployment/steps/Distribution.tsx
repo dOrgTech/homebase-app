@@ -12,6 +12,7 @@ import { formatUnits, parseUnits } from "services/contracts/utils"
 import { numberWithCommas } from "../state/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { FieldChange, handleChange } from "modules/creator/utils"
 
 const SupplyContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -135,6 +136,8 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                       <CustomInputContainer>
                         <Field
                           type="number"
+                          onKeyDown={(e: FieldChange) => handleChange(e)}
+                          inputProps={{ min: 0 }}
                           name={`holders.[${index}].amount`}
                           placeholder={`Amount`}
                           component={CustomFormikTextField}

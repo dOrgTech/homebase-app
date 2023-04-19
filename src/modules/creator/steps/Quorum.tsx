@@ -8,7 +8,7 @@ import { useRouteMatch } from "react-router-dom"
 import { CreatorContext, ActionTypes, QuorumSettings } from "modules/creator/state"
 import { InfoRounded } from "@material-ui/icons"
 import { TitleBlock } from "modules/common/TitleBlock"
-import { FieldChange, handleChange } from "."
+import { FieldChange, handleChange } from "../utils"
 
 const ErrorText = styled(Typography)({
   display: "flex",
