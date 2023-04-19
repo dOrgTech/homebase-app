@@ -327,6 +327,13 @@ export const legacyTheme = createMuiTheme({
       root: {
         display: "none"
       }
+    },
+    MuiAccordionSummary: {
+      root: {
+        "& .Mui-expanded": {
+          minHeight: 91
+        }
+      }
     }
   }
 })
