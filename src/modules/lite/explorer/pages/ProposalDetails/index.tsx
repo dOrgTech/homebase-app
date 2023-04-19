@@ -53,15 +53,15 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const navigate = useHistory()
   const { state } = useLocation<{ poll: Poll; choices: Choice[] }>()
-  const [selectedVote, setSelectedVote] = useState<Choice>()
-  const { network, account, wallet } = useTezos()
+  const { account, wallet } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
-  const { hasVoted, vote } = useHasVoted(refresh)
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
   const isMember = useIsMembers(account, community?.members)
+
+  const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
     choices.map(elem => {
@@ -75,15 +75,18 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     }
 
     const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-    const { signature, payloadBytes } = await getSignature(
-      account,
-      wallet,
-      JSON.stringify({
+    // const { signature } = await getSignature(account, wallet)
+
+    const votesData = selectedVotes.map((vote: Choice) => {
+      return {
         address: account,
-        choice: selectedVote?.name,
-        choiceId: selectedVote?._id
-      })
-    )
+        choice: vote?.name,
+        choiceId: vote?._id,
+        pollID: poll?._id
+      }
+    })
+
+    const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
     if (!signature) {
       openNotification({
         message: `Issue with Signature`,
@@ -92,7 +95,9 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
       })
       return
     }
-    await fetch(`${process.env.REACT_APP_API_URL}/update/${selectedVote?._id}/choice`, {
+
+    // selectedVotes.forEach(async (vote, index) => {
+    return await fetch(`${process.env.REACT_APP_API_URL}/update/choice`, {
       method: "POST",
       body: JSON.stringify({
         signature,
@@ -111,6 +116,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
             variant: "success"
           })
           setRefresh(Math.random())
+          setSelectedVotes([])
         } else {
           openNotification({
             message: `Something went wrong!!`,
@@ -128,6 +134,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         })
         return
       })
+    // })
   }
 
   return (
@@ -150,11 +157,25 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                 style={{ gap: 30 }}
               >
                 {choices.map((choice, index) => {
-                  return <ChoiceItemSelected key={index} choice={choice} setSelectedVote={setSelectedVote} />
+                  console.log(selectedVotes)
+                  return (
+                    <ChoiceItemSelected
+                      multiple={poll?.votingStrategy === 0 ? false : true}
+                      key={index}
+                      choice={choice}
+                      votes={selectedVotes}
+                      setSelectedVotes={setSelectedVotes}
+                    />
+                  )
                 })}
               </Grid>
               {isMember && poll?.isActive === ProposalStatus.ACTIVE ? (
-                <Button variant="contained" color="secondary" onClick={() => saveVote()}>
+                <Button
+                  disabled={selectedVotes.length === 0}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => saveVote()}
+                >
                   Cast your vote
                 </Button>
               ) : null}
