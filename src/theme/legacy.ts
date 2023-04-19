@@ -38,7 +38,7 @@ export const legacyTheme = createMuiTheme({
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 400,
+      fontWeight: 300,
       lineHeight: "26.33px",
       letterSpacing: "-0.01em"
     },
@@ -326,6 +326,13 @@ export const legacyTheme = createMuiTheme({
     MuiFormHelperText: {
       root: {
         display: "none"
+      }
+    },
+    MuiAccordionSummary: {
+      root: {
+        "& .Mui-expanded": {
+          minHeight: 91
+        }
       }
     }
   }
