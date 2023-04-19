@@ -36,9 +36,9 @@ export const useTezos = (): WalletConnectReturn => {
       const { wallet } = await connectWithBeacon(network)
 
       const newTezos: TezosToolkit = initTezosInstance(network || newNetwork)
-      const account = await newTezos.wallet.pkh()
-
       newTezos.setProvider({ wallet })
+
+      const account = await newTezos.wallet.pkh()
 
       dispatch({
         type: TezosActionType.UPDATE_TEZOS,
@@ -49,7 +49,6 @@ export const useTezos = (): WalletConnectReturn => {
           wallet
         }
       })
-
       mixpanel.identify(account)
 
       return newTezos
