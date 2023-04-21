@@ -12,8 +12,8 @@ const TableContainer = styled(ContentContainer)({
 })
 
 const AccordionHeader = styled(AccordionSummary)(({ theme }) => ({
-  minHeight: 40,
-  padding: "20px 38px",
+  height: 91,
+  padding: "0px 38px",
   background: theme.palette.primary.main,
   borderRadius: "8px"
 }))

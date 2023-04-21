@@ -6,6 +6,8 @@ import { EnvKey, getEnv } from "services/config"
 
 export type Network = "mainnet" | "ghostnet"
 
+export const ALICE_PRIV_KEY = "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
+
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.api.tez.ie",
   ghostnet: "https://ghostnet.ecadinfra.com"
@@ -29,12 +31,19 @@ export const getTezosNetwork = (): Network => {
   return envNetwork
 }
 
-export const createWallet = (network: Network) =>
-  new BeaconWallet({
-    name: "Homebase",
-    iconUrl: "https://tezostaquito.io/img/favicon.png",
-    preferredNetwork: network as NetworkType
-  })
+let beaconWallet: BeaconWallet
+
+export const createWallet = (network: Network) => {
+  if (!beaconWallet) {
+    beaconWallet = new BeaconWallet({
+      name: "Homebase",
+      iconUrl: "https://tezostaquito.io/img/favicon.png",
+      preferredNetwork: network as NetworkType
+    })
+  }
+
+  return beaconWallet
+}
 
 export const createTezos = (network: Network) => {
   const tezos = new TezosToolkit(rpcNodes[network])
