@@ -83,6 +83,8 @@ export const useOriginate = (template: DAOTemplate) => {
         newTezos = initTezosInstance(network)
         const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
         newTezos.setProvider({ signer })
+
+        params.orgSettings.administrator = await newTezos.wallet.pkh()
       }
 
       mixpanel.track("Started DAO origination", {

@@ -10,7 +10,7 @@ export const ALICE_PRIV_KEY = "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSp
 
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.api.tez.ie",
-  ghostnet: "https://ghostnet.ecadinfra.com"
+  ghostnet: "https://ghostnet.tezos.marigold.dev"
 }
 
 export const getTezosNetwork = (): Network => {
