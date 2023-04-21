@@ -120,22 +120,6 @@ export const Template = (): JSX.Element => {
             Contract interaction. Transfer assets based on vote outcomes.
           </BoxDescription>
         </LambdaCustomBox>{" "}
-        <LambdaCustomBox
-          item
-          container
-          direction="column"
-          justifyContent="flex-start"
-          alignItems="center"
-          xs={isMobileSmall ? 12 : 6}
-          onClick={() => update("lite")}
-          className={selectedTemplate === "lite" ? style.selected : ""}
-        >
-          <LiteIcon style={{ marginBottom: 14 }} />
-          <BoxTitle color="textSecondary">Lite DAO</BoxTitle>
-          <BoxDescription color="textSecondary">
-            Off-chain weighted voting. Multiple voting strategies. No treasury.{" "}
-          </BoxDescription>
-        </LambdaCustomBox>{" "}
       </Grid>
       {error ? <ErrorText>{"Must select a template in order to continue"}</ErrorText> : null}
     </Box>
