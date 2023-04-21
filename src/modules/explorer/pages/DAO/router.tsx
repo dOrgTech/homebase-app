@@ -10,7 +10,7 @@ import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { Navbar } from "../../components/Toolbar"
-import { NFTs } from "../NFTs"
+import { Config } from "../Config"
 import { ProposalDetails } from "../ProposalDetails"
 import { Proposals } from "../Proposals"
 import { Registry } from "../Registry"
@@ -121,11 +121,11 @@ export const DAORouter = (): JSX.Element => {
           <DAORoute path={`${match.url}/registry`}>
             <Registry />
           </DAORoute>
-          <DAORoute path={`${match.url}/nfts`}>
-            <NFTs />
-          </DAORoute>
           <DAORoute path={`${match.url}/user`}>
             <User />
+          </DAORoute>
+          <DAORoute path={`${match.url}/config`}>
+            <Config />
           </DAORoute>
           <DAORoute path={`${match.url}/overview`}>
             <DAO />

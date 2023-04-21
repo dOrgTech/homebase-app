@@ -1,5 +1,4 @@
-import { Box, Grid, Theme, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Box, Grid, Theme, Typography, styled } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo } from "react"
@@ -21,7 +20,7 @@ import { DropButton } from "../Proposals"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
-  borderTop: `0.3px solid #5E6969`
+  borderTop: `0.3px solid #4a4e4e`
 })
 
 const BalancesHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
@@ -57,6 +56,10 @@ const VotedText = styled(Typography)({
   fontSize: 18
 })
 
+const CreatedText = styled(Typography)({
+  fontWeight: 300
+})
+
 export const ProposalItem: React.FC<{
   proposal: Proposal
   status: ProposalStatus
@@ -70,7 +73,7 @@ export const ProposalItem: React.FC<{
       <Grid item sm={8}>
         <Grid container direction="column" style={{ gap: 20 }}>
           <Grid item>
-            <ProposalTitle color="textPrimary" variant="h4">
+            <ProposalTitle color="textPrimary" variant="body1">
               {agoraPost ? agoraPost.title : `Proposal ${toShortAddress(proposal.id)}`}
             </ProposalTitle>
           </Grid>
@@ -80,9 +83,9 @@ export const ProposalItem: React.FC<{
                 <StatusBadge status={status} />
               </Grid>
               <Grid item>
-                <Typography variant="body1" color="textPrimary">
+                <CreatedText variant="body1" color="textPrimary">
                   Created {formattedDate}
-                </Typography>
+                </CreatedText>
               </Grid>
             </Grid>
           </Grid>

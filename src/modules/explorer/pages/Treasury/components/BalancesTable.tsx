@@ -1,35 +1,21 @@
 import React, { useMemo, useState } from "react"
-import {
-  Button,
-  Grid,
-  styled,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from "@material-ui/core"
-import hexToRgba from "hex-to-rgba"
+import { Card, CardContent, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
 import { DAOHolding } from "services/bakingBad/tokenBalances"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { useTezosBalance } from "services/contracts/baseDAO/hooks/useTezosBalance"
 import { useDAOID } from "../../DAO/router"
 import BigNumber from "bignumber.js"
-import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { useIsProposalButtonDisabled } from "../../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { SmallButton } from "../../../../common/SmallButton"
+import { toShortAddress } from "services/contracts/utils"
+import { CopyButton } from "modules/common/CopyButton"
 
 const TokenSymbol = styled(Typography)(({ theme }) => ({
-  background: hexToRgba(theme.palette.secondary.main, 0.11),
-  borderRadius: 4,
   color: theme.palette.secondary.main,
-  padding: "1px 8px",
   boxSizing: "border-box",
-  width: "min-content"
+  width: "min-content",
+  fontSize: 24
 }))
 
 const MobileTableHeader = styled(Grid)({
@@ -49,9 +35,36 @@ interface RowData {
   amount: string
 }
 
-const TableContainer = styled(ContentContainer)({
-  width: "100%"
+const AddressText = styled(Typography)({
+  marginTop: 8
 })
+
+const TokenCard = styled(Card)(({ theme }) => ({
+  height: 200,
+  background: theme.palette.primary.main,
+  borderRadius: 8,
+  padding: "32px 36px"
+}))
+
+const CustomCardContent = styled(CardContent)({
+  padding: 0
+})
+
+const BalanceText = styled(Typography)(({ theme }) => ({
+  fontSize: 24,
+  fontWeight: 300,
+  marginBottom: 16,
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "24px !important"
+  }
+}))
+
+const BalanceTitle = styled(Typography)(({ theme }) => ({
+  fontSize: 18,
+  [theme.breakpoints.down("sm")]: {
+    fontSize: "18px !important"
+  }
+}))
 
 const createData = (daoHolding: DAOHolding): RowData => {
   return {
@@ -63,7 +76,7 @@ const createData = (daoHolding: DAOHolding): RowData => {
 
 const titles = ["Token Balances", "Address", "Balance"] as const
 
-const titleDataMatcher = (title: typeof titles[number], rowData: RowData) => {
+const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
   switch (title) {
     case "Token Balances":
       return rowData.symbol
@@ -80,144 +93,70 @@ interface TableProps {
   openXTZTransferModal: () => void
   openTokenTransferModal: (tokenAddress: string) => void
   shouldDisable: boolean
+  isMobileSmall: boolean
 }
 
-const MobileBalancesTable: React.FC<TableProps> = ({
+const BalancesList: React.FC<TableProps> = ({
   rows,
   tezosBalance,
   openTokenTransferModal,
   openXTZTransferModal,
-  shouldDisable
-}) => {
-  const XTZRowData: RowData = {
-    symbol: "XTZ",
-    address: "-",
-    amount: tezosBalance.toString()
-  }
-
-  return (
-    <Grid container direction="column" alignItems="center">
-      <MobileTableHeader item>
-        <Typography align="center" variant="h4" color="textPrimary">
-          Token Balances
-        </Typography>
-      </MobileTableHeader>
-      <MobileTableRow item container direction="column" alignItems="center" style={{ gap: 19 }}>
-        {titles.map((title, j) => (
-          <Grid item key={`balancesMobileItem-${j}`}>
-            <Typography variant="h6" color="secondary" align="center">
-              {title === "Token Balances" ? "Token" : title}
-            </Typography>
-            <Typography variant="h6" color="textPrimary" align="center">
-              {titleDataMatcher(title, XTZRowData)}
-            </Typography>
-          </Grid>
-        ))}
-        <Grid item>
-          <SmallButton
-            variant="contained"
-            color="secondary"
-            size={"small"}
-            onClick={() => openXTZTransferModal()}
-            disabled={shouldDisable}
-          >
-            Transfer
-          </SmallButton>
-        </Grid>
-      </MobileTableRow>
-      {rows.map((row, i) => (
-        <MobileTableRow
-          key={`balancesMobile-${i}`}
-          item
-          container
-          direction="column"
-          alignItems="center"
-          style={{ gap: 19 }}
-        >
-          {titles.map((title, j) => (
-            <Grid item key={`balancesMobileItem-${j}`}>
-              <Typography variant="h6" color="secondary" align="center">
-                {title}
-              </Typography>
-              <Typography variant="h6" color="textPrimary" align="center">
-                {titleDataMatcher(title, row)}
-              </Typography>
-            </Grid>
-          ))}
-          <Grid item>
-            <SmallButton
-              variant="contained"
-              color="secondary"
-              size={"small"}
-              onClick={() => openTokenTransferModal(row.address)}
-              disabled={shouldDisable}
-            >
-              Transfer
-            </SmallButton>
-          </Grid>
-        </MobileTableRow>
-      ))}
-    </Grid>
-  )
-}
-
-const DesktopBalancesTable: React.FC<TableProps> = ({
-  rows,
-  tezosBalance,
-  openTokenTransferModal,
-  openXTZTransferModal,
-  shouldDisable
+  shouldDisable,
+  isMobileSmall
 }) => {
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          {titles.map((title, i) => (
-            <TableCell key={`tokentitle-${i}`}>{title}</TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow>
-          <TableCell>
+    <Grid container direction="row" spacing={2}>
+      <Grid item xs={isMobileSmall ? 12 : 3}>
+        <TokenCard>
+          <CustomCardContent>
             <TokenSymbol>XTZ</TokenSymbol>
-          </TableCell>
-          <TableCell>-</TableCell>
-          <TableCell>{tezosBalance.toString()}</TableCell>
-          <TableCell align="right">
-            <SmallButton
-              variant="contained"
-              color="secondary"
-              onClick={() => openXTZTransferModal()}
-              disabled={shouldDisable}
-            >
-              Transfer
-            </SmallButton>
-          </TableCell>
-        </TableRow>
 
-        {rows.map((row, i) => (
-          <TableRow key={`tokenrow-${i}`}>
-            <TableCell>
-              <TokenSymbol>{row.symbol}</TokenSymbol>
-            </TableCell>
-            <TableCell>{row.address}</TableCell>
-            <TableCell>{row.amount}</TableCell>
-            <TableCell align="right">
-              {" "}
+            <BalanceTitle variant="body1" color="secondary" style={{ marginTop: 49 }}>
+              Balance
+            </BalanceTitle>
+            <BalanceText>{tezosBalance.toString()}</BalanceText>
+            <Grid container item direction="row" alignItems="center" justifyContent="center">
               <SmallButton
                 variant="contained"
                 color="secondary"
-                onClick={() => openTokenTransferModal(row.address)}
+                onClick={() => openXTZTransferModal()}
                 disabled={shouldDisable}
               >
                 Transfer
               </SmallButton>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+            </Grid>
+          </CustomCardContent>
+        </TokenCard>
+      </Grid>
+
+      {rows.map((row, i) => (
+        <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 3}>
+          <TokenCard>
+            <CustomCardContent>
+              <TokenSymbol>{row.symbol}</TokenSymbol>
+              <Grid container item direction="row" alignItems="center">
+                <AddressText variant="subtitle2">{toShortAddress(row.address)}</AddressText>
+                <CopyButton text={row.address} style={{ height: 15 }}></CopyButton>
+              </Grid>
+              <BalanceTitle color="secondary" style={{ marginTop: 16 }}>
+                Balance
+              </BalanceTitle>
+              <BalanceText>{row.amount}</BalanceText>
+              <Grid container item direction="row" alignItems="center" justifyContent="center">
+                <SmallButton
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => openTokenTransferModal(row.address)}
+                  disabled={shouldDisable}
+                >
+                  Transfer
+                </SmallButton>
+              </Grid>
+            </CustomCardContent>
+          </TokenCard>
+        </Grid>
+      ))}
+    </Grid>
   )
 }
 
@@ -285,25 +224,16 @@ export const BalancesTable: React.FC = () => {
 
   return (
     <>
-      <TableContainer item>
-        {isSmall ? (
-          <MobileBalancesTable
-            rows={rows}
-            tezosBalance={tezosBalance || new BigNumber(0)}
-            openTokenTransferModal={onOpenTokenTransferModal}
-            openXTZTransferModal={onOpenXTZTransferModal}
-            shouldDisable={shouldDisable}
-          />
-        ) : (
-          <DesktopBalancesTable
-            rows={rows}
-            tezosBalance={tezosBalance || new BigNumber(0)}
-            openTokenTransferModal={onOpenTokenTransferModal}
-            openXTZTransferModal={onOpenXTZTransferModal}
-            shouldDisable={shouldDisable}
-          />
-        )}
-      </TableContainer>
+      <Grid item>
+        <BalancesList
+          rows={rows}
+          tezosBalance={tezosBalance || new BigNumber(0)}
+          openTokenTransferModal={onOpenTokenTransferModal}
+          openXTZTransferModal={onOpenXTZTransferModal}
+          shouldDisable={shouldDisable}
+          isMobileSmall={isSmall}
+        />
+      </Grid>
 
       <ProposalFormContainer
         open={openTransfer}

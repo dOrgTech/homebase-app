@@ -5,6 +5,7 @@ import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg"
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg"
 import { ReactComponent as UserIcon } from "assets/logos/user.svg"
 import { ReactComponent as NFTIcon } from "assets/logos/nft.svg"
+import { ReactComponent as ConfigIcon } from "assets/logos/config.svg"
 import React, { useEffect, useState } from "react"
 import { useDAOID } from "../pages/DAO/router"
 import { useDAO } from "services/indexer/dao/hooks/useDAO"
@@ -81,7 +82,8 @@ const IconContainer = styled("span")(({ theme, isSelected }: { theme: Theme; isS
   "justifyContent": "center",
 
   "& > svg > *": {
-    fill: isSelected ? theme.palette.secondary.main : theme.palette.text.primary
+    fill: isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
+    stroke: isSelected ? theme.palette.secondary.main : theme.palette.text.primary
   }
 }))
 
@@ -124,20 +126,20 @@ const getPages = (daoId: string): Page[] => [
     href: `/explorer/dao/${daoId}/registry`
   },
   {
-    pathId: "nfts",
-    name: "NFT",
-    icon: NFTIcon,
-    href: `/explorer/dao/${daoId}/nfts`
-  },
-  {
     pathId: "user",
     name: "User",
     icon: UserIcon,
     href: `/explorer/dao/${daoId}/user`
+  },
+  {
+    pathId: "config",
+    name: "Config",
+    icon: ConfigIcon,
+    href: `/explorer/dao/${daoId}/config`
   }
 ]
 
-const StyledBottomBar = styled(Grid)(({ theme, visible }: { theme: Theme; visible: boolean }) => ({
+const StyledBottomBar = styled(Grid)(({ theme }: { theme: Theme }) => ({
   position: "fixed",
   height: 55,
   width: "100%",
@@ -173,7 +175,7 @@ const BottomNavBar: React.FC = ({ children }) => {
   }, [prevScrollPos, visible])
 
   return (
-    <StyledBottomBar container direction={"row"} visible={visible}>
+    <StyledBottomBar container direction={"row"}>
       <BottomBarItems container>{children}</BottomBarItems>
     </StyledBottomBar>
   )
@@ -225,7 +227,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
   ) : (
     <BottomNavBar>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item alignItems="center">
+        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} container item alignItems="center">
           <Link to={page.href}>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>

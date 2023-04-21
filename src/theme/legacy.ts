@@ -3,7 +3,8 @@ export const legacyTheme = createMuiTheme({
   palette: {
     primary: {
       main: "#1C1F23",
-      light: "#3D3D3D"
+      light: "#3D3D3D",
+      dark: "#2F3438"
     },
     secondary: {
       main: "#4BCF93",
@@ -37,7 +38,7 @@ export const legacyTheme = createMuiTheme({
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 400,
+      fontWeight: 300,
       lineHeight: "26.33px",
       letterSpacing: "-0.01em"
     },
@@ -325,6 +326,13 @@ export const legacyTheme = createMuiTheme({
     MuiFormHelperText: {
       root: {
         display: "none"
+      }
+    },
+    MuiAccordionSummary: {
+      root: {
+        "& .Mui-expanded": {
+          minHeight: 91
+        }
       }
     }
   }

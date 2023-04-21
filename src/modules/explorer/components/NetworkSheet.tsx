@@ -1,11 +1,12 @@
 import { styled, Grid, Typography, capitalize } from "@material-ui/core"
-import React, { useMemo } from "react"
+import React, { useContext, useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network } from "services/beacon"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { ColorDot, networkDotColorMap } from "./ChangeNetworkButton"
 import { ContentContainer } from "./ContentContainer"
 import { EnvKey, getEnv } from "services/config"
+import { ActionTypes, CreatorContext } from "modules/creator/state"
 
 const SheetItem = styled(ContentContainer)({
   "height": 50,
@@ -24,6 +25,7 @@ const SUPPORTED_NETWORKS: Network[] = ["mainnet", "ghostnet"]
 
 export const NetworkSheet: React.FC<Props> = props => {
   const { network, changeNetwork } = useTezos()
+  const { dispatch } = useContext(CreatorContext)
 
   const options = useMemo(() => SUPPORTED_NETWORKS.filter(n => n !== network), [network])
 
@@ -37,6 +39,9 @@ export const NetworkSheet: React.FC<Props> = props => {
             onClick={() => {
               props.onClose()
               changeNetwork(networkOption)
+              dispatch({
+                type: ActionTypes.CLEAR_CACHE
+              })
               window.location.href = `/explorer`
             }}
           >

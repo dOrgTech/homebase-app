@@ -1,4 +1,3 @@
-import { alpha } from "@material-ui/core"
 import { createTheme } from "@material-ui/core/styles"
 import { ThemeOptions } from "@material-ui/core/styles/createTheme"
 const defaultTheme = createTheme()
@@ -47,7 +46,7 @@ export const theme = createTheme({
     },
     subtitle2: {
       fontSize: 16,
-      fontWeight: 400
+      fontWeight: 300
     },
     h3: {
       fontSize: 21,
@@ -88,8 +87,11 @@ export const theme = createTheme({
     MuiTypography: {
       root: {
         letterSpacing: "-0.03em !important"
-        // lineHeight: "1.5 !important",
-        // wordSpacing: "40",
+      }
+    },
+    MuiMenu: {
+      paper: {
+        backgroundColor: "#2f3438"
       }
     },
     MuiSlider: {
@@ -273,7 +275,11 @@ export const theme = createTheme({
     },
     MuiSelect: {
       selectMenu: {
-        textAlign: "right"
+        textAlign: "right",
+        textTransform: "capitalize"
+      },
+      icon: {
+        color: "#fff"
       }
     },
     MuiDialogContentText: {
@@ -365,10 +371,14 @@ export const theme = createTheme({
     MuiTableCell: {
       root: {
         borderBottom: "unset"
+      },
+      head: {
+        fontWeight: 300
       }
     },
     MuiTableRow: {
       root: {
+        "height": 70,
         "& th:first-child, & td:first-child": {
           paddingLeft: 46
         },
@@ -391,6 +401,16 @@ export const theme = createTheme({
     MuiPaper: {
       rounded: {
         borderRadius: "8px"
+      }
+    },
+    MuiAccordionSummary: {
+      root: {
+        "minHeight": 91,
+        "& .Mui-expanded": {
+          minHeight: 91,
+          display: "flex",
+          alignItems: "center"
+        }
       }
     }
   }
