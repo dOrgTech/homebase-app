@@ -49,7 +49,7 @@ export const CodeVisor: React.FC<Props> = ({ open, title = "View Code", code, ha
 
   return (
     <>
-      <CustomDialog open={open} onClose={handleClose} title={title} template="lambda">
+      <CustomDialog open={open} onClose={handleClose} title={title} template="md">
         <>
           <Content container direction={"column"} style={{ gap: 32 }}>
             <CustomEditor
