@@ -17,6 +17,7 @@ import { useIsMembers } from "../../hooks/useIsMember"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
+import { EnvKey, getEnv } from "services/config"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -92,7 +93,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
       })
       return
     }
-    await fetch(`${process.env.REACT_APP_API_URL}/update/${selectedVote?._id}/choice`, {
+    await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/update/${selectedVote?._id}/choice`, {
       method: "POST",
       body: JSON.stringify({
         signature,

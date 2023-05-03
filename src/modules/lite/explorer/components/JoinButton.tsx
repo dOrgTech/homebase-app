@@ -6,6 +6,7 @@ import { Community } from "models/Community"
 import { getSignature, hasTokenBalance } from "services/lite/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useCommunityToken } from "../hooks/useCommunityToken"
+import { EnvKey, getEnv } from "services/config"
 
 const CustomButton = styled(Button)(({ theme }) => ({
   "width": 67,
@@ -55,7 +56,7 @@ export const JoinButton: React.FC<JoinButtonProps> = ({ account, setIsUpdated, c
           return
         }
 
-        await fetch(`${process.env.REACT_APP_API_URL}/daos/join`, {
+        await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/join`, {
           method: "POST",
           body: JSON.stringify({
             signature,

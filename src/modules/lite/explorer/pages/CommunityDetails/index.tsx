@@ -45,6 +45,7 @@ export const CommunityDetails: React.FC<{ id: string }> = ({ id }) => {
   const [isUpdated, setIsUpdated] = useState(1)
   const community = useCommunity(id, isUpdated)
   const polls = usePolls(community?.polls, id, community)
+  console.log("polls: ", polls)
 
   return (
     <PageContainer>

@@ -11,6 +11,7 @@ import {
   useTheme,
   useMediaQuery
 } from "@material-ui/core"
+import { EnvKey, getEnv } from "services/config"
 
 import { Choices } from "../../components/Choices"
 import { useHistory, useParams } from "react-router-dom"
@@ -519,7 +520,7 @@ export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
   useEffect(() => {
     async function fetchData() {
       const communityId = id.toString()
-      await fetch(`${process.env.REACT_APP_API_URL}/token/${communityId}`).then(async response => {
+      await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
         if (!response.ok) {
           openNotification({
             message: "An error has occurred",
@@ -579,7 +580,7 @@ export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
         return
       }
 
-      await fetch(`${process.env.REACT_APP_API_URL}/poll/add`, {
+      await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
