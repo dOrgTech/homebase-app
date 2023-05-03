@@ -168,7 +168,7 @@ export const DAOItem: React.FC<{
       <Container container justifyContent="space-between">
         <SectionNames>
           <Grid>
-            <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
+            <SymbolText color="secondary">{dao?.symbol?.toUpperCase()}</SymbolText>
             <NameText color="textPrimary">{dao.name}</NameText>
           </Grid>
         </SectionNames>
