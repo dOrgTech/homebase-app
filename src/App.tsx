@@ -160,4 +160,3 @@ export default withLDProvider({
   clientSideID:
     env === "PROD" ? getEnv(EnvKey.REACT_APP_LAUNCH_DARKLY_SDK_PROD) : getEnv(EnvKey.REACT_APP_LAUNCH_DARKLY_SDK_DEV)
 })(App)
-
