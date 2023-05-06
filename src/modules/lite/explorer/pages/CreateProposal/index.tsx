@@ -25,6 +25,8 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import duration from "dayjs/plugin/duration"
 import { CommunityBadge } from "../../components/CommunityBadge"
 import { BackButton } from "modules/lite/components/BackButton"
+import { saveLiteProposal } from "services/services/lite/lite-services"
+import { useToken } from "../../hooks/useToken"
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -513,34 +515,34 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
 export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
   const navigate = useHistory()
   const { network, account, wallet } = useTezos()
-  const [tokenAddress, setTokenAddress] = useState<string>("")
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
+  const tokenAddress = useToken(id)
 
-  useEffect(() => {
-    async function fetchData() {
-      const communityId = id.toString()
-      await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
-        if (!response.ok) {
-          openNotification({
-            message: "An error has occurred",
-            autoHideDuration: 2000,
-            variant: "error"
-          })
-          return
-        }
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const communityId = id.toString()
+  //     await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
+  //       if (!response.ok) {
+  //         openNotification({
+  //           message: "An error has occurred",
+  //           autoHideDuration: 2000,
+  //           variant: "error"
+  //         })
+  //         return
+  //       }
 
-        const record = await response.json()
-        if (!record) {
-          return
-        }
-        setTokenAddress(record.tokenAddress)
-      })
-    }
-    fetchData()
+  //       const record = await response.json()
+  //       if (!record) {
+  //         return
+  //       }
+  //       setTokenAddress(record.tokenAddress)
+  //     })
+  //   }
+  //   fetchData()
 
-    return
-  }, [id, network])
+  //   return
+  // }, [id, network])
 
   const initialState: Poll = {
     name: "",
@@ -559,58 +561,38 @@ export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
 
   const saveProposal = useCallback(
     async (values: Poll) => {
-      setIsLoading(true)
-      if (!wallet) {
-        return
-      }
+      try {
+        setIsLoading(true)
+        if (!wallet) {
+          return
+        }
 
-      const data = values
-      data.daoID = id
-      data.startTime = String(dayjs().valueOf())
-      data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
+        const data = values
+        data.daoID = id
+        data.startTime = String(dayjs().valueOf())
+        data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
 
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
-      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      if (!signature) {
-        openNotification({
-          message: `Issue with Signature`,
-          autoHideDuration: 3000,
-          variant: "error"
-        })
-        return
-      }
+        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
+        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        if (!signature) {
+          openNotification({
+            message: `Issue with Signature`,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
 
-      await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          signature,
-          publicKey,
-          payloadBytes
-        })
-      })
-        .then(async res => {
-          if (res.ok) {
-            openNotification({
-              message: "Proposal created!",
-              autoHideDuration: 3000,
-              variant: "success"
-            })
-            setIsLoading(false)
-            navigate.push(`/explorer/lite/dao/${id}/community`)
-          } else {
-            openNotification({
-              message: "Proposal could not be created",
-              autoHideDuration: 3000,
-              variant: "error"
-            })
-            setIsLoading(false)
-            return
-          }
-        })
-        .catch(err => {
+        const res = await saveLiteProposal(signature, publicKey, payloadBytes)
+        if (res.ok) {
+          openNotification({
+            message: "Proposal created!",
+            autoHideDuration: 3000,
+            variant: "success"
+          })
+          setIsLoading(false)
+          navigate.push(`/explorer/lite/dao/${id}/community`)
+        } else {
           openNotification({
             message: "Proposal could not be created",
             autoHideDuration: 3000,
@@ -618,7 +600,16 @@ export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
           })
           setIsLoading(false)
           return
+        }
+      } catch (error) {
+        openNotification({
+          message: "Proposal could not be created",
+          autoHideDuration: 3000,
+          variant: "error"
         })
+        setIsLoading(false)
+        return
+      }
     },
     [navigate, id, network, tokenAddress]
   )

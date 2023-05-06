@@ -18,6 +18,7 @@ import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { EnvKey, getEnv } from "services/config"
+import { voteOnLiteProposal } from "services/services/lite/lite-services"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -75,60 +76,49 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
       return
     }
 
-    const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-    const { signature, payloadBytes } = await getSignature(
-      account,
-      wallet,
-      JSON.stringify({
-        address: account,
-        choice: selectedVote?.name,
-        choiceId: selectedVote?._id
-      })
-    )
-    if (!signature) {
-      openNotification({
-        message: `Issue with Signature`,
-        autoHideDuration: 3000,
-        variant: "error"
-      })
-      return
-    }
-    await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/update/${selectedVote?._id}/choice`, {
-      method: "POST",
-      body: JSON.stringify({
-        signature,
-        publicKey,
-        payloadBytes
-      }),
-      headers: {
-        "Content-Type": "application/json"
+    try {
+      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+      const { signature, payloadBytes } = await getSignature(
+        account,
+        wallet,
+        JSON.stringify({
+          address: account,
+          choice: selectedVote?.name,
+          choiceId: selectedVote?._id
+        })
+      )
+      if (!signature) {
+        openNotification({
+          message: `Issue with Signature`,
+          autoHideDuration: 3000,
+          variant: "error"
+        })
+        return
       }
-    })
-      .then(resp => {
-        if (resp.ok) {
-          openNotification({
-            message: "Your vote has been submitted",
-            autoHideDuration: 3000,
-            variant: "success"
-          })
-          setRefresh(Math.random())
-        } else {
-          openNotification({
-            message: `Something went wrong!!`,
-            autoHideDuration: 3000,
-            variant: "error"
-          })
-          return
-        }
-      })
-      .catch(err => {
+      const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes, selectedVote?._id)
+      if (resp.ok) {
+        openNotification({
+          message: "Your vote has been submitted",
+          autoHideDuration: 3000,
+          variant: "success"
+        })
+        setRefresh(Math.random())
+      } else {
         openNotification({
           message: `Something went wrong!!`,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
+      }
+    } catch (error) {
+      openNotification({
+        message: `Something went wrong!!`,
+        autoHideDuration: 3000,
+        variant: "error"
       })
+      return
+    }
   }
 
   return (

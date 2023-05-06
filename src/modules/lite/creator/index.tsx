@@ -26,6 +26,7 @@ import { getSignature } from "services/utils/utils"
 import { Navbar } from "modules/common/Toolbar"
 import { SmallButton } from "modules/common/SmallButton"
 import { EnvKey, getEnv } from "services/config"
+import { saveLiteCommunity } from "services/services/lite/lite-services"
 
 const CommunityContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -379,53 +380,43 @@ export const CommunityCreator: React.FC = () => {
 
       values.members.push(account)
 
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
-      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      if (!signature) {
-        openNotification({
-          message: `Issue with Signature`,
-          autoHideDuration: 3000,
-          variant: "error"
-        })
-        return
-      }
+      try {
+        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
+        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        if (!signature) {
+          openNotification({
+            message: `Issue with Signature`,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
 
-      await fetch(`${getEnv(EnvKey.REACT_APP_API_URL)}/dao/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          signature,
-          publicKey,
-          payloadBytes
-        })
-      })
-        .then(async res => {
-          if (res.ok) {
-            openNotification({
-              message: "Community created!",
-              autoHideDuration: 3000,
-              variant: "success"
-            })
-            navigate.push("/explorer")
-          } else {
-            openNotification({
-              message: "Community could not be created!",
-              autoHideDuration: 3000,
-              variant: "error"
-            })
-            return
-          }
-        })
-        .catch(error => {
+        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
+
+        if (resp.ok) {
+          openNotification({
+            message: "Community created!",
+            autoHideDuration: 3000,
+            variant: "success"
+          })
+          navigate.push("/explorer")
+        } else {
           openNotification({
             message: "Community could not be created!",
             autoHideDuration: 3000,
             variant: "error"
           })
           return
+        }
+      } catch (error) {
+        openNotification({
+          message: "Community could not be created!",
+          autoHideDuration: 3000,
+          variant: "error"
         })
+        return
+      }
     },
     [navigate]
   )

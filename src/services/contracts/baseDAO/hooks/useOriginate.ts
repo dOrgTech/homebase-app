@@ -9,6 +9,8 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
+import { getLiteDAOs, joinLiteCommunity } from "services/services/lite/lite-services"
+import { getSignature } from "services/lite/utils"
 
 const INITIAL_STATES = [
   {
@@ -61,7 +63,7 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES)
 
   const [activeState, setActiveState] = useState<number>()
-  const { tezos, connect, network, account } = useTezos()
+  const { tezos, connect, network, account, wallet } = useTezos()
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params }) => {
