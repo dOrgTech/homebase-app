@@ -11,6 +11,9 @@ import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
 import { InMemorySigner } from "@taquito/signer"
 import { ALICE_PRIV_KEY } from "services/beacon"
+import { getSignature } from "services/lite/utils"
+import { saveLiteCommunity } from "services/services/lite/lite-services"
+import { Community } from "models/Community"
 
 const INITIAL_STATES = [
   {
@@ -185,6 +188,27 @@ export const useOriginate = (template: DAOTemplate) => {
 
       setActiveState(4)
       setStates(updatedStates)
+
+      if (wallet) {
+        const values = {
+          name: params.orgSettings.name,
+          description: params.orgSettings.description,
+          linkToTerms: contract.address,
+          picUri: "",
+          members: [],
+          polls: [],
+          tokenAddress: params.orgSettings.governanceToken.address,
+          tokenType: "FA2",
+          requiredTokenOwnership: true,
+          allowPublicAccess: true,
+          network: network
+        }
+        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
+        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+
+        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
+        console.log("resp: ", resp)
+      }
 
       mixpanel.track("Completed DAO indexation", {
         daoName: params.orgSettings.name,
