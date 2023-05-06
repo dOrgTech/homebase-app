@@ -17,6 +17,14 @@ type WalletConnectReturn = {
   wallet: BeaconWallet | undefined
 }
 
+export const initTezosInstance = (network: Network) => {
+  const newTezos = new TezosToolkit(rpcNodes[network])
+  newTezos.setPackerProvider(new MichelCodecPacker())
+  newTezos.addExtension(new Tzip16Module())
+
+  return newTezos
+}
+
 export const useTezos = (): WalletConnectReturn => {
   const {
     state: { tezos, network, account, wallet },
@@ -27,13 +35,11 @@ export const useTezos = (): WalletConnectReturn => {
 
   const connect = useCallback(
     async (newNetwork?: Network) => {
-      const { wallet } = await connectWithBeacon(newNetwork || network)
+      const { wallet } = await connectWithBeacon(network)
 
-      const newTezos = new TezosToolkit(rpcNodes[newNetwork || network])
-      newTezos.setPackerProvider(new MichelCodecPacker())
-      newTezos.addExtension(new Tzip16Module())
-
+      const newTezos: TezosToolkit = initTezosInstance(network || newNetwork)
       newTezos.setProvider({ wallet })
+
       const account = await newTezos.wallet.pkh()
 
       dispatch({
@@ -45,7 +51,6 @@ export const useTezos = (): WalletConnectReturn => {
           wallet
         }
       })
-
       mixpanel.identify(account)
 
       return newTezos
