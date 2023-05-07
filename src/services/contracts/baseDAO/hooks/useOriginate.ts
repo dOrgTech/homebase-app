@@ -201,13 +201,14 @@ export const useOriginate = (template: DAOTemplate) => {
           tokenType: "FA2",
           requiredTokenOwnership: true,
           allowPublicAccess: true,
-          network: network
+          network: network,
+          daoContract: contract.address,
+          tokenID: params.orgSettings.governanceToken.tokenId
         }
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
         const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
 
         const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
-        console.log("resp: ", resp)
       }
 
       mixpanel.track("Completed DAO indexation", {

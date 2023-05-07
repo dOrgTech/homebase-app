@@ -110,7 +110,7 @@ export const getXTZTransfers = async (address: string) => {
 }
 
 export const saveLiteCommunity = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
-  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_API_URL)}/dao/add`, {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
