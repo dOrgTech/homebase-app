@@ -8,55 +8,55 @@ const statusColors = (status: ProposalStatus) => {
       return {
         background: "#77632E",
         color: "#DBDE39",
-        text: "ACTIVE"
+        text: "Active"
       }
     case ProposalStatus.PENDING:
       return {
         background: "#273379",
         color: "#3866F9",
-        text: "PENDING"
+        text: "Pending"
       }
     case ProposalStatus.PASSED:
       return {
         background: "#1A5D35",
         color: "#3DB84E",
-        text: "PASSED"
+        text: "Passed"
       }
     case ProposalStatus.EXECUTABLE:
       return {
         background: "#35796F",
         color: "#5AFFE1",
-        text: "PASSED - EXECUTABLE"
+        text: "Passed - Executable"
       }
     case ProposalStatus.REJECTED:
       return {
         background: "#63191B",
         color: "#CC0F0F",
-        text: "REJECTED"
+        text: "Rejected"
       }
     case ProposalStatus.EXPIRED:
       return {
         background: "#443042",
         color: "#7E496F",
-        text: "EXPIRED"
+        text: "Expired"
       }
     case ProposalStatus.DROPPED:
       return {
         background: "#482E30",
         color: "#894343",
-        text: "DROPPED"
+        text: "Dropped"
       }
     case ProposalStatus.NO_QUORUM:
       return {
         background: "#484A4C",
         color: "#8A8A8A",
-        text: "NO QUORUM"
+        text: "No Quorum"
       }
     case ProposalStatus.EXECUTED:
       return {
         background: "#2F7952",
         color: "#58FF98",
-        text: "PASSED - EXECUTED"
+        text: "Passed - Executed"
       }
   }
 }

@@ -66,7 +66,7 @@ export const AllProposalsList: React.FC<Props> = ({ currentLevel, proposals, tit
       <Grid container direction="column" wrap={"nowrap"}>
         <TableHeader item container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="body2" style={{ fontWeight: "500" }} color="textPrimary">
+            <Typography variant="body1" style={{ fontWeight: "500" }} color="textPrimary">
               {title}
             </Typography>
           </Grid>
