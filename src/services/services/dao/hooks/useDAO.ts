@@ -11,6 +11,9 @@ import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import { parseUnits } from "services/contracts/utils"
 import { getDAO } from "services/services/dao/services"
 import { useBlockchainInfo } from "../../../contracts/baseDAO/hooks/useBlockchainInfo"
+import { useCommunityForContract } from "modules/lite/explorer/hooks/useCommunityForContract"
+import { fetchLiteData } from "services/services/lite/lite-services"
+import { Community } from "services/services/types"
 
 export const useDAO = (address: string) => {
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>()
@@ -24,6 +27,8 @@ export const useDAO = (address: string) => {
     ["dao", address],
     async () => {
       const response = await getDAO(address as string)
+      const liteDAO = await fetchLiteData(address, network)
+      console.log("liteDAO: ", liteDAO)
 
       const dao = response.daos[0]
 
@@ -94,7 +99,7 @@ export const useDAO = (address: string) => {
 
       switch (dao.dao_type.name) {
         case "lambda":
-          return new LambdaDAO(base)
+          return new LambdaDAO({ ...base, liteDAO })
         default:
           throw new Error(`DAO with address '${dao.address}' has an unrecognized type '${dao.dao_type.name}'`)
       }

@@ -15,11 +15,13 @@ import { LambdaAddArgs, LambdaExecuteArgs, LambdaRemoveArgs } from "./types"
 import transfer_arg_type_michelson from "./michelson/supported_lambda_types/transfer_proposal_type.json"
 import update_contract_delegate_type_michelson from "./michelson/supported_lambda_types/update_contract_delegate_proposal.json"
 import update_guardian_type_michelson from "./michelson/supported_lambda_types/update_guardian_proposal.json"
+import { Community } from "models/Community"
 
 const parser = new Parser()
 
 interface LambdaDAOData extends BaseDAOData {
   extra: LambdaExtraDTO
+  liteDAO: Community | undefined
 }
 
 interface RegistryItemDTO {
@@ -65,6 +67,7 @@ const mapStorageRegistryAffectedList = (
 }
 
 export class LambdaDAO extends BaseDAO {
+  public liteDAOData: Community | undefined
   public decoded: {
     decodedRegistry: {
       key: string
@@ -87,6 +90,8 @@ export class LambdaDAO extends BaseDAO {
     this.data.extra.returnedPercentage = new BigNumber(100)
       .minus(new BigNumber(this.data.extra.slash_scale_value))
       .toString()
+
+    this.liteDAOData = data.liteDAO
   }
 
   public async proposeGuardianChange(newGuardianAddress: string, tezos: TezosToolkit) {

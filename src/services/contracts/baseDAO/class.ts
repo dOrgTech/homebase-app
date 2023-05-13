@@ -298,6 +298,8 @@ export abstract class BaseDAO {
       slash_scale_value: configParams.slash_scale_value
     }
 
+    console.log("configuration_proposal_args: ", configuration_proposal_args)
+
     const packed_configuration_proposal_arg = packDataBytes(
       configuration_arg_schema.Encode(configuration_proposal_args) // as MichelsonData
     )

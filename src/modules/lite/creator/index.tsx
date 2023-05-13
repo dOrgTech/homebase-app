@@ -357,6 +357,7 @@ export const CommunityCreator: React.FC = () => {
   const openNotification = useNotification()
 
   const initialState: Community = {
+    _id: "",
     name: "",
     description: "",
     linkToTerms: "",

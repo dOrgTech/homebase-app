@@ -24,7 +24,7 @@ const Header = styled(Grid)({
   padding: "24px 41px"
 })
 
-const StyledDivider = styled(Divider)({
+export const StyledDivider = styled(Divider)({
   height: 0.3,
   backgroundColor: "#7d8c8b",
   marginTop: 0,
@@ -43,8 +43,8 @@ const Title = styled(Typography)(({ theme }) => ({
     marginLeft: -2
   }
 }))
-export const ProposalList: React.FC<{ polls: Poll[]; id: string }> = ({ polls, id }) => {
-  const communityId = id.toString()
+export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined }> = ({ polls, id }) => {
+  const communityId = id?.toString()
   const openNotification = useNotification()
   const [communityPolls, setCommunityPolls] = useState<Poll[]>()
   const [isFilter, setIsFilter] = useState(false)
@@ -175,7 +175,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string }> = ({ polls, i
       <Header container justifyContent="space-between" alignItems="center">
         <Grid item xs={isMobileSmall ? 12 : 3}>
           <Title variant={"body2"} color="textPrimary">
-            Proposals
+            Off-Chain
           </Title>
         </Grid>
         <Grid item xs={isMobileSmall ? 6 : 4} container direction="row" justifyContent="flex-end">

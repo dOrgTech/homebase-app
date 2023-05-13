@@ -4,8 +4,6 @@ import React, { useContext } from "react"
 import { useHistory } from "react-router"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { DashboardContext } from "../context/ActionSheets/explorer"
-import { useIsMembers } from "../hooks/useIsMember"
-import { JoinButton } from "./JoinButton"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -57,7 +55,6 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
   const theme = useTheme()
   const { account } = useTezos()
   const { isConnected } = useContext(DashboardContext)
-  const isMember = useIsMembers(account, community?.members)
 
   return (
     <DaoCardContainer container style={{ gap: 10 }} direction="column">
@@ -70,7 +67,6 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
           <MembersText variant={"body1"} color="textPrimary">
             {community?.members?.length} members
           </MembersText>
-          {isConnected ? <JoinButton account={account} setIsUpdated={setIsUpdated} community={community} /> : null}
         </Grid>
       </Grid>
 
@@ -80,7 +76,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
         </CommunityDescription>
       </Grid>
 
-      {isConnected && isMember ? (
+      {isConnected ? (
         <Grid item>
           <ProposalButton
             variant="contained"

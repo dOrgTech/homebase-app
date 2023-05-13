@@ -143,6 +143,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
 
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
+  console.log("dao: ", dao)
   const daoLambdas = useDAOLambdas(daoId)
 
   const { mutate: lambdaAdd } = useLambdaAddPropose()

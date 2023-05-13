@@ -19,6 +19,8 @@ import { SupportedLambdaProposalKey } from "services/bakingBad/lambdas"
 import { DelegationChangeProposalForm } from "modules/explorer/components/DelegationChangeProposalForm"
 import { DaoInfoTables } from "./components/DAOInfoTable"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import { ProposalCreator } from "modules/lite/explorer/pages/CreateProposal"
+import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal/ProposalCreatorModal"
 
 interface Action {
   id: any
@@ -28,6 +30,12 @@ interface Action {
 }
 
 const getActions = (): Action[] => [
+  {
+    name: "Off Chain Poll",
+    description: "Create an inconsequential poll for your community",
+    id: "off-chain",
+    isLambda: true
+  },
   {
     name: "Add Lambda",
     description: "Write Michelson code to add Lambda",
@@ -127,6 +135,7 @@ export const Config: React.FC = () => {
   const name = data && data.data.name
   const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
   const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
+  const [openLiteProposal, setOpenLiteProposal] = useState(false)
 
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
@@ -143,7 +152,12 @@ export const Config: React.FC = () => {
   }
 
   const handleCloseSupportedExecuteProposalModal = () => {
+    setOpenLiteProposal(false)
     setOpenSupportedExecuteProposalModal(defaultOpenSupportedExecuteProposalModal)
+  }
+
+  const handleLiteProposal = () => {
+    setOpenLiteProposal(true)
   }
 
   const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
@@ -242,7 +256,9 @@ export const Config: React.FC = () => {
           <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
             <OptionContainer
               onClick={() =>
-                elem.isLambda
+                elem.id === "off-chain"
+                  ? handleLiteProposal()
+                  : elem.isLambda
                   ? handleOpenCustomProposalModal(elem.id)
                   : handleOpenSupportedExecuteProposalModal(elem.id)
               }
@@ -256,24 +272,38 @@ export const Config: React.FC = () => {
 
       <DaoInfoTables />
 
-      <ProposalFormLambda
-        action={proposalAction}
-        open={openProposalFormLambda}
-        handleClose={handleCloseCustomProposalModal}
-      />
-      <ConfigProposalForm
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-      />
-      <GuardianChangeProposalForm
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateGuardianProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-      />
+      {openProposalFormLambda ? (
+        <ProposalFormLambda
+          action={proposalAction}
+          open={openProposalFormLambda}
+          handleClose={handleCloseCustomProposalModal}
+        />
+      ) : null}
 
-      <DelegationChangeProposalForm
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-      />
+      {openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal ? (
+        <ConfigProposalForm
+          open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal}
+          handleClose={handleCloseSupportedExecuteProposalModal}
+        />
+      ) : null}
+
+      {openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateGuardianProposal ? (
+        <GuardianChangeProposalForm
+          open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateGuardianProposal}
+          handleClose={handleCloseSupportedExecuteProposalModal}
+        />
+      ) : null}
+
+      {openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal ? (
+        <DelegationChangeProposalForm
+          open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal}
+          handleClose={handleCloseSupportedExecuteProposalModal}
+        />
+      ) : null}
+
+      {openLiteProposal ? (
+        <ProposalCreatorModal open={openLiteProposal} handleClose={handleCloseSupportedExecuteProposalModal} />
+      ) : null}
     </>
   )
 }

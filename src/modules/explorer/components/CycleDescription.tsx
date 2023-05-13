@@ -13,6 +13,7 @@ const ProposalsStatus = styled(Typography)(({ theme }: { theme: Theme }) => ({
 
 export const CycleDescription: React.FC<{ daoAddress: string }> = ({ daoAddress }) => {
   const { cycleInfo } = useDAO(daoAddress)
+  console.log("cycleInfo: ", cycleInfo)
   const isVotingPeriod = cycleInfo && cycleInfo.type
   const theme = useTheme()
 

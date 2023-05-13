@@ -13,7 +13,6 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { useHasVoted } from "../../hooks/useHasVoted"
 import { usePollChoices } from "../../hooks/usePollChoices"
 import { useCommunity } from "../../hooks/useCommunity"
-import { useIsMembers } from "../../hooks/useIsMember"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
@@ -63,7 +62,6 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const isMember = useIsMembers(account, community?.members)
 
   useEffect(() => {
     choices.map(elem => {
@@ -144,7 +142,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                   return <ChoiceItemSelected key={index} choice={choice} setSelectedVote={setSelectedVote} />
                 })}
               </Grid>
-              {isMember && poll?.isActive === ProposalStatus.ACTIVE ? (
+              {poll?.isActive === ProposalStatus.ACTIVE ? (
                 <Button variant="contained" color="secondary" onClick={() => saveVote()}>
                   Cast your vote
                 </Button>
