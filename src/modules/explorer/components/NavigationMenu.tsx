@@ -62,6 +62,9 @@ const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected
 
   "& > a > * > * > *": {
     transition: ".15s ease-out"
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "45px"
   }
 }))
 
