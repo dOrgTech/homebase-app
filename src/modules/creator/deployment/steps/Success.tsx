@@ -127,7 +127,7 @@ export const Success: React.FC = () => {
 
             <ChoicesContainer container direction="row" alignContent="center" justifyContent="center">
               <Grid item xs>
-                <OptionButton underline="none" href={`/creator/build/template`}>
+                <OptionButton underline="none" href={`/creator/build/dao`}>
                   <MainButton variant="contained" color="secondary">
                     Create DAO
                   </MainButton>
