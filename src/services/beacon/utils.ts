@@ -38,7 +38,11 @@ export const createWallet = (network: Network) => {
     beaconWallet = new BeaconWallet({
       name: "Homebase",
       iconUrl: "https://tezostaquito.io/img/favicon.png",
-      preferredNetwork: network as NetworkType
+      preferredNetwork: network as NetworkType,
+      walletConnectOptions: {
+        projectId: "1641355e825aeaa926e843dd38b04f6f", // Project ID can be customised
+        relayUrl: "wss://relay.walletconnect.com" // WC2 relayUrl can be customised
+      }
     })
   }
 
