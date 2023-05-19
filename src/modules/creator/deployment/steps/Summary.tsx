@@ -83,6 +83,7 @@ export const ContractSummary: React.FC = () => {
   const history = useHistory()
   const match = useRouteMatch()
   const openNotification = useNotification()
+  const [hasShowedError, setHasShowedError] = useState(false)
 
   const { state, dispatch } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
@@ -111,15 +112,16 @@ export const ContractSummary: React.FC = () => {
   }, [data, dispatch, history])
 
   useEffect(() => {
-    if (error) {
+    if (error && !hasShowedError) {
       setIsLoading(false)
       openNotification({
         message: "Error deploying token... try again later",
         variant: "error",
         autoHideDuration: 2000
       })
+      setHasShowedError(true)
     }
-  }, [error, openNotification])
+  }, [error, openNotification, hasShowedError])
 
   useEffect(() => {
     dispatch({
@@ -134,7 +136,9 @@ export const ContractSummary: React.FC = () => {
             ...state.data
           })
           setIsLoading(true)
+          setHasShowedError(false)
         },
+
         text: isLoading ? "Deploying..." : "Launch"
       }
     })
