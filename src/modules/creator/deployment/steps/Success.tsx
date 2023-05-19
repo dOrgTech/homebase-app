@@ -38,12 +38,10 @@ const CardContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const DescriptionContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 32,
   display: "inline-flex",
   [theme.breakpoints.down("sm")]: {
     paddingLeft: "4%",
-    paddingRight: "4%",
-    marginTop: 40
+    paddingRight: "4%"
   }
 }))
 
@@ -105,6 +103,9 @@ export const Success: React.FC = () => {
             </Grid>
 
             <Grid container direction="column">
+              <Grid item>
+                <DescriptionText style={{ marginTop: 40, marginBottom: 20 }}>Your Token Address:</DescriptionText>
+              </Grid>
               <DescriptionContainer item>
                 <DescriptionText style={{ display: "inline-flex", alignItems: "center" }}>
                   <Blockie address={address} size={35} style={{ marginRight: 16 }} />
