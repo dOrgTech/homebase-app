@@ -138,12 +138,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string }> = ({ polls, i
         if (status !== ProposalStatus.ACTIVE && status !== ProposalStatus.CLOSED && status !== undefined) {
           const formatted = polls
             .slice()
-            .sort((a, b) =>
-              (a.votes && a.votes.length > 0 ? a.votes.length : 0) >
-              (b.votes && b.votes.length > 0 ? b.votes.length : 0)
-                ? -1
-                : 1
-            )
+            .sort((a, b) => ((a.votes && a.votes > 0 ? a.votes : 0) > (b.votes && b.votes > 0 ? b.votes : 0) ? -1 : 1))
           setCommunityPolls(formatted)
           setIsFilter(true)
         } else {
@@ -156,12 +151,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string }> = ({ polls, i
           setCommunityPolls(formatted)
           const formattedByPopularity = formatted
             .slice()
-            .sort((a, b) =>
-              (a.votes && a.votes.length > 0 ? a.votes.length : 0) >
-              (b.votes && b.votes.length > 0 ? b.votes.length : 0)
-                ? -1
-                : 1
-            )
+            .sort((a, b) => ((a.votes && a.votes > 0 ? a.votes : 0) > (b.votes && b.votes > 0 ? b.votes : 0) ? -1 : 1))
           setCommunityPolls(formattedByPopularity)
           setIsFilter(true)
         }
