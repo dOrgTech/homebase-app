@@ -27,6 +27,12 @@ const urlToStepMap: Record<string, number> = {
   review: 5
 }
 
+export type FieldChange = { key: string; preventDefault: () => void }
+
+export const handleChange = (event: FieldChange) => {
+  return event.key === "." || event.key === "," ? event.preventDefault() : null
+}
+
 const AnalyticsWrappedStep: React.FC<{ name: string; index: number }> = ({ name, index, children }) => {
   useEffect(() => {
     mixpanel.track("Visited Creator Step", {

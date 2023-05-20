@@ -8,6 +8,7 @@ import { useRouteMatch } from "react-router-dom"
 import { CreatorContext, ActionTypes, QuorumSettings } from "modules/creator/state"
 import { InfoRounded } from "@material-ui/icons"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { FieldChange, handleChange } from "."
 
 const ErrorText = styled(Typography)({
   display: "flex",
@@ -116,8 +117,6 @@ const InputContainer = styled(Grid)({
   }
 })
 
-type QuorumChange = { key: string; preventDefault: () => void }
-
 const validateForm = (values: QuorumSettings) => {
   const errors: FormikErrors<QuorumSettings> = {}
 
@@ -154,10 +153,6 @@ const validateForm = (values: QuorumSettings) => {
   return errors
 }
 
-const handleChange = (event: QuorumChange) => {
-  return event.key === "." || event.key === "," ? event.preventDefault() : null
-}
-
 //TODO: Remove any from this component
 const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
   const {
@@ -169,13 +164,13 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
   const match = useRouteMatch()
   const history = useHistory()
 
-  const controlMaxFieldLimit = (field: string, value: any) => {
-    const itemValue = value.target.value.split(".")
-    if ((itemValue[0] && itemValue[0].length > 18) || (itemValue[1] && itemValue[1].length > 8)) {
-      return value.preventDefault()
-    }
-    setFieldValue(field, value.target.value)
-  }
+  // const controlMaxFieldLimit = (field: string, value: any) => {
+  //   const itemValue = value.target.value.split(".")
+  //   if ((itemValue[0] && itemValue[0].length > 18) || (itemValue[1] && itemValue[1].length > 8)) {
+  //     return value.preventDefault()
+  //   }
+  //   setFieldValue(field, value.target.value)
+  // }
 
   useEffect(() => {
     if (values) {
@@ -211,15 +206,15 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 <Field
                   name="quorumThreshold"
                   type="number"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   placeholder="00"
-                  onKeyDown={(e: QuorumChange) => handleChange(e)}
-                  inputProps={{ min: 0, max: 100 }}
+                  inputProps={{ min: 0, max: 100, step: 1 }}
                   component={TextField}
                   InputProps={{
                     endAdornment: <ValueText color="textSecondary">%</ValueText>
                   }}
                   onClick={() => setFieldTouched("quorumThreshold")}
-                  onChange={(e: any) => controlMaxFieldLimit("quorumThreshold", e)}
+                  // onChange={(e: any) => controlMaxFieldLimit("quorumThreshold", e)}
                 />
               </GridItemCenter>
               <GridItemCenterBottom item xs={7} container direction="row" justifyContent="flex-end">
@@ -245,14 +240,15 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 <Field
                   name="minQuorumAmount"
                   type="number"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   placeholder="00"
-                  onKeyDown={(e: QuorumChange) => handleChange(e)}
+                  inputProps={{ min: 0, max: 100, step: 1 }}
                   component={TextField}
                   InputProps={{
                     endAdornment: <ValueText color="textSecondary">%</ValueText>
                   }}
                   onClick={() => setFieldTouched("minQuorumAmount")}
-                  onChange={(e: any) => controlMaxFieldLimit("minQuorumAmount", e)}
+                  // onChange={(e: any) => controlMaxFieldLimit("minQuorumAmount", e)}
                 ></Field>
               </GridItemCenter>
               <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
@@ -274,14 +270,15 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
                 <Field
                   name="maxQuorumAmount"
                   type="number"
+                  onKeyDown={(e: FieldChange) => handleChange(e)}
                   placeholder="00"
-                  onKeyDown={(e: QuorumChange) => handleChange(e)}
+                  inputProps={{ min: 0, max: 100, step: 1 }}
                   component={TextField}
                   InputProps={{
                     endAdornment: <ValueText color="textSecondary">%</ValueText>
                   }}
                   onClick={() => setFieldTouched("maxQuorumAmount")}
-                  onChange={(e: any) => controlMaxFieldLimit("maxQuorumAmount", e)}
+                  // onChange={(e: any) => controlMaxFieldLimit("maxQuorumAmount", e)}
                 ></Field>
               </GridItemCenter>
               <GridItemCenter item xs={7} container direction="row">
@@ -314,15 +311,15 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
               <Field
                 name="quorumChange"
                 type="number"
+                onKeyDown={(e: FieldChange) => handleChange(e)}
                 placeholder="00"
-                onKeyDown={(e: QuorumChange) => handleChange(e)}
-                inputProps={{ min: 0, max: 100 }}
+                inputProps={{ min: 0, max: 100, step: 1 }}
                 component={TextField}
                 InputProps={{
                   endAdornment: <ValueText color="textSecondary">%</ValueText>
                 }}
                 onClick={() => setFieldTouched("quorumChange")}
-                onChange={(e: any) => controlMaxFieldLimit("quorumChange", e)}
+                // onChange={(e: any) => controlMaxFieldLimit("quorumChange", e)}
               />
             </GridItemCenter>
 
@@ -349,15 +346,15 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
               <Field
                 name="quorumMaxChange"
                 type="number"
+                onKeyDown={(e: FieldChange) => handleChange(e)}
                 placeholder="00"
-                onKeyDown={(e: QuorumChange) => handleChange(e)}
-                inputProps={{ min: 0, max: 100 }}
+                inputProps={{ min: 0, max: 100, step: 1 }}
                 component={TextField}
                 InputProps={{
                   endAdornment: <ValueText color="textSecondary">%</ValueText>
                 }}
                 onClick={() => setFieldTouched("quorumMaxChange")}
-                onChange={(e: any) => controlMaxFieldLimit("quorumMaxChange", e)}
+                // onChange={(e: any) => controlMaxFieldLimit("quorumMaxChange", e)}
               />
             </GridItemCenter>
 

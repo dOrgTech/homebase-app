@@ -1,14 +1,19 @@
 import { OriginateParams } from "../types"
 import { DAOTemplate } from "../../../../modules/creator/state/types"
 import { useState } from "react"
-import { ContractAbstraction, ContractProvider, Wallet } from "@taquito/taquito"
+import { ContractAbstraction, ContractProvider, TezosToolkit, Wallet } from "@taquito/taquito"
 import { useMutation, useQueryClient } from "react-query"
 
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
-import { useTezos } from "services/beacon/hooks/useTezos"
+import { initTezosInstance, useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
 import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
+import { InMemorySigner } from "@taquito/signer"
+import { ALICE_PRIV_KEY } from "services/beacon"
+import { getSignature } from "services/lite/utils"
+import { saveLiteCommunity } from "services/services/lite/lite-services"
+import { Community } from "models/Community"
 
 const INITIAL_STATES = [
   {
@@ -61,7 +66,7 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES)
 
   const [activeState, setActiveState] = useState<number>()
-  const { tezos, connect, network, account } = useTezos()
+  const { tezos, connect, network, account, wallet } = useTezos()
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params }) => {
@@ -75,10 +80,14 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(0)
       setStates(updatedStates)
 
-      let tezosToolkit = tezos
+      let newTezos: TezosToolkit = tezos
 
-      if (!account) {
-        tezosToolkit = await connect()
+      if (network !== "mainnet") {
+        newTezos = initTezosInstance(network)
+        const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
+        newTezos.setProvider({ signer })
+
+        params.orgSettings.administrator = await newTezos.wallet.pkh()
       }
 
       mixpanel.track("Started DAO origination", {
@@ -89,7 +98,7 @@ export const useOriginate = (template: DAOTemplate) => {
 
       const metadata = await deployMetadataCarrier({
         ...metadataParams,
-        tezos: tezosToolkit,
+        tezos: newTezos,
         connect
       })
 
@@ -116,7 +125,7 @@ export const useOriginate = (template: DAOTemplate) => {
       })
 
       const contract = await BaseDAO.baseDeploy(template, {
-        tezos: tezosToolkit,
+        tezos: newTezos,
         metadata,
         params,
         network
@@ -139,7 +148,7 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(2)
       setStates(updatedStates)
 
-      const tx = await BaseDAO.transfer_ownership(contract.address, contract.address, tezos)
+      const tx = await BaseDAO.transfer_ownership(contract.address, contract.address, newTezos)
 
       if (!tx) {
         throw new Error(`Error transferring ownership of ${template}DAO to itself`)
@@ -179,6 +188,28 @@ export const useOriginate = (template: DAOTemplate) => {
 
       setActiveState(4)
       setStates(updatedStates)
+
+      if (wallet) {
+        const values = {
+          name: params.orgSettings.name,
+          description: params.orgSettings.description,
+          linkToTerms: contract.address,
+          picUri: "",
+          members: [],
+          polls: [],
+          tokenAddress: params.orgSettings.governanceToken.address,
+          tokenType: "FA2",
+          requiredTokenOwnership: true,
+          allowPublicAccess: true,
+          network: network,
+          daoContract: contract.address,
+          tokenID: params.orgSettings.governanceToken.tokenId
+        }
+        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
+        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+
+        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
+      }
 
       mixpanel.track("Completed DAO indexation", {
         daoName: params.orgSettings.name,

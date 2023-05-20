@@ -5,14 +5,15 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { EnvKey, getEnv } from "services/config"
 
-export const useCommunity = (daoId: string, isUpdated?: number) => {
-  const [community, setCommunity] = useState<Community>()
+export const useToken = (daoId: string) => {
+  const [tokenAddress, setTokenAddress] = useState<string>("")
   const openNotification = useNotification()
 
   useEffect(() => {
     async function fetchData() {
       try {
-        await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/${daoId.toString()}`).then(async response => {
+        const communityId = daoId
+        await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
           if (!response.ok) {
             openNotification({
               message: "An error has occurred",
@@ -26,7 +27,7 @@ export const useCommunity = (daoId: string, isUpdated?: number) => {
           if (!record) {
             return
           }
-          setCommunity(record)
+          setTokenAddress(record.tokenAddress)
         })
       } catch {
         return
@@ -35,6 +36,6 @@ export const useCommunity = (daoId: string, isUpdated?: number) => {
     fetchData()
 
     return
-  }, [daoId, isUpdated, setCommunity])
-  return community
+  }, [daoId, setTokenAddress])
+  return tokenAddress
 }

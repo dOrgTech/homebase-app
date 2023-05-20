@@ -3,6 +3,7 @@ import { Choice } from "models/Choice"
 import { Poll } from "models/Polls"
 import { useNotification } from "modules/common/hooks/useNotification"
 import React, { useEffect, useState } from "react"
+import { EnvKey, getEnv } from "services/config"
 
 export const usePollChoices = (poll: Poll | undefined, refresh?: number) => {
   const [choices, setChoices] = useState<Choice[]>([])
@@ -11,7 +12,7 @@ export const usePollChoices = (poll: Poll | undefined, refresh?: number) => {
   useEffect(() => {
     async function fetchChoices() {
       if (poll) {
-        await fetch(`${process.env.REACT_APP_API_URL}/choices/${poll._id}/find`).then(async response => {
+        await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/find`).then(async response => {
           if (!response.ok) {
             openNotification({
               message: "An error has occurred",

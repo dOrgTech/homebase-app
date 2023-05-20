@@ -1,7 +1,7 @@
 import { useQuery } from "react-query"
 import { Network } from "services/beacon"
 import { getDAOs } from "services/services/dao/services"
-import { getLiteDAOs } from "../lite-services"
+import { getLiteDAOs } from "../../lite/lite-services"
 
 export const useAllDAOs = (network: Network) => {
   return useQuery(

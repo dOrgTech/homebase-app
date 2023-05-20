@@ -106,7 +106,7 @@ const InfoCopyIcon = styled(CopyButton)({
   }
 })
 
-const getReadableConfig = (configKey: keyof Proposal["metadata"]["config"]) => {
+const getReadableConfig = (configKey: any) => {
   switch (configKey) {
     case "frozen_extra_value":
       return "Proposal fee"
@@ -199,7 +199,7 @@ export const ProposalDetails: React.FC = () => {
   //     proposal.getStatus(cycleInfo.currentLevel).status === ProposalStatus.EXECUTED) &&
   //   !dao?.data.ledger.find(l => l.holder.address.toLowerCase() === account.toLowerCase())?.staked.isZero()
 
-  const parseReadableConfigValue = (configKey: keyof Proposal["metadata"]["config"], value: BigNumber) => {
+  const parseReadableConfigValue = (configKey: any, value: BigNumber) => {
     if (dao) {
       switch (configKey) {
         case "frozen_extra_value":

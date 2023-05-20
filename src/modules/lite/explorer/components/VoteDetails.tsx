@@ -115,7 +115,7 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
                     style={{ width: "100%", marginRight: "4px" }}
                     color="secondary"
                     value={calculateWeight(
-                      poll?.totalSupplyAtReferenceBlock!,
+                      poll?.totalSupplyAtReferenceBlock,
                       calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals),
                       tokenData?.decimals
                     )
@@ -127,7 +127,7 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
                 <Grid item xs={2} lg={1} sm={1} container justifyContent="flex-end">
                   <Typography color="textPrimary" variant="body2">
                     {calculateWeight(
-                      poll?.totalSupplyAtReferenceBlock!,
+                      poll?.totalSupplyAtReferenceBlock,
                       calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals),
                       tokenData?.decimals
                     )

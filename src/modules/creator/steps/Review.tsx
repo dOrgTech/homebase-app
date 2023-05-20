@@ -68,7 +68,6 @@ export const Review: React.FC = () => {
   useEffect(() => {
     ;(async () => {
       if (!validDAOData && info && metadataCarrierParams) {
-        await connect()
         mutate({
           metadataParams: metadataCarrierParams,
           params: info

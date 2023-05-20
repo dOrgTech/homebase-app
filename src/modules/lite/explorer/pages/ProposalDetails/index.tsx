@@ -17,6 +17,7 @@ import { useIsMembers } from "../../hooks/useIsMember"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
+import { voteOnLiteProposal } from "services/services/lite/lite-services"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -69,72 +70,56 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     })
   })
 
+  const votesData = selectedVotes.map((vote: Choice) => {
+    return {
+      address: account,
+      choice: vote?.name,
+      choiceId: vote?._id,
+      pollID: poll?._id
+    }
+  })
+
   const saveVote = async () => {
     if (!wallet) {
       return
     }
 
-    const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-    // const { signature } = await getSignature(account, wallet)
-
-    const votesData = selectedVotes.map((vote: Choice) => {
-      return {
-        address: account,
-        choice: vote?.name,
-        choiceId: vote?._id,
-        pollID: poll?._id
+    try {
+      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
+      if (!signature) {
+        openNotification({
+          message: `Issue with Signature`,
+          autoHideDuration: 3000,
+          variant: "error"
+        })
+        return
       }
-    })
-
-    const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
-    if (!signature) {
-      openNotification({
-        message: `Issue with Signature`,
-        autoHideDuration: 3000,
-        variant: "error"
-      })
-      return
-    }
-
-    // selectedVotes.forEach(async (vote, index) => {
-    return await fetch(`${process.env.REACT_APP_API_URL}/update/choice`, {
-      method: "POST",
-      body: JSON.stringify({
-        signature,
-        publicKey,
-        payloadBytes
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-      .then(resp => {
-        if (resp.ok) {
-          openNotification({
-            message: "Your vote has been submitted",
-            autoHideDuration: 3000,
-            variant: "success"
-          })
-          setRefresh(Math.random())
-          setSelectedVotes([])
-        } else {
-          openNotification({
-            message: `Something went wrong!!`,
-            autoHideDuration: 3000,
-            variant: "error"
-          })
-          return
-        }
-      })
-      .catch(err => {
+      const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes)
+      if (resp.ok) {
+        openNotification({
+          message: "Your vote has been submitted",
+          autoHideDuration: 3000,
+          variant: "success"
+        })
+        setRefresh(Math.random())
+        setSelectedVotes([])
+      } else {
         openNotification({
           message: `Something went wrong!!`,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
+      }
+    } catch (error) {
+      openNotification({
+        message: `Something went wrong!!`,
+        autoHideDuration: 3000,
+        variant: "error"
       })
-    // })
+      return
+    }
   }
 
   return (
@@ -157,6 +142,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                 style={{ gap: 30 }}
               >
                 {choices.map((choice, index) => {
+                  console.log(selectedVotes)
                   return (
                     <ChoiceItemSelected
                       multiple={poll?.votingStrategy === 0 ? false : true}

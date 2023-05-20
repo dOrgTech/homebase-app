@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom"
 import { CommunityToken } from "models/Community"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { Dropdown } from "modules/explorer/components/Dropdown"
+import { EnvKey, getEnv } from "services/config"
 
 export enum ProposalPopularity {
   RECENT = "recent",
@@ -61,7 +62,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string }> = ({ polls, i
     async function getPollToken() {
       if (polls && polls.length > 0) {
         polls.forEach(async poll => {
-          await fetch(`${process.env.REACT_APP_API_URL}/token/${communityId}`).then(async response => {
+          await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
             if (!response.ok) {
               openNotification({
                 message: "An error has occurred",

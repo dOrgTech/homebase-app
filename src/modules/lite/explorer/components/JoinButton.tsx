@@ -6,6 +6,8 @@ import { Community } from "models/Community"
 import { getSignature, hasTokenBalance } from "services/lite/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useCommunityToken } from "../hooks/useCommunityToken"
+import { EnvKey, getEnv } from "services/config"
+import { joinLiteCommunity } from "services/services/lite/lite-services"
 
 const CustomButton = styled(Button)(({ theme }) => ({
   "width": 67,
@@ -55,33 +57,23 @@ export const JoinButton: React.FC<JoinButtonProps> = ({ account, setIsUpdated, c
           return
         }
 
-        await fetch(`${process.env.REACT_APP_API_URL}/daos/join`, {
-          method: "POST",
-          body: JSON.stringify({
-            signature,
-            publicKey,
-            payloadBytes
-          }),
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }).then(resp => {
-          if (resp.ok) {
-            setIsUpdated(Math.random())
-            openNotification({
-              message: `You just ${!isMember ? "joined" : "left"} ${community?.name}!`,
-              autoHideDuration: 3000,
-              variant: "info"
-            })
-          } else {
-            openNotification({
-              message: `Something went wrong!!`,
-              autoHideDuration: 3000,
-              variant: "error"
-            })
-            return
-          }
-        })
+        const resp = await joinLiteCommunity(signature, publicKey, payloadBytes)
+
+        if (resp.ok) {
+          setIsUpdated(Math.random())
+          openNotification({
+            message: `You just ${!isMember ? "joined" : "left"} ${community?.name}!`,
+            autoHideDuration: 3000,
+            variant: "info"
+          })
+        } else {
+          openNotification({
+            message: `Something went wrong!!`,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
       } else {
         openNotification({
           message: `To join ${community?.name} your balance of ${token?.symbol} must be more than zero!`,

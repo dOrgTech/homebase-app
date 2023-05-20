@@ -155,26 +155,29 @@ export const DAOItem: React.FC<{
 }> = ({ dao }) => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const daoType = dao.dao_type.name
   const daoHref =
-    dao.dao_type.name !== "lambda" && dao.dao_type.name !== "lite"
+    daoType !== "lambda" && daoType !== "lite"
       ? `${getEnv(EnvKey.REACT_APP_V2_URL)}/explorer/dao/${dao.id}`
-      : dao.dao_type.name === "lambda"
+      : daoType === "lambda"
       ? `dao/${dao.id}`
       : `lite/dao/${dao.id}`
-  const daoType = dao.dao_type.name
 
   return (
     <Link underline="none" href={daoHref}>
       <Container container justifyContent="space-between">
         <SectionNames>
           <Grid>
-            <SymbolText color="secondary">{dao.symbol.toUpperCase()}</SymbolText>
+            <SymbolText color="secondary">{dao?.symbol?.toUpperCase()}</SymbolText>
             <NameText color="textPrimary">{dao.name}</NameText>
           </Grid>
         </SectionNames>
         <Grid>
           <Grid item xs={12} sm>
-            <Badge dao_type={dao.dao_type.name}>{daoType}</Badge>
+            {daoType === "lambda" ? <Badge dao_type={daoType}>V3</Badge> : null}
+            {daoType === "registry" ? <Badge dao_type={daoType}>V2</Badge> : null}
+            {daoType === "lite" ? <Badge dao_type={daoType}>Lite</Badge> : null}
+
             <NumberText color="textPrimary">{dao.votingAddresses.length}</NumberText>
             <VotingAddressesText color="textPrimary">Voting Addresses</VotingAddressesText>
           </Grid>

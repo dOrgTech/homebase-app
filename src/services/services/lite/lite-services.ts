@@ -7,8 +7,8 @@ import {
   GET_PROPOSALS_QUERY,
   GET_PROPOSAL_QUERY,
   GET_XTZ_TRANSFERS
-} from "./queries"
-import { LambdaProposal, Proposal } from "./mappers/proposal/types"
+} from "../dao/queries"
+import { LambdaProposal, Proposal } from "../dao/mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
 import axios from "axios"
@@ -107,4 +107,64 @@ export const getXTZTransfers = async (address: string) => {
   return await client.request<GetXTZTransfersDTO>(GET_XTZ_TRANSFERS, {
     address
   })
+}
+
+export const saveLiteCommunity = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      signature,
+      publicKey,
+      payloadBytes
+    })
+  })
+  return resp
+}
+
+export const joinLiteCommunity = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/join`, {
+    method: "POST",
+    body: JSON.stringify({
+      signature,
+      publicKey,
+      payloadBytes
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  return resp
+}
+
+export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      signature,
+      publicKey,
+      payloadBytes
+    })
+  })
+  return resp
+}
+
+export const voteOnLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/update/choice`, {
+    method: "POST",
+    body: JSON.stringify({
+      signature,
+      publicKey,
+      payloadBytes
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  return resp
 }

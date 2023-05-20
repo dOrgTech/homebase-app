@@ -4,6 +4,7 @@ import { Poll } from "models/Polls"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { isProposalActive } from "services/lite/utils"
 import { ProposalStatus } from "../components/ProposalTableRowStatusBadge"
+import { EnvKey, getEnv } from "services/config"
 
 export const usePolls = (pollList: string[] | undefined, id?: any, community?: any) => {
   const [polls, setPolls] = useState<Poll[]>([])
@@ -12,7 +13,11 @@ export const usePolls = (pollList: string[] | undefined, id?: any, community?: a
   useEffect(() => {
     async function fetchPoll() {
       if (pollList && pollList.length > 0) {
-        await fetch(`${process.env.REACT_APP_API_URL}/polls/list`).then(async response => {
+        console.log(
+          "`${process.env.REACT_APP_LITE_API_URL}/polls/${id}/list`: ",
+          `${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`
+        )
+        await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`).then(async response => {
           if (!response.ok) {
             openNotification({
               message: "An error has occurred",
