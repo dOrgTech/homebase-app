@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useState } from "react"
 import {
   Grid,
   styled,
@@ -11,10 +11,9 @@ import {
   useTheme,
   useMediaQuery
 } from "@material-ui/core"
-import { EnvKey, getEnv } from "services/config"
 
 import { Choices } from "../../components/Choices"
-import { useHistory, useParams } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { Poll } from "models/Polls"
@@ -198,6 +197,10 @@ const validateForm = (values: Poll) => {
     errors.name = "Required"
   }
 
+  if (!values.externalLink) {
+    errors.externalLink = "Required"
+  }
+
   if (values.choices.length === 0 || values.choices.length === 1) {
     errors.choices = "Two options at least are required"
   }
@@ -297,6 +300,7 @@ export const ProposalForm = ({
             </Grid>
             <Grid item>
               <Field name="externalLink" type="text" placeholder="External Link" component={CustomFormikTextField} />
+              {errors?.externalLink && touched.externalLink ? <ErrorText>{errors.externalLink}</ErrorText> : null}
             </Grid>
 
             {isMobileSmall ? (
@@ -518,31 +522,6 @@ export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const tokenAddress = useToken(id)
-
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const communityId = id.toString()
-  //     await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
-  //       if (!response.ok) {
-  //         openNotification({
-  //           message: "An error has occurred",
-  //           autoHideDuration: 2000,
-  //           variant: "error"
-  //         })
-  //         return
-  //       }
-
-  //       const record = await response.json()
-  //       if (!record) {
-  //         return
-  //       }
-  //       setTokenAddress(record.tokenAddress)
-  //     })
-  //   }
-  //   fetchData()
-
-  //   return
-  // }, [id, network])
 
   const initialState: Poll = {
     name: "",
