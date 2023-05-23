@@ -35,6 +35,7 @@ interface Props {
 export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
+  console.log("dao: ", dao)
 
   const methods = useForm<Values>()
 

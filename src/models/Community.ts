@@ -1,5 +1,5 @@
 export interface Community {
-  _id?: string
+  _id: string
   name: string
   description: string
   linkToTerms: string

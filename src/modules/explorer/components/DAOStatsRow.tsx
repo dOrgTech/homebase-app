@@ -10,6 +10,7 @@ import BigNumber from "bignumber.js"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAOID } from "../pages/DAO/router"
 import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 38px",
@@ -115,6 +116,7 @@ const CycleTime = styled(Typography)(({ theme }) => ({
 export const DAOStatsRow: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
+  console.log("data: ", data)
 
   const symbol = data && data.data.token.symbol.toUpperCase()
   const blocksLeft = cycleInfo && cycleInfo.blocksLeft
@@ -122,6 +124,10 @@ export const DAOStatsRow: React.FC = () => {
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { hours, minutes, days } = useTimeLeftInCycle()
+  const polls = usePolls(data?.liteDAOData?._id)
+  console.log("polls: ", polls)
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) < Math.floor(new Date().valueOf() / 1000))
+  console.log("activeLiteProposals: ", activeLiteProposals)
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -221,7 +227,9 @@ export const DAOStatsRow: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <ProposalInfoTitle color="secondary">Active Proposals</ProposalInfoTitle>
-                  <LargeNumber color="textPrimary">{activeProposals?.length}</LargeNumber>
+                  <LargeNumber color="textPrimary">
+                    {Number(activeProposals?.length) + Number(activeLiteProposals.length)}
+                  </LargeNumber>
                 </Grid>
               </Grid>
             </Grid>

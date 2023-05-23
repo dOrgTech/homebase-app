@@ -168,3 +168,20 @@ export const voteOnLiteProposal = async (signature: string, publicKey: string | 
   })
   return resp
 }
+
+export const fetchLiteData = async (daoContract: string, network: Network) => {
+  if (daoContract) {
+    const data = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/contracts/${daoContract.toString()}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        network
+      })
+    })
+
+    const liteData: Community = await data.json()
+    return liteData
+  }
+}

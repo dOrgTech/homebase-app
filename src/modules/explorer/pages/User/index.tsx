@@ -17,6 +17,7 @@ import { ProfileAvatar } from "../../components/styled/ProfileAvatar"
 import { UserBalances } from "../../components/UserBalances"
 import { UserProfileName } from "../../components/UserProfileName"
 import { DropButton } from "../Proposals"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -108,6 +109,7 @@ export const User: React.FC = () => {
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
+  const polls = usePolls(data?.liteDAOData?._id)
 
   useEffect(() => {
     if (!account) {
@@ -211,6 +213,7 @@ export const User: React.FC = () => {
               currentLevel={cycleInfo.currentLevel}
               proposals={proposalsCreated}
               title={"Proposals Posted"}
+              liteProposals={polls}
             />
           )}
         </Grid>
@@ -235,6 +238,7 @@ export const User: React.FC = () => {
                   </Grid>
                 )
               }}
+              liteProposals={polls}
             />
           )}
         </Grid>

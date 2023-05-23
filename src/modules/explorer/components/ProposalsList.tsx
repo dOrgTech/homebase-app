@@ -6,6 +6,9 @@ import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { ContentContainer } from "./ContentContainer"
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
+import { ProposalTableRow } from "modules/lite/explorer/components/ProposalTableRow"
+import { StyledDivider } from "modules/lite/explorer/components/ProposalList"
+import { Poll } from "models/Polls"
 
 const TableContainer = styled(ContentContainer)({
   width: "100%"
@@ -28,9 +31,17 @@ interface Props {
   title: string
   showFooter?: boolean
   rightItem?: (proposal: Proposal) => React.ReactElement
+  liteProposals: Poll[]
 }
 
-export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, title, showFooter, rightItem }) => {
+export const ProposalsList: React.FC<Props> = ({
+  currentLevel,
+  proposals,
+  title,
+  showFooter,
+  rightItem,
+  liteProposals
+}) => {
   const [open, setopen] = useState(true)
 
   return (
@@ -42,7 +53,7 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, title,
               {title}
             </Typography>
           </Grid>
-          {proposals.length ? (
+          {proposals.length && proposals.length > 0 ? (
             <Grid item>
               <IconButton aria-label="expand row" size="small" onClick={() => setopen(!open)}>
                 {open ? <KeyboardArrowUpIcon htmlColor="#FFF" /> : <KeyboardArrowDownIcon htmlColor="#FFF" />}
@@ -50,7 +61,7 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, title,
             </Grid>
           ) : null}
         </TableHeader>
-        {proposals.length ? (
+        {proposals.length && proposals.length > 0 ? (
           <Grid
             item
             container
@@ -71,7 +82,19 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, title,
               </Grid>
             ))}
           </Grid>
-        ) : (
+        ) : null}
+        {liteProposals && liteProposals.length > 0
+          ? liteProposals.map((poll, i) => {
+              return (
+                <div key={`poll-${i}`}>
+                  <ProposalTableRow poll={poll} />
+                  {liteProposals.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
+                </div>
+              )
+            })
+          : null}
+
+        {!(proposals.length && proposals.length > 0) && !(liteProposals && liteProposals.length > 0) ? (
           <ProposalsFooter item container direction="column" justifyContent="center">
             <Grid item>
               <Typography color="textPrimary" align="center">
@@ -79,7 +102,7 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, title,
               </Typography>
             </Grid>
           </ProposalsFooter>
-        )}
+        ) : null}
         {showFooter && (
           <ProposalsFooter item container direction="column" justifyContent="center">
             <Grid item>

@@ -3,7 +3,6 @@ import { Avatar, Button, Grid, styled, Typography } from "@material-ui/core"
 import { useHistory } from "react-router"
 import { Community } from "models/Community"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { JoinButton } from "./JoinButton"
 import { DashboardContext } from "../context/ActionSheets/explorer"
 
 const StyledAvatar = styled(Avatar)({
@@ -69,11 +68,6 @@ export const DaoCard: React.FC<{ community: Community; setIsUpdated: any }> = ({
           {community.members?.length} members
         </MembersText>
       </Grid>
-      {isConnected ? (
-        <Grid item>
-          <JoinButton account={account} setIsUpdated={setIsUpdated} community={community} />
-        </Grid>
-      ) : null}
     </DaoCardContainer>
   )
 }

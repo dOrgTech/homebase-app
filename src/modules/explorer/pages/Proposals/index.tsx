@@ -17,6 +17,8 @@ import { SmallButton } from "../../../common/SmallButton"
 
 import { ContentContainer } from "../../components/ContentContainer"
 import { AllProposalsList } from "modules/explorer/components/AllProposalsList"
+import { ProposalList } from "modules/lite/explorer/components/ProposalList"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 
 const ProposalInfoTitle = styled(Typography)({
   fontSize: "18px",
@@ -82,6 +84,11 @@ export const Proposals: React.FC = () => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
+  const polls = usePolls(data?.liteDAOData?._id)
+  const id = data?.liteDAOData?._id
+
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) < Math.floor(new Date().valueOf() / 1000))
+
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
@@ -106,7 +113,9 @@ export const Proposals: React.FC = () => {
                 <Grid item xs={isMobileSmall ? undefined : true}>
                   <Grid item container direction="column">
                     <ProposalInfoTitle color="secondary">Active Proposals</ProposalInfoTitle>
-                    <LargeNumber color="textPrimary">{activeProposals?.length}</LargeNumber>
+                    <LargeNumber color="textPrimary">
+                      {Number(activeLiteProposals?.length) + Number(activeProposals?.length)}
+                    </LargeNumber>
                   </Grid>
                 </Grid>
               </Grid>
@@ -115,7 +124,14 @@ export const Proposals: React.FC = () => {
         </HeroContainer>
 
         {data && cycleInfo && proposals && (
-          <AllProposalsList title={"Proposals"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
+          <AllProposalsList title={"On-Chain"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
+        )}
+        {polls.length > 0 ? (
+          <ProposalList polls={polls} id={id} />
+        ) : (
+          <Typography style={{ width: "inherit" }} color="textPrimary">
+            0 proposals found
+          </Typography>
         )}
       </Grid>
     </>

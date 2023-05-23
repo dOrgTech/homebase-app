@@ -26,6 +26,10 @@ import { CommunityBadge } from "../../components/CommunityBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { saveLiteProposal } from "services/services/lite/lite-services"
 import { useToken } from "../../hooks/useToken"
+import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import { Props } from "react-spring-bottom-sheet/dist/types"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useDAOID } from "modules/explorer/pages/DAO/router"
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -64,7 +68,7 @@ const CustomFormikTextField = withStyles({
 
 const PageContainer = styled("div")({
   marginBottom: 50,
-  width: "1000px",
+  width: "fit-content",
   height: "100%",
   margin: "auto",
   padding: "28px 0",
@@ -270,12 +274,12 @@ export const ProposalForm = ({
     <PageContainer>
       <Grid container>
         <Header container direction="column">
-          <CommunityLabel container direction="row" justifyContent="center" alignItems="center">
+          {/* <CommunityLabel container direction="row" justifyContent="center" alignItems="center">
             <CommunityBadge id={id} />
-          </CommunityLabel>
-          <Typography color="textPrimary" variant="subtitle1">
+          </CommunityLabel> */}
+          {/* <Typography color="textPrimary" variant="subtitle1">
             New Proposal
-          </Typography>
+          </Typography> */}
         </Header>
         <Grid container direction={isMobileSmall ? "row" : "column"} style={{ gap: 40 }}>
           <ProposalContainer container item direction={"column"} style={{ gap: 30 }} xs={12} md={7} lg={8}>
@@ -516,11 +520,14 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
   return String(time.valueOf())
 }
 
-export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
+export const ProposalCreator: React.FC<any> = () => {
   const navigate = useHistory()
   const { network, account, wallet } = useTezos()
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
+  const daoId = useDAOID()
+  const { data } = useDAO(daoId)
+  const id = data?.liteDAOData?._id
   const tokenAddress = useToken(id)
 
   const initialState: Poll = {
@@ -595,35 +602,32 @@ export const ProposalCreator: React.FC<{ id: string }> = ({ id }) => {
 
   return (
     <PageContainer>
-      <Grid container>
-        <BackButton />
+      <Grid container direction={"column"} style={{ gap: 18 }}>
+        <Formik
+          validateOnChange={true}
+          validateOnBlur={false}
+          validate={validateForm}
+          onSubmit={saveProposal}
+          initialValues={initialState}
+        >
+          {({ submitForm, setFieldValue, values, errors, touched, setFieldTouched }) => {
+            return (
+              <Form style={{ width: "100%" }}>
+                <ProposalForm
+                  submitForm={submitForm}
+                  isSubmitting={isLoading}
+                  setFieldValue={setFieldValue}
+                  errors={errors}
+                  touched={touched}
+                  values={values}
+                  setFieldTouched={setFieldTouched}
+                  id={id}
+                />
+              </Form>
+            )
+          }}
+        </Formik>
       </Grid>
-
-      <Formik
-        enableReinitialize={true}
-        validateOnChange={true}
-        validateOnBlur={false}
-        validate={validateForm}
-        onSubmit={saveProposal}
-        initialValues={initialState}
-      >
-        {({ submitForm, setFieldValue, values, errors, touched, setFieldTouched }) => {
-          return (
-            <Form style={{ width: "100%" }}>
-              <ProposalForm
-                submitForm={submitForm}
-                isSubmitting={isLoading}
-                setFieldValue={setFieldValue}
-                errors={errors}
-                touched={touched}
-                values={values}
-                setFieldTouched={setFieldTouched}
-                id={id}
-              />
-            </Form>
-          )
-        }}
-      </Formik>
     </PageContainer>
   )
 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react"
-import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Tooltip } from "@material-ui/core"
+import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Tooltip, Avatar } from "@material-ui/core"
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -15,6 +15,12 @@ import { UsersTable } from "../../components/UsersTable"
 import BigNumber from "bignumber.js"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { SmallButton } from "../../../common/SmallButton"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+
+export const StyledAvatar = styled(Avatar)({
+  height: 50,
+  width: 50
+})
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 38px"
@@ -81,6 +87,8 @@ export const DAO: React.FC = () => {
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
+  const polls = usePolls(data?.liteDAOData?._id)
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) < Math.floor(new Date().valueOf() / 1000))
 
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {
@@ -115,6 +123,7 @@ export const DAO: React.FC = () => {
         <Grid container direction="column" style={{ gap: 36 }}>
           <Grid item>
             <Grid container style={{ gap: 20 }} alignItems="center">
+              {/* <StyledAvatar src={data?.liteDAOData?.picUri}></StyledAvatar> */}
               <Grid item>
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
@@ -142,12 +151,15 @@ export const DAO: React.FC = () => {
       <DAOStatsRow />
 
       {data && cycleInfo && activeProposals && (
-        <ProposalsList
-          showFooter
-          title="Active Proposals"
-          currentLevel={cycleInfo.currentLevel}
-          proposals={activeProposals}
-        />
+        <>
+          <ProposalsList
+            showFooter
+            title="Active Proposals"
+            currentLevel={cycleInfo.currentLevel}
+            proposals={activeProposals}
+            liteProposals={activeLiteProposals}
+          />
+        </>
       )}
       <TableContainer item>
         <UsersTable data={usersTableData} />
