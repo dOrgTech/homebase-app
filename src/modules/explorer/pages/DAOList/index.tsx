@@ -148,8 +148,8 @@ export const DAOList: React.FC = () => {
       if (searchText) {
         return formattedDAOs.filter(
           formattedDao =>
-            formattedDao.name.toLowerCase().includes(searchText.toLowerCase()) ||
-            formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase())
+            (formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())) ||
+            (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
         )
       }
 
@@ -165,10 +165,6 @@ export const DAOList: React.FC = () => {
 
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
-  }
-
-  const goToHomebaseLite = () => {
-    window.open("https://lite.tezos-homebase.io/")
   }
 
   return (
