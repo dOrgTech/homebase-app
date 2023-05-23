@@ -140,7 +140,6 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                 style={{ gap: 30 }}
               >
                 {choices.map((choice, index) => {
-                  console.log(selectedVotes)
                   return (
                     <ChoiceItemSelected
                       multiple={poll?.votingStrategy === 0 ? false : true}

@@ -10,7 +10,6 @@ export const useCommunityForContract = (daoContract: string) => {
   const [community, setCommunity] = useState<Community>()
   const openNotification = useNotification()
   const { network } = useTezos()
-  console.log("network: ", network)
 
   useEffect(() => {
     return

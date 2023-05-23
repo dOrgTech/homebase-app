@@ -117,7 +117,6 @@ const CycleTime = styled(Typography)(({ theme }) => ({
 export const DAOStatsRow: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
-  console.log("data: ", data)
 
   const symbol = data && data.data.token.symbol.toUpperCase()
   const blocksLeft = cycleInfo && cycleInfo.blocksLeft
@@ -126,9 +125,7 @@ export const DAOStatsRow: React.FC = () => {
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { hours, minutes, days } = useTimeLeftInCycle()
   const polls = usePolls(data?.liteDAOData?._id)
-  console.log("polls: ", polls)
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
-  console.log("activeLiteProposals: ", activeLiteProposals)
 
   const amountLocked = useMemo(() => {
     if (!ledger) {

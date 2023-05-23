@@ -146,7 +146,6 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
   } else {
     url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}`
   }
-  console.log("url: ", url)
 
   const response = await fetch(url)
   if (!response.ok) {

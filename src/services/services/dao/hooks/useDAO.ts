@@ -28,7 +28,6 @@ export const useDAO = (address: string) => {
     async () => {
       const response = await getDAO(address as string)
       const liteDAO = await fetchLiteData(address, network)
-      console.log("liteDAO: ", liteDAO)
 
       const dao = response.daos[0]
 

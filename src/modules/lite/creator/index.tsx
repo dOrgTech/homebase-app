@@ -189,7 +189,6 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 
   useEffect(() => {
     if (tokenMetadata) {
-      console.log(tokenMetadata)
       setFieldValue("tokenID", tokenMetadata.token_id)
       setFieldValue("tokenType", tokenMetadata.standard)
       setFieldValue("symbol", tokenMetadata.symbol)
