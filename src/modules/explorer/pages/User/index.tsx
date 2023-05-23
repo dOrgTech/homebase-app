@@ -110,6 +110,8 @@ export const User: React.FC = () => {
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
   const polls = usePolls(data?.liteDAOData?._id)
+  console.log("polls: ", polls)
+  const pollsPosted = polls?.filter(p => p.author === account)
 
   useEffect(() => {
     if (!account) {
@@ -213,7 +215,7 @@ export const User: React.FC = () => {
               currentLevel={cycleInfo.currentLevel}
               proposals={proposalsCreated}
               title={"Proposals Posted"}
-              liteProposals={polls}
+              liteProposals={pollsPosted}
             />
           )}
         </Grid>
@@ -238,7 +240,7 @@ export const User: React.FC = () => {
                   </Grid>
                 )
               }}
-              liteProposals={polls}
+              liteProposals={pollsPosted}
             />
           )}
         </Grid>

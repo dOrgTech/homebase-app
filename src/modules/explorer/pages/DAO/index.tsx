@@ -16,6 +16,7 @@ import BigNumber from "bignumber.js"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { SmallButton } from "../../../common/SmallButton"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import dayjs from "dayjs"
 
 export const StyledAvatar = styled(Avatar)({
   height: 50,
@@ -88,7 +89,7 @@ export const DAO: React.FC = () => {
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
   const polls = usePolls(data?.liteDAOData?._id)
-  const activeLiteProposals = polls?.filter(p => Number(p.endTime) < Math.floor(new Date().valueOf() / 1000))
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
 
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {

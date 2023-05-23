@@ -19,6 +19,7 @@ import { ContentContainer } from "../../components/ContentContainer"
 import { AllProposalsList } from "modules/explorer/components/AllProposalsList"
 import { ProposalList } from "modules/lite/explorer/components/ProposalList"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import dayjs from "dayjs"
 
 const ProposalInfoTitle = styled(Typography)({
   fontSize: "18px",
@@ -87,7 +88,7 @@ export const Proposals: React.FC = () => {
   const polls = usePolls(data?.liteDAOData?._id)
   const id = data?.liteDAOData?._id
 
-  const activeLiteProposals = polls?.filter(p => Number(p.endTime) < Math.floor(new Date().valueOf() / 1000))
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
 
   return (
     <>

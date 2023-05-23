@@ -11,6 +11,7 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAOID } from "../pages/DAO/router"
 import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import dayjs from "dayjs"
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 38px",
@@ -126,7 +127,7 @@ export const DAOStatsRow: React.FC = () => {
   const { hours, minutes, days } = useTimeLeftInCycle()
   const polls = usePolls(data?.liteDAOData?._id)
   console.log("polls: ", polls)
-  const activeLiteProposals = polls?.filter(p => Number(p.endTime) < Math.floor(new Date().valueOf() / 1000))
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
   console.log("activeLiteProposals: ", activeLiteProposals)
 
   const amountLocked = useMemo(() => {

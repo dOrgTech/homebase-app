@@ -577,7 +577,9 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
             variant: "success"
           })
           setIsLoading(false)
-          navigate.push(`/explorer/lite/dao/${id}/community`)
+          daoId
+            ? navigate.push(`/explorer/dao/${daoId}/proposals`)
+            : navigate.push(`/explorer/lite/dao/${id}/community`)
         } else {
           openNotification({
             message: "Proposal could not be created",
