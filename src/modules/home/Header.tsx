@@ -2,7 +2,6 @@ import { AppBar, Box, Button, Grid, Link, styled, Theme, Toolbar, Typography } f
 import HomeButton from "assets/logos/homebase_logo.svg"
 import hexToRgba from "hex-to-rgba"
 import React from "react"
-import { EnvKey, getEnv } from "services/config"
 import { MainButton } from "../common/MainButton"
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({

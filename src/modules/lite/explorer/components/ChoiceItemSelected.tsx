@@ -14,9 +14,31 @@ const StyledContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
   }
 }))
 
-export const ChoiceItemSelected: React.FC<{ choice: Choice; setSelectedVote: any }> = ({ choice, setSelectedVote }) => {
+export const ChoiceItemSelected: React.FC<{
+  choice: Choice
+  setSelectedVotes: any
+  votes: Choice[]
+  multiple: boolean
+}> = ({ choice, setSelectedVotes, votes, multiple }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+
+  const handleVotes = (choice: Choice) => {
+    if (multiple) {
+      let votesArray = [...votes]
+      if (!votesArray.includes(choice)) {
+        votesArray?.push(choice)
+      } else {
+        votesArray = votesArray.filter(vote => vote._id !== choice._id)
+      }
+      const setVotes = [...new Set(votesArray)]
+      setVotes.forEach(vote => (vote.selected = true))
+      setSelectedVotes(setVotes)
+    } else {
+      choice.selected = true
+      setSelectedVotes([choice])
+    }
+  }
 
   return (
     <StyledContainer
@@ -28,8 +50,7 @@ export const ChoiceItemSelected: React.FC<{ choice: Choice; setSelectedVote: any
       justifyContent={"center"}
       alignItems="center"
       onClick={() => {
-        setSelectedVote(choice)
-        choice.selected = true
+        handleVotes(choice)
         return
       }}
     >

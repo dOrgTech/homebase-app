@@ -154,13 +154,8 @@ export const saveLiteProposal = async (signature: string, publicKey: string | un
   return resp
 }
 
-export const voteOnLiteProposal = async (
-  signature: string,
-  publicKey: string | undefined,
-  payloadBytes: string,
-  selectedVoteId: string | undefined
-) => {
-  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/update/${selectedVoteId}/choice`, {
+export const voteOnLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/update/choice`, {
     method: "POST",
     body: JSON.stringify({
       signature,
