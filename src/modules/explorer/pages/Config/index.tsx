@@ -136,6 +136,7 @@ export const Config: React.FC = () => {
   const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
   const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
   const [openLiteProposal, setOpenLiteProposal] = useState(false)
+  const liteDAOId = data?.liteDAOData?._id
 
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
@@ -252,22 +253,24 @@ export const Config: React.FC = () => {
       </Grid>
 
       <Grid container style={{ marginTop: 32 }} spacing={2}>
-        {getActions().map((elem, index) => (
-          <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
-            <OptionContainer
-              onClick={() =>
-                elem.id === "off-chain"
-                  ? handleLiteProposal()
-                  : elem.isLambda
-                  ? handleOpenCustomProposalModal(elem.id)
-                  : handleOpenSupportedExecuteProposalModal(elem.id)
-              }
-            >
-              <ActionText color="textPrimary">{elem.name}</ActionText>
-              <ActionDescriptionText color="textPrimary"> {elem.description} </ActionDescriptionText>
-            </OptionContainer>
-          </Grid>
-        ))}
+        {getActions().map((elem, index) =>
+          !liteDAOId && elem.id === "off-chain" ? null : (
+            <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
+              <OptionContainer
+                onClick={() =>
+                  elem.id === "off-chain"
+                    ? handleLiteProposal()
+                    : elem.isLambda
+                    ? handleOpenCustomProposalModal(elem.id)
+                    : handleOpenSupportedExecuteProposalModal(elem.id)
+                }
+              >
+                <ActionText color="textPrimary">{elem.name}</ActionText>
+                <ActionDescriptionText color="textPrimary"> {elem.description} </ActionDescriptionText>
+              </OptionContainer>
+            </Grid>
+          )
+        )}
       </Grid>
 
       <DaoInfoTables />

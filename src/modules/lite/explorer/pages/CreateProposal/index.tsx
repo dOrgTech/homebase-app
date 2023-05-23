@@ -68,7 +68,7 @@ const CustomFormikTextField = withStyles({
 
 const PageContainer = styled("div")({
   marginBottom: 50,
-  width: "fit-content",
+  width: "100%",
   height: "100%",
   margin: "auto",
   padding: "28px 0",
@@ -520,7 +520,7 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
   return String(time.valueOf())
 }
 
-export const ProposalCreator: React.FC<{ id: string }> = props => {
+export const ProposalCreator: React.FC<{ id?: string }> = props => {
   const navigate = useHistory()
   const { network, account, wallet } = useTezos()
   const openNotification = useNotification()
