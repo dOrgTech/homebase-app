@@ -520,14 +520,14 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
   return String(time.valueOf())
 }
 
-export const ProposalCreator: React.FC<any> = () => {
+export const ProposalCreator: React.FC<{ id: string }> = props => {
   const navigate = useHistory()
   const { network, account, wallet } = useTezos()
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
-  const id = data?.liteDAOData?._id
+  const id = data?.liteDAOData?._id ? data?.liteDAOData?._id : props.id
   const tokenAddress = useToken(id)
 
   const initialState: Poll = {

@@ -13,7 +13,6 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { useHasVoted } from "../../hooks/useHasVoted"
 import { usePollChoices } from "../../hooks/usePollChoices"
 import { useCommunity } from "../../hooks/useCommunity"
-import { useIsMembers } from "../../hooks/useIsMember"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
@@ -60,7 +59,6 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const isMember = useIsMembers(account, community?.members)
 
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
@@ -154,7 +152,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                   )
                 })}
               </Grid>
-              {isMember && poll?.isActive === ProposalStatus.ACTIVE ? (
+              {poll?.isActive === ProposalStatus.ACTIVE ? (
                 <Button
                   disabled={selectedVotes.length === 0}
                   variant="contained"
