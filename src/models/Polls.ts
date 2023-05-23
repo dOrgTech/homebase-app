@@ -19,7 +19,7 @@ export interface Poll {
   tokenSymbol?: string
   tokenAddress?: string
   tokenDecimals?: string
-  votes?: Vote[]
+  votes?: number
   votingStrategy: number
   endTimeMinutes?: number | null
   endTimeHours?: number | null

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react"
 import { Grid, styled, CircularProgress, Typography } from "@material-ui/core"
 import { ProposalList } from "../../components/ProposalList"
 import { DaoCardDetail } from "../../components/DaoCardDetail"
-import { useParams } from "react-router-dom"
 import { usePolls } from "../../hooks/usePolls"
 import { useCommunity } from "../../hooks/useCommunity"
 
@@ -45,7 +44,6 @@ export const CommunityDetails: React.FC<{ id: string }> = ({ id }) => {
   const [isUpdated, setIsUpdated] = useState(1)
   const community = useCommunity(id, isUpdated)
   const polls = usePolls(community?.polls, id, community)
-  console.log("polls: ", polls)
 
   return (
     <PageContainer>

@@ -17,7 +17,6 @@ import { useIsMembers } from "../../hooks/useIsMember"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
-import { EnvKey, getEnv } from "services/config"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
 
 const PageContainer = styled("div")({
@@ -55,20 +54,29 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const navigate = useHistory()
   const { state } = useLocation<{ poll: Poll; choices: Choice[] }>()
-  const [selectedVote, setSelectedVote] = useState<Choice>()
-  const { network, account, wallet } = useTezos()
+  const { account, wallet } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
-  const { hasVoted, vote } = useHasVoted(refresh)
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
   const isMember = useIsMembers(account, community?.members)
 
+  const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
+
   useEffect(() => {
     choices.map(elem => {
       return (elem.selected = false)
     })
+  })
+
+  const votesData = selectedVotes.map((vote: Choice) => {
+    return {
+      address: account,
+      choice: vote?.name,
+      choiceId: vote?._id,
+      pollID: poll?._id
+    }
   })
 
   const saveVote = async () => {
@@ -78,15 +86,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
     try {
       const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      const { signature, payloadBytes } = await getSignature(
-        account,
-        wallet,
-        JSON.stringify({
-          address: account,
-          choice: selectedVote?.name,
-          choiceId: selectedVote?._id
-        })
-      )
+      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
       if (!signature) {
         openNotification({
           message: `Issue with Signature`,
@@ -95,7 +95,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         })
         return
       }
-      const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes, selectedVote?._id)
+      const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes)
       if (resp.ok) {
         openNotification({
           message: "Your vote has been submitted",
@@ -103,6 +103,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
           variant: "success"
         })
         setRefresh(Math.random())
+        setSelectedVotes([])
       } else {
         openNotification({
           message: `Something went wrong!!`,
@@ -141,11 +142,25 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                 style={{ gap: 30 }}
               >
                 {choices.map((choice, index) => {
-                  return <ChoiceItemSelected key={index} choice={choice} setSelectedVote={setSelectedVote} />
+                  console.log(selectedVotes)
+                  return (
+                    <ChoiceItemSelected
+                      multiple={poll?.votingStrategy === 0 ? false : true}
+                      key={index}
+                      choice={choice}
+                      votes={selectedVotes}
+                      setSelectedVotes={setSelectedVotes}
+                    />
+                  )
                 })}
               </Grid>
               {isMember && poll?.isActive === ProposalStatus.ACTIVE ? (
-                <Button variant="contained" color="secondary" onClick={() => saveVote()}>
+                <Button
+                  disabled={selectedVotes.length === 0}
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => saveVote()}
+                >
                   Cast your vote
                 </Button>
               ) : null}

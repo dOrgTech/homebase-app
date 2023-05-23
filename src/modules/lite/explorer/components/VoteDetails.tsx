@@ -100,11 +100,13 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
                   </Typography>
                 </Grid>
                 <Grid item xs={12} lg={6} sm={6} container justifyContent={isMobileSmall ? "flex-start" : "flex-end"}>
-                  <Typography color="textPrimary" variant="body2">
-                    {choice.walletAddresses.length} Voters -{" "}
-                    {nFormatter(calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals), 1)}{" "}
-                    {tokenData?.symbol}
-                  </Typography>
+                  {choice && choice.walletAddresses ? (
+                    <Typography color="textPrimary" variant="body2">
+                      {choice.walletAddresses.length} Voters -{" "}
+                      {nFormatter(calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals), 1)}{" "}
+                      {tokenData?.symbol}
+                    </Typography>
+                  ) : null}
                 </Grid>
               </Grid>
               <Grid item container direction="row" alignItems="center">

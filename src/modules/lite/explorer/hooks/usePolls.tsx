@@ -40,8 +40,22 @@ export const usePolls = (pollList: string[] | undefined, id?: any, community?: a
               : ProposalStatus.CLOSED
           })
 
-          setPolls(communityPolls)
-          return
+          communityPolls.forEach(async poll => {
+            if (poll) {
+              await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/votes`).then(async response => {
+                if (!response.ok) {
+                  console.log("error in query")
+                  return
+                }
+                const records: number = await response.json()
+                poll.votes = records
+                return
+              })
+            }
+
+            setPolls(communityPolls)
+            return
+          })
         })
       }
     }
