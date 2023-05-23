@@ -26,7 +26,7 @@ export const storageParamsToBaseDAODockerArgs = (
   min_quorum: `${storage.minQuorumAmount}n`,
   max_quorum: `${storage.maxQuorumAmount}n`,
   quorum_change: `${storage.quorumChange}n`,
-  max_quorum_change: `${storage.maxQuorumAmount}n`,
+  max_quorum_change: `${storage.quorumMaxChange}n`,
   proposal_flush_level: `${storage.proposalFlushPeriod}n`,
   proposal_expired_level: `${storage.proposalExpiryPeriod}n`,
   governance_total_supply: `${token.supply.toFixed()}n`,
