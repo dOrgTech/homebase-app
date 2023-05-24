@@ -38,7 +38,7 @@ export const useDropAllExpired = () => {
       } catch (e) {
         closeFlushNotification(dropNotification)
         openNotification({
-          message: "An error has happened with execute transaction!",
+          message: "An error has happened with drop expired transaction!",
           variant: "error",
           autoHideDuration: 5000
         })
