@@ -4,12 +4,14 @@ import ProgressBar from "react-customizable-progressbar"
 import { Box, Grid, styled, SvgIcon, LinearProgress, useTheme, Typography, useMediaQuery } from "@material-ui/core"
 import { ContentContainer } from "./ContentContainer"
 import { CycleDescription } from "./CycleDescription"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { useProposals } from "services/indexer/dao/hooks/useProposals"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useProposals } from "services/services/dao/hooks/useProposals"
 import BigNumber from "bignumber.js"
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAOID } from "../pages/DAO/router"
 import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import dayjs from "dayjs"
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 38px",
@@ -122,6 +124,8 @@ export const DAOStatsRow: React.FC = () => {
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { hours, minutes, days } = useTimeLeftInCycle()
+  const polls = usePolls(data?.liteDAOData?._id)
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -221,7 +225,9 @@ export const DAOStatsRow: React.FC = () => {
                 </Grid>
                 <Grid item>
                   <ProposalInfoTitle color="secondary">Active Proposals</ProposalInfoTitle>
-                  <LargeNumber color="textPrimary">{activeProposals?.length}</LargeNumber>
+                  <LargeNumber color="textPrimary">
+                    {Number(activeProposals?.length) + Number(activeLiteProposals.length)}
+                  </LargeNumber>
                 </Grid>
               </Grid>
             </Grid>

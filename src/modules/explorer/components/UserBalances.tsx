@@ -1,7 +1,7 @@
 import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import React, { useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 
 const BalancesBox = styled(Grid)(({ theme }) => ({
   minHeight: "137px",

@@ -2,11 +2,10 @@ import { Button, Grid, styled, Tooltip, Typography, useMediaQuery, useTheme } fr
 import React, { useCallback, useState } from "react"
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { useProposals } from "services/indexer/dao/hooks/useProposals"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useProposals } from "services/services/dao/hooks/useProposals"
 import { useDAOID } from "../DAO/router"
 
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
 import { useDropAllExpired } from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired"
 import { SmallButton } from "../../../common/SmallButton"
 import { ContentContainer } from "../../components/ContentContainer"
@@ -19,6 +18,9 @@ import { GuardianChangeProposalForm } from "modules/explorer/components/Guardian
 import { SupportedLambdaProposalKey } from "services/bakingBad/lambdas"
 import { DelegationChangeProposalForm } from "modules/explorer/components/DelegationChangeProposalForm"
 import { DaoInfoTables } from "./components/DAOInfoTable"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import { ProposalCreator } from "modules/lite/explorer/pages/CreateProposal"
+import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal/ProposalCreatorModal"
 
 interface Action {
   id: any
@@ -28,6 +30,12 @@ interface Action {
 }
 
 const getActions = (): Action[] => [
+  {
+    name: "Off Chain Poll",
+    description: "Create an inconsequential poll for your community",
+    id: "off-chain",
+    isLambda: true
+  },
   {
     name: "Add Lambda",
     description: "Write Michelson code to add Lambda",
@@ -127,6 +135,8 @@ export const Config: React.FC = () => {
   const name = data && data.data.name
   const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
   const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
+  const [openLiteProposal, setOpenLiteProposal] = useState(false)
+  const liteDAOId = data?.liteDAOData?._id
 
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
@@ -143,7 +153,12 @@ export const Config: React.FC = () => {
   }
 
   const handleCloseSupportedExecuteProposalModal = () => {
+    setOpenLiteProposal(false)
     setOpenSupportedExecuteProposalModal(defaultOpenSupportedExecuteProposalModal)
+  }
+
+  const handleLiteProposal = () => {
+    setOpenLiteProposal(true)
   }
 
   const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
@@ -155,7 +170,7 @@ export const Config: React.FC = () => {
       mutate({
         dao: data,
         numOfProposalsToFlush: executableProposals.length,
-        expiredProposalIds: expiredProposals.map(p => p.id)
+        expiredProposalIds: expiredProposals.map((p: any) => p.id)
       })
       return
     }
@@ -165,7 +180,7 @@ export const Config: React.FC = () => {
     if (expiredProposals && expiredProposals.length && data) {
       dropAllExpired({
         dao: data,
-        expiredProposalIds: expiredProposals.map(p => p.id)
+        expiredProposalIds: expiredProposals.map((p: any) => p.id)
       })
       return
     }
@@ -238,42 +253,60 @@ export const Config: React.FC = () => {
       </Grid>
 
       <Grid container style={{ marginTop: 32 }} spacing={2}>
-        {getActions().map((elem, index) => (
-          <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
-            <OptionContainer
-              onClick={() =>
-                elem.isLambda
-                  ? handleOpenCustomProposalModal(elem.id)
-                  : handleOpenSupportedExecuteProposalModal(elem.id)
-              }
-            >
-              <ActionText color="textPrimary">{elem.name}</ActionText>
-              <ActionDescriptionText color="textPrimary"> {elem.description} </ActionDescriptionText>
-            </OptionContainer>
-          </Grid>
-        ))}
+        {getActions().map((elem, index) =>
+          !liteDAOId && elem.id === "off-chain" ? null : (
+            <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
+              <OptionContainer
+                onClick={() =>
+                  elem.id === "off-chain"
+                    ? handleLiteProposal()
+                    : elem.isLambda
+                    ? handleOpenCustomProposalModal(elem.id)
+                    : handleOpenSupportedExecuteProposalModal(elem.id)
+                }
+              >
+                <ActionText color="textPrimary">{elem.name}</ActionText>
+                <ActionDescriptionText color="textPrimary"> {elem.description} </ActionDescriptionText>
+              </OptionContainer>
+            </Grid>
+          )
+        )}
       </Grid>
 
       <DaoInfoTables />
 
-      <ProposalFormLambda
-        action={proposalAction}
-        open={openProposalFormLambda}
-        handleClose={handleCloseCustomProposalModal}
-      />
-      <ConfigProposalForm
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-      />
-      <GuardianChangeProposalForm
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateGuardianProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-      />
+      {openProposalFormLambda ? (
+        <ProposalFormLambda
+          action={proposalAction}
+          open={openProposalFormLambda}
+          handleClose={handleCloseCustomProposalModal}
+        />
+      ) : null}
 
-      <DelegationChangeProposalForm
-        open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal}
-        handleClose={handleCloseSupportedExecuteProposalModal}
-      />
+      {openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal ? (
+        <ConfigProposalForm
+          open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.ConfigurationProposal}
+          handleClose={handleCloseSupportedExecuteProposalModal}
+        />
+      ) : null}
+
+      {openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateGuardianProposal ? (
+        <GuardianChangeProposalForm
+          open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateGuardianProposal}
+          handleClose={handleCloseSupportedExecuteProposalModal}
+        />
+      ) : null}
+
+      {openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal ? (
+        <DelegationChangeProposalForm
+          open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal}
+          handleClose={handleCloseSupportedExecuteProposalModal}
+        />
+      ) : null}
+
+      {openLiteProposal ? (
+        <ProposalCreatorModal open={openLiteProposal} handleClose={handleCloseSupportedExecuteProposalModal} />
+      ) : null}
     </>
   )
 }

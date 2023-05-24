@@ -8,7 +8,7 @@ import { ReactComponent as NFTIcon } from "assets/logos/nft.svg"
 import { ReactComponent as ConfigIcon } from "assets/logos/config.svg"
 import React, { useEffect, useState } from "react"
 import { useDAOID } from "../pages/DAO/router"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useLocation } from "react-router"
 import { Link } from "react-router-dom"
@@ -62,6 +62,9 @@ const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected
 
   "& > a > * > * > *": {
     transition: ".15s ease-out"
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "45px"
   }
 }))
 

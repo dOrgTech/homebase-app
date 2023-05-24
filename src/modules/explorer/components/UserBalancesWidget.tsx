@@ -1,10 +1,9 @@
-import { Grid, styled, Theme, Typography } from "@material-ui/core"
-import { useTheme } from "@material-ui/styles"
+import { Grid, styled, Theme, Typography, useTheme } from "@material-ui/core"
 import BigNumber from "bignumber.js"
 import hexToRgba from "hex-to-rgba"
 import React, { useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 
 const BalanceBox = styled(Grid)(({ radiusSide, color }: { radiusSide: "left" | "right" | "none"; color: string }) => {

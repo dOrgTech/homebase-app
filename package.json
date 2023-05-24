@@ -15,12 +15,18 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@airgap/beacon-sdk": "^3.3.0",
+    "@date-io/dayjs": "1.x",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
     "@craco/craco": "^7.1.0",
     "@hookform/resolvers": "^2.8.1",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@microsoft/signalr": "^5.0.9",
+    "@mui/material": "^5.10.6",
+    "@mui/x-date-pickers": "^5.0.2",
     "@taquito/beacon-wallet": "^16.1.2",
     "@taquito/signer": "^16.1.2",
     "@taquito/taquito": "^16.1.2",
@@ -95,7 +101,8 @@
     "typescript": "^5.0.4"
   },
   "resolutions": {
-    "@types/react": "~17.0.3"
+    "@types/react": "~17.0.3",
+    "react-error-overlay": "6.0.9"
   },
   "eslintConfig": {
     "extends": [

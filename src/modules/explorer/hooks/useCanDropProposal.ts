@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { useProposal } from "services/indexer/dao/hooks/useProposal"
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useProposal } from "services/services/dao/hooks/useProposal"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 export const useCanDropProposal = (daoId: string, proposalId: string) => {
   const { account } = useTezos()

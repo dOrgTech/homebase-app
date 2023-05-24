@@ -7,9 +7,9 @@ import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useUnstakeFromAllProposals } from "services/contracts/baseDAO/hooks/useUnstakeFromAllProposals"
 import { toShortAddress } from "services/contracts/utils"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { useProposals } from "services/indexer/dao/hooks/useProposals"
-import { Proposal, ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useProposals } from "services/services/dao/hooks/useProposals"
+import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { FreezeDialog } from "../../components/FreezeDialog"
 import { ProposalsList } from "../../components/ProposalsList"
 import { StatusBadge } from "../../components/StatusBadge"
@@ -17,6 +17,7 @@ import { ProfileAvatar } from "../../components/styled/ProfileAvatar"
 import { UserBalances } from "../../components/UserBalances"
 import { UserProfileName } from "../../components/UserProfileName"
 import { DropButton } from "../Proposals"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -108,6 +109,8 @@ export const User: React.FC = () => {
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
+  const polls = usePolls(data?.liteDAOData?._id)
+  const pollsPosted = polls?.filter(p => p.author === account)
 
   useEffect(() => {
     if (!account) {
@@ -211,6 +214,7 @@ export const User: React.FC = () => {
               currentLevel={cycleInfo.currentLevel}
               proposals={proposalsCreated}
               title={"Proposals Posted"}
+              liteProposals={pollsPosted}
             />
           )}
         </Grid>
@@ -235,6 +239,7 @@ export const User: React.FC = () => {
                   </Grid>
                 )
               }}
+              liteProposals={pollsPosted}
             />
           )}
         </Grid>
