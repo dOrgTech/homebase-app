@@ -19,11 +19,6 @@ const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthMd": {
     width: "-webkit-fill-available",
     height: "-webkit-fill-available"
-  },
-  "& .MuiDialog-paperWidthXs": {
-    width: "-webkit-fill-available",
-    height: "auto",
-    maxWidth: "960px !important"
   }
 })
 
@@ -33,10 +28,10 @@ export const ResponsiveDialog: React.FC<{
   onGoBack?: () => void
   title?: string
   customTitleColor?: string
-  template?: "xs" | "md" | "sm"
+  template?: string
   children: any
 }> = props => {
-  const { open, onClose, onGoBack, title, children, template = "sm" } = props
+  const { open, onClose, onGoBack, title, children, template = "" } = props
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
@@ -56,7 +51,7 @@ export const ResponsiveDialog: React.FC<{
       </Content>
     </BottomSheet>
   ) : (
-    <CustomDialog open={open} onClose={onClose} maxWidth={template}>
+    <CustomDialog open={open} onClose={onClose} maxWidth={template ? "md" : "sm"}>
       <Content container direction="column" style={{ gap: 30 }}>
         <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
           <Grid item>{onGoBack ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
