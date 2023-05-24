@@ -105,6 +105,7 @@ export const User: React.FC = () => {
   const history = useHistory()
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
+  const { data: pendingProposals } = useProposals(daoId, ProposalStatus.PENDING)
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
@@ -158,6 +159,7 @@ export const User: React.FC = () => {
   const canUnstakeVotes: boolean | undefined =
     executedProposals &&
     droppedProposals &&
+    pendingProposals &&
     executedProposals
       .concat(droppedProposals)
       .some(proposal => proposal.voters.find(vote => vote.address === account)?.staked)

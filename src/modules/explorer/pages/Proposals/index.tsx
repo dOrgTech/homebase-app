@@ -127,13 +127,13 @@ export const Proposals: React.FC = () => {
         {data && cycleInfo && proposals && (
           <AllProposalsList title={"On-Chain"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
         )}
-        {polls.length > 0 ? (
-          <ProposalList polls={polls} id={id} />
-        ) : (
+        {polls.length > 0 ? <ProposalList polls={polls} id={id} /> : null}
+
+        {proposals?.length === 0 && polls?.length === 0 ? (
           <Typography style={{ width: "inherit" }} color="textPrimary">
             0 proposals found
           </Typography>
-        )}
+        ) : null}
       </Grid>
     </>
   )
