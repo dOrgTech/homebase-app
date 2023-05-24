@@ -140,7 +140,12 @@ export const getDAONFTBalances = async (
 }
 
 export const getTokenMetadata = async (contractAddress: string, network: Network, tokenId: string) => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}&tokenId=${tokenId}`
+  let url = ""
+  if (tokenId !== undefined) {
+    url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}&tokenId=${tokenId}`
+  } else {
+    url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}`
+  }
 
   const response = await fetch(url)
   if (!response.ok) {

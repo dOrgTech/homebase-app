@@ -18,7 +18,7 @@ import { VotersProgress } from "./VotersProgress"
 import { AppTabBar } from "./AppTabBar"
 import { TabPanel } from "./TabPanel"
 import { BigNumber } from "bignumber.js"
-import { useProposal } from "services/indexer/dao/hooks/useProposal"
+import { useProposal } from "services/services/dao/hooks/useProposal"
 import { UserBadge } from "./UserBadge"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 

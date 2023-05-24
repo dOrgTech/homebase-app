@@ -2,7 +2,7 @@ import React from "react"
 import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { RectangleContainer } from "./styled/RectangleHeader"
 import { CopyAddress } from "modules/common/CopyAddress"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 
 const Container = styled(Grid)(({ theme }) => ({

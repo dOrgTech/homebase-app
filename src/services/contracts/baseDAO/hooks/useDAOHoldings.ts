@@ -1,7 +1,7 @@
 import { BaseDAO } from ".."
 import { useQuery } from "react-query"
 import { DAOHolding, getDAOBalances, getDAONFTBalances, NFTDAOHolding } from "services/bakingBad/tokenBalances"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useMemo } from "react"
 import { NFT } from "models/Token"

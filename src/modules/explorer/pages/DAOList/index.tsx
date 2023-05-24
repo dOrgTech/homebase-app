@@ -13,7 +13,7 @@ import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import React, { useEffect, useMemo, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { useAllDAOs } from "services/indexer/dao/hooks/useAllDAOs"
+import { useAllDAOs } from "services/services/dao/hooks/useAllDAOs"
 import { ConnectMessage } from "./components/ConnectMessage"
 import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
@@ -138,7 +138,7 @@ export const DAOList: React.FC = () => {
           id: dao.address,
           name: dao.name,
           symbol: dao.token.symbol,
-          votingAddresses: dao.ledgers.map(l => l.holder.address),
+          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
           dao_type: {
             name: dao.dao_type.name
           }
@@ -148,8 +148,8 @@ export const DAOList: React.FC = () => {
       if (searchText) {
         return formattedDAOs.filter(
           formattedDao =>
-            formattedDao.name.toLowerCase().includes(searchText.toLowerCase()) ||
-            formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase())
+            (formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())) ||
+            (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
         )
       }
 
@@ -167,28 +167,11 @@ export const DAOList: React.FC = () => {
     setSelectedTab(newValue)
   }
 
-  const goToHomebaseLite = () => {
-    window.open("https://lite.tezos-homebase.io/")
-  }
-
   return (
     <>
       <Navbar disableMobileMenu />
       <PageContainer>
         <Grid container style={{ gap: 42 }} direction="column">
-          <Grid item>
-            <BannerContainer container alignItems="center" direction="row">
-              <LinkText color="textPrimary" style={{ display: "inline" }}>
-                For off-chain token-weighted polls, try{" "}
-              </LinkText>{" "}
-              <ExternalLink color="secondary" onClick={goToHomebaseLite}>
-                {" "}
-                Homebase Lite
-                <ExternalLinkIcon color="secondary" />{" "}
-              </ExternalLink>
-            </BannerContainer>
-          </Grid>
-
           <Grid item>
             <Grid
               container

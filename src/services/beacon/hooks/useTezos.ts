@@ -5,6 +5,7 @@ import { connectWithBeacon, Network, rpcNodes, TezosActionType } from "services/
 import { TezosContext } from "services/beacon/context"
 import { Tzip16Module } from "@taquito/tzip16"
 import mixpanel from "mixpanel-browser"
+import { BeaconWallet } from "@taquito/beacon-wallet"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -13,6 +14,7 @@ type WalletConnectReturn = {
   reset: () => void
   account: string
   network: Network
+  wallet: BeaconWallet | undefined
 }
 
 export const initTezosInstance = (network: Network) => {
@@ -96,6 +98,7 @@ export const useTezos = (): WalletConnectReturn => {
       location.reload()
     },
     account,
-    network
+    network,
+    wallet
   }
 }

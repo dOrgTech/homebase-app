@@ -4,8 +4,8 @@ import { formatNumber } from "../utils/FormatNumber"
 import { MultiColorBar as CustomBar } from "modules/explorer/components/ProgressBar"
 import { useVotesStats } from "../hooks/useVotesStats"
 import BigNumber from "bignumber.js"
-import { useProposal } from "services/indexer/dao/hooks/useProposal"
-import { Proposal } from "services/indexer/dao/mappers/proposal/types"
+import { useProposal } from "services/services/dao/hooks/useProposal"
+import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { VotesDetailDialog } from "./VotesDetailDialog"
 
 interface VotersData {

@@ -36,7 +36,6 @@ export const WarningFooter: React.FC<{ text: string }> = ({ text }) => {
 
   const closeButton = () => {
     localStorage.setItem("warning-closed", "true")
-    console.log("warning-closed")
     setOpen(false)
   }
 
