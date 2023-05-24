@@ -2,72 +2,66 @@ import React from "react"
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
 import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
 
-const statusColors = (status: ProposalStatus | "all") => {
+const statusColors = (status: ProposalStatus) => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return {
-        background: "#0085ff33",
-        color: "#0085FF",
-        text: "Active"
+        background: "#77632E",
+        color: "#DBDE39",
+        text: "ACTIVE"
       }
     case ProposalStatus.PENDING:
       return {
-        background: "#ffc83933",
-        color: "#ffc839",
-        text: "Pending"
+        background: "#273379",
+        color: "#3866F9",
+        text: "PENDING"
       }
     case ProposalStatus.PASSED:
       return {
-        background: "#4aff9833",
-        color: "#4aff98",
-        text: "Passed"
+        background: "#1A5D35",
+        color: "#3DB84E",
+        text: "PASSED"
       }
     case ProposalStatus.EXECUTABLE:
       return {
         background: "#35796F",
         color: "#5AFFE1",
-        text: "Passed - Executable"
+        text: "PASSED - EXECUTABLE"
       }
     case ProposalStatus.REJECTED:
       return {
-        background: "#ff5a6433",
-        color: "#ff5a64",
-        text: "Rejected"
+        background: "#63191B",
+        color: "#CC0F0F",
+        text: "REJECTED"
       }
     case ProposalStatus.EXPIRED:
       return {
-        background: "#9a40a933",
-        color: "#9a40a9",
-        text: "Expired"
+        background: "#443042",
+        color: "#7E496F",
+        text: "EXPIRED"
       }
     case ProposalStatus.DROPPED:
       return {
-        background: "#b93d3d33",
-        color: "#b93d3d",
-        text: "Dropped"
+        background: "#482E30",
+        color: "#894343",
+        text: "DROPPED"
       }
     case ProposalStatus.NO_QUORUM:
       return {
         background: "#484A4C",
         color: "#8A8A8A",
-        text: "No Quorum"
+        text: "NO QUORUM"
       }
     case ProposalStatus.EXECUTED:
       return {
         background: "#2F7952",
         color: "#58FF98",
-        text: "Passed - Executed"
-      }
-    case "all":
-      return {
-        background: "#81feb733",
-        color: "#81feb7",
-        text: "All"
+        text: "PASSED - EXECUTED"
       }
   }
 }
 
-export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | "all"; theme: Theme }) => ({
+const Badge = styled(Grid)(({ status }: { status: ProposalStatus; theme: Theme }) => ({
   borderRadius: 50,
   textAlign: "center",
   minHeight: 24,
@@ -75,11 +69,10 @@ export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | "all";
   padding: "2px 8px",
   background: statusColors(status).background,
   color: statusColors(status).color,
-  whiteSpace: "nowrap",
-  fontWeight: 300
+  whiteSpace: "nowrap"
 }))
 
-export const StatusBadge: React.FC<{ status: ProposalStatus | "all" } & GridProps> = ({ status, ...props }) => (
+export const StatusBadge: React.FC<{ status: ProposalStatus } & GridProps> = ({ status, ...props }) => (
   <Badge status={status} {...props}>
     <Typography color="inherit"> {statusColors(status).text} </Typography>
   </Badge>

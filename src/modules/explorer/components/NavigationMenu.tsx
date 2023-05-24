@@ -133,6 +133,12 @@ const getPages = (daoId: string): Page[] => [
     name: "User",
     icon: UserIcon,
     href: `/explorer/dao/${daoId}/user`
+  },
+  {
+    pathId: "config",
+    name: "Config",
+    icon: ConfigIcon,
+    href: `/explorer/dao/${daoId}/config`
   }
 ]
 
