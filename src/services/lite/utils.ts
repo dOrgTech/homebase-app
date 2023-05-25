@@ -154,12 +154,20 @@ export const calculateProposalTotal = (choices: Choice[], decimals: any) => {
   return result
 }
 
-export const getTotalVoters = (choices: Choice[]) => {
-  let votersTotal = 0
-  choices.map((choice: Choice) => {
-    votersTotal += choice.walletAddresses.length
+const getUsers = (options: Choice[]) => {
+  const addresses: string[] = []
+
+  options.map(option => {
+    return option.walletAddresses.map(wallet => addresses.push(wallet.address))
   })
-  return votersTotal
+
+  return new Set(addresses)
+}
+
+export const getTotalVoters = (choices: Choice[]) => {
+  const totalVoters = getUsers(choices)
+
+  return totalVoters.size
 }
 
 export const getTreasuryPercentage = (proposalTotal: BigNumber, totalSupply: number, decimals: any) => {
