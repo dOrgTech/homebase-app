@@ -66,6 +66,21 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
   width: "100%"
 }))
 
+const CustomAmountContainer = styled(Grid)(({ theme }) => ({
+  height: 54,
+  boxSizing: "border-box",
+  marginTop: 14,
+  background: "#2F3438",
+  borderRadius: 8,
+  alignItems: "center",
+  display: "flex",
+  padding: "13px 23px",
+  width: "40%",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%"
+  }
+}))
+
 const ErrorText = styled(Typography)({
   fontSize: 14,
   color: "red"
@@ -151,14 +166,14 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                         />
                       </CustomInputContainer>
 
-                      <CustomInputContainer>
+                      <CustomAmountContainer>
                         <Field
                           type="number"
                           name={`holders.[${index}].amount`}
                           placeholder={`Amount`}
                           component={CustomFormikTextField}
                         />
-                      </CustomInputContainer>
+                      </CustomAmountContainer>
 
                       {index !== 0 ? (
                         <RemoveButton
