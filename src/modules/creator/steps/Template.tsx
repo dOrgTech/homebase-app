@@ -88,7 +88,11 @@ export const Template = (): JSX.Element => {
             type: ActionTypes.UPDATE_TEMPLATE,
             template: selectedTemplate
           })
-          return history.push(`dao`)
+
+          if (selectedTemplate === "lambda") {
+            return history.push(`dao`)
+          }
+          return history.push("/lite")
         },
         text: "Continue"
       }
@@ -118,6 +122,22 @@ export const Template = (): JSX.Element => {
           <BoxTitle color="textSecondary">Full DAO</BoxTitle>
           <BoxDescription color="textSecondary">
             Contract interaction. Transfer assets based on vote outcomes.
+          </BoxDescription>
+        </LambdaCustomBox>{" "}
+        <LambdaCustomBox
+          item
+          container
+          direction="column"
+          justifyContent="flex-start"
+          alignItems="center"
+          xs={isMobileSmall ? 12 : 6}
+          onClick={() => update("lite")}
+          className={selectedTemplate === "lite" ? style.selected : ""}
+        >
+          <LiteIcon style={{ marginBottom: 14 }} />
+          <BoxTitle color="textSecondary">Lite DAO</BoxTitle>
+          <BoxDescription color="textSecondary">
+            Off-chain weighted voting. Multiple voting strategies. No treasury.{" "}
           </BoxDescription>
         </LambdaCustomBox>{" "}
       </Grid>

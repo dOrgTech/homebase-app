@@ -1,6 +1,6 @@
 import { Grid, Typography, TextField, styled, CircularProgress } from "@material-ui/core"
 import React, { useCallback, useEffect } from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { Controller, FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalCodeEditorInput, ProposalFormInput } from "./ProposalFormInput"

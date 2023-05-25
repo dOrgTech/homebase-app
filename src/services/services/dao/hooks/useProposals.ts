@@ -1,7 +1,7 @@
 import { useQuery } from "react-query"
 import { BaseDAO, CycleInfo } from "services/contracts/baseDAO"
-import { getProposals } from "services/indexer/dao/services"
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { getProposals } from "services/services/dao/services"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAO } from "./useDAO"
 
 export const useProposals = (contractAddress: string, status?: ProposalStatus) => {

@@ -3,7 +3,7 @@ import { CircularProgress, Grid, styled, Typography, useMediaQuery, useTheme } f
 import { ResponsiveTableContainer } from "./ResponsiveTable"
 import { TableHeader } from "./styled/TableHeader"
 import { ProposalTableRow } from "./ProposalTableRow"
-import { Proposal, ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 const ProposalTableHeadText: React.FC = ({ children }) => (
   <ProposalTableHeadItem variant="subtitle1" color="textSecondary">

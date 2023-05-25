@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles, withTheme } from "@material-ui/core"
+import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
 import React, { useContext, useEffect } from "react"
-import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles } from "@material-ui/core"
-import { Field, FieldArray, Form, Formik, FormikErrors } from "formik"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
-import { ActionTypes, Holder, TokenDistributionSettings } from "../state/types"
+import { ActionTypes, Holder, TokenContractSettings, TokenDistributionSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
+import { SmallButton } from "modules/common/SmallButton"
 import { AddCircleOutline, RemoveCircle } from "@material-ui/icons"
 import BigNumber from "bignumber.js"
-import { formatUnits, parseUnits } from "services/contracts/utils"
+import { parseUnits } from "services/contracts/utils"
 import { numberWithCommas } from "../state/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { TitleBlock } from "modules/common/TitleBlock"
-import { FieldChange, handleChange } from "modules/creator/utils"
 
 const SupplyContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -21,12 +21,15 @@ const SupplyContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const RemoveButton = styled(RemoveCircle)({
-  marginTop: 0,
-  cursor: "pointer"
+  marginTop: 13
 })
 
 const AmountText = styled(Typography)({
   fontWeight: 200
+})
+
+const ButtonContainer = styled(Grid)({
+  marginTop: 40
 })
 
 const CustomFormikTextField = withStyles({
@@ -136,29 +139,24 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                       <CustomInputContainer>
                         <Field
                           type="number"
-                          onKeyDown={(e: FieldChange) => handleChange(e)}
-                          inputProps={{ min: 0 }}
                           name={`holders.[${index}].amount`}
                           placeholder={`Amount`}
                           component={CustomFormikTextField}
-                          InputProps={{
-                            endAdornment:
-                              index !== 0 ? (
-                                <RemoveButton
-                                  color="error"
-                                  onClick={() => {
-                                    if (index !== 0) {
-                                      arrayHelpers.remove(index)
-                                    }
-                                  }}
-                                />
-                              ) : (
-                                <RemoveButton color="error" style={{ visibility: "hidden" }} />
-                              ),
-                            disableUnderline: true
-                          }}
                         />
                       </CustomInputContainer>
+
+                      {index !== 0 ? (
+                        <RemoveButton
+                          color="error"
+                          onClick={() => {
+                            if (index !== 0) {
+                              arrayHelpers.remove(index)
+                            }
+                          }}
+                        />
+                      ) : (
+                        <RemoveButton color="error" style={{ visibility: "hidden" }} />
+                      )}
                     </div>
                   ))
                 : null}
@@ -206,7 +204,7 @@ export const ContractDistribution: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const totalAmount = new BigNumber(Number(tokenSettings.totalSupply))
+  const totalAmount = parseUnits(new BigNumber(Number(tokenSettings.totalSupply)), Number(tokenSettings.decimals))
 
   const saveStepInfo = (
     values: TokenDistributionSettings,

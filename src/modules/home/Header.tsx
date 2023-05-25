@@ -1,9 +1,7 @@
-import { AppBar, Box, Button, Grid, Link, Theme, Toolbar, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { AppBar, Box, Button, Grid, Link, styled, Theme, Toolbar, Typography } from "@material-ui/core"
 import HomeButton from "assets/logos/homebase_logo.svg"
 import hexToRgba from "hex-to-rgba"
 import React from "react"
-import { EnvKey, getEnv } from "services/config"
 import { MainButton } from "../common/MainButton"
 
 const StyledAppBar = styled(AppBar)(({ theme }: { theme: Theme }) => ({

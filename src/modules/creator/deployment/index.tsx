@@ -25,6 +25,7 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const PageContent = styled(Grid)(({ theme }) => ({
+  marginTop: 0,
   width: "1000px",
   height: "100%",
   margin: "auto",
@@ -75,9 +76,10 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 415,
+  maxHeight: 410,
   paddingTop: 20,
-  position: "sticky"
+  position: "sticky",
+  top: 125
 }))
 
 const StyledStepper = styled(Stepper)({

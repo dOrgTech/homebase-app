@@ -11,7 +11,7 @@ export const useTokenMetadata = (address?: string, tokenId?: string) => {
     ["tokenMetadata", address, tokenId],
     () => getTokenMetadata(address as string, network, tokenId as string),
     {
-      enabled: !!tezos && !!address && !!tokenId
+      enabled: !!tezos && !!address
     }
   )
 

@@ -1,6 +1,6 @@
 import { BaseDAO } from ".."
 import { useQuery } from "react-query"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getDAOLambda } from "services/bakingBad/lambdas"
 import { Lambda } from "services/bakingBad/lambdas/types"

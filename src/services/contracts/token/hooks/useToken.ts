@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from "react-query"
 
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { getDAO } from "services/indexer/dao/services"
 import mixpanel from "mixpanel-browser"
 import { TokenContractParams } from "modules/creator/deployment/state/types"
 import { deployTokenContract } from ".."

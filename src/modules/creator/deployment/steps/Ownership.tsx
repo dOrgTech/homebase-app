@@ -8,6 +8,7 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const PageContent = styled(Grid)(({ theme }) => ({
+  marginTop: 60,
   width: "1000px",
   height: "100%",
   margin: "auto",

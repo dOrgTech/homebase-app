@@ -28,7 +28,6 @@ export const extractTransfersData = (
       }
     } else {
       const fa12Transfer = transfer
-      console.log("fa12Transfer: ", fa12Transfer)
 
       return {
         amount: fa12Transfer.legacy_token_transfer_type.transfer.target.value,

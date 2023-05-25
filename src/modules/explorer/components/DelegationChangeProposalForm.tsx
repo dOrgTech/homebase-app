@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import { Grid, styled, Typography, TextField } from "@material-ui/core"
 import React, { useCallback, useEffect, useMemo } from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { SendButton } from "./ProposalFormSendButton"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { Controller, FormProvider, useForm } from "react-hook-form"

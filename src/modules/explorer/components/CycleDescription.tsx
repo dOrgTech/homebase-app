@@ -1,6 +1,6 @@
 import { Typography, useMediaQuery, useTheme, Theme, styled } from "@material-ui/core"
 import React from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 
 const ProposalsStatus = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontSize: "20px",

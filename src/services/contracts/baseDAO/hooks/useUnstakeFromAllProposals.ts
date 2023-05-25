@@ -38,7 +38,7 @@ export const useUnstakeFromAllProposals = () => {
       } catch (e) {
         closeFlushNotification(unstakeNotification)
         openNotification({
-          message: "An error has happened with execute transaction!",
+          message: "An error has happened with unstake transaction!",
           variant: "error",
           autoHideDuration: 5000
         })

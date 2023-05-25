@@ -1,12 +1,21 @@
-import React, { useContext, useEffect } from "react"
-import { Grid, styled, TextareaAutosize, Typography, withStyles, withTheme } from "@material-ui/core"
+import {
+  Grid,
+  styled,
+  TextareaAutosize,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  withStyles,
+  withTheme
+} from "@material-ui/core"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
+import React, { useContext, useEffect } from "react"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, TokenContractSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
+import { SmallButton } from "modules/common/SmallButton"
 import { TitleBlock } from "modules/common/TitleBlock"
-import { FieldChange, handleChange } from "modules/creator/utils"
 
 const ButtonContainer = styled(Grid)({
   marginTop: 40
@@ -101,7 +110,7 @@ const validateForm = (values: TokenContractSettings) => {
   return errors
 }
 
-const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue }: any) => {
+const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
   const { dispatch } = useContext(DeploymentContext)
   const match = useRouteMatch()
   const history = useHistory()
@@ -166,8 +175,6 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue 
             <CustomInputContainer>
               <Field
                 id="outlined-basic"
-                onKeyDown={(e: FieldChange) => handleChange(e)}
-                inputProps={{ min: 0 }}
                 type="number"
                 placeholder="Supply"
                 name="totalSupply"
@@ -184,8 +191,6 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue 
             <CustomInputContainer>
               <Field
                 id="outlined-basic"
-                onKeyDown={(e: FieldChange) => handleChange(e)}
-                inputProps={{ min: 0 }}
                 type="number"
                 placeholder="Decimals"
                 name="decimals"
@@ -210,7 +215,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue 
           <Grid item xs={6}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
-              Icon Link{" "}
+              Icon{" "}
             </Typography>
             <CustomInputContainer>
               <Field id="outlined-basic" placeholder="Icon" name="icon" component={CustomFormikTextField} />
