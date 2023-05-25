@@ -16,6 +16,7 @@ import { ActionTypes, TokenContractSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { SmallButton } from "modules/common/SmallButton"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { FieldChange, handleChange, handleNegativeInput } from "modules/creator/utils"
 
 const ButtonContainer = styled(Grid)({
   marginTop: 40
@@ -179,6 +180,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                 placeholder="Supply"
                 name="totalSupply"
                 component={CustomFormikTextField}
+                onKeyDown={(e: FieldChange) => handleNegativeInput(e)}
               />
             </CustomInputContainer>
             {errors.totalSupply && touched.totalSupply ? <ErrorText>{errors.totalSupply}</ErrorText> : null}
@@ -195,6 +197,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                 placeholder="Decimals"
                 name="decimals"
                 component={CustomFormikTextField}
+                onKeyDown={(e: FieldChange) => handleChange(e)}
               />
             </CustomInputContainer>
             {errors.decimals && touched.decimals ? <ErrorText>{errors.decimals}</ErrorText> : null}
