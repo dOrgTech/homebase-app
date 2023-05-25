@@ -5,13 +5,14 @@ import {
   styled,
   Typography,
   Checkbox,
-  Button,
   useMediaQuery,
   useTheme,
   withStyles,
   withTheme,
   TextareaAutosize,
-  CircularProgress
+  CircularProgress,
+  InputAdornment,
+  Tooltip
 } from "@material-ui/core"
 import { UploadAvatar } from "./components/UploadAvatar"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
@@ -27,6 +28,7 @@ import { Navbar } from "modules/common/Toolbar"
 import { SmallButton } from "modules/common/SmallButton"
 import { EnvKey, getEnv } from "services/config"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
+import { InfoRounded } from "@material-ui/icons"
 
 const CommunityContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -34,6 +36,13 @@ const CommunityContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     marginTop: 0
   }
+}))
+
+const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
+  cursor: "default",
+  color: theme.palette.secondary.light,
+  height: 16,
+  width: 16
 }))
 
 const AvatarCommunityContainer = styled(Grid)(({ theme }) => ({
@@ -265,7 +274,24 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
           </Grid>
           <Grid item container xs={12} md={4}>
             <CustomInputContainer>
-              <Field name="tokenID" type="text" placeholder="Token ID" component={CustomFormikTextField} />
+              <Field
+                name="tokenID"
+                type="text"
+                placeholder="Token ID"
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">
+                      <Tooltip
+                        placement="bottom"
+                        title="Homebase will only track your governance token at a certain ID index, which is a parameter specified upon deploying the token contract. Fungible tokens usually have the ID of 0 (zero)."
+                      >
+                        <InfoIconInput />
+                      </Tooltip>
+                    </InputAdornment>
+                  )
+                }}
+                component={CustomFormikTextField}
+              />
             </CustomInputContainer>
           </Grid>
           <Grid item container xs={12} md={4}>
