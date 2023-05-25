@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js"
 import { NavigationBarProps } from "modules/creator/state/types"
 
 export type TokenContractSettings = {
@@ -11,6 +12,7 @@ export type TokenContractSettings = {
 
 export type TokenDistributionSettings = {
   holders: Holder[]
+  totalAmount: BigNumber
 }
 
 export type Holder = {

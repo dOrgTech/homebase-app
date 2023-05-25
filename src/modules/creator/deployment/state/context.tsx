@@ -1,6 +1,7 @@
 import React, { createContext, useReducer, Dispatch, useMemo } from "react"
 import useLocalStorage from "modules/common/hooks/useLocalStorage"
 import { DeploymentAction, DeploymentState, TokenContractParams, ActionTypes } from "./types"
+import BigNumber from "bignumber.js"
 
 const deploymentStatus = {
   deploying: false,
@@ -24,7 +25,8 @@ export const INITIAL_TOKEN_STATE: TokenContractParams = {
         walletAddress: "",
         amount: null
       }
-    ]
+    ],
+    totalAmount: new BigNumber(0)
   }
 }
 

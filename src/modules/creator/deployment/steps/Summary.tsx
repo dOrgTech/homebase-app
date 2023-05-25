@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
@@ -7,19 +7,10 @@ import { numberWithCommas } from "../state/utils"
 import BigNumber from "bignumber.js"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "modules/common/CopyButton"
-import { SmallButton } from "modules/common/SmallButton"
 import { ActionTypes } from "../state/types"
 import { TitleBlock } from "modules/common/TitleBlock"
-
-const Title = styled(Typography)({
-  fontSize: 24
-})
-
-const Subtitle = styled(Typography)({
-  color: "gray",
-  fontWeight: 200,
-  marginBottom: 20
-})
+import { useTokenOriginate } from "services/contracts/token/hooks/useToken"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 const ThirdContainer = styled(Grid)({
   marginTop: 22,
@@ -91,9 +82,12 @@ export const ContractSummary: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const history = useHistory()
   const match = useRouteMatch()
+  const openNotification = useNotification()
 
   const { state, dispatch } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const goToSettings = () => {
     history.push(`config`)
@@ -102,6 +96,30 @@ export const ContractSummary: React.FC = () => {
   const goToDistribution = () => {
     history.push(`distribution`)
   }
+
+  const {
+    mutation: { mutate, data, error }
+  } = useTokenOriginate(state.data)
+
+  useEffect(() => {
+    if (data && data.address) {
+      dispatch({
+        type: ActionTypes.CLEAR_CACHE
+      })
+      history.push("/creator/success", { address: data.address })
+    }
+  }, [data, dispatch, history])
+
+  useEffect(() => {
+    if (error) {
+      setIsLoading(false)
+      openNotification({
+        message: "Error deploying token... try again later",
+        variant: "error",
+        autoHideDuration: 2000
+      })
+    }
+  }, [error, openNotification])
 
   useEffect(() => {
     dispatch({
@@ -112,13 +130,15 @@ export const ContractSummary: React.FC = () => {
       },
       next: {
         handler: () => {
-          history.push("/creator/build/template")
-          dispatch({ type: ActionTypes.CLEAR_CACHE })
+          mutate({
+            ...state.data
+          })
+          setIsLoading(true)
         },
-        text: "Launch"
+        text: isLoading ? "Deploying..." : "Launch"
       }
     })
-  }, [dispatch, history, match.path, match.url])
+  }, [dispatch, history, match.path, match.url, mutate, state.data, isLoading])
 
   return (
     <>
