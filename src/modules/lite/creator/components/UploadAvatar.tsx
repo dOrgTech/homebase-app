@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Avatar, Button, Grid, styled, Typography } from "@material-ui/core"
+import { Avatar, Grid, styled, Typography } from "@material-ui/core"
 import { SmallButton } from "modules/common/SmallButton"
 
 const AvatarCardContainer = styled(Grid)(({ theme }) => ({
@@ -31,6 +31,13 @@ const AvatarBox = styled(Grid)(({ theme }) => ({
 
 export const UploadAvatar: React.FC<any> = ({ setFieldValue, values, disabled }) => {
   const [avatarPreview, setAvatarPreview] = useState<any>("")
+  const hiddenFileInput = React.useRef<HTMLInputElement>(null)
+
+  const handleClick = () => {
+    if (hiddenFileInput) {
+      hiddenFileInput.current?.click()
+    }
+  }
 
   return (
     <AvatarCardContainer container direction={"column"}>
@@ -43,13 +50,14 @@ export const UploadAvatar: React.FC<any> = ({ setFieldValue, values, disabled })
         </Grid>
 
         <Grid item>
-          <SmallButton variant="contained" color="secondary">
+          <SmallButton variant="contained" color="secondary" onClick={handleClick}>
             Upload
             <input
+              ref={hiddenFileInput}
               name="picUri"
               accept="image/*"
               type="file"
-              hidden
+              style={{ display: "none" }}
               onChange={e => {
                 const fileReader = new FileReader()
                 fileReader.onload = () => {

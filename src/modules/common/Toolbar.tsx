@@ -28,6 +28,7 @@ import { ChangeNetworkButton } from "./ChangeNetworkButton"
 
 import { ArrowBackIos } from "@material-ui/icons"
 import { EnvKey, getEnv } from "services/config"
+import { networkNameMap } from "services/bakingBad"
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
@@ -39,7 +40,7 @@ const AddressMenuItem = styled(Grid)(({ theme }) => ({
   cursor: "pointer",
   boxSizing: "border-box",
   color: theme.palette.text.secondary,
-  padding: "20px 3px"
+  padding: "15px 10px"
 }))
 
 const AddressMenuIcon = styled(Grid)({

@@ -95,10 +95,6 @@ export const Template = (): JSX.Element => {
           return history.push("/lite")
         },
         text: "Continue"
-      },
-      back: {
-        handler: () => history.push("/explorer"),
-        text: "Back"
       }
     })
   }, [dispatch, history, match.path, match.url, selectedTemplate])

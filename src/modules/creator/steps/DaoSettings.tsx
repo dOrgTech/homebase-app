@@ -146,6 +146,10 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
             submitForm(values)
           },
           text: "Continue"
+        },
+        back: {
+          handler: () => history.push(`template`),
+          text: "Back"
         }
       })
     }
@@ -395,7 +399,7 @@ export const DaoSettings = (): JSX.Element => {
       <Formik
         enableReinitialize={true}
         validateOnChange={true}
-        validateOnBlur={false}
+        validateOnBlur={true}
         validate={validateForm}
         onSubmit={saveStepInfo}
         initialValues={orgSettings}
