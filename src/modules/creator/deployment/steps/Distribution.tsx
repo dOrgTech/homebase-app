@@ -234,10 +234,7 @@ export const ContractDistribution: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  tokenDistribution.totalAmount = parseUnits(
-    new BigNumber(Number(tokenSettings.totalSupply)),
-    Number(tokenSettings.decimals)
-  )
+  tokenDistribution.totalAmount = new BigNumber(Number(tokenSettings.totalSupply))
 
   const saveStepInfo = (
     values: TokenDistributionSettings,
