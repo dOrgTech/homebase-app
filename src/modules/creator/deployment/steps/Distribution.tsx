@@ -14,6 +14,7 @@ import { numberWithCommas } from "../state/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { useTezos } from "services/beacon/hooks/useTezos"
+import { FieldChange, handleNegativeInput } from "modules/creator/utils"
 
 const SupplyContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -172,6 +173,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                           name={`holders.[${index}].amount`}
                           placeholder={`Amount`}
                           component={CustomFormikTextField}
+                          onKeyDown={(e: FieldChange) => handleNegativeInput(e)}
                         />
                       </CustomAmountContainer>
 
