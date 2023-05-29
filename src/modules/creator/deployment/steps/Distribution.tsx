@@ -13,6 +13,8 @@ import { parseUnits } from "services/contracts/utils"
 import { numberWithCommas } from "../state/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { TitleBlock } from "modules/common/TitleBlock"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { FieldChange, handleNegativeInput } from "modules/creator/utils"
 
 const SupplyContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -65,17 +67,46 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
   width: "100%"
 }))
 
+const CustomAmountContainer = styled(Grid)(({ theme }) => ({
+  height: 54,
+  boxSizing: "border-box",
+  marginTop: 14,
+  background: "#2F3438",
+  borderRadius: 8,
+  alignItems: "center",
+  display: "flex",
+  padding: "13px 23px",
+  width: "40%",
+  [theme.breakpoints.down("sm")]: {
+    width: "100%"
+  }
+}))
+
 const ErrorText = styled(Typography)({
   fontSize: 14,
   color: "red"
 })
 
+const hasDuplicates = (options: Holder[]) => {
+  const trimOptions = options.map(option => option.walletAddress.trim())
+  return new Set(trimOptions).size !== trimOptions.length
+}
+
 const validateForm = (values: TokenDistributionSettings) => {
   const errors: FormikErrors<TokenDistributionSettings> = {}
 
   values.holders.forEach((holder: Holder, index: number) => {
-    if (!values.holders[index].walletAddress || values.holders[index].amount === null) {
+    if (values.holders[index].walletAddress && !values.holders[index].amount) {
       errors.holders = "Required"
+    }
+    if (!values.holders[index].walletAddress && values.holders[index].amount) {
+      errors.holders = "Required"
+    }
+    if (values.holders.length > 0 && hasDuplicates(values.holders)) {
+      errors.holders = "Duplicate wallets are not allowed"
+    }
+    if (values.totalAmount && values.totalAmount.minus(new BigNumber(getTotal(values.holders))) < new BigNumber(0)) {
+      errors.totalAmount = "Available balance has to be greater that the total supply"
     }
   })
 
@@ -136,14 +167,15 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                         />
                       </CustomInputContainer>
 
-                      <CustomInputContainer>
+                      <CustomAmountContainer>
                         <Field
                           type="number"
                           name={`holders.[${index}].amount`}
                           placeholder={`Amount`}
                           component={CustomFormikTextField}
+                          onKeyDown={(e: FieldChange) => handleNegativeInput(e)}
                         />
-                      </CustomInputContainer>
+                      </CustomAmountContainer>
 
                       {index !== 0 ? (
                         <RemoveButton
@@ -199,26 +231,24 @@ export const ContractDistribution: React.FC = () => {
   const { state, dispatch, updateCache } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
   const history = useHistory()
-  const openNotification = useNotification()
+  const { account } = useTezos()
 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const totalAmount = parseUnits(new BigNumber(Number(tokenSettings.totalSupply)), Number(tokenSettings.decimals))
+  tokenDistribution.totalAmount = new BigNumber(Number(tokenSettings.totalSupply))
 
   const saveStepInfo = (
     values: TokenDistributionSettings,
     { setSubmitting }: { setSubmitting: (b: boolean) => void }
   ) => {
-    if (totalAmount.minus(new BigNumber(getTotal(values.holders))) < new BigNumber(0)) {
-      openNotification({
-        message: "Available balance has to be greater that the total supply",
-        variant: "error",
-        autoHideDuration: 2000
-      })
-      return
-    }
     const newValues: TokenDistributionSettings = { ...values }
+
+    if (newValues.holders.length === 1 && newValues.holders[0].walletAddress === "") {
+      newValues.holders[0].walletAddress = account
+      newValues.holders[0].amount = newValues.totalAmount.toNumber()
+    }
+
     const newState = {
       ...state.data,
       tokenDistribution: newValues
@@ -250,16 +280,21 @@ export const ContractDistribution: React.FC = () => {
                 <SupplyContainer item container direction="column" style={{ gap: "12px" }}>
                   <Grid container item direction="row" style={{ gap: 10 }}>
                     <AmountText color="textSecondary">Total supply: </AmountText>
-                    <Typography color="secondary"> {numberWithCommas(totalAmount)} </Typography>
+                    <Typography color="secondary"> {numberWithCommas(values.totalAmount)} </Typography>
                   </Grid>
                   <Grid container item direction="row" style={{ gap: 10 }}>
                     <AmountText color="textSecondary">Available:</AmountText>
                     <Typography color="secondary">
                       {" "}
-                      {numberWithCommas(totalAmount.minus(new BigNumber(getTotal(values.holders))))}
+                      {numberWithCommas(
+                        values.totalAmount && values.totalAmount.minus(new BigNumber(getTotal(values.holders)))
+                      )}
                     </Typography>
                   </Grid>
                 </SupplyContainer>
+                {errors.totalAmount && touched.totalAmount ? (
+                  <ErrorText style={{ marginTop: 6 }}>{errors.totalAmount}</ErrorText>
+                ) : null}
 
                 <Grid
                   container

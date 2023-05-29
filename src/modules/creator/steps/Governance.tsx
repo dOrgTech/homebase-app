@@ -15,7 +15,7 @@ import { TitleBlock } from "modules/common/TitleBlock"
 import BigNumber from "bignumber.js"
 import { mutezToXtz, parseUnits } from "services/contracts/utils"
 import { formatUnits } from "services/contracts/utils"
-import { FieldChange, handleChange } from "."
+import { FieldChange, handleChange } from "../utils"
 
 const TimeBox = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
