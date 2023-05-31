@@ -1,11 +1,11 @@
 import { BaseDAO } from ".."
 import { useQuery } from "react-query"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getDAOTransfers } from "services/bakingBad/transfers"
 import { mutezToXtz, parseUnits } from "services/contracts/utils"
 import { BigNumber } from "bignumber.js"
-import { getXTZTransfers } from "services/indexer/dao/services"
+import { getXTZTransfers } from "services/services/dao/services"
 import dayjs from "dayjs"
 
 export interface TransferWithBN {

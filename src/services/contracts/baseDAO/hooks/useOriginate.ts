@@ -7,10 +7,13 @@ import { useMutation, useQueryClient } from "react-query"
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
 import { initTezosInstance, useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from ".."
-import { getDAO } from "services/indexer/dao/services"
+import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
 import { InMemorySigner } from "@taquito/signer"
 import { ALICE_PRIV_KEY } from "services/beacon"
+import { getSignature } from "services/lite/utils"
+import { saveLiteCommunity } from "services/services/lite/lite-services"
+import { Community } from "models/Community"
 
 const INITIAL_STATES = [
   {
@@ -63,7 +66,7 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES)
 
   const [activeState, setActiveState] = useState<number>()
-  const { tezos, connect, network, account } = useTezos()
+  const { tezos, connect, network, account, wallet } = useTezos()
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params }) => {
@@ -185,6 +188,28 @@ export const useOriginate = (template: DAOTemplate) => {
 
       setActiveState(4)
       setStates(updatedStates)
+
+      if (wallet) {
+        const values = {
+          name: params.orgSettings.name,
+          description: params.orgSettings.description,
+          linkToTerms: contract.address,
+          picUri: "",
+          members: [],
+          polls: [],
+          tokenAddress: params.orgSettings.governanceToken.address,
+          tokenType: "FA2",
+          requiredTokenOwnership: true,
+          allowPublicAccess: true,
+          network: network,
+          daoContract: contract.address,
+          tokenID: params.orgSettings.governanceToken.tokenId
+        }
+        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
+        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+
+        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
+      }
 
       mixpanel.track("Completed DAO indexation", {
         daoName: params.orgSettings.name,

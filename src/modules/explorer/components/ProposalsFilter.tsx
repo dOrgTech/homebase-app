@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import { Button, Fade, Grid, styled, Popper, useTheme, useMediaQuery } from "@material-ui/core"
 import { KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons"
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
 import { StatusBadge } from "./StatusBadge"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 interface Option {
   name: ProposalStatus | "All"

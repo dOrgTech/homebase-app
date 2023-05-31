@@ -1,6 +1,6 @@
 import React from "react"
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 const statusColors = (status: ProposalStatus | "all") => {
   switch (status) {

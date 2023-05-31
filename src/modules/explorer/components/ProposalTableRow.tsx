@@ -13,9 +13,9 @@ import {
   PlayCircleOutlineOutlined
 } from "@material-ui/icons"
 import { toShortAddress } from "services/contracts/utils"
-import { Proposal, ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 
 export interface ProposalTableRowData {
   daoId?: string

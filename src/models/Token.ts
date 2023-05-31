@@ -4,7 +4,6 @@ import { Network } from "services/beacon"
 interface TokenParams {
   id: string
   contract: string
-  level: number
   token_id: number
   symbol: string
   name: string
@@ -43,7 +42,6 @@ interface NFTParams extends TokenParams {
 export class Token {
   id: string
   contract: string
-  level: number
   token_id: number
   symbol: string
   name: string
@@ -55,7 +53,6 @@ export class Token {
   constructor(params: TokenParams) {
     this.id = params.id
     this.contract = params.contract
-    this.level = params.level
     this.token_id = params.token_id
     this.symbol = params.symbol
     this.name = params.name

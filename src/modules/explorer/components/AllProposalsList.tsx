@@ -1,9 +1,8 @@
-import { Collapse, Grid, Theme, Typography } from "@material-ui/core"
-import { styled } from "@material-ui/styles"
+import { Collapse, Grid, styled, Theme, Typography } from "@material-ui/core"
 import { ProposalItem } from "modules/explorer/pages/User"
 import React, { useCallback, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Proposal } from "services/indexer/dao/mappers/proposal/types"
+import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { ContentContainer } from "./ContentContainer"
 import { ProposalFilter } from "./ProposalsFilter"
 

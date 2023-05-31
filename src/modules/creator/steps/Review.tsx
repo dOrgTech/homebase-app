@@ -62,7 +62,7 @@ export const Review: React.FC = () => {
     activeState
   } = useOriginate(state.data.template)
   const history = useHistory()
-  console.log("statesss: ", states)
+  console.log("states: ", states)
 
   // TODO: Fix infinite calling here
   useEffect(() => {

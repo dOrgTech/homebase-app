@@ -4,7 +4,7 @@ export enum ProposalStatus {
 }
 export interface Poll {
   _id?: string
-  daoID: string
+  daoID: string | undefined
   description: string
   name: string
   referenceBlock?: string
@@ -19,7 +19,7 @@ export interface Poll {
   tokenSymbol?: string
   tokenAddress?: string
   tokenDecimals?: string
-  votes?: Vote[]
+  votes?: number
   votingStrategy: number
   endTimeMinutes?: number | null
   endTimeHours?: number | null

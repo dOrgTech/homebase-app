@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import { styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core"
 import React from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { useDAOID } from "../../DAO/router"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import BigNumber from "bignumber.js"
+import { useDAOID } from "../../DAO/router"
 
 const RowValue = styled(Typography)({
   fontWeight: 300,

@@ -8,7 +8,7 @@ import { ReactComponent as RegistryIcon } from "assets/logos/list.svg"
 import { ReactComponent as UserIcon } from "assets/logos/user.svg"
 import { ReactComponent as NFTIcon } from "assets/logos/nft.svg"
 import { useHistory, useLocation } from "react-router-dom"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAOID } from "../pages/DAO/router"
 

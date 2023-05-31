@@ -240,6 +240,11 @@ export const theme = createTheme({
         color: "#fff"
       }
     },
+    MuiRadio: {
+      root: {
+        color: "#fff"
+      }
+    },
     MuiDivider: {
       root: {
         marginTop: 16,
@@ -396,6 +401,9 @@ export const theme = createTheme({
       root: {
         borderRadius: 50,
         background: "rgba(125,140,139, 0.2) !important"
+      },
+      barColorPrimary: {
+        backgroundColor: "#3866f9"
       }
     },
     MuiPaper: {

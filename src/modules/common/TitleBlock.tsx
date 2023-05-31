@@ -78,11 +78,11 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
             {" "}
             {description}
           </Typography>
-        ) : (
+        ) : description ? (
           <CustomTypography variant="subtitle1" color="textSecondary">
             {description}
           </CustomTypography>
-        )}
+        ) : null}
       </Grid>
       <Grid item xs={12}></Grid>
     </StyledGrid>

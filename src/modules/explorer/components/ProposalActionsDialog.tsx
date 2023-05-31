@@ -3,7 +3,6 @@ import { Grid, styled, Button, Typography, useMediaQuery, useTheme } from "@mate
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useState } from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
 import { NFTTransferFormValues } from "./NFTTransfer"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalFormContainer } from "./ProposalForm"
@@ -14,6 +13,7 @@ import { DelegationChangeProposalForm } from "./DelegationChangeProposalForm"
 import { MainButton } from "../../common/MainButton"
 import { SupportedLambdaProposalKey } from "services/bakingBad/lambdas"
 import { ProposalAction, ProposalFormLambda } from "modules/explorer/components/ConfigProposalFormLambda"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>

@@ -10,7 +10,7 @@ import {
   useTheme,
   useMediaQuery
 } from "@material-ui/core"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { ErrorText } from "modules/explorer/components/styled/ErrorText"
 import * as Yup from "yup"

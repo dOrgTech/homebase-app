@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 
 export const useIsProposalButtonDisabled = (daoId: string) => {
   const { cycleInfo } = useDAO(daoId)

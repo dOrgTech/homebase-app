@@ -13,11 +13,16 @@ import {
   useTheme
 } from "@material-ui/core"
 
-import { useDAO } from "services/indexer/dao/hooks/useDAO"
-import { useProposals } from "services/indexer/dao/hooks/useProposals"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useProposals } from "services/services/dao/hooks/useProposals"
 import { useDAOID } from "../DAO/router"
 
-import { ProposalStatus } from "services/indexer/dao/mappers/proposal/types"
+import { ProposalSelectionMenuLambda } from "modules/explorer/components/ProposalSelectionMenuLambda"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { useUnstakeFromAllProposals } from "services/contracts/baseDAO/hooks/useUnstakeFromAllProposals"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import { MainButton } from "../../../common/MainButton"
+
 import { ContentContainer } from "../../components/ContentContainer"
 import { AllProposalsList } from "modules/explorer/components/AllProposalsList"
 import { SmallButton } from "modules/common/SmallButton"
@@ -33,6 +38,9 @@ import { ReactComponent as TezosIcon } from "assets/img/tezos-icon.svg"
 import { ReactComponent as CycleIcon } from "assets/img/cycle-icon.svg"
 import { ReactComponent as ChartIcon } from "assets/img/chart-icon.svg"
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
+import { ProposalList } from "modules/lite/explorer/components/ProposalList"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import dayjs from "dayjs"
 
 const ProposalInfoTitle = styled(Typography)({
   fontSize: "18px",
@@ -74,6 +82,17 @@ const CycleTime = styled(Typography)(({ theme }) => ({
 
   ["@media (max-width:409.99px)"]: {
     fontSize: "15px"
+  }
+}))
+
+const LargeNumber = styled(Typography)(({ theme }) => ({
+  fontSize: "36px",
+  fontWeight: 300,
+  color: theme.palette.text.primary,
+  marginTop: "7px",
+
+  ["@media (max-width:1030px)"]: {
+    fontSize: "30px"
   }
 }))
 
@@ -194,6 +213,11 @@ export const Proposals: React.FC = () => {
     }
   }, [data, dropAllExpired, expiredProposals])
 
+  const polls = usePolls(data?.liteDAOData?._id)
+  const id = data?.liteDAOData?._id
+
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
+
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
@@ -212,6 +236,7 @@ export const Proposals: React.FC = () => {
                 <Grid
                   item
                   container
+                  justifyContent="flex-end"
                   style={{ gap: 15 }}
                   direction={isMobileSmall ? "column" : "row"}
                   xs={isMobileSmall ? undefined : true}
@@ -253,69 +278,79 @@ export const Proposals: React.FC = () => {
                   </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid
-              item
-              container
-              direction="row"
-              alignItems="center"
-              style={{ marginTop: 40 }}
-              spacing={isMobileSmall ? 2 : 1}
-            >
-              <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                <ListIcon />
-                <Grid item>
-                  <ProposalInfoTitle color="textPrimary">Cycle Status</ProposalInfoTitle>
-                  <CycleTime color="secondary">{shouldDisable ? "Voting" : "Creating"} </CycleTime>
-                </Grid>
-              </ItemBox>
-              <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                <CycleIcon />
-                <Grid item>
-                  <ProposalInfoTitle color="textPrimary">Current Cycle</ProposalInfoTitle>
-                  <CycleTime color="secondary">{cycleInfo?.currentCycle}</CycleTime>
-                </Grid>
-              </ItemBox>
-              <ItemBox item container xs={isMobileSmall ? 6 : 4} className={style.circleWidth}>
-                <ProgressBar
-                  progress={data ? ((blocksLeft || 0) / Number(data.data.period)) * 100 : 100}
-                  radius={25}
-                  strokeWidth={3}
-                  strokeColor={theme.palette.secondary.main}
-                  trackStrokeWidth={5}
-                  trackStrokeColor={"rgba(125,140,139, 0.2)"}
-                />
-                <Grid item className={style.progressText}>
-                  <ProposalInfoTitle color="textPrimary">Time Left in Cycle</ProposalInfoTitle>
-                  <CycleTime color="secondary">
-                    {" "}
-                    {days}d {hours}h {minutes}m{" "}
-                  </CycleTime>
-                </Grid>
-              </ItemBox>
-              <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                <TezosIcon />
-                <Grid item>
-                  <ProposalInfoTitle color="textPrimary">Voting Addresses</ProposalInfoTitle>
-                  <CycleTime color="secondary">{data?.data.ledger.length || "-"}</CycleTime>
-                </Grid>
-              </ItemBox>
-              <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                <ChartIcon />
-                <Grid item>
-                  <ProposalInfoTitle color="textPrimary">Active Proposals</ProposalInfoTitle>
-                  <CycleTime color="secondary">{activeProposals?.length}</CycleTime>
-                </Grid>
-              </ItemBox>
+              <Grid
+                item
+                container
+                direction="row"
+                alignItems="center"
+                style={{ marginTop: 40 }}
+                spacing={isMobileSmall ? 2 : 1}
+              >
+                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
+                  <ListIcon />
+                  <Grid item>
+                    <ProposalInfoTitle color="textPrimary">Cycle Status</ProposalInfoTitle>
+                    <CycleTime color="secondary">{shouldDisable ? "Voting" : "Creating"} </CycleTime>
+                  </Grid>
+                </ItemBox>
+                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
+                  <CycleIcon />
+                  <Grid item>
+                    <ProposalInfoTitle color="textPrimary">Current Cycle</ProposalInfoTitle>
+                    <CycleTime color="secondary">{cycleInfo?.currentCycle}</CycleTime>
+                  </Grid>
+                </ItemBox>
+                <ItemBox item container xs={isMobileSmall ? 6 : 4} className={style.circleWidth}>
+                  <ProgressBar
+                    progress={data ? ((blocksLeft || 0) / Number(data.data.period)) * 100 : 100}
+                    radius={25}
+                    strokeWidth={3}
+                    strokeColor={theme.palette.secondary.main}
+                    trackStrokeWidth={5}
+                    trackStrokeColor={"rgba(125,140,139, 0.2)"}
+                  />
+                  <Grid item className={style.progressText}>
+                    <ProposalInfoTitle color="textPrimary">Time Left in Cycle</ProposalInfoTitle>
+                    <CycleTime color="secondary">
+                      {" "}
+                      {days}d {hours}h {minutes}m{" "}
+                    </CycleTime>
+                  </Grid>
+                </ItemBox>
+                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
+                  <TezosIcon />
+                  <Grid item>
+                    <ProposalInfoTitle color="textPrimary">Voting Addresses</ProposalInfoTitle>
+                    <CycleTime color="secondary">{data?.data.ledger.length || "-"}</CycleTime>
+                  </Grid>
+                </ItemBox>
+                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
+                  <ChartIcon />
+                  <Grid item>
+                    <ProposalInfoTitle color="textPrimary">Active Proposals</ProposalInfoTitle>
+                    <CycleTime color="secondary">
+                      {" "}
+                      {Number(activeLiteProposals?.length) + Number(activeProposals?.length)}
+                    </CycleTime>
+                  </Grid>
+                </ItemBox>
+              </Grid>
             </Grid>
           </Grid>
         </HeroContainer>
 
         {data && cycleInfo && proposals && (
-          <AllProposalsList title={"Proposals"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
+          <AllProposalsList title={"On-Chain"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
         )}
 
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
+        {polls.length > 0 ? <ProposalList polls={polls} id={id} /> : null}
+
+        {proposals?.length === 0 && polls?.length === 0 ? (
+          <Typography style={{ width: "inherit" }} color="textPrimary">
+            0 proposals found
+          </Typography>
+        ) : null}
       </Grid>
     </>
   )

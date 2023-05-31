@@ -80,7 +80,7 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 565,
+  maxHeight: 585,
   paddingTop: 20,
   position: "sticky",
   top: 153
@@ -122,7 +122,7 @@ export const DAOCreate: React.FC = () => {
 
   const { back, next } = creator.state
   const step = useStepNumber()
-  const progress = useMemo(() => step * 20, [step])
+  const progress = useMemo(() => step * 33, [step])
   const history = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
@@ -154,7 +154,7 @@ export const DAOCreate: React.FC = () => {
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
-                  <IndicatorValue>{progress === 0.5 ? 0 : step * 20}%</IndicatorValue>
+                  <IndicatorValue>{progress === 0.5 ? 0 : step * 33}%</IndicatorValue>
                 </Box>
               </ProgressBar>
               <Box>
@@ -175,13 +175,13 @@ export const DAOCreate: React.FC = () => {
 
         <Grid item xs={12} md={9} container justifyContent="center" alignItems="baseline">
           <Grid container direction="column" alignItems="center" style={{ width: "100%", marginBottom: 20 }}>
-            <Grid item style={{ width: "100%" }} xs>
+            <Grid item style={{ width: "100%", margin: "inherit" }} xs>
               <StepContentContainer item container justifyContent="center">
                 <StepRouter />
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 4 && <NavigationBar back={back} next={next} />}
+          {step < 5 && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>
