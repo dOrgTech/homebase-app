@@ -247,7 +247,7 @@ export const Proposals: React.FC = () => {
                 >
                   <SmallButton
                     variant="contained"
-                    // disabled={shouldDisable}
+                    disabled={shouldDisable}
                     color="secondary"
                     onClick={() => setOpenDialog(true)}
                   >
