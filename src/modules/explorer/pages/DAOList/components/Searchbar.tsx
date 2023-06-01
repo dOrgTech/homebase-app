@@ -38,7 +38,9 @@ const StyledInput = withStyles((theme: Theme) => ({
       borderBottomColor: "transparent"
     }
   },
-  input: {}
+  input: {
+    disabled: {}
+  }
 }))(TextField)
 
 const SearchIcon = styled(SearchOutlined)({
