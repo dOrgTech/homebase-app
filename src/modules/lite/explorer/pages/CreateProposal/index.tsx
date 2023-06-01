@@ -67,7 +67,6 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField)
 
 const PageContainer = styled("div")({
-  width: "100%",
   height: "100%",
   margin: "auto",
   padding: "28px 0",
@@ -274,7 +273,7 @@ export const ProposalForm = ({
 
   const hasErrors = errors.endTimeDays || errors.endTimeHours || errors.endTimeMinutes
   return (
-    <PageContainer>
+    <PageContainer style={shouldShowBar ? { width: "1000px" } : { width: "100%" }}>
       <Grid container>
         {shouldShowBar ? (
           <>
@@ -615,7 +614,7 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
   )
 
   return (
-    <PageContainer>
+    <PageContainer style={{ width: "100%" }}>
       <Grid container direction={"column"} style={{ gap: 18 }}>
         <Formik
           validateOnChange={true}
