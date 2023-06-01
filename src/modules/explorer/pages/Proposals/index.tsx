@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import {
   Box,
   Button,
@@ -192,6 +192,10 @@ export const Proposals: React.FC = () => {
     setOpenDialog(false)
   }
 
+  useEffect(() => {
+    console.log("se actualizó")
+  }, [openDialog])
+
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {
       mutate({
@@ -243,7 +247,7 @@ export const Proposals: React.FC = () => {
                 >
                   <SmallButton
                     variant="contained"
-                    disabled={shouldDisable}
+                    // disabled={shouldDisable}
                     color="secondary"
                     onClick={() => setOpenDialog(true)}
                   >
@@ -342,7 +346,6 @@ export const Proposals: React.FC = () => {
         {data && cycleInfo && proposals && (
           <AllProposalsList title={"On-Chain"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
         )}
-
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
         {polls.length > 0 ? <ProposalList polls={polls} id={id} /> : null}
 

@@ -58,7 +58,7 @@ export const CodeCollapse: React.FC<Props> = ({ code }) => {
         >
           <ProposalCodeEditorInput
             label=""
-            containerStyle={{ marginTop: "8px" }}
+            containerstyle={{ marginTop: "8px" }}
             insertSpaces
             ignoreTabKey={false}
             tabSize={4}

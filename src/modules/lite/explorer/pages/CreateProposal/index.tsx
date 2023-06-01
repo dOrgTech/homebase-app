@@ -13,7 +13,7 @@ import {
 } from "@material-ui/core"
 
 import { Choices } from "../../components/Choices"
-import { useHistory } from "react-router-dom"
+import { useHistory, useLocation } from "react-router-dom"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { Poll } from "models/Polls"
@@ -27,7 +27,6 @@ import { BackButton } from "modules/lite/components/BackButton"
 import { saveLiteProposal } from "services/services/lite/lite-services"
 import { useToken } from "../../hooks/useToken"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
-import { Props } from "react-spring-bottom-sheet/dist/types"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 dayjs.extend(duration)
@@ -63,11 +62,11 @@ const CustomFormikTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  }
+  },
+  disabled: {}
 })(FormikTextField)
 
 const PageContainer = styled("div")({
-  marginBottom: 50,
   width: "100%",
   height: "100%",
   margin: "auto",
@@ -80,7 +79,7 @@ const PageContainer = styled("div")({
   ["@media (max-width:1335px)"]: {},
 
   ["@media (max-width:1167px)"]: {
-    width: "86vw"
+    width: "78vw"
   },
 
   ["@media (max-width:1030px)"]: {},
@@ -269,18 +268,31 @@ export const ProposalForm = ({
     getIn(values, "endTimeMinutes")
   )
 
+  const { pathname } = useLocation()
+
+  const shouldShowBar = pathname.includes("/lite") ? true : false
+
   const hasErrors = errors.endTimeDays || errors.endTimeHours || errors.endTimeMinutes
   return (
     <PageContainer>
       <Grid container>
-        <Header container direction="column">
-          {/* <CommunityLabel container direction="row" justifyContent="center" alignItems="center">
-            <CommunityBadge id={id} />
-          </CommunityLabel> */}
-          {/* <Typography color="textPrimary" variant="subtitle1">
-            New Proposal
-          </Typography> */}
-        </Header>
+        {shouldShowBar ? (
+          <>
+            <BackButton />
+            <Header container direction="column">
+              <CommunityLabel container direction="row" justifyContent="center" alignItems="center">
+                <CommunityBadge id={id} />
+              </CommunityLabel>
+              <Typography
+                color="textPrimary"
+                variant="subtitle1"
+                style={isMobileSmall ? { marginBottom: 0 } : { marginBottom: 32 }}
+              >
+                New Proposal
+              </Typography>
+            </Header>
+          </>
+        ) : null}
         <Grid container direction={isMobileSmall ? "row" : "column"} style={{ gap: 40 }}>
           <ProposalContainer container item direction={"column"} style={{ gap: 30 }} xs={12} md={7} lg={8}>
             <Grid item>

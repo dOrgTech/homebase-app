@@ -39,7 +39,7 @@ const CheckIcon = styled(CheckOutlined)({
   fontSize: 169
 })
 
-const codeEditorContainerStyles = {
+const codeEditorcontainerstyles = {
   marginTop: "8px"
 }
 
@@ -259,7 +259,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
       <>
         <ProposalCodeEditorInput
           label="Implementation"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -282,7 +282,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         </ProposalFormInput>
         <ProposalCodeEditorInput
           label="Implementation"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -305,7 +305,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         </ProposalFormInput>
         <ProposalCodeEditorInput
           label="Implementation"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -318,7 +318,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         />
         <ProposalCodeEditorInput
           label="Lambda Arguments Code"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -331,7 +331,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         />
         <ProposalCodeEditorInput
           label="Lambda Params"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}

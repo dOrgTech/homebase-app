@@ -14,6 +14,7 @@ import { MainButton } from "../../common/MainButton"
 import { SupportedLambdaProposalKey } from "services/bakingBad/lambdas"
 import { ProposalAction, ProposalFormLambda } from "modules/explorer/components/ConfigProposalFormLambda"
 import { useDAO } from "services/services/dao/hooks/useDAO"
+import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal/ProposalCreatorModal"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -96,6 +97,12 @@ const getActions = (): Action[] => [
     description: "Change the DAO Delegate Address",
     id: SupportedLambdaProposalKey.UpdateContractDelegateProposal,
     isLambda: false
+  },
+  {
+    name: "Off Chain Poll",
+    description: "Create an inconsequential poll for your community",
+    id: "off-chain",
+    isLambda: true
   }
 ]
 
@@ -108,11 +115,14 @@ const defaultOpenSupportedExecuteProposalModal = "none"
 
 export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID()
-  const { data: dao } = useDAO(daoId)
-  const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
-  const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
+  const { data } = useDAO(daoId)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+
+  const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
+  const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
+  const [openLiteProposal, setOpenLiteProposal] = useState(false)
+  const liteDAOId = data?.liteDAOData?._id
 
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
@@ -132,7 +142,13 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
   }
 
   const handleCloseSupportedExecuteProposalModal = () => {
+    setOpenLiteProposal(false)
     setOpenSupportedExecuteProposalModal(defaultOpenSupportedExecuteProposalModal)
+    handleClose()
+  }
+
+  const handleLiteProposal = () => {
+    setOpenLiteProposal(true)
     handleClose()
   }
 
@@ -144,20 +160,24 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
     <>
       <ResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
         <Grid container style={{ marginTop: 32 }} spacing={2}>
-          {getActions().map((elem, index) => (
-            <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
-              <OptionContainer
-                onClick={() =>
-                  elem.isLambda
-                    ? handleOpenCustomProposalModal(elem.id)
-                    : handleOpenSupportedExecuteProposalModal(elem.id)
-                }
-              >
-                <ActionText color="textPrimary">{elem.name}</ActionText>
-                <ActionDescriptionText color="textPrimary"> {elem.description} </ActionDescriptionText>
-              </OptionContainer>
-            </Grid>
-          ))}
+          {getActions().map((elem, index) =>
+            !liteDAOId && elem.id === "off-chain" ? null : (
+              <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
+                <OptionContainer
+                  onClick={() =>
+                    elem.id === "off-chain"
+                      ? handleLiteProposal()
+                      : elem.isLambda
+                      ? handleOpenCustomProposalModal(elem.id)
+                      : handleOpenSupportedExecuteProposalModal(elem.id)
+                  }
+                >
+                  <ActionText color="textPrimary">{elem.name}</ActionText>
+                  <ActionDescriptionText color="textPrimary"> {elem.description} </ActionDescriptionText>
+                </OptionContainer>
+              </Grid>
+            )
+          )}
         </Grid>
       </ResponsiveDialog>
 
@@ -179,6 +199,8 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
         open={openSupportedExecuteProposalModalKey === SupportedLambdaProposalKey.UpdateContractDelegateProposal}
         handleClose={handleCloseSupportedExecuteProposalModal}
       />
+
+      <ProposalCreatorModal open={openLiteProposal} handleClose={handleCloseSupportedExecuteProposalModal} />
     </>
   )
 }

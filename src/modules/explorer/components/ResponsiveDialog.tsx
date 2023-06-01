@@ -24,6 +24,11 @@ const CustomDialog = styled(Dialog)({
     width: "-webkit-fill-available",
     height: "auto",
     maxWidth: "960px !important"
+  },
+  "& .MuiDialog-paperWidthLg": {
+    width: "-webkit-fill-available",
+    height: "max-content",
+    maxWidth: "960px !important"
   }
 })
 
@@ -33,7 +38,7 @@ export const ResponsiveDialog: React.FC<{
   onGoBack?: () => void
   title?: string
   customTitleColor?: string
-  template?: "xs" | "md" | "sm"
+  template?: "xs" | "md" | "sm" | "lg"
   children: any
 }> = props => {
   const { open, onClose, onGoBack, title, children, template = "sm" } = props
@@ -67,7 +72,7 @@ export const ResponsiveDialog: React.FC<{
             <CloseButton onClose={onClose} />
           </Grid>
         </Grid>
-        <Grid item>{children}</Grid>
+        {children}
       </Content>
     </CustomDialog>
   )
