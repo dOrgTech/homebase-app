@@ -84,7 +84,8 @@ const NameText = styled(Typography)(({ theme }) => ({
 
   ["@media (max-width:960px)"]: {
     fontSize: "28px",
-    marginBottom: "10px"
+    marginBottom: "10px",
+    maxWidth: 245
   }
 }))
 
