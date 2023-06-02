@@ -1,22 +1,22 @@
-import React, { useCallback, useMemo } from "react"
-import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Tooltip, Avatar } from "@material-ui/core"
+import React, { useMemo, useState } from "react"
+import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Avatar } from "@material-ui/core"
 
 import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
 import { useDAOID } from "./router"
 
-import { UserBalancesBox } from "../../components/UserBalances"
 import { ContentContainer } from "../../components/ContentContainer"
 import { ProposalsList } from "../../components/ProposalsList"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
 import { UsersTable } from "../../components/UsersTable"
 import BigNumber from "bignumber.js"
-import { InfoIcon } from "../../components/styled/InfoIcon"
 import { SmallButton } from "../../../common/SmallButton"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
+import { DaoSettingModal } from "./components/Settings"
+import { Visibility } from "@material-ui/icons"
 
 export const StyledAvatar = styled(Avatar)({
   height: 50,
@@ -48,6 +48,15 @@ const TitleText = styled(Typography)(({ theme }) => ({
     fontSize: 22
   }
 }))
+
+const ViewSettings = styled(Grid)({
+  "fontWeight": 300,
+  "gap": 8,
+  "cursor": "pointer",
+  "& h6": {
+    fontWeight: 300
+  }
+})
 
 const SubtitleText = styled(Typography)({
   fontSize: 18,
@@ -91,16 +100,11 @@ export const DAO: React.FC = () => {
   const polls = usePolls(data?.liteDAOData?._id)
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
 
-  const onFlush = useCallback(async () => {
-    if (executableProposals && expiredProposals && executableProposals.length && data) {
-      mutate({
-        dao: data,
-        numOfProposalsToFlush: executableProposals.length,
-        expiredProposalIds: expiredProposals.map(p => p.id)
-      })
-      return
-    }
-  }, [data, mutate, expiredProposals, executableProposals])
+  const [openDialog, setOpenDialog] = useState(false)
+
+  const handleCloseModal = () => {
+    setOpenDialog(false)
+  }
 
   const usersTableData = useMemo(() => {
     if (!ledger || !cycleInfo || !data) {
@@ -124,22 +128,17 @@ export const DAO: React.FC = () => {
         <Grid container direction="column" style={{ gap: 36 }}>
           <Grid item>
             <Grid container style={{ gap: 20 }} alignItems="center">
-              {/* <StyledAvatar src={data?.liteDAOData?.picUri}></StyledAvatar> */}
               <Grid item>
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
               <Grid item>
-                <SmallButton
-                  variant="contained"
-                  size={isExtraSmall ? "small" : "medium"}
-                  onClick={onFlush}
-                  disabled={!executableProposals || !executableProposals.length}
-                >
-                  Execute
-                </SmallButton>
-                <Tooltip title="Execute all passed proposals and drop all expired or rejected">
-                  <InfoIcon color="secondary" />
-                </Tooltip>
+                <ViewSettings container direction="row" alignItems="center" onClick={() => setOpenDialog(true)}>
+                  <Visibility fontSize="small" color="secondary" />
+                  <Typography variant="h6" color="secondary">
+                    View configuration
+                  </Typography>
+                </ViewSettings>
+                <DaoSettingModal open={openDialog} handleClose={handleCloseModal} />
               </Grid>
             </Grid>
           </Grid>
@@ -148,7 +147,6 @@ export const DAO: React.FC = () => {
           </Grid>
         </Grid>
       </HeroContainer>
-      {/* <UserBalancesBox daoId={daoId} /> */}
       <DAOStatsRow />
 
       {data && cycleInfo && activeProposals && (
