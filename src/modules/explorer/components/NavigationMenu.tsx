@@ -4,8 +4,6 @@ import { ReactComponent as VotingIcon } from "assets/logos/voting.svg"
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg"
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg"
 import { ReactComponent as UserIcon } from "assets/logos/user.svg"
-import { ReactComponent as NFTIcon } from "assets/logos/nft.svg"
-import { ReactComponent as ConfigIcon } from "assets/logos/config.svg"
 import React, { useEffect, useState } from "react"
 import { useDAOID } from "../pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -47,11 +45,7 @@ const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected
   "&:hover": {
     "& > a > * > * > * > * > *": {
       fill: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
-      transition: isSelected ? "none" : ".15s ease-in"
-    },
-
-    "& > a > * > * > *": {
-      color: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+      stroke: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
       transition: isSelected ? "none" : ".15s ease-in"
     }
   },
@@ -72,11 +66,6 @@ const PageItemBg = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelect
   alignItems: "center",
   justifyContent: "center",
   gap: 15
-  // background: isSelected
-  // ? alpha(theme.palette.primary.dark, 0.15)
-  // : "transparent",
-  // padding: "8px 15px",
-  // borderRadius: 4,
 }))
 
 const IconContainer = styled("span")(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
@@ -91,9 +80,12 @@ const IconContainer = styled("span")(({ theme, isSelected }: { theme: Theme; isS
 }))
 
 const NavText = styled(Typography)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  display: "flex",
-  justifyContent: "center",
-  color: isSelected ? theme.palette.secondary.main : theme.palette.text.primary
+  "display": "flex",
+  "justifyContent": "center",
+  "color": isSelected ? theme.palette.secondary.main : theme.palette.text.primary,
+  "&:hover": {
+    color: `${theme.palette.secondary.main} !important`
+  }
 }))
 
 interface Page {

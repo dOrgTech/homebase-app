@@ -36,7 +36,8 @@ const CustomContainer = styled(Grid)({
 
 const IconSwap = styled(SwapIcon)({
   marginLeft: 16,
-  marginRight: 16
+  marginRight: 16,
+  cursor: "pointer"
 })
 
 const DialogTitle = styled(Typography)({
@@ -61,7 +62,8 @@ interface Props {
   open: boolean
   handleClose: () => void
   defaultValues?: ProposalFormDefaultValues
-  defaultTab?: number
+  defaultTab: number
+  handleChangeTab?: (value: number) => void
 }
 
 const enabledForms: Record<
@@ -97,11 +99,17 @@ const SwapText = styled(Typography)({
   opacity: 0.65
 })
 
-export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defaultValues, defaultTab }) => {
+export const ProposalFormContainer: React.FC<Props> = ({
+  open,
+  handleClose,
+  defaultValues,
+  defaultTab,
+  handleChangeTab
+}) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const { data: daoHoldings } = useDAOHoldings(daoId)
-  const [selectedTab, setSelectedTab] = useState(defaultTab || 0)
+  const [state, setState] = useState(defaultTab)
 
   const methods = useForm<Values>({
     defaultValues: useMemo(
@@ -180,6 +188,18 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
     }
   }
 
+  const changeTab = (state: number) => {
+    setState(state)
+    if (state === 0) {
+      handleChangeTab?.(1)
+    } else if (state === 1) {
+      console.log()
+      handleChangeTab?.(0)
+    } else {
+      return
+    }
+  }
+
   return (
     <FormProvider {...methods}>
       <ProposalFormResponsiveDialog open={open} onClose={handleClose}>
@@ -187,16 +207,16 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
           <>
             <CustomContainer container direction="row" justifyContent="space-between" alignItems="center">
               <Grid item container direction="row" alignItems="center" style={{ width: "80%" }}>
-                <DialogTitle>{forms[selectedTab].label.toLowerCase()}</DialogTitle>
-                {selectedTab === 0 || selectedTab === 1 ? <IconSwap /> : null}
-                <SwapText>{getLabel(selectedTab)}</SwapText>
+                <DialogTitle>{forms[defaultTab].label.toLowerCase()}</DialogTitle>
+                {defaultTab === 0 || defaultTab === 1 ? <IconSwap onClick={() => changeTab(defaultTab)} /> : null}
+                <SwapText>{getLabel(defaultTab)}</SwapText>
               </Grid>
               <Grid item>
                 <CloseButton onClose={handleClose} />
               </Grid>
             </CustomContainer>
             {forms.map((form, i) => (
-              <TabPanel key={`tab-${i}`} value={selectedTab} index={i}>
+              <TabPanel key={`tab-${i}`} value={defaultTab} index={i}>
                 <form.component open={open} />
               </TabPanel>
             ))}

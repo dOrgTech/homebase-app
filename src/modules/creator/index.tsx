@@ -122,7 +122,7 @@ export const DAOCreate: React.FC = () => {
 
   const { back, next } = creator.state
   const step = useStepNumber()
-  const progress = useMemo(() => step * 33, [step])
+  const progress = useMemo(() => step * 20, [step])
   const history = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
@@ -154,7 +154,7 @@ export const DAOCreate: React.FC = () => {
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
-                  <IndicatorValue>{progress === 0.5 ? 0 : step * 33}%</IndicatorValue>
+                  <IndicatorValue>{progress === 0.5 ? 0 : step * 20}%</IndicatorValue>
                 </Box>
               </ProgressBar>
               <Box>

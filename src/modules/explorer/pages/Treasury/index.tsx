@@ -160,7 +160,12 @@ export const Treasury: React.FC = () => {
           </TabPanel>
         </ItemGrid>
       </Grid>
-      <ProposalFormContainer open={openTransfer} handleClose={onCloseTransfer} defaultTab={0} />
+      <ProposalFormContainer
+        open={openTransfer}
+        handleClose={onCloseTransfer}
+        defaultTab={selectedTab}
+        handleChangeTab={handleChangeTab}
+      />
     </>
   )
 }
