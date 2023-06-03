@@ -10,10 +10,12 @@ import { bytes2Char } from "@taquito/tzip16"
 import { BaseDAO } from "services/contracts/baseDAO"
 import { DAOTemplate } from "modules/creator/state"
 import transfer_arg_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/transfer_proposal_type.json"
+import transfer_proposal_type_before_fa12 from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/transfer_proposal_type_before_fa1.2.json"
 import update_contract_delegate_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/update_contract_delegate_proposal.json"
 import update_guardian_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/update_guardian_proposal.json"
 import configuration_proposal_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
 import { PMLambdaProposal } from "services/contracts/baseDAO/lambdaDAO/types"
+import { HUMANITEZ_DAO } from "services/config"
 
 export enum IndexerStatus {
   CREATED = "created",
@@ -324,7 +326,9 @@ export class LambdaProposal extends Proposal {
         )
 
         if (lambdaMetadata.lambdaHandler.handler_name === "transfer_proposal") {
-          const transfer_arg_schema = new Schema(transfer_arg_type_michelson as MichelsonData)
+          const transfer_michelson =
+            this.dao.data.address === HUMANITEZ_DAO ? transfer_proposal_type_before_fa12 : transfer_arg_type_michelson
+          const transfer_arg_schema = new Schema(transfer_michelson as MichelsonData)
           const transfer_proposal_data = transfer_arg_schema.Execute(lambdaMetadata.lambdaHandler.unpacked_argument)
 
           const { agora_post_id, registry_diff, transfers } = transfer_proposal_data

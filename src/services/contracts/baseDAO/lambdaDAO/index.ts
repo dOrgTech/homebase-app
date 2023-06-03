@@ -13,9 +13,11 @@ import { formatUnits } from "../../utils"
 import { LambdaAddArgs, LambdaExecuteArgs, LambdaRemoveArgs } from "./types"
 
 import transfer_arg_type_michelson from "./michelson/supported_lambda_types/transfer_proposal_type.json"
+import transfer_proposal_type_before_fa12 from "./michelson/supported_lambda_types/transfer_proposal_type_before_fa1.2.json"
 import update_contract_delegate_type_michelson from "./michelson/supported_lambda_types/update_contract_delegate_proposal.json"
 import update_guardian_type_michelson from "./michelson/supported_lambda_types/update_guardian_proposal.json"
 import { Community } from "models/Community"
+import { HUMANITEZ_DAO } from "services/config"
 
 const parser = new Parser()
 
@@ -162,7 +164,10 @@ export class LambdaDAO extends BaseDAO {
     const contract = await getContract(tezos, this.data.address)
     const p = new Parser()
 
-    const transfer_arg_schema = new Schema(transfer_arg_type_michelson as MichelsonData)
+    const transfer_michelson =
+      this.data.address === HUMANITEZ_DAO ? transfer_proposal_type_before_fa12 : transfer_arg_type_michelson
+
+    const transfer_arg_schema = new Schema(transfer_michelson as MichelsonData)
     const transfer_proposal_args = {
       transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
       registry_diff: transfer_proposal.registry_diff.map(item => [char2Bytes(item.key), char2Bytes(item.value)]),
