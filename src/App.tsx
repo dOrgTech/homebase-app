@@ -20,7 +20,7 @@ import { ActionSheetProvider } from "modules/explorer/context/ActionSheets"
 import { legacyTheme } from "theme/legacy"
 import { Footer } from "modules/common/Footer"
 import { FAQ } from "modules/home/FAQ"
-import { EnvKey, getEnv } from "services/config"
+import { EnvKey, HUMANITEZ_DAO, getEnv } from "services/config"
 import { DAOCreatorRouter } from "modules/creator/router"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
@@ -124,7 +124,7 @@ const App: React.FC = () => {
                         <DAOExplorerRouter />
                       </TZKTSubscriptionsProvider>
 
-                      {window.location.href.indexOf("KT1PY9PXm8NMAgSEZg7bUtFjmV2Sj64bKuVV") !== -1 ? (
+                      {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
                         <>
                           {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
                           <WarningFooter
