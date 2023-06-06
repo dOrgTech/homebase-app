@@ -1,19 +1,22 @@
-import { Collapse, Grid, IconButton, styled, Typography } from "@material-ui/core"
+import { Collapse, Grid, styled, Theme, Typography } from "@material-ui/core"
 import { ProposalItem } from "modules/explorer/pages/User"
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { ContentContainer } from "./ContentContainer"
-import { Dropdown } from "./Dropdown"
+import { ProposalFilter } from "./ProposalsFilter"
 
 const TableContainer = styled(ContentContainer)({
   width: "100%"
 })
 
-const TableHeader = styled(Grid)({
+const TableHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
   padding: "16px 46px",
-  minHeight: 34
-})
+  minHeight: 34,
+  [theme.breakpoints.down("sm")]: {
+    gap: 10
+  }
+}))
 
 const ProposalsFooter = styled(Grid)({
   padding: "16px 46px",
@@ -31,13 +34,13 @@ interface Props {
 
 export const AllProposalsList: React.FC<Props> = ({ currentLevel, proposals, title, showFooter, rightItem }) => {
   const [filteredProposal, setFilteredProposals] = useState(proposals)
-  const [filter, setFilter] = useState("All")
+  const [filter, setFilter] = useState("all")
 
   const filterProposals = useCallback(
     (status?: any) => {
-      if (status === "All") {
+      if (status === "all") {
         return setFilteredProposals(proposals)
-      } else if (status !== "All" && status !== undefined) {
+      } else if (status !== "all" && status !== undefined) {
         const filtered = proposals.filter(proposal => proposal["cachedStatus"]?.status === status)
         setFilteredProposals(filtered)
       } else {
@@ -65,32 +68,11 @@ export const AllProposalsList: React.FC<Props> = ({ currentLevel, proposals, tit
       <Grid container direction="column" wrap={"nowrap"}>
         <TableHeader item container justifyContent="space-between" alignItems="center">
           <Grid item>
-            <Typography variant="body2" style={{ fontWeight: "500" }} color="textPrimary">
+            <Typography variant="body1" style={{ fontWeight: "500" }} color="textPrimary">
               {title}
             </Typography>
           </Grid>
-          {proposals.length ? (
-            <Grid item>
-              <IconButton aria-label="expand row" size="small">
-                <Dropdown
-                  options={[
-                    { name: "All", value: "All" },
-                    { name: ProposalStatus.ACTIVE, value: ProposalStatus.ACTIVE },
-                    { name: ProposalStatus.DROPPED, value: ProposalStatus.DROPPED },
-                    { name: ProposalStatus.EXECUTABLE, value: ProposalStatus.EXECUTABLE },
-                    { name: ProposalStatus.EXECUTED, value: ProposalStatus.EXECUTED },
-                    { name: ProposalStatus.EXPIRED, value: ProposalStatus.EXPIRED },
-                    { name: ProposalStatus.NO_QUORUM, value: ProposalStatus.NO_QUORUM },
-                    { name: ProposalStatus.PASSED, value: ProposalStatus.PASSED },
-                    { name: ProposalStatus.PENDING, value: ProposalStatus.PENDING },
-                    { name: ProposalStatus.REJECTED, value: ProposalStatus.REJECTED }
-                  ]}
-                  value={"All"}
-                  onSelected={filterProposalByStatus}
-                />{" "}
-              </IconButton>
-            </Grid>
-          ) : null}
+          {proposals.length ? <ProposalFilter filterProposalByStatus={filterProposalByStatus} /> : null}
         </TableHeader>
         {filteredProposal.length ? (
           <Grid

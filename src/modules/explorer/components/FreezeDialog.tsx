@@ -41,7 +41,7 @@ const CustomMaxLabel = styled(Typography)({
 
 export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
   const [open, setOpen] = React.useState(false)
-  const [amount, setAmount] = React.useState<number>(0)
+  const [amount, setAmount] = React.useState<number | "">(0)
   const daoId = useDAOID()
   const { mutate } = useFreeze()
   const { data: dao, ledger } = useDAO(daoId)
@@ -146,6 +146,12 @@ export const FreezeDialog: React.FC<{ freeze: boolean }> = ({ freeze }) => {
                 type="number"
                 placeholder="0"
                 onChange={(newValue: any) => setAmount(newValue.target.value)}
+                onClick={(newValue: any) => {
+                  if (amount === 0) {
+                    setAmount("")
+                  }
+                  return
+                }}
                 inputProps={{ min: 0 }}
                 InputProps={{
                   disableUnderline: true,

@@ -461,7 +461,7 @@ export const ProposalDetails: React.FC = () => {
                       </Grid>
                       <ProposalCodeEditorInput
                         label="Lambda Code"
-                        containerStyle={{ marginTop: "8px" }}
+                        containerstyle={{ marginTop: "8px" }}
                         insertSpaces
                         ignoreTabKey={false}
                         tabSize={4}

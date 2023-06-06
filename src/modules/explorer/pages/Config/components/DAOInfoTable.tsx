@@ -16,9 +16,7 @@ const TableTitle = styled(Typography)({
 })
 
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    maxWidth: 390
-  }
+  [theme.breakpoints.down("sm")]: {}
 }))
 
 export const DaoInfoTables: React.FC = () => {

@@ -72,7 +72,8 @@ const CustomFormikTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  }
+  },
+  disabled: {}
 })(FormikTextField)
 
 export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingStrategy, setFieldValue }) => {

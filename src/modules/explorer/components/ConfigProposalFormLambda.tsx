@@ -39,7 +39,7 @@ const CheckIcon = styled(CheckOutlined)({
   fontSize: 169
 })
 
-const codeEditorContainerStyles = {
+const codeEditorcontainerstyles = {
   marginTop: "8px"
 }
 
@@ -87,7 +87,7 @@ enum LambdaProposalState {
 const codeEditorPlaceholder = {
   addLambda: `Write Michelson Code for Lambda's Implementation
 
-Eg:- 
+Eg:-
 
 (Left (Left (Pair (Pair { DROP ;
     NIL operation ;
@@ -102,7 +102,7 @@ Eg:-
   `,
   lambdaExecuteArgumentsCode: `Write Michelson Code for the input Paramerers of your Lambda
 
-Eg:- 
+Eg:-
 
 {
   "prim": "pair",
@@ -127,7 +127,7 @@ Eg:-
 `,
   lambdaExecuteParams: `Enter the values for the given params in a JSON/JavaScript Object format.
 
-Eg:- 
+Eg:-
 
 {
   xtz_transfer_type: {
@@ -259,7 +259,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
       <>
         <ProposalCodeEditorInput
           label="Implementation"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -282,7 +282,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         </ProposalFormInput>
         <ProposalCodeEditorInput
           label="Implementation"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -305,7 +305,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         </ProposalFormInput>
         <ProposalCodeEditorInput
           label="Implementation"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -318,7 +318,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         />
         <ProposalCodeEditorInput
           label="Lambda Arguments Code"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -331,7 +331,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         />
         <ProposalCodeEditorInput
           label="Lambda Params"
-          containerStyle={codeEditorContainerStyles}
+          containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
           tabSize={4}
@@ -352,7 +352,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         open={open}
         onClose={handleClose}
         title={ProposalAction[action] + " Lambda Proposal"}
-        template="lambda"
+        template="md"
       >
         {state === LambdaProposalState.write_action ? (
           <>

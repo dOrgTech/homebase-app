@@ -101,6 +101,7 @@ export const ProposalSelectionMenu: React.FC<Props> = ({ open, handleClose }) =>
         )}
       </ResponsiveDialog>
       <ProposalFormContainer
+        defaultTab={0}
         open={ProposalModalKey.transfer === openModal || ProposalModalKey.registry === openModal}
         handleClose={() => handleCloseModal()}
       />

@@ -17,9 +17,9 @@ export const ChoiceDetails: React.FC<{ choice: Choice; index: number; poll: Poll
   const [, updateState] = React.useState<any>()
   const forceUpdate = React.useCallback(() => updateState({}), [])
 
-  setTimeout(() => {
-    forceUpdate()
-  }, 500)
+  // setTimeout(() => {
+  //   forceUpdate()
+  // }, 500)
 
   return (
     <Grid style={{ gap: 19, display: index > 2 ? "none" : "block", marginBottom: 16 }} container>

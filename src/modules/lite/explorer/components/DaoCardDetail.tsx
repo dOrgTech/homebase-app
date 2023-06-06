@@ -53,7 +53,6 @@ interface DaoCardDetailProps {
 export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUpdated }) => {
   const navigate = useHistory()
   const theme = useTheme()
-  const { account } = useTezos()
   const { isConnected } = useContext(DashboardContext)
 
   return (
@@ -70,7 +69,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
         </Grid>
       </Grid>
 
-      <Grid container direction="row">
+      <Grid container direction="row" justifyContent="center">
         <CommunityDescription variant="body2" color="textPrimary">
           {community?.description}
         </CommunityDescription>

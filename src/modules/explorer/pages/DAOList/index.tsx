@@ -259,19 +259,19 @@ export const DAOList: React.FC = () => {
               </DAOItemGrid>
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
-              <Grid container style={{ gap: 18 }} justifyContent={isMobileSmall ? "center" : "flex-start"}>
+              <DAOItemGrid container style={{ gap: 18 }} justifyContent={isMobileSmall ? "center" : "flex-start"}>
                 {!account ? (
                   <ConnectMessage />
                 ) : (
                   currentDAOs
                     .filter(dao => dao.votingAddresses.includes(account))
                     .map((dao, i) => (
-                      <Grid key={`mine-${i}`} item>
+                      <DAOItemCard key={`mine-${i}`} item>
                         <DAOItem dao={dao} />
-                      </Grid>
+                      </DAOItemCard>
                     ))
                 )}
-              </Grid>
+              </DAOItemGrid>
             </TabPanel>
           </Grid>
         </Grid>

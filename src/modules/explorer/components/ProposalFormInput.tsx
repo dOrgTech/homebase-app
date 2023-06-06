@@ -60,7 +60,7 @@ type EditorProps = React.HTMLAttributes<HTMLDivElement> & {
   onKeyDown?: React.KeyboardEventHandler<HTMLTextAreaElement>
   preClassName?: string
 }
-export type CustomEditorProps = { label?: string; containerStyle?: Record<string, string> } & EditorProps
+export type CustomEditorProps = { label?: string; containerstyle?: Record<string, string> } & EditorProps
 
 const StyledEditorWrapper = styled(Grid)(() => ({
   "borderRadius": 4,
@@ -89,9 +89,9 @@ const StyledEditor = styled(Editor)({
 })
 
 export const ProposalCodeEditorInput: React.FC<CustomEditorProps> = props => {
-  const { label, containerStyle } = props
+  const { label, containerstyle } = props
   return (
-    <Grid container direction="column" style={{ gap: 18, ...containerStyle }}>
+    <Grid container direction="column" style={{ gap: 18, ...containerstyle }}>
       {label ? (
         <Grid item>
           <Typography style={{ fontWeight: 400 }} color="textPrimary">

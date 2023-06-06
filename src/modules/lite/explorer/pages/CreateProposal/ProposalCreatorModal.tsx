@@ -10,6 +10,7 @@ export const ProposalCreatorModal: React.FC<any> = ({ open, handleClose }) => {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
       title={"Create Off Chain Poll"}
+      template="xs"
     >
       <ProposalCreator />
     </ResponsiveDialog>
