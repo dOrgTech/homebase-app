@@ -13,7 +13,6 @@ import { useTokenOriginate } from "services/contracts/token/hooks/useToken"
 import { useNotification } from "modules/common/hooks/useNotification"
 
 const ThirdContainer = styled(Grid)({
-  marginTop: 22,
   background: "#2F3438",
   borderRadius: 8,
   boxSizing: "border-box"
@@ -57,7 +56,8 @@ const ThirdContainerRow = styled(Grid)({
 
 const TitleSpacing = styled(Typography)({
   marginTop: 8,
-  fontWeight: 200
+  fontWeight: 400,
+  fontSize: 18
 })
 
 const ContainerEdit = styled(Typography)({
@@ -69,7 +69,7 @@ const AdminAddress = styled(Typography)({
 })
 
 const KeyText = styled(Typography)({
-  fontWeight: 300
+  fontWeight: 400
 })
 
 const AddressText = styled(Typography)({
@@ -144,10 +144,13 @@ export const ContractSummary: React.FC = () => {
     <>
       <Grid container direction="column">
         <Grid>
-          <TitleBlock
-            title="Review information"
-            description={"and make sure you've set up your token right."}
-          ></TitleBlock>
+          <Typography style={{ marginBottom: 16 }} variant="h5" color="textSecondary">
+            Review Information
+          </Typography>
+          <Typography variant="subtitle1" style={{ marginBottom: 32, fontWeight: 300 }} color="textSecondary">
+            {" "}
+            Make sure you’ve set up your token right.{" "}
+          </Typography>
         </Grid>
 
         <ThirdContainer container direction="row">
@@ -159,7 +162,7 @@ export const ContractSummary: React.FC = () => {
               justifyContent="space-between"
             >
               <TitleSpacing color="textSecondary" variant="subtitle1">
-                TOKEN CONTRACT SETTINGS
+                Token Contract Settings
               </TitleSpacing>
               <ContainerEdit color="secondary" onClick={goToSettings}>
                 Edit
@@ -243,7 +246,7 @@ export const ContractSummary: React.FC = () => {
           </ThirdContainerLastRow>
         </ThirdContainer>
 
-        <ThirdContainer container direction="row">
+        <ThirdContainer container direction="row" style={{ marginTop: 22 }}>
           <ThirdContainerFirstRow item xs={12}>
             <Grid
               container
@@ -252,7 +255,7 @@ export const ContractSummary: React.FC = () => {
               justifyContent="space-between"
             >
               <TitleSpacing color="textSecondary" variant="subtitle1">
-                INITIAL DISTRIBUTION
+                Initial Distribution
               </TitleSpacing>
               <ContainerEdit color="secondary" onClick={goToDistribution}>
                 Edit

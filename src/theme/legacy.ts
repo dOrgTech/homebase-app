@@ -239,6 +239,11 @@ export const legacyTheme = createMuiTheme({
       input: {
         textAlign: "start",
         color: "#fff"
+      },
+      root: {
+        "&::placeholder": {
+          fontWeight: 300
+        }
       }
     },
     MuiDivider: {

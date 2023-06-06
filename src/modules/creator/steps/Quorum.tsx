@@ -14,7 +14,8 @@ const ErrorText = styled(Typography)({
   display: "flex",
   minWidth: "100%",
   fontSize: 14,
-  color: "red"
+  color: "red",
+  marginTop: 4
 })
 
 const SpacingContainer = styled(Grid)({
@@ -102,6 +103,7 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
   padding: "12px 25px",
   minWidth: 150,
   maxWidth: 150,
+  fontWeight: 300,
   ["@media (max-width:1167px)"]: {
     maxWidth: "100%",
     minWidth: "100%",

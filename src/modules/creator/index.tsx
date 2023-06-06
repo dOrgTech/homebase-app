@@ -26,7 +26,6 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const StepContentContainer = styled(Grid)({
-  marginTop: 28,
   alignItems: "baseline",
   height: "100%",
   paddingTop: 0,
@@ -72,8 +71,15 @@ const FAQClickToAction = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
   fontSize: "14px",
   cursor: "pointer",
-  marginTop: 16,
-  marginBottom: 8
+  textAlign: "center",
+  textDecoration: "underline"
+}))
+
+const FAQClickText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  fontSize: "14px",
+  cursor: "pointer",
+  textAlign: "center"
 }))
 
 const ProgressContainer = styled(Grid)(({ theme }) => ({
@@ -157,8 +163,9 @@ export const DAOCreate: React.FC = () => {
                   <IndicatorValue>{progress === 0.5 ? 0 : step * 20}%</IndicatorValue>
                 </Box>
               </ProgressBar>
-              <Box>
-                <FAQClickToAction onClick={goToFAQ}>New to DAOs? Read our FAQ</FAQClickToAction>
+              <Box onClick={goToFAQ}>
+                <FAQClickText>New to DAOs?</FAQClickText>
+                <FAQClickToAction> Read our FAQ </FAQClickToAction>
               </Box>
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title, path }: StepInfo, index: number) => (
