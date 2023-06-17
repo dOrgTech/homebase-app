@@ -195,13 +195,12 @@ export const ProposalDetails: React.FC = () => {
   //   !dao?.data.ledger.find(l => l.holder.address.toLowerCase() === account.toLowerCase())?.staked.isZero()
 
   const parseReadableConfigValue = (configKey: any, value: BigNumber) => {
-    if (dao) {
+    if (dao && value) {
       switch (configKey) {
         case "frozen_extra_value":
           return parseUnits(value, dao.data.token.decimals).toString()
         case "slash_scale_value":
           return 100 - value.toNumber()
-
         default:
           return value.toString()
       }
@@ -415,7 +414,7 @@ export const ProposalDetails: React.FC = () => {
                             </Typography>{" "}
                             to{" "}
                             <Typography variant="body1" color="secondary" display={"inline"}>
-                              {parseReadableConfigValue(key as keyof Proposal["metadata"]["config"], value)}
+                              {parseReadableConfigValue(key as keyof Proposal["metadata"]["config"], value) ?? 0}
                             </Typography>
                           </DetailsText>
                         </Grid>
