@@ -86,7 +86,10 @@ function getBaseMetadata(proposalMetadataDTO: PMLambdaProposal): BaseProposalMet
       const configuration_proposal_data = configuration_proposal_schema.Execute(unpacked_argument)
       values.config = Object.entries(configuration_proposal_data)
         .filter(([_, value]) => !!value)
-        .map(([key, value]) => ({ key: key as BaseProposalMetadata["config"][number]["key"], value }))
+        .map(([key, value]: [key: any, value: any]) => ({
+          key: key as BaseProposalMetadata["config"][number]["key"],
+          value: value.Some
+        }))
     }
   }
 
