@@ -73,8 +73,8 @@ function getBaseMetadata(proposalMetadataDTO: PMLambdaProposal): BaseProposalMet
 
     if (proposalMetadataDTO.execute_handler.handler_name === "update_contract_delegate_proposal") {
       const update_contract_delegate_schema = new Schema(update_contract_delegate_type_michelson as MichelsonData)
-      const update_contract_delegate_data = update_contract_delegate_schema.Execute(unpacked_argument)
-      values.update_contract_delegate = update_contract_delegate_data
+      const update_contract_delegate_data: { Some: string } = update_contract_delegate_schema.Execute(unpacked_argument)
+      values.update_contract_delegate = update_contract_delegate_data.Some
     }
     if (proposalMetadataDTO.execute_handler.handler_name === "update_guardian_proposal") {
       const update_guardian_schema = new Schema(update_guardian_type_michelson as MichelsonData)
