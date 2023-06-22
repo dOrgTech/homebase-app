@@ -12,6 +12,7 @@ import { useProposeDelegationChange } from "services/contracts/baseDAO/hooks/use
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { validateContractAddress, validateAddress } from "@taquito/utils"
+import { useDelegate } from "services/contracts/baseDAO/hooks/useDelegate"
 
 const ErrorText = styled(Typography)({
   fontSize: 14,
@@ -56,6 +57,7 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
 
+  const currentDelegate = useDelegate(dao && dao?.data.address ? dao?.data.address : "")
   const methods = useForm<Values>({
     defaultValues: useMemo(
       () => ({
@@ -99,6 +101,19 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
         title={"Change Delegate"}
       >
         <Content container direction={"column"} style={{ gap: 18 }}>
+          {dao && (
+            <Grid item>
+              <Typography color={"inherit"} style={{ marginBottom: "7px" }}>
+                Current Delegate:{" "}
+              </Typography>
+              <Typography variant="subtitle2" color="secondary">
+                {currentDelegate && currentDelegate.data && currentDelegate.data.address
+                  ? currentDelegate.data.address
+                  : "-"}
+              </Typography>
+            </Grid>
+          )}
+
           <Grid item>
             <ProposalFormInput label={"New Delegate Address"}>
               <Controller
