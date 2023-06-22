@@ -1,9 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import { styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@material-ui/core"
+import {
+  Grid,
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from "@material-ui/core"
 import React from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import BigNumber from "bignumber.js"
 import { useDAOID } from "../../DAO/router"
+import { useDelegate } from "services/contracts/baseDAO/hooks/useDelegate"
+import { CopyButton } from "modules/common/CopyButton"
 
 const RowValue = styled(Typography)({
   fontWeight: 300,
@@ -22,9 +34,50 @@ const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
 export const DaoInfoTables: React.FC = () => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
+  const currentDelegate = useDelegate(dao && dao?.data.address ? dao?.data.address : "")
 
   return (
     <>
+      <CustomTableContainer>
+        <Table style={{ marginTop: 32 }} aria-label="simple table">
+          <TableBody>
+            {dao ? (
+              <>
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    <Typography variant="body1">Contract Address (Treasury)</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <RowValue>
+                      <Grid container direction="row" alignItems="center" justifyContent="flex-end">
+                        {dao.data.address}
+                        <CopyButton text={dao.data.address} />
+                      </Grid>
+                    </RowValue>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    <Typography variant="body1">Current Delegate</Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <RowValue>
+                      {currentDelegate && currentDelegate.data && currentDelegate.data.address ? (
+                        <Grid container direction="row" alignItems="center" justifyContent="flex-end">
+                          {currentDelegate.data.address}
+                          <CopyButton text={dao.data.address} />
+                        </Grid>
+                      ) : (
+                        "-"
+                      )}
+                    </RowValue>
+                  </TableCell>
+                </TableRow>
+              </>
+            ) : null}
+          </TableBody>
+        </Table>
+      </CustomTableContainer>
       <CustomTableContainer>
         <Table style={{ marginTop: 32 }} aria-label="simple table">
           <TableHead>
