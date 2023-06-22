@@ -192,10 +192,6 @@ export const Proposals: React.FC = () => {
     setOpenDialog(false)
   }
 
-  useEffect(() => {
-    console.log("se actualizó")
-  }, [openDialog])
-
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {
       mutate({

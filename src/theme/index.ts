@@ -317,7 +317,8 @@ export const theme = createTheme({
         "$checked$checked + &": {
           opacity: 1,
           backgroundColor: "#1C1F23",
-          color: "#81FEB7"
+          color: "#81FEB7",
+          border: "1px solid #1C1F23"
         }
       },
       thumb: {
