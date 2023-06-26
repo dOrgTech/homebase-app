@@ -388,7 +388,8 @@ export const theme = createTheme({
       root: {
         "height": 70,
         "& th:first-child, & td:first-child": {
-          paddingLeft: 46
+          paddingLeft: 46,
+          textAlign: "inherit"
         },
         "& th:last-child, & td:last-child": {
           paddingRight: 46

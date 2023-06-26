@@ -8,12 +8,15 @@ const Content = styled(Grid)({
   padding: "41px 46px"
 })
 
-const TitleText = styled(Typography)({
+const TitleText = styled(Typography)(({ theme }) => ({
   color: "#ffff",
   fontWeight: 550,
   lineHeight: ".80",
-  textTransform: "capitalize"
-})
+  textTransform: "capitalize",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 18
+  }
+}))
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthMd": {
@@ -62,7 +65,9 @@ export const ResponsiveDialog: React.FC<{
             <CloseButton onClose={onClose} />
           </Grid>
         </Grid>
-        <Grid item>{children}</Grid>
+        <Grid item style={{ width: "inherit" }}>
+          {children}
+        </Grid>
       </Content>
     </BottomSheet>
   ) : (
