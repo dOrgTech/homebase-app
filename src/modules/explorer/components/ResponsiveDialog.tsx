@@ -48,8 +48,13 @@ export const ResponsiveDialog: React.FC<{
   return isSmall ? (
     <BottomSheet open={open} onDismiss={onClose}>
       <Content container direction="column" style={{ gap: 46 }}>
-        <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
-          <Grid item>{onGoBack ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
+        <Grid item container direction="row" justifyContent="space-between">
+          {onGoBack !== undefined ? (
+            <Grid item>
+              {" "}
+              <BackButton onGoBack={onGoBack} />
+            </Grid>
+          ) : null}
           <Grid item>
             <TitleText>{title}</TitleText>
           </Grid>
@@ -64,7 +69,12 @@ export const ResponsiveDialog: React.FC<{
     <CustomDialog open={open} onClose={onClose} maxWidth={template}>
       <Content container direction="column" style={{ gap: 30 }}>
         <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
-          <Grid item>{onGoBack ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
+          {onGoBack !== undefined ? (
+            <Grid item>
+              {" "}
+              <BackButton onGoBack={onGoBack} />
+            </Grid>
+          ) : null}{" "}
           <Grid item>
             <TitleText color="textPrimary">{title}</TitleText>
           </Grid>

@@ -92,7 +92,8 @@ const enabledForms: Record<
 }
 
 const Content = styled(Grid)({
-  padding: "0 54px"
+  padding: "0 54px",
+  paddingBottom: 24
 })
 
 const SwapText = styled(Typography)({
@@ -193,7 +194,6 @@ export const ProposalFormContainer: React.FC<Props> = ({
     if (state === 0) {
       handleChangeTab?.(1)
     } else if (state === 1) {
-      console.log()
       handleChangeTab?.(0)
     } else {
       return
@@ -221,7 +221,7 @@ export const ProposalFormContainer: React.FC<Props> = ({
               </TabPanel>
             ))}
 
-            <Content container direction={"column"} style={{ gap: 10 }}>
+            <Content container direction={"column"} style={{ gap: 20 }}>
               <Grid item>
                 <ProposalFormInput label={"Agora Post ID"}>
                   <Controller
@@ -238,28 +238,28 @@ export const ProposalFormContainer: React.FC<Props> = ({
                   />
                 </ProposalFormInput>
               </Grid>
-              <Grid item>
-                <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>
-                  Proposal Fee:{" "}
-                </Typography>
-                <Typography
-                  align="left"
-                  variant="subtitle2"
-                  color="secondary"
-                  display={"inline"}
-                  style={{ fontWeight: 300 }}
-                >
-                  {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
-                </Typography>
-              </Grid>
+              <Grid item container direction="row" alignItems="center" justifyContent="space-between">
+                <Grid item>
+                  <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>
+                    Proposal Fee:{" "}
+                  </Typography>
+                  <Typography
+                    align="left"
+                    variant="subtitle2"
+                    color="secondary"
+                    display={"inline"}
+                    style={{ fontWeight: 300 }}
+                  >
+                    {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
+                  </Typography>
+                </Grid>
 
-              <SendButton
-                style={{ margin: "10px 0 35px 0" }}
-                onClick={methods.handleSubmit(onSubmit as any)}
-                disabled={!dao || !daoHoldings}
-              >
-                Submit
-              </SendButton>
+                <Grid item>
+                  <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao || !daoHoldings}>
+                    Submit
+                  </SendButton>
+                </Grid>
+              </Grid>
             </Content>
           </>
         )}

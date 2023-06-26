@@ -29,14 +29,14 @@ export type Asset = Token | { symbol: "XTZ" }
 
 const AmountText = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
-  fontSize: 14,
+  fontSize: 16,
   lineHeight: "146.3%",
-  marginRight: 10
+  marginRight: 10,
+  fontWeight: 300
 }))
 
 const DAOBalanceText = styled(Typography)({
   color: "#ffff",
-  fontSize: 14,
   lineHeight: "100%",
   marginRight: 10
 })
@@ -201,7 +201,7 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
   }, [index, setValue, max, currentAssetBalance, currentTransfer, ledger])
 
   return (
-    <DialogContent style={{ paddingBottom: 29 }}>
+    <DialogContent style={{ paddingBottom: 29, paddingTop: 24 }}>
       <Grid container direction={"column"} style={{ gap: 31 }}>
         <Grid item>
           <BatchBar
@@ -342,11 +342,11 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
                       <ErrorText>{"Must be greater than zero"}</ErrorText>
                     ) : null}
                   </Grid>
-                  <DaoBalance container direction="row" alignItems="center" justifyContent="space-between">
-                    <Grid item xs={6}>
-                      <DAOBalanceText>DAO Balance</DAOBalanceText>
+                  <DaoBalance container direction="row" alignItems="center">
+                    <Grid item>
+                      <DAOBalanceText variant="subtitle2">DAO Balance:</DAOBalanceText>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item>
                       {daoAssets ? (
                         <AmountContainer item container direction="row" justifyContent="flex-end">
                           {currentAssetBalance !== undefined &&
