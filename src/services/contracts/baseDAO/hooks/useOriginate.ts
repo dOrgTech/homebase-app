@@ -80,15 +80,15 @@ export const useOriginate = (template: DAOTemplate) => {
       setActiveState(0)
       setStates(updatedStates)
 
-      let newTezos: TezosToolkit = tezos
+      const newTezos: TezosToolkit = tezos
 
-      if (network !== "mainnet") {
-        newTezos = initTezosInstance(network)
-        const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
-        newTezos.setProvider({ signer })
+      // if (network !== "mainnet") {
+      //   newTezos = initTezosInstance(network)
+      //   const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
+      //   newTezos.setProvider({ signer })
 
-        params.orgSettings.administrator = await newTezos.wallet.pkh()
-      }
+      //   params.orgSettings.administrator = await newTezos.wallet.pkh()
+      // }
 
       mixpanel.track("Started DAO origination", {
         contract: "MetadataCarrier",
