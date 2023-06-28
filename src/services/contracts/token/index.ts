@@ -2,7 +2,7 @@ import { MichelsonMap, TezosToolkit } from "@taquito/taquito"
 import BigNumber from "bignumber.js"
 import { TokenContractParams } from "modules/creator/deployment/state/types"
 import { formatUnits } from "../utils"
-import fa2MultiAsset from "./assets/MultiAsset.json"
+import fa2_single_asset_delegated from "./assets/fa2_single_asset_delegated"
 
 interface Tezos {
   tezos: TezosToolkit
@@ -13,8 +13,9 @@ export const deployTokenContract = async ({
   tokenSettings,
   tokenDistribution,
   tezos,
-  account
-}: TokenContractParams & Tezos) => {
+  account,
+  currentBlock
+}: TokenContractParams & Tezos & any) => {
   try {
     const metadata = MichelsonMap.fromLiteral({
       "": Buffer.from("tezos-storage:contents", "ascii").toString("hex"),
@@ -23,7 +24,7 @@ export const deployTokenContract = async ({
           version: "v0.0.1",
           name: tokenSettings.name,
           description: tokenSettings.description,
-          authors: ["FA2 Bakery"],
+          authors: ["Tezos Homebase"],
           source: {
             tools: ["Ligo"]
           },
@@ -35,14 +36,17 @@ export const deployTokenContract = async ({
     const storage = {
       admin: {
         admin: account,
-        pending_admin: null,
         paused: false
       },
       assets: {
-        token_total_supply: MichelsonMap.fromLiteral({}),
-        ledger: MichelsonMap.fromLiteral({}),
-        operators: MichelsonMap.fromLiteral({}),
-        token_metadata: MichelsonMap.fromLiteral({})
+        ledger: new MichelsonMap(),
+        voting_power_history: new MichelsonMap(),
+        voting_power_history_sizes: new MichelsonMap(),
+        delegates: new MichelsonMap(),
+        operators: new MichelsonMap(),
+        token_metadata: new MichelsonMap(),
+        total_supply: 0,
+        minter: account
       },
       metadata: metadata
     }
@@ -52,14 +56,19 @@ export const deployTokenContract = async ({
       tokenSettings.decimals &&
       formatUnits(new BigNumber(tokenSettings.totalSupply), tokenSettings.decimals)
 
-    totalSupply && storage.assets.token_total_supply.set(index, totalSupply.toString())
-    tokenDistribution.holders.map((holder, holderIndex) => {
-      holder.amount &&
-        tokenSettings.decimals &&
+    storage.assets.total_supply = totalSupply.toString()
+    tokenDistribution.holders.map((holder: { amount: BigNumber.Value; walletAddress: any }) => {
+      if (holder.amount && tokenSettings.decimals) {
         storage.assets.ledger.set(
-          [holder.walletAddress, index],
+          holder.walletAddress,
           formatUnits(new BigNumber(holder.amount), tokenSettings.decimals).toString()
         )
+        storage.assets.voting_power_history.set([holder.walletAddress, 0], {
+          from_block: currentBlock,
+          amount: formatUnits(new BigNumber(holder.amount), tokenSettings.decimals).toString()
+        })
+        storage.assets.voting_power_history_sizes.set(holder.walletAddress, 1)
+      }
     })
     storage.assets.token_metadata.set(index, {
       token_id: index,
@@ -73,7 +82,7 @@ export const deployTokenContract = async ({
       })
     })
     const t = tezos.wallet.originate({
-      code: fa2MultiAsset,
+      code: fa2_single_asset_delegated,
       storage
     })
     const c = await t.send()

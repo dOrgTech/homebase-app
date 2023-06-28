@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import { Box, styled, Tooltip } from "@material-ui/core"
-import { FileCopyOutlined } from "@material-ui/icons"
+import { FileCopyOutlined, Image } from "@material-ui/icons"
+import DownloadIcon from "assets/img/download.svg"
 
-const CopyIcon = styled(FileCopyOutlined)({
+const CopyIcon = styled("img")({
   cursor: "pointer"
 })
 
@@ -23,7 +24,7 @@ export const CopyButton: React.FC<{ text: string; style?: any }> = ({ text, styl
       }}
     >
       <Tooltip style={style} placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
-        <CopyIcon color="secondary" fontSize="small" />
+        <CopyIcon src={DownloadIcon} />
       </Tooltip>
     </Box>
   )

@@ -176,7 +176,7 @@ export const DAOItem: React.FC<{
         <Grid>
           <Grid item xs={12} sm>
             {daoType === "lambda" ? <Badge dao_type={daoType}>V3</Badge> : null}
-            {daoType === "registry" ? <Badge dao_type={daoType}>V2</Badge> : null}
+            {daoType === "registry" || daoType === "treasury" ? <Badge dao_type={daoType}>V2</Badge> : null}
             {daoType === "lite" ? <Badge dao_type={daoType}>Lite</Badge> : null}
 
             <NumberText color="textPrimary">{dao.votingAddresses.length}</NumberText>

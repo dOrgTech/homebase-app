@@ -7,7 +7,8 @@ import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy
 import { useTezos } from "services/beacon/hooks/useTezos"
 import mixpanel from "mixpanel-browser"
 import { TokenContractParams } from "modules/creator/deployment/state/types"
-import { deployTokenContract } from ".."
+import { getCurrentBlock } from "services/utils/utils"
+import { deployTokenContract } from "services/contracts/token"
 
 export const useTokenOriginate = (tokenData: TokenContractParams) => {
   const queryClient = useQueryClient()
@@ -33,10 +34,13 @@ export const useTokenOriginate = (tokenData: TokenContractParams) => {
         tokenSettings
       }
 
+      const currentBlock = await getCurrentBlock(network)
+
       const contract = await deployTokenContract({
         ...mutateTokenData,
         tezos: tezosToolkit,
-        account
+        account,
+        currentBlock
       })
 
       if (!contract) {
