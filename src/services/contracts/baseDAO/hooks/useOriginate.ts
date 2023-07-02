@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "react-query"
 
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
 import { initTezosInstance, useTezos } from "services/beacon/hooks/useTezos"
-import { BaseDAO } from ".."
+import { BaseDAO, replacer } from ".."
 import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
 import { InMemorySigner } from "@taquito/signer"
@@ -71,6 +71,26 @@ export const useOriginate = (template: DAOTemplate) => {
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params }) => {
       const updatedStates = INITIAL_STATES
+
+      const deployParams: any = {
+        params: { ...params },
+        metadataParams: { ...metadataParams }
+      }
+
+      if (network !== "mainnet") {
+        const resp = await fetch("http://localhost:3001/deploy", {
+          method: "POST",
+          body: JSON.stringify({ deployParams: deployParams }, replacer),
+          headers: { "Content-Type": "application/json" }
+        })
+
+        const data = await resp.json()
+        console.log("data: ", data)
+        const contract = data.contract
+        console.log("contract: ", contract)
+
+        return contract
+      }
 
       updatedStates[0] = {
         activeText: "Deploying Metadata Carrier Contract",
