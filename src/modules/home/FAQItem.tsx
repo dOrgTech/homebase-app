@@ -64,7 +64,6 @@ export const FAQItem = ({ question, answer, id }: { question: string; answer: st
   }, [])
 
   const updateLocationHash = () => {
-    window.location.hash = "#" + questionId
   }
 
   return (
@@ -79,9 +78,7 @@ export const FAQItem = ({ question, answer, id }: { question: string; answer: st
               setStyle({ display: "block" })
             }}
             onMouseLeave={e => {
-              if (window.location.hash !== "#" + questionId) {
-                setStyle({ display: "none" })
-              }
+             
             }}
           >
             <Typography

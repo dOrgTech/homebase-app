@@ -4,6 +4,7 @@ import { Network } from "services/beacon"
 import { parseUnits } from "services/contracts/utils"
 import { networkNameMap } from ".."
 import { BalanceDataDTO, BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenDataTZKT } from "./types"
+import fetch from "node-fetch";
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO => value.hasOwnProperty("artifact_uri")
 

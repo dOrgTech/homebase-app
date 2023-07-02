@@ -142,8 +142,6 @@ export const reducer = (state: CreatorState, action: CreatorAction): CreatorStat
       }
       return state
     case ActionTypes.CLEAR_CACHE:
-      window.localStorage.removeItem(LOCAL_STORAGE_KEY)
-      window.localStorage.removeItem("creator-started")
       state = {
         ...INITIAL_STATE,
         deploymentStatus: {

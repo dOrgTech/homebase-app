@@ -1,6 +1,7 @@
 import { Network } from "services/beacon"
 import { networkNameMap } from ".."
 import { DelegationDTO } from "./types"
+import fetch from "node-fetch";
 
 export const getLatestDelegation = async (daoAddress: string, network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/operations/delegations?sender=${daoAddress}&status=applied`

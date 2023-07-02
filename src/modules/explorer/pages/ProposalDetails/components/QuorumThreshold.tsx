@@ -3,7 +3,6 @@ import { Grid, Typography, Tooltip, styled } from "@material-ui/core"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
 import ProgressBar from "react-customizable-progressbar"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
-import { theme } from "theme"
 import BigNumber from "bignumber.js"
 
 interface Props {
@@ -52,7 +51,6 @@ export const QuorumThreshold: React.FC<Props> = ({ value, tooltipText }) => {
             strokeWidth={7}
             strokeColor="#3866F9"
             trackStrokeWidth={4}
-            trackStrokeColor={theme.palette.primary.light}
           >
             <div className="indicator">
               <ProgressText textColor="#3866F9">{formatNumber(value)}</ProgressText>

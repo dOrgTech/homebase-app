@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { CommunityToken } from "models/Community"
 import { EnvKey, getEnv } from "services/config"
+import fetch from "node-fetch";
 
 export const useCommunityToken = (communityId: any) => {
   const [token, setToken] = useState<CommunityToken>()

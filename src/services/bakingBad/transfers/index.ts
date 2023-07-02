@@ -1,6 +1,7 @@
 import { Network } from "services/beacon"
 import { networkNameMap } from ".."
 import { TransactionTzkt, TransferDTO, TransfersDTO, TransferTZKT } from "./types"
+import fetch from "node-fetch";
 
 const ELEMENTS_PER_REQUEST = 20
 

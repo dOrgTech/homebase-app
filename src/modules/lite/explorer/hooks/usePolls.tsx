@@ -5,6 +5,7 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { isProposalActive } from "services/lite/utils"
 import { ProposalStatus } from "../components/ProposalTableRowStatusBadge"
 import { EnvKey, getEnv } from "services/config"
+import fetch from "node-fetch";
 
 export const usePolls = (id: any) => {
   const [polls, setPolls] = useState<Poll[]>([])

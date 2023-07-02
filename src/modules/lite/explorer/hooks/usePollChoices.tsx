@@ -4,6 +4,7 @@ import { Poll } from "models/Polls"
 import { useNotification } from "modules/common/hooks/useNotification"
 import React, { useEffect, useState } from "react"
 import { EnvKey, getEnv } from "services/config"
+import fetch from "node-fetch";
 
 export const usePollChoices = (poll: Poll | undefined, refresh?: number) => {
   const [choices, setChoices] = useState<Choice[]>([])

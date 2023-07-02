@@ -193,7 +193,6 @@ export const ProposalFormContainer: React.FC<Props> = ({
     if (state === 0) {
       handleChangeTab?.(1)
     } else if (state === 1) {
-      console.log()
       handleChangeTab?.(0)
     } else {
       return

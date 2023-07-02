@@ -9,6 +9,7 @@ import { CommunityToken } from "models/Community"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { Dropdown } from "modules/explorer/components/Dropdown"
 import { EnvKey, getEnv } from "services/config"
+import fetch from "node-fetch";
 
 export enum ProposalPopularity {
   RECENT = "recent",

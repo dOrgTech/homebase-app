@@ -1,6 +1,7 @@
 import { Network } from "services/beacon"
 import { BlockchainStats } from "./types"
 import { networkNameMap } from ".."
+import fetch from "node-fetch";
 
 export const getNetworkStats = async (network: Network): Promise<BlockchainStats> => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/protocols/current`

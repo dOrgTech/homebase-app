@@ -84,7 +84,6 @@ export const reducer = (state: DeploymentState, action: DeploymentAction): Deplo
       }
       return state
     case ActionTypes.CLEAR_CACHE:
-      window.localStorage.removeItem(LOCAL_STORAGE_KEY)
       state = {
         ...INITIAL_STATE,
         deploymentStatus: {

@@ -1,6 +1,7 @@
 import { Network } from "services/beacon"
 import { Lambda } from "./types"
 import { networkNameMap } from ".."
+import fetch from "node-fetch";
 
 export * from "./types"
 export * from "./constants"

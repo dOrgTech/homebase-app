@@ -1,5 +1,6 @@
 import { API_URL } from ".."
 import { Topic } from "./types"
+import fetch from "node-fetch";
 
 export const getTopicById = async (topicId: number): Promise<Topic> => {
   if (topicId <= 0) {

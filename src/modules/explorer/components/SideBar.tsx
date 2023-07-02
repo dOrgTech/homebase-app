@@ -84,16 +84,12 @@ const BottomNavBar: React.FC = ({ children }) => {
 
   useEffect(() => {
     const handleScroll = debounce(() => {
-      const currentScrollPos = window.pageYOffset
+      const currentScrollPos = 123
 
       setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10)
 
       setPrevScrollPos(currentScrollPos)
     }, 100)
-
-    window.addEventListener("scroll", handleScroll)
-
-    return () => window.removeEventListener("scroll", handleScroll)
   }, [prevScrollPos, visible])
 
   return (

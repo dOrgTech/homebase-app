@@ -6,6 +6,7 @@ import { storageParamsToBaseDAODockerArgs } from "./mappers"
 import { GeneratorArgs, BaseDAODockerContractsDTO } from "./types"
 import { getTokenMetadata } from "services/bakingBad/tokenBalances"
 import { EnvKey, getEnv } from "services/config"
+import fetch from "node-fetch";
 
 export const API_URL = getEnv(EnvKey.REACT_APP_BASEDAO_DOCKERISED_URL)
 

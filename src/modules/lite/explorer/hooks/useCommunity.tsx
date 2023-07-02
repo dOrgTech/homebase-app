@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EnvKey, getEnv } from "services/config"
+import fetch from "node-fetch";
 
 export const useCommunity = (daoId: string, isUpdated?: number) => {
   const [community, setCommunity] = useState<Community>()

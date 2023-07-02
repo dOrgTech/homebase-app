@@ -14,6 +14,8 @@ module.exports = {
           stream: require.resolve("stream-browserify/"),
           url: require.resolve("url/"),
           util: require.resolve("util/"),
+          zlib: require.resolve("browserify-zlib"),
+          path: require.resolve("path-browserify"),
           fs: false
         }
       }

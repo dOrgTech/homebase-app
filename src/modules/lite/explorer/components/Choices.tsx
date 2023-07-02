@@ -11,7 +11,6 @@ import {
   useMediaQuery,
   withStyles
 } from "@material-ui/core"
-import { theme } from "theme"
 
 import { AddCircleOutline, RemoveCircleOutline } from "@material-ui/icons"
 import { FieldArray, Field } from "formik"
@@ -56,7 +55,6 @@ const CustomFormikTextField = withStyles({
     "& .MuiInput-root": {
       fontWeight: 300,
       textAlign: "initial",
-      borderBottom: `0.3px solid ${theme.palette.primary.light} !important`,
       marginTop: "0px !important",
       padding: "19px 26px 19px"
     },
@@ -77,8 +75,6 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField)
 
 export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingStrategy, setFieldValue }) => {
-  const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("sm"))
-
   return (
     <Grid container direction="column" style={{ gap: 30 }}>
       <ChoicesContainer container direction="column">
@@ -89,8 +85,8 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
         </Title>
 
         <VotingContainer item>
-          <Grid container direction={isMobileExtraSmall ? "column" : "row"}>
-            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 6} alignItems="center">
+          <Grid container>
+            <Grid item container direction="row" alignItems="center">
               <Field name="votingStrategy">
                 {() => (
                   <Radio
@@ -106,7 +102,7 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
               <ChoiceText color="textPrimary">Single choice</ChoiceText>
             </Grid>
 
-            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 6} alignItems="center">
+            <Grid item container direction="row" alignItems="center">
               <Field name="votingStrategy">
                 {() => (
                   <Radio
@@ -161,9 +157,7 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
                   style={{ gap: 10, cursor: "pointer", paddingLeft: 26, paddingTop: 12 }}
                   onClick={() => arrayHelpers.insert(choices.length, "")}
                 >
-                  <IconButton size="small">
-                    <AddCircleOutline htmlColor={theme.palette.secondary.main} />
-                  </IconButton>
+                  <IconButton size="small"></IconButton>
                   <Typography variant={"body2"} color={"secondary"}>
                     Add Choice
                   </Typography>

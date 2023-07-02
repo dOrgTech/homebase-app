@@ -10,7 +10,6 @@ import { DAOExplorerRouter } from "modules/explorer/router"
 import { DAOCreate } from "modules/creator"
 import { CreatorProvider } from "modules/creator/state"
 import ScrollToTop from "modules/common/ScrollToTop"
-import { theme } from "theme"
 
 import "App.css"
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions"
@@ -87,7 +86,7 @@ const App: React.FC = () => {
   const classes = styles()
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={null}>
       <SnackbarProvider
         classes={{
           variantSuccess: classes.success,
@@ -124,16 +123,7 @@ const App: React.FC = () => {
                         <DAOExplorerRouter />
                       </TZKTSubscriptionsProvider>
 
-                      {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
-                        <>
-                          {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
-                          <WarningFooter
-                            text={
-                              "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                            }
-                          />
-                        </>
-                      ) : null}
+                    
                       <Footer></Footer>
                     </Route>
                     <Route path="/faq">

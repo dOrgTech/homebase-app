@@ -4,6 +4,7 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import React, { useEffect, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EnvKey, getEnv } from "services/config"
+import fetch from "node-fetch";
 
 export const useHasVoted = (refresh?: number) => {
   const [hasVoted, setHasVoted] = useState(false)

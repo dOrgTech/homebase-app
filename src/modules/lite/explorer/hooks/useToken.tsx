@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { EnvKey, getEnv } from "services/config"
 import { useDAO } from "services/services/dao/hooks/useDAO"
+import fetch from "node-fetch";
 
 export const useToken = (daoId: string | undefined) => {
   const [tokenAddress, setTokenAddress] = useState<string>("")

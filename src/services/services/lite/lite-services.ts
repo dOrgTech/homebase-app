@@ -15,6 +15,7 @@ import axios from "axios"
 import { EnvKey, getEnv } from "services/config"
 import { getTokenMetadata } from "services/bakingBad/tokenBalances"
 import { Network } from "services/beacon"
+import fetch from "node-fetch";
 
 interface GetDAODTO {
   daos: [FetchedDAO]

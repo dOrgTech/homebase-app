@@ -10,7 +10,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
       return initialValue
     }
     try {
-      const item = window.localStorage.getItem(key)
+      const item = ""
       return item ? JSON.parse(item) : initialValue
     } catch (error) {
       console.warn(`Error reading localStorage key “${key}”:`, error)
@@ -31,11 +31,9 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
       // Allow value to be a function so we have the same API as useState
       const newValue = value instanceof Function ? value(storedValue) : value
       // Save to local storage
-      window.localStorage.setItem(key, JSON.stringify(newValue))
       // Save state
       setStoredValue(newValue)
       // We dispatch a custom event so every useLocalStorage hook are notified
-      window.dispatchEvent(new Event("local-storage"))
     } catch (error) {
       console.warn(`Error setting localStorage key “${key}”:`, error)
     }
@@ -49,12 +47,8 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T) => voi
       setStoredValue(readValue())
     }
     // this only works for other documents, not the current one
-    window.addEventListener("storage", handleStorageChange)
     // this is a custom event, triggered in writeValueToLocalStorage
-    window.addEventListener("local-storage", handleStorageChange)
     return () => {
-      window.removeEventListener("storage", handleStorageChange)
-      window.removeEventListener("local-storage", handleStorageChange)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

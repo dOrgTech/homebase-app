@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import fetch from "node-fetch";
 
 const FILE_NAME = "faq.md"
 const QUESTION_DELIMITER = "<question>"

@@ -14,19 +14,11 @@ export const rpcNodes: Record<Network, string> = {
 }
 
 export const getTezosNetwork = (): Network => {
-  const storageNetwork = window.localStorage.getItem("homebase:network")
-
-  if (storageNetwork) {
-    return storageNetwork as Network
-  }
-
   const envNetwork = getEnv(EnvKey.REACT_APP_NETWORK).toString().toLowerCase() as Network
 
   if (!envNetwork) {
     throw new Error("No Network ENV set")
   }
-
-  window.localStorage.setItem("homebase:network", envNetwork)
 
   return envNetwork
 }

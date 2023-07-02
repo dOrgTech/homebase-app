@@ -1,6 +1,7 @@
 import { Network } from "services/beacon"
 import { API_URL } from ".."
 import { Claim, ClaimsDTO } from "./types"
+import fetch from "node-fetch";
 
 export const getProfileClaim = async (tzAddress: string, network: Network): Promise<Claim> => {
   const url = `${API_URL}/${tzAddress}/${network}`

@@ -1,28 +1,31 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "baseUrl": "./src",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "types" : ["node", "lodash", "react"],
-    "allowJs": true,
-    "skipLibCheck": true,
+    "module": "commonjs",
+    "baseUrl": "src",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "allowJs": true,
+    "target": "es6",
+    "noImplicitAny": false,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "paths": {
+      "*": ["node_modules/*"],
+      "services/*": ["services/*"],
+      "services/beacon": ["services/beacon"],
+      "modules/*": ["modules/*"],
+      "theme/*": ["theme/*"],
+      "assets/*": ["assets/*"],
+      "models/*": ["models/*"],
+      "src/*": ["src/*"],
+      "utils": ["utils"]
+    },
+    "lib": ["DOM", "DOM.Iterable", "esnext"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src/**/*"]
 }
