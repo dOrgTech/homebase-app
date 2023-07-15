@@ -27,7 +27,7 @@ export const xtzToMutez = (xtz: BigNumber) => {
 }
 
 export const parseUnits = (amount: BigNumber, decimals: number | string) => {
-  return amount.dividedBy(new BigNumber(10).pow(decimals))
+  return amount.div(new BigNumber(10).pow(decimals))
 }
 
 export const formatUnits = (amount: BigNumber, decimals: number | string) => {

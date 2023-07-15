@@ -124,23 +124,18 @@ export const ProposalDetails: React.FC = () => {
   }>()
   const daoId = useDAOID()
   const [openVote, setOpenVote] = useState(false)
-  const [openVisor, setOpenVisor] = useState(false)
   const [voteIsSupport, setVoteIsSupport] = useState(false)
   const theme = useTheme<Theme>()
   const { data: proposal } = useProposal(daoId, proposalId)
-  const isLambdaProposal = proposal?.type === "lambda"
   const { data: dao, cycleInfo } = useDAO(daoId)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { mutate: dropProposal } = useDropProposal()
   const { data: holdings } = useDAOHoldings(daoId)
-  const { account } = useTezos()
   const canDropProposal = useCanDropProposal(daoId, proposalId)
   const { data: agoraPost } = useAgoraTopic(Number(proposal?.metadata?.agoraPostId))
 
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const { mutate: mutateUnstake } = useUnstakeVotes()
-  const daoLambdas = useDAOLambdas(daoId)
-  const proposalLambda = useDAOLambda(daoId, (proposal as LambdaProposal)?.metadata.lambdaHandler.handler_name)
 
   const onClickVote = (support: boolean) => {
     setVoteIsSupport(support)
@@ -200,13 +195,12 @@ export const ProposalDetails: React.FC = () => {
   //   !dao?.data.ledger.find(l => l.holder.address.toLowerCase() === account.toLowerCase())?.staked.isZero()
 
   const parseReadableConfigValue = (configKey: any, value: BigNumber) => {
-    if (dao) {
+    if (dao && value) {
       switch (configKey) {
         case "frozen_extra_value":
           return parseUnits(value, dao.data.token.decimals).toString()
         case "slash_scale_value":
           return 100 - value.toNumber()
-
         default:
           return value.toString()
       }
@@ -420,7 +414,7 @@ export const ProposalDetails: React.FC = () => {
                             </Typography>{" "}
                             to{" "}
                             <Typography variant="body1" color="secondary" display={"inline"}>
-                              {parseReadableConfigValue(key as keyof Proposal["metadata"]["config"], value)}
+                              {parseReadableConfigValue(key as keyof Proposal["metadata"]["config"], value) ?? 0}
                             </Typography>
                           </DetailsText>
                         </Grid>

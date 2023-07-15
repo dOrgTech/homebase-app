@@ -9,6 +9,15 @@ import { useDAOID } from "../pages/DAO/router"
 import { ProposalFormInput } from "./ProposalFormInput"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { useProposeDelegationChange } from "services/contracts/baseDAO/hooks/useProposeDelegationChange"
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { validateContractAddress, validateAddress } from "@taquito/utils"
+import { useDelegate } from "services/contracts/baseDAO/hooks/useDelegate"
+
+const ErrorText = styled(Typography)({
+  fontSize: 14,
+  color: "red"
+})
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -31,10 +40,24 @@ const Content = styled(Grid)({
   padding: "10px 0"
 })
 
+const isInvalidKtOrTzAddress = (address: string | undefined) => {
+  if (address !== undefined) {
+    return validateContractAddress(address) !== 3 && validateAddress(address) !== 3 ? false : true
+  }
+  return false
+}
+
+const validationSchema = yup.object({
+  newDelegationAddress: yup
+    .string()
+    .test("is-valid-address", "Must be a valid address", value => isInvalidKtOrTzAddress(value))
+})
+
 export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClose, defaultValues }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
 
+  const currentDelegate = useDelegate(dao && dao?.data.address ? dao?.data.address : "")
   const methods = useForm<Values>({
     defaultValues: useMemo(
       () => ({
@@ -42,9 +65,13 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
         ...defaultValues
       }),
       [defaultValues]
-    )
-    // resolver: yupResolver(validationSchema as any),
+    ),
+    resolver: yupResolver(validationSchema)
   })
+
+  const {
+    formState: { errors }
+  } = methods
 
   const newDelegationAddress = methods.watch("newDelegationAddress")
 
@@ -74,6 +101,19 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
         title={"Change Delegate"}
       >
         <Content container direction={"column"} style={{ gap: 18 }}>
+          {dao && (
+            <Grid item>
+              <Typography color={"inherit"} style={{ marginBottom: "7px" }}>
+                Current Delegate:{" "}
+              </Typography>
+              <Typography variant="subtitle2" color="secondary">
+                {currentDelegate && currentDelegate.data && currentDelegate.data.address
+                  ? currentDelegate.data.address
+                  : "-"}
+              </Typography>
+            </Grid>
+          )}
+
           <Grid item>
             <ProposalFormInput label={"New Delegate Address"}>
               <Controller
@@ -84,20 +124,25 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
                 )}
               />
             </ProposalFormInput>
+            <ErrorText>{errors.newDelegationAddress?.message}</ErrorText>
           </Grid>
 
-          <Grid item>
-            <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>
-              Proposal Fee:{" "}
-            </Typography>
-            <Typography align="left" variant="subtitle2" color="secondary" display={"inline"}>
-              {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
-            </Typography>
-          </Grid>
+          <Grid container direction="row" alignItems="center" justifyContent="space-between">
+            <Grid item>
+              <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>
+                Proposal Fee:{" "}
+              </Typography>
+              <Typography align="left" variant="subtitle2" color="secondary" display={"inline"}>
+                {dao && dao.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
+              </Typography>
+            </Grid>
 
-          <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao || !newDelegationAddress}>
-            Submit
-          </SendButton>
+            <Grid>
+              <SendButton onClick={methods.handleSubmit(onSubmit as any)} disabled={!dao || !newDelegationAddress}>
+                Submit
+              </SendButton>
+            </Grid>
+          </Grid>
         </Content>
       </ResponsiveDialog>
     </FormProvider>

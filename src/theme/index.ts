@@ -317,7 +317,8 @@ export const theme = createTheme({
         "$checked$checked + &": {
           opacity: 1,
           backgroundColor: "#1C1F23",
-          color: "#81FEB7"
+          color: "#81FEB7",
+          border: "1px solid #1C1F23"
         }
       },
       thumb: {
@@ -387,7 +388,8 @@ export const theme = createTheme({
       root: {
         "height": 70,
         "& th:first-child, & td:first-child": {
-          paddingLeft: 46
+          paddingLeft: 46,
+          textAlign: "inherit"
         },
         "& th:last-child, & td:last-child": {
           paddingRight: 46

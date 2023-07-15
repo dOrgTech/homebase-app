@@ -21,3 +21,5 @@ export enum EnvKey {
 export enum FeatureFlag {
   lambdaDao = "lambdaDao"
 }
+
+export const HUMANITEZ_DAO = "KT1PY9PXm8NMAgSEZg7bUtFjmV2Sj64bKuVV"
