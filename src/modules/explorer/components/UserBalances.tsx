@@ -75,7 +75,7 @@ const BalanceToken = styled(Typography)({
   fontWeight: 300
 })
 
-export const UserBalances: React.FC<{ daoId: string; setVoteWeight: any }> = ({ daoId, children, setVoteWeight }) => {
+export const UserBalances: React.FC<{ daoId: string }> = ({ daoId, children }) => {
   const { account } = useTezos()
   const { data: dao, ledger } = useDAO(daoId)
   const theme = useTheme()
@@ -104,7 +104,6 @@ export const UserBalances: React.FC<{ daoId: string; setVoteWeight: any }> = ({ 
       userBalances.available.balance = "-"
       userBalances.pending.balance = "-"
       userBalances.staked.balance = "-"
-      setVoteWeight("-")
 
       return userBalances
     }
@@ -112,9 +111,8 @@ export const UserBalances: React.FC<{ daoId: string; setVoteWeight: any }> = ({ 
     userBalances.available.balance = userLedger.available_balance.dp(10, 1).toString()
     userBalances.pending.balance = userLedger.pending_balance.dp(10, 1).toString()
     userBalances.staked.balance = userLedger.staked.dp(10, 1).toString()
-    setVoteWeight(userBalances.staked.balance)
     return userBalances
-  }, [account, ledger, setVoteWeight])
+  }, [account, ledger])
 
   const balancesList = Object.keys(balances).map(key => balances[key as keyof Balances])
 
@@ -148,10 +146,10 @@ export const UserBalances: React.FC<{ daoId: string; setVoteWeight: any }> = ({ 
   )
 }
 
-export const UserBalancesBox: React.FC<{ daoId: string; setVoteWeight: any }> = ({ daoId, setVoteWeight }) => {
+export const UserBalancesBox: React.FC<{ daoId: string }> = ({ daoId }) => {
   return (
     <BalancesBox item>
-      <UserBalances daoId={daoId} setVoteWeight={setVoteWeight} />
+      <UserBalances daoId={daoId} />
     </BalancesBox>
   )
 }

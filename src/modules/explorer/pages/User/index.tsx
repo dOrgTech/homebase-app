@@ -109,7 +109,6 @@ export const User: React.FC = () => {
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
   const polls = usePolls(data?.liteDAOData?._id)
   const pollsPosted = polls?.filter(p => p.author === account)
-  const [voteWeight, setVoteWeight] = useState()
 
   useEffect(() => {
     if (!account) {
@@ -168,7 +167,7 @@ export const User: React.FC = () => {
     <MainContainer>
       <Grid container direction="column" style={{ gap: 40 }} wrap={"nowrap"}>
         <BalancesHeader item>
-          <UserBalances daoId={daoId} setVoteWeight={setVoteWeight}>
+          <UserBalances daoId={daoId}>
             <Grid item>
               <Grid container alignItems="center" justifyContent="space-between" style={{ gap: 20 }}>
                 <Grid item>
@@ -208,7 +207,7 @@ export const User: React.FC = () => {
           </UserBalances>
         </BalancesHeader>
 
-        <Delegation voteWeight={voteWeight} daoId={daoId} />
+        <Delegation daoId={daoId} />
         <Grid item>
           {proposalsCreated && cycleInfo && (
             <ProposalsList

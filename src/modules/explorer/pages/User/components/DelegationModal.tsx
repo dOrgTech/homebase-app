@@ -3,6 +3,10 @@ import React, { useEffect, useState } from "react"
 import { DelegationsType, matchTextToStatus } from "./DelegationBanner"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { SmallButton } from "modules/common/SmallButton"
+import { useTokenDelegate } from "services/contracts/token/hooks/useTokenDelegate"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useDAOID } from "../../DAO/router"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const AddressTextField = styled(TextField)({
   "backgroundColor": "#2f3438",
@@ -50,10 +54,17 @@ export const DelegationDialog: React.FC<{
   open: boolean
   onClose: () => void
   status: DelegationsType | undefined
-  setDelegationStatus: (value: DelegationsType | undefined) => void
-}> = ({ status, onClose, open, setDelegationStatus }) => {
+  setDelegationStatus: (value: DelegationsType) => void
+  delegationStatus: DelegationsType
+  delegatedTo: string | null | undefined
+}> = ({ status, onClose, open, setDelegationStatus, delegationStatus, delegatedTo }) => {
   const [options, setOptions] = useState<ActionTypes[]>([])
   const [selectedOption, setSelectedOption] = useState()
+  const { mutate: delegateToken } = useTokenDelegate()
+  const daoId = useDAOID()
+  const { data, cycleInfo } = useDAO(daoId)
+  const { tezos, connect, network, account } = useTezos()
+  const [newDelegate, setNewDelegate] = useState("")
 
   useEffect(() => {
     getOptionsByStatus(status)
@@ -71,13 +82,20 @@ export const DelegationDialog: React.FC<{
 
   const updateStatus = () => {
     if (selectedOption === ActionTypes.DELEGATE || selectedOption === ActionTypes.CHANGE_DELEGATE) {
-      return setDelegationStatus(DelegationsType.DELEGATING)
-    }
-    if (selectedOption === ActionTypes.STOP_ACCEPTING_DELEGATIONS || ActionTypes.STOP_DELEGATING) {
-      return setDelegationStatus(DelegationsType.NOT_ACCEPTING_DELEGATION)
-    }
-    if (selectedOption === ActionTypes.ACCEPT_DELEGATIONS) {
-      return setDelegationStatus(DelegationsType.ACCEPTING_DELEGATION)
+      if (newDelegate && data?.data.token.contract) {
+        delegateToken({ tokenAddress: data?.data.token.contract, delegateAddress: newDelegate })
+      }
+    } else if (
+      selectedOption === ActionTypes.STOP_ACCEPTING_DELEGATIONS ||
+      selectedOption === ActionTypes.STOP_DELEGATING
+    ) {
+      if (data?.data.token.contract) {
+        delegateToken({ tokenAddress: data?.data.token.contract, delegateAddress: null })
+      }
+    } else if (selectedOption === ActionTypes.ACCEPT_DELEGATIONS) {
+      if (data?.data.token.contract && account) {
+        delegateToken({ tokenAddress: data?.data.token.contract, delegateAddress: account })
+      }
     }
   }
 
@@ -88,7 +106,7 @@ export const DelegationDialog: React.FC<{
         setOptions(optionsOne)
         break
       case DelegationsType.ACCEPTING_DELEGATION:
-        const optionsTwo = [ActionTypes.STOP_ACCEPTING_DELEGATIONS, ActionTypes.DELEGATE]
+        const optionsTwo = [ActionTypes.STOP_ACCEPTING_DELEGATIONS]
         setOptions(optionsTwo)
         break
       case DelegationsType.DELEGATING:
@@ -104,7 +122,7 @@ export const DelegationDialog: React.FC<{
         <Grid item style={{ gap: 8 }} container direction="column">
           <Typography color="textPrimary">Current Status</Typography>
           <Typography color="secondary" style={{ fontWeight: 200 }}>
-            {matchTextToStatus(status)}
+            {matchTextToStatus(status)} {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
           </Typography>
         </Grid>
 
@@ -130,7 +148,14 @@ export const DelegationDialog: React.FC<{
                 />
                 {item === selectedOption &&
                 (selectedOption === ActionTypes.DELEGATE || selectedOption === ActionTypes.CHANGE_DELEGATE) ? (
-                  <AddressTextField type="text" placeholder="Enter Address" InputProps={{ disableUnderline: true }} />
+                  <AddressTextField
+                    onChange={e => {
+                      setNewDelegate(e.target.value)
+                    }}
+                    type="text"
+                    placeholder="Enter Address"
+                    InputProps={{ disableUnderline: true }}
+                  />
                 ) : null}
               </Grid>
             </>
