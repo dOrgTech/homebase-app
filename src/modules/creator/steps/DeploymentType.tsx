@@ -96,7 +96,11 @@ export const DeploymentType = (): JSX.Element => {
         description={
           <Typography variant="subtitle1" color="textSecondary">
             Learn more about the two available deployment options in{" "}
-            <Link target="_blank" href="/" color="secondary">
+            <Link
+              target="_blank"
+              href="https://faq.tezos-homebase.io/homebase-faq/how-to-configure-your-dao-in-homebase/deployment-type"
+              color="secondary"
+            >
               this article
             </Link>{" "}
           </Typography>
