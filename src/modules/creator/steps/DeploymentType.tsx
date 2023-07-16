@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles } from "@material-ui/core"
+import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles, Link } from "@material-ui/core"
 import { useHistory } from "react-router"
 
-import { ReactComponent as LiteIcon } from "assets/img/lite-dao.svg"
-import { ReactComponent as FullIcon } from "assets/img/full-dao.svg"
+import { ReactComponent as ManagedIcon } from "assets/img/managed.svg"
+import { ReactComponent as SelfDeployedIcon } from "assets/img/self-deployed.svg"
 
 import { ActionTypes, CreatorContext, DAOTemplate } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { useRouteMatch } from "react-router-dom"
 
 const LambdaCustomBox = styled(Grid)(({ theme }) => ({
-  "height": 273,
+  "height": 480,
   "marginTop": 30,
   "background": "#2F3438",
   "borderRadius": 8,
@@ -29,7 +29,7 @@ const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   },
   ["@media (max-width:1167px)"]: {
     marginBottom: 20,
-    marginTop: 0
+    marginTop: 20
   }
 }))
 
@@ -38,13 +38,6 @@ const styles = makeStyles({
     border: "3px solid rgba(129, 254, 183, 0.4)",
     padding: "37px 41px"
   }
-})
-
-const ErrorText = styled(Typography)({
-  display: "block",
-  fontSize: 14,
-  color: "red",
-  marginTop: 8
 })
 
 const BoxTitle = styled(Typography)({
@@ -56,13 +49,10 @@ const BoxTitle = styled(Typography)({
 
 const BoxDescription = styled(Typography)({
   fontWeight: 300,
-  fontSize: 16,
-  lineHeight: "135%",
-  letterSpacing: -0.18,
-  alignSelf: "stretch"
+  fontSize: 16
 })
 
-export const Template = (): JSX.Element => {
+export const DeploymentType = (): JSX.Element => {
   const { state, dispatch, updateCache } = useContext(CreatorContext)
   const { template } = state.data
 
@@ -83,24 +73,13 @@ export const Template = (): JSX.Element => {
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          if (!selectedTemplate) {
-            return setError(true)
-          }
-          dispatch({
-            type: ActionTypes.UPDATE_TEMPLATE,
-            template: selectedTemplate
-          })
-
-          if (selectedTemplate === "lambda") {
-            return history.push(`dao`)
-          }
-          return history.push("/lite")
+          history.push(`review`)
         },
-        text: "Continue"
+        text: "Deploy DAO"
       },
       back: {
         text: "Back",
-        handler: () => history.push("/creator/ownership")
+        handler: () => history.push(`summary`)
       }
     })
   }, [dispatch, history, match.path, match.url, selectedTemplate])
@@ -112,7 +91,17 @@ export const Template = (): JSX.Element => {
 
   return (
     <Box>
-      <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />
+      <TitleBlock
+        title={"Choose Deployment Type"}
+        description={
+          <Typography variant="subtitle1" color="textSecondary">
+            Learn more about the two available deployment options in{" "}
+            <Link target="_blank" href="/" color="secondary">
+              this article
+            </Link>{" "}
+          </Typography>
+        }
+      />
       <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} direction="row">
         <LambdaCustomBox
           item
@@ -124,11 +113,17 @@ export const Template = (): JSX.Element => {
           onClick={() => update("lambda")}
           className={selectedTemplate === "lambda" ? style.selected : ""}
         >
-          <FullIcon style={{ marginBottom: 16 }} />
-          <BoxTitle color="textSecondary">Full DAO</BoxTitle>
-          <BoxDescription color="textSecondary">
-            Contract interaction. Transfer assets based on vote outcomes.
-          </BoxDescription>
+          <ManagedIcon style={{ marginBottom: 14 }} />
+          <BoxTitle color="textSecondary">Managed</BoxTitle>
+          <Grid container direction="column" style={{ gap: 16 }}>
+            <BoxDescription color="textSecondary">
+              Homebase will deploy a contract on-chain with your parameters using a dedicated endpoint.{" "}
+            </BoxDescription>
+            <BoxDescription color="textSecondary">
+              Requires upfront payment for the transaction fees (7 XTZ).{" "}
+            </BoxDescription>
+            <BoxDescription color="textSecondary">Takes between 3 and 5 minutes. </BoxDescription>
+          </Grid>
         </LambdaCustomBox>{" "}
         <LambdaCustomBox
           item
@@ -140,14 +135,18 @@ export const Template = (): JSX.Element => {
           onClick={() => update("lite")}
           className={selectedTemplate === "lite" ? style.selected : ""}
         >
-          <LiteIcon style={{ marginBottom: 16 }} />
-          <BoxTitle color="textSecondary">Lite DAO</BoxTitle>
-          <BoxDescription color="textSecondary">
-            Off-chain weighted voting. Multiple voting strategies. No treasury.{" "}
-          </BoxDescription>
+          <SelfDeployedIcon style={{ marginBottom: 14 }} />
+          <BoxTitle color="textSecondary">Self-Deployed</BoxTitle>
+          <Grid container direction="column" style={{ gap: 16 }}>
+            <BoxDescription color="textSecondary">Use your private key to sign four transactions. </BoxDescription>
+            <BoxDescription color="textSecondary">
+              May need multiple tries as bytecode can get stuck between app and wallet. If it’s not working, please use
+              the managed option.
+            </BoxDescription>
+            <BoxDescription color="textSecondary">Can take up to 15 minutes. </BoxDescription>
+          </Grid>
         </LambdaCustomBox>{" "}
       </Grid>
-      {error ? <ErrorText>{"Must select a template in order to continue"}</ErrorText> : null}
     </Box>
   )
 }

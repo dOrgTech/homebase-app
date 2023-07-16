@@ -14,12 +14,16 @@ const ErrorText = styled(Typography)({
   display: "flex",
   minWidth: "100%",
   fontSize: 14,
-  color: "red"
+  color: "red",
+  height: 42
 })
 
-const SpacingContainer = styled(Grid)({
-  marginTop: 25
-})
+const SpacingContainer = styled(Grid)(({ theme }) => ({
+  marginTop: 25,
+  [theme.breakpoints.down("sm")]: {
+    gap: 16
+  }
+}))
 
 const AdditionContainer = styled(Grid)(({ theme }) => ({
   marginTop: 14,
@@ -63,11 +67,6 @@ const ValueText = styled(Typography)({
   }
 })
 
-const GridItemContainer = styled(Grid)(() => ({
-  display: "flex",
-  alignItems: "center"
-}))
-
 const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
   cursor: "default",
   color: theme.palette.secondary.light,
@@ -88,32 +87,6 @@ const ParentContainer = styled(Grid)({
   maxWidth: "70%",
   ["@media (max-width:1167px)"]: {
     maxWidth: "100%"
-  }
-})
-
-const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  border: "none",
-  height: 54,
-  marginTop: 14,
-  background: "#2F3438",
-  borderRadius: 8,
-  alignItems: "center",
-  justifyContent: "end",
-  padding: "12px 25px",
-  minWidth: 150,
-  maxWidth: 150,
-  ["@media (max-width:1167px)"]: {
-    maxWidth: "100%",
-    minWidth: "100%",
-    paddingLeft: 25,
-    paddingRight: 25
-  }
-}))
-
-const InputContainer = styled(Grid)({
-  paddingRight: 15,
-  ["@media (max-width:1167px)"]: {
-    paddingRight: 0
   }
 })
 
@@ -192,181 +165,199 @@ const QuorumForm = ({ submitForm, values, errors, touched, setFieldValue, setFie
 
   return (
     <>
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Quorum Threshold
-        </Typography>
+      <SpacingContainer direction="row" container alignItems="center" justifyContent="space-between">
+        <Grid container item direction="column" xs={12} md={6}>
+          <Typography variant="subtitle1" color="textSecondary" style={{ fontWeight: 400 }}>
+            Initial Quorum Threshold
+          </Typography>
+          <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+            <AdditionContainer item xs={12} sm={6}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={5}>
+                  <Field
+                    style={{ textAlign: "end" }}
+                    name="quorumThreshold"
+                    type="number"
+                    onKeyDown={(e: FieldChange) => handleChange(e)}
+                    placeholder="00"
+                    inputProps={{ min: 0, max: 100, step: 1 }}
+                    component={TextField}
+                    InputProps={{
+                      endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    }}
+                    onClick={() => setFieldTouched("quorumThreshold")}
+                    // onChange={(e: any) => controlMaxFieldLimit("quorumThreshold", e)}
+                  />
+                </GridItemCenter>
+
+                <GridItemCenterBottom item xs={7} container direction="row">
+                  <Tooltip
+                    placement="bottom"
+                    title={`Initial % of ${
+                      orgSettings.governanceToken.tokenMetadata?.symbol || ""
+                    }'s supply required as votes to pass/reject a proposal. Total supply: ${
+                      orgSettings.governanceToken.tokenMetadata?.supply
+                    }`}
+                  >
+                    <InfoIconInput />
+                  </Tooltip>
+                </GridItemCenterBottom>
+              </ItemContainer>
+            </AdditionContainer>
+            {errors.quorumThreshold && touched.quorumThreshold ? <ErrorText>{errors.quorumThreshold}</ErrorText> : null}
+          </Grid>
+        </Grid>
+
+        <Grid container item direction="column" xs={12} md={6}>
+          <Typography variant="subtitle1" color="textSecondary" style={{ fontWeight: 400 }}>
+            Initial Quorum Change
+          </Typography>
+          <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+            <AdditionContainer item xs={12} sm={6}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={5}>
+                  <Field
+                    style={{ textAlign: "end" }}
+                    name="quorumChange"
+                    type="number"
+                    onKeyDown={(e: FieldChange) => handleChange(e)}
+                    placeholder="00"
+                    inputProps={{ min: 0, max: 100, step: 1 }}
+                    component={TextField}
+                    InputProps={{
+                      endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    }}
+                    onClick={() => setFieldTouched("quorumChange")}
+                    // onChange={(e: any) => controlMaxFieldLimit("quorumChange", e)}
+                  />
+                </GridItemCenter>
+
+                <GridItemCenterBottom item xs={7} container direction="row">
+                  <Tooltip placement="bottom" title="Participation adjustment value">
+                    <InfoIconInput />
+                  </Tooltip>
+                </GridItemCenterBottom>
+              </ItemContainer>
+            </AdditionContainer>
+            {errors.quorumChange && touched.quorumChange ? <ErrorText>{errors.quorumChange}</ErrorText> : null}
+          </Grid>
+        </Grid>
       </SpacingContainer>
 
-      <ParentContainer container direction="row" alignItems="center">
-        <InputContainer item xs={12} sm={4}>
-          <GridItemContainer>
-            <CustomInputContainer item xs={12} container direction="row">
-              <GridItemCenter item xs={5}>
-                <Field
-                  name="quorumThreshold"
-                  type="number"
-                  onKeyDown={(e: FieldChange) => handleChange(e)}
-                  placeholder="00"
-                  inputProps={{ min: 0, max: 100, step: 1 }}
-                  component={TextField}
-                  InputProps={{
-                    endAdornment: <ValueText color="textSecondary">%</ValueText>
-                  }}
-                  onClick={() => setFieldTouched("quorumThreshold")}
-                  // onChange={(e: any) => controlMaxFieldLimit("quorumThreshold", e)}
-                />
-              </GridItemCenter>
-              <GridItemCenterBottom item xs={7} container direction="row" justifyContent="flex-end">
-                <Tooltip
-                  placement="bottom"
-                  title={`Initial % of ${
-                    orgSettings.governanceToken.tokenMetadata?.symbol || ""
-                  }'s supply required as votes to pass/reject a proposal. Total supply: ${
-                    orgSettings.governanceToken.tokenMetadata?.supply
-                  }`}
-                >
-                  <InfoIconInput />
-                </Tooltip>
-              </GridItemCenterBottom>
-            </CustomInputContainer>
-          </GridItemContainer>
-        </InputContainer>
+      <SpacingContainer direction="row" container alignItems="center" justifyContent="space-between">
+        <Grid container item direction="column" xs={12} sm={6}>
+          <Typography variant="subtitle1" color="textSecondary" style={{ fontWeight: 400 }}>
+            Min. Quorum Threshold
+          </Typography>
+          <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+            <AdditionContainer item xs={12} sm={6}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={5}>
+                  <Field
+                    style={{ textAlign: "end" }}
+                    name="minQuorumAmount"
+                    type="number"
+                    onKeyDown={(e: FieldChange) => handleChange(e)}
+                    placeholder="00"
+                    inputProps={{ min: 0, max: 100, step: 1 }}
+                    component={TextField}
+                    InputProps={{
+                      endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    }}
+                    onClick={() => setFieldTouched("minQuorumAmount")}
+                    // onChange={(e: any) => controlMaxFieldLimit("minQuorumAmount", e)}
+                  ></Field>
+                </GridItemCenter>
 
-        <InputContainer item xs={12} sm={4}>
-          <GridItemContainer>
-            <CustomInputContainer item xs={12} container direction="row">
-              <GridItemCenter item xs={5}>
-                <Field
-                  name="minQuorumAmount"
-                  type="number"
-                  onKeyDown={(e: FieldChange) => handleChange(e)}
-                  placeholder="00"
-                  inputProps={{ min: 0, max: 100, step: 1 }}
-                  component={TextField}
-                  InputProps={{
-                    endAdornment: <ValueText color="textSecondary">%</ValueText>
-                  }}
-                  onClick={() => setFieldTouched("minQuorumAmount")}
-                  // onChange={(e: any) => controlMaxFieldLimit("minQuorumAmount", e)}
-                ></Field>
-              </GridItemCenter>
-              <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
-                <ValueText color="textSecondary"> Min</ValueText>
-                <Tooltip
-                  placement="bottom"
-                  title="Minimum value the quorum can change to after participation adjustment"
-                >
-                  <InfoIconInputQuorum />
-                </Tooltip>
-              </GridItemCenter>
-            </CustomInputContainer>
-          </GridItemContainer>
-        </InputContainer>
-        <InputContainer item xs={12} sm={4}>
-          <GridItemContainer>
-            <CustomInputContainer item xs={12} container direction="row">
-              <GridItemCenter item xs={5}>
-                <Field
-                  name="maxQuorumAmount"
-                  type="number"
-                  onKeyDown={(e: FieldChange) => handleChange(e)}
-                  placeholder="00"
-                  inputProps={{ min: 0, max: 100, step: 1 }}
-                  component={TextField}
-                  InputProps={{
-                    endAdornment: <ValueText color="textSecondary">%</ValueText>
-                  }}
-                  onClick={() => setFieldTouched("maxQuorumAmount")}
-                  // onChange={(e: any) => controlMaxFieldLimit("maxQuorumAmount", e)}
-                ></Field>
-              </GridItemCenter>
-              <GridItemCenter item xs={7} container direction="row">
-                <ValueText color="textSecondary">Max</ValueText>
-                <Tooltip
-                  placement="bottom"
-                  title="Maximum value the quorum can change to after participation adjustment"
-                >
-                  <InfoIconInputQuorum />
-                </Tooltip>
-              </GridItemCenter>
-            </CustomInputContainer>
-          </GridItemContainer>
-        </InputContainer>
-        {errors.quorumThreshold && touched.quorumThreshold ? <ErrorText>{errors.quorumThreshold}</ErrorText> : null}
-        {errors.minQuorumAmount && touched.minQuorumAmount ? <ErrorText>{errors.minQuorumAmount}</ErrorText> : null}
-        {errors.maxQuorumAmount && touched.maxQuorumAmount ? <ErrorText>{errors.maxQuorumAmount}</ErrorText> : null}
-      </ParentContainer>
+                <GridItemCenterBottom item xs={7} container direction="row">
+                  <Tooltip
+                    placement="bottom"
+                    title="Minimum value the quorum can change to after participation adjustment"
+                  >
+                    <InfoIconInput />
+                  </Tooltip>
+                </GridItemCenterBottom>
+              </ItemContainer>
+            </AdditionContainer>
+            {errors.minQuorumAmount && touched.minQuorumAmount ? <ErrorText>{errors.minQuorumAmount}</ErrorText> : null}
+          </Grid>
+        </Grid>
 
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Quorum Change
-        </Typography>
+        <Grid container item direction="column" xs={12} sm={6}>
+          <Typography variant="subtitle1" color="textSecondary" style={{ fontWeight: 400 }}>
+            Max. Quorum Change
+          </Typography>
+          <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+            <AdditionContainer item xs={12} sm={6}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={5}>
+                  <Field
+                    style={{ textAlign: "end" }}
+                    name="quorumMaxChange"
+                    type="number"
+                    onKeyDown={(e: FieldChange) => handleChange(e)}
+                    placeholder="00"
+                    inputProps={{ min: 0, max: 100, step: 1 }}
+                    component={TextField}
+                    InputProps={{
+                      endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    }}
+                    onClick={() => setFieldTouched("quorumMaxChange")}
+                    // onChange={(e: any) => controlMaxFieldLimit("quorumMaxChange", e)}
+                  />
+                </GridItemCenter>
+
+                <GridItemCenterBottom item xs={7} container direction="row">
+                  <Tooltip placement="bottom" title="Maximum participation adjustment value">
+                    <InfoIconInput />
+                  </Tooltip>
+                </GridItemCenterBottom>
+              </ItemContainer>
+            </AdditionContainer>
+            {errors.quorumMaxChange && touched.quorumMaxChange ? <ErrorText>{errors.quorumMaxChange}</ErrorText> : null}
+          </Grid>
+        </Grid>
       </SpacingContainer>
 
-      <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
-        <AdditionContainer item xs={12} sm={3}>
-          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
-            <GridItemCenter item xs={5}>
-              <Field
-                name="quorumChange"
-                type="number"
-                onKeyDown={(e: FieldChange) => handleChange(e)}
-                placeholder="00"
-                inputProps={{ min: 0, max: 100, step: 1 }}
-                component={TextField}
-                InputProps={{
-                  endAdornment: <ValueText color="textSecondary">%</ValueText>
-                }}
-                onClick={() => setFieldTouched("quorumChange")}
-                // onChange={(e: any) => controlMaxFieldLimit("quorumChange", e)}
-              />
-            </GridItemCenter>
+      <SpacingContainer direction="row" container alignItems="center" justifyContent="space-between">
+        <Grid container item direction="column" xs={12} sm={6}>
+          <Typography variant="subtitle1" color="textSecondary" style={{ fontWeight: 400 }}>
+            Max. Quorum Threshold
+          </Typography>
+          <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+            <AdditionContainer item xs={12} sm={6}>
+              <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+                <GridItemCenter item xs={5}>
+                  <Field
+                    style={{ textAlign: "end" }}
+                    name="maxQuorumAmount"
+                    type="number"
+                    onKeyDown={(e: FieldChange) => handleChange(e)}
+                    placeholder="00"
+                    inputProps={{ min: 0, max: 100, step: 1 }}
+                    component={TextField}
+                    InputProps={{
+                      endAdornment: <ValueText color="textSecondary">%</ValueText>
+                    }}
+                    onClick={() => setFieldTouched("maxQuorumAmount")}
+                    // onChange={(e: any) => controlMaxFieldLimit("maxQuorumAmount", e)}
+                  ></Field>
+                </GridItemCenter>
 
-            <GridItemCenterBottom item xs={7} container direction="row">
-              <Tooltip placement="bottom" title="Participation adjustment value">
-                <InfoIconInput />
-              </Tooltip>
-            </GridItemCenterBottom>
-          </ItemContainer>
-        </AdditionContainer>
-        {errors.quorumChange && touched.quorumChange ? <ErrorText>{errors.quorumChange}</ErrorText> : null}
-      </Grid>
-
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Quorum Max Change
-        </Typography>
+                <GridItemCenterBottom item xs={7} container direction="row">
+                  <Tooltip
+                    placement="bottom"
+                    title="Maximum value the quorum can change to after participation adjustment"
+                  >
+                    <InfoIconInputQuorum />
+                  </Tooltip>
+                </GridItemCenterBottom>
+              </ItemContainer>
+            </AdditionContainer>
+            {errors.maxQuorumAmount && touched.maxQuorumAmount ? <ErrorText>{errors.maxQuorumAmount}</ErrorText> : null}
+          </Grid>
+        </Grid>
       </SpacingContainer>
-
-      <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
-        <AdditionContainer item xs={12} sm={3}>
-          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
-            <GridItemCenter item xs={5}>
-              <Field
-                name="quorumMaxChange"
-                type="number"
-                onKeyDown={(e: FieldChange) => handleChange(e)}
-                placeholder="00"
-                inputProps={{ min: 0, max: 100, step: 1 }}
-                component={TextField}
-                InputProps={{
-                  endAdornment: <ValueText color="textSecondary">%</ValueText>
-                }}
-                onClick={() => setFieldTouched("quorumMaxChange")}
-                // onChange={(e: any) => controlMaxFieldLimit("quorumMaxChange", e)}
-              />
-            </GridItemCenter>
-
-            <GridItemCenterBottom item xs={7} container direction="row" justifyContent="space-around">
-              <Tooltip placement="bottom" title="Maximum participation adjustment value">
-                <InfoIconInput />
-              </Tooltip>
-            </GridItemCenterBottom>
-          </ItemContainer>
-        </AdditionContainer>
-        {errors.quorumMaxChange && touched.quorumMaxChange ? <ErrorText>{errors.quorumMaxChange}</ErrorText> : null}
-      </Grid>
     </>
   )
 }
@@ -399,7 +390,7 @@ export const Quorum: React.FC = () => {
           "\u0027" +
           "s total supply"
         }
-        tooltipText={"Quorum Settings"}
+        tooltipText={"Quorum"}
         tooltip={true}
       ></TitleBlock>
 

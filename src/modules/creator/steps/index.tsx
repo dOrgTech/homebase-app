@@ -9,13 +9,15 @@ import { ProtectedRoute } from "modules/creator/components/ProtectedRoute"
 import { Quorum } from "./Quorum"
 import mixpanel from "mixpanel-browser"
 import { Template } from "./Template"
+import { DeploymentType } from "./DeploymentType"
 
 export const STEPS: StepInfo[] = [
-  { title: "Select template", index: 0, path: "template" },
-  { title: "Configure DAO settings", index: 1, path: "dao" },
-  { title: "Configure Proposal & Voting", index: 2, path: "voting" },
-  { title: "Adjust Quorum", index: 3, path: "quorum" },
-  { title: "Review information", index: 4, path: "summary" }
+  { title: "DAO Template", index: 0, path: "template" },
+  { title: "DAO Basics", index: 1, path: "dao" },
+  { title: "Proposals & Voting", index: 2, path: "voting" },
+  { title: "Quorum", index: 3, path: "quorum" },
+  { title: "Review Information", index: 4, path: "summary" },
+  { title: "Deployment Type", index: 5, path: "type" }
 ]
 
 const urlToStepMap: Record<string, number> = {
@@ -24,7 +26,8 @@ const urlToStepMap: Record<string, number> = {
   voting: 2,
   quorum: 3,
   summary: 4,
-  review: 5
+  type: 5,
+  review: 6
 }
 
 const AnalyticsWrappedStep: React.FC<{ name: string; index: number }> = ({ name, index, children }) => {
@@ -69,8 +72,13 @@ export const StepRouter: React.FC = () => {
             <Summary />
           </AnalyticsWrappedStep>
         </Route>
+        <Route path={`${match.url}/type`}>
+          <AnalyticsWrappedStep name="Deployment Type" index={5}>
+            <DeploymentType />
+          </AnalyticsWrappedStep>
+        </Route>
         <Route path={`${match.url}/review`}>
-          <AnalyticsWrappedStep name="Deployment" index={5}>
+          <AnalyticsWrappedStep name="Deployment" index={6}>
             <Review />
           </AnalyticsWrappedStep>
         </Route>
@@ -99,3 +107,4 @@ export { Template } from "modules/creator/steps/Template"
 export { DaoSettings } from "modules/creator/steps/DaoSettings"
 export { Governance } from "modules/creator/steps/Governance"
 export { Review } from "modules/creator/steps/Review"
+export { DeploymentType } from "modules/creator/steps/DeploymentType"

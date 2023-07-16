@@ -26,7 +26,6 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const StepContentContainer = styled(Grid)({
-  marginTop: 28,
   alignItems: "baseline",
   height: "100%",
   paddingTop: 0,
@@ -72,18 +71,17 @@ const FAQClickToAction = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
   fontSize: "14px",
   cursor: "pointer",
-  marginTop: 16,
-  marginBottom: 8
+  fontWeight: 300
 }))
 
 const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 585,
+  maxHeight: 650,
   paddingTop: 20,
   position: "sticky",
-  top: 153
+  top: 130
 }))
 
 const custom = (theme: Theme) => ({
@@ -158,7 +156,10 @@ export const DAOCreate: React.FC = () => {
                 </Box>
               </ProgressBar>
               <Box>
-                <FAQClickToAction onClick={goToFAQ}>New to DAOs? Read our FAQ</FAQClickToAction>
+                <FAQClickToAction onClick={goToFAQ}>New to DAOs?</FAQClickToAction>
+                <FAQClickToAction style={{ textDecoration: "underline" }} onClick={goToFAQ}>
+                  Read our FAQ
+                </FAQClickToAction>
               </Box>
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title, path }: StepInfo, index: number) => (
@@ -181,7 +182,7 @@ export const DAOCreate: React.FC = () => {
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 5 && <NavigationBar back={back} next={next} />}
+          {step < 6 && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>

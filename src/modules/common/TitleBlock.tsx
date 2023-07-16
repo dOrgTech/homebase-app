@@ -7,14 +7,9 @@ import { CopyButton } from "./CopyButton"
 
 const StyledGrid = styled(Grid)({
   height: "fit-content",
-  background: "#2F3438",
   borderRadius: 8,
-  padding: "30px 40px",
-  marginBottom: 38
-})
-
-const CustomTypography = styled(Typography)({
-  marginTop: 27
+  padding: "0",
+  gap: 16
 })
 
 const CustomTooltip = styled(Tooltip)({
@@ -33,7 +28,7 @@ const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
 }))
 
 const CustomTooltipText = styled(Typography)({
-  fontSize: 12,
+  fontSize: 14,
   marginLeft: 2
 })
 
@@ -79,9 +74,9 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
             {description}
           </Typography>
         ) : description ? (
-          <CustomTypography variant="subtitle1" color="textSecondary">
+          <Typography variant="subtitle1" color="textSecondary">
             {description}
-          </CustomTypography>
+          </Typography>
         ) : null}
       </Grid>
       <Grid item xs={12}></Grid>
