@@ -10,7 +10,8 @@ import {
   styled,
   useMediaQuery,
   useTheme,
-  Theme
+  Theme,
+  Link
 } from "@material-ui/core"
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
@@ -125,10 +126,6 @@ export const DAOCreate: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const goToFAQ = (): void => {
-    history.push("/faq")
-  }
-
   useEffect(() => {
     mixpanel.unregister("daoAddress")
     mixpanel.unregister("daoType")
@@ -156,10 +153,10 @@ export const DAOCreate: React.FC = () => {
                 </Box>
               </ProgressBar>
               <Box>
-                <FAQClickToAction onClick={goToFAQ}>New to DAOs?</FAQClickToAction>
-                <FAQClickToAction style={{ textDecoration: "underline" }} onClick={goToFAQ}>
-                  Read our FAQ
-                </FAQClickToAction>
+                <FAQClickToAction>New to DAOs?</FAQClickToAction>
+                <Link target="_blank" href="https://faq.tezos-homebase.io" color="secondary">
+                  <FAQClickToAction style={{ textDecoration: "underline" }}>Read our FAQ</FAQClickToAction>
+                </Link>
               </Box>
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title, path }: StepInfo, index: number) => (

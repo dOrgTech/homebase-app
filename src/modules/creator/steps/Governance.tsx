@@ -897,6 +897,7 @@ export const Governance: React.FC = () => {
         title={"Proposals & Voting"}
         tooltipText={"Proposals and Voting"}
         tooltip={true}
+        tooltipLink={"how-to-configure-your-dao-in-homebase/configure-proposal-and-voting"}
         description={"These settings will define the duration, support and approval required for proposals."}
       ></TitleBlock>
 

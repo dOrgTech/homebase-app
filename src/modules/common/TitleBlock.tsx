@@ -1,4 +1,4 @@
-import { Grid, Paper, styled, Tooltip, Typography } from "@material-ui/core"
+import { Grid, Link, Paper, styled, Tooltip, Typography } from "@material-ui/core"
 import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
 import { InfoRounded } from "@material-ui/icons"
@@ -45,9 +45,16 @@ interface Props {
   description: ReactElement | string
   tooltip?: boolean
   tooltipText?: string
+  tooltipLink?: string
 }
 
-export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip = false, tooltipText = "" }) => {
+export const TitleBlock: React.FC<Props> = ({
+  title = "",
+  description,
+  tooltip = false,
+  tooltipText = "",
+  tooltipLink = ""
+}) => {
   return (
     <StyledGrid container direction="row" justifyContent="space-between">
       <Grid item xs={12} container direction="row" alignItems="flex-end">
@@ -61,9 +68,9 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
             <CustomTooltip placement="bottom" title={description}>
               <InfoIconInput />
             </CustomTooltip>
-            <HashLink smooth to="/faq#how-to-create-a-dao-on-homebase" target={"_blank"}>
+            <Link target="_blank" href={`https://faq.tezos-homebase.io/homebase-faq/${tooltipLink}`} color="secondary">
               <CustomTooltipText color="secondary">{tooltipText} </CustomTooltipText>
-            </HashLink>
+            </Link>
           </CustomTextContainer>
         ) : null}
       </Grid>

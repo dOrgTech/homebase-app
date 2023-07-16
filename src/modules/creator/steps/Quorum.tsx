@@ -392,6 +392,7 @@ export const Quorum: React.FC = () => {
         }
         tooltipText={"Quorum"}
         tooltip={true}
+        tooltipLink={"how-to-configure-your-dao-in-homebase/configure-proposal-and-voting"}
       ></TitleBlock>
 
       <Formik
