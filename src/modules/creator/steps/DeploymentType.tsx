@@ -5,7 +5,7 @@ import { useHistory } from "react-router"
 import { ReactComponent as ManagedIcon } from "assets/img/managed.svg"
 import { ReactComponent as SelfDeployedIcon } from "assets/img/self-deployed.svg"
 
-import { ActionTypes, CreatorContext, DAOTemplate } from "modules/creator/state"
+import { ActionTypes, CreatorContext, DeploymentMethod } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { useRouteMatch } from "react-router-dom"
 
@@ -65,7 +65,7 @@ export const DeploymentType = (): JSX.Element => {
 
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
-  const [selectedTemplate, setTemplate] = useState<DAOTemplate>(template)
+  const [selectedTemplate, setTemplate] = useState<DeploymentMethod>("managed")
   const [error, setError] = useState<boolean>(false)
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export const DeploymentType = (): JSX.Element => {
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          history.push(`review`)
+          history.push(`review`, { method: selectedTemplate })
         },
         text: "Deploy DAO"
       },
@@ -84,7 +84,7 @@ export const DeploymentType = (): JSX.Element => {
     })
   }, [dispatch, history, match.path, match.url, selectedTemplate])
 
-  const update = (templateValue: DAOTemplate) => {
+  const update = (templateValue: DeploymentMethod) => {
     setError(false)
     setTemplate(templateValue)
   }
@@ -114,8 +114,8 @@ export const DeploymentType = (): JSX.Element => {
           justifyContent="flex-start"
           alignItems="center"
           xs={isMobileSmall ? 12 : 6}
-          onClick={() => update("lambda")}
-          className={selectedTemplate === "lambda" ? style.selected : ""}
+          onClick={() => update("managed")}
+          className={selectedTemplate === "managed" ? style.selected : ""}
         >
           <ManagedIcon style={{ marginBottom: 14 }} />
           <BoxTitle color="textSecondary">Managed</BoxTitle>
@@ -136,8 +136,8 @@ export const DeploymentType = (): JSX.Element => {
           justifyContent="flex-start"
           alignItems="center"
           xs={isMobileSmall ? 12 : 6}
-          onClick={() => update("lite")}
-          className={selectedTemplate === "lite" ? style.selected : ""}
+          onClick={() => update("self-deployed")}
+          className={selectedTemplate === "self-deployed" ? style.selected : ""}
         >
           <SelfDeployedIcon style={{ marginBottom: 14 }} />
           <BoxTitle color="textSecondary">Self-Deployed</BoxTitle>

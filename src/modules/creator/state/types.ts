@@ -68,6 +68,8 @@ export interface NavigationBarProps {
 
 export type DAOTemplate = "lambda" | "lite" | ""
 
+export type DeploymentMethod = "managed" | "self-deployed"
+
 type DeploymentStatus = {
   deploying: boolean
   successful: boolean

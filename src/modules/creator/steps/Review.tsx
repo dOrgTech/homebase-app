@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom"
 
 import Rocket from "assets/img/rocket.svg"
 import { useOriginate } from "services/contracts/baseDAO/hooks/useOriginate"
-import { getTokensInfo, CreatorContext, ActionTypes, MigrationParams } from "modules/creator/state"
+import { getTokensInfo, CreatorContext, ActionTypes, MigrationParams, DeploymentMethod } from "modules/creator/state"
 import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types"
 import { DeploymentLoader } from "../components/DeploymentLoader"
 import { useCreatorRouteValidation } from "modules/creator/components/ProtectedRoute"
@@ -62,15 +62,18 @@ export const Review: React.FC = () => {
     activeState
   } = useOriginate(state.data.template)
   const history = useHistory()
-  console.log("states: ", states)
+
+  const historyState = history.location?.state as { method: DeploymentMethod }
+  const deploymentMethod = historyState.method
 
   // TODO: Fix infinite calling here
   useEffect(() => {
     ;(async () => {
-      if (!validDAOData && info && metadataCarrierParams) {
+      if (!validDAOData && info && metadataCarrierParams && deploymentMethod) {
         mutate({
           metadataParams: metadataCarrierParams,
-          params: info
+          params: info,
+          deploymentMethod
         })
       }
     })()
