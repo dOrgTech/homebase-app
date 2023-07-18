@@ -1,11 +1,13 @@
 import { useQueryClient } from "react-query"
 import { useCallback, useContext } from "react"
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
-import { connectWithBeacon, Network, rpcNodes, TezosActionType } from "services/beacon"
+import { ALICE_PRIV_KEY, connectWithBeacon, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
 import { Tzip16Module } from "@taquito/tzip16"
 import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
+import { EnvKey, getEnv } from "services/config"
+import { InMemorySigner } from "@taquito/signer"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -35,10 +37,18 @@ export const useTezos = (): WalletConnectReturn => {
 
   const connect = useCallback(
     async (newNetwork?: Network) => {
-      const { wallet } = await connectWithBeacon(network)
-
       const newTezos: TezosToolkit = initTezosInstance(network || newNetwork)
-      newTezos.setProvider({ wallet })
+
+      let wallet
+
+      if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) === "true") {
+        const { wallet: beaconWallet } = await connectWithBeacon(network)
+        wallet = beaconWallet
+        newTezos.setProvider({ wallet })
+      } else {
+        const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
+        newTezos.setProvider({ signer })
+      }
 
       const account = await newTezos.wallet.pkh()
 
