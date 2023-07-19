@@ -224,7 +224,7 @@ export const ContractSummary: React.FC = () => {
               </Grid>
               <Grid item xs={7}>
                 <AdminAddress variant="subtitle2" color="textSecondary" align="right">
-                  {numberWithCommas(new BigNumber(Number(tokenSettings.totalSupply)))}
+                  {numberWithCommas(new BigNumber(Number(tokenDistribution.totalAmount)))}
                 </AdminAddress>
               </Grid>
             </Grid>

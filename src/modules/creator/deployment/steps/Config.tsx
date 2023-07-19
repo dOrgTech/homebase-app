@@ -102,10 +102,6 @@ const validateForm = (values: TokenContractSettings) => {
     errors.description = "Required"
   }
 
-  if (!values.totalSupply || values.totalSupply === null) {
-    errors.totalSupply = "Required"
-  }
-
   if (!values.decimals || values.decimals === null) {
     errors.decimals = "Required"
   }
@@ -180,7 +176,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
           {errors.description && touched.description ? <ErrorText>{errors.description}</ErrorText> : null}
         </Grid>
         <Grid item container direction="row" spacing={2}>
-          <Grid item xs={6}>
+          {/* <Grid item xs={6}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Supply{" "}
@@ -196,7 +192,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
               />
             </CustomInputContainer>
             {errors.totalSupply && touched.totalSupply ? <ErrorText>{errors.totalSupply}</ErrorText> : null}
-          </Grid>
+          </Grid> */}
           <Grid item xs={isMobileSmall ? 6 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
@@ -214,6 +210,16 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
             </CustomInputContainer>
             {errors.decimals && touched.decimals ? <ErrorText>{errors.decimals}</ErrorText> : null}
           </Grid>
+          <Grid item xs={isMobileSmall ? 6 : 3}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Symbol{" "}
+            </Typography>
+            <CustomInputContainer>
+              <Field id="outlined-basic" placeholder="TEZ" name="symbol" component={CustomFormikTextField} />
+            </CustomInputContainer>
+            {errors.symbol && touched.symbol ? <ErrorText>{errors.symbol}</ErrorText> : null}
+          </Grid>
         </Grid>
 
         <Grid item container direction="row" spacing={2}>
@@ -225,16 +231,6 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
             <CustomInputContainer>
               <Field id="outlined-basic" placeholder="URL" name="icon" component={CustomFormikTextField} />
             </CustomInputContainer>
-          </Grid>
-          <Grid item xs={isMobileSmall ? 6 : 3}>
-            <Typography variant="subtitle1" color="textSecondary">
-              {" "}
-              Symbol{" "}
-            </Typography>
-            <CustomInputContainer>
-              <Field id="outlined-basic" placeholder="TEZ" name="symbol" component={CustomFormikTextField} />
-            </CustomInputContainer>
-            {errors.symbol && touched.symbol ? <ErrorText>{errors.symbol}</ErrorText> : null}
           </Grid>
         </Grid>
       </Grid>

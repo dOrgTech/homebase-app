@@ -52,9 +52,9 @@ export const deployTokenContract = async ({
     }
     const index = 0
     const totalSupply =
-      tokenSettings.totalSupply &&
+      tokenDistribution.totalAmount &&
       tokenSettings.decimals &&
-      formatUnits(new BigNumber(tokenSettings.totalSupply), tokenSettings.decimals)
+      formatUnits(new BigNumber(tokenDistribution.totalAmount), tokenSettings.decimals)
 
     storage.assets.total_supply = totalSupply.toString()
     tokenDistribution.holders.map((holder: { amount: BigNumber.Value; walletAddress: any }) => {

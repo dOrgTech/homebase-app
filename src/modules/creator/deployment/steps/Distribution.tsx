@@ -108,7 +108,6 @@ const hasDuplicates = (options: Holder[]) => {
 
 const validateForm = (values: TokenDistributionSettings) => {
   const errors: FormikErrors<TokenDistributionSettings> = {}
-
   values.holders.forEach((holder: Holder, index: number) => {
     if (values.holders[index].walletAddress && !values.holders[index].amount) {
       errors.holders = "Required"
@@ -116,11 +115,11 @@ const validateForm = (values: TokenDistributionSettings) => {
     if (!values.holders[index].walletAddress && values.holders[index].amount) {
       errors.holders = "Required"
     }
+    if (!values.holders[index].walletAddress && values.holders[index].amount === 0) {
+      errors.holders = "Required"
+    }
     if (values.holders.length > 0 && hasDuplicates(values.holders)) {
       errors.holders = "Duplicate wallets are not allowed"
-    }
-    if (values.totalAmount && values.totalAmount.minus(new BigNumber(getTotal(values.holders))) < new BigNumber(0)) {
-      errors.totalAmount = "Available balance has to be greater that the total supply"
     }
   })
 
@@ -261,18 +260,12 @@ export const ContractDistribution: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  tokenDistribution.totalAmount = new BigNumber(Number(tokenSettings.totalSupply))
-
   const saveStepInfo = (
     values: TokenDistributionSettings,
     { setSubmitting }: { setSubmitting: (b: boolean) => void }
   ) => {
     const newValues: TokenDistributionSettings = { ...values }
-
-    if (newValues.holders.length === 1 && newValues.holders[0].walletAddress === "") {
-      newValues.holders[0].walletAddress = account
-      newValues.holders[0].amount = newValues.totalAmount.toNumber()
-    }
+    newValues.totalAmount = new BigNumber(Number(getTotal(values.holders)))
 
     const newState = {
       ...state.data,
@@ -310,18 +303,7 @@ export const ContractDistribution: React.FC = () => {
                     </AmountText>
                     <Typography color="secondary" style={{ fontWeight: 300 }}>
                       {" "}
-                      {numberWithCommas(values.totalAmount)}{" "}
-                    </Typography>
-                  </Grid>
-                  <Grid container item direction="row" style={{ gap: 10 }}>
-                    <AmountText variant="subtitle1" color="textSecondary">
-                      Available:
-                    </AmountText>
-                    <Typography style={{ fontWeight: 300 }} color="secondary">
-                      {" "}
-                      {numberWithCommas(
-                        values.totalAmount && values.totalAmount.minus(new BigNumber(getTotal(values.holders)))
-                      )}
+                      {numberWithCommas(getTotal(values.holders))}{" "}
                     </Typography>
                   </Grid>
                 </Grid>
