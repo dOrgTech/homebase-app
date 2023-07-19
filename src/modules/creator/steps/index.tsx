@@ -20,7 +20,7 @@ export const STEPS: StepInfo[] = [
   { title: "Deployment Type", index: 5, path: "type" }
 ]
 
-const urlToStepMap: Record<string, number> = {
+export const urlToStepMap: Record<string, number> = {
   template: 0,
   dao: 1,
   voting: 2,

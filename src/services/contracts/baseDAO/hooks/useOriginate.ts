@@ -31,6 +31,14 @@ const INITIAL_STATES = [
   {
     activeText: "",
     completedText: ""
+  },
+  {
+    activeText: "",
+    completedText: ""
+  },
+  {
+    activeText: "",
+    completedText: ""
   }
 ]
 
@@ -80,7 +88,12 @@ export const useOriginate = (template: DAOTemplate) => {
           metadataParams: { ...metadataParams }
         }
 
-        setActiveState(1)
+        updatedStates[0] = {
+          activeText: `Deploying ${template} DAO Contract`,
+          completedText: ""
+        }
+
+        setActiveState(0)
         setStates(updatedStates)
 
         const resp = await fetch("http://localhost:3001/deploy", {
@@ -90,8 +103,10 @@ export const useOriginate = (template: DAOTemplate) => {
         })
 
         const data = await resp.json()
-        contract = data.contract
-        console.log("contract: ", contract)
+        console.log(data)
+        const address = data.address
+
+        contract = await tezos.wallet.at(address)
 
         mixpanel.track("Started DAO origination", {
           contract: "BaseDAO",
@@ -107,12 +122,15 @@ export const useOriginate = (template: DAOTemplate) => {
           completedText: `Deployed ${template} DAO contract with address "${contract.address}"`
         }
 
-        updatedStates[3] = {
+        setActiveState(1)
+        setStates(updatedStates)
+
+        updatedStates[2] = {
           activeText: `Waiting for DAO to be indexed`,
           completedText: ""
         }
 
-        setActiveState(3)
+        setActiveState(2)
         setStates(updatedStates)
       } else {
         updatedStates[0] = {
@@ -215,11 +233,9 @@ export const useOriginate = (template: DAOTemplate) => {
 
       const indexed = await waitForIndexation(contract.address)
 
-      updatedStates[3] = {
-        ...updatedStates[3],
-        completedText: indexed
-          ? `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`
-          : `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully, but metadata has not been indexed yet. This usually takes a few minutes, your DAO page may not be available yet.`
+      updatedStates[4] = {
+        activeText: `Deployling Lite DAO`,
+        completedText: ""
       }
 
       setActiveState(4)
@@ -244,7 +260,25 @@ export const useOriginate = (template: DAOTemplate) => {
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
         const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
 
-        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
+        await saveLiteCommunity(signature, publicKey, payloadBytes)
+
+        updatedStates[4] = {
+          activeText: "",
+          completedText: "Successfully deployed Lite DAO"
+        }
+
+        setActiveState(5)
+        setStates(updatedStates)
+
+        updatedStates[5] = {
+          ...updatedStates[5],
+          completedText: indexed
+            ? `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully`
+            : `Deployed ${metadataParams.metadata.unfrozenToken.name} successfully, but metadata has not been indexed yet. This usually takes a few minutes, your DAO page may not be available yet.`
+        }
+
+        setActiveState(6)
+        setStates(updatedStates)
       }
 
       mixpanel.track("Completed DAO indexation", {

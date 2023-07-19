@@ -17,7 +17,7 @@ import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
 
 import { CreatorContext, StepInfo } from "modules/creator/state"
-import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps"
+import { StepRouter, STEPS, urlToStepMap, useStepNumber } from "modules/creator/steps"
 import { NavigationBar } from "modules/creator/components/NavigationBar"
 import { Navbar } from "modules/common/Toolbar"
 import mixpanel from "mixpanel-browser"
@@ -141,7 +141,7 @@ export const DAOCreate: React.FC = () => {
           <ProgressContainer item xs={3} container direction="column">
             <Grid item container direction="column" alignItems="center" xs>
               <ProgressBar
-                progress={progress}
+                progress={Math.floor((step / (Object.keys(urlToStepMap).length - 1)) * 100)}
                 radius={52}
                 strokeWidth={5}
                 strokeColor={theme.palette.secondary.main}
@@ -149,7 +149,7 @@ export const DAOCreate: React.FC = () => {
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
-                  <IndicatorValue>{progress === 0.5 ? 0 : step * 20}%</IndicatorValue>
+                  <IndicatorValue>{Math.floor((step / (Object.keys(urlToStepMap).length - 1)) * 100)}%</IndicatorValue>
                 </Box>
               </ProgressBar>
               <Box>

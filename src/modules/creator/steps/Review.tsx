@@ -134,7 +134,7 @@ export const Review: React.FC = () => {
 
             {states[0].activeText !== "" && states[2].completedText === "" && error === null ? (
               <Grid container direction="row" justifyContent="center" alignContent="center">
-                <Typography color="secondary"> This may take several minutes </Typography>
+                <Typography color="secondary"> This may take several minutes, Do not close the tab </Typography>
               </Grid>
             ) : null}
           </>
