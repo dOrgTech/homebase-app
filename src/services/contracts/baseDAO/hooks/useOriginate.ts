@@ -14,6 +14,7 @@ import { ALICE_PRIV_KEY } from "services/beacon"
 import { getSignature } from "services/lite/utils"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
 import { Community } from "models/Community"
+import { EnvKey, getEnv } from "services/config"
 
 const INITIAL_STATES = [
   {
@@ -96,7 +97,7 @@ export const useOriginate = (template: DAOTemplate) => {
         setActiveState(0)
         setStates(updatedStates)
 
-        const resp = await fetch("http://localhost:3001/deploy", {
+        const resp = await fetch(`${getEnv(EnvKey.REACT_APP_DAO_DEPLOYER_API)}/deploy`, {
           method: "POST",
           body: JSON.stringify({ deployParams: deployParams }, replacer),
           headers: { "Content-Type": "application/json" }
