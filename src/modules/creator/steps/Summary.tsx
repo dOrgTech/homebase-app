@@ -113,9 +113,9 @@ export const Summary = (): JSX.Element => {
       type: ActionTypes.UPDATE_NAVIGATION_BAR,
       next: {
         handler: () => {
-          history.push(`review`)
+          history.push(`type`)
         },
-        text: "Launch"
+        text: "Continue"
       },
       back: {
         handler: () => history.push(`quorum`),

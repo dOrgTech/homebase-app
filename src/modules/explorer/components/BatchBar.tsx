@@ -45,13 +45,13 @@ const AddButton = styled(Paper)({
   "minWidth": 31,
   "textAlign": "center",
   "padding": 0,
-  "background": "#383e43",
-  "color": "#fff",
+  "background": "inherit",
+  "color": "rgb(129, 254, 183)",
   "alignItems": "center",
   "display": "flex",
   "justifyContent": "center",
   "cursor": "pointer",
-
+  "boxShadow": "none",
   "&:hover": {
     background: "#3c4349"
   }
@@ -69,10 +69,10 @@ interface Props {
 
 export const BatchBar = ({ isBatch, handleIsBatchChange, onClickAdd, items, activeItem, setActiveItem }: Props) => {
   return (
-    <ProposalFormInput>
+    <Grid>
       <Grid container direction="row" alignItems={"center"}>
         <Grid item xs={6}>
-          <Typography variant="subtitle2" color="textPrimary">
+          <Typography variant="body1" color="textPrimary">
             Batch Transfer?
           </Typography>
         </Grid>
@@ -90,13 +90,17 @@ export const BatchBar = ({ isBatch, handleIsBatchChange, onClickAdd, items, acti
                 item
                 key={index}
                 onClick={() => setActiveItem(index)}
-                style={Number(index + 1) === activeItem ? { background: "#81FEB7" } : { background: "#3c4349" }}
+                style={Number(index + 1) === activeItem ? { background: "#81FEB7" } : { background: "inherit" }}
               >
                 <Typography
                   variant="subtitle2"
-                  style={Number(index + 1) === activeItem ? { color: "#1C1F23" } : { color: "ffff" }}
+                  style={
+                    Number(index + 1) === activeItem
+                      ? { color: "#1C1F23", fontWeight: 500 }
+                      : { color: "#fff", opacity: 0.65, fontWeight: 500 }
+                  }
                 >
-                  #{index + 1}
+                  {index + 1}
                 </Typography>
               </TransferActive>
             )
@@ -105,6 +109,6 @@ export const BatchBar = ({ isBatch, handleIsBatchChange, onClickAdd, items, acti
           <AddButton onClick={onClickAdd}>+</AddButton>
         </BatchBarContainer>
       ) : null}
-    </ProposalFormInput>
+    </Grid>
   )
 }

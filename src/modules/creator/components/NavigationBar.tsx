@@ -3,6 +3,7 @@ import React from "react"
 import { ArrowBackIos } from "@material-ui/icons"
 
 import { NavigationBarProps } from "modules/creator/state"
+import { MainButton } from "modules/common/MainButton"
 
 const Footer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -27,14 +28,12 @@ const BackButton = styled(Paper)({
   width: "fit-content"
 })
 
-const NextButton = styled(Paper)(({ theme }) => ({
-  boxShadow: "none",
-  borderRadius: 4,
+const NextButton = styled(MainButton)(({ theme }) => ({
   textAlign: "center",
   float: "right",
   cursor: "pointer",
   background: theme.palette.secondary.light,
-  padding: 8
+  padding: "8px 16px"
 }))
 
 const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
@@ -58,14 +57,18 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
           {back && (
             <BackButton onClick={back.handler}>
               <BackButtonIcon />
-              <Typography color="secondary">{back.text}</Typography>
+              <Typography style={{ fontWeight: 500 }} color="secondary">
+                {back.text}
+              </Typography>
             </BackButton>
           )}
         </Grid>
         <Grid item xs={6}>
           {next && (
             <NextButton onClick={next.handler}>
-              <Typography color="primary">{next.text}</Typography>
+              <Typography style={{ fontWeight: 500 }} color="primary">
+                {next.text}
+              </Typography>
             </NextButton>
           )}
         </Grid>

@@ -16,7 +16,7 @@ export const CopyAddress: React.FC<Props> = ({ address, typographyProps }) => {
     <>
       <Grid container alignItems="center">
         <Grid item>
-          <Typography variant="subtitle1" color="textPrimary" {...typographyProps}>
+          <Typography variant="subtitle2" color="textPrimary" {...typographyProps}>
             {isMobileSmall ? toShortAddress(address) : address}
           </Typography>
         </Grid>

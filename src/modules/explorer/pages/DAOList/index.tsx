@@ -115,11 +115,6 @@ const ExternalLink = styled(Typography)({
   }
 })
 
-const ExternalLinkIcon = styled(LaunchOutlined)({
-  fontSize: 14,
-  marginBottom: 2
-})
-
 export const DAOList: React.FC = () => {
   const { network, account, tezos } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)

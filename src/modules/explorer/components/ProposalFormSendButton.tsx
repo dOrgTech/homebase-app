@@ -10,8 +10,9 @@ const SendContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
-  width: 101,
-  color: "#1C1F23"
+  width: 96,
+  color: "#1C1F23",
+  height: 40
 }))
 
 export const SendButton: React.FC<ViewButtonProps> = ({ children, ...props }) => {
