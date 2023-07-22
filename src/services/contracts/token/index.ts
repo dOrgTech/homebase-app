@@ -90,6 +90,6 @@ export const deployTokenContract = async ({
 
     return contract
   } catch (e) {
-    console.error(e)
+    throw e
   }
 }

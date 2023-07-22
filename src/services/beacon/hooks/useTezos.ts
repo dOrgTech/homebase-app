@@ -1,7 +1,7 @@
 import { useQueryClient } from "react-query"
 import { useCallback, useContext } from "react"
 import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
-import { connectWithBeacon, Network, rpcNodes, TezosActionType } from "services/beacon"
+import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
 import { Tzip16Module } from "@taquito/tzip16"
 import mixpanel from "mixpanel-browser"
@@ -17,14 +17,6 @@ type WalletConnectReturn = {
   wallet: BeaconWallet | undefined
 }
 
-export const initTezosInstance = (network: Network) => {
-  const newTezos = new TezosToolkit(rpcNodes[network])
-  newTezos.setPackerProvider(new MichelCodecPacker())
-  newTezos.addExtension(new Tzip16Module())
-
-  return newTezos
-}
-
 export const useTezos = (): WalletConnectReturn => {
   const {
     state: { tezos, network, account, wallet },
@@ -37,7 +29,7 @@ export const useTezos = (): WalletConnectReturn => {
     async (newNetwork?: Network) => {
       const { wallet } = await connectWithBeacon(network)
 
-      const newTezos: TezosToolkit = initTezosInstance(network || newNetwork)
+      const newTezos: TezosToolkit = createTezos(network || newNetwork)
       newTezos.setProvider({ wallet })
 
       const account = await newTezos.wallet.pkh()
@@ -74,28 +66,35 @@ export const useTezos = (): WalletConnectReturn => {
     }, [dispatch, wallet]),
     changeNetwork: async (newNetwork: Network) => {
       mixpanel.register({ Network: newNetwork })
-
       localStorage.setItem("homebase:network", newNetwork)
-
+      const newTezos: TezosToolkit = createTezos(newNetwork)
       if (!("_pkh" in tezos.wallet)) {
-        const Tezos = new TezosToolkit(rpcNodes[newNetwork])
-        Tezos.setPackerProvider(new MichelCodecPacker())
-        Tezos.addExtension(new Tzip16Module())
+        dispatch({
+          type: TezosActionType.UPDATE_TEZOS,
+          payload: {
+            network: newNetwork,
+            tezos: newTezos,
+            account: "",
+            wallet: undefined
+          }
+        })
+      } else {
+        const { wallet } = await connectWithBeacon(newNetwork)
+        newTezos.setProvider({ wallet })
+        const newAccount = await newTezos.wallet.pkh()
 
         dispatch({
           type: TezosActionType.UPDATE_TEZOS,
           payload: {
             network: newNetwork,
-            tezos: Tezos,
-            account,
-            wallet: undefined
+            tezos: newTezos,
+            account: newAccount,
+            wallet
           }
         })
-      } else {
-        await connect(newNetwork)
       }
+
       queryClient.resetQueries()
-      location.reload()
     },
     account,
     network,

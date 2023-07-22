@@ -5,7 +5,7 @@ import { ContractAbstraction, ContractProvider, TezosToolkit, Wallet } from "@ta
 import { useMutation, useQueryClient } from "react-query"
 
 import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy"
-import { initTezosInstance, useTezos } from "services/beacon/hooks/useTezos"
+import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO, replacer } from ".."
 import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
