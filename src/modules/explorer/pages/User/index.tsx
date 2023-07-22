@@ -1,7 +1,7 @@
 import { Box, Grid, Theme, Typography, styled } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
-import React, { useCallback, useEffect, useMemo } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHistory } from "react-router"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -18,6 +18,7 @@ import { UserBalances } from "../../components/UserBalances"
 import { UserProfileName } from "../../components/UserProfileName"
 import { DropButton } from "../Proposals"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import { Delegation } from "./components/DelegationBanner"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -103,9 +104,6 @@ export const User: React.FC = () => {
   const { data, cycleInfo } = useDAO(daoId)
   const { data: proposals } = useProposals(daoId)
   const history = useHistory()
-  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
-  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
-  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
@@ -208,6 +206,8 @@ export const User: React.FC = () => {
             </Grid>
           </UserBalances>
         </BalancesHeader>
+
+        <Delegation daoId={daoId} />
         <Grid item>
           {proposalsCreated && cycleInfo && (
             <ProposalsList

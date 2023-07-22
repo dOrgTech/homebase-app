@@ -1,6 +1,7 @@
 import { Network } from "services/beacon"
 import { networkNameMap } from ".."
-import { DelegationDTO } from "./types"
+import { DelegationDTO, TokenDelegationDTO, UserDelegateBalance } from "./types"
+import { getUserTokenBalance } from "../tokenBalances"
 
 export const getLatestDelegation = async (daoAddress: string, network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/operations/delegations?sender=${daoAddress}&status=applied`
@@ -16,4 +17,65 @@ export const getLatestDelegation = async (daoAddress: string, network: Network) 
   }
 
   return resultingDelegations[0]
+}
+
+export const getTokenDelegation = async (tokenAddress: string, account: string, network: Network) => {
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${tokenAddress}/bigmaps/delegates/keys?key.eq=${account}&active=true`
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch token delegations from TZKT API")
+  }
+
+  const resultingDelegations: TokenDelegationDTO[] = await response.json()
+
+  if (resultingDelegations.length === 0) {
+    return null
+  }
+
+  const delegatedTo = resultingDelegations[0].value
+
+  return delegatedTo
+}
+
+export const getTokenDelegationVoteWeight = async (tokenAddress: string, account: string, network: Network) => {
+  const selfBalance = await getUserTokenBalance(account, network, tokenAddress)
+
+  if (!selfBalance) {
+    throw new Error("Could not fetch delegate token balance from the TZKT API")
+  }
+
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${tokenAddress}/bigmaps/delegates/keys?value.eq=${account}&active=true`
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch token delegations from TZKT API")
+  }
+
+  const resultingDelegations: TokenDelegationDTO[] = await response.json()
+
+  const delegateBalance: UserDelegateBalance = {
+    address: account,
+    balance: selfBalance
+  }
+
+  if (resultingDelegations.length === 0) {
+    return [delegateBalance]
+  }
+
+  const delegatedAddressBalances: UserDelegateBalance[] = []
+
+  await Promise.all(
+    resultingDelegations.map(async del => {
+      const balance = await getUserTokenBalance(del.key, network, tokenAddress)
+      if (balance) {
+        delegatedAddressBalances.push({
+          address: del.key,
+          balance: balance
+        })
+      }
+    })
+  )
+
+  return delegatedAddressBalances
 }
