@@ -70,7 +70,14 @@ export const getLiteDAOs = async (network: string) => {
         name: dao.name,
         decimals: Number(dao.decimals),
         standard: dao.tokenType
-      }
+      },
+      ledgers: dao.members.map(member => {
+        return {
+          holder: {
+            address: member
+          }
+        }
+      })
     }
     return new_dao
   })

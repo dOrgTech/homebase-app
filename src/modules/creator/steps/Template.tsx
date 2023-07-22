@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react"
 import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles } from "@material-ui/core"
 import { useHistory } from "react-router"
-import { ReactComponent as LambdaIcon } from "assets/img/lambda.svg"
 
 import { ReactComponent as LiteIcon } from "assets/img/lite-dao.svg"
 import { ReactComponent as FullIcon } from "assets/img/full-dao.svg"
@@ -57,7 +56,10 @@ const BoxTitle = styled(Typography)({
 
 const BoxDescription = styled(Typography)({
   fontWeight: 300,
-  fontSize: 16
+  fontSize: 16,
+  lineHeight: "135%",
+  letterSpacing: -0.18,
+  alignSelf: "stretch"
 })
 
 export const Template = (): JSX.Element => {
@@ -95,6 +97,10 @@ export const Template = (): JSX.Element => {
           return history.push("/lite")
         },
         text: "Continue"
+      },
+      back: {
+        text: "Back",
+        handler: () => history.push("/creator/ownership")
       }
     })
   }, [dispatch, history, match.path, match.url, selectedTemplate])
@@ -118,7 +124,7 @@ export const Template = (): JSX.Element => {
           onClick={() => update("lambda")}
           className={selectedTemplate === "lambda" ? style.selected : ""}
         >
-          <FullIcon style={{ marginBottom: 14 }} />
+          <FullIcon style={{ marginBottom: 16 }} />
           <BoxTitle color="textSecondary">Full DAO</BoxTitle>
           <BoxDescription color="textSecondary">
             Contract interaction. Transfer assets based on vote outcomes.
@@ -134,7 +140,7 @@ export const Template = (): JSX.Element => {
           onClick={() => update("lite")}
           className={selectedTemplate === "lite" ? style.selected : ""}
         >
-          <LiteIcon style={{ marginBottom: 14 }} />
+          <LiteIcon style={{ marginBottom: 16 }} />
           <BoxTitle color="textSecondary">Lite DAO</BoxTitle>
           <BoxDescription color="textSecondary">
             Off-chain weighted voting. Multiple voting strategies. No treasury.{" "}

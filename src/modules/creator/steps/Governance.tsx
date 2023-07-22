@@ -14,7 +14,6 @@ import dayjs from "dayjs"
 import { TitleBlock } from "modules/common/TitleBlock"
 import BigNumber from "bignumber.js"
 import { mutezToXtz, parseUnits } from "services/contracts/utils"
-import { formatUnits } from "services/contracts/utils"
 import { FieldChange, handleChange } from "../utils"
 
 const TimeBox = styled(Grid)(({ theme }) => ({
@@ -28,7 +27,8 @@ const TimeBox = styled(Grid)(({ theme }) => ({
 
 const TimeText = styled(Typography)({
   marginTop: -20,
-  marginLeft: 16
+  marginLeft: 16,
+  fontWeight: 300
 })
 
 const CustomTooltip = styled(Tooltip)({
@@ -151,7 +151,8 @@ const Value = styled(Typography)({
 const styles = {
   voting: {
     marginTop: 6,
-    marginBottom: 16
+    marginBottom: 16,
+    fontWeight: 400
   }
 }
 
@@ -177,8 +178,13 @@ const GridNoPadding = styled(Grid)({
 const InfoBox = styled(Paper)({
   boxShadow: "none",
   border: "none",
-  background: "inherit",
-  marginTop: 20
+  marginTop: 20,
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 10,
+  backgroundColor: "#2F3438",
+  borderRadius: 8,
+  padding: "32px 48px"
 })
 
 const validateForm = (values: VotingSettings) => {
@@ -375,14 +381,6 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     }
     return "0 minutes"
   }
-
-  // const controlMaxFieldLimit = (field: string, value: any) => {
-  //   const itemValue = value.target.value.split(".")
-  //   if ((itemValue[0] && itemValue[0].length > 18) || (itemValue[1] && itemValue[1].length > 8)) {
-  //     return value.preventDefault()
-  //   }
-  //   setFieldValue(field, value.target.value)
-  // }
 
   useEffect(() => {
     if (values) {
@@ -726,16 +724,16 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
         <TitleBlock
           description={
             <>
-              <Typography color={"textSecondary"}>
+              <Typography color={"textSecondary"} style={{ fontWeight: 300 }}>
                 You will need to wait for a full cycle before making your first proposal.
               </Typography>
-              <Typography color={"textSecondary"} style={{ marginTop: 10 }}>
+              <Typography color={"textSecondary"} style={{ marginTop: 16, fontWeight: 300 }}>
                 {`A proposal will accept votes for ${formatDate(votingTime)} after it is created. Once the voting cycle
                 ends, if the proposal is accepted, it will become executable after another ${formatDate(
                   flushDelayTime
                 )}.`}
               </Typography>
-              <Typography color={"textSecondary"} style={{ marginTop: 10 }}>
+              <Typography color={"textSecondary"} style={{ marginTop: 16, fontWeight: 300 }}>
                 If not executed within {formatDate(expiryDelayTime)} after voting ends, the proposal will expire and
                 won&apos;t be available for execution anymore.
               </Typography>
@@ -744,7 +742,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
         ></TitleBlock>
       </InfoBox>
 
-      <Grid item style={{ marginTop: 12 }}>
+      <Grid item style={{ marginTop: 40 }}>
         <SecondContainer container direction="row">
           <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
             Required Stake to Propose
@@ -796,12 +794,12 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
         </StakeContainer>
       </Grid>
 
-      <SecondContainer container direction="row">
+      <SecondContainer container direction="row" style={{ marginTop: 40 }}>
         <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
           Returned Stake After Proposal Rejection
         </Typography>
 
-        <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
+        <Grid container direction="row" alignItems="center" style={{ marginTop: 8 }}>
           <GridNoPadding item xs={8} sm={10}>
             <Field name="returnedTokenPercentage">
               {() => (
@@ -897,8 +895,9 @@ export const Governance: React.FC = () => {
     <Box>
       <TitleBlock
         title={"Proposals & Voting"}
-        tooltipText={"Configure Proposals and Voting"}
+        tooltipText={"Proposals and Voting"}
         tooltip={true}
+        tooltipLink={"how-to-configure-your-dao-in-homebase/configure-proposal-and-voting"}
         description={"These settings will define the duration, support and approval required for proposals."}
       ></TitleBlock>
 

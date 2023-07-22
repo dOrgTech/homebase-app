@@ -1,4 +1,4 @@
-import { Grid, Paper, styled, Tooltip, Typography } from "@material-ui/core"
+import { Grid, Link, Paper, styled, Tooltip, Typography } from "@material-ui/core"
 import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
 import { InfoRounded } from "@material-ui/icons"
@@ -7,14 +7,9 @@ import { CopyButton } from "./CopyButton"
 
 const StyledGrid = styled(Grid)({
   height: "fit-content",
-  background: "#2F3438",
   borderRadius: 8,
-  padding: "30px 40px",
-  marginBottom: 38
-})
-
-const CustomTypography = styled(Typography)({
-  marginTop: 27
+  padding: "0",
+  gap: 16
 })
 
 const CustomTooltip = styled(Tooltip)({
@@ -33,7 +28,7 @@ const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
 }))
 
 const CustomTooltipText = styled(Typography)({
-  fontSize: 12,
+  fontSize: 14,
   marginLeft: 2
 })
 
@@ -50,9 +45,16 @@ interface Props {
   description: ReactElement | string
   tooltip?: boolean
   tooltipText?: string
+  tooltipLink?: string
 }
 
-export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip = false, tooltipText = "" }) => {
+export const TitleBlock: React.FC<Props> = ({
+  title = "",
+  description,
+  tooltip = false,
+  tooltipText = "",
+  tooltipLink = ""
+}) => {
   return (
     <StyledGrid container direction="row" justifyContent="space-between">
       <Grid item xs={12} container direction="row" alignItems="flex-end">
@@ -66,9 +68,9 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
             <CustomTooltip placement="bottom" title={description}>
               <InfoIconInput />
             </CustomTooltip>
-            <HashLink smooth to="/faq#how-to-create-a-dao-on-homebase" target={"_blank"}>
+            <Link target="_blank" href={`https://faq.tezos-homebase.io/homebase-faq/${tooltipLink}`} color="secondary">
               <CustomTooltipText color="secondary">{tooltipText} </CustomTooltipText>
-            </HashLink>
+            </Link>
           </CustomTextContainer>
         ) : null}
       </Grid>
@@ -79,9 +81,9 @@ export const TitleBlock: React.FC<Props> = ({ title = "", description, tooltip =
             {description}
           </Typography>
         ) : description ? (
-          <CustomTypography variant="subtitle1" color="textSecondary">
+          <Typography variant="subtitle1" color="textSecondary">
             {description}
-          </CustomTypography>
+          </Typography>
         ) : null}
       </Grid>
       <Grid item xs={12}></Grid>

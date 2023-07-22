@@ -110,5 +110,6 @@ export const setDelegate = async ({
     return contract.methods.set_delegate(delegateAddress).send()
   } catch (e) {
     console.error(e)
+    return e
   }
 }
