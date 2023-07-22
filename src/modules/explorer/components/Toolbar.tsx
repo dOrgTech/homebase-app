@@ -22,6 +22,7 @@ import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { SmallButton } from "../../common/SmallButton"
 import { EnvKey, getEnv } from "services/config"
+import { useDAOID } from "../pages/DAO/router"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -105,7 +106,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
 
-  const history = useHistory()
+  const daoId = useDAOID()
 
   return (
     <StyledAppBar>
@@ -138,9 +139,12 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                   {children}
                   <Grid item>
                     <Grid container alignItems="center" style={{ gap: 8 }}>
-                      <Grid item>
-                        <ChangeNetworkButton />
-                      </Grid>
+                      {!daoId ? (
+                        <Grid item>
+                          <ChangeNetworkButton />
+                        </Grid>
+                      ) : null}
+
                       <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
                           container
@@ -164,9 +168,11 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                 </Grid>
               ) : (
                 <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
-                  <Grid item>
-                    <ChangeNetworkButton />
-                  </Grid>
+                  {!daoId ? (
+                    <Grid item>
+                      <ChangeNetworkButton />
+                    </Grid>
+                  ) : null}
                   <Grid item>
                     <SmallButton
                       color="secondary"

@@ -42,7 +42,6 @@ export const NetworkSheet: React.FC<Props> = props => {
               dispatch({
                 type: ActionTypes.CLEAR_CACHE
               })
-              window.location.href = `/explorer`
             }}
           >
             <Grid container justifyContent="center" alignItems="center" style={{ gap: 8 }}>
