@@ -23,3 +23,19 @@ export interface DelegationDTO {
   }
   status: string
 }
+
+export interface TokenDelegationDTO {
+  id: number
+  active: boolean
+  hash: string
+  key: string
+  value: string
+  firstLevel: number
+  lastLevel: number
+  updates: number
+}
+
+export interface UserDelegateBalance {
+  address: string
+  balance: string
+}

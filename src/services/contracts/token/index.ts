@@ -3,6 +3,7 @@ import BigNumber from "bignumber.js"
 import { TokenContractParams } from "modules/creator/deployment/state/types"
 import { formatUnits } from "../utils"
 import fa2_single_asset_delegated from "./assets/fa2_single_asset_delegated"
+import { getContract } from "../baseDAO"
 
 interface Tezos {
   tezos: TezosToolkit
@@ -89,6 +90,24 @@ export const deployTokenContract = async ({
     const contract = await c.contract()
 
     return contract
+  } catch (e) {
+    console.error(e)
+    return e
+  }
+}
+
+export const setDelegate = async ({
+  tokenAddress,
+  delegateAddress,
+  tezos
+}: {
+  tokenAddress: string
+  delegateAddress: string | null
+  tezos: TezosToolkit
+}) => {
+  try {
+    const contract = await getContract(tezos, tokenAddress)
+    return contract.methods.set_delegate(delegateAddress).send()
   } catch (e) {
     console.error(e)
   }
