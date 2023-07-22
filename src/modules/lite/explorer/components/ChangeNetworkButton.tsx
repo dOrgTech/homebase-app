@@ -3,6 +3,7 @@ import React from "react"
 import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
+import { useLocation } from "react-router-dom"
 
 const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {
@@ -40,16 +41,25 @@ export const ChangeNetworkButton = () => {
   const { network } = useTezos()
   const { open } = useActionSheet(ActionSheet.Network)
 
+  const location = useLocation()
+
+  const canShow =
+    location.pathname.indexOf("/explorer/dao/") === -1 && location.pathname.indexOf("/explorer/lite/dao/") === -1
+
   return (
-    <StyledConnectedButton onClick={() => open()}>
-      <Grid container style={{ gap: 5 }} alignItems="center" wrap="nowrap">
-        <Grid item>
-          <ColorDot color={networkDotColorMap[network]} />
-        </Grid>
-        <Grid item>
-          <NetworkText color="textPrimary">{capitalize(network)}</NetworkText>
-        </Grid>
-      </Grid>
-    </StyledConnectedButton>
+    <>
+      {canShow ? (
+        <StyledConnectedButton onClick={() => open()}>
+          <Grid container style={{ gap: 5 }} alignItems="center" wrap="nowrap">
+            <Grid item>
+              <ColorDot color={networkDotColorMap[network]} />
+            </Grid>
+            <Grid item>
+              <NetworkText color="textPrimary">{capitalize(network)}</NetworkText>
+            </Grid>
+          </Grid>
+        </StyledConnectedButton>
+      ) : null}
+    </>
   )
 }
