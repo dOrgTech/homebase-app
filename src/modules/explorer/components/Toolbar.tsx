@@ -11,7 +11,6 @@ import {
   useMediaQuery,
   Theme
 } from "@material-ui/core"
-import { useHistory } from "react-router-dom"
 
 import HomeButton from "assets/logos/homebase_logo.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -21,8 +20,6 @@ import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { SmallButton } from "../../common/SmallButton"
-import { EnvKey, getEnv } from "services/config"
-import { useDAOID } from "../pages/DAO/router"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -106,8 +103,6 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
 
-  const daoId = useDAOID()
-
   return (
     <StyledAppBar>
       <StyledToolbar>
@@ -139,11 +134,9 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                   {children}
                   <Grid item>
                     <Grid container alignItems="center" style={{ gap: 8 }}>
-                      {!daoId ? (
-                        <Grid item>
-                          <ChangeNetworkButton />
-                        </Grid>
-                      ) : null}
+                      <Grid item>
+                        <ChangeNetworkButton />
+                      </Grid>
 
                       <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
@@ -168,11 +161,9 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                 </Grid>
               ) : (
                 <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
-                  {!daoId ? (
-                    <Grid item>
-                      <ChangeNetworkButton />
-                    </Grid>
-                  ) : null}
+                  <Grid item>
+                    <ChangeNetworkButton />
+                  </Grid>
                   <Grid item>
                     <SmallButton
                       color="secondary"

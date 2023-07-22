@@ -1,6 +1,7 @@
 import { Box, capitalize, Grid, styled, Typography, Theme } from "@material-ui/core"
 import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
 import React from "react"
+import { useLocation } from "react-router-dom"
 import { Network } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
 
@@ -41,16 +42,25 @@ export const ChangeNetworkButton = () => {
   const { network } = useTezos()
   const { open } = useActionSheet(ActionSheet.Network)
 
+  const location = useLocation()
+
+  const canShow =
+    location.pathname.indexOf("/explorer/dao/") === -1 && location.pathname.indexOf("/explorer/lite/dao/") === -1
+
   return (
-    <StyledConnectedButton onClick={() => open()}>
-      <Grid container style={{ gap: 5 }} alignItems="center" wrap="nowrap">
-        <Grid item>
-          <ColorDot color={networkDotColorMap[network]} />
-        </Grid>
-        <Grid item>
-          <NetworkText>{capitalize(network)}</NetworkText>
-        </Grid>
-      </Grid>
-    </StyledConnectedButton>
+    <>
+      {canShow ? (
+        <StyledConnectedButton onClick={() => open()}>
+          <Grid container style={{ gap: 5 }} alignItems="center" wrap="nowrap">
+            <Grid item>
+              <ColorDot color={networkDotColorMap[network]} />
+            </Grid>
+            <Grid item>
+              <NetworkText>{capitalize(network)}</NetworkText>
+            </Grid>
+          </Grid>
+        </StyledConnectedButton>
+      ) : null}
+    </>
   )
 }
