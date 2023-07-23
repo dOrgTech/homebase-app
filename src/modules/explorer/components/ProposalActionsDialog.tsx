@@ -15,6 +15,7 @@ import { SupportedLambdaProposalKey } from "services/bakingBad/lambdas"
 import { ProposalAction, ProposalFormLambda } from "modules/explorer/components/ConfigProposalFormLambda"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal/ProposalCreatorModal"
+import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -123,6 +124,7 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
   const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
   const [openLiteProposal, setOpenLiteProposal] = useState(false)
   const liteDAOId = data?.liteDAOData?._id
+  const shouldDisable = useIsProposalButtonDisabled(daoId)
 
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
@@ -167,13 +169,21 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
                   onClick={() =>
                     elem.id === "off-chain"
                       ? handleLiteProposal()
-                      : elem.isLambda
-                      ? handleOpenCustomProposalModal(elem.id)
-                      : handleOpenSupportedExecuteProposalModal(elem.id)
+                      : !shouldDisable
+                      ? elem.isLambda
+                        ? handleOpenCustomProposalModal(elem.id)
+                        : handleOpenSupportedExecuteProposalModal(elem.id)
+                      : null
                   }
                 >
-                  <ActionText color="textPrimary">{elem.name}</ActionText>
-                  <ActionDescriptionText color="textPrimary"> {elem.description} </ActionDescriptionText>
+                  <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
+                    {elem.name}
+                  </ActionText>
+                  <ActionDescriptionText
+                    color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
+                  >
+                    {elem.description}{" "}
+                  </ActionDescriptionText>
                 </OptionContainer>
               </Grid>
             )

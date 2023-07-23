@@ -241,12 +241,7 @@ export const Proposals: React.FC = () => {
                   direction={isMobileSmall ? "column" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
-                  <SmallButton
-                    variant="contained"
-                    disabled={shouldDisable}
-                    color="secondary"
-                    onClick={() => setOpenDialog(true)}
-                  >
+                  <SmallButton variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
                     New Proposal
                   </SmallButton>
                   <Grid>
