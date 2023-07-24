@@ -10,13 +10,14 @@ import {
   styled,
   useMediaQuery,
   useTheme,
-  Theme
+  Theme,
+  Link
 } from "@material-ui/core"
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
 
 import { CreatorContext, StepInfo } from "modules/creator/state"
-import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps"
+import { StepRouter, STEPS, urlToStepMap, useStepNumber } from "modules/creator/steps"
 import { NavigationBar } from "modules/creator/components/NavigationBar"
 import { Navbar } from "modules/common/Toolbar"
 import mixpanel from "mixpanel-browser"
@@ -70,9 +71,8 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
 const FAQClickToAction = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
   fontSize: "14px",
-  cursor: "pointer",
-  textAlign: "center",
-  textDecoration: "underline"
+  cursor: "default",
+  textAlign: "center"
 }))
 
 const FAQClickText = styled(Typography)(({ theme }) => ({
@@ -86,10 +86,10 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 585,
+  maxHeight: 650,
   paddingTop: 20,
   position: "sticky",
-  top: 153
+  top: 130
 }))
 
 const custom = (theme: Theme) => ({
@@ -133,10 +133,6 @@ export const DAOCreate: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const goToFAQ = (): void => {
-    history.push("/faq")
-  }
-
   useEffect(() => {
     mixpanel.unregister("daoAddress")
     mixpanel.unregister("daoType")
@@ -152,7 +148,7 @@ export const DAOCreate: React.FC = () => {
           <ProgressContainer item xs={3} container direction="column">
             <Grid item container direction="column" alignItems="center" xs>
               <ProgressBar
-                progress={progress}
+                progress={Math.floor((step / (Object.keys(urlToStepMap).length - 1)) * 100)}
                 radius={52}
                 strokeWidth={5}
                 strokeColor={theme.palette.secondary.main}
@@ -160,12 +156,16 @@ export const DAOCreate: React.FC = () => {
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
-                  <IndicatorValue>{progress === 0.5 ? 0 : step * 20}%</IndicatorValue>
+                  <IndicatorValue>{Math.floor((step / (Object.keys(urlToStepMap).length - 1)) * 100)}%</IndicatorValue>
                 </Box>
               </ProgressBar>
-              <Box onClick={goToFAQ}>
-                <FAQClickText>New to DAOs?</FAQClickText>
-                <FAQClickToAction> Read our FAQ </FAQClickToAction>
+              <Box>
+                <FAQClickToAction>New to DAOs?</FAQClickToAction>
+                <Link target="_blank" href="https://faq.tezos-homebase.io" color="secondary">
+                  <FAQClickToAction style={{ textDecoration: "underline", cursor: "pointer" }}>
+                    Read our FAQ
+                  </FAQClickToAction>
+                </Link>
               </Box>
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title, path }: StepInfo, index: number) => (
@@ -188,7 +188,7 @@ export const DAOCreate: React.FC = () => {
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 5 && <NavigationBar back={back} next={next} />}
+          {step < 6 && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>

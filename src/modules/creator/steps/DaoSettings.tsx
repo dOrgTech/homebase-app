@@ -74,6 +74,9 @@ const CustomFormikTextField = withStyles({
     "& .MuiInputBase-input": {
       textAlign: "initial"
     },
+    "& .MuiInputBase-root": {
+      textWeight: 300
+    },
     "& .MuiInput-underline:before": {
       borderBottom: "none !important"
     },
@@ -102,6 +105,8 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "fontSize": 16,
   "color": props.theme.palette.text.secondary,
   "background": "#2F3438",
+  "lineHeight": "135%",
+  "letterSpacing": -0.18,
   "borderRadius": 8,
   "paddingRight": 40,
   "wordBreak": "break-word",
@@ -163,6 +168,22 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
   return (
     <>
       <SecondContainer container item direction="row" spacing={2} wrap="wrap">
+        <Grid item xs={isMobile ? 12 : 12}>
+          <Typography variant="subtitle1" color="textSecondary">
+            {" "}
+            DAO Name{" "}
+          </Typography>
+          <CustomInputContainer>
+            <Field
+              name="name"
+              inputProps={{ maxLength: 18 }}
+              type="text"
+              placeholder="DAO Name"
+              component={CustomFormikTextField}
+            ></Field>
+          </CustomInputContainer>
+          {errors.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
+        </Grid>
         <Grid item xs={isMobile ? 12 : 9}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
@@ -220,55 +241,12 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
             </Typography>
           </MetadataContainer>
         )}
-
-        <Grid item xs={isMobile ? 12 : 12}>
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
-            DAO Name{" "}
-          </Typography>
-          <CustomInputContainer>
-            <Field
-              name="name"
-              inputProps={{ maxLength: 18 }}
-              type="text"
-              placeholder="My Group’s Token"
-              component={CustomFormikTextField}
-            ></Field>
-          </CustomInputContainer>
-          {errors.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
-        </Grid>
-      </SecondContainer>
-      <SecondContainer container direction="row" alignItems="center">
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" color="textSecondary">
-            Description
-          </Typography>
-        </Grid>
-        <TextareaContainer item xs={12}>
-          <Field name="description">
-            {() => (
-              <CustomTextarea
-                maxLength={1500}
-                aria-label="empty textarea"
-                placeholder="This is what we’re about..."
-                value={getIn(values, "description")}
-                onChange={(newValue: any) => {
-                  setFieldValue("description", newValue.target.value)
-                }}
-              />
-            )}
-          </Field>
-          <Tooltip placement="bottom" title="Description info">
-            <InfoIcon />
-          </Tooltip>
-        </TextareaContainer>
-        {errors.description && touched.description ? <ErrorText>{errors.description}</ErrorText> : null}
       </SecondContainer>
       <SecondContainer item container direction="row" alignItems="center">
         <Grid item xs={12}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
-            Guardian{" "}
+            Guardian Address{" "}
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -298,6 +276,32 @@ const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors,
           </CustomInputContainer>
           {errors.guardian && touched.guardian ? <ErrorText>{errors.guardian}</ErrorText> : null}
         </Grid>
+      </SecondContainer>
+      <SecondContainer container direction="row" alignItems="center">
+        <Grid item xs={12}>
+          <Typography variant="subtitle1" color="textSecondary">
+            DAO Description
+          </Typography>
+        </Grid>
+        <TextareaContainer item xs={12}>
+          <Field name="description">
+            {() => (
+              <CustomTextarea
+                maxLength={1500}
+                aria-label="empty textarea"
+                placeholder="Type a description"
+                value={getIn(values, "description")}
+                onChange={(newValue: any) => {
+                  setFieldValue("description", newValue.target.value)
+                }}
+              />
+            )}
+          </Field>
+          <Tooltip placement="bottom" title="Description info">
+            <InfoIcon />
+          </Tooltip>
+        </TextareaContainer>
+        {errors.description && touched.description ? <ErrorText>{errors.description}</ErrorText> : null}
       </SecondContainer>
     </>
   )
@@ -388,7 +392,7 @@ export const DaoSettings = (): JSX.Element => {
   return (
     <Box>
       <TitleBlock
-        title="DAO Settings"
+        title="DAO Basics"
         description={
           <Typography variant="subtitle1" color="textSecondary">
             These settings will define the name, symbol, and initial distribution of your token. You will need a

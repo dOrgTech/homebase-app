@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom"
 
 import Rocket from "assets/img/rocket.svg"
 import { useOriginate } from "services/contracts/baseDAO/hooks/useOriginate"
-import { getTokensInfo, CreatorContext, ActionTypes, MigrationParams } from "modules/creator/state"
+import { getTokensInfo, CreatorContext, ActionTypes, MigrationParams, DeploymentMethod } from "modules/creator/state"
 import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types"
 import { DeploymentLoader } from "../components/DeploymentLoader"
 import { useCreatorRouteValidation } from "modules/creator/components/ProtectedRoute"
@@ -62,15 +62,18 @@ export const Review: React.FC = () => {
     activeState
   } = useOriginate(state.data.template)
   const history = useHistory()
-  console.log("states: ", states)
+
+  const historyState = history.location?.state as { method: DeploymentMethod }
+  const deploymentMethod = historyState.method
 
   // TODO: Fix infinite calling here
   useEffect(() => {
     ;(async () => {
-      if (!validDAOData && info && metadataCarrierParams) {
+      if (!validDAOData && info && metadataCarrierParams && deploymentMethod) {
         mutate({
           metadataParams: metadataCarrierParams,
-          params: info
+          params: info,
+          deploymentMethod
         })
       }
     })()
@@ -100,39 +103,44 @@ export const Review: React.FC = () => {
               <Grid item>
                 <RocketImg src={Rocket} alt="rocket" />
               </Grid>
-              <Grid item container direction="row" justifyContent="center">
-                <Typography variant="h4" color="textSecondary">
-                  Deploying
-                </Typography>
-                <CustomText color="secondary" variant="h4">
-                  {" "}
-                  {state.data.orgSettings.name}
-                </CustomText>
-                <Typography variant="h4" color="textSecondary">
-                  {" "}
-                  to the Tezos Network
-                </Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <Box>
-                  {data && data.address ? (
-                    <CustomButton
-                      color="secondary"
-                      variant="outlined"
-                      onClick={() => history.push("/explorer/dao/" + data.address)}
-                    >
-                      Go to my DAO
-                    </CustomButton>
-                  ) : null}
-                </Box>
-              </Grid>
+              {data && !data.address ? (
+                <Grid item container direction="row" justifyContent="center">
+                  <Typography variant="h4" color="textSecondary">
+                    Deploying
+                  </Typography>
+                  <CustomText color="secondary" variant="h4">
+                    {" "}
+                    {state.data.orgSettings.name}
+                  </CustomText>
+                  <Typography variant="h4" color="textSecondary">
+                    {" "}
+                    to the Tezos Network
+                  </Typography>
+                </Grid>
+              ) : null}
             </Grid>
             <DeploymentLoader states={states} activeStep={activeState} error={error} />
 
+            <Grid item xs={12} container justifyContent="center">
+              <Box>
+                {data && data.address ? (
+                  <CustomButton
+                    color="secondary"
+                    variant="outlined"
+                    onClick={() => history.push("/explorer/dao/" + data.address)}
+                  >
+                    Go to my DAO
+                  </CustomButton>
+                ) : null}
+              </Box>
+            </Grid>
+
             {states[0].activeText !== "" && states[2].completedText === "" && error === null ? (
-              <Grid container direction="row" justifyContent="center" alignContent="center">
-                <Typography color="secondary"> This may take several minutes </Typography>
-              </Grid>
+              data && data.address ? null : (
+                <Grid container direction="row" justifyContent="center" alignContent="center">
+                  <Typography color="secondary"> This may take several minutes, Do not close the tab </Typography>
+                </Grid>
+              )
             ) : null}
           </>
         ) : (

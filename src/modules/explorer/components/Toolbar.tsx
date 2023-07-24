@@ -11,7 +11,6 @@ import {
   useMediaQuery,
   Theme
 } from "@material-ui/core"
-import { useHistory } from "react-router-dom"
 
 import HomeButton from "assets/logos/homebase_logo.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -21,7 +20,6 @@ import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { SmallButton } from "../../common/SmallButton"
-import { EnvKey, getEnv } from "services/config"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -105,8 +103,6 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
 
-  const history = useHistory()
-
   return (
     <StyledAppBar>
       <StyledToolbar>
@@ -141,6 +137,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                       <Grid item>
                         <ChangeNetworkButton />
                       </Grid>
+
                       <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
                           container

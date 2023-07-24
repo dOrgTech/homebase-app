@@ -61,3 +61,12 @@ export const calculateCycleInfo = (originationTime: string, votingPeriod: number
 export const unpackExtraNumValue = (bytes: string): BigNumber => {
   return new BigNumber((unpackDataBytes({ bytes }) as { int: string }).int)
 }
+
+export const replacer = (name: any, val: any) => {
+  // convert Number to string
+  if (val && val.constructor === BigNumber) {
+    return val.toString()
+  } else {
+    return val // return as is
+  }
+}
