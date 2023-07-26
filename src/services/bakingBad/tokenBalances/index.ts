@@ -3,7 +3,7 @@ import { NFT, Token } from "models/Token"
 import { Network } from "services/beacon"
 import { parseUnits } from "services/contracts/utils"
 import { networkNameMap } from ".."
-import { BalanceDataDTO, BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenDataTZKT } from "./types"
+import { BalanceDataDTO, BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, StakedBalanceDTO, TokenDataTZKT } from "./types"
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO => value.hasOwnProperty("artifact_uri")
 
@@ -210,5 +210,30 @@ export const getUserTokenBalance = async (accountAddress: string, network: Netwo
 
   if (userTokenBalance && userTokenBalance[0]) {
     return userTokenBalance[0].balance
+  }
+}
+
+export const getUserDAODepositBalance = async (
+  accountAddress: string,
+  network: Network = "mainnet",
+  daoAddress = ""
+) => {
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${daoAddress}/bigmaps/freeze_history/keys?key.eq=${accountAddress}`
+
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user staked balance")
+  }
+
+  const userStakedBalances: StakedBalanceDTO[] = await response.json()
+
+  if (userStakedBalances && userStakedBalances[0]) {
+    const userStakedBalance = new BigNumber(userStakedBalances[0].value.staked)
+    const userCurrentUnstakedBalance = new BigNumber(userStakedBalances[0].value.current_unstaked)
+    const userPastUnstakedBalance = new BigNumber(userStakedBalances[0].value.past_unstaked)
+
+    const userDAODepositBalance = userStakedBalance.plus(userCurrentUnstakedBalance).plus(userPastUnstakedBalance)
+    return userDAODepositBalance.toString()
   }
 }

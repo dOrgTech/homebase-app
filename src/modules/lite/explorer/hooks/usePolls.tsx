@@ -13,6 +13,10 @@ export const usePolls = (id: any) => {
   useEffect(() => {
     async function fetchPoll() {
       await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`).then(async response => {
+        console.log(
+          "${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list: ",
+          `${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`
+        )
         if (!response.ok) {
           openNotification({
             message: "An error has occurred",
@@ -23,6 +27,7 @@ export const usePolls = (id: any) => {
         }
 
         const communityPolls: Poll[] = await response.json()
+        console.log("communityPolls: ", communityPolls)
         if (!communityPolls) {
           return
         }

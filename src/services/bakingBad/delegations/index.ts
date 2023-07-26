@@ -1,7 +1,8 @@
 import { Network } from "services/beacon"
 import { networkNameMap } from ".."
 import { DelegationDTO, TokenDelegationDTO, UserDelegateBalance } from "./types"
-import { getUserTokenBalance } from "../tokenBalances"
+import { getUserDAODepositBalance, getUserTokenBalance } from "../tokenBalances"
+import BigNumber from "bignumber.js"
 
 export const getLatestDelegation = async (daoAddress: string, network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/operations/delegations?sender=${daoAddress}&status=applied`
@@ -38,7 +39,12 @@ export const getTokenDelegation = async (tokenAddress: string, account: string, 
   return delegatedTo
 }
 
-export const getTokenDelegationVoteWeight = async (tokenAddress: string, account: string, network: Network) => {
+export const getTokenDelegationVoteWeight = async (
+  tokenAddress: string,
+  daoAddress: string,
+  account: string,
+  network: Network
+) => {
   const selfBalance = await getUserTokenBalance(account, network, tokenAddress)
 
   if (!selfBalance) {
@@ -54,9 +60,13 @@ export const getTokenDelegationVoteWeight = async (tokenAddress: string, account
 
   const resultingDelegations: TokenDelegationDTO[] = await response.json()
 
+  const daoDepositBalance = await getUserDAODepositBalance(account, network, daoAddress)
+
   const delegateBalance: UserDelegateBalance = {
     address: account,
-    balance: selfBalance
+    balance: daoDepositBalance
+      ? new BigNumber(selfBalance).plus(new BigNumber(daoDepositBalance)).toString()
+      : selfBalance
   }
 
   if (resultingDelegations.length === 0) {
@@ -71,11 +81,13 @@ export const getTokenDelegationVoteWeight = async (tokenAddress: string, account
       if (balance) {
         delegatedAddressBalances.push({
           address: del.key,
-          balance: balance
+          balance:
+            del.key === account && daoDepositBalance
+              ? new BigNumber(balance).plus(new BigNumber(daoDepositBalance)).toString()
+              : balance
         })
       }
     })
   )
-
   return delegatedAddressBalances
 }

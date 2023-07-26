@@ -57,7 +57,7 @@ export const useTezos = (): WalletConnectReturn => {
       if (!wallet) {
         throw new Error("No Wallet Connected")
       }
-
+      await wallet.clearActiveAccount()
       await wallet.disconnect()
 
       dispatch({

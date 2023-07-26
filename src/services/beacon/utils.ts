@@ -31,17 +31,23 @@ export const getTezosNetwork = (): Network => {
   return envNetwork
 }
 
-export const createWallet = (network: Network) =>
-  new BeaconWallet({
-    name: "Homebase",
-    iconUrl: "https://tezostaquito.io/img/favicon.png",
-    preferredNetwork: network as NetworkType,
-    walletConnectOptions: {
-      projectId: "1641355e825aeaa926e843dd38b04f6f", // Project ID can be customised
-      relayUrl: "wss://relay.walletconnect.com" // WC2 relayUrl can be customised
-    }
-  })
+let beaconWallet: BeaconWallet
 
+export const createWallet = (network: Network) => {
+  if (!beaconWallet) {
+    beaconWallet = new BeaconWallet({
+      name: "Homebase",
+      iconUrl: "https://tezostaquito.io/img/favicon.png",
+      preferredNetwork: network as NetworkType,
+      walletConnectOptions: {
+        projectId: "1641355e825aeaa926e843dd38b04f6f", // Project ID can be customised
+        relayUrl: "wss://relay.walletconnect.com" // WC2 relayUrl can be customised
+      }
+    })
+  }
+
+  return beaconWallet
+}
 export const createTezos = (network: Network) => {
   const tezos = new TezosToolkit(rpcNodes[network])
   tezos.setPackerProvider(new MichelCodecPacker())

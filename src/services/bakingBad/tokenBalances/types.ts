@@ -142,3 +142,21 @@ export interface BalanceDataDTO {
   lastLevel: number
   lastTime: string
 }
+
+export interface StakedBalanceDTO {
+  id: number
+  active: boolean
+  hash: string
+  key: string
+  value: StakedBalanceValue
+  firstLevel: number
+  lastLevel: number
+  updates: number
+}
+
+export interface StakedBalanceValue {
+  staked: string
+  past_unstaked: string
+  current_unstaked: string
+  current_stage_num: string
+}

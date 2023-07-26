@@ -7,7 +7,7 @@ export const useDelegationStatus = (tokenAddress: string | undefined) => {
   const { network, tezos, account, connect } = useTezos()
 
   const { data, ...rest } = useQuery<string | null, Error>(
-    ["tokenDelegations", tokenAddress],
+    ["tokenDelegations", tokenAddress, account],
     async () => {
       if (!tokenAddress) {
         return null
@@ -16,7 +16,7 @@ export const useDelegationStatus = (tokenAddress: string | undefined) => {
       }
     },
     {
-      enabled: !!tokenAddress
+      enabled: !!tokenAddress && !!account
     }
   )
 

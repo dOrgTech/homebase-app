@@ -56,9 +56,8 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
   const { data: delegatedTo } = useDelegationStatus(dao?.data.token.contract)
   const [delegationStatus, setDelegationStatus] = useState<DelegationsType>(DelegationsType.NOT_ACCEPTING_DELEGATION)
   const [openModal, setOpenModal] = useState(false)
-  const { data: delegateVoteBalances } = useDelegationVoteWeight(dao?.data.token.contract)
+  const { data: delegateVoteBalances } = useDelegationVoteWeight(dao?.data.token.contract, dao?.data.address)
   const [voteWeight, setVoteWeight] = useState(new BigNumber(0))
-  console.log("voteWeight: ", voteWeight.toString())
 
   const onCloseAction = () => {
     setOpenModal(false)
@@ -95,7 +94,7 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
         <Grid container style={{ gap: 12 }} direction="column">
           <Typography color="textPrimary">Voting Weight</Typography>
           <Balance color="secondary">
-            {!voteWeight || voteWeight.eq(new BigNumber(0)) ? (
+            {!voteWeight || voteWeight.eq(new BigNumber(0)) || delegationStatus === DelegationsType.DELEGATING ? (
               "-"
             ) : (
               <>{`${parseUnits(voteWeight, dao.data.token.decimals).toString()} ${dao.data.token.symbol}`}</>
