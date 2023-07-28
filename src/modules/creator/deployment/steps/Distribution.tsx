@@ -168,10 +168,12 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                       key={index}
                       style={
                         isMobile
-                          ? { display: "inline-block", gap: 16, alignItems: "center" }
+                          ? { gap: 16, alignItems: "center" }
                           : { display: "flex", gap: 16, alignItems: "center" }
                       }
                     >
+                      {isMobile ? <Typography color="textSecondary">Wallet address</Typography> : null}
+
                       <CustomInputContainer>
                         <Field
                           type="text"
@@ -180,6 +182,12 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                           component={CustomFormikTextField}
                         />
                       </CustomInputContainer>
+
+                      {isMobile ? (
+                        <Typography color="textSecondary" style={{ marginTop: 8 }}>
+                          Amount
+                        </Typography>
+                      ) : null}
 
                       <CustomAmountContainer>
                         <Field
@@ -333,7 +341,7 @@ export const ContractDistribution: React.FC = () => {
                   container
                   direction={!isMobile ? "row" : "row"}
                   alignItems={!isMobile ? "flex-start" : "center"}
-                  style={{ marginTop: 35 }}
+                  style={!isMobile ? { marginTop: 35 } : { visibility: "hidden" }}
                 >
                   <Grid item xs={isMobile ? 12 : 7}>
                     <Typography variant="subtitle1" color="textSecondary">
