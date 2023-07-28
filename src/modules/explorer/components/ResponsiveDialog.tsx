@@ -13,6 +13,7 @@ const TitleText = styled(Typography)(({ theme }) => ({
   fontWeight: 550,
   lineHeight: ".80",
   textTransform: "capitalize",
+  fontSize: 20,
   [theme.breakpoints.down("sm")]: {
     fontSize: 18
   }

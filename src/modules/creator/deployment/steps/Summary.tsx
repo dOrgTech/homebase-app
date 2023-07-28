@@ -98,7 +98,7 @@ export const ContractSummary: React.FC = () => {
   }
 
   const {
-    mutation: { mutate, data, error }
+    mutation: { mutate, data }
   } = useTokenOriginate(state.data)
 
   useEffect(() => {
@@ -107,19 +107,10 @@ export const ContractSummary: React.FC = () => {
         type: ActionTypes.CLEAR_CACHE
       })
       history.push("/creator/success", { address: data.address })
+    } else if (data && !data.address) {
+      setIsLoading(false)
     }
   }, [data, dispatch, history])
-
-  useEffect(() => {
-    if (error) {
-      setIsLoading(false)
-      openNotification({
-        message: "Error deploying token... try again later",
-        variant: "error",
-        autoHideDuration: 2000
-      })
-    }
-  }, [error, openNotification])
 
   useEffect(() => {
     dispatch({

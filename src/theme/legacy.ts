@@ -32,7 +32,7 @@ export const legacyTheme = createMuiTheme({
     },
     subtitle1: {
       fontSize: 18,
-      fontWeight: 400,
+      fontWeight: 300,
       lineHeight: "26.33px",
       letterSpacing: "-0.01em"
     },
@@ -43,7 +43,7 @@ export const legacyTheme = createMuiTheme({
       letterSpacing: "-0.01em"
     },
     h3: {
-      fontSize: 35,
+      fontSize: 32,
       fontWeight: 500,
       fontFamily: "Roboto Mono"
     },
@@ -241,9 +241,7 @@ export const legacyTheme = createMuiTheme({
         color: "#fff"
       },
       root: {
-        "&::placeholder": {
-          fontWeight: 300
-        }
+        fontWeight: 300
       }
     },
     MuiDivider: {

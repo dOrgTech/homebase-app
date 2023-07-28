@@ -122,6 +122,9 @@ const validateForm = (values: TokenDistributionSettings) => {
     if (values.totalAmount && values.totalAmount.minus(new BigNumber(getTotal(values.holders))) < new BigNumber(0)) {
       errors.totalAmount = "Available balance has to be greater that the total supply"
     }
+    if (values.totalAmount && values.totalAmount.gt(new BigNumber(getTotal(values.holders)))) {
+      errors.totalAmount = "Total Supply not fully allocated"
+    }
   })
 
   return errors
