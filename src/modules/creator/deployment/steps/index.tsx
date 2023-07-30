@@ -11,7 +11,7 @@ import { ContractSummary } from "./Summary"
 
 export const STEPS: StepInfo[] = [
   { title: "Configure Token Contract", index: 0, path: "config" },
-  { title: "Token Distribution", index: 1, path: "distribution" },
+  { title: "Initial Token Distribution", index: 1, path: "distribution" },
   { title: "Review Information", index: 2, path: "summary" }
 ]
 
