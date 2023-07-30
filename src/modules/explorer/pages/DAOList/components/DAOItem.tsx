@@ -32,7 +32,8 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   },
 
   ["@media (max-width:1155px)"]: {
-    minHeight: 123
+    minHeight: 123,
+    maxWidth: 480
   },
 
   ["@media (max-width:1030px)"]: {},

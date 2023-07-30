@@ -26,25 +26,16 @@ const AddressTextField = styled(TextField)({
 })
 
 export enum ActionTypes {
-  ACCEPT_DELEGATIONS = "ACCEPT_DELEGATIONS",
-  DELEGATE = "DELEGATE",
-  CHANGE_DELEGATE = "CHANGE_DELEGATE",
-  STOP_ACCEPTING_DELEGATIONS = "STOP_ACCEPTING_DELEGATIONS",
-  STOP_DELEGATING = "STOP_DELEGATING"
+  SET_DELEGATE = "SET_DELEGATE",
+  NOT_DELEGATING = "NOT_DELEGATING"
 }
 
 const matchTextToAction = (value: ActionTypes) => {
   switch (value) {
-    case ActionTypes.ACCEPT_DELEGATIONS:
-      return "Accept Delegations"
-    case ActionTypes.DELEGATE:
-      return "Delegate"
-    case ActionTypes.CHANGE_DELEGATE:
-      return "Change Delegate"
-    case ActionTypes.STOP_ACCEPTING_DELEGATIONS:
-      return "Stop Accepting Delegations"
-    case ActionTypes.STOP_DELEGATING:
-      return "Stop Delegating"
+    case ActionTypes.SET_DELEGATE:
+      return "Enter delegate address"
+    case ActionTypes.NOT_DELEGATING:
+      return "I want to own my voting power"
     default:
       return
   }
@@ -58,9 +49,9 @@ export const DelegationDialog: React.FC<{
   delegationStatus: DelegationsType
   delegatedTo: string | null | undefined
 }> = ({ status, onClose, open, setDelegationStatus, delegationStatus, delegatedTo }) => {
-  const [options, setOptions] = useState<ActionTypes[]>([])
+  const [options, setOptions] = useState<ActionTypes[]>([ActionTypes.NOT_DELEGATING, ActionTypes.SET_DELEGATE])
   const [selectedOption, setSelectedOption] = useState()
-  const { mutate: delegateToken } = useTokenDelegate()
+  const { mutate: delegateToken, data: tokenData } = useTokenDelegate()
   const daoId = useDAOID()
   const { data, cycleInfo } = useDAO(daoId)
   const { tezos, connect, network, account } = useTezos()
@@ -81,37 +72,39 @@ export const DelegationDialog: React.FC<{
   }
 
   const updateStatus = () => {
-    if (selectedOption === ActionTypes.DELEGATE || selectedOption === ActionTypes.CHANGE_DELEGATE) {
+    if (selectedOption === ActionTypes.SET_DELEGATE) {
       if (newDelegate && data?.data.token.contract) {
-        delegateToken({ tokenAddress: data?.data.token.contract, delegateAddress: newDelegate })
+        delegateToken(
+          { tokenAddress: data?.data.token.contract, delegateAddress: newDelegate },
+          { onSuccess: () => setDelegationStatus(DelegationsType.DELEGATING) }
+        )
+        return
       }
-    } else if (
-      selectedOption === ActionTypes.STOP_ACCEPTING_DELEGATIONS ||
-      selectedOption === ActionTypes.STOP_DELEGATING
-    ) {
+    } else if (selectedOption === ActionTypes.NOT_DELEGATING) {
       if (data?.data.token.contract) {
-        delegateToken({ tokenAddress: data?.data.token.contract, delegateAddress: null })
+        delegateToken(
+          { tokenAddress: data?.data.token.contract, delegateAddress: null },
+          {
+            onSuccess: () => {
+              setDelegationStatus(DelegationsType.NOT_DELEGATING)
+              return
+            }
+          }
+        )
       }
-    } else if (selectedOption === ActionTypes.ACCEPT_DELEGATIONS) {
-      if (data?.data.token.contract && account) {
-        delegateToken({ tokenAddress: data?.data.token.contract, delegateAddress: account })
-      }
+      return
     }
   }
 
   const getOptionsByStatus = (status: DelegationsType | undefined) => {
     switch (status) {
-      case DelegationsType.NOT_ACCEPTING_DELEGATION:
-        const optionsOne = [ActionTypes.ACCEPT_DELEGATIONS, ActionTypes.DELEGATE]
+      case DelegationsType.NOT_DELEGATING:
+        const optionsOne = [ActionTypes.SET_DELEGATE]
         setOptions(optionsOne)
         break
-      case DelegationsType.ACCEPTING_DELEGATION:
-        const optionsTwo = [ActionTypes.STOP_ACCEPTING_DELEGATIONS]
-        setOptions(optionsTwo)
-        break
       case DelegationsType.DELEGATING:
-        const optionsThree = [ActionTypes.CHANGE_DELEGATE, ActionTypes.STOP_DELEGATING, ActionTypes.ACCEPT_DELEGATIONS]
-        setOptions(optionsThree)
+        const optionsTwo = [ActionTypes.NOT_DELEGATING]
+        setOptions(optionsTwo)
         break
     }
   }
@@ -146,8 +139,7 @@ export const DelegationDialog: React.FC<{
                   name="radio-buttons"
                   inputProps={{ "aria-label": "A" }}
                 />
-                {item === selectedOption &&
-                (selectedOption === ActionTypes.DELEGATE || selectedOption === ActionTypes.CHANGE_DELEGATE) ? (
+                {item === selectedOption && selectedOption === ActionTypes.SET_DELEGATE ? (
                   <AddressTextField
                     onChange={e => {
                       setNewDelegate(e.target.value)
@@ -163,7 +155,9 @@ export const DelegationDialog: React.FC<{
         })}
 
         <Grid container direction="row" justifyContent="flex-end">
-          <SmallButton onClick={saveInfo}>Submit</SmallButton>
+          <SmallButton disabled={selectedOption === undefined} onClick={saveInfo}>
+            Submit
+          </SmallButton>
         </Grid>
       </Grid>
     </ResponsiveDialog>

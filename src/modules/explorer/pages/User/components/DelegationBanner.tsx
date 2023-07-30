@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useEffect, useState } from "react"
-import { Grid, Theme, Typography, styled } from "@material-ui/core"
+import { CircularProgress, Grid, Theme, Typography, styled } from "@material-ui/core"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { Edit } from "@material-ui/icons"
 import { DelegationDialog } from "./DelegationModal"
@@ -10,8 +11,7 @@ import BigNumber from "bignumber.js"
 import { parseUnits } from "services/contracts/utils"
 
 export enum DelegationsType {
-  ACCEPTING_DELEGATION = "ACCEPTING_DELEGATION",
-  NOT_ACCEPTING_DELEGATION = "NOT_ACCEPTING_DELEGATION",
+  NOT_DELEGATING = "NOT_DELEGATING",
   DELEGATING = "DELEGATING"
 }
 
@@ -38,9 +38,7 @@ const Balance = styled(Typography)({
 
 export const matchTextToStatus = (value: DelegationsType | undefined) => {
   switch (value) {
-    case DelegationsType.ACCEPTING_DELEGATION:
-      return "Accepting delegations"
-    case DelegationsType.NOT_ACCEPTING_DELEGATION:
+    case DelegationsType.NOT_DELEGATING:
       return "Not currently accepting delegations or delegating"
     case DelegationsType.DELEGATING:
       return "Delegating to "
@@ -53,26 +51,35 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
   const { data: dao } = useDAO(daoId)
   const { network, tezos, account, connect } = useTezos()
 
-  const { data: delegatedTo } = useDelegationStatus(dao?.data.token.contract)
-  const [delegationStatus, setDelegationStatus] = useState<DelegationsType>(DelegationsType.NOT_ACCEPTING_DELEGATION)
+  const { data: delegatedTo, isLoading, refetch } = useDelegationStatus(dao?.data.token.contract)
+  const [delegationStatus, setDelegationStatus] = useState<DelegationsType>(DelegationsType.NOT_DELEGATING)
   const [openModal, setOpenModal] = useState(false)
   const { data: delegateVoteBalances } = useDelegationVoteWeight(dao?.data.token.contract)
   const [voteWeight, setVoteWeight] = useState(new BigNumber(0))
-  console.log("voteWeight: ", voteWeight.toString())
+  // console.log("voteWeight: ", voteWeight.toString())
+
+  useEffect(() => {
+    refetch()
+
+    setTimeout(() => {
+      if (delegatedTo === account) {
+        setDelegationStatus(DelegationsType.DELEGATING)
+      } else if (delegatedTo && delegatedTo !== account) {
+        setDelegationStatus(DelegationsType.DELEGATING)
+      } else {
+        setDelegationStatus(DelegationsType.NOT_DELEGATING)
+      }
+    }, 2000)
+  }, [])
 
   const onCloseAction = () => {
     setOpenModal(false)
   }
 
   useEffect(() => {
-    if (delegatedTo === account) {
-      setDelegationStatus(DelegationsType.ACCEPTING_DELEGATION)
-    } else if (delegatedTo && delegatedTo !== account) {
-      setDelegationStatus(DelegationsType.DELEGATING)
-    } else {
-      setDelegationStatus(DelegationsType.NOT_ACCEPTING_DELEGATION)
-    }
-  }, [delegatedTo, account])
+    refetch()
+    console.log(delegatedTo)
+  }, [delegationStatus, setDelegationStatus])
 
   useEffect(() => {
     let totalVoteWeight = new BigNumber(0)
@@ -124,8 +131,14 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
           </Grid>
         </Grid>
         <Subtitle variant="body1">
-          {matchTextToStatus(delegationStatus)}
-          {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
+          {isLoading ? (
+            <CircularProgress color="secondary" />
+          ) : (
+            <>
+              {matchTextToStatus(delegationStatus)}
+              {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
+            </>
+          )}
         </Subtitle>
       </Grid>
       <DelegationDialog
