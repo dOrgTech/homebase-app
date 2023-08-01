@@ -8,12 +8,16 @@ const Content = styled(Grid)({
   padding: "41px 46px"
 })
 
-const TitleText = styled(Typography)({
+const TitleText = styled(Typography)(({ theme }) => ({
   color: "#ffff",
   fontWeight: 550,
   lineHeight: ".80",
-  textTransform: "capitalize"
-})
+  textTransform: "capitalize",
+  fontSize: 20,
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 18
+  }
+}))
 
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthMd": {
@@ -48,8 +52,13 @@ export const ResponsiveDialog: React.FC<{
   return isSmall ? (
     <BottomSheet open={open} onDismiss={onClose}>
       <Content container direction="column" style={{ gap: 46 }}>
-        <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
-          <Grid item>{onGoBack ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
+        <Grid item container direction="row" justifyContent="space-between">
+          {onGoBack !== undefined ? (
+            <Grid item>
+              {" "}
+              <BackButton onGoBack={onGoBack} />
+            </Grid>
+          ) : null}
           <Grid item>
             <TitleText>{title}</TitleText>
           </Grid>
@@ -57,14 +66,21 @@ export const ResponsiveDialog: React.FC<{
             <CloseButton onClose={onClose} />
           </Grid>
         </Grid>
-        <Grid item>{children}</Grid>
+        <Grid item style={{ width: "inherit" }}>
+          {children}
+        </Grid>
       </Content>
     </BottomSheet>
   ) : (
     <CustomDialog open={open} onClose={onClose} maxWidth={template}>
       <Content container direction="column" style={{ gap: 30 }}>
         <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
-          <Grid item>{onGoBack ? <BackButton onGoBack={onGoBack} /> : null}</Grid>
+          {onGoBack !== undefined ? (
+            <Grid item>
+              {" "}
+              <BackButton onGoBack={onGoBack} />
+            </Grid>
+          ) : null}{" "}
           <Grid item>
             <TitleText color="textPrimary">{title}</TitleText>
           </Grid>

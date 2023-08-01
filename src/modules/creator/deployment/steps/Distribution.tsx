@@ -1,37 +1,24 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles, withTheme } from "@material-ui/core"
-import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
+import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles } from "@material-ui/core"
+import { Field, FieldArray, Form, Formik, FormikErrors } from "formik"
 import React, { useContext, useEffect } from "react"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, Holder, TokenContractSettings, TokenDistributionSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
-import { SmallButton } from "modules/common/SmallButton"
-import { AddCircleOutline, RemoveCircle } from "@material-ui/icons"
+import { AddCircleOutline, RemoveCircleOutline } from "@material-ui/icons"
 import BigNumber from "bignumber.js"
-import { parseUnits } from "services/contracts/utils"
 import { numberWithCommas } from "../state/utils"
-import { useNotification } from "modules/common/hooks/useNotification"
-import { TitleBlock } from "modules/common/TitleBlock"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { FieldChange, handleNegativeInput } from "modules/creator/utils"
 
-const SupplyContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.dark,
-  padding: "30px 40px",
-  borderRadius: 8
-}))
-
-const RemoveButton = styled(RemoveCircle)({
-  marginTop: 13
+const RemoveButton = styled(RemoveCircleOutline)({
+  marginTop: 0,
+  fontSize: 18
 })
 
 const AmountText = styled(Typography)({
-  fontWeight: 200
-})
-
-const ButtonContainer = styled(Grid)({
-  marginTop: 40
+  fontWeight: 400
 })
 
 const CustomFormikTextField = withStyles({
@@ -56,27 +43,53 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField)
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  height: 54,
-  boxSizing: "border-box",
-  marginTop: 14,
-  background: "#2F3438",
-  borderRadius: 8,
-  alignItems: "center",
-  display: "flex",
-  padding: "13px 23px",
-  width: "100%"
+  "height": 54,
+  "boxSizing": "border-box",
+  "marginTop": 14,
+  "background": "#2F3438",
+  "borderRadius": 8,
+  "alignItems": "center",
+  "display": "flex",
+  "padding": "13px 23px",
+  "width": "85%",
+  "fontWeight": 300,
+  "& input::placeholder": {
+    fontWeight: 300
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "100%"
+  }
 }))
 
 const CustomAmountContainer = styled(Grid)(({ theme }) => ({
-  height: 54,
-  boxSizing: "border-box",
-  marginTop: 14,
-  background: "#2F3438",
-  borderRadius: 8,
-  alignItems: "center",
-  display: "flex",
-  padding: "13px 23px",
-  width: "40%",
+  "height": 54,
+  "boxSizing": "border-box",
+  "marginTop": 14,
+  "background": "#2F3438",
+  "borderRadius": 8,
+  "alignItems": "center",
+  "display": "flex",
+  "padding": "13px 23px",
+  "width": "45%",
+  "& input::placeholder": {
+    fontWeight: 300
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "100%"
+  }
+}))
+
+const AddButtonContainer = styled(Grid)(({ theme }) => ({
+  "height": 54,
+  "boxSizing": "border-box",
+  "marginTop": 14,
+  "alignItems": "center",
+  "display": "flex",
+  "padding": "0px 0px",
+  "width": "15%",
+  "& input::placeholder": {
+    fontWeight: 300
+  },
   [theme.breakpoints.down("sm")]: {
     width: "100%"
   }
@@ -84,7 +97,8 @@ const CustomAmountContainer = styled(Grid)(({ theme }) => ({
 
 const ErrorText = styled(Typography)({
   fontSize: 14,
-  color: "red"
+  color: "red",
+  marginTop: 4
 })
 
 const hasDuplicates = (options: Holder[]) => {
@@ -107,6 +121,9 @@ const validateForm = (values: TokenDistributionSettings) => {
     }
     if (values.totalAmount && values.totalAmount.minus(new BigNumber(getTotal(values.holders))) < new BigNumber(0)) {
       errors.totalAmount = "Available balance has to be greater that the total supply"
+    }
+    if (values.totalAmount && values.totalAmount.gt(new BigNumber(getTotal(values.holders)))) {
+      errors.totalAmount = "Total Supply not fully allocated"
     }
   })
 
@@ -154,10 +171,12 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                       key={index}
                       style={
                         isMobile
-                          ? { display: "inline-block", gap: 16, alignItems: "center" }
+                          ? { gap: 16, alignItems: "center" }
                           : { display: "flex", gap: 16, alignItems: "center" }
                       }
                     >
+                      {isMobile ? <Typography color="textSecondary">Wallet address</Typography> : null}
+
                       <CustomInputContainer>
                         <Field
                           type="text"
@@ -167,52 +186,69 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                         />
                       </CustomInputContainer>
 
+                      {isMobile ? (
+                        <Typography color="textSecondary" style={{ marginTop: 8 }}>
+                          Amount
+                        </Typography>
+                      ) : null}
+
                       <CustomAmountContainer>
                         <Field
                           type="number"
                           name={`holders.[${index}].amount`}
-                          placeholder={`Amount`}
+                          placeholder={`0`}
                           component={CustomFormikTextField}
                           onKeyDown={(e: FieldChange) => handleNegativeInput(e)}
-                        />
-                      </CustomAmountContainer>
-
-                      {index !== 0 ? (
-                        <RemoveButton
-                          color="error"
-                          onClick={() => {
-                            if (index !== 0) {
-                              arrayHelpers.remove(index)
-                            }
+                          InputProps={{
+                            endAdornment:
+                              index !== 0 ? (
+                                <RemoveButton
+                                  color="error"
+                                  onClick={() => {
+                                    if (index !== 0) {
+                                      arrayHelpers.remove(index)
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <RemoveButton color="error" style={{ visibility: "hidden" }} />
+                              )
                           }}
                         />
-                      ) : (
-                        <RemoveButton color="error" style={{ visibility: "hidden" }} />
-                      )}
+                      </CustomAmountContainer>
+                      <AddButtonContainer>
+                        {index === values.holders.length - 1 ? (
+                          <Grid
+                            direction="row"
+                            container
+                            justifyContent={isMobile ? "flex-start" : "flex-end"}
+                            alignItems={"center"}
+                            style={{ gap: 8 }}
+                          >
+                            <IconButton
+                              style={{ cursor: "pointer", padding: 0 }}
+                              onClick={() => arrayHelpers.insert(values.holders.length, newValue)}
+                            >
+                              <AddCircleOutline
+                                style={{ cursor: "pointer", fontSize: 18 }}
+                                htmlColor={theme.palette.secondary.main}
+                              />
+                            </IconButton>
+                            <Typography
+                              variant={"body2"}
+                              style={{ cursor: "pointer" }}
+                              onClick={() => arrayHelpers.insert(values.holders.length, newValue)}
+                              color={"secondary"}
+                            >
+                              Add
+                            </Typography>
+                          </Grid>
+                        ) : null}
+                      </AddButtonContainer>
                     </div>
                   ))
                 : null}
               {errors.holders && touched.holders ? <ErrorText>{errors.holders}</ErrorText> : null}
-
-              <div>
-                <Grid container alignItems={"center"} style={{ gap: 10 }}>
-                  <IconButton
-                    size="small"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => arrayHelpers.insert(values.holders.length, newValue)}
-                  >
-                    <AddCircleOutline htmlColor={theme.palette.secondary.main} />
-                  </IconButton>
-                  <Typography
-                    variant={"body2"}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => arrayHelpers.insert(values.holders.length, newValue)}
-                    color={"secondary"}
-                  >
-                    Add Member
-                  </Typography>
-                </Grid>
-              </div>
             </div>
           )}
         />
@@ -260,53 +296,65 @@ export const ContractDistribution: React.FC = () => {
   }
 
   return (
-    <>
-      <Grid container direction="column">
-        <Formik
-          enableReinitialize={true}
-          validateOnChange={true}
-          validateOnBlur={false}
-          validate={validateForm}
-          onSubmit={saveStepInfo}
-          initialValues={tokenDistribution}
-        >
-          {({ submitForm, isSubmitting, setFieldValue, values, errors, touched, setFieldTouched }) => {
-            return (
-              <Form style={{ width: "100%" }}>
-                <Grid>
-                  <TitleBlock title="Initial token distribution" description={""}></TitleBlock>
-                </Grid>
-
-                <SupplyContainer item container direction="column" style={{ gap: "12px" }}>
+    <Grid container direction="column">
+      <Grid>
+        <Typography style={{ marginBottom: 32 }} variant="h5" color="textSecondary">
+          Initial Token Distribution
+        </Typography>
+      </Grid>
+      <Formik
+        enableReinitialize={true}
+        validateOnChange={true}
+        validateOnBlur={false}
+        validate={validateForm}
+        onSubmit={saveStepInfo}
+        initialValues={tokenDistribution}
+      >
+        {({ submitForm, isSubmitting, setFieldValue, values, errors, touched, setFieldTouched }) => {
+          return (
+            <Form style={{ width: "100%" }}>
+              <Grid container>
+                <Grid xs={12} item container direction="column" style={{ gap: "12px" }}>
                   <Grid container item direction="row" style={{ gap: 10 }}>
-                    <AmountText color="textSecondary">Total supply: </AmountText>
-                    <Typography color="secondary"> {numberWithCommas(values.totalAmount)} </Typography>
+                    <AmountText variant="subtitle1" color="textSecondary">
+                      Total supply:{" "}
+                    </AmountText>
+                    <Typography color="secondary" style={{ fontWeight: 300 }}>
+                      {" "}
+                      {numberWithCommas(values.totalAmount)}{" "}
+                    </Typography>
                   </Grid>
                   <Grid container item direction="row" style={{ gap: 10 }}>
-                    <AmountText color="textSecondary">Available:</AmountText>
-                    <Typography color="secondary">
+                    <AmountText variant="subtitle1" color="textSecondary">
+                      Available:
+                    </AmountText>
+                    <Typography style={{ fontWeight: 300 }} color="secondary">
                       {" "}
                       {numberWithCommas(
                         values.totalAmount && values.totalAmount.minus(new BigNumber(getTotal(values.holders)))
                       )}
                     </Typography>
                   </Grid>
-                </SupplyContainer>
+                </Grid>
                 {errors.totalAmount && touched.totalAmount ? (
                   <ErrorText style={{ marginTop: 6 }}>{errors.totalAmount}</ErrorText>
                 ) : null}
 
                 <Grid
                   container
-                  direction={isMobile ? "column" : "row"}
-                  alignItems={isMobile ? "flex-start" : "center"}
-                  style={{ marginTop: 35 }}
+                  direction={!isMobile ? "row" : "row"}
+                  alignItems={!isMobile ? "flex-start" : "center"}
+                  style={!isMobile ? { marginTop: 35 } : { visibility: "hidden" }}
                 >
-                  <Grid item xs={6}>
-                    <Typography color="textSecondary">Wallet address</Typography>
+                  <Grid item xs={isMobile ? 12 : 7}>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Wallet Address
+                    </Typography>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Typography color="textSecondary">Amount</Typography>
+                  <Grid item>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Amount
+                    </Typography>
                   </Grid>
                 </Grid>
                 <TokenSettingsForm
@@ -318,11 +366,11 @@ export const ContractDistribution: React.FC = () => {
                   values={values}
                   setFieldTouched={setFieldTouched}
                 />
-              </Form>
-            )
-          }}
-        </Formik>
-      </Grid>
-    </>
+              </Grid>
+            </Form>
+          )
+        }}
+      </Formik>
+    </Grid>
   )
 }

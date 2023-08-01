@@ -192,10 +192,6 @@ export const Proposals: React.FC = () => {
     setOpenDialog(false)
   }
 
-  useEffect(() => {
-    console.log("se actualizó")
-  }, [openDialog])
-
   const onFlush = useCallback(async () => {
     if (executableProposals && expiredProposals && executableProposals.length && data) {
       mutate({
@@ -245,12 +241,7 @@ export const Proposals: React.FC = () => {
                   direction={isMobileSmall ? "column" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
-                  <SmallButton
-                    variant="contained"
-                    disabled={shouldDisable}
-                    color="secondary"
-                    onClick={() => setOpenDialog(true)}
-                  >
+                  <SmallButton variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
                     New Proposal
                   </SmallButton>
                   <Grid>

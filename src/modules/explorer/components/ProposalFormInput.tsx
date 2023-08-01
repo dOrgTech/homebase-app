@@ -3,7 +3,7 @@ import Editor from "react-simple-code-editor"
 import { Grid, styled, Typography } from "@material-ui/core"
 
 const StyledBody = styled(Grid)(({ theme }) => ({
-  "borderRadius": 4,
+  "borderRadius": 8,
   "background": theme.palette.primary.main,
   "padding": "0 20px",
   "minHeight": 54,

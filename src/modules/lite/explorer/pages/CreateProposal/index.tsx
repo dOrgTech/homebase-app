@@ -136,7 +136,7 @@ const ErrorText = styled(Typography)({
   fontSize: 14,
   color: "red",
   marginBottom: -21,
-  marginTop: 2
+  marginTop: 4
 })
 
 const ErrorTextTime = styled(Typography)({
