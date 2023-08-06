@@ -78,7 +78,6 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
 
   useEffect(() => {
     refetch()
-    console.log(delegatedTo)
   }, [delegationStatus, setDelegationStatus])
 
   useEffect(() => {
