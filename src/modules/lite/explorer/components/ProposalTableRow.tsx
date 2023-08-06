@@ -41,7 +41,7 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
   }
 }))
 
-export const ProposalTableRow: React.FC<{ poll: Poll }> = ({ poll }) => {
+export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ poll, daoId }) => {
   const navigate = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
@@ -53,7 +53,9 @@ export const ProposalTableRow: React.FC<{ poll: Poll }> = ({ poll }) => {
       item
       container
       alignItems="center"
-      onClick={() => navigate.push(`/explorer/lite/dao/${poll.daoID}/community/proposal/${poll._id}`, { poll: poll })}
+      onClick={() =>
+        navigate.push(`/explorer/lite/dao/${poll.daoID}/community/proposal/${poll._id}`, { poll: poll, daoId: daoId })
+      }
     >
       <BlockieContainer container direction="row">
         <Blockie address={"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"} size={24} />

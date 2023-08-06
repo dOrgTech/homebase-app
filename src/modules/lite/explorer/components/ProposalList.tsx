@@ -43,7 +43,11 @@ const Title = styled(Typography)(({ theme }) => ({
     marginLeft: -2
   }
 }))
-export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined }> = ({ polls, id }) => {
+export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; daoId?: string }> = ({
+  polls,
+  id,
+  daoId
+}) => {
   const communityId = id?.toString()
   const openNotification = useNotification()
   const [communityPolls, setCommunityPolls] = useState<Poll[]>()
@@ -195,7 +199,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined }> =
         communityPolls.map((poll, i) => {
           return (
             <div key={`poll-${i}`}>
-              <ProposalTableRow poll={poll} />
+              <ProposalTableRow poll={poll} daoId={daoId} />
               {communityPolls.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
             </div>
           )
