@@ -60,7 +60,8 @@ const InfoIconCorrect = styled(InfoRounded)(({ theme }) => ({
 const ErrorText = styled(Typography)({
   display: "block",
   fontSize: 14,
-  color: "red"
+  color: "red",
+  marginTop: 4
 })
 
 const ErrorTextTime = styled(Typography)({

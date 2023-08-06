@@ -160,7 +160,8 @@ const CustomInputContainer = styled(Grid)(({ theme }) => ({
   alignItems: "center",
   display: "flex",
   padding: "13px 23px",
-  width: "100%"
+  width: "100%",
+  fontWeight: 300
 }))
 
 const CheckboxContainer = styled(Grid)(({ theme }) => ({
