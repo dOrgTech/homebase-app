@@ -26,6 +26,7 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "padding": 32,
   "cursor": "pointer",
   "transition": "0.15s ease-out",
+  "maxWidth": 490,
 
   ["@media (max-width:1335px)"]: {
     minHeight: 130
