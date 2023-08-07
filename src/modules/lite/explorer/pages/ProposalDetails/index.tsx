@@ -17,6 +17,7 @@ import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
+import { EnvKey, getEnv } from "services/config"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -53,7 +54,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const navigate = useHistory()
   const { state } = useLocation<{ poll: Poll; choices: Choice[] }>()
-  const { account, wallet } = useTezos()
+  const { account, wallet, network, tezos } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
@@ -83,8 +84,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     }
 
     try {
-      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
+      const { signature, payloadBytes } = await getSignature(account, wallet, network, JSON.stringify(votesData), tezos)
+      let publicKey
+      if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) !== "true") {
+        publicKey = await tezos.signer.publicKey()
+      } else {
+        publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+      }
+
       if (!signature) {
         openNotification({
           message: `Issue with Signature`,
@@ -111,6 +118,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         return
       }
     } catch (error) {
+      console.log("error: ", error)
       openNotification({
         message: `Something went wrong!!`,
         autoHideDuration: 3000,

@@ -29,6 +29,7 @@ import { useToken } from "../../hooks/useToken"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
+import { EnvKey, getEnv } from "services/config"
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -533,7 +534,7 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
 
 export const ProposalCreator: React.FC<{ id?: string }> = props => {
   const navigate = useHistory()
-  const { network, account, wallet } = useTezos()
+  const { network, account, wallet, tezos } = useTezos()
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const daoId = useDAOID()
@@ -569,8 +570,14 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
         data.startTime = String(dayjs().valueOf())
         data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
 
-        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const { signature, payloadBytes } = await getSignature(account, wallet, network, JSON.stringify(data), tezos)
+        let publicKey
+        if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) !== "true") {
+          publicKey = await tezos.signer.publicKey()
+        } else {
+          publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        }
+
         if (!signature) {
           openNotification({
             message: `Issue with Signature`,

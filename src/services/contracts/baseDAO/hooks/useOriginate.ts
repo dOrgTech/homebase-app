@@ -258,8 +258,14 @@ export const useOriginate = (template: DAOTemplate) => {
           daoContract: contract.address,
           tokenID: params.orgSettings.governanceToken.tokenId
         }
-        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const { signature, payloadBytes } = await getSignature(account, wallet, network, JSON.stringify(values), tezos)
+        let publicKey
+
+        if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) !== "true") {
+          publicKey = await tezos.signer.publicKey()
+        } else {
+          publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        }
 
         await saveLiteCommunity(signature, publicKey, payloadBytes)
 
