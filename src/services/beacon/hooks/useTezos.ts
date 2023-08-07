@@ -98,17 +98,27 @@ export const useTezos = (): WalletConnectReturn => {
           }
         })
       } else {
-        const { wallet } = await connectWithBeacon(newNetwork)
-        newTezos.setProvider({ wallet })
-        const newAccount = await newTezos.wallet.pkh()
+        let wallet, account
+
+        if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) === "true") {
+          const { wallet: beaconWallet } = await connectWithBeacon(network)
+          wallet = beaconWallet
+          newTezos.setProvider({ wallet })
+          account = await newTezos.wallet.pkh()
+        } else {
+          const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
+          wallet = signer
+          account = await signer.publicKeyHash()
+          newTezos.setProvider({ signer })
+        }
 
         dispatch({
           type: TezosActionType.UPDATE_TEZOS,
           payload: {
             network: newNetwork,
             tezos: newTezos,
-            account: newAccount,
-            wallet
+            account,
+            wallet: wallet as BeaconWallet
           }
         })
       }
