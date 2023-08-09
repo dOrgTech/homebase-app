@@ -54,7 +54,7 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
   const { data: delegatedTo, isLoading, refetch } = useDelegationStatus(dao?.data.token.contract)
   const [delegationStatus, setDelegationStatus] = useState<DelegationsType>(DelegationsType.NOT_DELEGATING)
   const [openModal, setOpenModal] = useState(false)
-  const { data: delegateVoteBalances } = useDelegationVoteWeight(dao?.data.token.contract)
+  const { data: delegateVoteBalances } = useDelegationVoteWeight(dao?.data.token.contract, dao?.data.address)
   const [voteWeight, setVoteWeight] = useState(new BigNumber(0))
   // console.log("voteWeight: ", voteWeight.toString())
 
