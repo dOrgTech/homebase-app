@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Grid, Link, styled, Typography } from "@material-ui/core"
+import { Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { MainButton } from "modules/common/MainButton"
 import { Navbar } from "modules/common/Toolbar"
 import { useHistory, useLocation } from "react-router-dom"
@@ -11,7 +11,6 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const PageContent = styled(Grid)(({ theme }) => ({
-  marginTop: 60,
   width: "1000px",
   height: "100%",
   margin: "auto",
@@ -48,19 +47,15 @@ const DescriptionContainer = styled(Grid)(({ theme }) => ({
 const OptionsContainer = styled(Grid)(({ theme }) => ({
   marginTop: 40,
   [theme.breakpoints.down("sm")]: {
-    paddingLeft: "4%",
-    paddingRight: "4%",
     marginTop: 40
   }
 }))
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 50,
-  paddingLeft: "24%",
-  paddingRight: "24%",
+  marginTop: 32,
+  gap: 48,
   [theme.breakpoints.down("sm")]: {
-    paddingLeft: "2%",
-    paddingRight: "2%"
+    gap: 16
   }
 }))
 
@@ -77,6 +72,9 @@ const OptionButton = styled(Link)(({ theme }) => ({
     width: "95%",
     display: "flex",
     textAlign: "center"
+  },
+  [theme.breakpoints.down("sm")]: {
+    justifyContent: "center"
   }
 }))
 
@@ -84,6 +82,8 @@ export const Success: React.FC = () => {
   const location = useLocation<{ address: string }>()
   const [address, setAddress] = useState("")
   const history = useHistory()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   useEffect(() => {
     if (location && location.state && location.state.address) {
@@ -126,15 +126,20 @@ export const Success: React.FC = () => {
               </OptionsContainer>
             </Grid>
 
-            <ChoicesContainer container direction="row" alignContent="center" justifyContent="center">
-              <Grid item xs>
-                <OptionButton underline="none" href={`/creator/build/dao`}>
+            <ChoicesContainer
+              container
+              direction="row"
+              alignContent="center"
+              justifyContent={isMobile ? "center" : "flex-start"}
+            >
+              <Grid container direction="row" justifyContent={"center"} item xs={isMobile ? 8 : 2}>
+                <OptionButton underline="none" href={`/creator/build/template`}>
                   <MainButton variant="contained" color="secondary">
                     Create DAO
                   </MainButton>
                 </OptionButton>
               </Grid>
-              <Grid item xs>
+              <Grid container direction="row" justifyContent={"center"} item xs={isMobile ? 8 : 2}>
                 <OptionButton underline="none" href={`/explorer`}>
                   <Typography color="secondary" style={{ padding: "6px 16px" }}>
                     {"I'm done"}
