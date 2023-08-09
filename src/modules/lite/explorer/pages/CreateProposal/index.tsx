@@ -531,7 +531,7 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
   return String(time.valueOf())
 }
 
-export const ProposalCreator: React.FC<{ id?: string }> = props => {
+export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props => {
   const navigate = useHistory()
   const { network, account, wallet } = useTezos()
   const openNotification = useNotification()
@@ -588,6 +588,7 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
             variant: "success"
           })
           setIsLoading(false)
+          props.onClose()
           daoId
             ? navigate.push(`/explorer/dao/${daoId}/proposals`)
             : navigate.push(`/explorer/lite/dao/${id}/community`)

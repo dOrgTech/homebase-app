@@ -12,7 +12,7 @@ export const ProposalCreatorModal: React.FC<any> = ({ open, handleClose }) => {
       title={"Create Off Chain Poll"}
       template="xs"
     >
-      <ProposalCreator />
+      <ProposalCreator onClose={handleClose} />
     </ResponsiveDialog>
   )
 }
