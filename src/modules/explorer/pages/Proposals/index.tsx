@@ -338,7 +338,7 @@ export const Proposals: React.FC = () => {
           <AllProposalsList title={"On-Chain"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
         )}
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
-        {polls.length > 0 ? <ProposalList polls={polls} id={id} /> : null}
+        {polls.length > 0 ? <ProposalList polls={polls} id={id} daoId={daoId} /> : null}
 
         {proposals?.length === 0 && polls?.length === 0 ? (
           <Typography style={{ width: "inherit" }} color="textPrimary">
