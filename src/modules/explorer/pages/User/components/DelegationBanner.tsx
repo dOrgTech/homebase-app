@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { Fragment, useEffect, useState } from "react"
-import { CircularProgress, Grid, Theme, Typography, styled } from "@material-ui/core"
+import { Box, CircularProgress, Grid, Theme, Typography, styled, withStyles } from "@material-ui/core"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { Edit } from "@material-ui/icons"
 import { DelegationDialog } from "./DelegationModal"
@@ -9,6 +9,8 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDelegationVoteWeight } from "services/contracts/token/hooks/useDelegationVoteWeight"
 import BigNumber from "bignumber.js"
 import { parseUnits } from "services/contracts/utils"
+import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
+import { CopyButton } from "modules/common/CopyButton"
 
 export enum DelegationsType {
   NOT_DELEGATING = "NOT_DELEGATING",
@@ -36,10 +38,19 @@ const Balance = styled(Typography)({
   fontWeight: 200
 })
 
+const CustomCopyButton = withStyles({
+  root: {
+    "& .MuiBox-root": {
+      padding: "0px !important"
+    }
+  },
+  disabled: {}
+})(Grid)
+
 export const matchTextToStatus = (value: DelegationsType | undefined) => {
   switch (value) {
     case DelegationsType.NOT_DELEGATING:
-      return "Not currently accepting delegations or delegating"
+      return "Not delegating"
     case DelegationsType.DELEGATING:
       return "Delegating to "
     default:
@@ -49,37 +60,42 @@ export const matchTextToStatus = (value: DelegationsType | undefined) => {
 
 export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
   const { data: dao } = useDAO(daoId)
-  const { network, tezos, account, connect } = useTezos()
+  const { network, account, connect } = useTezos()
 
   const { data: delegatedTo, isLoading, refetch } = useDelegationStatus(dao?.data.token.contract)
   const [delegationStatus, setDelegationStatus] = useState<DelegationsType>(DelegationsType.NOT_DELEGATING)
   const [openModal, setOpenModal] = useState(false)
   const { data: delegateVoteBalances } = useDelegationVoteWeight(dao?.data.token.contract, dao?.data.address)
   const [voteWeight, setVoteWeight] = useState(new BigNumber(0))
-  // console.log("voteWeight: ", voteWeight.toString())
+  const [loadingRes, setLoadingRes] = useState(true)
+  const [shouldRefetch, setShouldRefetch] = useState(true)
 
   useEffect(() => {
-    refetch()
-
     setTimeout(() => {
-      if (delegatedTo === account) {
-        setDelegationStatus(DelegationsType.DELEGATING)
-      } else if (delegatedTo && delegatedTo !== account) {
-        setDelegationStatus(DelegationsType.DELEGATING)
-      } else {
-        setDelegationStatus(DelegationsType.NOT_DELEGATING)
-      }
-    }, 2000)
+      setLoadingRes(false)
+    }, 4000)
   }, [])
+
+  setTimeout(() => {
+    if (shouldRefetch) {
+      refetch()
+    }
+  }, 60000)
 
   const onCloseAction = () => {
     setOpenModal(false)
   }
 
   useEffect(() => {
-    refetch()
-    console.log(delegatedTo)
-  }, [delegationStatus, setDelegationStatus])
+    if (delegatedTo === account) {
+      setDelegationStatus(DelegationsType.DELEGATING)
+    } else if (delegatedTo && delegatedTo !== account) {
+      setDelegationStatus(DelegationsType.DELEGATING)
+    } else {
+      setDelegationStatus(DelegationsType.NOT_DELEGATING)
+    }
+    setShouldRefetch(false)
+  }, [delegatedTo])
 
   useEffect(() => {
     let totalVoteWeight = new BigNumber(0)
@@ -131,12 +147,22 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
           </Grid>
         </Grid>
         <Subtitle variant="body1">
-          {isLoading ? (
+          {isLoading || loadingRes ? (
             <CircularProgress color="secondary" />
           ) : (
             <>
-              {matchTextToStatus(delegationStatus)}
-              {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
+              <Grid container direction="row" alignItems="center" style={{ gap: 8 }}>
+                {matchTextToStatus(delegationStatus)}
+                {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
+                  <ProfileAvatar size={22} address={delegatedTo ? delegatedTo : ""} />
+                )}
+                {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
+                {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
+                  <CustomCopyButton>
+                    <CopyButton text={delegatedTo ? delegatedTo : ""} />
+                  </CustomCopyButton>
+                )}
+              </Grid>
             </>
           )}
         </Subtitle>
@@ -148,6 +174,7 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
         setDelegationStatus={setDelegationStatus}
         delegationStatus={delegationStatus}
         delegatedTo={delegatedTo}
+        setShouldRefetch={setShouldRefetch}
       />
     </DelegationBox>
   )
