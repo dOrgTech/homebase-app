@@ -1,9 +1,12 @@
 import { Avatar, Button, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { Community } from "models/Community"
-import React, { useContext } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { DashboardContext } from "../context/ActionSheets/explorer"
+import { getSignature, getTotalHolders } from "services/lite/utils"
+import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
+import { updateCount } from "services/services/lite/lite-services"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -52,8 +55,24 @@ interface DaoCardDetailProps {
 
 export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUpdated }) => {
   const navigate = useHistory()
+  const { network } = useTezos()
   const theme = useTheme()
   const { isConnected } = useContext(DashboardContext)
+  const [isLoading, setIsLoading] = useState(true)
+  const count = useHoldersTotalCount(network, community?.tokenAddress || "")
+
+  const updateCommunityCount = useCallback(
+    async (count: number) => {
+      if (community) {
+        updateCount(community._id, count)
+      }
+    },
+    [community]
+  )
+
+  useEffect(() => {
+    updateCommunityCount(count)
+  }, [count, updateCommunityCount])
 
   return (
     <DaoCardContainer container style={{ gap: 10 }} direction="column">
@@ -64,7 +83,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
         <Grid item direction="column" container alignItems="center">
           <CommunityText color="textPrimary">{community?.name}</CommunityText>
           <MembersText variant={"body1"} color="textPrimary">
-            {community?.members?.length} members
+            {count} members
           </MembersText>
         </Grid>
       </Grid>

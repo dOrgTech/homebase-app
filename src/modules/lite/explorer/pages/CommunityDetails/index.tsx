@@ -5,6 +5,7 @@ import { ProposalList } from "../../components/ProposalList"
 import { DaoCardDetail } from "../../components/DaoCardDetail"
 import { usePolls } from "../../hooks/usePolls"
 import { useCommunity } from "../../hooks/useCommunity"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const CommunityDetailsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",

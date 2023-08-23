@@ -18,8 +18,6 @@ import { ConnectMessage } from "./components/ConnectMessage"
 import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
 import { MainButton } from "../../../common/MainButton"
-import { EnvKey, getEnv } from "services/config"
-import { LaunchOutlined } from "@material-ui/icons"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -134,6 +132,8 @@ export const DAOList: React.FC = () => {
           name: dao.name,
           symbol: dao.token.symbol,
           votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+          votingAddressesCount:
+            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
           dao_type: {
             name: dao.dao_type.name
           }
