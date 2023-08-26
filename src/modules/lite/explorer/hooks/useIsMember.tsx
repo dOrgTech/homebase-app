@@ -4,12 +4,12 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { Network } from "services/beacon"
 import { networkNameMap } from "services/bakingBad"
 
-export const useHoldersTotalCount = (network: Network, tokenAddress: string) => {
-  const [count, setCount] = useState<number>(0)
+export const useIsMember = (network: Network, tokenAddress: string, memberAddress: string) => {
+  const [isMember, setIsMember] = useState(false)
   const openNotification = useNotification()
 
   useEffect(() => {
-    async function fetchTotalCount() {
+    async function fetIsMember() {
       try {
         if (tokenAddress !== "") {
           const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?token.contract=${tokenAddress}`
@@ -25,12 +25,13 @@ export const useHoldersTotalCount = (network: Network, tokenAddress: string) => 
 
             const record: any[] = await response.json()
 
-            const nonZeroBalance = record.filter((item: any) => item.balance !== "0")
+            const nonZeroBalance = record.filter(
+              (item: any) => item.account.address === memberAddress && item.balance !== "0"
+            )
             if (!record) {
               return
             }
-
-            setCount(nonZeroBalance.length)
+            nonZeroBalance.length === 0 ? setIsMember(false) : setIsMember(true)
             return
           })
         }
@@ -44,8 +45,8 @@ export const useHoldersTotalCount = (network: Network, tokenAddress: string) => 
         return
       }
     }
-    fetchTotalCount()
+    fetIsMember()
     return
-  }, [network, tokenAddress])
-  return count
+  }, [network, tokenAddress, memberAddress])
+  return isMember
 }

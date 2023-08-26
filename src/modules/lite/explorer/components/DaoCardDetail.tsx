@@ -4,9 +4,9 @@ import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { DashboardContext } from "../context/ActionSheets/explorer"
-import { getSignature, getTotalHolders } from "services/lite/utils"
 import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
 import { updateCount } from "services/services/lite/lite-services"
+import { useIsMember } from "../hooks/useIsMember"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -55,11 +55,13 @@ interface DaoCardDetailProps {
 
 export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUpdated }) => {
   const navigate = useHistory()
-  const { network } = useTezos()
+  const { network, account } = useTezos()
   const theme = useTheme()
   const { isConnected } = useContext(DashboardContext)
-  const [isLoading, setIsLoading] = useState(true)
   const count = useHoldersTotalCount(network, community?.tokenAddress || "")
+  const isMember = useIsMember(network, community?.tokenAddress || "", account)
+
+  console.log(community)
 
   const updateCommunityCount = useCallback(
     async (count: number) => {
@@ -73,6 +75,10 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
   useEffect(() => {
     updateCommunityCount(count)
   }, [count, updateCommunityCount])
+
+  const shouldBeDisabled = () => {
+    return community?.requiredTokenOwnership && isMember ? false : true
+  }
 
   return (
     <DaoCardContainer container style={{ gap: 10 }} direction="column">
@@ -97,6 +103,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
       {isConnected ? (
         <Grid item>
           <ProposalButton
+            disabled={shouldBeDisabled()}
             variant="contained"
             color="secondary"
             size="small"
