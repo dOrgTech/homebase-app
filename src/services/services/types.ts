@@ -202,6 +202,7 @@ export interface DAOListItem {
   start_level?: number
   token: TokenDTO
   votingAddressesCount: number
+  allowPublicAccess: boolean
 }
 
 export type FetchedDAO = DAODTO & {

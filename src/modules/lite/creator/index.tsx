@@ -396,7 +396,8 @@ export const CommunityCreator: React.FC = () => {
     tokenType: "FA2",
     requiredTokenOwnership: false,
     allowPublicAccess: false,
-    network
+    network,
+    votingAddressesCount: 0
   }
 
   const saveCommunity = useCallback(

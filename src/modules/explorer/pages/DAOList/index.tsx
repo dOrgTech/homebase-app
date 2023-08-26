@@ -136,7 +136,8 @@ export const DAOList: React.FC = () => {
             dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
           dao_type: {
             name: dao.dao_type.name
-          }
+          },
+          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
         }))
         .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
 
@@ -240,11 +241,13 @@ export const DAOList: React.FC = () => {
           <Grid item>
             <TabPanel value={selectedTab} index={0}>
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                {currentDAOs.map((dao, i) => (
-                  <DAOItemCard key={`dao-${i}`} item>
-                    <DAOItem dao={dao} />
-                  </DAOItemCard>
-                ))}
+                {currentDAOs.map((dao, i) =>
+                  dao.allowPublicAccess ? (
+                    <DAOItemCard key={`dao-${i}`} item>
+                      <DAOItem dao={dao} />
+                    </DAOItemCard>
+                  ) : null
+                )}
 
                 {isLoading ? (
                   <Grid item>
