@@ -16,7 +16,7 @@ export const useHoldersTotalCount = (network: Network, tokenAddress: string) => 
     async function fetchTotalCount() {
       try {
         if (tokenAddress !== "") {
-          const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/count?token.contract=${tokenAddress}`
+          const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?token.contract=${tokenAddress}`
           await fetch(url).then(async response => {
             if (!response.ok) {
               openNotification({
@@ -27,13 +27,15 @@ export const useHoldersTotalCount = (network: Network, tokenAddress: string) => 
               return
             }
 
-            const record: number = await response.json()
+            const record: any[] = await response.json()
+
+            const nonZeroBalance = record.filter((item: any) => item.balance !== "0")
             console.log(record)
             if (!record) {
               return
             }
 
-            setCount(record)
+            setCount(nonZeroBalance.length)
             return
           })
         }
