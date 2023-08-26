@@ -71,6 +71,8 @@ export const getLiteDAOs = async (network: string) => {
         decimals: Number(dao.decimals),
         standard: dao.tokenType
       },
+      votingAddressesCount: dao.votingAddressesCount,
+      allowPublicAccess: dao.allowPublicAccess,
       ledgers: dao.members.map(member => {
         return {
           holder: {
@@ -146,6 +148,12 @@ export const joinLiteCommunity = async (signature: string, publicKey: string | u
   return resp
 }
 
+export const updateLiteCommunity = async () => {
+  const response = await axios.get<any>(`${REACT_APP_LITE_API_URL}/daos/create/voting`)
+  const daos = response.data
+  console.log(daos)
+}
+
 export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
     method: "POST",
@@ -191,4 +199,17 @@ export const fetchLiteData = async (daoContract: string, network: Network) => {
     const liteData: Community = await data.json()
     return liteData
   }
+}
+
+export const updateCount = async (id: string, count: number) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/count/${id}`, {
+    method: "POST",
+    body: JSON.stringify({
+      count
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  return resp
 }

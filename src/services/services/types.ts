@@ -201,6 +201,8 @@ export interface DAOListItem {
   staked?: string
   start_level?: number
   token: TokenDTO
+  votingAddressesCount: number
+  allowPublicAccess: boolean
 }
 
 export type FetchedDAO = DAODTO & {
@@ -248,4 +250,5 @@ export interface Community {
   allowPublicAccess: boolean
   decimals: string
   network: Network
+  votingAddressesCount: number
 }

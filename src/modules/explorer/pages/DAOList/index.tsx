@@ -18,8 +18,6 @@ import { ConnectMessage } from "./components/ConnectMessage"
 import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
 import { MainButton } from "../../../common/MainButton"
-import { EnvKey, getEnv } from "services/config"
-import { LaunchOutlined } from "@material-ui/icons"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -134,9 +132,12 @@ export const DAOList: React.FC = () => {
           name: dao.name,
           symbol: dao.token.symbol,
           votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+          votingAddressesCount:
+            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
           dao_type: {
             name: dao.dao_type.name
-          }
+          },
+          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
         }))
         .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
 
@@ -240,11 +241,13 @@ export const DAOList: React.FC = () => {
           <Grid item>
             <TabPanel value={selectedTab} index={0}>
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                {currentDAOs.map((dao, i) => (
-                  <DAOItemCard key={`dao-${i}`} item>
-                    <DAOItem dao={dao} />
-                  </DAOItemCard>
-                ))}
+                {currentDAOs.map((dao, i) =>
+                  dao.allowPublicAccess ? (
+                    <DAOItemCard key={`dao-${i}`} item>
+                      <DAOItem dao={dao} />
+                    </DAOItemCard>
+                  ) : null
+                )}
 
                 {isLoading ? (
                   <Grid item>

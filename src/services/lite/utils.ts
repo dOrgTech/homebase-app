@@ -8,6 +8,7 @@ import { BeaconWallet } from "@taquito/beacon-wallet"
 import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
+import axios from "axios"
 
 export const getCurrentBlock = async (network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/head`
@@ -33,6 +34,19 @@ export const getTotalSupplyAtReferenceBlock = async (network: Network, address: 
   const result = await response.json()
 
   return result[0].value
+}
+
+export const getTotalHolders = async (network: Network, address: string): Promise<number> => {
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/count?token.contract=${address}`
+  const response = await axios.get(url)
+
+  if (!response) {
+    throw new Error("Failed to fetch contract current block")
+  }
+
+  const result = await response.data
+
+  return result
 }
 
 export const getUserTotalSupplyAtReferenceBlock = async (
