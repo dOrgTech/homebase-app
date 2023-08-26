@@ -7,6 +7,7 @@ import { useTokenDelegate } from "services/contracts/token/hooks/useTokenDelegat
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../../DAO/router"
 import { useTezos } from "services/beacon/hooks/useTezos"
+import { toShortAddress } from "services/contracts/utils"
 
 const AddressTextField = styled(TextField)({
   "backgroundColor": "#2f3438",
@@ -33,9 +34,9 @@ export enum ActionTypes {
 const matchTextToAction = (value: ActionTypes) => {
   switch (value) {
     case ActionTypes.SET_DELEGATE:
-      return "Enter delegate address"
+      return "Set delegate"
     case ActionTypes.NOT_DELEGATING:
-      return "I want to own my voting power"
+      return "Not delegate"
     default:
       return
   }
@@ -48,7 +49,8 @@ export const DelegationDialog: React.FC<{
   setDelegationStatus: (value: DelegationsType) => void
   delegationStatus: DelegationsType
   delegatedTo: string | null | undefined
-}> = ({ status, onClose, open, setDelegationStatus, delegationStatus, delegatedTo }) => {
+  setShouldRefetch: (value: boolean) => void
+}> = ({ status, onClose, open, setShouldRefetch, delegationStatus, delegatedTo }) => {
   const [options, setOptions] = useState<ActionTypes[]>([ActionTypes.NOT_DELEGATING, ActionTypes.SET_DELEGATE])
   const [selectedOption, setSelectedOption] = useState()
   const { mutate: delegateToken, data: tokenData } = useTokenDelegate()
@@ -56,10 +58,6 @@ export const DelegationDialog: React.FC<{
   const { data, cycleInfo } = useDAO(daoId)
   const { tezos, connect, network, account } = useTezos()
   const [newDelegate, setNewDelegate] = useState("")
-
-  useEffect(() => {
-    getOptionsByStatus(status)
-  }, [status])
 
   const closeDialog = () => {
     setSelectedOption(undefined)
@@ -76,7 +74,7 @@ export const DelegationDialog: React.FC<{
       if (newDelegate && data?.data.token.contract) {
         delegateToken(
           { tokenAddress: data?.data.token.contract, delegateAddress: newDelegate },
-          { onSuccess: () => setDelegationStatus(DelegationsType.DELEGATING) }
+          { onSuccess: () => setShouldRefetch(true) }
         )
         return
       }
@@ -84,28 +82,10 @@ export const DelegationDialog: React.FC<{
       if (data?.data.token.contract) {
         delegateToken(
           { tokenAddress: data?.data.token.contract, delegateAddress: null },
-          {
-            onSuccess: () => {
-              setDelegationStatus(DelegationsType.NOT_DELEGATING)
-              return
-            }
-          }
+          { onSuccess: () => setShouldRefetch(true) }
         )
       }
       return
-    }
-  }
-
-  const getOptionsByStatus = (status: DelegationsType | undefined) => {
-    switch (status) {
-      case DelegationsType.NOT_DELEGATING:
-        const optionsOne = [ActionTypes.SET_DELEGATE]
-        setOptions(optionsOne)
-        break
-      case DelegationsType.DELEGATING:
-        const optionsTwo = [ActionTypes.NOT_DELEGATING]
-        setOptions(optionsTwo)
-        break
     }
   }
 
@@ -115,7 +95,8 @@ export const DelegationDialog: React.FC<{
         <Grid item style={{ gap: 8 }} container direction="column">
           <Typography color="textPrimary">Current Status</Typography>
           <Typography color="secondary" style={{ fontWeight: 200 }}>
-            {matchTextToStatus(status)} {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
+            {matchTextToStatus(status)}
+            {delegationStatus === DelegationsType.DELEGATING ? toShortAddress(delegatedTo ? delegatedTo : "") : null}
           </Typography>
         </Grid>
 
@@ -139,12 +120,13 @@ export const DelegationDialog: React.FC<{
                   name="radio-buttons"
                   inputProps={{ "aria-label": "A" }}
                 />
-                {item === selectedOption && selectedOption === ActionTypes.SET_DELEGATE ? (
+                {item === ActionTypes.SET_DELEGATE ? (
                   <AddressTextField
                     onChange={e => {
                       setNewDelegate(e.target.value)
                     }}
                     type="text"
+                    disabled={selectedOption !== ActionTypes.SET_DELEGATE}
                     placeholder="Enter Address"
                     InputProps={{ disableUnderline: true }}
                   />

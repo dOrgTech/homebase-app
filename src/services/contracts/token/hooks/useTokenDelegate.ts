@@ -37,7 +37,7 @@ export const useTokenDelegate = () => {
         }
 
         openNotification({
-          message: "Delegate transaction confirmed!",
+          message: "Delegate transaction confirmed! It may take some minutes to reflect the status change",
           autoHideDuration: 5000,
           variant: "success",
           detailsLink: `https://${networkNameMap[network]}.tzkt.io/` + (tx as WalletOperation).opHash
