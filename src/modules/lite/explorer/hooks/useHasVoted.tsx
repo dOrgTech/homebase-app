@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react"
 import { Choice } from "models/Choice"
 import { useNotification } from "modules/common/hooks/useNotification"
-import React, { useEffect, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EnvKey, getEnv } from "services/config"
 
