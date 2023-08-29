@@ -26,7 +26,7 @@ import { CommunityBadge } from "../../components/CommunityBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { saveLiteProposal } from "services/services/lite/lite-services"
 import { useToken } from "../../hooks/useToken"
-import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import { isWebUri } from "valid-url"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 dayjs.extend(duration)
@@ -192,6 +192,17 @@ const hasDuplicates = (options: string[]) => {
   return new Set(trimOptions).size !== trimOptions.length
 }
 
+const isValidHttpUrl = (externalLink: string) => {
+  let url
+  try {
+    url = new URL(externalLink)
+  } catch (_) {
+    return false
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:"
+}
+
 const validateForm = (values: Poll) => {
   const errors: FormikErrors<Poll> = {}
 
@@ -213,6 +224,10 @@ const validateForm = (values: Poll) => {
 
   if (values.choices.length > 0 && hasDuplicates(values.choices)) {
     errors.choices = "Duplicate options are not allowed"
+  }
+
+  if (values.externalLink && !isWebUri(values.externalLink)) {
+    errors.externalLink = "Not a valid url"
   }
 
   if (values.endTimeMinutes !== undefined && values.endTimeDays !== undefined && values.endTimeHours !== undefined) {

@@ -61,8 +61,6 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
   const count = useHoldersTotalCount(network, community?.tokenAddress || "")
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
 
-  console.log(community)
-
   const updateCommunityCount = useCallback(
     async (count: number) => {
       if (community) {
