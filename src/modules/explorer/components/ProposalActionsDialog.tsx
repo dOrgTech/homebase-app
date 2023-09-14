@@ -16,6 +16,8 @@ import { ProposalAction, ProposalFormLambda } from "modules/explorer/components/
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal/ProposalCreatorModal"
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
+import { useIsMember } from "modules/lite/explorer/hooks/useIsMember"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -125,6 +127,8 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
   const [openLiteProposal, setOpenLiteProposal] = useState(false)
   const liteDAOId = data?.liteDAOData?._id
   const shouldDisable = useIsProposalButtonDisabled(daoId)
+  const { network, account } = useTezos()
+  const isMember = useIsMember(network, data?.liteDAOData?.tokenAddress || "", account)
 
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
@@ -167,8 +171,10 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
               <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
                 <OptionContainer
                   onClick={() =>
-                    elem.id === "off-chain"
+                    elem.id === "off-chain" && isMember
                       ? handleLiteProposal()
+                      : elem.id === "off-chain" && !isMember
+                      ? null
                       : !shouldDisable
                       ? elem.isLambda
                         ? handleOpenCustomProposalModal(elem.id)
@@ -176,11 +182,25 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
                       : null
                   }
                 >
-                  <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
+                  <ActionText
+                    color={
+                      shouldDisable && elem.id !== "off-chain"
+                        ? "textSecondary"
+                        : elem.id === "off-chain" && !isMember
+                        ? "textSecondary"
+                        : "textPrimary"
+                    }
+                  >
                     {elem.name}
                   </ActionText>
                   <ActionDescriptionText
-                    color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
+                    color={
+                      shouldDisable && elem.id !== "off-chain"
+                        ? "textSecondary"
+                        : elem.id === "off-chain" && !isMember
+                        ? "textSecondary"
+                        : "textPrimary"
+                    }
                   >
                     {elem.description}{" "}
                   </ActionDescriptionText>
