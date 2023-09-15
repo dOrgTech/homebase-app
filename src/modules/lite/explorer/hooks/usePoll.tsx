@@ -15,8 +15,9 @@ export const useSinglePoll = (pollId: string | undefined, id?: any, community?: 
       try {
         await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${pollId}/polls`).then(async response => {
           if (!response.ok) {
+            const data = await response.json()
             openNotification({
-              message: "An error has occurred",
+              message: data.message,
               autoHideDuration: 2000,
               variant: "error"
             })

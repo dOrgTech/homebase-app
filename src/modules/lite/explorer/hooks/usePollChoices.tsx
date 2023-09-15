@@ -14,8 +14,9 @@ export const usePollChoices = (poll: Poll | undefined, refresh?: number) => {
       if (poll) {
         await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/find`).then(async response => {
           if (!response.ok) {
+            const data = await response.json()
             openNotification({
-              message: "An error has occurred",
+              message: data.message,
               autoHideDuration: 2000,
               variant: "error"
             })

@@ -29,6 +29,7 @@ import { useToken } from "../../hooks/useToken"
 import { isWebUri } from "valid-url"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
+import { useUserTokenBalance } from "services/contracts/token/hooks/useUserTokenBalance"
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -430,6 +431,7 @@ export const ProposalForm = ({
             ) : null}
             <ProposalChoices>
               <Choices
+                id={id}
                 choices={getIn(values, "choices")}
                 isLoading={isSubmitting}
                 submitForm={submitForm}
@@ -596,6 +598,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
         }
 
         const res = await saveLiteProposal(signature, publicKey, payloadBytes)
+        const respData = await res.json()
         if (res.ok) {
           openNotification({
             message: "Proposal created!",
@@ -609,7 +612,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
             : navigate.push(`/explorer/lite/dao/${id}/community`)
         } else {
           openNotification({
-            message: "Proposal could not be created",
+            message: respData.message,
             autoHideDuration: 3000,
             variant: "error"
           })

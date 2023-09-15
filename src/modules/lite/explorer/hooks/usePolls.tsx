@@ -14,8 +14,9 @@ export const usePolls = (id: any) => {
     async function fetchPoll() {
       await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`).then(async response => {
         if (!response.ok) {
+          const data = await response.json()
           openNotification({
-            message: "An error has occurred",
+            message: data.message,
             autoHideDuration: 2000,
             variant: "error"
           })
@@ -36,7 +37,6 @@ export const usePolls = (id: any) => {
           if (poll) {
             await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/votes`).then(async response => {
               if (!response.ok) {
-                console.log("error in query")
                 return
               }
               const records: number = await response.json()

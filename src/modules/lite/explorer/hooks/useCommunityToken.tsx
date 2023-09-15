@@ -9,8 +9,9 @@ export const useCommunityToken = (communityId: any) => {
       if (communityId !== undefined) {
         await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${String(communityId)}`).then(async response => {
           if (!response.ok) {
-            const message = `An error has occurred: ${response.statusText}`
-            return
+            const data = await response.json()
+            const message = data.message
+            return message
           }
 
           const record: CommunityToken = await response.json()

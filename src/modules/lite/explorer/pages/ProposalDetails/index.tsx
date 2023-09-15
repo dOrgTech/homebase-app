@@ -97,6 +97,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         return
       }
       const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes)
+      const response = await resp.json()
       if (resp.ok) {
         openNotification({
           message: "Your vote has been submitted",
@@ -107,13 +108,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         setSelectedVotes([])
       } else {
         openNotification({
-          message: `Something went wrong!!`,
+          message: response.message,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
       }
     } catch (error) {
+      console.log("error: ", error)
       openNotification({
         message: `Something went wrong!!`,
         autoHideDuration: 3000,
