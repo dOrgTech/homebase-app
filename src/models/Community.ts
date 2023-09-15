@@ -24,4 +24,5 @@ export interface CommunityToken {
   symbol: string
   tokenAddress: string
   decimals: string
+  message?: string
 }

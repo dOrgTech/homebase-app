@@ -19,8 +19,9 @@ export const useHasVoted = (refresh?: number) => {
           await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${String(account)}/user`).then(
             async response => {
               if (!response.ok) {
+                const data = await response.json()
                 openNotification({
-                  message: "An error has occurred",
+                  message: data.message,
                   autoHideDuration: 2000,
                   variant: "error"
                 })

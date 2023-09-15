@@ -14,8 +14,9 @@ export const useToken = (daoId: string | undefined) => {
           const communityId = daoId
           await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
             if (!response.ok) {
+              const data = await response.json()
               openNotification({
-                message: "An error has occurred",
+                message: data.message,
                 autoHideDuration: 2000,
                 variant: "error"
               })

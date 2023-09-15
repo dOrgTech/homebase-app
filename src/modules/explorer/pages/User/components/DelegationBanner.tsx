@@ -60,13 +60,12 @@ export const matchTextToStatus = (value: DelegationsType | undefined) => {
 
 export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
   const { data: dao } = useDAO(daoId)
-  const { network, account, connect } = useTezos()
+  const { account } = useTezos()
 
   const { data: delegatedTo, isLoading, refetch } = useDelegationStatus(dao?.data.token.contract)
   const [delegationStatus, setDelegationStatus] = useState<DelegationsType>(DelegationsType.NOT_DELEGATING)
   const [openModal, setOpenModal] = useState(false)
-  const { data: delegateVoteBalances } = useDelegationVoteWeight(dao?.data.token.contract, dao?.data.address)
-  const [voteWeight, setVoteWeight] = useState(new BigNumber(0))
+  const { data: voteWeight } = useDelegationVoteWeight(dao?.data.token.contract)
   const [loadingRes, setLoadingRes] = useState(true)
   const [shouldRefetch, setShouldRefetch] = useState(true)
 
@@ -97,15 +96,6 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
     setShouldRefetch(false)
   }, [delegatedTo])
 
-  useEffect(() => {
-    let totalVoteWeight = new BigNumber(0)
-    delegateVoteBalances?.forEach(delegatedVote => {
-      const balance = new BigNumber(delegatedVote.balance)
-      totalVoteWeight = totalVoteWeight.plus(balance)
-    })
-    setVoteWeight(totalVoteWeight)
-  }, [delegateVoteBalances])
-
   return (
     <DelegationBox container direction="column">
       <Grid container style={{ gap: 12 }} direction="column">
@@ -114,7 +104,7 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
         </Typography>
         <Subtitle variant="body1">These settings only affect your participation in off-chain polls</Subtitle>
       </Grid>
-      {dao && (
+      {dao && voteWeight && (
         <Grid container style={{ gap: 12 }} direction="column">
           <Typography color="textPrimary">Voting Weight</Typography>
           <Balance color="secondary">
