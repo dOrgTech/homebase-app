@@ -18,6 +18,8 @@ import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
 import { useDelegationStatus } from "services/contracts/token/hooks/useDelegationStatus"
 import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useDelegationVoteWeight } from "services/contracts/token/hooks/useDelegationVoteWeight"
+import BigNumber from "bignumber.js"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -61,7 +63,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const { data: delegatedTo } = useDelegationStatus(dao?.data.token.contract)
+  const { data: voteWeight } = useDelegationVoteWeight(dao?.data.token.contract)
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
@@ -158,7 +160,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
               </Grid>
               {poll?.isActive === ProposalStatus.ACTIVE ? (
                 <Button
-                  disabled={selectedVotes.length === 0 || !!delegatedTo}
+                  disabled={selectedVotes.length === 0 || voteWeight?.eq(new BigNumber(0))}
                   variant="contained"
                   color="secondary"
                   onClick={() => saveVote()}

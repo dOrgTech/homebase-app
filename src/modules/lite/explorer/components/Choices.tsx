@@ -95,7 +95,9 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
   const liteDAOId = data?.liteDAOData?._id ? data?.liteDAOData?._id : id
   const tokenAddress = useToken(liteDAOId)
   const { data: userBalance } = useUserTokenBalance(tokenAddress)
+  console.log("userBalance: ", userBalance)
   const canCreateProposal = userBalance && new BigNumber(userBalance).gt(0) ? true : false
+  console.log("canCreateProposal: ", canCreateProposal)
 
   return (
     <Grid container direction="column" style={{ gap: 30 }}>
@@ -193,7 +195,7 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
       </ChoicesContainer>
       <Grid container style={{ gap: 10, marginTop: 31 }}>
         {!isLoading ? (
-          <MainButton disabled={canCreateProposal} variant="contained" color="secondary" onClick={submitForm}>
+          <MainButton disabled={!canCreateProposal} variant="contained" color="secondary" onClick={submitForm}>
             Create Proposal
           </MainButton>
         ) : (
