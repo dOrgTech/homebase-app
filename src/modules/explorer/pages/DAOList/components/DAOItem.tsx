@@ -130,12 +130,12 @@ const VotingAddressesText = styled(Typography)({
 })
 
 const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
-  "borderRadius": 4,
+  "borderRadius": "45%",
+  "padding": "4px 8px 4px 8px",
   "height": "auto",
   "boxSizing": "border-box",
   "width": "fit-content",
   "textAlign": "center",
-  "padding": "0 7px",
   "float": "right",
   "background":
     dao_type === "lambda" ? hexToRgba(theme.palette.secondary.main, 0.4) : hexToRgba(theme.palette.warning.main, 0.4),

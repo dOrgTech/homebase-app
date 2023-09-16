@@ -7,7 +7,8 @@ import {
   Typography,
   useMediaQuery,
   Theme,
-  useTheme
+  useTheme,
+  Icon
 } from "@material-ui/core"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
@@ -18,6 +19,10 @@ import { ConnectMessage } from "./components/ConnectMessage"
 import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
 import { MainButton } from "../../../common/MainButton"
+import { ReactComponent as TabsIcon } from "assets/img/tabs-icon.svg"
+import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
+import { ReactComponent as MyDAOsIcon } from "assets/img/my-daos-icon.svg"
+import { ReactComponent as MyDAOsSelectedIcon } from "assets/img/my-daos-selected-icon.svg"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -38,13 +43,21 @@ const PageContainer = styled("div")(({ theme }) => ({
 }))
 
 const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "fontSize": 16,
-  "color": isSelected ? theme.palette.primary.dark : "#fff",
-
-  "backgroundColor": isSelected ? theme.palette.secondary.main : theme.palette.primary.main,
-
+  "fontSize": 18,
+  "fontWeight": 400,
+  "paddingLeft": 20,
+  "paddingRight": 20,
+  "paddingTop": 0,
+  "paddingBottom": 0,
+  "color": isSelected ? theme.palette.secondary.main : "#fff",
+  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.primary.main,
   "&:hover": {
-    backgroundColor: isSelected ? theme.palette.secondary.main : theme.palette.secondary.dark
+    backgroundColor: isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.secondary.dark,
+    borderRadius: 8,
+    borderTopLeftRadius: "8px !important",
+    borderTopRightRadius: "8px !important",
+    borderBottomLeftRadius: "8px !important",
+    borderBottomRightRadius: "8px !important"
   }
 }))
 
@@ -58,10 +71,10 @@ const Search = styled(Grid)({
 })
 
 const DAOItemGrid = styled(Grid)({
-  gap: "18px",
+  gap: "32px",
 
   ["@media (max-width: 1155px)"]: {
-    gap: "16px"
+    gap: "32px"
   },
 
   ["@media (max-width:960px)"]: {
@@ -74,44 +87,19 @@ const DAOItemGrid = styled(Grid)({
 })
 
 const DAOItemCard = styled(Grid)({
-  flexBasis: "49%",
+  flexBasis: "48%",
 
   ["@media (max-width:760px)"]: {
     minWidth: "100%"
   }
 })
 
-const BannerContainer = styled(Grid)(({ theme }) => ({
+const TabsContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
-  padding: "30px 48px",
+  padding: 12,
   borderRadius: 8,
-  display: "inline-block",
-  [theme.breakpoints.down("md")]: {
-    padding: "28px 38px"
-  }
+  gap: 30
 }))
-
-const LinkText = styled(Typography)(({ theme }) => ({
-  fontSize: 18,
-  fontWeight: 200,
-  lineHeight: "146.3%",
-  cursor: "default",
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 16
-  },
-  [theme.breakpoints.down("xs")]: {
-    fontSize: 13
-  }
-}))
-
-const ExternalLink = styled(Typography)({
-  "display": "inline",
-  "cursor": "pointer",
-  "fontWeight": 200,
-  "&:hover": {
-    textDecoration: "underline"
-  }
-})
 
 export const DAOList: React.FC = () => {
   const { network, account, tezos } = useTezos()
@@ -167,7 +155,7 @@ export const DAOList: React.FC = () => {
     <>
       <Navbar disableMobileMenu />
       <PageContainer>
-        <Grid container style={{ gap: 42 }} direction="column">
+        <Grid container style={{ gap: 32 }} direction="column">
           <Grid item>
             <Grid
               container
@@ -203,14 +191,15 @@ export const DAOList: React.FC = () => {
           <Grid item>
             <Grid container>
               <Grid item>
-                <Grid container>
+                <TabsContainer container>
                   <Grid item>
                     <StyledTab
+                      startIcon={selectedTab === 0 ? <TabsSelectedIcon /> : <TabsIcon />}
                       variant="contained"
                       style={
                         selectedTab !== 0
                           ? { borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex: 0 }
-                          : { borderRadius: 4, zIndex: 1 }
+                          : { borderRadius: 8, zIndex: 1 }
                       }
                       disableElevation={true}
                       onClick={() => handleChangeTab(0)}
@@ -221,12 +210,13 @@ export const DAOList: React.FC = () => {
                   </Grid>
                   <Grid item>
                     <StyledTab
+                      startIcon={selectedTab === 1 ? <MyDAOsSelectedIcon /> : <MyDAOsIcon />}
                       disableElevation={true}
                       variant="contained"
                       style={
                         selectedTab !== 1
                           ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0 }
-                          : { borderRadius: 4, marginLeft: -1, zIndex: 1 }
+                          : { borderRadius: 8, marginLeft: -1, zIndex: 1 }
                       }
                       onClick={() => handleChangeTab(1)}
                       isSelected={selectedTab === 1}
@@ -234,7 +224,7 @@ export const DAOList: React.FC = () => {
                       My DAOs
                     </StyledTab>
                   </Grid>
-                </Grid>
+                </TabsContainer>
               </Grid>
             </Grid>
           </Grid>

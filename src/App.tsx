@@ -139,10 +139,7 @@ const App: React.FC = () => {
                     <Route path="/faq">
                       <FAQ />
                     </Route>
-                    <Route path="/">
-                      <Landing />
-                    </Route>
-                    <Redirect to="/" />
+                    <Redirect to="/explorer" />
                   </Switch>
                 </Router>
               </Box>
