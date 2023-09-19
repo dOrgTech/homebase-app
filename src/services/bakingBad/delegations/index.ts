@@ -41,7 +41,7 @@ export const getTokenDelegation = async (tokenAddress: string, account: string, 
   return delegatedTo
 }
 
-export const getTokenDelegationVoteWeight = async (tokenAddress: string, account: string, network: Network) => {
+export const getTokenVoteWeight = async (tokenAddress: string, account: string, network: Network) => {
   const level = await getCurrentBlock(network)
 
   const url = `${getEnv(
