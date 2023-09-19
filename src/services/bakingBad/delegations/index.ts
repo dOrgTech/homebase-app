@@ -2,7 +2,6 @@ import { Network } from "services/beacon"
 import { networkNameMap } from ".."
 import { DelegationDTO, TokenDelegationDTO } from "./types"
 import BigNumber from "bignumber.js"
-import { getCurrentBlock } from "services/utils/utils"
 import { EnvKey, getEnv } from "services/config"
 
 export const getLatestDelegation = async (daoAddress: string, network: Network) => {
@@ -41,9 +40,7 @@ export const getTokenDelegation = async (tokenAddress: string, account: string, 
   return delegatedTo
 }
 
-export const getTokenVoteWeight = async (tokenAddress: string, account: string, network: Network) => {
-  const level = await getCurrentBlock(network)
-
+export const getTokenVoteWeight = async (tokenAddress: string, account: string, network: Network, level: string) => {
   const url = `${getEnv(
     EnvKey.REACT_APP_LITE_API_URL
   )}/network/${network}/token/${tokenAddress}/token-id/0/voting-power?userAddress=${account}&level=${level}`

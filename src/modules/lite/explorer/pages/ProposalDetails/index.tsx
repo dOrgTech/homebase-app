@@ -62,7 +62,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract)
+  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract, poll?.referenceBlock)
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
