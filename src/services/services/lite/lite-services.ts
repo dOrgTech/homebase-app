@@ -1,19 +1,11 @@
 import { client, client_v2 } from "../graphql"
 import { Community, DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
-import {
-  GET_DAOS_QUERY,
-  GET_DAOS_QUERY_V2,
-  GET_DAO_QUERY,
-  GET_PROPOSALS_QUERY,
-  GET_PROPOSAL_QUERY,
-  GET_XTZ_TRANSFERS
-} from "../dao/queries"
+import { GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "../dao/queries"
 import { LambdaProposal, Proposal } from "../dao/mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
 import axios from "axios"
 import { EnvKey, getEnv } from "services/config"
-import { getTokenMetadata } from "services/bakingBad/tokenBalances"
 import { Network } from "services/beacon"
 
 interface GetDAODTO {
