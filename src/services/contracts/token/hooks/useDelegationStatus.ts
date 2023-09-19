@@ -16,7 +16,7 @@ export const useDelegationStatus = (tokenAddress: string | undefined) => {
       }
     },
     {
-      enabled: !!tokenAddress
+      enabled: !!tokenAddress && !!account
     }
   )
 
