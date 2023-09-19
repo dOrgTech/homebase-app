@@ -1,13 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from "react"
+import React from "react"
 import { styled, Grid, Typography, useTheme, useMediaQuery, LinearProgress } from "@material-ui/core"
 import { RowContainer } from "./tables/RowContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { useHistory } from "react-router"
 import { Blockie } from "modules/common/Blockie"
 import { toShortAddress } from "services/contracts/utils"
-import { Choice } from "models/Choice"
 import { Poll } from "models/Polls"
-import { ChoiceDetails } from "./ChoiceDetails"
 import { usePollChoices } from "../hooks/usePollChoices"
 
 export interface ProposalTableRowData {
@@ -83,17 +81,6 @@ export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ pol
           <DescriptionText color="textPrimary">{poll.description}</DescriptionText>
         </Grid>
       </Grid>
-
-      {choices && choices.length > 0
-        ? choices.map((choice: Choice, index: number) => (
-            <ChoiceDetails
-              key={`'choice-'${choice.name}${index}`}
-              poll={poll}
-              choice={choice}
-              index={index}
-            ></ChoiceDetails>
-          ))
-        : null}
     </RowContainer>
   )
 }

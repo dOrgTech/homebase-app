@@ -19,8 +19,7 @@ import { TextField as FormikTextField } from "formik-material-ui"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useToken } from "../hooks/useToken"
-import { useUserTokenBalance } from "services/contracts/token/hooks/useUserTokenBalance"
-import BigNumber from "bignumber.js"
+import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 19,
@@ -94,10 +93,8 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
   const { data } = useDAO(daoId)
   const liteDAOId = data?.liteDAOData?._id ? data?.liteDAOData?._id : id
   const tokenAddress = useToken(liteDAOId)
-  const { data: userBalance } = useUserTokenBalance(tokenAddress)
-  console.log("userBalance: ", userBalance)
-  const canCreateProposal = userBalance && new BigNumber(userBalance).gt(0) ? true : false
-  console.log("canCreateProposal: ", canCreateProposal)
+  const { data: userTokenVoteWeight } = useTokenVoteWeight(tokenAddress)
+  const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.gt(0) ? true : false
 
   return (
     <Grid container direction="column" style={{ gap: 30 }}>

@@ -6,7 +6,7 @@ import { Edit } from "@material-ui/icons"
 import { DelegationDialog } from "./DelegationModal"
 import { useDelegationStatus } from "services/contracts/token/hooks/useDelegationStatus"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { useDelegationVoteWeight } from "services/contracts/token/hooks/useDelegationVoteWeight"
+import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
 import { parseUnits } from "services/contracts/utils"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
@@ -65,7 +65,7 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
   const { data: delegatedTo, isLoading, refetch } = useDelegationStatus(dao?.data.token.contract)
   const [delegationStatus, setDelegationStatus] = useState<DelegationsType>(DelegationsType.NOT_DELEGATING)
   const [openModal, setOpenModal] = useState(false)
-  const { data: voteWeight } = useDelegationVoteWeight(dao?.data.token.contract)
+  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract)
   const [loadingRes, setLoadingRes] = useState(true)
   const [shouldRefetch, setShouldRefetch] = useState(true)
 

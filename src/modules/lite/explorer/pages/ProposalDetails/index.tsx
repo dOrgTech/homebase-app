@@ -16,9 +16,8 @@ import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
-import { useDelegationStatus } from "services/contracts/token/hooks/useDelegationStatus"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { useDelegationVoteWeight } from "services/contracts/token/hooks/useDelegationVoteWeight"
+import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
 
 const PageContainer = styled("div")({
@@ -63,7 +62,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const { data: voteWeight } = useDelegationVoteWeight(dao?.data.token.contract)
+  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract)
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
