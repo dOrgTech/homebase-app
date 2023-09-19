@@ -6,7 +6,6 @@ import { useHistory } from "react-router"
 import { Blockie } from "modules/common/Blockie"
 import { toShortAddress } from "services/contracts/utils"
 import { Poll } from "models/Polls"
-import { usePollChoices } from "../hooks/usePollChoices"
 
 export interface ProposalTableRowData {
   daoId?: string
@@ -44,7 +43,6 @@ export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ pol
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const choices = usePollChoices(poll)
 
   return (
     <RowContainer
