@@ -14,7 +14,7 @@ export const useTokenVoteWeight = (tokenAddress: string | undefined) => {
       }
     },
     {
-      enabled: !!tokenAddress
+      enabled: !!tokenAddress && !!account
     }
   )
 
