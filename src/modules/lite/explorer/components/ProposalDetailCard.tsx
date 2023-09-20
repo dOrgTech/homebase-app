@@ -110,111 +110,106 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
 
   return (
     <>
-      {poll && poll !== undefined ? (
-        <GridContainer container style={{ gap: 50 }}>
-          <Grid container style={{ gap: 25 }}>
-            <Grid
-              item
-              container
-              alignItems="flex-end"
-              direction="row"
-              style={{ gap: isMobileSmall ? 25 : 0 }}
-              justifyContent="space-between"
-            >
-              <Grid item>
-                <Typography variant="h1" color="textPrimary">
-                  {poll?.name}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Grid container style={{ gap: 18 }} direction="row">
-                  <Grid item>
-                    <Grid
-                      container
-                      style={{ gap: 12, cursor: "pointer" }}
-                      alignItems="center"
-                      aria-describedby={id}
-                      onClick={handleClick}
-                    >
-                      <LogoItem src={Share} />
-                      <Typography color="secondary" variant="body2">
-                        Share
-                      </Typography>
-                    </Grid>
-                    <CustomPopover
-                      id={id}
-                      open={open}
-                      anchorEl={anchorEl}
-                      onClose={handleClose}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left"
-                      }}
-                    >
-                      <Grid container direction="row" onClick={handleCopy}>
-                        <CopyIcon />
-                        <Typography variant="subtitle2">Copy link</Typography>
-                      </Grid>
-                    </CustomPopover>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-
-            <Grid container justifyContent={"space-between"} alignItems={"center"}>
-              <Grid item>
-                <Grid container justifyContent={isMobileSmall ? "space-evenly" : "flex-start"} style={{ gap: 23 }}>
-                  <Grid item>
-                    <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} />
-                  </Grid>
-                  <Grid item>
-                    <CommunityBadge id={daoId} />
-                  </Grid>
-                  <Grid item>
-                    <CreatorBadge address={poll?.author} />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid container direction="row">
-              <Grid item container direction="row" spacing={2} alignItems="center">
-                <TextContainer color="textPrimary" variant="body2">
-                  Start date:{" "}
-                </TextContainer>
-                <EndText variant="body2" color="textPrimary">
-                  {dayjs(Number(poll?.startTime)).format("lll")}
-                </EndText>
-                <Divider color="textPrimary">-</Divider>
-                <EndTextContainer color="textPrimary" variant="body2">
-                  End date:{" "}
-                </EndTextContainer>
-                <EndText variant="body2" color="textPrimary">
-                  {dayjs(Number(poll?.endTime)).format("lll")}
-                </EndText>
-              </Grid>
-            </Grid>
-
-            <Grid container>
-              <Typography variant="body2" color="textPrimary">
-                {poll?.description}
+      <GridContainer container style={{ gap: 50 }}>
+        <Grid container style={{ gap: 25 }}>
+          <Grid
+            item
+            container
+            alignItems="flex-end"
+            direction="row"
+            style={{ gap: isMobileSmall ? 25 : 0 }}
+            justifyContent={isMobileSmall ? "center" : "space-between"}
+          >
+            <Grid item>
+              <Typography variant="h1" color="textPrimary">
+                {poll?.name}
               </Typography>
             </Grid>
-
-            {poll?.externalLink ? (
-              <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
-                <LogoItem src={LinkIcon} />
-                <StyledLink color="secondary" href={poll?.externalLink} target="_">
-                  {poll?.externalLink}
-                </StyledLink>
+            <Grid item>
+              <Grid container style={{ gap: 18 }} direction="row">
+                <Grid item>
+                  <Grid
+                    container
+                    style={{ gap: 12, cursor: "pointer" }}
+                    alignItems="center"
+                    aria-describedby={id}
+                    onClick={handleClick}
+                  >
+                    <LogoItem src={Share} />
+                    <Typography color="secondary" variant="body2">
+                      Share
+                    </Typography>
+                  </Grid>
+                  <CustomPopover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left"
+                    }}
+                  >
+                    <Grid container direction="row" onClick={handleCopy}>
+                      <CopyIcon />
+                      <Typography variant="subtitle2">Copy link</Typography>
+                    </Grid>
+                  </CustomPopover>
+                </Grid>
               </Grid>
-            ) : null}
+            </Grid>
           </Grid>
-        </GridContainer>
-      ) : (
-        <Grid container direction="row">
-          <Typography color="textPrimary">Could not load the requested proposal</Typography>
+
+          <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} alignItems={"center"}>
+            <Grid item>
+              <Grid container style={{ gap: 23 }} justifyContent={isMobileSmall ? "center" : "flex-start"}>
+                <Grid item>
+                  <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} />
+                </Grid>
+                <Grid item>
+                  <CommunityBadge id={daoId} />
+                </Grid>
+                <Grid item>
+                  <CreatorBadge address={poll?.author} />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid container direction="row">
+            <Grid item container direction="row" spacing={2} alignItems="center">
+              <TextContainer color="textPrimary" variant="body2">
+                Start date:{" "}
+              </TextContainer>
+              <EndText variant="body2" color="textPrimary">
+                {dayjs(Number(poll?.startTime)).format("lll")}
+              </EndText>
+              <Divider color="textPrimary">-</Divider>
+              <EndTextContainer color="textPrimary" variant="body2">
+                End date:{" "}
+              </EndTextContainer>
+              <EndText variant="body2" color="textPrimary">
+                {dayjs(Number(poll?.endTime)).format("lll")}
+              </EndText>
+            </Grid>
+          </Grid>
+
+          <Grid container>
+            <Typography variant="body2" color="textPrimary">
+              {poll?.description}
+            </Typography>
+          </Grid>
+
+          {poll?.externalLink ? (
+            <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
+              <LogoItem src={LinkIcon} />
+              <StyledLink color="secondary" href={poll?.externalLink} target="_">
+                {poll?.externalLink}
+              </StyledLink>
+            </Grid>
+          ) : null}
         </Grid>
-      )}
+      </GridContainer>
+      )
     </>
   )
 }
