@@ -1,10 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Community } from "models/Community"
-import { useNotification } from "modules/common/hooks/useNotification"
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNotification } from "modules/common/hooks/useNotification"
 import { EnvKey, getEnv } from "services/config"
-import { useDAO } from "services/services/dao/hooks/useDAO"
 
 export const useToken = (daoId: string | undefined) => {
   const [tokenAddress, setTokenAddress] = useState<string>("")
@@ -17,8 +14,9 @@ export const useToken = (daoId: string | undefined) => {
           const communityId = daoId
           await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
             if (!response.ok) {
+              const data = await response.json()
               openNotification({
-                message: "An error has occurred",
+                message: data.message,
                 autoHideDuration: 2000,
                 variant: "error"
               })

@@ -26,6 +26,7 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "padding": 32,
   "cursor": "pointer",
   "transition": "0.15s ease-out",
+  "maxWidth": 490,
 
   ["@media (max-width:1335px)"]: {
     minHeight: 130
@@ -71,6 +72,7 @@ const NameText = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   overflow: "hidden",
   fontSize: "32px",
+  maxWidth: 245,
 
   ["@media (max-width:1335px)"]: {
     fontSize: "29px"
@@ -152,6 +154,7 @@ export const DAOItem: React.FC<{
     symbol: string
     votingAddresses: string[]
     dao_type: { name: string }
+    votingAddressesCount: number
   }
 }> = ({ dao }) => {
   const theme = useTheme()
@@ -179,7 +182,7 @@ export const DAOItem: React.FC<{
             {daoType === "registry" || daoType === "treasury" ? <Badge dao_type={daoType}>V2</Badge> : null}
             {daoType === "lite" ? <Badge dao_type={daoType}>Lite</Badge> : null}
 
-            <NumberText color="textPrimary">{dao.votingAddresses.length}</NumberText>
+            <NumberText color="textPrimary"> {dao.votingAddressesCount}</NumberText>
             <VotingAddressesText color="textPrimary">Voting Addresses</VotingAddressesText>
           </Grid>
         </Grid>

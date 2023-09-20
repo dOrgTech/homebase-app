@@ -5,6 +5,7 @@ import { ProposalList } from "../../components/ProposalList"
 import { DaoCardDetail } from "../../components/DaoCardDetail"
 import { usePolls } from "../../hooks/usePolls"
 import { useCommunity } from "../../hooks/useCommunity"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const CommunityDetailsContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -43,7 +44,7 @@ const PageContainer = styled("div")({
 export const CommunityDetails: React.FC<{ id: string }> = ({ id }) => {
   const [isUpdated, setIsUpdated] = useState(1)
   const community = useCommunity(id, isUpdated)
-  const polls = usePolls(id)
+  const { data: polls } = usePolls(id)
 
   return (
     <PageContainer>
@@ -52,7 +53,7 @@ export const CommunityDetails: React.FC<{ id: string }> = ({ id }) => {
           <DaoCardDetail community={community} setIsUpdated={setIsUpdated} />
         </CommunityDetailsContainer>
         <CommunityDetailsContainer container justifyContent="center" item xs={12} lg={8} md={8}>
-          {polls.length > 0 ? (
+          {polls && polls.length > 0 ? (
             <ProposalList polls={polls} id={id} />
           ) : (
             <Typography style={{ width: "inherit" }} color="textPrimary">

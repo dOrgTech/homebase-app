@@ -26,9 +26,10 @@ import { CommunityBadge } from "../../components/CommunityBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { saveLiteProposal } from "services/services/lite/lite-services"
 import { useToken } from "../../hooks/useToken"
-import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import { isWebUri } from "valid-url"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
+import { useUserTokenBalance } from "services/contracts/token/hooks/useUserTokenBalance"
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -192,6 +193,17 @@ const hasDuplicates = (options: string[]) => {
   return new Set(trimOptions).size !== trimOptions.length
 }
 
+const isValidHttpUrl = (externalLink: string) => {
+  let url
+  try {
+    url = new URL(externalLink)
+  } catch (_) {
+    return false
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:"
+}
+
 const validateForm = (values: Poll) => {
   const errors: FormikErrors<Poll> = {}
 
@@ -213,6 +225,10 @@ const validateForm = (values: Poll) => {
 
   if (values.choices.length > 0 && hasDuplicates(values.choices)) {
     errors.choices = "Duplicate options are not allowed"
+  }
+
+  if (values.externalLink && !isWebUri(values.externalLink)) {
+    errors.externalLink = "Not a valid url"
   }
 
   if (values.endTimeMinutes !== undefined && values.endTimeDays !== undefined && values.endTimeHours !== undefined) {
@@ -320,6 +336,11 @@ export const ProposalForm = ({
 
             {isMobileSmall ? (
               <TimeContainerMobile direction="row">
+                <Grid item container direction="row" xs={12}>
+                  <Typography color="textPrimary" style={{ fontSize: 16 }}>
+                    Set Poll Duration
+                  </Typography>
+                </Grid>
                 <TimeBox item>
                   <Field
                     style={{ margin: "auto" }}
@@ -415,6 +436,7 @@ export const ProposalForm = ({
             ) : null}
             <ProposalChoices>
               <Choices
+                id={id}
                 choices={getIn(values, "choices")}
                 isLoading={isSubmitting}
                 submitForm={submitForm}
@@ -426,99 +448,112 @@ export const ProposalForm = ({
           </ProposalContainer>
 
           {!isMobileSmall ? (
-            <TimeContainer container item direction={"row"} style={{ gap: 10 }} xs={12} md={4} lg={4}>
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="endTimeDays"
-                  type="number"
-                  placeholder="DD"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "endTimeDays") === 0) {
-                      setFieldValue("endTimeDays", "")
-                      setFieldTouched("endTimeDays")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("endTimeDays", null)
-                    } else {
-                      setFieldValue("endTimeDays", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="endTimeHours"
-                  type="number"
-                  placeholder="HH"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "endTimeHours") === 0) {
-                      setFieldValue("endTimeHours", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("endTimeHours", null)
-                    } else {
-                      setFieldValue("endTimeHours", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-
-              <TimeBox item>
-                <Field
-                  style={{ margin: "auto" }}
-                  id="outlined-basic"
-                  name="endTimeMinutes"
-                  type="number"
-                  placeholder="MM"
-                  component={CustomFormikTextField}
-                  inputProps={{ min: 0 }}
-                  onClick={() => {
-                    if (getIn(values, "endTimeMinutes") === 0) {
-                      setFieldValue("endTimeMinutes", "")
-                    }
-                  }}
-                  onChange={(newValue: any) => {
-                    if (newValue.target.value === "") {
-                      setFieldValue("endTimeMinutes", null)
-                    } else {
-                      setFieldValue("endTimeMinutes", parseInt(newValue.target.value, 10))
-                    }
-                  }}
-                />
-              </TimeBox>
-              {getIn(values, "endTimeDays") !== null &&
-              getIn(values, "endTimeHours") !== null &&
-              getIn(values, "endTimeMinutes") !== null &&
-              !hasErrors ? (
-                <Grid container direction="row" style={{ marginTop: -70 }}>
-                  <Typography color="textPrimary" variant={"body2"}>
-                    End date:
-                  </Typography>
-                  <Typography color="secondary" variant="body2" style={{ marginLeft: 10 }}>
-                    {" "}
-                    {dayjs(Number(finalDate)).format("MM/DD/YYYY h:mm A")}
-                  </Typography>
+            <>
+              <TimeContainer
+                container
+                item
+                direction={"row"}
+                style={{ gap: 10, flexBasis: "20% !important;" }}
+                xs={12}
+                md={4}
+                lg={4}
+              >
+                <Grid item container direction="row" xs={12}>
+                  <Typography color="textPrimary">Set Poll Duration</Typography>
                 </Grid>
-              ) : null}
+                <TimeBox item>
+                  <Field
+                    style={{ margin: "auto" }}
+                    id="outlined-basic"
+                    name="endTimeDays"
+                    type="number"
+                    placeholder="DD"
+                    component={CustomFormikTextField}
+                    inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "endTimeDays") === 0) {
+                        setFieldValue("endTimeDays", "")
+                        setFieldTouched("endTimeDays")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      if (newValue.target.value === "") {
+                        setFieldValue("endTimeDays", null)
+                      } else {
+                        setFieldValue("endTimeDays", parseInt(newValue.target.value, 10))
+                      }
+                    }}
+                  />
+                </TimeBox>
+                <TimeBox item>
+                  <Field
+                    style={{ margin: "auto" }}
+                    id="outlined-basic"
+                    name="endTimeHours"
+                    type="number"
+                    placeholder="HH"
+                    component={CustomFormikTextField}
+                    inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "endTimeHours") === 0) {
+                        setFieldValue("endTimeHours", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      if (newValue.target.value === "") {
+                        setFieldValue("endTimeHours", null)
+                      } else {
+                        setFieldValue("endTimeHours", parseInt(newValue.target.value, 10))
+                      }
+                    }}
+                  />
+                </TimeBox>
 
-              <Grid container direction="row" style={{ marginTop: -80 }}>
-                {errors?.endTimeDays && touched.endTimeDays ? (
-                  <ErrorTextTime>{errors.endTimeDays}</ErrorTextTime>
+                <TimeBox item>
+                  <Field
+                    style={{ margin: "auto" }}
+                    id="outlined-basic"
+                    name="endTimeMinutes"
+                    type="number"
+                    placeholder="MM"
+                    component={CustomFormikTextField}
+                    inputProps={{ min: 0 }}
+                    onClick={() => {
+                      if (getIn(values, "endTimeMinutes") === 0) {
+                        setFieldValue("endTimeMinutes", "")
+                      }
+                    }}
+                    onChange={(newValue: any) => {
+                      if (newValue.target.value === "") {
+                        setFieldValue("endTimeMinutes", null)
+                      } else {
+                        setFieldValue("endTimeMinutes", parseInt(newValue.target.value, 10))
+                      }
+                    }}
+                  />
+                </TimeBox>
+                {getIn(values, "endTimeDays") !== null &&
+                getIn(values, "endTimeHours") !== null &&
+                getIn(values, "endTimeMinutes") !== null &&
+                !hasErrors ? (
+                  <Grid container direction="row" style={{ marginTop: 0 }}>
+                    <Typography color="textPrimary" variant={"body2"}>
+                      End date:
+                    </Typography>
+                    <Typography color="secondary" variant="body2" style={{ marginLeft: 10 }}>
+                      {" "}
+                      {dayjs(Number(finalDate)).format("MM/DD/YYYY h:mm A")}
+                    </Typography>
+                  </Grid>
                 ) : null}
-              </Grid>
-            </TimeContainer>
+
+                <Grid container direction="row" style={{ marginTop: -80 }}>
+                  {errors?.endTimeDays && touched.endTimeDays ? (
+                    <ErrorTextTime>{errors.endTimeDays}</ErrorTextTime>
+                  ) : null}
+                </Grid>
+              </TimeContainer>
+            </>
           ) : null}
         </Grid>
       </Grid>
@@ -531,7 +566,7 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
   return String(time.valueOf())
 }
 
-export const ProposalCreator: React.FC<{ id?: string }> = props => {
+export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props => {
   const navigate = useHistory()
   const { network, account, wallet } = useTezos()
   const openNotification = useNotification()
@@ -549,7 +584,7 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
     startTime: dayjs().toISOString(),
     endTime: "",
     daoID: "",
-    author: account,
+    author: "",
     votingStrategy: 0,
     endTimeDays: null,
     endTimeHours: null,
@@ -568,6 +603,7 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
         data.daoID = id
         data.startTime = String(dayjs().valueOf())
         data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
+        data.author = account
 
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
         const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
@@ -581,6 +617,7 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
         }
 
         const res = await saveLiteProposal(signature, publicKey, payloadBytes)
+        const respData = await res.json()
         if (res.ok) {
           openNotification({
             message: "Proposal created!",
@@ -588,12 +625,15 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
             variant: "success"
           })
           setIsLoading(false)
+          if (props?.onClose) {
+            props?.onClose()
+          }
           daoId
             ? navigate.push(`/explorer/dao/${daoId}/proposals`)
             : navigate.push(`/explorer/lite/dao/${id}/community`)
         } else {
           openNotification({
-            message: "Proposal could not be created",
+            message: respData.message,
             autoHideDuration: 3000,
             variant: "error"
           })
@@ -601,6 +641,7 @@ export const ProposalCreator: React.FC<{ id?: string }> = props => {
           return
         }
       } catch (error) {
+        console.log("error: ", error)
         openNotification({
           message: "Proposal could not be created",
           autoHideDuration: 3000,

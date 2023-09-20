@@ -1,14 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from "react"
+import React from "react"
 import { styled, Grid, Typography, useTheme, useMediaQuery, LinearProgress } from "@material-ui/core"
 import { RowContainer } from "./tables/RowContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { useHistory } from "react-router"
 import { Blockie } from "modules/common/Blockie"
 import { toShortAddress } from "services/contracts/utils"
-import { Choice } from "models/Choice"
 import { Poll } from "models/Polls"
-import { ChoiceDetails } from "./ChoiceDetails"
-import { usePollChoices } from "../hooks/usePollChoices"
 
 export interface ProposalTableRowData {
   daoId?: string
@@ -41,19 +38,20 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
   }
 }))
 
-export const ProposalTableRow: React.FC<{ poll: Poll }> = ({ poll }) => {
+export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ poll, daoId }) => {
   const navigate = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const choices = usePollChoices(poll)
 
   return (
     <RowContainer
       item
       container
       alignItems="center"
-      onClick={() => navigate.push(`/explorer/lite/dao/${poll.daoID}/community/proposal/${poll._id}`, { poll: poll })}
+      onClick={() =>
+        navigate.push(`/explorer/lite/dao/${poll.daoID}/community/proposal/${poll._id}`, { poll: poll, daoId: daoId })
+      }
     >
       <BlockieContainer container direction="row">
         <Blockie address={"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"} size={24} />
@@ -81,17 +79,6 @@ export const ProposalTableRow: React.FC<{ poll: Poll }> = ({ poll }) => {
           <DescriptionText color="textPrimary">{poll.description}</DescriptionText>
         </Grid>
       </Grid>
-
-      {choices && choices.length > 0
-        ? choices.map((choice: Choice, index: number) => (
-            <ChoiceDetails
-              key={`'choice-'${choice.name}${index}`}
-              poll={poll}
-              choice={choice}
-              index={index}
-            ></ChoiceDetails>
-          ))
-        : null}
     </RowContainer>
   )
 }

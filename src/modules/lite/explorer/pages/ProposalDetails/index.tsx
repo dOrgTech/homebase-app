@@ -1,22 +1,24 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Button, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalDetailCard } from "../../components/ProposalDetailCard"
 import { GridContainer } from "modules/common/GridContainer"
 import { ChoiceItemSelected } from "../../components/ChoiceItemSelected"
 import { VoteDetails } from "../../components/VoteDetails"
-import { useHistory, useLocation, useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import { Poll } from "models/Polls"
 import { Choice } from "models/Choice"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getSignature } from "services/lite/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
-import { useHasVoted } from "../../hooks/useHasVoted"
 import { usePollChoices } from "../../hooks/usePollChoices"
 import { useCommunity } from "../../hooks/useCommunity"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
+import BigNumber from "bignumber.js"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -51,18 +53,20 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const navigate = useHistory()
-  const { state } = useLocation<{ poll: Poll; choices: Choice[] }>()
+  const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
+
+  const { data: dao } = useDAO(state.daoId)
   const { account, wallet } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-
+  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract, poll?.referenceBlock)
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
+    // refetch()
     choices.map(elem => {
       return (elem.selected = false)
     })
@@ -94,6 +98,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         return
       }
       const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes)
+      const response = await resp.json()
       if (resp.ok) {
         openNotification({
           message: "Your vote has been submitted",
@@ -104,13 +109,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         setSelectedVotes([])
       } else {
         openNotification({
-          message: `Something went wrong!!`,
+          message: response.message,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
       }
     } catch (error) {
+      console.log("error: ", error)
       openNotification({
         message: `Something went wrong!!`,
         autoHideDuration: 3000,
@@ -153,7 +159,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
               </Grid>
               {poll?.isActive === ProposalStatus.ACTIVE ? (
                 <Button
-                  disabled={selectedVotes.length === 0}
+                  disabled={selectedVotes.length === 0 || voteWeight?.eq(new BigNumber(0))}
                   variant="contained"
                   color="secondary"
                   onClick={() => saveVote()}

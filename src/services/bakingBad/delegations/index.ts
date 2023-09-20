@@ -1,7 +1,8 @@
 import { Network } from "services/beacon"
 import { networkNameMap } from ".."
-import { DelegationDTO, TokenDelegationDTO, UserDelegateBalance } from "./types"
-import { getUserTokenBalance } from "../tokenBalances"
+import { DelegationDTO, TokenDelegationDTO } from "./types"
+import BigNumber from "bignumber.js"
+import { EnvKey, getEnv } from "services/config"
 
 export const getLatestDelegation = async (daoAddress: string, network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/operations/delegations?sender=${daoAddress}&status=applied`
@@ -21,6 +22,7 @@ export const getLatestDelegation = async (daoAddress: string, network: Network) 
 
 export const getTokenDelegation = async (tokenAddress: string, account: string, network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${tokenAddress}/bigmaps/delegates/keys?key.eq=${account}&active=true`
+  console.log("urlssdasd: ", url)
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -38,44 +40,20 @@ export const getTokenDelegation = async (tokenAddress: string, account: string, 
   return delegatedTo
 }
 
-export const getTokenDelegationVoteWeight = async (tokenAddress: string, account: string, network: Network) => {
-  const selfBalance = await getUserTokenBalance(account, network, tokenAddress)
-
-  if (!selfBalance) {
-    throw new Error("Could not fetch delegate token balance from the TZKT API")
-  }
-
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${tokenAddress}/bigmaps/delegates/keys?value.eq=${account}&active=true`
+export const getTokenVoteWeight = async (tokenAddress: string, account: string, network: Network, level: string) => {
+  const url = `${getEnv(
+    EnvKey.REACT_APP_LITE_API_URL
+  )}/network/${network}/token/${tokenAddress}/token-id/0/voting-power?userAddress=${account}&level=${level}`
   const response = await fetch(url)
-
   if (!response.ok) {
-    throw new Error("Failed to fetch token delegations from TZKT API")
+    const data = await response.json()
+    throw new Error(data.message)
   }
 
-  const resultingDelegations: TokenDelegationDTO[] = await response.json()
-
-  const delegateBalance: UserDelegateBalance = {
-    address: account,
-    balance: selfBalance
+  const result: { votingWeight: string } = await response.json()
+  if (result) {
+    return new BigNumber(result.votingWeight)
   }
 
-  if (resultingDelegations.length === 0) {
-    return [delegateBalance]
-  }
-
-  const delegatedAddressBalances: UserDelegateBalance[] = []
-
-  await Promise.all(
-    resultingDelegations.map(async del => {
-      const balance = await getUserTokenBalance(del.key, network, tokenAddress)
-      if (balance) {
-        delegatedAddressBalances.push({
-          address: del.key,
-          balance: balance
-        })
-      }
-    })
-  )
-
-  return delegatedAddressBalances
+  return new BigNumber(0)
 }

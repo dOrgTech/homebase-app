@@ -19,6 +19,7 @@ import { UserProfileName } from "../../components/UserProfileName"
 import { DropButton } from "../Proposals"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { Delegation } from "./components/DelegationBanner"
+import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -103,12 +104,15 @@ export const User: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo } = useDAO(daoId)
   const { data: proposals } = useProposals(daoId)
+
   const history = useHistory()
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
-  const polls = usePolls(data?.liteDAOData?._id)
+  const { data: polls } = usePolls(data?.liteDAOData?._id)
   const pollsPosted = polls?.filter(p => p.author === account)
+
+  const { data: isTokenDelegationSupported } = useTokenDelegationSupported(data?.data.token.contract)
 
   useEffect(() => {
     if (!account) {
@@ -207,7 +211,8 @@ export const User: React.FC = () => {
           </UserBalances>
         </BalancesHeader>
 
-        <Delegation daoId={daoId} />
+        {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
+
         <Grid item>
           {proposalsCreated && cycleInfo && (
             <ProposalsList

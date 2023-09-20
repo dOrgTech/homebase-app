@@ -1,9 +1,10 @@
 import BigNumber from "bignumber.js"
 import { NFT, Token } from "models/Token"
-import { Network } from "services/beacon"
+import { Network, createTezos } from "services/beacon"
 import { parseUnits } from "services/contracts/utils"
 import { networkNameMap } from ".."
 import { BalanceDataDTO, BalanceTZKT, DAOToken, FA2TokenDTO, NFTDTO, TokenDataTZKT } from "./types"
+import { TezosToolkit } from "@taquito/taquito"
 
 const isNFTDTO = (value: DAOToken): value is NFTDTO => value.hasOwnProperty("artifact_uri")
 
@@ -198,6 +199,8 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
 }
 
 export const getUserTokenBalance = async (accountAddress: string, network: Network = "mainnet", tokenAddress = "") => {
+  let userTokenBalance = ""
+
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?account=${accountAddress}&token.contract=${tokenAddress}`
 
   const response = await fetch(url)
@@ -206,9 +209,42 @@ export const getUserTokenBalance = async (accountAddress: string, network: Netwo
     throw new Error("Failed to fetch user balances")
   }
 
-  const userTokenBalance: BalanceDataDTO[] = await response.json()
+  const userTokenBalanceResp: BalanceDataDTO[] = await response.json()
 
-  if (userTokenBalance && userTokenBalance[0]) {
-    return userTokenBalance[0].balance
+  if (userTokenBalanceResp && userTokenBalanceResp[0]) {
+    userTokenBalance = userTokenBalanceResp[0].balance
   }
+
+  return userTokenBalance
+}
+
+export const isTokenDelegationSupported = async (tezos: TezosToolkit, address: string) => {
+  const token = await tezos.wallet.at(address)
+
+  const contractViews = Object.keys(token.contractViews)
+  const votingPowerView = contractViews.find(view => view === "voting_power")
+
+  if (votingPowerView) {
+    return true
+  }
+
+  return false
+}
+
+export const getVotingPowerAtReferenceBlock = async (
+  accountAddress: string,
+  network: Network = "mainnet",
+  tokenAddress = "",
+  level: string
+) => {
+  const tezos: TezosToolkit = createTezos(network)
+  const token = await tezos.wallet.at(tokenAddress)
+
+  const userVotingPower = await token.contractViews
+    .voting_power({ addr: accountAddress, block_level: level })
+    .executeView({
+      viewCaller: accountAddress
+    })
+
+  return userVotingPower.toString()
 }

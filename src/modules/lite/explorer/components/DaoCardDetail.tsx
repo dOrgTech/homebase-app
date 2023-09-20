@@ -1,9 +1,12 @@
 import { Avatar, Button, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { Community } from "models/Community"
-import React, { useContext } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { DashboardContext } from "../context/ActionSheets/explorer"
+import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
+import { updateCount } from "services/services/lite/lite-services"
+import { useIsMember } from "../hooks/useIsMember"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -52,8 +55,28 @@ interface DaoCardDetailProps {
 
 export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUpdated }) => {
   const navigate = useHistory()
+  const { network, account } = useTezos()
   const theme = useTheme()
   const { isConnected } = useContext(DashboardContext)
+  const count = useHoldersTotalCount(network, community?.tokenAddress || "")
+  const isMember = useIsMember(network, community?.tokenAddress || "", account)
+
+  const updateCommunityCount = useCallback(
+    async (count: number) => {
+      if (community) {
+        updateCount(community._id, count)
+      }
+    },
+    [community]
+  )
+
+  useEffect(() => {
+    updateCommunityCount(count)
+  }, [count, updateCommunityCount])
+
+  const shouldBeDisabled = () => {
+    return community?.requiredTokenOwnership && isMember ? false : true
+  }
 
   return (
     <DaoCardContainer container style={{ gap: 10 }} direction="column">
@@ -64,7 +87,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
         <Grid item direction="column" container alignItems="center">
           <CommunityText color="textPrimary">{community?.name}</CommunityText>
           <MembersText variant={"body1"} color="textPrimary">
-            {community?.members?.length} members
+            {count} members
           </MembersText>
         </Grid>
       </Grid>
@@ -78,6 +101,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
       {isConnected ? (
         <Grid item>
           <ProposalButton
+            disabled={shouldBeDisabled()}
             variant="contained"
             color="secondary"
             size="small"

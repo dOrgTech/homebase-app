@@ -14,6 +14,7 @@ export interface Community {
   allowPublicAccess: boolean
   decimals?: string
   network: string
+  votingAddressesCount: number
 }
 
 export interface CommunityToken {
@@ -23,4 +24,5 @@ export interface CommunityToken {
   symbol: string
   tokenAddress: string
   decimals: string
+  message?: string
 }
