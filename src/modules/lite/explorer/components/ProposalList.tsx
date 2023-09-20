@@ -50,7 +50,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
 }) => {
   const communityId = id?.toString()
   const openNotification = useNotification()
-  const [communityPolls, setCommunityPolls] = useState<Poll[]>()
+  const [communityPolls, setCommunityPolls] = useState<Poll[]>(polls)
   const [isFilter, setIsFilter] = useState(false)
   const [isFilterByStatus, setIsFilterByStatus] = useState(1)
   const [statusFilter, setStatusFilter] = useState("")

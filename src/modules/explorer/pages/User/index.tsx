@@ -109,7 +109,7 @@ export const User: React.FC = () => {
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
-  const polls = usePolls(data?.liteDAOData?._id)
+  const { data: polls } = usePolls(data?.liteDAOData?._id)
   const pollsPosted = polls?.filter(p => p.author === account)
 
   const { data: isTokenDelegationSupported } = useTokenDelegationSupported(data?.data.token.contract)
