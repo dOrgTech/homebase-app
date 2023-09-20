@@ -12,11 +12,12 @@ import {
   calculateWeight,
   getTotalVoters,
   getTreasuryPercentage,
-  getTurnoutValue,
   nFormatter
 } from "services/lite/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useCommunityToken } from "../hooks/useCommunityToken"
+import { getTurnoutValue } from "services/utils/utils"
+import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -59,9 +60,10 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const [open, setOpen] = React.useState(false)
   const { network } = useTezos()
-  const [turnout, setTurnout] = useState(0)
+  const [turnout, setTurnout] = useState<number | null>()
   const [votes, setVotes] = useState<Choice[]>([])
   const tokenData = useCommunityToken(communityId)
+  const { data: isTokenDelegationSupported } = useTokenDelegationSupported(tokenData?.tokenAddress)
 
   const handleClickOpen = () => {
     setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
@@ -76,11 +78,19 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
   }
 
   useMemo(async () => {
-    if (token && token !== undefined) {
-      const value = await getTurnoutValue(network, token, Number(poll?.referenceBlock), getTotalVoters(choices))
-      setTurnout(value)
+    if (token && tokenData) {
+      const value = await getTurnoutValue(
+        network,
+        tokenData?.tokenAddress,
+        tokenData.tokenID,
+        Number(poll?.referenceBlock),
+        getTotalVoters(choices)
+      )
+      if (value) {
+        setTurnout(value)
+      }
     }
-  }, [poll, choices, network, token])
+  }, [poll, choices, network, token, tokenData])
 
   return (
     <Container container direction="column">
@@ -148,9 +158,11 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
             <Typography color="textPrimary" variant="body1">
               Votes
             </Typography>
-            <Typography color="textPrimary" variant="body2">
-              ({turnout.toFixed(2)} % Turnout)
-            </Typography>
+            {isTokenDelegationSupported && turnout ? (
+              <Typography color="textPrimary" variant="body1">
+                ({turnout.toFixed(2)} % Turnout)
+              </Typography>
+            ) : null}
           </Grid>
 
           <Grid
@@ -170,7 +182,7 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
             <Typography color="textPrimary" variant="body1">
               {poll?.tokenSymbol}
             </Typography>
-            <Typography color="textPrimary" variant="body2">
+            <Typography color="textPrimary" variant="body1">
               (
               {getTreasuryPercentage(
                 calculateProposalTotal(choices, tokenData?.decimals),
