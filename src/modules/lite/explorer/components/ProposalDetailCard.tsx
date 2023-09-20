@@ -11,17 +11,22 @@ import { Poll } from "models/Polls"
 import dayjs from "dayjs"
 import { useNotification } from "modules/common/hooks/useNotification"
 
-const LogoItem = styled("img")({
-  height: 18,
-  cursor: "pointer"
-})
+const LogoItem = styled("img")(({ theme }) => ({
+  cursor: "pointer",
+  [theme.breakpoints.down("sm")]: {
+    height: 10
+  }
+}))
 
-const TextContainer = styled(Typography)({
+const TextContainer = styled(Typography)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: 10,
-  marginRight: 8
-})
+  marginRight: 8,
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 20
+  }
+}))
 
 const EndTextContainer = styled(Typography)(({ theme }) => ({
   display: "flex",
@@ -47,12 +52,16 @@ const Divider = styled(Typography)(({ theme }) => ({
   }
 }))
 
-const StyledLink = styled(Link)({
+const StyledLink = styled(Link)(({ theme }) => ({
   fontFamily: "Roboto Mono",
   fontWeight: 300,
   fontSize: 16,
-  marginLeft: 8
-})
+  marginLeft: 8,
+  [theme.breakpoints.down("sm")]: {
+    fontWeight: 100,
+    fontSize: 10
+  }
+}))
 
 const CopyIcon = styled(FileCopyOutlined)({
   marginRight: 8,
@@ -169,20 +178,17 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
             </Grid>
             <Grid container direction="row">
               <Grid item container direction="row" spacing={2} alignItems="center">
-                <TextContainer color="textPrimary" variant="body1">
+                <TextContainer color="textPrimary" variant="body2">
                   Start date:{" "}
                 </TextContainer>
                 <EndText variant="body2" color="textPrimary">
-                  {" "}
                   {dayjs(Number(poll?.startTime)).format("lll")}
                 </EndText>
                 <Divider color="textPrimary">-</Divider>
-                <EndTextContainer color="textPrimary" variant="body1">
-                  {" "}
+                <EndTextContainer color="textPrimary" variant="body2">
                   End date:{" "}
                 </EndTextContainer>
                 <EndText variant="body2" color="textPrimary">
-                  {" "}
                   {dayjs(Number(poll?.endTime)).format("lll")}
                 </EndText>
               </Grid>
@@ -195,9 +201,9 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
             </Grid>
 
             {poll?.externalLink ? (
-              <Grid container alignItems="center">
+              <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
                 <LogoItem src={LinkIcon} />
-                <StyledLink color="secondary" href="#">
+                <StyledLink color="secondary" href={poll?.externalLink} target="_">
                   {poll?.externalLink}
                 </StyledLink>
               </Grid>
