@@ -43,10 +43,14 @@ const Title = styled(Typography)(({ theme }) => ({
     marginLeft: -2
   }
 }))
-export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined }> = ({ polls, id }) => {
+export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; daoId?: string }> = ({
+  polls,
+  id,
+  daoId
+}) => {
   const communityId = id?.toString()
   const openNotification = useNotification()
-  const [communityPolls, setCommunityPolls] = useState<Poll[]>()
+  const [communityPolls, setCommunityPolls] = useState<Poll[]>(polls)
   const [isFilter, setIsFilter] = useState(false)
   const [isFilterByStatus, setIsFilterByStatus] = useState(1)
   const [statusFilter, setStatusFilter] = useState("")
@@ -64,8 +68,9 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined }> =
         polls.forEach(async poll => {
           await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
             if (!response.ok) {
+              const data = await response.json()
               openNotification({
-                message: "An error has occurred",
+                message: data.message,
                 autoHideDuration: 2000,
                 variant: "error"
               })
@@ -195,7 +200,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined }> =
         communityPolls.map((poll, i) => {
           return (
             <div key={`poll-${i}`}>
-              <ProposalTableRow poll={poll} />
+              <ProposalTableRow poll={poll} daoId={daoId} />
               {communityPolls.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
             </div>
           )

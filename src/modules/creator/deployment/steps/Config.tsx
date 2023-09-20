@@ -27,7 +27,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "boxSizing": "border-box",
   "width": "100%",
   "marginTop": 14,
-  "fontWeight": 400,
+  "fontWeight": 300,
   "padding": "21px 20px",
   "fontFamily": "Roboto Mono",
   "border": "none",
@@ -66,19 +66,24 @@ const CustomFormikTextField = withStyles({
 })(FormikTextField)
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  height: 54,
-  boxSizing: "border-box",
-  marginTop: 14,
-  background: "#2F3438",
-  borderRadius: 8,
-  alignItems: "center",
-  display: "flex",
-  padding: "13px 23px"
+  "height": 54,
+  "boxSizing": "border-box",
+  "marginTop": 14,
+  "background": "#2F3438",
+  "borderRadius": 8,
+  "alignItems": "center",
+  "display": "flex",
+  "padding": "13px 23px",
+  "fontWeight": 300,
+  "& input::placeholder": {
+    fontWeight: 300
+  }
 }))
 
 const ErrorText = styled(Typography)({
   fontSize: 14,
-  color: "red"
+  color: "red",
+  marginTop: 4
 })
 
 const TextareaContainer = styled(Grid)({
@@ -116,6 +121,8 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
   const { dispatch } = useContext(DeploymentContext)
   const match = useRouteMatch()
   const history = useHistory()
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   useEffect(() => {
     if (values) {
@@ -126,6 +133,10 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
             submitForm(values)
           },
           text: "Continue"
+        },
+        back: {
+          text: "Back",
+          handler: () => history.push("/creator/ownership")
         }
       })
     }
@@ -137,10 +148,10 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
         <Grid item xs={12}>
           <Typography variant="subtitle1" color="textSecondary">
             {" "}
-            Contract name{" "}
+            Contract Name{" "}
           </Typography>
           <CustomInputContainer>
-            <Field id="outlined-basic" placeholder="Contract name" name="name" component={CustomFormikTextField} />
+            <Field id="outlined-basic" placeholder="Contract Name" name="name" component={CustomFormikTextField} />
           </CustomInputContainer>
           {errors.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
         </Grid>
@@ -157,7 +168,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                 <CustomTextarea
                   maxLength={1500}
                   aria-label="empty textarea"
-                  placeholder="Description"
+                  placeholder="Type a description"
                   value={getIn(values, "description")}
                   onChange={(newValue: any) => {
                     setFieldValue("description", newValue.target.value)
@@ -178,7 +189,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
               <Field
                 id="outlined-basic"
                 type="number"
-                placeholder="Supply"
+                placeholder="0"
                 name="totalSupply"
                 component={CustomFormikTextField}
                 onKeyDown={(e: FieldChange) => handleNegativeInput(e)}
@@ -186,7 +197,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
             </CustomInputContainer>
             {errors.totalSupply && touched.totalSupply ? <ErrorText>{errors.totalSupply}</ErrorText> : null}
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={isMobileSmall ? 6 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Decimals{" "}
@@ -195,7 +206,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
               <Field
                 id="outlined-basic"
                 type="number"
-                placeholder="Decimals"
+                placeholder="0"
                 name="decimals"
                 component={CustomFormikTextField}
                 onKeyDown={(e: FieldChange) => handleChange(e)}
@@ -209,21 +220,21 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
           <Grid item xs={6}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
-              Symbol{" "}
-            </Typography>
-            <CustomInputContainer>
-              <Field id="outlined-basic" placeholder="Symbol" name="symbol" component={CustomFormikTextField} />
-            </CustomInputContainer>
-            {errors.symbol && touched.symbol ? <ErrorText>{errors.symbol}</ErrorText> : null}
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="subtitle1" color="textSecondary">
-              {" "}
               Icon{" "}
             </Typography>
             <CustomInputContainer>
-              <Field id="outlined-basic" placeholder="Icon" name="icon" component={CustomFormikTextField} />
+              <Field id="outlined-basic" placeholder="URL" name="icon" component={CustomFormikTextField} />
             </CustomInputContainer>
+          </Grid>
+          <Grid item xs={isMobileSmall ? 6 : 3}>
+            <Typography variant="subtitle1" color="textSecondary">
+              {" "}
+              Symbol{" "}
+            </Typography>
+            <CustomInputContainer>
+              <Field id="outlined-basic" placeholder="TEZ" name="symbol" component={CustomFormikTextField} />
+            </CustomInputContainer>
+            {errors.symbol && touched.symbol ? <ErrorText>{errors.symbol}</ErrorText> : null}
           </Grid>
         </Grid>
       </Grid>
@@ -252,7 +263,9 @@ export const ConfigContract: React.FC = () => {
     <>
       <Grid container direction="column">
         <Grid>
-          <TitleBlock title="Configure token contract" description={""}></TitleBlock>
+          <Typography style={{ marginBottom: 32 }} variant="h5" color="textSecondary">
+            Configure Token Contract
+          </Typography>
         </Grid>
 
         <Formik

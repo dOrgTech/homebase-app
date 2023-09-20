@@ -1,19 +1,11 @@
 import { client, client_v2 } from "../graphql"
 import { Community, DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
-import {
-  GET_DAOS_QUERY,
-  GET_DAOS_QUERY_V2,
-  GET_DAO_QUERY,
-  GET_PROPOSALS_QUERY,
-  GET_PROPOSAL_QUERY,
-  GET_XTZ_TRANSFERS
-} from "../dao/queries"
+import { GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "../dao/queries"
 import { LambdaProposal, Proposal } from "../dao/mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
 import axios from "axios"
 import { EnvKey, getEnv } from "services/config"
-import { getTokenMetadata } from "services/bakingBad/tokenBalances"
 import { Network } from "services/beacon"
 
 interface GetDAODTO {
@@ -71,6 +63,8 @@ export const getLiteDAOs = async (network: string) => {
         decimals: Number(dao.decimals),
         standard: dao.tokenType
       },
+      votingAddressesCount: dao.votingAddressesCount,
+      allowPublicAccess: dao.allowPublicAccess,
       ledgers: dao.members.map(member => {
         return {
           holder: {
@@ -146,6 +140,12 @@ export const joinLiteCommunity = async (signature: string, publicKey: string | u
   return resp
 }
 
+export const updateLiteCommunity = async () => {
+  const response = await axios.get<any>(`${REACT_APP_LITE_API_URL}/daos/create/voting`)
+  const daos = response.data
+  console.log(daos)
+}
+
 export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
     method: "POST",
@@ -191,4 +191,17 @@ export const fetchLiteData = async (daoContract: string, network: Network) => {
     const liteData: Community = await data.json()
     return liteData
   }
+}
+
+export const updateCount = async (id: string, count: number) => {
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/count/${id}`, {
+    method: "POST",
+    body: JSON.stringify({
+      count
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  return resp
 }

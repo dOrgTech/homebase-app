@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Link, styled, Typography } from "@material-ui/core"
+import { Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { MainButton } from "modules/common/MainButton"
 import { Navbar } from "modules/common/Toolbar"
 
@@ -8,7 +8,6 @@ const PageContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const PageContent = styled(Grid)(({ theme }) => ({
-  marginTop: 60,
   width: "1000px",
   height: "100%",
   margin: "auto",
@@ -54,11 +53,10 @@ const OptionsContainer = styled(Grid)(({ theme }) => ({
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
   marginTop: 50,
-  paddingLeft: "24%",
-  paddingRight: "24%",
   [theme.breakpoints.down("sm")]: {
     paddingLeft: "2%",
-    paddingRight: "2%"
+    paddingRight: "2%",
+    gap: 20
   }
 }))
 
@@ -79,6 +77,9 @@ const OptionButton = styled(Link)(({ theme }) => ({
 }))
 
 export const Ownership: React.FC = () => {
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+
   return (
     <>
       <PageContainer container direction="row">
@@ -105,15 +106,20 @@ export const Ownership: React.FC = () => {
               </OptionsContainer>
             </Grid>
 
-            <ChoicesContainer container direction="row" alignContent="center" justifyContent="center">
-              <Grid item xs>
+            <ChoicesContainer
+              container
+              direction="row"
+              alignContent="center"
+              justifyContent={isMobileSmall ? "center" : "flex-start"}
+            >
+              <Grid item xs={isMobileSmall ? undefined : 3}>
                 <OptionButton underline="none" href={`/creator/build`}>
                   <MainButton variant="contained" color="secondary">
                     Yes, I have one
                   </MainButton>
                 </OptionButton>
               </Grid>
-              <Grid item xs>
+              <Grid item xs={isMobileSmall ? undefined : 3}>
                 <OptionButton underline="none" href={`/creator/deployment`}>
                   <MainButton variant="contained" color="secondary">
                     No, I need one

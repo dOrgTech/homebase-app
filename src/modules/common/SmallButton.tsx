@@ -7,6 +7,8 @@ export const SmallButton = styled(Button)({
   "transition": ".15s ease-out",
   "textTransform": "capitalize",
   "borderRadius": 8,
+  "backgroundColor": "#81feb7 !important",
+  "color": "#1c1f23",
 
   "&$disabled": {
     boxShadow: "none"

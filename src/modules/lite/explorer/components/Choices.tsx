@@ -16,6 +16,10 @@ import { theme } from "theme"
 import { AddCircleOutline, RemoveCircleOutline } from "@material-ui/icons"
 import { FieldArray, Field } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
+import { useDAOID } from "modules/explorer/pages/DAO/router"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useToken } from "../hooks/useToken"
+import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 19,
@@ -76,8 +80,21 @@ const CustomFormikTextField = withStyles({
   disabled: {}
 })(FormikTextField)
 
-export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingStrategy, setFieldValue }) => {
+const MainButton = styled(Button)(({ theme }) => ({
+  "&$disabled": {
+    boxShadow: "none"
+  }
+}))
+
+export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingStrategy, setFieldValue, id }) => {
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("sm"))
+
+  const daoId = useDAOID()
+  const { data } = useDAO(daoId)
+  const liteDAOId = data?.liteDAOData?._id ? data?.liteDAOData?._id : id
+  const tokenAddress = useToken(liteDAOId)
+  const { data: userTokenVoteWeight } = useTokenVoteWeight(tokenAddress)
+  const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.gt(0) ? true : false
 
   return (
     <Grid container direction="column" style={{ gap: 30 }}>
@@ -175,9 +192,9 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
       </ChoicesContainer>
       <Grid container style={{ gap: 10, marginTop: 31 }}>
         {!isLoading ? (
-          <Button variant="contained" color="secondary" onClick={submitForm}>
+          <MainButton disabled={!canCreateProposal} variant="contained" color="secondary" onClick={submitForm}>
             Create Proposal
-          </Button>
+          </MainButton>
         ) : (
           <CircularProgress color="secondary" />
         )}

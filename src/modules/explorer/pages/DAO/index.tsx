@@ -97,7 +97,7 @@ export const DAO: React.FC = () => {
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
-  const polls = usePolls(data?.liteDAOData?._id)
+  const { data: polls } = usePolls(data?.liteDAOData?._id)
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
 
   const [openDialog, setOpenDialog] = useState(false)

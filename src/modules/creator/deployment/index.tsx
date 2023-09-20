@@ -76,7 +76,7 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 410,
+  maxHeight: 460,
   paddingTop: 20,
   position: "sticky",
   top: 125
@@ -92,6 +92,21 @@ const StyledStepper = styled(Stepper)({
   "cursor": "pointer"
 })
 
+const FAQClickToAction = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  fontSize: "14px",
+  cursor: "pointer",
+  textAlign: "center",
+  textDecoration: "underline"
+}))
+
+const FAQClickText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  fontSize: "14px",
+  cursor: "pointer",
+  textAlign: "center"
+}))
+
 export const Deployment: React.FC = () => {
   const creator = useContext(DeploymentContext)
 
@@ -102,7 +117,11 @@ export const Deployment: React.FC = () => {
 
   const history = useHistory()
   const step = useDeploymentStepNumber()
-  const progress = useMemo(() => step * 50, [step])
+  const progress = useMemo(() => step * 45, [step])
+
+  const goToFAQ = (): void => {
+    history.push("/faq")
+  }
 
   return (
     <PageContainer container direction="row">
@@ -120,9 +139,14 @@ export const Deployment: React.FC = () => {
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
-                  <IndicatorValue>{progress === 0.5 ? 0 : step * 50}%</IndicatorValue>
+                  <IndicatorValue>{progress === 0.5 ? 0 : step * 45}%</IndicatorValue>
                 </Box>
               </ProgressBar>
+
+              <Box onClick={goToFAQ}>
+                <FAQClickText>New to DAOs?</FAQClickText>
+                <FAQClickToAction> Read our FAQ </FAQClickToAction>
+              </Box>
 
               <StyledStepper activeStep={step} orientation="vertical">
                 {STEPS.map(({ title, path }: StepInfo, index: number) => (
