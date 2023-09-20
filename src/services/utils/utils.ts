@@ -35,13 +35,9 @@ export const getTotalSupplyAtReferenceBlock = async (network: Network, address: 
   return result[0].value
 }
 
-export const getUserTotalSupplyAtReferenceBlock = async (
-  network: Network,
-  address: string,
-  level: number,
-  userAddress: string
-) => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${address}/bigmaps/ledger/historical_keys/${level}`
+export const getTokenHoldersCount = async (network: Network, address: string, tokenID: number) => {
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?tokenId=${tokenID}&contract=${address}`
+
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -50,13 +46,7 @@ export const getUserTotalSupplyAtReferenceBlock = async (
 
   const result = await response.json()
 
-  let userBalance
-
-  if (result && result.length > 0) {
-    userBalance = result.find((elem: any) => elem.key.address === userAddress)
-    return userBalance.value
-  }
-  return 0
+  return result[0].holdersCount
 }
 
 export const hasTokenBalance = async (network: Network, account: string, contract: any) => {
@@ -84,20 +74,18 @@ export const hasTokenBalance = async (network: Network, account: string, contrac
   return hasBalance
 }
 
-export const getTurnoutValue = async (network: Network, address: string, level: number, voters: number) => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${address}/bigmaps/ledger/historical_keys/${level}`
-  const response = await fetch(url)
+export const getTurnoutValue = async (
+  network: Network,
+  address: string,
+  tokenID: number,
+  level: number,
+  voters: number
+) => {
+  const tokenHolders = await getTokenHoldersCount(network, address, tokenID)
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch contract current block")
+  if (tokenHolders) {
+    return (voters * 100) / Number(tokenHolders)
   }
-  const result = await response.json()
-
-  if (result) {
-    return (voters * 100) / result.length
-  }
-
-  return 0
 }
 
 export const isProposalActive = (date: number) => {
