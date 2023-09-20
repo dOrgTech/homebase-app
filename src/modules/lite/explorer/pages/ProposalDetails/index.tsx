@@ -55,7 +55,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
 
-  const { data: dao } = useDAO(state.daoId)
+  const { data: dao } = useDAO(state?.daoId)
   const { account, wallet } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
