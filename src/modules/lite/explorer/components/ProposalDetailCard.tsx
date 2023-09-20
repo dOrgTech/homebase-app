@@ -64,6 +64,7 @@ const CustomPopover = withStyles({
     "marginTop": 10,
     "padding": 8,
     "cursor": "pointer",
+    "background": "#1c1f23 !important",
     "&:hover": {
       background: "#81feb76b !important"
     }
