@@ -30,23 +30,24 @@ export const usePolls = (id: any) => {
         return
       }
 
-      communityPolls.map(community => {
-        community.timeFormatted = isProposalActive(Number(community.endTime))
-        community.isActive = !community.timeFormatted.includes("ago") ? ProposalStatus.ACTIVE : ProposalStatus.CLOSED
-      })
+      // @TODO Add functinolity if needed for card in proposal list
+      // communityPolls.map(community => {
+      //   community.timeFormatted = isProposalActive(Number(community.endTime))
+      //   community.isActive = !community.timeFormatted.includes("ago") ? ProposalStatus.ACTIVE : ProposalStatus.CLOSED
+      // })
 
-      communityPolls.forEach(async poll => {
-        if (poll) {
-          await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/votes`).then(async response => {
-            if (!response.ok) {
-              return
-            }
-            const records: number = await response.json()
-            poll.votes = records
-            return
-          })
-        }
-      })
+      // communityPolls.forEach(async poll => {
+      //   if (poll) {
+      //     await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/votes`).then(async response => {
+      //       if (!response.ok) {
+      //         return
+      //       }
+      //       const records: number = await response.json()
+      //       poll.votes = records
+      //       return
+      //     })
+      //   }
+      // })
 
       return communityPolls
     },

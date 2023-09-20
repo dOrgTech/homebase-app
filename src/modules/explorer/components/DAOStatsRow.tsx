@@ -226,7 +226,9 @@ export const DAOStatsRow: React.FC = () => {
                 <Grid item>
                   <ProposalInfoTitle color="secondary">Active Proposals</ProposalInfoTitle>
                   <LargeNumber color="textPrimary">
-                    {Number(activeProposals?.length) + Number(activeLiteProposals?.length)}
+                    {activeLiteProposals
+                      ? Number(activeProposals?.length) + Number(activeLiteProposals?.length)
+                      : Number(activeProposals?.length)}
                   </LargeNumber>
                 </Grid>
               </Grid>
