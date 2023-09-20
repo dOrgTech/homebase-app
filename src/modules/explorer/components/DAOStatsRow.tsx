@@ -124,7 +124,7 @@ export const DAOStatsRow: React.FC = () => {
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { hours, minutes, days } = useTimeLeftInCycle()
-  const polls = usePolls(data?.liteDAOData?._id)
+  const { data: polls } = usePolls(data?.liteDAOData?._id)
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
 
   const amountLocked = useMemo(() => {
@@ -226,7 +226,7 @@ export const DAOStatsRow: React.FC = () => {
                 <Grid item>
                   <ProposalInfoTitle color="secondary">Active Proposals</ProposalInfoTitle>
                   <LargeNumber color="textPrimary">
-                    {Number(activeProposals?.length) + Number(activeLiteProposals.length)}
+                    {Number(activeProposals?.length) + Number(activeLiteProposals?.length)}
                   </LargeNumber>
                 </Grid>
               </Grid>

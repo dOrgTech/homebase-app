@@ -5,53 +5,60 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { isProposalActive } from "services/lite/utils"
 import { ProposalStatus } from "../components/ProposalTableRowStatusBadge"
 import { EnvKey, getEnv } from "services/config"
+import { useQuery } from "react-query"
 
 export const usePolls = (id: any) => {
-  const [polls, setPolls] = useState<Poll[]>([])
   const openNotification = useNotification()
 
-  useEffect(() => {
-    async function fetchPoll() {
-      await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`).then(async response => {
-        if (!response.ok) {
-          const data = await response.json()
-          openNotification({
-            message: data.message,
-            autoHideDuration: 2000,
-            variant: "error"
-          })
-          return
-        }
+  const { data, ...rest } = useQuery(
+    ["proposals", id],
+    async () => {
+      const response = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/polls/${id}/list`)
 
-        const communityPolls: Poll[] = await response.json()
-        if (!communityPolls) {
-          return
-        }
-
-        communityPolls.map(community => {
-          community.timeFormatted = isProposalActive(Number(community.endTime))
-          community.isActive = !community.timeFormatted.includes("ago") ? ProposalStatus.ACTIVE : ProposalStatus.CLOSED
+      if (!response.ok) {
+        const data = await response.json()
+        openNotification({
+          message: data.message,
+          autoHideDuration: 2000,
+          variant: "error"
         })
-
-        communityPolls.forEach(async poll => {
-          if (poll) {
-            await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/votes`).then(async response => {
-              if (!response.ok) {
-                return
-              }
-              const records: number = await response.json()
-              poll.votes = records
-              return
-            })
-          }
-        })
-
-        setPolls(communityPolls)
         return
+      }
+
+      const communityPolls: Poll[] = await response.json()
+      if (!communityPolls) {
+        return
+      }
+
+      communityPolls.map(community => {
+        community.timeFormatted = isProposalActive(Number(community.endTime))
+        community.isActive = !community.timeFormatted.includes("ago") ? ProposalStatus.ACTIVE : ProposalStatus.CLOSED
       })
+
+      communityPolls.forEach(async poll => {
+        if (poll) {
+          await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/votes`).then(async response => {
+            if (!response.ok) {
+              return
+            }
+            const records: number = await response.json()
+            poll.votes = records
+            return
+          })
+        }
+      })
+
+      return communityPolls
+    },
+    {
+      refetchInterval: 30000,
+      enabled: !!id,
+      refetchOnMount: "always"
     }
-    fetchPoll()
-    return
-  }, [id])
-  return polls
+  )
+
+  return {
+    data,
+    ...rest
+  }
 }
