@@ -421,7 +421,7 @@ export const CommunityCreator: React.FC = () => {
         }
 
         const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
-
+        const response = await resp.json()
         if (resp.ok) {
           openNotification({
             message: "Community created!",
@@ -431,13 +431,14 @@ export const CommunityCreator: React.FC = () => {
           navigate.push("/explorer")
         } else {
           openNotification({
-            message: "Community could not be created!",
+            message: response.message,
             autoHideDuration: 3000,
             variant: "error"
           })
           return
         }
       } catch (error) {
+        console.log("error: ", error)
         openNotification({
           message: "Community could not be created!",
           autoHideDuration: 3000,

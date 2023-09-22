@@ -248,7 +248,7 @@ export const useOriginate = (template: DAOTemplate) => {
           description: params.orgSettings.description,
           linkToTerms: contract.address,
           picUri: "",
-          members: [],
+          members: [account],
           polls: [],
           tokenAddress: params.orgSettings.governanceToken.address,
           tokenType: "FA2",
