@@ -38,9 +38,9 @@ export const useSinglePoll = (pollId: string | undefined, id?: any, community?: 
           return
         })
       } catch (error) {
-        setPoll(undefined)
+        console.log("error: ", error)
         openNotification({
-          message: "An error has occurred",
+          message: "An error has occurred fetching poll",
           autoHideDuration: 2000,
           variant: "error"
         })

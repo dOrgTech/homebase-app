@@ -30,7 +30,8 @@ export const useToken = (daoId: string | undefined) => {
             setTokenAddress(record.tokenAddress)
           })
         }
-      } catch {
+      } catch (error) {
+        console.log("error: ", error)
         return
       }
     }

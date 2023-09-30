@@ -108,6 +108,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         setRefresh(Math.random())
         setSelectedVotes([])
       } else {
+        console.log("Error: ", response.message)
         openNotification({
           message: response.message,
           autoHideDuration: 3000,
@@ -118,7 +119,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     } catch (error) {
       console.log("error: ", error)
       openNotification({
-        message: `Something went wrong!!`,
+        message: `Could not submit vote, Please Try Again!`,
         autoHideDuration: 3000,
         variant: "error"
       })

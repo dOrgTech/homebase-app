@@ -22,7 +22,6 @@ export const getLatestDelegation = async (daoAddress: string, network: Network) 
 
 export const getTokenDelegation = async (tokenAddress: string, account: string, network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${tokenAddress}/bigmaps/delegates/keys?key.eq=${account}&active=true`
-  console.log("urlssdasd: ", url)
   const response = await fetch(url)
 
   if (!response.ok) {

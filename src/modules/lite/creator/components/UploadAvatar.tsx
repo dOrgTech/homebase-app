@@ -42,7 +42,7 @@ export const UploadAvatar: React.FC<any> = ({ setFieldValue, values, disabled })
   return (
     <AvatarCardContainer container direction={"column"}>
       <AvatarBox item>
-        <Typography color="textSecondary">Avatar</Typography>
+        <Typography color="textSecondary">Avatar - 5Kb Max</Typography>
       </AvatarBox>
       <AvatarContainer container item style={{ gap: 28 }} alignItems={"center"} direction={"column"}>
         <Grid item>
@@ -66,7 +66,7 @@ export const UploadAvatar: React.FC<any> = ({ setFieldValue, values, disabled })
                     setAvatarPreview(fileReader.result)
                   }
                 }
-                if (e.target && e.target.files && e.target.files?.length > 0) {
+                if (e.target && e.target.files && e.target.files?.length > 0 && e.target.files[0].size < 5000) {
                   fileReader.readAsDataURL(e.target.files[0])
                 }
               }}

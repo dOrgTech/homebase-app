@@ -30,7 +30,8 @@ export const useCommunity = (daoId: string, isUpdated?: number) => {
           }
           setCommunity(record)
         })
-      } catch {
+      } catch (error) {
+        console.log("error: ", error)
         return
       }
     }
