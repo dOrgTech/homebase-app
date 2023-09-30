@@ -261,7 +261,12 @@ export const useOriginate = (template: DAOTemplate) => {
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
         const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
 
-        await saveLiteCommunity(signature, publicKey, payloadBytes)
+        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
+        const data = await resp.json()
+        if (!resp.ok) {
+          console.log("Error: ", data.message)
+          throw new Error(data.message)
+        }
 
         updatedStates[4] = {
           activeText: "",

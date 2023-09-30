@@ -8,7 +8,6 @@ import { BeaconWallet } from "@taquito/beacon-wallet"
 import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
-import axios from "axios"
 
 export const getCurrentBlock = async (network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/head`
