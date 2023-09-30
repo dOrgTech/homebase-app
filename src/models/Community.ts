@@ -15,6 +15,7 @@ export interface Community {
   decimals?: string
   network: string
   votingAddressesCount: number
+  daoContract?: string
 }
 
 export interface CommunityToken {
