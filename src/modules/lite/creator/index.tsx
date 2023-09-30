@@ -421,17 +421,18 @@ export const CommunityCreator: React.FC = () => {
         }
 
         const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
-        const response = await resp.json()
+        const data = await resp.json()
         if (resp.ok) {
           openNotification({
-            message: "Community created!",
+            message: "Community created! Checkout the DAO in explorer page",
             autoHideDuration: 3000,
             variant: "success"
           })
           navigate.push("/explorer")
         } else {
+          console.log("Error: ", data.message)
           openNotification({
-            message: response.message,
+            message: data.message,
             autoHideDuration: 3000,
             variant: "error"
           })

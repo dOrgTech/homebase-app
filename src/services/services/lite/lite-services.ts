@@ -4,7 +4,6 @@ import { GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFE
 import { LambdaProposal, Proposal } from "../dao/mappers/proposal/types"
 import dayjs from "dayjs"
 import { BaseDAO } from "../../contracts/baseDAO"
-import axios from "axios"
 import { EnvKey, getEnv } from "services/config"
 import { Network } from "services/beacon"
 
@@ -37,10 +36,17 @@ export const getDAO = async (address: string) => {
 }
 
 export const getLiteDAOs = async (network: string) => {
-  const response = await axios.post<Community[]>(`${REACT_APP_LITE_API_URL}/daos/`, {
-    network
+  const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/`, {
+    method: "POST",
+    body: JSON.stringify({
+      network
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
   })
-  const daos = response.data
+
+  const daos: Community[] = await resp.json()
 
   const new_daos = daos.map(dao => {
     const new_dao: DAOListItem = {
@@ -138,12 +144,6 @@ export const joinLiteCommunity = async (signature: string, publicKey: string | u
     }
   })
   return resp
-}
-
-export const updateLiteCommunity = async () => {
-  const response = await axios.get<any>(`${REACT_APP_LITE_API_URL}/daos/create/voting`)
-  const daos = response.data
-  console.log(daos)
 }
 
 export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {

@@ -64,28 +64,38 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
 
   useMemo(() => {
     async function getPollToken() {
-      if (polls && polls.length > 0) {
-        polls.forEach(async poll => {
-          await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
-            if (!response.ok) {
-              const data = await response.json()
-              openNotification({
-                message: data.message,
-                autoHideDuration: 2000,
-                variant: "error"
-              })
+      try {
+        if (polls && polls.length > 0) {
+          polls.forEach(async poll => {
+            await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${communityId}`).then(async response => {
+              if (!response.ok) {
+                const data = await response.json()
+                openNotification({
+                  message: data.message,
+                  autoHideDuration: 2000,
+                  variant: "error"
+                })
+                return
+              }
+              const record: CommunityToken = await response.json()
+              if (!record) {
+                return
+              }
+              poll.tokenAddress = record.tokenAddress
+              poll.tokenSymbol = record.symbol
+              poll.tokenDecimals = record.decimals
               return
-            }
-            const record: CommunityToken = await response.json()
-            if (!record) {
-              return
-            }
-            poll.tokenAddress = record.tokenAddress
-            poll.tokenSymbol = record.symbol
-            poll.tokenDecimals = record.decimals
-            return
+            })
           })
+        }
+      } catch (error: any) {
+        console.log("error: ", error)
+        openNotification({
+          message: error.message,
+          autoHideDuration: 2000,
+          variant: "error"
         })
+        return
       }
     }
     getPollToken()

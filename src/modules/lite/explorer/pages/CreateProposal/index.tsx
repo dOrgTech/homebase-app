@@ -632,6 +632,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
             ? navigate.push(`/explorer/dao/${daoId}/proposals`)
             : navigate.push(`/explorer/lite/dao/${id}/community`)
         } else {
+          console.log("Error: ", respData.message)
           openNotification({
             message: respData.message,
             autoHideDuration: 3000,

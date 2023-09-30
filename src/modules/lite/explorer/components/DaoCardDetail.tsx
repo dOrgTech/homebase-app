@@ -64,7 +64,16 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
   const updateCommunityCount = useCallback(
     async (count: number) => {
       if (community) {
-        updateCount(community._id, count)
+        try {
+          const resp = await updateCount(community._id, count)
+          const respData = await resp.json()
+
+          if (!resp.ok) {
+            console.log(respData.message)
+          }
+        } catch (error) {
+          console.log("Error: ", error)
+        }
       }
     },
     [community]
