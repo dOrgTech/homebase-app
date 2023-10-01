@@ -37,7 +37,7 @@ export const CodeCollapse: React.FC<Props> = ({ code }) => {
         <TableHeader item container justifyContent="space-between">
           <Grid item>
             <Typography variant="body2" style={{ fontWeight: "500" }} color="textPrimary">
-              View Lambda Parameter Code
+              View Function Parameter Code
             </Typography>
           </Grid>
           <Grid item>

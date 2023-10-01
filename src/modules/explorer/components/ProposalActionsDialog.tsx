@@ -66,20 +66,20 @@ interface Action {
 
 const getActions = (): Action[] => [
   {
-    name: "Add Lambda",
-    description: "Write Michelson code to add Lambda",
+    name: "Add Function",
+    description: "Write Michelson code to add Function",
     id: ProposalAction.new,
     isLambda: true
   },
   {
-    name: "Remove Lambda",
-    description: "Choose which Lambda to remove",
+    name: "Remove Function",
+    description: "Choose which Function to remove",
     id: ProposalAction.remove,
     isLambda: true
   },
   {
-    name: "Execute Lambda",
-    description: "Execute a Lambda already installed on DAO",
+    name: "Execute Function",
+    description: "Execute a Function already installed on DAO",
     id: ProposalAction.execute,
     isLambda: true
   },
