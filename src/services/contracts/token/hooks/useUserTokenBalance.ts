@@ -1,6 +1,4 @@
-import BigNumber from "bignumber.js"
 import { useQuery } from "react-query"
-import { getTokenDelegationVoteWeight } from "services/bakingBad/delegations"
 import { getUserTokenBalance } from "services/bakingBad/tokenBalances"
 import { useTezos } from "services/beacon/hooks/useTezos"
 

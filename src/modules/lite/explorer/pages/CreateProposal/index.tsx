@@ -584,7 +584,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
     startTime: dayjs().toISOString(),
     endTime: "",
     daoID: "",
-    author: account,
+    author: "",
     votingStrategy: 0,
     endTimeDays: null,
     endTimeHours: null,
@@ -603,6 +603,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
         data.daoID = id
         data.startTime = String(dayjs().valueOf())
         data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
+        data.author = account
 
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
         const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
@@ -624,11 +625,14 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
             variant: "success"
           })
           setIsLoading(false)
-          props.onClose()
+          if (props?.onClose) {
+            props?.onClose()
+          }
           daoId
             ? navigate.push(`/explorer/dao/${daoId}/proposals`)
             : navigate.push(`/explorer/lite/dao/${id}/community`)
         } else {
+          console.log("Error: ", respData.message)
           openNotification({
             message: respData.message,
             autoHideDuration: 3000,
@@ -638,6 +642,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
           return
         }
       } catch (error) {
+        console.log("error: ", error)
         openNotification({
           message: "Proposal could not be created",
           autoHideDuration: 3000,

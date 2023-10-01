@@ -11,21 +11,26 @@ export const usePollChoices = (poll: Poll | undefined, refresh?: number) => {
 
   useEffect(() => {
     async function fetchChoices() {
-      if (poll) {
-        await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/find`).then(async response => {
-          if (!response.ok) {
-            const data = await response.json()
-            openNotification({
-              message: data.message,
-              autoHideDuration: 2000,
-              variant: "error"
-            })
+      try {
+        if (poll) {
+          await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/choices/${poll._id}/find`).then(async response => {
+            if (!response.ok) {
+              const data = await response.json()
+              openNotification({
+                message: data.message,
+                autoHideDuration: 2000,
+                variant: "error"
+              })
+              return
+            }
+            const records: Choice[] = await response.json()
+            setChoices(records)
             return
-          }
-          const records: Choice[] = await response.json()
-          setChoices(records)
-          return
-        })
+          })
+        }
+      } catch (error) {
+        console.log("error: ", error)
+        return
       }
     }
     fetchChoices()

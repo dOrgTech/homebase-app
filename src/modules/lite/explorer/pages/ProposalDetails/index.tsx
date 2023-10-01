@@ -16,9 +16,8 @@ import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
-import { useDelegationStatus } from "services/contracts/token/hooks/useDelegationStatus"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { useDelegationVoteWeight } from "services/contracts/token/hooks/useDelegationVoteWeight"
+import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
 
 const PageContainer = styled("div")({
@@ -56,14 +55,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
 
-  const { data: dao } = useDAO(state.daoId)
+  const { data: dao } = useDAO(state?.daoId)
   const { account, wallet } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const { data: voteWeight } = useDelegationVoteWeight(dao?.data.token.contract)
+  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract, poll?.referenceBlock)
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
@@ -109,6 +108,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         setRefresh(Math.random())
         setSelectedVotes([])
       } else {
+        console.log("Error: ", response.message)
         openNotification({
           message: response.message,
           autoHideDuration: 3000,
@@ -119,7 +119,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     } catch (error) {
       console.log("error: ", error)
       openNotification({
-        message: `Something went wrong!!`,
+        message: `Could not submit vote, Please Try Again!`,
         autoHideDuration: 3000,
         variant: "error"
       })

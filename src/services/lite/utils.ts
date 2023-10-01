@@ -8,7 +8,6 @@ import { BeaconWallet } from "@taquito/beacon-wallet"
 import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
-import axios from "axios"
 
 export const getCurrentBlock = async (network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/head`
@@ -36,43 +35,6 @@ export const getTotalSupplyAtReferenceBlock = async (network: Network, address: 
   return result[0].value
 }
 
-export const getTotalHolders = async (network: Network, address: string): Promise<number> => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/count?token.contract=${address}`
-  const response = await axios.get(url)
-
-  if (!response) {
-    throw new Error("Failed to fetch contract current block")
-  }
-
-  const result = await response.data
-
-  return result
-}
-
-export const getUserTotalSupplyAtReferenceBlock = async (
-  network: Network,
-  address: string,
-  level: number,
-  userAddress: string
-) => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${address}/bigmaps/ledger/historical_keys/${level}`
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch contract current block")
-  }
-
-  const result = await response.json()
-
-  let userBalance
-
-  if (result && result.length > 0) {
-    userBalance = result.find((elem: any) => elem.key.address === userAddress)
-    return userBalance.value
-  }
-  return 0
-}
-
 export const hasTokenBalance = async (network: Network, account: string, contract: any) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${account}&token.contract=${contract}`
   const response = await fetch(url)
@@ -96,22 +58,6 @@ export const hasTokenBalance = async (network: Network, account: string, contrac
   }
 
   return hasBalance
-}
-
-export const getTurnoutValue = async (network: Network, address: string, level: number, voters: number) => {
-  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/contracts/${address}/bigmaps/ledger/historical_keys/${level}`
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch contract current block")
-  }
-  const result = await response.json()
-
-  if (result) {
-    return (voters * 100) / result.length
-  }
-
-  return 0
 }
 
 export const isProposalActive = (date: number) => {

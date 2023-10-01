@@ -31,7 +31,7 @@ interface Props {
   title: string
   showFooter?: boolean
   rightItem?: (proposal: Proposal) => React.ReactElement
-  liteProposals: Poll[]
+  liteProposals: Poll[] | undefined
 }
 
 export const ProposalsList: React.FC<Props> = ({

@@ -42,9 +42,10 @@ export const useHasVoted = (refresh?: number) => {
               return
             }
           )
-        } catch {
+        } catch (error) {
+          console.log("error: ", error)
           openNotification({
-            message: "An error has occurred",
+            message: "An error has occurred fetching vote status",
             autoHideDuration: 2000,
             variant: "error"
           })

@@ -218,6 +218,19 @@ export const getUserTokenBalance = async (accountAddress: string, network: Netwo
   return userTokenBalance
 }
 
+export const isTokenDelegationSupported = async (tezos: TezosToolkit, address: string) => {
+  const token = await tezos.wallet.at(address)
+
+  const contractViews = Object.keys(token.contractViews)
+  const votingPowerView = contractViews.find(view => view === "voting_power")
+
+  if (votingPowerView) {
+    return true
+  }
+
+  return false
+}
+
 export const getVotingPowerAtReferenceBlock = async (
   accountAddress: string,
   network: Network = "mainnet",

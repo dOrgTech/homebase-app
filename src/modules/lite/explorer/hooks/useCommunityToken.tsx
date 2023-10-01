@@ -6,22 +6,27 @@ export const useCommunityToken = (communityId: any) => {
   const [token, setToken] = useState<CommunityToken>()
   useEffect(() => {
     async function fetchToken() {
-      if (communityId !== undefined) {
-        await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${String(communityId)}`).then(async response => {
-          if (!response.ok) {
-            const data = await response.json()
-            const message = data.message
-            return message
-          }
+      try {
+        if (communityId !== undefined) {
+          await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token/${String(communityId)}`).then(async response => {
+            if (!response.ok) {
+              const data = await response.json()
+              const message = data.message
+              return message
+            }
 
-          const record: CommunityToken = await response.json()
-          if (!record) {
+            const record: CommunityToken = await response.json()
+            if (!record) {
+              return
+            }
+
+            setToken(record)
             return
-          }
-
-          setToken(record)
-          return
-        })
+          })
+        }
+      } catch (error) {
+        console.log("error: ", error)
+        return
       }
     }
     fetchToken()
