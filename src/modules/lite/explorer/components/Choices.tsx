@@ -193,7 +193,7 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
       <Grid container style={{ gap: 10, marginTop: 31 }}>
         {!isLoading ? (
           <MainButton disabled={!canCreateProposal} variant="contained" color="secondary" onClick={submitForm}>
-            Create Proposal
+            {canCreateProposal ? "Create Proposal" : "No Voting Weight"}
           </MainButton>
         ) : (
           <CircularProgress color="secondary" />
