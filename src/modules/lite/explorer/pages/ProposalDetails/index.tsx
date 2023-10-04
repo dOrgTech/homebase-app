@@ -165,7 +165,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                   color="secondary"
                   onClick={() => saveVote()}
                 >
-                  Cast your vote
+                  {voteWeight?.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
                 </Button>
               ) : null}
             </GridContainer>
