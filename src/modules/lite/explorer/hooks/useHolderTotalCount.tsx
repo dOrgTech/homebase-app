@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { Network } from "services/beacon"
 import { networkNameMap } from "services/bakingBad"
+import { getTokenHoldersCount } from "services/utils/utils"
 
-export const useHoldersTotalCount = (network: Network, tokenAddress: string) => {
+export const useHoldersTotalCount = (network: Network, tokenAddress: string, tokenID: number) => {
   const [count, setCount] = useState<number>(0)
   const openNotification = useNotification()
 
@@ -12,36 +13,15 @@ export const useHoldersTotalCount = (network: Network, tokenAddress: string) => 
     async function fetchTotalCount() {
       try {
         if (tokenAddress !== "") {
-          const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?token.contract=${tokenAddress}`
-          await fetch(url).then(async response => {
-            if (!response.ok) {
-              openNotification({
-                message: "An error has occurred",
-                autoHideDuration: 2000,
-                variant: "error"
-              })
-              return
-            }
-
-            const record: any[] = await response.json()
-
-            const nonZeroBalance = record.filter((item: any) => item.balance !== "0")
-            if (!record) {
-              return
-            }
-
-            setCount(nonZeroBalance.length)
-            return
-          })
+          const holdersCount = await getTokenHoldersCount(network, tokenAddress, tokenID)
+          setCount(holdersCount)
         }
-        return
       } catch (error) {
         openNotification({
           message: "An error has occurred",
           autoHideDuration: 2000,
           variant: "error"
         })
-        return
       }
     }
     fetchTotalCount()
