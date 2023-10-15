@@ -84,10 +84,6 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
     updateCommunityCount()
   }, [updateCommunityCount])
 
-  const shouldBeDisabled = () => {
-    return community?.requiredTokenOwnership && isMember ? false : true
-  }
-
   return (
     <DaoCardContainer container style={{ gap: 10 }} direction="column">
       <Grid item>
@@ -111,7 +107,6 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
       {isConnected ? (
         <Grid item>
           <ProposalButton
-            disabled={shouldBeDisabled()}
             variant="contained"
             color="secondary"
             size="small"
