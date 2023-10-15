@@ -4,9 +4,9 @@ import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { DashboardContext } from "../context/ActionSheets/explorer"
-import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
 import { updateCount } from "services/services/lite/lite-services"
 import { useIsMember } from "../hooks/useIsMember"
+import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -58,34 +58,31 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
   const { network, account } = useTezos()
   const theme = useTheme()
   const { isConnected } = useContext(DashboardContext)
-  const count = useHoldersTotalCount(network, community?.tokenAddress || "")
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
-
-  const updateCommunityCount = useCallback(
-    async (count: number) => {
-      if (community) {
-        try {
-          const resp = await updateCount(community._id, count)
-          const respData = await resp.json()
-
-          if (!resp.ok) {
-            console.log(respData.message)
-          }
-        } catch (error) {
-          console.log("Error: ", error)
-        }
-      }
-    },
-    [community]
+  const count = useHoldersTotalCount(
+    network,
+    community?.tokenAddress || "",
+    community?.tokenID ? Number(community?.tokenID) : 0
   )
 
-  useEffect(() => {
-    updateCommunityCount(count)
-  }, [count, updateCommunityCount])
+  const updateCommunityCount = useCallback(async () => {
+    if (community) {
+      try {
+        const resp = await updateCount(community._id)
+        const respData = await resp.json()
 
-  const shouldBeDisabled = () => {
-    return community?.requiredTokenOwnership && isMember ? false : true
-  }
+        if (!resp.ok) {
+          console.log(respData.message)
+        }
+      } catch (error) {
+        console.log("Error: ", error)
+      }
+    }
+  }, [community])
+
+  useEffect(() => {
+    updateCommunityCount()
+  }, [updateCommunityCount])
 
   return (
     <DaoCardContainer container style={{ gap: 10 }} direction="column">
@@ -110,7 +107,6 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
       {isConnected ? (
         <Grid item>
           <ProposalButton
-            disabled={shouldBeDisabled()}
             variant="contained"
             color="secondary"
             size="small"

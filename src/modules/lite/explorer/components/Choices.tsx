@@ -18,8 +18,8 @@ import { FieldArray, Field } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { useToken } from "../hooks/useToken"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
+import { useCommunity } from "../hooks/useCommunity"
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
   paddingBottom: 19,
@@ -91,9 +91,9 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
 
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
-  const liteDAOId = data?.liteDAOData?._id ? data?.liteDAOData?._id : id
-  const tokenAddress = useToken(liteDAOId)
-  const { data: userTokenVoteWeight } = useTokenVoteWeight(tokenAddress)
+  const community = useCommunity(id)
+
+  const { data: userTokenVoteWeight } = useTokenVoteWeight(data?.data?.token?.contract || community?.tokenAddress)
   const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.gt(0) ? true : false
 
   return (
