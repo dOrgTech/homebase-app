@@ -1,0 +1,37 @@
+.pagination {
+  display: flex;
+  list-style: none;
+  outline: none;
+  font-family: "Roboto Mono";
+}
+.pagination > .active > a {
+  background-color: rgba(129, 254, 183, 0.2);
+  color: rgba(129, 254, 183, 1);
+}
+.pagination > li > a {
+  border: none;
+  padding: 5px 10px;
+  outline: none;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+  background-color: rgba(129, 254, 183, 0.2);
+  border-color: none;
+  outline: none;
+}
+.pagination > li > a,
+.pagination > li > span {
+  color: #fff;
+}
+.pagination > li:first-child > a,
+.pagination > li:first-child > span,
+.pagination > li:last-child > a,
+.pagination > li:last-child > span {
+  border-radius: unset;
+}

@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useAllDAOs } from "services/services/dao/hooks/useAllDAOs"
 import { ConnectMessage } from "./components/ConnectMessage"
@@ -23,6 +23,8 @@ import { ReactComponent as TabsIcon } from "assets/img/tabs-icon.svg"
 import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
 import { ReactComponent as MyDAOsIcon } from "assets/img/my-daos-icon.svg"
 import { ReactComponent as MyDAOsSelectedIcon } from "assets/img/my-daos-selected-icon.svg"
+import ReactPaginate from "react-paginate"
+import "./styles.css"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -111,6 +113,10 @@ export const DAOList: React.FC = () => {
 
   const [searchText, setSearchText] = useState("")
   const [selectedTab, setSelectedTab] = React.useState(0)
+  const [currentPage, setCurrentPage] = useState(0)
+
+  const [offset, setOffset] = useState(0)
+  const pageCount = Math.ceil(daos ? daos.length / 16 : 0)
 
   const currentDAOs = useMemo(() => {
     if (daos) {
@@ -137,6 +143,38 @@ export const DAOList: React.FC = () => {
         )
       }
 
+      const slice = formattedDAOs.slice(offset, offset + 16)
+
+      return slice
+    }
+
+    return []
+  }, [daos, searchText, offset])
+
+  const myDAOs = useMemo(() => {
+    if (daos) {
+      const formattedDAOs = daos
+        .map(dao => ({
+          id: dao.address,
+          name: dao.name,
+          symbol: dao.token.symbol,
+          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+          votingAddressesCount:
+            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
+          dao_type: {
+            name: dao.dao_type.name
+          },
+          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
+        }))
+        .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
+
+      if (searchText) {
+        return formattedDAOs.filter(
+          formattedDao =>
+            (formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())) ||
+            (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
+        )
+      }
       return formattedDAOs
     }
 
@@ -149,6 +187,15 @@ export const DAOList: React.FC = () => {
 
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
+  }
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (daos) {
+      const newOffset = (event.selected * 16) % daos.length
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
   }
 
   return (
@@ -238,6 +285,20 @@ export const DAOList: React.FC = () => {
                     </DAOItemCard>
                   ) : null
                 )}
+                <Grid container direction="row" justifyContent="flex-end">
+                  <ReactPaginate
+                    previousLabel={"<"}
+                    breakLabel="..."
+                    nextLabel=">"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={2}
+                    pageCount={pageCount}
+                    renderOnZeroPageCount={null}
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                    forcePage={currentPage}
+                  />
+                </Grid>
 
                 {isLoading ? (
                   <Grid item>
@@ -251,7 +312,7 @@ export const DAOList: React.FC = () => {
                 {!account ? (
                   <ConnectMessage />
                 ) : (
-                  currentDAOs
+                  myDAOs
                     .filter(dao => dao.votingAddresses.includes(account))
                     .map((dao, i) => (
                       <DAOItemCard key={`mine-${i}`} item>
