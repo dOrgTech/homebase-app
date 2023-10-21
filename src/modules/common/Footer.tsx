@@ -122,7 +122,7 @@ export const ExplorerFooter: React.FC = () => {
             direction="row"
             alignItems="center"
             style={isMobileSmall ? { gap: 8 } : {}}
-            justifyContent={isMobileSmall ? "space-between" : "flex-start"}
+            justifyContent={isMobileSmall ? "space-between" : "flex-end"}
           >
             <Grid
               container
@@ -141,11 +141,11 @@ export const ExplorerFooter: React.FC = () => {
             <Grid
               container
               direction="row"
-              style={{ gap: 8 }}
               item
               sm={4}
               xs={5}
               md={3}
+              style={isMobileSmall ? { gap: 8 } : { marginLeft: -40, gap: 8 }}
               justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
             >
               <LogoItem src={Help} />
