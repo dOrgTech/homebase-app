@@ -71,8 +71,13 @@ const Balance = styled(Typography)({
 })
 
 const BalanceToken = styled(Typography)({
-  fontSize: 24,
+  fontSize: 21,
   fontWeight: 300
+})
+
+const OnChainTitle = styled(Typography)({
+  marginBottom: 16,
+  fontSize: 24
 })
 
 export const UserBalances: React.FC<{ daoId: string }> = ({ daoId, children }) => {
@@ -120,6 +125,11 @@ export const UserBalances: React.FC<{ daoId: string }> = ({ daoId, children }) =
     <Grid container direction="column" style={{ gap: 40 }}>
       {children}
       <Grid item container direction={isExtraSmall ? "column" : "row"} justifyContent="space-between">
+        <Grid container item direction="row">
+          <OnChainTitle align="center" color="textPrimary">
+            On-Chain Balances
+          </OnChainTitle>
+        </Grid>
         {dao &&
           balancesList.map(({ displayName, balance }, i) => (
             <Grid item key={`balance-${i}`}>
