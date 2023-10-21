@@ -130,8 +130,8 @@ const VotingAddressesText = styled(Typography)({
 })
 
 const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
-  "borderRadius": "45%",
-  "padding": "4px 8px 4px 8px",
+  "borderRadius": "50px",
+  "padding": "3px 8px 3px 8px",
   "height": "auto",
   "boxSizing": "border-box",
   "width": "fit-content",
@@ -144,7 +144,7 @@ const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: strin
     height: "100%"
   },
   "fontFamily": "Roboto Mono",
-  "fontWeight": "bold"
+  "fontWeight": 500
 }))
 
 export const DAOItem: React.FC<{

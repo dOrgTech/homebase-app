@@ -28,8 +28,8 @@ const HeroContainer = styled(ContentContainer)(({ theme }) => ({
 }))
 
 const TitleText = styled(Typography)(({ theme }) => ({
-  fontSize: 40,
-  fontWeight: 500,
+  fontSize: 36,
+  fontWeight: 600,
   lineHeight: 0.8,
 
   ["@media (max-width:642px)"]: {
@@ -60,7 +60,6 @@ const ViewSettings = styled(Grid)({
 
 const SubtitleText = styled(Typography)({
   fontSize: 18,
-  margin: "-10px auto 0 auto",
   width: "875px",
   fontWeight: 300,
   maxHeight: "200px",
@@ -123,19 +122,19 @@ export const DAO: React.FC = () => {
   }, [cycleInfo, data, ledger])
 
   return (
-    <Grid container direction="column" style={{ gap: isExtraSmall ? 25 : 42 }}>
+    <Grid container direction="column" style={{ gap: isExtraSmall ? 25 : 32 }}>
       <HeroContainer item>
-        <Grid container direction="column" style={{ gap: 36 }}>
+        <Grid container direction="column" style={{ gap: 20 }}>
           <Grid item>
-            <Grid container style={{ gap: 20 }} alignItems="center">
+            <Grid container justifyContent="space-between" alignItems="center">
               <Grid item>
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
               <Grid item>
                 <ViewSettings container direction="row" alignItems="center" onClick={() => setOpenDialog(true)}>
                   <Visibility fontSize="small" color="secondary" />
-                  <Typography variant="h6" color="secondary">
-                    View configuration
+                  <Typography variant="body2" color="secondary">
+                    View Settings
                   </Typography>
                 </ViewSettings>
                 <DaoSettingModal open={openDialog} handleClose={handleCloseModal} />
@@ -149,17 +148,6 @@ export const DAO: React.FC = () => {
       </HeroContainer>
       <DAOStatsRow />
 
-      {data && cycleInfo && activeProposals && (
-        <>
-          <ProposalsList
-            showFooter
-            title="Active Proposals"
-            currentLevel={cycleInfo.currentLevel}
-            proposals={activeProposals}
-            liteProposals={activeLiteProposals}
-          />
-        </>
-      )}
       <TableContainer item>
         <UsersTable data={usersTableData} />
       </TableContainer>

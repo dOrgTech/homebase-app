@@ -73,8 +73,8 @@ const Search = styled(Grid)({
 })
 
 const DAOItemGrid = styled(Grid)({
-  gap: "32px",
-
+  gap: "30px",
+  justifyContent: "space-between",
   ["@media (max-width: 1155px)"]: {
     gap: "32px"
   },
@@ -89,7 +89,7 @@ const DAOItemGrid = styled(Grid)({
 })
 
 const DAOItemCard = styled(Grid)({
-  flexBasis: "48%",
+  flexBasis: "48.5%",
 
   ["@media (max-width:760px)"]: {
     minWidth: "100%"
@@ -308,7 +308,7 @@ export const DAOList: React.FC = () => {
               </DAOItemGrid>
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
-              <DAOItemGrid container style={{ gap: 18 }} justifyContent={isMobileSmall ? "center" : "flex-start"}>
+              <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
                 {!account ? (
                   <ConnectMessage />
                 ) : (

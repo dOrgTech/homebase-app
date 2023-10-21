@@ -84,6 +84,11 @@ export const theme = createTheme({
     }
   },
   overrides: {
+    MuiSvgIcon: {
+      colorSecondary: {
+        color: "#81FEB7 !important"
+      }
+    },
     MuiTypography: {
       root: {
         letterSpacing: "-0.03em !important"
@@ -207,6 +212,7 @@ export const theme = createTheme({
       },
       disabled: {}
     },
+
     MuiButton: {
       root: {
         "textTransform": "capitalize",
@@ -370,7 +376,7 @@ export const theme = createTheme({
     },
     MuiTableBody: {
       root: {
-        "& > *": {
+        "& > *:not(:first-child)": {
           borderTop: "0.3px solid rgba(125,140,139, 0.2)",
           minHeight: 90
         }

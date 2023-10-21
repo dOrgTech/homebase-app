@@ -1,7 +1,17 @@
 import React, { useMemo } from "react"
 import { ReactComponent as VotingPeriodIcon } from "assets/logos/votingPeriod.svg"
 import ProgressBar from "react-customizable-progressbar"
-import { Box, Grid, styled, SvgIcon, LinearProgress, useTheme, Typography, useMediaQuery } from "@material-ui/core"
+import {
+  Box,
+  Grid,
+  styled,
+  SvgIcon,
+  LinearProgress,
+  useTheme,
+  Typography,
+  useMediaQuery,
+  Paper
+} from "@material-ui/core"
 import { ContentContainer } from "./ContentContainer"
 import { CycleDescription } from "./CycleDescription"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -12,6 +22,14 @@ import { useDAOID } from "../pages/DAO/router"
 import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
+import FiberSmartRecordIcon from "@mui/icons-material/FiberSmartRecord"
+import LockIcon from "@mui/icons-material/Lock"
+import HowToVoteIcon from "@mui/icons-material/HowToVote"
+import PaletteIcon from "@mui/icons-material/Palette"
+import { ReactComponent as TzIcon } from "assets/img/tz_circle.svg"
+import { formatNumber } from "../utils/FormatNumber"
+import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 
 const StatsContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 38px",
@@ -114,6 +132,40 @@ const CycleTime = styled(Typography)(({ theme }) => ({
   }
 }))
 
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: 8,
+  color: theme.palette.text.primary,
+  height: 84,
+  display: "flex",
+  padding: "33px 40px 30px 40px",
+  flexDirection: "column",
+  gap: 8
+}))
+
+const ItemContent = styled(Grid)({
+  gap: 8
+})
+
+const ItemTitle = styled(Typography)({
+  fontSize: 18,
+  fontWeight: 600
+})
+
+const ItemValue = styled(Typography)({
+  fontSize: 36,
+  fontWeight: 300
+})
+
+const Percentage = styled(Typography)({
+  fontSize: 18,
+  fontWeight: 300,
+  marginLeft: 78,
+  marginTop: 20,
+  position: "absolute"
+})
+
 export const DAOStatsRow: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
@@ -126,6 +178,7 @@ export const DAOStatsRow: React.FC = () => {
   const { hours, minutes, days } = useTimeLeftInCycle()
   const { data: polls } = usePolls(data?.liteDAOData?._id)
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
+  const { tokenHoldings } = useDAOHoldings(daoId)
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -151,9 +204,80 @@ export const DAOStatsRow: React.FC = () => {
   const amountLockedPercentage = totalTokens ? amountLocked.div(totalTokens).multipliedBy(100) : new BigNumber(0)
 
   return (
-    <Grid item>
-      <Grid container style={{ gap: isExtraSmall ? 25 : 44 }}>
-        <StatsContainer item xs>
+    <Box sx={{ flexGrow: 1 }}>
+      <Grid container spacing={4}>
+        <Grid item xs={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <AccountBalanceWalletIcon color="secondary" />
+              <ItemTitle color="textPrimary">Total {symbol}</ItemTitle>
+            </ItemContent>
+            <Grid item>
+              <ItemValue color="textPrimary">{formatNumber(totalTokens)}</ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <TzIcon color="secondary" />
+              <ItemTitle color="textPrimary">Voting Addresses</ItemTitle>
+            </ItemContent>
+            <Grid item>
+              <ItemValue color="textPrimary">{data?.data.ledger.length || "-"}</ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <FiberSmartRecordIcon color="secondary" style={{ transform: "rotate(180deg)" }} />
+              <ItemTitle color="textPrimary">Tokens</ItemTitle>
+            </ItemContent>
+            <Grid item>
+              <ItemValue color="textPrimary">{tokenHoldings.length || "-"}</ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <LockIcon color="secondary" /> <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
+            </ItemContent>
+            <Grid item container direction="row">
+              <ItemValue color="textPrimary">{formatNumber(amountLocked)}</ItemValue>
+              <Percentage color="textPrimary">{formatNumber(amountLockedPercentage)}%</Percentage>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <HowToVoteIcon color="secondary" />
+              <ItemTitle color="textPrimary">Active Proposals</ItemTitle>
+            </ItemContent>
+            <Grid item>
+              <ItemValue color="textPrimary">
+                {" "}
+                {activeLiteProposals
+                  ? Number(activeProposals?.length) + Number(activeLiteProposals?.length)
+                  : Number(activeProposals?.length)}
+              </ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <PaletteIcon color="secondary" />
+              <ItemTitle color="textPrimary">NFTs</ItemTitle>
+            </ItemContent>
+            <Grid item>
+              <ItemValue color="textPrimary"></ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        {/* <StatsContainer item xs>
           <Grid container direction="column" style={{ gap: 24, marginTop: "-3px" }}>
             <Grid item>
               <CycleDescription daoAddress={daoId} />
@@ -196,8 +320,8 @@ export const DAOStatsRow: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
-        </StatsContainer>
-        <StatsContainer item xs>
+        </StatsContainer> */}
+        {/* <StatsContainer item xs>
           <Grid container direction="column" style={{ marginTop: "-3px" }}>
             <Grid item>
               <Grid container direction="column">
@@ -234,8 +358,8 @@ export const DAOStatsRow: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
-        </StatsContainer>
+        </StatsContainer> */}
       </Grid>
-    </Grid>
+    </Box>
   )
 }
