@@ -145,7 +145,7 @@ export const ExplorerFooter: React.FC = () => {
               sm={4}
               xs={5}
               md={3}
-              style={isMobileSmall ? { gap: 8 } : { marginLeft: -40, gap: 8 }}
+              style={isMobileSmall ? { gap: 8 } : { marginLeft: -35, gap: 8 }}
               justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
             >
               <LogoItem src={Help} />
