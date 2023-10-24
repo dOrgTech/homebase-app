@@ -89,6 +89,7 @@ export const DAO: React.FC = () => {
   const { mutate } = useFlush()
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const symbol = data && data.data.token.symbol.toUpperCase()
 
   const name = data && data.data.name
   const description = data && data.data.description
@@ -124,9 +125,9 @@ export const DAO: React.FC = () => {
   return (
     <Grid container direction="column" style={{ gap: isExtraSmall ? 25 : 32 }}>
       <HeroContainer item>
-        <Grid container direction="column" style={{ gap: 20 }}>
+        <Grid container direction="column" style={{ gap: isExtraSmall ? 40 : 20 }}>
           <Grid item>
-            <Grid container justifyContent="space-between" alignItems="center">
+            <Grid container justifyContent="space-between" alignItems="center" style={isExtraSmall ? { gap: 20 } : {}}>
               <Grid item>
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
@@ -148,9 +149,9 @@ export const DAO: React.FC = () => {
       </HeroContainer>
       <DAOStatsRow />
 
-      <TableContainer item>
-        <UsersTable data={usersTableData} />
-      </TableContainer>
+      <Grid item>
+        <UsersTable data={usersTableData} symbol={symbol || ""} />
+      </Grid>
     </Grid>
   )
 }

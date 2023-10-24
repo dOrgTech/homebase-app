@@ -13,6 +13,8 @@ import {
 } from "@material-ui/core"
 import dayjs from "dayjs"
 import { UserBadge } from "modules/explorer/components/UserBadge"
+import { Blockie } from "modules/common/Blockie"
+import { CopyButton } from "./CopyButton"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
@@ -57,6 +59,28 @@ const TableText = styled(Typography)({
   }
 })
 
+const Title = styled(Typography)({
+  fontSize: 20
+})
+
+const CardContainer = styled(Grid)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  padding: "40px 48px",
+  borderRadius: 8
+}))
+
+const Value = styled(Typography)({
+  marginTop: 8,
+  fontWeight: 300,
+  gap: 6,
+  display: "flex"
+})
+
+const Symbol = styled(Typography)({
+  marginLeft: 4,
+  fontWeight: 300
+})
+
 const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
   switch (title) {
     case "Rank":
@@ -82,9 +106,9 @@ const MobileUsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   return (
     <Grid container direction="column" alignItems="center">
       <MobileTableHeader item>
-        <Typography align="center" variant="h4" color="textPrimary">
+        <Title align="center" variant="h4" color="textPrimary">
           Top Addresses
-        </Typography>
+        </Title>
       </MobileTableHeader>
       {data.map((row, i) => (
         <MobileTableRow
@@ -112,45 +136,71 @@ const MobileUsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   )
 }
 
-const DesktopUsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
+const DesktopUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data, symbol }) => {
   return (
     <>
-      <Table>
-        <StyledTableHead>
-          <StyledTableRow>
-            <TableCell>
-              <TableText>Top Addresses</TableText>
-            </TableCell>
-          </StyledTableRow>
-          <TableRow>
-            {titles.map((title, i) => (
-              <TableCell key={`userstitle-${i}`}>
-                <TableText>{title}</TableText>
-              </TableCell>
-            ))}
-          </TableRow>
-        </StyledTableHead>
-        <TableBody>
-          {data.map((row, i) => (
-            <TableRow key={`usersrow-${i}`}>
-              <OverflowCell>
-                <UserBadge smallText={true} address={row.address} size={44} gap={16} />
-              </OverflowCell>
-              <TableCell>{row.votes}</TableCell>
-              <TableCell>{row.availableStaked}</TableCell>
-              <TableCell>{row.totalStaked}</TableCell>
-              <TableCell>{row.proposalsVoted}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <Grid container style={{ gap: 32 }}>
+        <Grid item container direction="row">
+          <Grid item xs={12}>
+            <Title color="textPrimary">Top Addresses</Title>
+          </Grid>
+        </Grid>
+
+        {data.map((item, i) => (
+          <CardContainer key={`usersrow-${i}`} container direction="row" style={{ gap: 24 }}>
+            <Grid item container direction="row" alignItems="center" xs={12} style={{ gap: 8 }}>
+              <Blockie address={item.address} size={24} />
+              <Typography style={{ fontWeight: 300 }} color="textPrimary" variant="body2">
+                {item.address}
+              </Typography>
+              <CopyButton text={item.address} />
+            </Grid>
+            <Grid item container direction="row" xs={12} justifyContent="space-between">
+              <Grid item xs={3}>
+                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
+                  Total Votes
+                </Typography>
+                <Value variant="body2" color="secondary">
+                  {item.votes}
+                </Value>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
+                  Proposals Voted
+                </Typography>
+                <Value variant="body2" color="secondary">
+                  {item.proposalsVoted}
+                </Value>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
+                  Available Staked
+                </Typography>
+                <Value variant="body2" color="secondary">
+                  {item.availableStaked}
+                  <Symbol variant="body2">{symbol}</Symbol>
+                </Value>
+              </Grid>
+              <Grid item xs={3}>
+                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
+                  Total Staked
+                </Typography>
+                <Value variant="body2" color="secondary">
+                  {item.totalStaked}
+                  <Symbol variant="body2">{symbol}</Symbol>
+                </Value>
+              </Grid>
+            </Grid>
+          </CardContainer>
+        ))}
+      </Grid>
     </>
   )
 }
 
-export const UsersTable: React.FC<{ data: RowData[] }> = ({ data }) => {
+export const UsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data, symbol }) => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down(960))
 
-  return isExtraSmall ? <MobileUsersTable data={data} /> : <DesktopUsersTable data={data} />
+  return isExtraSmall ? <MobileUsersTable data={data} /> : <DesktopUsersTable data={data} symbol={symbol} />
 }
