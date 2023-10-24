@@ -128,7 +128,6 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
   const liteDAOId = data?.liteDAOData?._id
   const shouldDisable = useIsProposalButtonDisabled(daoId)
   const { network, account } = useTezos()
-  const isMember = useIsMember(network, data?.liteDAOData?.tokenAddress || "", account)
 
   const handleOpenCustomProposalModal = (key: ProposalAction) => {
     setProposalAction(key)
@@ -171,10 +170,8 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
               <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
                 <OptionContainer
                   onClick={() =>
-                    elem.id === "off-chain" && isMember
+                    elem.id === "off-chain"
                       ? handleLiteProposal()
-                      : elem.id === "off-chain" && !isMember
-                      ? null
                       : !shouldDisable
                       ? elem.isLambda
                         ? handleOpenCustomProposalModal(elem.id)
@@ -182,25 +179,11 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
                       : null
                   }
                 >
-                  <ActionText
-                    color={
-                      shouldDisable && elem.id !== "off-chain"
-                        ? "textSecondary"
-                        : elem.id === "off-chain" && !isMember
-                        ? "textSecondary"
-                        : "textPrimary"
-                    }
-                  >
+                  <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
                     {elem.name}
                   </ActionText>
                   <ActionDescriptionText
-                    color={
-                      shouldDisable && elem.id !== "off-chain"
-                        ? "textSecondary"
-                        : elem.id === "off-chain" && !isMember
-                        ? "textSecondary"
-                        : "textPrimary"
-                    }
+                    color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
                   >
                     {elem.description}{" "}
                   </ActionDescriptionText>

@@ -62,7 +62,10 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract, poll?.referenceBlock)
+  const { data: voteWeight } = useTokenVoteWeight(
+    dao?.data.token.contract || community?.tokenAddress,
+    poll?.referenceBlock
+  )
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
@@ -165,7 +168,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                   color="secondary"
                   onClick={() => saveVote()}
                 >
-                  Cast your vote
+                  {voteWeight?.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
                 </Button>
               ) : null}
             </GridContainer>
