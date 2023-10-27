@@ -17,7 +17,6 @@ import { formatNumber } from "../utils/FormatNumber"
 import { useDAOHoldings, useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 
 const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
   backgroundColor: theme.palette.primary.main,
   borderRadius: 8,
   color: theme.palette.text.primary,
@@ -32,22 +31,27 @@ const ItemContent = styled(Grid)({
   gap: 8
 })
 
-const ItemTitle = styled(Typography)({
+const ItemTitle = styled(Typography)(({ theme }) => ({
   fontSize: 18,
-  fontWeight: 600
-})
+  fontWeight: 600,
+  [theme.breakpoints.down("md")]: {
+    fontSize: 15
+  }
+}))
 
-const ItemValue = styled(Typography)({
+const ItemValue = styled(Typography)(({ theme }) => ({
   fontSize: 36,
-  fontWeight: 300
-})
+  fontWeight: 300,
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 28
+  }
+}))
 
 const Percentage = styled(Typography)({
   fontSize: 18,
   fontWeight: 300,
-  marginLeft: 78,
   marginTop: 20,
-  position: "absolute"
+  paddingLeft: 18
 })
 
 export const DAOStatsRow: React.FC = () => {
@@ -85,7 +89,7 @@ export const DAOStatsRow: React.FC = () => {
   const amountLockedPercentage = totalTokens ? amountLocked.div(totalTokens).multipliedBy(100) : new BigNumber(0)
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, width: "inherit" }}>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6} md={4}>
           <Item>

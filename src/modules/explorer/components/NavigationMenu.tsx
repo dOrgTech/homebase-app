@@ -57,6 +57,42 @@ const InnerContainerExplorer = styled(Grid)(({ theme }: { theme: Theme }) => ({
   }
 }))
 
+const PageItemMobile = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+  "display": "flex",
+  "alignItems": "center",
+  "borderTop": "2px solid transparent",
+  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
+  "height": "auto",
+  "padding": "20px 20px",
+  "borderRadius": 8,
+  "transition": isSelected ? "0s ease-in" : ".1s ease-out",
+  "width": 180,
+  "justifyContent": "center",
+
+  "& > a > *": {
+    height: "100%"
+  },
+
+  "&:hover": {
+    "& > a > * > * > * > * > *": {
+      fill: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+      stroke: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+      transition: isSelected ? "none" : ".15s ease-in"
+    }
+  },
+
+  "& > a > * > * > * > * > *": {
+    transition: ".15s ease-out"
+  },
+
+  "& > a > * > * > *": {
+    transition: ".15s ease-out"
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "45px"
+  }
+}))
+
 const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
   "display": "flex",
   "alignItems": "center",
@@ -259,7 +295,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
   ) : (
     <BottomNavBar>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} container item alignItems="center">
+        <PageItemMobile key={`page-${i}`} isSelected={pathId === page.pathId} container item alignItems="center">
           <Link to={page.href}>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>
@@ -269,7 +305,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
               </Grid>
             </Grid>
           </Link>
-        </PageItem>
+        </PageItemMobile>
       ))}
     </BottomNavBar>
   )

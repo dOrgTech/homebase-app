@@ -24,7 +24,10 @@ export const StyledAvatar = styled(Avatar)({
 })
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
-  padding: "38px 38px"
+  padding: 38,
+  [theme.breakpoints.down("sm")]: {
+    width: "inherit"
+  }
 }))
 
 const TitleText = styled(Typography)(({ theme }) => ({
@@ -77,10 +80,6 @@ const SubtitleText = styled(Typography)({
     width: "100%",
     margin: "-15px auto 0 auto"
   }
-})
-
-const TableContainer = styled(ContentContainer)({
-  width: "100%"
 })
 
 export const DAO: React.FC = () => {
@@ -149,7 +148,7 @@ export const DAO: React.FC = () => {
       </HeroContainer>
       <DAOStatsRow />
 
-      <Grid item>
+      <Grid item style={{ width: "inherit" }}>
         <UsersTable data={usersTableData} symbol={symbol || ""} />
       </Grid>
     </Grid>
