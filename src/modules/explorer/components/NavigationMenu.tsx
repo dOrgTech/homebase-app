@@ -196,12 +196,13 @@ const getPages = (daoId: string): Page[] => [
 ]
 
 const styles = makeStyles(theme => ({
-  home: {
-    backgroundColor: theme.palette.primary.main
-  },
   explorer: {
     backgroundColor: theme.palette.primary.dark
-  }
+  },
+  lite: {
+    display: "none"
+  },
+  home: {}
 }))
 
 const StyledBottomBar = styled(Grid)(({ theme }: { theme: Theme }) => ({
@@ -273,7 +274,16 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
 
   return !isMobileSmall || disableMobileMenu ? (
     <Container container>
-      <InnerContainer container className={location.pathname.match("/explorer/daos") ? classes.explorer : classes.home}>
+      <InnerContainer
+        container
+        className={
+          location.pathname.match("/explorer/daos")
+            ? classes.explorer
+            : location.pathname.match("/explorer/lite")
+            ? classes.lite
+            : classes.home
+        }
+      >
         {pages.map((page, i) => (
           <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item>
             <Link to={page.href}>

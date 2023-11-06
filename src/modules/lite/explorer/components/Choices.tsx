@@ -1,10 +1,11 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Button,
   CircularProgress,
   Grid,
   IconButton,
   InputAdornment,
+  makeStyles,
   Radio,
   styled,
   Typography,
@@ -22,9 +23,8 @@ import { useToken } from "../hooks/useToken"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
-  paddingBottom: 19,
-  background: theme.palette.primary.main,
-  borderRadius: 4
+  marginTop: 24,
+  gap: 24
 }))
 
 const RemoveCircle = styled(RemoveCircleOutline)(({ theme }) => ({
@@ -32,28 +32,47 @@ const RemoveCircle = styled(RemoveCircleOutline)(({ theme }) => ({
   cursor: "pointer"
 }))
 
-const Title = styled(Grid)(({ theme }) => ({
-  paddingLeft: 26,
-  paddingRight: 26,
-  paddingTop: 19,
-  paddingBottom: 19,
-  borderBottom: `0.3px solid ${theme.palette.primary.light}`,
-  marginTop: "0px !important"
-}))
-
 const ChoiceText = styled(Typography)({
   fontWeight: 300,
-  fontSize: 17
+  fontSize: 18,
+  marginLeft: 12
 })
 
 const VotingContainer = styled(Grid)(({ theme }) => ({
-  padding: "19px 26px 0px",
-  borderBottom: `0.3px solid ${theme.palette.primary.light}`,
   height: 80,
   [theme.breakpoints.down("sm")]: {
     height: 120
   }
 }))
+
+const useStyles = makeStyles({
+  root: {
+    "&:hover": {
+      backgroundColor: "transparent"
+    }
+  },
+  icon: {
+    "width": 24,
+    "height": 24,
+    "borderRadius": "50%",
+    "backgroundColor": "#2F3438",
+
+    "input:disabled ~ &": {
+      boxShadow: "none",
+      background: "rgba(206,217,224,.5)"
+    }
+  },
+  checkedIcon: {
+    "&:before": {
+      borderRadius: "50%",
+      display: "block",
+      width: 24,
+      height: 24,
+      background: "radial-gradient(#81FEB7,#81FEB7 27%,#2F3438 27%)",
+      content: '""'
+    }
+  }
+})
 
 const CustomFormikTextField = withStyles({
   root: {
@@ -96,26 +115,32 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
   const { data: userTokenVoteWeight } = useTokenVoteWeight(tokenAddress)
   const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.gt(0) ? true : false
 
+  const classes = useStyles()
+
   return (
     <Grid container direction="column" style={{ gap: 30 }}>
       <ChoicesContainer container direction="column">
-        <Title item>
-          <Typography variant={"body2"} color="textPrimary">
+        <Grid item>
+          <Typography variant={"body1"} color="textPrimary">
             Set Poll Options
           </Typography>
-        </Title>
+        </Grid>
 
         <VotingContainer item>
           <Grid container direction={isMobileExtraSmall ? "column" : "row"}>
-            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 6} alignItems="center">
+            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 4} alignItems="center">
               <Field name="votingStrategy">
                 {() => (
                   <Radio
+                    className={classes.root}
                     style={{ paddingLeft: 0 }}
                     checked={Number(votingStrategy) === 0}
                     value={0}
+                    disableRipple
                     name="radio-buttons"
                     inputProps={{ "aria-label": "A" }}
+                    checkedIcon={<span className={(classes.icon, classes.checkedIcon)} />}
+                    icon={<span className={classes.icon} />}
                     onClick={() => setFieldValue("votingStrategy", 0)}
                   />
                 )}
@@ -123,15 +148,18 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
               <ChoiceText color="textPrimary">Single choice</ChoiceText>
             </Grid>
 
-            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 6} alignItems="center">
+            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 4} alignItems="center">
               <Field name="votingStrategy">
                 {() => (
                   <Radio
                     style={{ paddingLeft: 0 }}
                     checked={Number(votingStrategy) === 1}
                     value={1}
+                    disableRipple={true}
                     name="radio-buttons"
                     inputProps={{ "aria-label": "A" }}
+                    checkedIcon={<span className={(classes.icon, classes.checkedIcon)} />}
+                    icon={<span className={classes.icon} />}
                     onClick={() => setFieldValue("votingStrategy", 1)}
                   />
                 )}

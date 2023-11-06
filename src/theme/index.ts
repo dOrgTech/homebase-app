@@ -42,7 +42,10 @@ export const theme = createTheme({
       }
     },
     subtitle1: {
-      fontSize: 32
+      fontSize: 32,
+      [breakpoints.down("xs")]: {
+        fontSize: 26
+      }
     },
     subtitle2: {
       fontSize: 16,
@@ -184,6 +187,13 @@ export const theme = createTheme({
       },
       text: {
         fill: "#fff"
+      }
+    },
+    MuiIconButton: {
+      colorSecondary: {
+        "&:hover": {
+          background: "inherit !important"
+        }
       }
     },
     MuiInput: {
