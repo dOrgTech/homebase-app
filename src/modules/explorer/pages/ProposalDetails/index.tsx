@@ -33,9 +33,6 @@ import { CopyButton } from "modules/common/CopyButton"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import { CodeCollapse } from "modules/explorer/components/CodeCollapse"
-import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
-import { useDAOLambda } from "services/contracts/baseDAO/hooks/useDAOLambda"
-import { parseLambdaCode } from "utils"
 
 const Container = styled(ContentContainer)({
   padding: "36px 45px"
@@ -378,7 +375,7 @@ export const ProposalDetails: React.FC = () => {
                       <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
                         <Grid item>
                           <DetailsText variant="body1" color="textPrimary">
-                            Execute Lambda{" "}
+                            Execute Function{" "}
                             <Typography variant="body1" color="secondary" display={"inline"}>
                               {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler.handler_name)}
                             </Typography>{" "}
@@ -445,7 +442,7 @@ export const ProposalDetails: React.FC = () => {
                         <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
                           <Grid item>
                             <DetailsText variant="body1" color="textPrimary">
-                              Add Lambda{" "}
+                              Add Function{" "}
                               <Typography variant="body1" color="secondary" display={"inline"}>
                                 {(proposal as LambdaProposal).metadata.lambdaHandler.name}
                               </Typography>{" "}
@@ -479,7 +476,7 @@ export const ProposalDetails: React.FC = () => {
                       <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
                         <Grid item>
                           <DetailsText variant="body1" color="textPrimary">
-                            Remove Lambda{" "}
+                            Remove Function{" "}
                             <Typography variant="body1" color="secondary" display={"inline"}>
                               {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler)}
                             </Typography>{" "}

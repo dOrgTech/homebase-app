@@ -5,7 +5,7 @@ import CloseButton from "modules/common/CloseButton"
 import BackButton from "modules/common/BackButton"
 
 const Content = styled(Grid)({
-  padding: "41px 46px"
+  padding: "40px 48px"
 })
 
 const TitleText = styled(Typography)(({ theme }) => ({

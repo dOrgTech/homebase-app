@@ -85,7 +85,7 @@ enum LambdaProposalState {
 }
 
 const codeEditorPlaceholder = {
-  addLambda: `Write Michelson Code for Lambda's Implementation
+  addLambda: `Write Michelson Code for Function's Implementation
 
 Eg:-
 
@@ -98,9 +98,9 @@ Eg:-
   { DROP ; UNIT })
 "sample")))
   `,
-  existingLambda: `Choose a Lambda from the Dropdown, the implementation will appear here
+  existingLambda: `Choose a Function from the Dropdown, the implementation will appear here
   `,
-  lambdaExecuteArgumentsCode: `Write Michelson Code for the input Paramerers of your Lambda
+  lambdaExecuteArgumentsCode: `Write Michelson Code for the input Paramerers of your Function
 
 Eg:-
 
@@ -277,7 +277,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderRemoveProposal = () => {
     return (
       <>
-        <ProposalFormInput label="Lambda Name">
+        <ProposalFormInput label="Function Name">
           <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
         </ProposalFormInput>
         <ProposalCodeEditorInput
@@ -300,7 +300,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderExecuteProposal = () => {
     return (
       <>
-        <ProposalFormInput label="Lambda Name">
+        <ProposalFormInput label="Function Name">
           <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
         </ProposalFormInput>
         <ProposalCodeEditorInput
@@ -317,7 +317,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
           placeholder={codeEditorPlaceholder.existingLambda}
         />
         <ProposalCodeEditorInput
-          label="Lambda Arguments Code"
+          label="Function Arguments Code"
           containerstyle={codeEditorcontainerstyles}
           insertSpaces
           ignoreTabKey={false}
@@ -351,18 +351,18 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
       <ResponsiveDialog
         open={open}
         onClose={handleClose}
-        title={ProposalAction[action] + " Lambda Proposal"}
+        title={ProposalAction[action] + " Function Proposal"}
         template="md"
       >
         {state === LambdaProposalState.write_action ? (
           <>
-            <Grid container direction="row" spacing={4}>
+            <Grid container direction="row">
               {action === ProposalAction.new ? renderNewProposal() : null}
               {action === ProposalAction.remove ? renderRemoveProposal() : null}
               {action === ProposalAction.execute ? renderExecuteProposal() : null}
             </Grid>
 
-            <StyledRow container direction="row" spacing={4} justifyContent="flex-end">
+            <StyledRow container direction="row" justifyContent="flex-end">
               <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={!code}>
                 Submit
               </StyledSendButton>
