@@ -155,7 +155,7 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
             <Typography color="secondary" variant="body1" onClick={() => handleClickOpen()}>
               {getTotalVoters(choices)}
             </Typography>
-            <Typography color="textPrimary" variant="body1">
+            <Typography color="textPrimary" variant="body1" onClick={() => handleClickOpen()}>
               Votes
             </Typography>
             {isTokenDelegationSupported && turnout ? (
