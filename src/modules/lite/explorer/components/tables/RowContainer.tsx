@@ -5,6 +5,7 @@ export const RowContainer = styled(Grid)(({ theme }) => ({
   padding: "44px 38px",
   cursor: "pointer",
   [theme.breakpoints.down("md")]: {
-    padding: "44px 38px"
+    padding: "34px 38px",
+    width: "inherit"
   }
 }))

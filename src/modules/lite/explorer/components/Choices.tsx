@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core"
 import { theme } from "theme"
 
-import { AddCircleOutline, RemoveCircleOutline } from "@material-ui/icons"
+import { AddCircleOutline, RemoveCircleOutline, DeleteTwoTone } from "@material-ui/icons"
 import { FieldArray, Field } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
@@ -27,16 +27,24 @@ const ChoicesContainer = styled(Grid)(({ theme }) => ({
   gap: 24
 }))
 
-const RemoveCircle = styled(RemoveCircleOutline)(({ theme }) => ({
+const ErrorTextChoices = styled(Typography)({
+  fontSize: 14,
+  color: "red"
+})
+
+const RemoveCircle = styled(DeleteTwoTone)(({ theme }) => ({
   color: theme.palette.error.main,
   cursor: "pointer"
 }))
 
-const ChoiceText = styled(Typography)({
+const ChoiceText = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
-  marginLeft: 12
-})
+  marginLeft: 12,
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 16
+  }
+}))
 
 const VotingContainer = styled(Grid)(({ theme }) => ({
   height: 80,
@@ -74,14 +82,15 @@ const useStyles = makeStyles({
   }
 })
 
-const CustomFormikTextField = withStyles({
+const CustomFormikChoiceTextField = withStyles({
   root: {
     "& .MuiInput-root": {
       fontWeight: 300,
       textAlign: "initial",
-      borderBottom: `0.3px solid ${theme.palette.primary.light} !important`,
+      backgroundColor: theme.palette.primary.main,
       marginTop: "0px !important",
-      padding: "19px 26px 19px"
+      padding: "10px 26px",
+      borderRadius: 8
     },
     "& .MuiInputBase-input": {
       textAlign: "initial"
@@ -105,7 +114,16 @@ const MainButton = styled(Button)(({ theme }) => ({
   }
 }))
 
-export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingStrategy, setFieldValue, id }) => {
+export const Choices: React.FC<any> = ({
+  choices,
+  submitForm,
+  isLoading,
+  votingStrategy,
+  setFieldValue,
+  id,
+  touched,
+  errors
+}) => {
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const daoId = useDAOID()
@@ -116,6 +134,9 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
   const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.gt(0) ? true : false
 
   const classes = useStyles()
+
+  console.log(touched)
+  console.log(errors)
 
   return (
     <Grid container direction="column" style={{ gap: 30 }}>
@@ -128,7 +149,7 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
 
         <VotingContainer item>
           <Grid container direction={isMobileExtraSmall ? "column" : "row"}>
-            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 4} alignItems="center">
+            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 3} alignItems="center">
               <Field name="votingStrategy">
                 {() => (
                   <Radio
@@ -148,7 +169,7 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
               <ChoiceText color="textPrimary">Single choice</ChoiceText>
             </Grid>
 
-            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 4} alignItems="center">
+            <Grid item container direction="row" xs={isMobileExtraSmall ? 12 : 3} alignItems="center">
               <Field name="votingStrategy">
                 {() => (
                   <Radio
@@ -172,18 +193,18 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
         <FieldArray
           name="choices"
           render={arrayHelpers => (
-            <div>
+            <Grid container direction="row" spacing={2}>
               {choices && choices.length > 0
                 ? choices.map((choice: any, index: number) => (
-                    <div key={index}>
+                    <Grid item xs={isMobileExtraSmall ? 12 : 6} key={index}>
                       <Field
                         type="text"
                         name={`choices[${index}]`}
-                        placeholder={`Choice ${index + 1}`}
-                        component={CustomFormikTextField}
+                        placeholder={`Option ${index + 1}`}
+                        component={CustomFormikChoiceTextField}
                         InputProps={{
                           endAdornment:
-                            index !== 0 ? (
+                            index !== 0 && index === choices.length - 1 ? (
                               <InputAdornment position="start">
                                 <RemoveCircle
                                   onClick={() => {
@@ -196,27 +217,29 @@ export const Choices: React.FC<any> = ({ choices, submitForm, isLoading, votingS
                             ) : null
                         }}
                       />
-                    </div>
+                    </Grid>
                   ))
                 : null}
-              <div>
-                <Grid
-                  container
-                  alignItems={"center"}
-                  style={{ gap: 10, cursor: "pointer", paddingLeft: 26, paddingTop: 12 }}
-                  onClick={() => arrayHelpers.insert(choices.length, "")}
-                >
-                  <IconButton size="small">
-                    <AddCircleOutline htmlColor={theme.palette.secondary.main} />
-                  </IconButton>
-                  <Typography variant={"body2"} color={"secondary"}>
-                    Add Choice
-                  </Typography>
-                </Grid>
-              </div>
-            </div>
+
+              <Grid
+                container
+                alignItems={"center"}
+                style={{ gap: 10, cursor: "pointer" }}
+                onClick={() => arrayHelpers.insert(choices.length, "")}
+                item
+                xs={isMobileExtraSmall ? 12 : 3}
+              >
+                <IconButton size="small">
+                  <AddCircleOutline htmlColor={theme.palette.secondary.main} />
+                </IconButton>
+                <Typography style={{ fontWeight: 300 }} variant={"body1"} color={"secondary"}>
+                  Add Choice
+                </Typography>
+              </Grid>
+            </Grid>
           )}
         />
+        {errors && touched ? <ErrorTextChoices>{errors}</ErrorTextChoices> : null}
       </ChoicesContainer>
       <Grid container style={{ gap: 10, marginTop: 31 }}>
         {!isLoading ? (

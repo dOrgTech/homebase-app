@@ -169,17 +169,9 @@ const ErrorText = styled(Typography)({
 })
 
 const ErrorTextTime = styled(Typography)({
-  marginTop: -18,
   marginBottom: 0,
   fontSize: 14,
   color: "red"
-})
-
-const ErrorTextChoices = styled(Typography)({
-  fontSize: 14,
-  color: "red",
-  marginBottom: -21,
-  marginTop: -86
 })
 
 const TimeBox = styled(Grid)(({ theme }) => ({
@@ -429,10 +421,10 @@ export const ProposalForm = ({
                     getIn(values, "endTimeMinutes") !== null &&
                     !hasErrors ? (
                       <Grid container direction="row" style={{ marginLeft: 16 }}>
-                        <Typography color="textPrimary" variant={"body2"}>
+                        <Typography color="textPrimary" variant={"body1"}>
                           End date:
                         </Typography>
-                        <Typography color="secondary" variant="body2" style={{ marginLeft: 10 }}>
+                        <Typography color="secondary" variant="body1" style={{ marginLeft: 10 }}>
                           {" "}
                           {dayjs(Number(finalDate)).format("MM/DD/YYYY h:mm A")}
                         </Typography>
@@ -485,7 +477,7 @@ export const ProposalForm = ({
                     name="endTimeDays"
                     type="number"
                     placeholder="DD"
-                    component={CustomFormikTextField}
+                    component={CustomFormikTimeTextField}
                     inputProps={{ min: 0 }}
                     onClick={() => {
                       if (getIn(values, "endTimeDays") === 0) {
@@ -509,7 +501,7 @@ export const ProposalForm = ({
                     name="endTimeHours"
                     type="number"
                     placeholder="HH"
-                    component={CustomFormikTextField}
+                    component={CustomFormikTimeTextField}
                     inputProps={{ min: 0 }}
                     onClick={() => {
                       if (getIn(values, "endTimeHours") === 0) {
@@ -533,7 +525,7 @@ export const ProposalForm = ({
                     name="endTimeMinutes"
                     type="number"
                     placeholder="MM"
-                    component={CustomFormikTextField}
+                    component={CustomFormikTimeTextField}
                     inputProps={{ min: 0 }}
                     onClick={() => {
                       if (getIn(values, "endTimeMinutes") === 0) {
@@ -554,10 +546,10 @@ export const ProposalForm = ({
                 getIn(values, "endTimeMinutes") !== null &&
                 !hasErrors ? (
                   <Grid container direction="row">
-                    <Typography color="textPrimary" variant={"body2"}>
+                    <Typography color="textPrimary" variant={"body1"}>
                       End date:
                     </Typography>
-                    <Typography color="secondary" variant="body2" style={{ marginLeft: 10 }}>
+                    <Typography color="secondary" variant="body1" style={{ marginLeft: 10 }}>
                       {" "}
                       {dayjs(Number(finalDate)).format("MM/DD/YYYY h:mm A")}
                     </Typography>
@@ -579,8 +571,9 @@ export const ProposalForm = ({
                 submitForm={submitForm}
                 votingStrategy={getIn(values, "votingStrategy")}
                 setFieldValue={setFieldValue}
+                touched={touched.choices}
+                errors={errors.choices}
               />
-              {errors?.choices && touched.choices ? <ErrorTextChoices>{errors.choices}</ErrorTextChoices> : null}
             </ProposalChoices>
           </ProposalContainer>
         </Grid>

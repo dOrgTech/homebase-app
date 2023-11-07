@@ -73,7 +73,7 @@ export const theme = createTheme({
     body1: {
       fontSize: 18,
       [breakpoints.down("xs")]: {
-        fontSize: 14
+        fontSize: 16
       }
     },
     body2: {

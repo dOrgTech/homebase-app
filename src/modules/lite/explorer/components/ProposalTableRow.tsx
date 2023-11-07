@@ -32,7 +32,8 @@ const BlockieContainer = styled(Grid)({
 const DescriptionText = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
-  marginBottom: 25,
+  width: "inherit",
+  wordBreak: "break-word",
   [theme.breakpoints.down("sm")]: {
     fontSize: 16
   }
