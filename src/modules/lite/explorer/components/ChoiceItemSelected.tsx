@@ -1,18 +1,22 @@
 import React, { useEffect } from "react"
-import { Divider, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Divider, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { Choice } from "models/Choice"
 
 const StyledContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  "borderRadius": 4,
-  "minHeight": 75,
-  "border": "1px solid",
-  "borderColor": theme.palette.primary.light,
-  "cursor": "pointer",
-  "&:hover": {
-    border: "1px solid",
-    borderColor: theme.palette.secondary.main
-  }
+  borderRadius: 4,
+  minHeight: 75,
+  border: "1px solid",
+  borderColor: theme.palette.primary.light,
+  cursor: "pointer"
 }))
+
+const StyledButton = styled(Button)({
+  "width": "100%",
+  "minHeight": "inherit",
+  "&:hover": {
+    background: "rgba(129, 254, 183, 0.62)"
+  }
+})
 
 export const ChoiceItemSelected: React.FC<{
   choice: Choice
@@ -31,13 +35,20 @@ export const ChoiceItemSelected: React.FC<{
       } else {
         votesArray = votesArray.filter(vote => vote._id !== choice._id)
       }
-      const setVotes = [...new Set(votesArray)]
-      setVotes.forEach(vote => (vote.selected = true))
-      setSelectedVotes(setVotes)
+      const result = votesArray.map(vote => {
+        vote.selected = true
+        return vote
+      })
+      setSelectedVotes(result)
     } else {
       choice.selected = true
       setSelectedVotes([choice])
     }
+  }
+
+  const isPartOfVotes = () => {
+    const found = votes.filter(vote => vote._id === choice._id)
+    return found.length > 0
   }
 
   return (
@@ -45,18 +56,21 @@ export const ChoiceItemSelected: React.FC<{
       spacing={isMobileSmall ? 1 : 2}
       container
       item
-      style={choice.selected ? { border: "1px solid", borderColor: theme.palette.secondary.main } : {}}
+      style={isPartOfVotes() ? { border: "1px solid", borderColor: theme.palette.secondary.main } : {}}
       xs={isMobileSmall ? 12 : 6}
       justifyContent={"center"}
       alignItems="center"
-      onClick={() => {
-        handleVotes(choice)
-        return
-      }}
     >
-      <Typography variant="body1" color="textPrimary">
-        {choice.name}
-      </Typography>
+      <StyledButton
+        onClick={() => {
+          handleVotes(choice)
+          return
+        }}
+      >
+        <Typography variant="body1" color="textPrimary">
+          {choice.name}
+        </Typography>
+      </StyledButton>
     </StyledContainer>
   )
 }

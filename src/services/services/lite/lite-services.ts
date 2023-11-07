@@ -131,21 +131,6 @@ export const saveLiteCommunity = async (signature: string, publicKey: string | u
   return resp
 }
 
-export const joinLiteCommunity = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
-  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/join`, {
-    method: "POST",
-    body: JSON.stringify({
-      signature,
-      publicKey,
-      payloadBytes
-    }),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
-  return resp
-}
-
 export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
     method: "POST",
@@ -193,12 +178,9 @@ export const fetchLiteData = async (daoContract: string, network: Network) => {
   }
 }
 
-export const updateCount = async (id: string, count: number) => {
+export const updateCount = async (id: string) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/count/${id}`, {
     method: "POST",
-    body: JSON.stringify({
-      count
-    }),
     headers: {
       "Content-Type": "application/json"
     }
