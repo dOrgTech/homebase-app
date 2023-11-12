@@ -209,7 +209,6 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           ) : null}
         </Grid>
       </GridContainer>
-      )
     </>
   )
 }

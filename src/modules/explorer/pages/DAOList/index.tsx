@@ -113,7 +113,7 @@ export const DAOList: React.FC = () => {
           },
           allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
         }))
-        .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
+        .sort((a, b) => b.votingAddressesCount - a.votingAddressesCount)
 
       if (searchText) {
         return formattedDAOs.filter(
