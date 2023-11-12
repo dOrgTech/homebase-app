@@ -67,10 +67,7 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
 
   const handleClickOpen = () => {
     setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
-
-    if (!isMobile) {
-      setOpen(true)
-    }
+    setOpen(true)
   }
 
   const handleClose = () => {
