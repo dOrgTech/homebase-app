@@ -7,6 +7,7 @@ import { DashboardContext } from "../context/ActionSheets/explorer"
 import { updateCount } from "services/services/lite/lite-services"
 import { useIsMember } from "../hooks/useIsMember"
 import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
+import ReactHtmlParser from "react-html-parser"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -112,7 +113,7 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
 
       <Grid container direction="row" justifyContent="center">
         <CommunityDescription variant="body2" color="textPrimary">
-          {community?.description}
+          {ReactHtmlParser(community?.description ? community?.description : "")}
         </CommunityDescription>
       </Grid>
 
