@@ -6,6 +6,7 @@ import { useHistory } from "react-router"
 import { Blockie } from "modules/common/Blockie"
 import { toShortAddress } from "services/contracts/utils"
 import { Poll } from "models/Polls"
+import ReactHtmlParser from "react-html-parser"
 
 export interface ProposalTableRowData {
   daoId?: string
@@ -76,7 +77,7 @@ export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ pol
         </Grid>
 
         <Grid>
-          <DescriptionText color="textPrimary">{poll.description}</DescriptionText>
+          <DescriptionText color="textPrimary">{ReactHtmlParser(poll.description)}</DescriptionText>
         </Grid>
       </Grid>
     </RowContainer>
