@@ -4,6 +4,9 @@ import hexToRgba from "hex-to-rgba"
 import { startCase } from "lodash"
 import React from "react"
 import { EnvKey, getEnv } from "services/config"
+import ReactHtmlParser from "react-html-parser"
+import { useProposals } from "services/services/dao/hooks/useProposals"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 const SectionNames = styled(Grid)(({ theme }: { theme: Theme }) => ({
   width: "55%",
@@ -19,28 +22,17 @@ const SectionNames = styled(Grid)(({ theme }: { theme: Theme }) => ({
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "background": theme.palette.primary.main,
-  "minHeight": 138,
+  "minHeight": 282,
   "wordBreak": "break-all",
   "borderRadius": 8,
   "boxSizing": "border-box",
-  "padding": 32,
   "cursor": "pointer",
   "transition": "0.15s ease-out",
-  "maxWidth": 490,
-
-  ["@media (max-width:1335px)"]: {
-    minHeight: 130
-  },
-
-  ["@media (max-width:1155px)"]: {
-    minHeight: 123
-  },
-
-  ["@media (max-width:1030px)"]: {},
-
-  ["@media (max-width:960px)"]: {
-    minHeight: 210
-  },
+  "padding": "34px 48px",
+  "minWidth": "340px",
+  "alignContent": "baseline",
+  "gap": 18,
+  "maxHeight": 282,
 
   ["@media (max-width:760px)"]: {
     maxWidth: "86vw"
@@ -60,6 +52,8 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
 const SymbolText = styled(Typography)({
   fontSize: "18px",
   fontWeight: 300,
+  color: "#bfc5ca",
+  lineHeight: "normal",
 
   ["@media (max-width:1335px)"]: {
     fontSize: "16px"
@@ -71,18 +65,9 @@ const NameText = styled(Typography)(({ theme }) => ({
   textOverflow: "ellipsis",
   color: theme.palette.text.primary,
   overflow: "hidden",
-  fontSize: "32px",
+  fontSize: 36,
   maxWidth: 245,
-
-  ["@media (max-width:1335px)"]: {
-    fontSize: "29px"
-  },
-
-  ["@media (max-width:1155px)"]: {
-    fontSize: "26px"
-  },
-
-  ["@media (max-width:1030px)"]: {},
+  fontWeight: 600,
 
   ["@media (max-width:960px)"]: {
     fontSize: "28px",
@@ -90,6 +75,20 @@ const NameText = styled(Typography)(({ theme }) => ({
     maxWidth: 245
   }
 }))
+
+const DescriptionText = styled(Typography)({
+  "color": "#bfc5ca",
+  "overflow": "hidden",
+  "height": 54,
+  "textOverflow": "ellipsis",
+  "fontSize": 18,
+  "fontWeight": 300,
+  "display": "-webkit-box",
+  "-webkit-line-clamp": 2 /* number of lines to show */,
+  "line-clamp": 2,
+  "-webkit-box-orient": "vertical",
+  "maxHeight": 60
+})
 
 const NumberText = styled(Typography)({
   fontSize: "28px",
@@ -129,17 +128,22 @@ const VotingAddressesText = styled(Typography)({
   }
 })
 
+const ItemText = styled(Typography)({
+  fontWeight: 600,
+  fontSize: 16,
+  whiteSpace: "pre"
+})
+
 const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
   "borderRadius": "50px",
-  "padding": "3px 8px 3px 8px",
+  "padding": "8px 16px",
   "height": "auto",
   "boxSizing": "border-box",
   "width": "fit-content",
   "textAlign": "center",
   "float": "right",
-  "background":
-    dao_type === "lambda" ? hexToRgba(theme.palette.secondary.main, 0.4) : hexToRgba(theme.palette.warning.main, 0.4),
-  "color": dao_type === "lambda" ? theme.palette.secondary.main : theme.palette.warning.main,
+  "background": "#2d433c",
+  "color": theme.palette.secondary.main,
   "& > div": {
     height: "100%"
   },
@@ -155,6 +159,7 @@ export const DAOItem: React.FC<{
     votingAddresses: string[]
     dao_type: { name: string }
     votingAddressesCount: number
+    description: string
   }
 }> = ({ dao }) => {
   const theme = useTheme()
@@ -167,23 +172,35 @@ export const DAOItem: React.FC<{
       ? `dao/${dao.id}`
       : `lite/dao/${dao.id}`
 
+  const { data: activeProposals } = useProposals(dao.id, ProposalStatus.ACTIVE)
+
   return (
     <Link underline="none" href={daoHref}>
-      <Container container justifyContent="space-between">
-        <SectionNames>
-          <Grid>
-            <SymbolText color="secondary">{dao?.symbol?.toUpperCase()}</SymbolText>
+      <Container container justifyContent="space-between" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between">
+          <Grid item xs={7} md={9}>
             <NameText color="textPrimary">{dao.name}</NameText>
           </Grid>
-        </SectionNames>
-        <Grid>
-          <Grid item xs={12} sm>
+          <Grid item>
             {daoType === "lambda" ? <Badge dao_type={daoType}>V3</Badge> : null}
             {daoType === "registry" || daoType === "treasury" ? <Badge dao_type={daoType}>V2</Badge> : null}
             {daoType === "lite" ? <Badge dao_type={daoType}>Lite</Badge> : null}
-
-            <NumberText color="textPrimary"> {dao.votingAddressesCount}</NumberText>
-            <VotingAddressesText color="textPrimary">Voting Addresses</VotingAddressesText>
+          </Grid>
+        </Grid>
+        <Grid container direction="row">
+          <DescriptionText>{ReactHtmlParser(dao.description)}</DescriptionText>
+        </Grid>
+        <Grid container direction="row" justifyContent="space-between">
+          <Grid xs={3} container item direction="column">
+            <ItemText color="textPrimary">DAO {"\n"}Token</ItemText>
+            <SymbolText>{dao?.symbol?.toUpperCase()}</SymbolText>
+          </Grid>
+          <Grid xs={3} container item direction="column">
+            <ItemText color="textPrimary">Voting {"\n"}Addresses</ItemText>{" "}
+            <SymbolText>{dao.votingAddressesCount}</SymbolText>
+          </Grid>
+          <Grid xs={3} container item direction="column">
+            <ItemText color="textPrimary">Active {"\n"}Proposals</ItemText> <SymbolText>{"-"}</SymbolText>
           </Grid>
         </Grid>
       </Container>

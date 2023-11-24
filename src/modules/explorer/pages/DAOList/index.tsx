@@ -46,13 +46,15 @@ const PageContainer = styled("div")(({ theme }) => ({
 
 const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
   "fontSize": 18,
+  "height": 40,
   "fontWeight": 400,
   "paddingLeft": 20,
   "paddingRight": 20,
   "paddingTop": 0,
   "paddingBottom": 0,
+  "borderRadius": 8,
   "color": isSelected ? theme.palette.secondary.main : "#fff",
-  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.primary.main,
+  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
   "&:hover": {
     backgroundColor: isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.secondary.dark,
     borderRadius: 8,
@@ -84,6 +86,7 @@ const DAOItemGrid = styled(Grid)({
   },
 
   ["@media (max-width:830px)"]: {
+    width: "86vw",
     gap: "12px"
   }
 })
@@ -91,14 +94,20 @@ const DAOItemGrid = styled(Grid)({
 const DAOItemCard = styled(Grid)({
   flexBasis: "48.5%",
 
+  ["@media (max-width:1500px)"]: {
+    flexBasis: "48.5%"
+  },
+
+  ["@media (max-width:1200px)"]: {
+    flexBasis: "47.5%"
+  },
+
   ["@media (max-width:760px)"]: {
     minWidth: "100%"
   }
 })
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  padding: 12,
   borderRadius: 8,
   gap: 30
 }))
@@ -106,6 +115,8 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
 export const DAOList: React.FC = () => {
   const { network, account, tezos } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
+
+  console.log(daos)
 
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
@@ -124,6 +135,7 @@ export const DAOList: React.FC = () => {
         .map(dao => ({
           id: dao.address,
           name: dao.name,
+          description: dao.description,
           symbol: dao.token.symbol,
           votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
           votingAddressesCount:
@@ -164,6 +176,7 @@ export const DAOList: React.FC = () => {
           dao_type: {
             name: dao.dao_type.name
           },
+          description: dao.description,
           allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
         }))
         .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
@@ -243,11 +256,6 @@ export const DAOList: React.FC = () => {
                     <StyledTab
                       startIcon={selectedTab === 0 ? <TabsSelectedIcon /> : <TabsIcon />}
                       variant="contained"
-                      style={
-                        selectedTab !== 0
-                          ? { borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex: 0 }
-                          : { borderRadius: 8, zIndex: 1 }
-                      }
                       disableElevation={true}
                       onClick={() => handleChangeTab(0)}
                       isSelected={selectedTab === 0}
@@ -260,11 +268,6 @@ export const DAOList: React.FC = () => {
                       startIcon={selectedTab === 1 ? <MyDAOsSelectedIcon /> : <MyDAOsIcon />}
                       disableElevation={true}
                       variant="contained"
-                      style={
-                        selectedTab !== 1
-                          ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0 }
-                          : { borderRadius: 8, marginLeft: -1, zIndex: 1 }
-                      }
                       onClick={() => handleChangeTab(1)}
                       isSelected={selectedTab === 1}
                     >
