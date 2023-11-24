@@ -26,9 +26,33 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { getSignature } from "services/utils/utils"
 import { Navbar } from "modules/common/Toolbar"
 import { SmallButton } from "modules/common/SmallButton"
-import { EnvKey, getEnv } from "services/config"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
 import { InfoRounded } from "@material-ui/icons"
+import CodeIcon from "@mui/icons-material/Code"
+import CodeOffIcon from "@mui/icons-material/CodeOff"
+import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
+import Prism, { highlight } from "prismjs"
+import "prism-themes/themes/prism-night-owl.css"
+
+const CodeButton = styled(CodeIcon)(({ theme }) => ({
+  background: theme.palette.primary.dark,
+  padding: 3,
+  borderTopLeftRadius: 4,
+  borderTopRightRadius: 4,
+  borderBottom: "0.5px solid",
+  cursor: "pointer",
+  color: theme.palette.secondary.main
+}))
+
+const CodeOffButton = styled(CodeOffIcon)(({ theme }) => ({
+  background: theme.palette.primary.dark,
+  padding: 3,
+  borderTopLeftRadius: 4,
+  borderTopRightRadius: 4,
+  borderBottom: "0.5px solid",
+  cursor: "pointer",
+  color: theme.palette.secondary.main
+}))
 
 const CommunityContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -116,6 +140,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "fontWeight": 400,
   "padding": "21px 20px",
   "fontFamily": "Roboto Mono",
+  "borderTopRightRadius": 0,
   "border": "none",
   "fontSize": 16,
   "color": props.theme.palette.text.secondary,
@@ -197,6 +222,27 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 
   const { data: tokenMetadata, isLoading: loading, error } = useTokenMetadata(values?.tokenAddress)
 
+  const codeEditorStyles = {
+    minHeight: 500,
+    fontFamily: "Roboto Mono",
+    fontSize: 14,
+    fontWeight: 400,
+    outlineWidth: 0,
+    color: "white"
+  }
+
+  const [isMarkup, setIsMarkup] = useState(false)
+  const grammar = Prism.languages.markup
+  const codeEditorPlaceholder = `
+  <html>
+    <head>
+      <title> Proposal Description </title>
+      </head>
+      <body>
+        <h1> ... </h1>
+      </body>
+  </html>`
+
   useEffect(() => {
     if (tokenMetadata) {
       setFieldValue("tokenID", tokenMetadata.token_id)
@@ -227,20 +273,55 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
           </CustomInputContainer>
           {errors?.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
           <Grid item>
-            <Field name="description">
-              {() => (
-                <CustomTextarea
-                  disabled={isSubmitting}
-                  maxLength={1500}
-                  aria-label="empty textarea"
-                  placeholder="Short description"
-                  value={getIn(values, "description")}
-                  onChange={(newValue: any) => {
-                    setFieldValue("description", newValue.target.value)
-                  }}
-                />
-              )}
-            </Field>
+            {!isMarkup ? (
+              <div style={{ justifyContent: "flex-end", display: "flex" }}>
+                <Tooltip title="Allow markup">
+                  <CodeButton onClick={() => setIsMarkup(true)} />
+                </Tooltip>
+              </div>
+            ) : (
+              <div style={{ justifyContent: "flex-end", display: "flex" }}>
+                <Tooltip title="Disable markup">
+                  <CodeOffButton onClick={() => setIsMarkup(false)} />
+                </Tooltip>
+              </div>
+            )}
+
+            {!isMarkup ? (
+              <Field name="description">
+                {() => (
+                  <CustomTextarea
+                    disabled={isSubmitting}
+                    maxLength={1500}
+                    aria-label="empty textarea"
+                    placeholder="Short description"
+                    value={getIn(values, "description")}
+                    onChange={(newValue: any) => {
+                      setFieldValue("description", newValue.target.value)
+                    }}
+                  />
+                )}
+              </Field>
+            ) : (
+              <Field name="description">
+                {() => (
+                  <ProposalCodeEditorInput
+                    insertSpaces
+                    ignoreTabKey={false}
+                    tabSize={4}
+                    style={codeEditorStyles}
+                    padding={10}
+                    value={getIn(values, "description")}
+                    onValueChange={(newValue: string) => {
+                      console.log(newValue)
+                      setFieldValue("description", newValue)
+                    }}
+                    highlight={code => highlight(code, grammar, "javascript")}
+                    placeholder={codeEditorPlaceholder}
+                  />
+                )}
+              </Field>
+            )}
           </Grid>
           <CustomInputContainer item>
             <Field name="linkToTerms" type="text" placeholder="Link to Terms" component={CustomFormikTextField} />

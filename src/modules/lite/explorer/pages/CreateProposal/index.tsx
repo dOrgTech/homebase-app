@@ -9,7 +9,8 @@ import {
   withTheme,
   TextareaAutosize,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Tooltip
 } from "@material-ui/core"
 
 import { Choices } from "../../components/Choices"
@@ -30,6 +31,12 @@ import { isWebUri } from "valid-url"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import { useUserTokenBalance } from "services/contracts/token/hooks/useUserTokenBalance"
+import CodeIcon from "@mui/icons-material/Code"
+import CodeOffIcon from "@mui/icons-material/CodeOff"
+import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
+import Prism, { highlight } from "prismjs"
+import "prism-themes/themes/prism-night-owl.css"
+
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -37,6 +44,26 @@ const ProposalContainer = styled(Grid)(({ theme }) => ({
   [theme.breakpoints.down("md")]: {
     marginTop: 30
   }
+}))
+
+const CodeButton = styled(CodeIcon)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  padding: 3,
+  borderTopLeftRadius: 4,
+  borderTopRightRadius: 4,
+  borderBottom: "0.5px solid",
+  cursor: "pointer",
+  color: theme.palette.secondary.main
+}))
+
+const CodeOffButton = styled(CodeOffIcon)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  padding: 3,
+  borderTopLeftRadius: 4,
+  borderTopRightRadius: 4,
+  borderBottom: "0.5px solid",
+  cursor: "pointer",
+  color: theme.palette.secondary.main
 }))
 
 const CustomFormikTextField = withStyles({
@@ -129,7 +156,6 @@ const ProposalChoices = styled(Grid)({
 })
 
 const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
-  "marginTop": 16,
   "minHeight": 192,
   "boxSizing": "border-box",
   "width": "100%",
@@ -137,6 +163,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "paddingTop": 19,
   "paddingLeft": 26,
   "border": "none",
+  "borderTopRightRadius": 0,
   "fontSize": 17,
   "color": props.theme.palette.text.primary,
   "background": props.theme.palette.primary.main,
@@ -207,17 +234,6 @@ const TimeContainerMobile = styled(Grid)(({ theme }) => ({
 const hasDuplicates = (options: string[]) => {
   const trimOptions = options.map(option => option.trim())
   return new Set(trimOptions).size !== trimOptions.length
-}
-
-const isValidHttpUrl = (externalLink: string) => {
-  let url
-  try {
-    url = new URL(externalLink)
-  } catch (_) {
-    return false
-  }
-
-  return url.protocol === "http:" || url.protocol === "https:"
 }
 
 const validateForm = (values: Poll) => {
@@ -301,7 +317,27 @@ export const ProposalForm = ({
 
   const { pathname } = useLocation()
 
+  const codeEditorStyles = {
+    minHeight: 500,
+    fontFamily: "Roboto Mono",
+    fontSize: 14,
+    fontWeight: 400,
+    outlineWidth: 0,
+    color: "white"
+  }
+
   const shouldShowBar = pathname.includes("/lite") ? true : false
+  const [isMarkup, setIsMarkup] = useState(false)
+  const grammar = Prism.languages.markup
+  const codeEditorPlaceholder = `
+  <html>
+    <head>
+      <title> Proposal Description </title>
+      </head>
+      <body>
+        <h1> ... </h1>
+      </body>
+  </html>`
 
   const hasErrors = errors.endTimeDays || errors.endTimeHours || errors.endTimeMinutes
   return (
@@ -443,20 +479,57 @@ export const ProposalForm = ({
 
             <Grid item xs={12}>
               <Typography color="textPrimary">Description</Typography>
-              <Field name="description">
-                {() => (
-                  <CustomTextarea
-                    maxLength={1500}
-                    aria-label="empty textarea"
-                    placeholder="Type description"
-                    value={getIn(values, "description")}
-                    onChange={(newValue: any) => {
-                      setFieldValue("description", newValue.target.value)
-                    }}
-                  />
+              <Grid item>
+                {!isMarkup ? (
+                  <div style={{ justifyContent: "flex-end", display: "flex" }}>
+                    <Tooltip title="Allow markup">
+                      <CodeButton onClick={() => setIsMarkup(true)} />
+                    </Tooltip>
+                  </div>
+                ) : (
+                  <div style={{ justifyContent: "flex-end", display: "flex" }}>
+                    <Tooltip title="Disable markup">
+                      <CodeOffButton onClick={() => setIsMarkup(false)} />
+                    </Tooltip>
+                  </div>
                 )}
-              </Field>
+                {!isMarkup ? (
+                  <Field name="description">
+                    {() => (
+                      <CustomTextarea
+                        maxLength={1500}
+                        aria-label="empty textarea"
+                        placeholder="Type description"
+                        value={getIn(values, "description")}
+                        onChange={(newValue: any) => {
+                          setFieldValue("description", newValue.target.value)
+                        }}
+                      />
+                    )}
+                  </Field>
+                ) : (
+                  <Field name="description">
+                    {() => (
+                      <ProposalCodeEditorInput
+                        insertSpaces
+                        ignoreTabKey={false}
+                        tabSize={4}
+                        style={codeEditorStyles}
+                        padding={10}
+                        value={getIn(values, "description")}
+                        onValueChange={(newValue: string) => {
+                          console.log(newValue)
+                          setFieldValue("description", newValue)
+                        }}
+                        highlight={code => highlight(code, grammar, "javascript")}
+                        placeholder={codeEditorPlaceholder}
+                      />
+                    )}
+                  </Field>
+                )}
+              </Grid>
             </Grid>
+
             <Grid item xs={12}>
               <Typography color="textPrimary">External Link</Typography>
               <Field name="externalLink" type="text" placeholder="External Link" component={CustomFormikTextField} />

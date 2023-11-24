@@ -1,4 +1,4 @@
-import { Avatar, Button, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Avatar, Button, Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { Community } from "models/Community"
 import React, { useCallback, useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
@@ -7,6 +7,7 @@ import { DashboardContext } from "../context/ActionSheets/explorer"
 import { updateCount } from "services/services/lite/lite-services"
 import { useIsMember } from "../hooks/useIsMember"
 import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
+import ReactHtmlParser from "react-html-parser"
 
 const StyledAvatar = styled(Avatar)({
   height: 159,
@@ -19,6 +20,15 @@ const MembersText = styled(Typography)({
   letterSpacing: "-0.01em",
   marginBottom: 10
 })
+
+const TermsText = styled(Link)(({ theme }) => ({
+  fontSize: 14,
+  textDecoration: "underline",
+  color: theme.palette.secondary.main,
+  cursor: "pointer",
+  fontFamily: "Roboto Mono",
+  letterSpacing: "1px !important"
+}))
 
 const CommunityText = styled(Typography)({
   fontWeight: 500,
@@ -95,12 +105,15 @@ export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUp
           <MembersText variant={"body1"} color="textPrimary">
             {count} members
           </MembersText>
+          <TermsText href={community?.linkToTerms} target="_blank" color="secondary">
+            COMMUNITY TERMS
+          </TermsText>
         </Grid>
       </Grid>
 
       <Grid container direction="row" justifyContent="center">
         <CommunityDescription variant="body2" color="textPrimary">
-          {community?.description}
+          {ReactHtmlParser(community?.description ? community?.description : "")}
         </CommunityDescription>
       </Grid>
 

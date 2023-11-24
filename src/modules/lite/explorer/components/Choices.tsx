@@ -135,9 +135,6 @@ export const Choices: React.FC<any> = ({
 
   const classes = useStyles()
 
-  console.log(touched)
-  console.log(errors)
-
   return (
     <Grid container direction="column" style={{ gap: 30 }}>
       <ChoicesContainer container direction="column">
