@@ -1,24 +1,11 @@
 import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery } from "@material-ui/core"
-import { createTheme } from "@material-ui/core/styles"
-import hexToRgba from "hex-to-rgba"
-import { startCase } from "lodash"
 import React from "react"
 import { EnvKey, getEnv } from "services/config"
 import ReactHtmlParser from "react-html-parser"
 import { useProposals } from "services/services/dao/hooks/useProposals"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
-
-const SectionNames = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  width: "55%",
-
-  ["@media (max-width:1030px)"]: {
-    width: "50%"
-  },
-
-  ["@media (max-width:960px)"]: {
-    width: "99%"
-  }
-}))
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import dayjs from "dayjs"
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "background": theme.palette.primary.main,
@@ -35,7 +22,9 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "maxHeight": 282,
 
   ["@media (max-width:760px)"]: {
-    maxWidth: "86vw"
+    maxWidth: "86vw",
+    padding: "17px 24px",
+    minWidth: "inherit"
   },
 
   "&:hover": {
@@ -90,44 +79,6 @@ const DescriptionText = styled(Typography)({
   "maxHeight": 60
 })
 
-const NumberText = styled(Typography)({
-  fontSize: "28px",
-  fontWeight: 300,
-
-  ["@media (max-width:1335px)"]: {
-    fontSize: "26px",
-    lineHeight: 1.2,
-    borderBottom: "7px solid transparent"
-  },
-
-  ["@media (max-width:1155px)"]: {
-    fontSize: "23px",
-    borderBottom: "9.5px solid transparent"
-  },
-
-  ["@media (max-width:960px)"]: {
-    fontSize: "26px",
-    borderBottom: "6px solid transparent"
-  }
-})
-
-const VotingAddressesText = styled(Typography)({
-  fontSize: "19px",
-  fontWeight: 300,
-
-  ["@media (max-width:1335px)"]: {
-    fontSize: "17px"
-  },
-
-  ["@media (max-width:1155px)"]: {
-    fontSize: "15.7px"
-  },
-
-  ["@media (max-width:960px)"]: {
-    fontSize: "17px"
-  }
-})
-
 const ItemText = styled(Typography)({
   fontWeight: 600,
   fontSize: 16,
@@ -173,11 +124,21 @@ export const DAOItem: React.FC<{
       : `lite/dao/${dao.id}`
 
   const { data: activeProposals } = useProposals(dao.id, ProposalStatus.ACTIVE)
+  const { data: polls } = usePolls(dao.id)
+  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
+
+  const getTotalActiveProposals = () => {
+    if (daoType === "lite") {
+      return activeLiteProposals?.length
+    } else {
+      return (activeProposals ? activeProposals?.length : 0) + (activeLiteProposals ? activeLiteProposals?.length : 0)
+    }
+  }
 
   return (
     <Link underline="none" href={daoHref}>
-      <Container container justifyContent="space-between" alignItems="center">
-        <Grid container direction="row" justifyContent="space-between">
+      <Container container justifyContent="space-between">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={7} md={9}>
             <NameText color="textPrimary">{dao.name}</NameText>
           </Grid>
@@ -200,7 +161,8 @@ export const DAOItem: React.FC<{
             <SymbolText>{dao.votingAddressesCount}</SymbolText>
           </Grid>
           <Grid xs={3} container item direction="column">
-            <ItemText color="textPrimary">Active {"\n"}Proposals</ItemText> <SymbolText>{"-"}</SymbolText>
+            <ItemText color="textPrimary">Active {"\n"}Proposals</ItemText>
+            <SymbolText>{getTotalActiveProposals()}</SymbolText>
           </Grid>
         </Grid>
       </Container>

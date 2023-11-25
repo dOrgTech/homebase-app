@@ -76,18 +76,19 @@ const Search = styled(Grid)({
 
 const DAOItemGrid = styled(Grid)({
   gap: "30px",
+  minHeight: "50vh",
   justifyContent: "space-between",
   ["@media (max-width: 1155px)"]: {
     gap: "32px"
   },
 
   ["@media (max-width:960px)"]: {
-    gap: "14px"
+    gap: "20px"
   },
 
   ["@media (max-width:830px)"]: {
     width: "86vw",
-    gap: "12px"
+    gap: "20px"
   }
 })
 
@@ -115,8 +116,6 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
 export const DAOList: React.FC = () => {
   const { network, account, tezos } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
-
-  console.log(daos)
 
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
@@ -188,11 +187,11 @@ export const DAOList: React.FC = () => {
             (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
         )
       }
-      return formattedDAOs
+      return formattedDAOs.filter(dao => dao.votingAddresses.includes(account))
     }
 
     return []
-  }, [daos, searchText])
+  }, [daos, searchText, account])
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())
@@ -314,14 +313,14 @@ export const DAOList: React.FC = () => {
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
                 {!account ? (
                   <ConnectMessage />
+                ) : myDAOs.length > 0 ? (
+                  myDAOs.map((dao, i) => (
+                    <DAOItemCard key={`mine-${i}`} item>
+                      <DAOItem dao={dao} />
+                    </DAOItemCard>
+                  ))
                 ) : (
-                  myDAOs
-                    .filter(dao => dao.votingAddresses.includes(account))
-                    .map((dao, i) => (
-                      <DAOItemCard key={`mine-${i}`} item>
-                        <DAOItem dao={dao} />
-                      </DAOItemCard>
-                    ))
+                  <Typography color="textPrimary">You have not joined any DAO</Typography>
                 )}
               </DAOItemGrid>
             </TabPanel>

@@ -313,7 +313,6 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
                     padding={10}
                     value={getIn(values, "description")}
                     onValueChange={(newValue: string) => {
-                      console.log(newValue)
                       setFieldValue("description", newValue)
                     }}
                     highlight={code => highlight(code, grammar, "javascript")}
