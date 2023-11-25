@@ -8,31 +8,56 @@ import {
   styled,
   Typography,
   Button,
-  Grid
+  Grid,
+  useTheme,
+  useMediaQuery
 } from "@material-ui/core"
 import { toShortAddress } from "services/contracts/utils"
 import { FileCopyOutlined } from "@material-ui/icons"
 import { Choice } from "models/Choice"
 import { formatByDecimals, getTotalVoters } from "services/lite/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
+import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 
-const CustomContent = styled(DialogContent)({
-  padding: "0px 54px 22px 54px !important"
-})
+const CustomContent = styled(DialogContent)(({ theme }) => ({
+  padding: 0,
+  display: "grid",
+  marginTop: 24,
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 0,
+    display: "inline",
+    paddingTop: "0px !important"
+  }
+}))
 
-const CustomDialogActions = styled(DialogActions)({
-  justifyContent: "center !important",
-  paddingBottom: 20
-})
+const CustomDialogActions = styled(DialogActions)(({ theme }) => ({
+  justifyContent: "flex-end !important",
+  paddingBottom: 20,
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 46
+  }
+}))
 
 const CopyIcon = styled(FileCopyOutlined)({
   marginLeft: 8,
   cursor: "pointer"
 })
 
-const CustomTitle = styled(Typography)(({ theme }) => ({
-  borderBottom: `0.3px solid ${theme.palette.primary.main}`,
-  paddingBottom: 16
+const Row = styled(Grid)(({ theme }) => ({
+  "background": theme.palette.primary.main,
+  "padding": "24px 48px",
+  "paddingBottom": "0px",
+  "borderBottom": "0.3px solid #7D8C8B",
+  "&:last-child": {
+    borderRadius: "0px 0px 8px 8px",
+    borderBottom: "none"
+  },
+  "&:first-child": {
+    borderRadius: "8px 8px 0px 0px"
+  },
+  [theme.breakpoints.down("sm")]: {
+    padding: "12px 24px"
+  }
 }))
 
 export const VotesDialog: React.FC<{
@@ -44,6 +69,9 @@ export const VotesDialog: React.FC<{
 }> = ({ open, handleClose, choices, symbol, decimals }) => {
   const descriptionElementRef = React.useRef<HTMLElement>(null)
   const openNotification = useNotification()
+
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   React.useEffect(() => {
     if (open) {
@@ -65,56 +93,71 @@ export const VotesDialog: React.FC<{
 
   return (
     <div>
-      <Dialog
-        disableEscapeKeyDown={true}
+      <ResponsiveDialog
         open={open}
         onClose={handleClose}
-        scroll={"paper"}
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
+        title={`${getTotalVoters(choices)} Votes: `}
+        template="xs"
       >
-        <DialogTitle id="scroll-dialog-title">
-          {" "}
-          <CustomTitle color="textPrimary" variant="body2">
-            {getTotalVoters(choices)} Votes:
-          </CustomTitle>
-        </DialogTitle>
         <CustomContent>
-          <DialogContentText id="scroll-dialog-description" ref={descriptionElementRef} tabIndex={-1}>
-            {choices.map((elem: Choice, index: number) => {
-              {
-                return elem.walletAddresses.map((choice, num) => {
-                  return (
-                    <Grid container direction="row" alignItems="baseline" key={`'row-'${index}${num}`}>
-                      <Grid item xs={6} md={4} lg={4} xl={4} container direction="row" alignItems="center">
-                        <Typography color="textPrimary"> {toShortAddress(choice.address)}</Typography>
-                        <CopyIcon onClick={() => copyAddress(choice.address)} color="secondary" fontSize="inherit" />
-                      </Grid>
-                      <Grid item xs={6} md={4} lg={4} xl={4} container justifyContent="center">
-                        <Typography color="textPrimary" variant="body1">
-                          {" "}
-                          {elem.name}{" "}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6} md={4} lg={4} xl={4} container justifyContent="flex-end">
-                        <Typography color="textPrimary" variant="body1">
-                          {" "}
-                          {formatByDecimals(choice.balanceAtReferenceBlock, decimals)} {symbol}{" "}
-                        </Typography>
-                      </Grid>
+          {choices.map((elem: Choice, index: number) => {
+            {
+              return elem.walletAddresses.map((choice, num) => {
+                return (
+                  <Row
+                    container
+                    direction={isMobileSmall ? "column" : "row"}
+                    alignItems="baseline"
+                    key={`'row-'${index}${num}`}
+                  >
+                    <Grid
+                      item
+                      xs={12}
+                      md={4}
+                      lg={4}
+                      xl={4}
+                      container
+                      direction="row"
+                      alignItems="center"
+                      justifyContent={isMobileSmall ? "center" : "flex-start"}
+                    >
+                      <Typography color="textPrimary"> {toShortAddress(choice.address)}</Typography>
+                      <CopyIcon onClick={() => copyAddress(choice.address)} color="secondary" fontSize="inherit" />
                     </Grid>
-                  )
-                })
-              }
-            })}
-          </DialogContentText>
+                    <Grid item xs={12} md={4} lg={4} xl={4} container justifyContent="center">
+                      <Typography color="textPrimary" variant="body1">
+                        {" "}
+                        {elem.name}{" "}
+                      </Typography>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                      md={4}
+                      lg={4}
+                      xl={4}
+                      container
+                      justifyContent={isMobileSmall ? "center" : "flex-end"}
+                    >
+                      <Typography color="textPrimary" variant="body1">
+                        {" "}
+                        {formatByDecimals(choice.balanceAtReferenceBlock, decimals)} {symbol}{" "}
+                      </Typography>
+                    </Grid>
+                  </Row>
+                )
+              })
+            }
+          })}
         </CustomContent>
         <CustomDialogActions>
           <Button variant="contained" color="secondary" onClick={handleClose}>
             Close
           </Button>
         </CustomDialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     </div>
   )
 }
