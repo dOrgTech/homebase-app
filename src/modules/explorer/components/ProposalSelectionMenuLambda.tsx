@@ -92,7 +92,7 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
       </Grid>
       <Grid container justifyContent="center" style={{ gap: 20 }} direction="column">
         <MainButton variant="contained" onClick={() => handleOpenCustomProposalModal(ProposalAction.new)}>
-          Add Lambda
+          Add Function
         </MainButton>
 
         <MainButton
@@ -100,11 +100,11 @@ export const ProposalSelectionMenuLambda: React.FC<Props> = ({ open, handleClose
           color="secondary"
           onClick={() => handleOpenCustomProposalModal(ProposalAction.remove)}
         >
-          Remove Lambda
+          Remove Function
         </MainButton>
 
         <MainButton variant="contained" color="secondary" onClick={toggleExecuteUI}>
-          Execute Lambda
+          Execute Function
         </MainButton>
       </Grid>
     </>
