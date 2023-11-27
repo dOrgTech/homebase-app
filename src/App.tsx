@@ -18,7 +18,7 @@ import { Landing } from "modules/home/Landing"
 import { WarningFooter } from "modules/common/WarningFooter"
 import { ActionSheetProvider } from "modules/explorer/context/ActionSheets"
 import { legacyTheme } from "theme/legacy"
-import { Footer } from "modules/common/Footer"
+import { ExplorerFooter } from "modules/common/Footer"
 import { FAQ } from "modules/home/FAQ"
 import { EnvKey, HUMANITEZ_DAO, getEnv } from "services/config"
 import { DAOCreatorRouter } from "modules/creator/router"
@@ -134,15 +134,12 @@ const App: React.FC = () => {
                           />
                         </>
                       ) : null}
-                      <Footer></Footer>
+                      <ExplorerFooter></ExplorerFooter>
                     </Route>
                     <Route path="/faq">
                       <FAQ />
                     </Route>
-                    <Route path="/">
-                      <Landing />
-                    </Route>
-                    <Redirect to="/" />
+                    <Redirect to="/explorer" />
                   </Switch>
                 </Router>
               </Box>

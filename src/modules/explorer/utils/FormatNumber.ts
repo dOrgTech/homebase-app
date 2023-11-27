@@ -1,5 +1,4 @@
 import BigNumber from "bignumber.js"
-
 export const formatNumber = (number: BigNumber) => {
   if (number.isLessThan(1e3))
     return number

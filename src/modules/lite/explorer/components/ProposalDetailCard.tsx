@@ -10,6 +10,7 @@ import LinkIcon from "assets/img/link.svg"
 import { Poll } from "models/Polls"
 import dayjs from "dayjs"
 import { useNotification } from "modules/common/hooks/useNotification"
+import ReactHtmlParser from "react-html-parser"
 
 const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
@@ -195,7 +196,7 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
 
           <Grid container>
             <Typography variant="body2" color="textPrimary">
-              {poll?.description}
+              {ReactHtmlParser(poll?.description ? poll?.description : "")}
             </Typography>
           </Grid>
 
@@ -209,7 +210,6 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           ) : null}
         </Grid>
       </GridContainer>
-      )
     </>
   )
 }

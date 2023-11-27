@@ -28,7 +28,8 @@ export const StyledDivider = styled(Divider)({
   height: 0.3,
   backgroundColor: "#7d8c8b",
   marginTop: 0,
-  marginBottom: 0
+  marginBottom: 0,
+  width: "inherit"
 })
 
 const NoProposalsText = styled(Typography)({
@@ -209,7 +210,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
       {communityPolls && communityPolls.length > 0 ? (
         communityPolls.map((poll, i) => {
           return (
-            <div key={`poll-${i}`}>
+            <div style={{ width: "inherit" }} key={`poll-${i}`}>
               <ProposalTableRow poll={poll} daoId={daoId} />
               {communityPolls.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
             </div>

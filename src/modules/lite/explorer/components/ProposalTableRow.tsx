@@ -6,6 +6,7 @@ import { useHistory } from "react-router"
 import { Blockie } from "modules/common/Blockie"
 import { toShortAddress } from "services/contracts/utils"
 import { Poll } from "models/Polls"
+import ReactHtmlParser from "react-html-parser"
 
 export interface ProposalTableRowData {
   daoId?: string
@@ -32,7 +33,8 @@ const BlockieContainer = styled(Grid)({
 const DescriptionText = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
-  marginBottom: 25,
+  width: "inherit",
+  wordBreak: "break-word",
   [theme.breakpoints.down("sm")]: {
     fontSize: 16
   }
@@ -76,7 +78,7 @@ export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ pol
         </Grid>
 
         <Grid>
-          <DescriptionText color="textPrimary">{poll.description}</DescriptionText>
+          <DescriptionText color="textPrimary">{ReactHtmlParser(poll.description)}</DescriptionText>
         </Grid>
       </Grid>
     </RowContainer>

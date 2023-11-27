@@ -17,7 +17,7 @@ const LogoItem = styled("img")({
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
-  fontSize: "24px",
+  fontSize: "26px",
   cursor: "pointer",
   fontFamily: "Roboto",
   letterSpacing: "initial"

@@ -42,7 +42,10 @@ export const theme = createTheme({
       }
     },
     subtitle1: {
-      fontSize: 32
+      fontSize: 32,
+      [breakpoints.down("xs")]: {
+        fontSize: 26
+      }
     },
     subtitle2: {
       fontSize: 16,
@@ -70,7 +73,7 @@ export const theme = createTheme({
     body1: {
       fontSize: 18,
       [breakpoints.down("xs")]: {
-        fontSize: 14
+        fontSize: 16
       }
     },
     body2: {
@@ -84,6 +87,11 @@ export const theme = createTheme({
     }
   },
   overrides: {
+    MuiSvgIcon: {
+      colorSecondary: {
+        color: "#81FEB7 !important"
+      }
+    },
     MuiTypography: {
       root: {
         letterSpacing: "-0.03em !important"
@@ -181,6 +189,13 @@ export const theme = createTheme({
         fill: "#fff"
       }
     },
+    MuiIconButton: {
+      colorSecondary: {
+        "&:hover": {
+          background: "inherit !important"
+        }
+      }
+    },
     MuiInput: {
       underline: {
         "&:after": {
@@ -207,6 +222,7 @@ export const theme = createTheme({
       },
       disabled: {}
     },
+
     MuiButton: {
       root: {
         "textTransform": "capitalize",
@@ -370,7 +386,7 @@ export const theme = createTheme({
     },
     MuiTableBody: {
       root: {
-        "& > *": {
+        "& > *:not(:first-child)": {
           borderTop: "0.3px solid rgba(125,140,139, 0.2)",
           minHeight: 90
         }

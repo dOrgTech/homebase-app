@@ -35,7 +35,11 @@ import Prism, { highlight } from "prismjs"
 import { CodeCollapse } from "modules/explorer/components/CodeCollapse"
 
 const Container = styled(ContentContainer)({
-  padding: "36px 45px"
+  "padding": "36px 45px",
+  "& a": {
+    color: "#81feb7",
+    textDecoration: "underline"
+  }
 })
 
 const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({

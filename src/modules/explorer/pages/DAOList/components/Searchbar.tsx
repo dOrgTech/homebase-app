@@ -12,11 +12,13 @@ const StyledInput = withStyles((theme: Theme) => ({
       "height": 54,
       "boxSizing": "border-box",
       "background": theme.palette.primary.main,
-      "padding": "18px 22px",
+      "padding": 16,
       "width": "100%",
-      "borderRadius": 4,
+      "borderRadius": 8,
       "marginTop": "0px !important",
       "maxWidth": 571,
+      "fontWeight": 300,
+      "gap": 6,
       "& input": {
         "color": theme.palette.text.primary,
         "textAlign": "start",
@@ -43,10 +45,6 @@ const StyledInput = withStyles((theme: Theme) => ({
   }
 }))(TextField)
 
-const SearchIcon = styled(SearchOutlined)({
-  marginRight: 5
-})
-
 export const SearchInput: React.FC<{ search: any }> = ({ search }) => {
   return (
     <StyledInput
@@ -58,7 +56,7 @@ export const SearchInput: React.FC<{ search: any }> = ({ search }) => {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SearchIcon color="secondary" />
+            <SearchOutlined color="secondary" />
           </InputAdornment>
         )
       }}

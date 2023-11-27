@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
-import { Button, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalDetailCard } from "../../components/ProposalDetailCard"
 import { GridContainer } from "modules/common/GridContainer"
 import { ChoiceItemSelected } from "../../components/ChoiceItemSelected"
 import { VoteDetails } from "../../components/VoteDetails"
-import { useLocation, useParams } from "react-router-dom"
+import { useHistory, useLocation, useParams } from "react-router-dom"
 import { Poll } from "models/Polls"
 import { Choice } from "models/Choice"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -19,6 +19,7 @@ import { voteOnLiteProposal } from "services/services/lite/lite-services"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
+import { ArrowBackIosOutlined } from "@material-ui/icons"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -54,7 +55,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
-
+  const navigate = useHistory()
   const { data: dao } = useDAO(state?.daoId)
   const { account, wallet } = useTezos()
   const openNotification = useNotification()
@@ -62,7 +63,10 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const choices = usePollChoices(poll, refresh)
-  const { data: voteWeight } = useTokenVoteWeight(dao?.data.token.contract, poll?.referenceBlock)
+  const { data: voteWeight } = useTokenVoteWeight(
+    dao?.data.token.contract || community?.tokenAddress,
+    poll?.referenceBlock
+  )
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
   useEffect(() => {
@@ -130,7 +134,15 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   return (
     <PageContainer style={{ gap: 30 }}>
       <Grid container>
-        <BackButton />
+        <Grid
+          container
+          style={{ gap: 15, cursor: "pointer", marginBottom: 23 }}
+          onClick={() => navigate.push(`/explorer/lite/dao/${id}/community/`)}
+          alignItems="center"
+        >
+          <ArrowBackIosOutlined color="secondary" />
+          <Typography color="secondary">Back to community</Typography>
+        </Grid>
       </Grid>
       <Grid container style={{ gap: 30 }}>
         <Grid item>
@@ -165,7 +177,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                   color="secondary"
                   onClick={() => saveVote()}
                 >
-                  Cast your vote
+                  {voteWeight?.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
                 </Button>
               ) : null}
             </GridContainer>
