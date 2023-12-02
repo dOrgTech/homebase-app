@@ -6,6 +6,8 @@ import { useProposals } from "services/services/dao/hooks/useProposals"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
+import { formatNumber } from "modules/explorer/utils/FormatNumber"
+import BigNumber from "bignumber.js"
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "background": theme.palette.primary.main,
@@ -18,7 +20,7 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "padding": "34px 48px",
   "minWidth": "340px",
   "alignContent": "baseline",
-  "gap": 18,
+  "gap": 30,
   "maxHeight": 282,
 
   ["@media (max-width:760px)"]: {
@@ -38,16 +40,23 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   }
 }))
 
-const SymbolText = styled(Typography)({
-  fontSize: "18px",
+const SymbolText = styled(Typography)(({ theme }: { theme: Theme }) => ({
+  fontSize: "24px",
   fontWeight: 300,
   color: "#bfc5ca",
   lineHeight: "normal",
+  marginTop: 8,
+  marginLeft: "12%",
 
-  ["@media (max-width:1335px)"]: {
-    fontSize: "16px"
+  [theme.breakpoints.down("md")]: {
+    fontSize: 18
+  },
+
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 18,
+    marginLeft: "0%"
   }
-})
+}))
 
 const NameText = styled(Typography)(({ theme }) => ({
   whiteSpace: "nowrap",
@@ -85,6 +94,11 @@ const ItemText = styled(Typography)({
   whiteSpace: "pre"
 })
 
+const ItemTextSmall = styled(Typography)({
+  fontWeight: 600,
+  fontSize: 16
+})
+
 const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
   "borderRadius": "50px",
   "padding": "8px 16px",
@@ -114,7 +128,7 @@ export const DAOItem: React.FC<{
   }
 }> = ({ dao }) => {
   const theme = useTheme()
-  const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isExtraSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const daoType = dao.dao_type.name
   const daoHref =
     daoType !== "lambda" && daoType !== "lite"
@@ -122,18 +136,6 @@ export const DAOItem: React.FC<{
       : daoType === "lambda"
       ? `dao/${dao.id}`
       : `lite/dao/${dao.id}`
-
-  const { data: activeProposals } = useProposals(dao.id, ProposalStatus.ACTIVE)
-  const { data: polls } = usePolls(dao.id)
-  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
-
-  const getTotalActiveProposals = () => {
-    if (daoType === "lite") {
-      return activeLiteProposals?.length
-    } else {
-      return (activeProposals ? activeProposals?.length : 0) + (activeLiteProposals ? activeLiteProposals?.length : 0)
-    }
-  }
 
   return (
     <Link underline="none" href={daoHref}>
@@ -151,20 +153,29 @@ export const DAOItem: React.FC<{
         <Grid container direction="row">
           <DescriptionText>{ReactHtmlParser(dao.description)}</DescriptionText>
         </Grid>
-        <Grid container direction="row" justifyContent="space-between">
-          <Grid xs={3} container item direction="column">
-            <ItemText color="textPrimary">DAO {"\n"}Token</ItemText>
-            <SymbolText>{dao?.symbol?.toUpperCase()}</SymbolText>
+        {!isExtraSmall ? (
+          <Grid container direction="row" justifyContent="space-between">
+            <Grid md={5} sm={5} container item direction="row">
+              <ItemText color="textPrimary">DAO {"\n"}Token</ItemText>
+              <SymbolText>{dao?.symbol?.toUpperCase()}</SymbolText>
+            </Grid>
+            <Grid md={5} xs={5} container item direction="row" justifyContent="flex-end">
+              <ItemText color="textPrimary">Voting {"\n"}Addresses</ItemText>{" "}
+              <SymbolText>{formatNumber(new BigNumber(dao.votingAddressesCount))}</SymbolText>
+            </Grid>
           </Grid>
-          <Grid xs={3} container item direction="column">
-            <ItemText color="textPrimary">Voting {"\n"}Addresses</ItemText>{" "}
-            <SymbolText>{dao.votingAddressesCount}</SymbolText>
+        ) : (
+          <Grid container direction="row" justifyContent="space-between">
+            <Grid xs={6} container item direction="column">
+              <ItemTextSmall color="textPrimary">DAO {"\n"}Token</ItemTextSmall>
+              <SymbolText>{dao?.symbol?.toUpperCase()}</SymbolText>
+            </Grid>
+            <Grid xs={6} container item direction="column">
+              <ItemTextSmall color="textPrimary">Voting Addresses</ItemTextSmall>
+              <SymbolText>{formatNumber(new BigNumber(dao.votingAddressesCount))}</SymbolText>
+            </Grid>
           </Grid>
-          <Grid xs={3} container item direction="column">
-            <ItemText color="textPrimary">Active {"\n"}Proposals</ItemText>
-            <SymbolText>{getTotalActiveProposals()}</SymbolText>
-          </Grid>
-        </Grid>
+        )}
       </Container>
     </Link>
   )
