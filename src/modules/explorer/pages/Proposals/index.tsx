@@ -1,106 +1,33 @@
-import React, { useCallback, useEffect, useState } from "react"
-import {
-  Box,
-  Button,
-  Grid,
-  makeStyles,
-  styled,
-  SvgIcon,
-  Theme,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from "@material-ui/core"
+import React, { useState } from "react"
+import { Box, Button, Grid, Paper, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
 import { useDAOID } from "../DAO/router"
 
-import { ProposalSelectionMenuLambda } from "modules/explorer/components/ProposalSelectionMenuLambda"
-import { useTezos } from "services/beacon/hooks/useTezos"
-import { useUnstakeFromAllProposals } from "services/contracts/baseDAO/hooks/useUnstakeFromAllProposals"
+import { ReactComponent as LinkActive } from "assets/img/link_active.svg"
+import { ReactComponent as LinkInactive } from "assets/img/link_inactive.svg"
+import { ReactComponent as UnlinkActive } from "assets/img/unlink_active.svg"
+import { ReactComponent as UnlinkInactive } from "assets/img/unlink_inactive.svg"
+
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
-import { MainButton } from "../../../common/MainButton"
 
 import { ContentContainer } from "../../components/ContentContainer"
 import { AllProposalsList } from "modules/explorer/components/AllProposalsList"
 import { SmallButton } from "modules/common/SmallButton"
 import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
-import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
-import { useDropAllExpired } from "services/contracts/baseDAO/hooks/useDropAllExpired"
-import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
-import ProgressBar from "react-customizable-progressbar"
 import { useTimeLeftInCycle } from "modules/explorer/hooks/useTimeLeftInCycle"
 
-import { ReactComponent as ListIcon } from "assets/img/list-icon.svg"
-import { ReactComponent as TezosIcon } from "assets/img/tezos-icon.svg"
-import { ReactComponent as CycleIcon } from "assets/img/cycle-icon.svg"
-import { ReactComponent as ChartIcon } from "assets/img/chart-icon.svg"
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
 import { ProposalList } from "modules/lite/explorer/components/ProposalList"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
+import { TabPanel } from "modules/explorer/components/TabPanel"
 
-const ProposalInfoTitle = styled(Typography)({
-  fontSize: "18px",
-  fontWeight: 300,
-
-  ["@media (max-width:1155px)"]: {
-    whiteSpace: "nowrap"
-  },
-
-  ["@media (max-width:1030px)"]: {
-    fontSize: "16.3px",
-    whiteSpace: "initial"
-  },
-
-  ["@media (max-width:830.99px)"]: {
-    fontSize: "18px"
-  },
-
-  ["@media (max-width:409.99px)"]: {
-    fontSize: "16px"
-  }
-})
-
-const CycleTime = styled(Typography)(({ theme }) => ({
-  fontWeight: 300,
-  fontSize: "18px",
-
-  ["@media (max-width:1030px)"]: {
-    fontSize: "16px"
-  },
-
-  ["@media (max-width:830.99px)"]: {
-    fontSize: "20px"
-  },
-
-  ["@media (max-width:434px)"]: {
-    fontSize: "18px"
-  },
-
-  ["@media (max-width:409.99px)"]: {
-    fontSize: "15px"
-  }
+const TabsContainer = styled(Grid)(({ theme }) => ({
+  borderRadius: 8,
+  gap: 16
 }))
-
-const LargeNumber = styled(Typography)(({ theme }) => ({
-  fontSize: "36px",
-  fontWeight: 300,
-  color: theme.palette.text.primary,
-  marginTop: "7px",
-
-  ["@media (max-width:1030px)"]: {
-    fontSize: "30px"
-  }
-}))
-
-const ProgressContainer = styled(Box)({
-  marginLeft: "-18px",
-  marginBottom: "-5px",
-  width: 80
-})
 
 const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   padding: "38px 48px 38px 48px",
@@ -111,66 +38,95 @@ const HeroContainer = styled(ContentContainer)(({ theme }) => ({
   }
 }))
 
-const IconContainer = styled(SvgIcon)({
-  width: "auto",
-  height: 45,
-  marginLeft: 48
-})
-
 const TitleText = styled(Typography)({
-  fontSize: 30,
+  fontSize: 36,
   fontWeight: 500,
   lineHeight: 0.9,
 
   ["@media (max-width:1030px)"]: {
-    fontSize: 25
+    fontSize: 26
   }
 })
+
+const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+  "fontSize": 18,
+  "height": 40,
+  "fontWeight": 400,
+  "paddingLeft": 20,
+  "paddingRight": 20,
+  "paddingTop": 0,
+  "paddingBottom": 0,
+  "borderRadius": 8,
+  "color": isSelected ? theme.palette.secondary.main : "#fff",
+  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
+  "&:hover": {
+    backgroundColor: isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.secondary.dark,
+    borderRadius: 8,
+    borderTopLeftRadius: "8px !important",
+    borderTopRightRadius: "8px !important",
+    borderBottomLeftRadius: "8px !important",
+    borderBottomRightRadius: "8px !important"
+  }
+}))
 
 export const DropButton = styled(Button)({
   verticalAlign: "text-bottom",
   fontSize: "16px"
 })
 
-const SubtitleText = styled(Grid)({
-  marginTop: 40,
-  marginBottom: -12
+const DAOItemGrid = styled(Grid)({
+  gap: "30px",
+  marginBottom: 40,
+  justifyContent: "space-between",
+  ["@media (max-width: 1155px)"]: {
+    gap: "32px"
+  },
+
+  ["@media (max-width:960px)"]: {
+    gap: "20px"
+  },
+
+  ["@media (max-width:830px)"]: {
+    width: "86vw",
+    gap: "20px"
+  }
 })
 
-const ItemBox = styled(Grid)(({ theme }) => ({
-  gap: 24,
-  alignItems: "center",
-  marginBottom: 16,
-  [theme.breakpoints.down("sm")]: {
-    justifyContent: "center",
-    height: 150,
-    textAlign: "center"
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: 8,
+  color: theme.palette.text.primary,
+  height: 84,
+  display: "flex",
+  padding: "33px 40px 30px 40px",
+  flexDirection: "column",
+  gap: 8
+}))
+
+const ItemContent = styled(Grid)({
+  gap: 8
+})
+
+const ItemTitle = styled(Typography)(({ theme }) => ({
+  fontSize: 18,
+  fontWeight: 600,
+  [theme.breakpoints.down("md")]: {
+    fontSize: 15
   }
 }))
 
-const styles = makeStyles((theme: Theme) => ({
-  circleWidth: {
-    "& .RCP": {
-      width: "50px !important"
-    },
-    "& svg": {
-      width: "60px !important",
-      [theme.breakpoints.down("sm")]: {
-        marginTop: -26
-      }
-    }
-  },
-  progressText: {
-    [theme.breakpoints.down("sm")]: {
-      marginTop: -40
-    }
+const ItemValue = styled(Typography)(({ theme }) => ({
+  fontSize: 32,
+  fontWeight: 300,
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 28
   }
 }))
 
 export const Proposals: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo } = useDAO(daoId)
-  const blocksLeft = cycleInfo && cycleInfo.blocksLeft
+  const [selectedTab, setSelectedTab] = React.useState(0)
 
   const { data: proposals } = useProposals(daoId)
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
@@ -178,13 +134,11 @@ export const Proposals: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const [openDialog, setOpenDialog] = useState(false)
 
-  const { mutate } = useFlush()
-  const { mutate: dropAllExpired } = useDropAllExpired()
+  // const { mutate } = useFlush()
+  // const { mutate: dropAllExpired } = useDropAllExpired()
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
-  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
+  // const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
   const { hours, minutes, days } = useTimeLeftInCycle()
-
-  const style = styles()
 
   const shouldDisable = useIsProposalButtonDisabled(daoId)
 
@@ -192,31 +146,35 @@ export const Proposals: React.FC = () => {
     setOpenDialog(false)
   }
 
-  const onFlush = useCallback(async () => {
-    if (executableProposals && expiredProposals && executableProposals.length && data) {
-      mutate({
-        dao: data,
-        numOfProposalsToFlush: executableProposals.length,
-        expiredProposalIds: expiredProposals.map(p => p.id)
-      })
-      return
-    }
-  }, [data, mutate, executableProposals, expiredProposals])
+  // const onFlush = useCallback(async () => {
+  //   if (executableProposals && expiredProposals && executableProposals.length && data) {
+  //     mutate({
+  //       dao: data,
+  //       numOfProposalsToFlush: executableProposals.length,
+  //       expiredProposalIds: expiredProposals.map(p => p.id)
+  //     })
+  //     return
+  //   }
+  // }, [data, mutate, executableProposals, expiredProposals])
 
-  const onDropAllExpired = useCallback(async () => {
-    if (expiredProposals && expiredProposals.length && data) {
-      dropAllExpired({
-        dao: data,
-        expiredProposalIds: expiredProposals.map(p => p.id)
-      })
-      return
-    }
-  }, [data, dropAllExpired, expiredProposals])
+  // const onDropAllExpired = useCallback(async () => {
+  //   if (expiredProposals && expiredProposals.length && data) {
+  //     dropAllExpired({
+  //       dao: data,
+  //       expiredProposalIds: expiredProposals.map(p => p.id)
+  //     })
+  //     return
+  //   }
+  // }, [data, dropAllExpired, expiredProposals])
 
   const { data: polls } = usePolls(data?.liteDAOData?._id)
   const id = data?.liteDAOData?._id
 
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
+
+  const handleChangeTab = (newValue: number) => {
+    setSelectedTab(newValue)
+  }
 
   return (
     <>
@@ -244,7 +202,7 @@ export const Proposals: React.FC = () => {
                   <SmallButton variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
                     New Proposal
                   </SmallButton>
-                  <Grid>
+                  {/* <Grid>
                     <SmallButton
                       variant="contained"
                       color="secondary"
@@ -256,9 +214,9 @@ export const Proposals: React.FC = () => {
                     <Tooltip placement="bottom" title="Execute all passed proposals and drop all expired or rejected">
                       <InfoIcon style={{ height: 16 }} color="secondary" />
                     </Tooltip>
-                  </Grid>
+                  </Grid> */}
 
-                  <Grid>
+                  {/* <Grid>
                     <DropButton
                       variant="contained"
                       color="secondary"
@@ -270,76 +228,166 @@ export const Proposals: React.FC = () => {
                     <Tooltip placement="bottom" title="Drop all expired proposals">
                       <InfoIcon style={{ height: 16 }} color="secondary" />
                     </Tooltip>
-                  </Grid>
+                  </Grid> */}
                 </Grid>
-              </Grid>
-              <Grid
-                item
-                container
-                direction="row"
-                alignItems="center"
-                style={{ marginTop: 40 }}
-                spacing={isMobileSmall ? 2 : 1}
-              >
-                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                  <ListIcon />
-                  <Grid item>
-                    <ProposalInfoTitle color="textPrimary">Cycle Status</ProposalInfoTitle>
-                    <CycleTime color="secondary">{shouldDisable ? "Voting" : "Creating"} </CycleTime>
-                  </Grid>
-                </ItemBox>
-                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                  <CycleIcon />
-                  <Grid item>
-                    <ProposalInfoTitle color="textPrimary">Current Cycle</ProposalInfoTitle>
-                    <CycleTime color="secondary">{cycleInfo?.currentCycle}</CycleTime>
-                  </Grid>
-                </ItemBox>
-                <ItemBox item container xs={isMobileSmall ? 6 : 4} className={style.circleWidth}>
-                  <ProgressBar
-                    progress={data ? ((blocksLeft || 0) / Number(data.data.period)) * 100 : 100}
-                    radius={25}
-                    strokeWidth={3}
-                    strokeColor={theme.palette.secondary.main}
-                    trackStrokeWidth={5}
-                    trackStrokeColor={"rgba(125,140,139, 0.2)"}
-                  />
-                  <Grid item className={style.progressText}>
-                    <ProposalInfoTitle color="textPrimary">Time Left in Cycle</ProposalInfoTitle>
-                    <CycleTime color="secondary">
-                      {" "}
-                      {days}d {hours}h {minutes}m{" "}
-                    </CycleTime>
-                  </Grid>
-                </ItemBox>
-                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                  <TezosIcon />
-                  <Grid item>
-                    <ProposalInfoTitle color="textPrimary">Voting Addresses</ProposalInfoTitle>
-                    <CycleTime color="secondary">{data?.data.ledger.length || "-"}</CycleTime>
-                  </Grid>
-                </ItemBox>
-                <ItemBox item container xs={isMobileSmall ? 6 : 4}>
-                  <ChartIcon />
-                  <Grid item>
-                    <ProposalInfoTitle color="textPrimary">Active Proposals</ProposalInfoTitle>
-                    <CycleTime color="secondary">
-                      {" "}
-                      {Number(activeLiteProposals?.length) + Number(activeProposals?.length)}
-                    </CycleTime>
-                  </Grid>
-                </ItemBox>
               </Grid>
             </Grid>
           </Grid>
         </HeroContainer>
 
-        {data && cycleInfo && proposals && (
-          <AllProposalsList title={"On-Chain"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
-        )}
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
-        {polls && polls.length > 0 ? <ProposalList polls={polls} id={id} daoId={daoId} /> : null}
+        <Grid item>
+          <Grid container>
+            <Grid item>
+              <TabsContainer container>
+                <Grid item>
+                  <StyledTab
+                    startIcon={selectedTab === 0 ? <LinkActive /> : <LinkInactive />}
+                    variant="contained"
+                    disableElevation={true}
+                    onClick={() => handleChangeTab(0)}
+                    isSelected={selectedTab === 0}
+                  >
+                    On-Chain
+                  </StyledTab>
+                </Grid>
+                <Grid item>
+                  <StyledTab
+                    startIcon={selectedTab === 1 ? <UnlinkActive /> : <UnlinkInactive />}
+                    disableElevation={true}
+                    variant="contained"
+                    onClick={() => handleChangeTab(1)}
+                    isSelected={selectedTab === 1}
+                  >
+                    Off-Chain
+                  </StyledTab>
+                </Grid>
+              </TabsContainer>
+            </Grid>
+          </Grid>
+        </Grid>
 
+        <Grid item>
+          <TabPanel value={selectedTab} index={0}>
+            <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
+              <Box sx={{ flexGrow: 1, width: "inherit" }}>
+                <Grid container spacing={4}>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Item>
+                      <ItemContent item container direction="row" alignItems="center">
+                        <ItemTitle color="textPrimary">Cycle Status</ItemTitle>
+                      </ItemContent>
+                      <Grid item>
+                        <ItemValue color="textPrimary">{shouldDisable ? "Voting" : "Creating"}</ItemValue>
+                      </Grid>
+                    </Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Item>
+                      <ItemContent item container direction="row" alignItems="center">
+                        <ItemTitle color="textPrimary">Current Cycle</ItemTitle>
+                      </ItemContent>
+                      <Grid item>
+                        <ItemValue color="textPrimary">{cycleInfo?.currentCycle}</ItemValue>
+                      </Grid>
+                    </Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Item>
+                      <ItemContent item container direction="row" alignItems="center">
+                        <ItemTitle color="textPrimary">Time Left in Cycle</ItemTitle>
+                      </ItemContent>
+                      <Grid item>
+                        <ItemValue color="textPrimary">
+                          {" "}
+                          {days}d {hours}h {minutes}m{" "}
+                        </ItemValue>
+                      </Grid>
+                    </Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Item>
+                      <ItemContent item container direction="row" alignItems="center">
+                        <ItemTitle color="textPrimary">Voting Addresses</ItemTitle>
+                      </ItemContent>
+                      <Grid item>
+                        <ItemValue color="textPrimary">{data?.data.ledger.length || "-"}</ItemValue>
+                      </Grid>
+                    </Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Item>
+                      <ItemContent item container direction="row" alignItems="center">
+                        <ItemTitle color="textPrimary">Active Proposals</ItemTitle>
+                      </ItemContent>
+                      <Grid item>
+                        <ItemValue color="textPrimary"> {Number(activeProposals?.length)}</ItemValue>
+                      </Grid>
+                    </Item>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Item>
+                      <ItemContent item container direction="row" alignItems="center">
+                        <ItemTitle color="textPrimary">Executable Proposals</ItemTitle>
+                      </ItemContent>
+                      <Grid item>
+                        <ItemValue color="textPrimary">{executableProposals?.length}</ItemValue>
+                      </Grid>
+                    </Item>
+                  </Grid>
+                </Grid>
+              </Box>
+            </DAOItemGrid>
+
+            {data && cycleInfo && proposals && (
+              <AllProposalsList title={"On-Chain"} currentLevel={cycleInfo.currentLevel} proposals={proposals} />
+            )}
+          </TabPanel>
+          <TabPanel value={selectedTab} index={1}>
+            <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
+              <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
+                <Box sx={{ flexGrow: 1, width: "inherit" }}>
+                  <Grid container spacing={4}>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Item>
+                        <ItemContent item container direction="row" alignItems="center">
+                          <ItemTitle color="textPrimary">Active Proposals</ItemTitle>
+                        </ItemContent>
+                        <Grid item>
+                          <ItemValue color="textPrimary">
+                            {activeLiteProposals ? activeLiteProposals?.length : 0}
+                          </ItemValue>
+                        </Grid>
+                      </Item>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Item>
+                        <ItemContent item container direction="row" alignItems="center">
+                          <ItemTitle color="textPrimary">Total Addresses</ItemTitle>
+                        </ItemContent>
+                        <Grid item>
+                          <ItemValue color="textPrimary">{data?.liteDAOData?.votingAddressesCount}</ItemValue>
+                        </Grid>
+                      </Item>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Item>
+                        <ItemContent item container direction="row" alignItems="center">
+                          <ItemTitle color="textPrimary">Delegates</ItemTitle>
+                        </ItemContent>
+                        <Grid item>
+                          <ItemValue color="textPrimary"> {0}</ItemValue>
+                        </Grid>
+                      </Item>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </DAOItemGrid>
+            </DAOItemGrid>
+            {polls && polls.length > 0 ? <ProposalList polls={polls} id={id} daoId={daoId} /> : null}
+          </TabPanel>
+        </Grid>
+
+        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
         {proposals?.length === 0 && polls?.length === 0 ? (
           <Typography style={{ width: "inherit" }} color="textPrimary">
             0 proposals found
