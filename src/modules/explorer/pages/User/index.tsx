@@ -65,6 +65,11 @@ const TitleText = styled(Typography)({
   fontSize: 32
 })
 
+const TitleText = styled(Typography)({
+  fontWeight: 600,
+  fontSize: 32
+})
+
 export const ProposalItem: React.FC<{
   proposal: Proposal | any
   status: ProposalStatus
