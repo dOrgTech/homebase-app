@@ -26,7 +26,7 @@ const TermsText = styled(Link)(({ theme }) => ({
   textDecoration: "underline",
   color: theme.palette.secondary.main,
   cursor: "pointer",
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   letterSpacing: "1px !important"
 }))
 

@@ -14,7 +14,7 @@ export interface ProposalTableRowData {
 }
 
 const ArrowInfo = styled(Typography)(({ theme }) => ({
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   fontWeight: 500,
   fontSize: 16,
   [theme.breakpoints.down("xs")]: {

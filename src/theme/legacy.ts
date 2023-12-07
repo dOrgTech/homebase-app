@@ -25,7 +25,7 @@ export const legacyTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto Flex",
     h1: {
       fontSize: 35,
       letterSpacing: "-0.01em"
@@ -45,7 +45,7 @@ export const legacyTheme = createMuiTheme({
     h3: {
       fontSize: 32,
       fontWeight: 500,
-      fontFamily: "Roboto Mono"
+      fontFamily: "Roboto Flex"
     },
     h2: {
       color: "#000000",

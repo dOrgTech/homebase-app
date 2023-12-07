@@ -34,7 +34,7 @@ export const theme = createTheme({
     }
   },
   typography: {
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto Flex",
     h1: {
       fontSize: 30,
       [breakpoints.down("xs")]: {
@@ -250,7 +250,14 @@ export const theme = createTheme({
         "padding": "1px 8px",
         "fontSize": "1rem"
       },
-      disabled: {}
+      disabled: {},
+      text: {
+        "color": "#81FEB7",
+        "&$disabled": {
+          color: "#bfc5ca !important",
+          background: "inherit !important"
+        }
+      }
     },
     MuiInputBase: {
       input: {

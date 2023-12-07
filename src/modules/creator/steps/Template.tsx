@@ -50,7 +50,7 @@ const ErrorText = styled(Typography)({
 const BoxTitle = styled(Typography)({
   fontSize: 18,
   fontWeight: 500,
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   marginBottom: 10
 })
 

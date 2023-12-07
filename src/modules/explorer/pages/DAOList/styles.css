@@ -2,7 +2,7 @@
   display: flex;
   list-style: none;
   outline: none;
-  font-family: "Roboto Mono";
+  font-family: "Roboto Flex";
 }
 .pagination > .active > a {
   background-color: rgba(129, 254, 183, 0.2);
@@ -14,6 +14,9 @@
   outline: none;
   cursor: pointer;
   border-radius: 50%;
+  margin-left: 8px;
+  margin-right: 8px;
+  font-family: "Roboto Flex";
 }
 .pagination > .active > a,
 .pagination > .active > span,

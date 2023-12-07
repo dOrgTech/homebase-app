@@ -46,7 +46,6 @@ const SymbolText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   color: "#bfc5ca",
   lineHeight: "normal",
   marginTop: 8,
-  marginLeft: "12%",
 
   [theme.breakpoints.down("md")]: {
     fontSize: 18
@@ -112,7 +111,7 @@ const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: strin
   "& > div": {
     height: "100%"
   },
-  "fontFamily": "Roboto Mono",
+  "fontFamily": "Roboto Flex",
   "fontWeight": 500
 }))
 
@@ -153,29 +152,16 @@ export const DAOItem: React.FC<{
         <Grid container direction="row">
           <DescriptionText>{ReactHtmlParser(dao.description)}</DescriptionText>
         </Grid>
-        {!isExtraSmall ? (
-          <Grid container direction="row" justifyContent="space-between">
-            <Grid md={5} sm={5} container item direction="row">
-              <ItemText color="textPrimary">DAO {"\n"}Token</ItemText>
-              <SymbolText>{dao?.symbol?.toUpperCase()}</SymbolText>
-            </Grid>
-            <Grid md={5} xs={5} container item direction="row" justifyContent="flex-end">
-              <ItemText color="textPrimary">Voting {"\n"}Addresses</ItemText>{" "}
-              <SymbolText>{formatNumber(new BigNumber(dao.votingAddressesCount))}</SymbolText>
-            </Grid>
+        <Grid container direction="row" justifyContent="space-between">
+          <Grid xs={6} container item direction="column">
+            <ItemTextSmall color="textPrimary">DAO {"\n"}Token</ItemTextSmall>
+            <SymbolText>{dao?.symbol?.toUpperCase()}</SymbolText>
           </Grid>
-        ) : (
-          <Grid container direction="row" justifyContent="space-between">
-            <Grid xs={6} container item direction="column">
-              <ItemTextSmall color="textPrimary">DAO {"\n"}Token</ItemTextSmall>
-              <SymbolText>{dao?.symbol?.toUpperCase()}</SymbolText>
-            </Grid>
-            <Grid xs={6} container item direction="column">
-              <ItemTextSmall color="textPrimary">Voting Addresses</ItemTextSmall>
-              <SymbolText>{formatNumber(new BigNumber(dao.votingAddressesCount))}</SymbolText>
-            </Grid>
+          <Grid xs={6} container item direction="column">
+            <ItemTextSmall color="textPrimary">Voting Addresses</ItemTextSmall>
+            <SymbolText>{formatNumber(new BigNumber(dao.votingAddressesCount))}</SymbolText>
           </Grid>
-        )}
+        </Grid>
       </Container>
     </Link>
   )

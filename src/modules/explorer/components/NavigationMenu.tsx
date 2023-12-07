@@ -31,23 +31,10 @@ const Container = styled(Grid)(({ theme }) => ({
 
 const InnerContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
   width: "1000px",
+  paddingLeft: 0,
+  paddingRight: 0,
   margin: "auto",
   borderRadius: 8,
-  backgroundColor: theme.palette.primary.main,
-  padding: 16,
-  alignItems: "center",
-  justifyContent: "space-between",
-
-  ["@media (max-width:1167px)"]: {
-    width: "86vw"
-  }
-}))
-
-const InnerContainerExplorer = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  width: "1000px",
-  margin: "auto",
-  borderRadius: 8,
-  backgroundColor: theme.palette.primary.dark,
   padding: 16,
   alignItems: "center",
   justifyContent: "space-between",

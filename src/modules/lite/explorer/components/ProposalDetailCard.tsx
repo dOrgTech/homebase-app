@@ -54,7 +54,7 @@ const Divider = styled(Typography)(({ theme }) => ({
 }))
 
 const StyledLink = styled(Link)(({ theme }) => ({
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   fontWeight: 300,
   fontSize: 16,
   marginLeft: 8,

@@ -1,4 +1,4 @@
-import { Box, Grid, Theme, Typography, styled } from "@material-ui/core"
+import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
@@ -20,6 +20,7 @@ import { DropButton } from "../Proposals"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { Delegation } from "./components/DelegationBanner"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
+import { CopyButton } from "modules/common/CopyButton"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -28,11 +29,13 @@ const ContentBlockItem = styled(Grid)({
 
 const BalancesHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
   minHeight: "178px",
-  padding: "46px 55px",
+  padding: "40px 48px",
+  gap: 16,
   background: theme.palette.primary.main,
   boxSizing: "border-box",
   borderRadius: 8,
-  boxShadow: "none"
+  boxShadow: "none",
+  display: "grid"
 }))
 
 const MainContainer = styled(Box)({
@@ -41,7 +44,8 @@ const MainContainer = styled(Box)({
 
 const UsernameText = styled(Typography)({
   fontSize: 18,
-  wordBreak: "break-all"
+  wordBreak: "break-all",
+  marginLeft: 10
 })
 
 const ProposalTitle = styled(Typography)({
@@ -61,6 +65,11 @@ const VotedText = styled(Typography)({
 
 const CreatedText = styled(Typography)({
   fontWeight: 300
+})
+
+const TitleText = styled(Typography)({
+  fontWeight: 600,
+  fontSize: 32
 })
 
 export const ProposalItem: React.FC<{
@@ -104,6 +113,9 @@ export const User: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo } = useDAO(daoId)
   const { data: proposals } = useProposals(daoId)
+
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const history = useHistory()
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
@@ -170,46 +182,44 @@ export const User: React.FC = () => {
   return (
     <MainContainer>
       <Grid container direction="column" style={{ gap: 40 }} wrap={"nowrap"}>
-        <BalancesHeader item>
-          <UserBalances daoId={daoId}>
-            <Grid item>
-              <Grid container alignItems="center" justifyContent="space-between" style={{ gap: 20 }}>
+        <BalancesHeader item style={{ gap: 16 }}>
+          <Grid container direction="row">
+            <TitleText color="textPrimary">My Address</TitleText>
+          </Grid>
+          <Grid container alignItems="center" justifyContent="space-between" style={{ gap: isMobileSmall ? 30 : 20 }}>
+            <Grid item md={6} xs={12}>
+              <Grid container alignItems="center" wrap="nowrap">
                 <Grid item>
-                  <Grid container spacing={2} alignItems="center" wrap="nowrap">
-                    <Grid item>
-                      <ProfileAvatar size={43} address={account} />
-                    </Grid>
-                    <Grid item>
-                      <UsernameText color="textPrimary">
-                        <UserProfileName address={account} />
-                      </UsernameText>
-                    </Grid>
-                  </Grid>
+                  <ProfileAvatar size={40} address={account} />
                 </Grid>
                 <Grid item>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item>
-                      <FreezeDialog freeze={true} />
-                    </Grid>
-                    <Grid item>
-                      <FreezeDialog freeze={false} />
-                    </Grid>
-                    <Grid item>
-                      <DropButton
-                        variant="contained"
-                        color="secondary"
-                        onClick={onUnstakeFromAllProposals}
-                        disabled={!canUnstakeVotes}
-                      >
-                        Unstake Votes
-                      </DropButton>
-                    </Grid>
-                  </Grid>
+                  <UsernameText color="textPrimary">
+                    <UserProfileName address={account} />
+                  </UsernameText>
+                </Grid>
+                <Grid item>
+                  <CopyButton text={account} />
                 </Grid>
               </Grid>
             </Grid>
-          </UserBalances>
+            <Grid item md={5} xs={12}>
+              <Grid container spacing={2} alignItems="center" justifyContent={isMobileSmall ? "center" : "flex-end"}>
+                <Grid item>
+                  <FreezeDialog freeze={true} />
+                </Grid>
+                <Grid item>
+                  <FreezeDialog freeze={false} />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
         </BalancesHeader>
+
+        <UserBalances
+          daoId={daoId}
+          canUnstakeVotes={canUnstakeVotes || false}
+          onUnstakeFromAllProposals={onUnstakeFromAllProposals}
+        ></UserBalances>
 
         {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
 
