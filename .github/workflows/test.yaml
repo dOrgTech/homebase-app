@@ -1,15 +1,16 @@
 name: Playwright Tests
 
 on:
-  workflow_run:
-    workflows: ["Upload Deployment URL"]
-    types:
-      - completed
+  # TODO: Constrain this further
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   test:
-    needs: capture-deployment-url
-    if: github.event_name != 'deployment_status'
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -19,11 +20,6 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: 18
-    - name: Download Deployment URL
-      uses: actions/download-artifact@v2
-      with:
-        name: deployment-url
-    - run: echo "$(<deployment-url)"
     - name: Install dependencies
       run: npm ci
     - name: Install Playwright
@@ -31,4 +27,4 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test
       env:
-        WEBAPP_URL: $(cat deployment-url | grep DEPLOYMENT_URL | cut -d '=' -f2)
+        WEBAPP_URL: https://deploy-preview-740--tezos-homebase.netlify.app
