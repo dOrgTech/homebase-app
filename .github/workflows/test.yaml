@@ -18,6 +18,7 @@ on:
       - '**'
 
 jobs:
+# TODO: Add something like https://github.com/JakePartusch/wait-for-netlify-action
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
@@ -32,7 +33,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        repository: W3DevTeam/TezosHomebaseTests
+        repository: dOrgTech/homebase-app-tests
     - uses: actions/setup-node@v4
       with:
         node-version: 18
