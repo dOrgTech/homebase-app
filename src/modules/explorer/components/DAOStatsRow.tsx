@@ -7,12 +7,6 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAOID } from "../pages/DAO/router"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
-import FiberSmartRecordIcon from "@mui/icons-material/FiberSmartRecord"
-import LockIcon from "@mui/icons-material/Lock"
-import HowToVoteIcon from "@mui/icons-material/HowToVote"
-import PaletteIcon from "@mui/icons-material/Palette"
-import { ReactComponent as TzIcon } from "assets/img/tz_circle.svg"
 import { formatNumber } from "../utils/FormatNumber"
 import { useDAOHoldings, useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 
@@ -40,7 +34,7 @@ const ItemTitle = styled(Typography)(({ theme }) => ({
 }))
 
 const ItemValue = styled(Typography)(({ theme }) => ({
-  fontSize: 36,
+  fontSize: 32,
   fontWeight: 300,
   [theme.breakpoints.down("sm")]: {
     fontSize: 28
@@ -94,7 +88,6 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <AccountBalanceWalletIcon color="secondary" />
               <ItemTitle color="textPrimary">Total {symbol}</ItemTitle>
             </ItemContent>
             <Grid item>
@@ -105,7 +98,6 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <TzIcon color="secondary" />
               <ItemTitle color="textPrimary">Voting Addresses</ItemTitle>
             </ItemContent>
             <Grid item>
@@ -116,7 +108,6 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <FiberSmartRecordIcon color="secondary" style={{ transform: "rotate(180deg)" }} />
               <ItemTitle color="textPrimary">Tokens</ItemTitle>
             </ItemContent>
             <Grid item>
@@ -127,7 +118,7 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <LockIcon color="secondary" /> <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
+              <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
             </ItemContent>
             <Grid item container direction="row">
               <ItemValue color="textPrimary">{formatNumber(amountLocked)}</ItemValue>
@@ -138,7 +129,6 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <HowToVoteIcon color="secondary" />
               <ItemTitle color="textPrimary">Active Proposals</ItemTitle>
             </ItemContent>
             <Grid item>
@@ -154,7 +144,6 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <PaletteIcon color="secondary" />
               <ItemTitle color="textPrimary">NFTs</ItemTitle>
             </ItemContent>
             <Grid item>

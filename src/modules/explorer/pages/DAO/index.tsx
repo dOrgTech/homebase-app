@@ -85,19 +85,12 @@ const SubtitleText = styled(Typography)({
 export const DAO: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
-  const { mutate } = useFlush()
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const symbol = data && data.data.token.symbol.toUpperCase()
 
   const name = data && data.data.name
   const description = data && data.data.description
-
-  const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
-  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
-  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
-  const { data: polls } = usePolls(data?.liteDAOData?._id)
-  const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
 
   const [openDialog, setOpenDialog] = useState(false)
 
