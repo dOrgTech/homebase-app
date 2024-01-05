@@ -1,4 +1,4 @@
-import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
@@ -16,11 +16,11 @@ import { StatusBadge } from "../../components/StatusBadge"
 import { ProfileAvatar } from "../../components/styled/ProfileAvatar"
 import { UserBalances } from "../../components/UserBalances"
 import { UserProfileName } from "../../components/UserProfileName"
-import { DropButton } from "../Proposals"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { Delegation } from "./components/DelegationBanner"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
 import { CopyButton } from "modules/common/CopyButton"
+import { UserMovements } from "./components/UserMovements"
 
 const ContentBlockItem = styled(Grid)({
   padding: "35px 52px",
@@ -50,17 +50,6 @@ const UsernameText = styled(Typography)({
 
 const ProposalTitle = styled(Typography)({
   fontWeight: "bold"
-})
-
-const StatusText = styled(Typography)({
-  textTransform: "uppercase",
-  marginLeft: 10,
-  fontSize: 18,
-  marginRight: 30
-})
-
-const VotedText = styled(Typography)({
-  fontSize: 18
 })
 
 const CreatedText = styled(Typography)({
@@ -223,41 +212,13 @@ export const User: React.FC = () => {
 
         {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
 
-        <Grid item>
-          {proposalsCreated && cycleInfo && (
-            <ProposalsList
-              currentLevel={cycleInfo.currentLevel}
-              proposals={proposalsCreated}
-              title={"Proposals Posted"}
-              liteProposals={pollsPosted}
-            />
-          )}
-        </Grid>
-        <Grid item>
-          {proposalsVoted && cycleInfo && (
-            <ProposalsList
-              title={"Voting History"}
-              currentLevel={cycleInfo.currentLevel}
-              proposals={proposalsVoted}
-              rightItem={proposal => {
-                const voteDecision = getVoteDecision(proposal)
-                return (
-                  <Grid container>
-                    <Grid item>
-                      <VotedText color="textPrimary">Voted</VotedText>
-                    </Grid>
-                    <Grid item>
-                      <StatusText color={voteDecision ? "secondary" : "error"}>
-                        {voteDecision ? "YES" : "NO"}
-                      </StatusText>
-                    </Grid>
-                  </Grid>
-                )
-              }}
-              liteProposals={pollsPosted}
-            />
-          )}
-        </Grid>
+        <UserMovements
+          getVoteDecision={getVoteDecision}
+          proposalsVoted={proposalsVoted}
+          cycleInfo={cycleInfo}
+          proposalsCreated={proposalsCreated}
+          pollsPosted={pollsPosted}
+        />
       </Grid>
     </MainContainer>
   )
