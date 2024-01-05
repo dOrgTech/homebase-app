@@ -9,7 +9,8 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {
     height: "100%"
   },
-  "background": theme.palette.primary.dark,
+  "background": "rgb(47, 52, 56)",
+  "height": 23,
   "borderRadius": 8,
   "paddingLeft": 16,
   "paddingRight": 16,
@@ -17,6 +18,7 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "paddingBottom": 6,
   "cursor": "pointer",
   "transition": ".15s ease-out",
+  "color": "#fff",
 
   "&:hover": {
     background: theme.palette.secondary.dark,
@@ -54,7 +56,7 @@ export const ChangeNetworkButton = () => {
               <ColorDot color={networkDotColorMap[network]} />
             </Grid>
             <Grid item>
-              <Typography color="textPrimary" variant="body2">
+              <Typography style={{ fontWeight: 400 }} variant="body2">
                 {capitalize(network)}
               </Typography>
             </Grid>
