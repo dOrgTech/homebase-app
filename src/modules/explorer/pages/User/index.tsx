@@ -1,4 +1,4 @@
-import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo } from "react"
