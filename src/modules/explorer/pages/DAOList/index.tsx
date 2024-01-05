@@ -215,7 +215,7 @@ export const DAOList: React.FC = () => {
       <Navbar disableMobileMenu />
       <PageContainer>
         <Grid container style={{ gap: 32 }} direction="column">
-          <Grid item style={{ height: "14vh" }}>
+          <Grid item style={isMobileSmall ? {} : { height: "14vh" }}>
             <Grid
               container
               justifyContent={isMobileExtraSmall ? "center" : "space-between"}

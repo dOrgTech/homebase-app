@@ -54,9 +54,7 @@ export const ChangeNetworkButton = () => {
               <ColorDot color={networkDotColorMap[network]} />
             </Grid>
             <Grid item>
-              <Typography color="textPrimary" variant="body2">
-                {capitalize(network)}
-              </Typography>
+              <Typography color="textSecondary">{capitalize(network)}</Typography>
             </Grid>
           </Grid>
         </StyledConnectedButton>

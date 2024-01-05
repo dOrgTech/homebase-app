@@ -17,6 +17,7 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "paddingBottom": 6,
   "cursor": "pointer",
   "transition": ".15s ease-out",
+  "height": 23,
 
   "&:hover": {
     background: theme.palette.secondary.dark,

@@ -8,7 +8,7 @@ import { useDelegationStatus } from "services/contracts/token/hooks/useDelegatio
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
-import { parseUnits } from "services/contracts/utils"
+import { parseUnits, toShortAddress } from "services/contracts/utils"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { CopyButton } from "modules/common/CopyButton"
 
@@ -168,7 +168,7 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
                 <DelegationText container direction="row" alignItems="center" style={{ gap: 8 }}>
                   {matchTextToStatus(delegationStatus)}
                   {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
-                    <ProfileAvatar size={22} address={delegatedTo ? delegatedTo : ""} />
+                    <ProfileAvatar size={22} address={delegatedTo ? toShortAddress(delegatedTo) : ""} />
                   )}
                   {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
                   {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (

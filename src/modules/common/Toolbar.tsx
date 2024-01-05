@@ -113,7 +113,7 @@ const LogoText = styled(Typography)({
 
 const AddressBarWrapper = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
-  background: theme.palette.primary.main,
+  background: theme.palette.primary.dark,
   paddingLeft: 16,
   paddingRight: 16,
   paddingTop: 5,
@@ -249,7 +249,7 @@ export const Navbar: React.FC<{
                             <ProfileAvatar size={22} address={account} />
                           </Grid>
                           <Grid item>
-                            <StyledUserProfileName variant="body2">
+                            <StyledUserProfileName>
                               <UserProfileName address={account} short={true} />
                             </StyledUserProfileName>
                           </Grid>
