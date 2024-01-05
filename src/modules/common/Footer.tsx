@@ -27,7 +27,8 @@ const Footer = styled(Grid)(({ theme }) => ({
 
 const LogoItem = styled("img")({
   opacity: 0.65,
-  cursor: "pointer"
+  cursor: "pointer",
+  marginLeft: 8
 })
 
 const HomebaseLogoItem = styled("img")({
@@ -198,7 +199,10 @@ export const ExplorerFooter: React.FC = () => {
             justifyContent="flex-end"
             style={{ gap: 8 }}
           >
-            <DesignedByText color="textPrimary"> Designed & Developed by</DesignedByText>
+            {isMobileSmall ? <DesignedByText color="textPrimary">Supported by Tezos Commons, </DesignedByText> : null}
+            <DesignedByText color="textPrimary">
+              {!isMobileSmall ? "Supported by Tezos Commons, " : null}Designed & Developed by
+            </DesignedByText>
             <LogoItem src={dOrg} onClick={goTodOrg} />
           </Grid>
         </BottomContainer>
