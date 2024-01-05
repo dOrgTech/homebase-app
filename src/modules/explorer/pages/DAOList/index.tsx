@@ -110,7 +110,7 @@ const DAOItemCard = styled(Grid)({
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
-  gap: 30
+  gap: 16
 }))
 
 export const DAOList: React.FC = () => {
