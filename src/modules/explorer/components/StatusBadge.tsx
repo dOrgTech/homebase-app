@@ -6,8 +6,8 @@ const statusColors = (status: ProposalStatus | "all") => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return {
-        background: "#0085ff33",
-        color: "#0085FF",
+        background: "#2A4660",
+        color: "#85C4FF",
         text: "Active"
       }
     case ProposalStatus.PENDING:
@@ -30,8 +30,8 @@ const statusColors = (status: ProposalStatus | "all") => {
       }
     case ProposalStatus.REJECTED:
       return {
-        background: "#ff5a6433",
-        color: "#ff5a64",
+        background: "#513438",
+        color: "#FF8FA0",
         text: "Rejected"
       }
     case ProposalStatus.EXPIRED:

@@ -283,11 +283,26 @@ export const UserMovements: React.FC<{
           </TabPanel>
           <TabPanel value={selectedTabVotes} index={1}>
             <Grid item style={{ marginTop: 38 }}>
-              {proposalsCreated && cycleInfo && (
+              {proposalsVoted && cycleInfo && (
                 <ProposalsList
+                  title={"Voting History"}
                   currentLevel={cycleInfo.currentLevel}
-                  proposals={proposalsCreated}
-                  title={"Proposals Posted"}
+                  proposals={proposalsVoted}
+                  rightItem={proposal => {
+                    const voteDecision = getVoteDecision(proposal)
+                    return (
+                      <Grid container>
+                        <Grid item>
+                          <VotedText color="textPrimary">Voted</VotedText>
+                        </Grid>
+                        <Grid item>
+                          <StatusText color={voteDecision ? "secondary" : "error"}>
+                            {voteDecision ? "YES" : "NO"}
+                          </StatusText>
+                        </Grid>
+                      </Grid>
+                    )
+                  }}
                   liteProposals={[]}
                 />
               )}
@@ -295,11 +310,26 @@ export const UserMovements: React.FC<{
           </TabPanel>
           <TabPanel value={selectedTabVotes} index={2}>
             <Grid item style={{ marginTop: 38 }}>
-              {proposalsCreated && cycleInfo && (
+              {pollsPosted && cycleInfo && (
                 <ProposalsList
+                  title={"Voting History"}
                   currentLevel={cycleInfo.currentLevel}
                   proposals={[]}
-                  title={"Proposals Posted"}
+                  rightItem={proposal => {
+                    const voteDecision = getVoteDecision(proposal)
+                    return (
+                      <Grid container>
+                        <Grid item>
+                          <VotedText color="textPrimary">Voted</VotedText>
+                        </Grid>
+                        <Grid item>
+                          <StatusText color={voteDecision ? "secondary" : "error"}>
+                            {voteDecision ? "YES" : "NO"}
+                          </StatusText>
+                        </Grid>
+                      </Grid>
+                    )
+                  }}
                   liteProposals={pollsPosted}
                 />
               )}

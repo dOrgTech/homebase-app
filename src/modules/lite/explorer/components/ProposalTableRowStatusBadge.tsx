@@ -11,19 +11,19 @@ export enum ProposalStatus {
 
 const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
   const statusToColor = {
-    [ProposalStatus.ACTIVE]: theme.palette.secondary.main,
-    [ProposalStatus.CLOSED]: "#7e496f"
+    [ProposalStatus.ACTIVE]: "#85c4ff",
+    [ProposalStatus.CLOSED]: "#cc8aff"
   }
 
   return statusToColor[status]
 }
 
 const Badge = styled(Grid)(({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
-  "borderRadius": 4,
+  "borderRadius": 50,
   "boxSizing": "border-box",
   "minWidth": 87,
   "textAlign": "center",
-  "padding": "2px 16px",
+  "padding": "4px 16px",
 
   "background": hexToRgba(getStatusColor(status, theme), 0.4),
   "color": getStatusColor(status, theme),
@@ -34,14 +34,15 @@ const Badge = styled(Grid)(({ status, theme }: { status: ProposalStatus; theme: 
 
 const Text = styled(Typography)({
   fontWeight: 500,
-  fontSize: 16
+  fontSize: 16,
+  textTransform: "capitalize"
 })
 
 export const TableStatusBadge: React.FC<{ status: ProposalStatus } & GridProps> = ({ status }) => (
   <Badge status={status} theme={theme}>
     <Grid container alignItems="center" justifyContent="center">
       <Grid item>
-        <Text> {status.toUpperCase()} </Text>
+        <Text> {status} </Text>
       </Grid>
     </Grid>
   </Badge>

@@ -21,7 +21,7 @@ export const theme = createTheme({
       contrastText: "#1C1F23"
     },
     text: {
-      primary: "#FFFFFF"
+      primary: "#FDFDFD"
     },
     error: {
       main: "#ED254E"
@@ -123,7 +123,7 @@ export const theme = createTheme({
     MuiStepLabel: {
       label: {
         "cursor": "pointer",
-        "color": "#fff",
+        "color": "#FDFDFD",
         "opacity": 0.5,
         "marginLeft": 15,
         "lineHeight": "40px",
@@ -138,11 +138,11 @@ export const theme = createTheme({
         }
       },
       active: {
-        color: "#fff !important",
+        color: "#FDFDFD !important",
         opacity: 1
       },
       completed: {
-        color: "#fff !important",
+        color: "#FDFDFD !important",
         opacity: 0.5,
         fontWeight: 300
       }
@@ -167,7 +167,7 @@ export const theme = createTheme({
         color: "#1C1F23 !important"
       },
       completed: {
-        color: "#fff !important"
+        color: "#FDFDFD !important"
       },
       root: {
         "height": 32,
@@ -176,7 +176,7 @@ export const theme = createTheme({
         "border": "1px solid #3D3D3D",
         "borderRadius": "50%",
         "&$active": {
-          "fill": "#fff",
+          "fill": "#FDFDFD",
           "border": "1px solid #3D3D3D",
           "borderRadius": "50%",
           "& $text": {
@@ -186,7 +186,7 @@ export const theme = createTheme({
         }
       },
       text: {
-        fill: "#fff"
+        fill: "#FDFDFD"
       }
     },
     MuiIconButton: {
@@ -262,12 +262,12 @@ export const theme = createTheme({
     MuiInputBase: {
       input: {
         textAlign: "center",
-        color: "#fff"
+        color: "#FDFDFD"
       }
     },
     MuiRadio: {
       root: {
-        color: "#fff"
+        color: "#FDFDFD"
       }
     },
     MuiDivider: {
@@ -309,7 +309,7 @@ export const theme = createTheme({
         textTransform: "capitalize"
       },
       icon: {
-        color: "#fff"
+        color: "#FDFDFD"
       }
     },
     MuiDialogContentText: {
@@ -335,7 +335,7 @@ export const theme = createTheme({
       track: {
         "borderRadius": "40px",
         "backgroundColor": "inherit",
-        "border": "1px solid #fff",
+        "border": "1px solid #FDFDFD",
         "opacity": 0.5,
         "$checked$checked + &": {
           opacity: 1,
@@ -352,7 +352,7 @@ export const theme = createTheme({
         }
       },
       colorSecondary: {
-        "color": "#fff",
+        "color": "#FDFDFD",
         "$checked$checked + &": {
           color: "#81FEB7"
         },

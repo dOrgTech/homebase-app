@@ -15,11 +15,6 @@ export enum ProposalPopularity {
   POPULAR = "popular"
 }
 
-const ProposalListContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  borderRadius: 8
-}))
-
 const Header = styled(Grid)({
   padding: "24px 41px"
 })
@@ -177,7 +172,7 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
   )
 
   return (
-    <ProposalListContainer container direction="column">
+    <Grid container direction="column" style={{ gap: 16 }}>
       <Header container justifyContent="space-between" alignItems="center">
         <Grid item xs={isMobileSmall ? 12 : 3}>
           <Title variant={"body2"} color="textPrimary">
@@ -206,13 +201,11 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
           />
         </Grid>
       </Header>
-      <StyledDivider />
       {communityPolls && communityPolls.length > 0 ? (
         communityPolls.map((poll, i) => {
           return (
             <div style={{ width: "inherit" }} key={`poll-${i}`}>
               <ProposalTableRow poll={poll} daoId={daoId} />
-              {communityPolls.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
             </div>
           )
         })
@@ -221,6 +214,6 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
           <NoProposalsText color="textPrimary">No proposals</NoProposalsText>
         </Header>
       )}
-    </ProposalListContainer>
+    </Grid>
   )
 }

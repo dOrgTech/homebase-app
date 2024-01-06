@@ -9,8 +9,10 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { ProposalTableRow } from "modules/lite/explorer/components/ProposalTableRow"
 import { StyledDivider } from "modules/lite/explorer/components/ProposalList"
 import { Poll } from "models/Polls"
+import ReactPaginate from "react-paginate"
+import "../pages/DAOList/styles.css"
 
-const TableContainer = styled(ContentContainer)({
+const TableContainer = styled(Grid)({
   width: "100%"
 })
 
@@ -21,7 +23,6 @@ const TableHeader = styled(Grid)({
 
 const ProposalsFooter = styled(Grid)({
   padding: "16px 46px",
-  borderTop: ".6px solid rgba(125,140,139, 0.2)",
   minHeight: 34
 })
 
@@ -42,25 +43,24 @@ export const ProposalsList: React.FC<Props> = ({
   rightItem,
   liteProposals
 }) => {
+  const [currentPage, setCurrentPage] = useState(0)
   const [open, setopen] = useState(true)
+  const [offset, setOffset] = useState(0)
+
+  const pageCount = Math.ceil(proposals && liteProposals ? proposals.length + liteProposals.length / 16 : 0)
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (proposals) {
+      const newOffset = (event.selected * 4) % proposals.length
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
+  }
 
   return (
     <TableContainer item>
-      <Grid container direction="column" wrap={"nowrap"}>
-        <TableHeader item container justifyContent="space-between">
-          <Grid item>
-            <Typography variant="body2" style={{ fontWeight: "500" }} color="textPrimary">
-              {title}
-            </Typography>
-          </Grid>
-          {proposals.length && proposals.length > 0 ? (
-            <Grid item>
-              <IconButton aria-label="expand row" size="small" onClick={() => setopen(!open)}>
-                {open ? <KeyboardArrowUpIcon htmlColor="#FFF" /> : <KeyboardArrowDownIcon htmlColor="#FFF" />}
-              </IconButton>
-            </Grid>
-          ) : null}
-        </TableHeader>
+      <Grid container direction="column" wrap={"nowrap"} style={{ gap: 16 }}>
         {proposals.length && proposals.length > 0 ? (
           <Grid
             item
@@ -88,7 +88,6 @@ export const ProposalsList: React.FC<Props> = ({
               return (
                 <div key={`poll-${i}`}>
                   <ProposalTableRow poll={poll} />
-                  {liteProposals.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
                 </div>
               )
             })
@@ -115,6 +114,20 @@ export const ProposalsList: React.FC<Props> = ({
           </ProposalsFooter>
         )}
       </Grid>
+      {/* <Grid container direction="row" justifyContent="flex-end">
+        <ReactPaginate
+          previousLabel={"<"}
+          breakLabel="..."
+          nextLabel=">"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={4}
+          pageCount={pageCount}
+          renderOnZeroPageCount={null}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+          forcePage={currentPage}
+        />
+      </Grid> */}
     </TableContainer>
   )
 }

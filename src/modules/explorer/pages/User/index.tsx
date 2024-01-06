@@ -22,10 +22,11 @@ import { useTokenDelegationSupported } from "services/contracts/token/hooks/useT
 import { CopyButton } from "modules/common/CopyButton"
 import { UserMovements } from "./components/UserMovements"
 
-const ContentBlockItem = styled(Grid)({
-  padding: "35px 52px",
-  borderTop: `0.3px solid #4a4e4e`
-})
+const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
+  padding: "37px 42px",
+  background: theme.palette.primary.main,
+  borderRadius: 8
+}))
 
 const BalancesHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
   minHeight: "178px",
