@@ -197,6 +197,34 @@ export const UserMovements: React.FC<{
     setFilters(filters)
   }
 
+  const handleChangeTabTransactions = (newValue: number) => {
+    if (newValue === 0) {
+      setFilteredTransactions(transfers)
+      setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
+    }
+    if (newValue === 1) {
+      const newArray = transfers?.filter(item => item.type === "Withdrawal")
+      setFilteredTransactions(newArray)
+      setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
+    }
+    if (newValue === 2) {
+      const newArray = transfers?.filter(item => item.type === "Deposit")
+      setFilteredTransactions(newArray)
+      setPageCount(Math.round(newArray ? newArray.length / 2 : 1))
+      console.log(pageCount)
+    }
+    setSelectedTabTransactions(newValue)
+  }
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (transfers) {
+      const newOffset = (event.selected * 2) % (filteredTransactions ? filteredTransactions.length : 1)
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
+  }
+
   return (
     <Grid item>
       {showActivity ? (
