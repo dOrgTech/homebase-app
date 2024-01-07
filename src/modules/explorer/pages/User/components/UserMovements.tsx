@@ -141,8 +141,7 @@ export const UserMovements: React.FC<{
     if (newValue === 2) {
       const newArray = transfers?.filter(item => item.type === "Deposit")
       setFilteredTransactions(newArray)
-      setPageCount(Math.round(newArray ? newArray.length / 2 : 1))
-      console.log(pageCount)
+      setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
     }
     setSelectedTabTransactions(newValue)
   }
