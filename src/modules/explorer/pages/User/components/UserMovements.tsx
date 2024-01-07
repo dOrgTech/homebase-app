@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Button, Grid, Theme, Typography, styled } from "@material-ui/core"
 import { ReactComponent as VotingInactiveIcon } from "assets/logos/voting_inactive.svg"
 import { ReactComponent as VotingActiveIcon } from "assets/logos/voting_active.svg"
@@ -11,11 +11,21 @@ import { ProposalsList } from "../../../components/ProposalsList"
 import { CycleInfo } from "services/contracts/baseDAO"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { Poll } from "models/Polls"
+import { TransferWithBN, useTransfers } from "services/contracts/baseDAO/hooks/useTransfers"
+import { TransactionItem } from "./TransactionItem"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import ReactPaginate from "react-paginate"
+import "../../DAOList/styles.css"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
   gap: 16
 }))
+
+const TransactionsFooter = styled(Grid)({
+  padding: "16px 46px",
+  minHeight: 34
+})
 
 const VotedText = styled(Typography)({
   fontSize: 18
@@ -71,15 +81,40 @@ const StyledTabInner = styled(Button)(({ theme, isSelected }: { theme: Theme; is
 }))
 
 export const UserMovements: React.FC<{
+  daoId: string
   proposalsCreated: Proposal[]
   cycleInfo: CycleInfo | undefined
   pollsPosted: Poll[] | undefined
   proposalsVoted: Proposal[] | undefined
   getVoteDecision: (proposal: any) => boolean
-}> = ({ proposalsCreated, cycleInfo, pollsPosted, proposalsVoted, getVoteDecision }) => {
+}> = ({ proposalsCreated, cycleInfo, pollsPosted, proposalsVoted, getVoteDecision, daoId }) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [selectedTabProposals, setSelectedTabProposals] = React.useState(0)
   const [selectedTabVotes, setSelectedTabVotes] = React.useState(0)
+  const [selectedTabTransactions, setSelectedTabTransactions] = React.useState(0)
+  const [filteredTransactions, setFilteredTransactions] = React.useState<TransferWithBN[] | undefined>()
+  const { account } = useTezos()
+
+  const useUserTransfers = (): TransferWithBN[] | undefined => {
+    const { data: transfers } = useTransfers(daoId)
+
+    return useMemo(() => {
+      const filteredTransfers = transfers?.filter(item => item.recipient === account || item.sender === account)
+      return filteredTransfers
+    }, [transfers])
+  }
+
+  const transfers = useUserTransfers()
+
+  useEffect(() => {
+    setFilteredTransactions(transfers)
+  }, [transfers])
+
+  const [currentPage, setCurrentPage] = useState(0)
+  const [offset, setOffset] = useState(0)
+  const count = Math.ceil(transfers ? transfers.length / 2 : 0)
+
+  const [pageCount, setPageCount] = React.useState(count)
 
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
@@ -91,6 +126,34 @@ export const UserMovements: React.FC<{
 
   const handleChangeTabVotes = (newValue: number) => {
     setSelectedTabVotes(newValue)
+  }
+
+  const handleChangeTabTransactions = (newValue: number) => {
+    if (newValue === 0) {
+      setFilteredTransactions(transfers)
+      setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
+    }
+    if (newValue === 1) {
+      const newArray = transfers?.filter(item => item.type === "Withdrawal")
+      setFilteredTransactions(newArray)
+      setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
+    }
+    if (newValue === 2) {
+      const newArray = transfers?.filter(item => item.type === "Deposit")
+      setFilteredTransactions(newArray)
+      setPageCount(Math.round(newArray ? newArray.length / 2 : 1))
+      console.log(pageCount)
+    }
+    setSelectedTabTransactions(newValue)
+  }
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (transfers) {
+      const newOffset = (event.selected * 2) % (filteredTransactions ? filteredTransactions.length : 1)
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
   }
 
   return (
@@ -334,6 +397,144 @@ export const UserMovements: React.FC<{
                 />
               )}
             </Grid>
+          </TabPanel>
+        </TabPanel>
+
+        {/* TAB TRANSACTIONS CONTENT */}
+        <TabPanel value={selectedTab} index={2}>
+          <Grid container>
+            <Grid item>
+              <TabsContainer container>
+                <Grid item>
+                  <StyledTabInner
+                    variant="contained"
+                    disableElevation={true}
+                    onClick={() => handleChangeTabTransactions(0)}
+                    isSelected={selectedTabTransactions === 0}
+                  >
+                    All
+                  </StyledTabInner>
+                </Grid>
+                <Grid item>
+                  <StyledTabInner
+                    disableElevation={true}
+                    variant="contained"
+                    onClick={() => handleChangeTabTransactions(1)}
+                    isSelected={selectedTabTransactions === 1}
+                  >
+                    Withdrawals
+                  </StyledTabInner>
+                </Grid>
+
+                <Grid item>
+                  <StyledTabInner
+                    disableElevation={true}
+                    variant="contained"
+                    onClick={() => handleChangeTabTransactions(2)}
+                    isSelected={selectedTabTransactions === 2}
+                  >
+                    Deposits
+                  </StyledTabInner>
+                </Grid>
+              </TabsContainer>
+            </Grid>
+          </Grid>
+
+          <TabPanel value={selectedTabTransactions} index={0}>
+            {transfers && transfers.length > 0 ? (
+              <Grid container item style={{ marginTop: 38, gap: 16 }}>
+                {filteredTransactions &&
+                  filteredTransactions
+                    .slice(offset, offset + 2)
+                    .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
+                <Grid container direction="row" justifyContent="flex-end">
+                  <ReactPaginate
+                    previousLabel={"<"}
+                    breakLabel="..."
+                    nextLabel=">"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={2}
+                    pageCount={pageCount}
+                    renderOnZeroPageCount={null}
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                    forcePage={currentPage}
+                  />
+                </Grid>
+              </Grid>
+            ) : (
+              <TransactionsFooter item container direction="column" justifyContent="center">
+                <Grid item>
+                  <Typography color="textPrimary" align="center">
+                    No items
+                  </Typography>
+                </Grid>
+              </TransactionsFooter>
+            )}
+          </TabPanel>
+          <TabPanel value={selectedTabTransactions} index={1}>
+            {transfers && transfers.length > 0 ? (
+              <Grid container item style={{ marginTop: 38, gap: 16 }}>
+                {filteredTransactions &&
+                  filteredTransactions
+                    .slice(offset, offset + 2)
+                    .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
+                <Grid container direction="row" justifyContent="flex-end">
+                  <ReactPaginate
+                    previousLabel={"<"}
+                    breakLabel="..."
+                    nextLabel=">"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={2}
+                    pageCount={pageCount}
+                    renderOnZeroPageCount={null}
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                    forcePage={currentPage}
+                  />
+                </Grid>
+              </Grid>
+            ) : (
+              <TransactionsFooter item container direction="column" justifyContent="center">
+                <Grid item>
+                  <Typography color="textPrimary" align="center">
+                    No items
+                  </Typography>
+                </Grid>
+              </TransactionsFooter>
+            )}
+          </TabPanel>
+          <TabPanel value={selectedTabTransactions} index={2}>
+            {transfers && transfers.length > 0 ? (
+              <Grid container item style={{ marginTop: 38, gap: 16 }}>
+                {filteredTransactions &&
+                  filteredTransactions
+                    .slice(offset, offset + 2)
+                    .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
+                <Grid container direction="row" justifyContent="flex-end">
+                  <ReactPaginate
+                    previousLabel={"<"}
+                    breakLabel="..."
+                    nextLabel=">"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={2}
+                    pageCount={pageCount}
+                    renderOnZeroPageCount={null}
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                    forcePage={currentPage}
+                  />
+                </Grid>
+              </Grid>
+            ) : (
+              <TransactionsFooter item container direction="column" justifyContent="center">
+                <Grid item>
+                  <Typography color="textPrimary" align="center">
+                    No items
+                  </Typography>
+                </Grid>
+              </TransactionsFooter>
+            )}
           </TabPanel>
         </TabPanel>
       </Grid>

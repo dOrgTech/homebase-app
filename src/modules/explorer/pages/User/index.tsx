@@ -214,6 +214,7 @@ export const User: React.FC = () => {
         {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
 
         <UserMovements
+          daoId={daoId}
           getVoteDecision={getVoteDecision}
           proposalsVoted={proposalsVoted}
           cycleInfo={cycleInfo}
