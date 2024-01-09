@@ -36,7 +36,7 @@ import CodeOffIcon from "@mui/icons-material/CodeOff"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
-
+import { EnvKey, getEnv } from "services/config"
 dayjs.extend(duration)
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
@@ -662,7 +662,7 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
 
 export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props => {
   const navigate = useHistory()
-  const { network, account, wallet } = useTezos()
+  const { network, account, wallet, tezos } = useTezos()
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const daoId = useDAOID()
@@ -699,8 +699,14 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
         data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
         data.author = account
 
-        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const { signature, payloadBytes } = await getSignature(account, wallet, network, JSON.stringify(data), tezos)
+        let publicKey
+        if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) !== "true") {
+          publicKey = await tezos.signer.publicKey()
+        } else {
+          publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        }
+
         if (!signature) {
           openNotification({
             message: `Issue with Signature`,

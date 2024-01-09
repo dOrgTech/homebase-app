@@ -1,0 +1,57 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches:
+      # TODO: comment out testing branch constraints
+      - '**'
+      # TODO: uncomment below actual branch constraints
+      # - develop
+      # - staging
+      # - master
+  # TODO: uncomment below actual branch constraints
+  # pull_request:
+  #   branches:
+      # types: [opened]
+      # - develop
+      # - staging
+      # - master
+
+jobs:
+# TODO: Add something like https://github.com/JakePartusch/wait-for-netlify-action
+  test:
+    # TODO: Remove this when playwright tests are working again
+    # if: false
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    env:
+      WEBAPP_URL: https://deploy-preview-740--tezos-homebase.netlify.app
+      # TODO: uncomment below actual branch constraints
+      # ${{ 
+      #   github.event_name == 'pull_request' && 'https://deploy-preview-${{ github.event.number }}--tezos-homebase.netlify.app' || 
+      #   github.ref == 'refs/heads/develop' && 'https://develop--tezos-homebase.netlify.app' ||
+      #   github.ref == 'refs/heads/staging' && 'https://staging--tezos-homebase.netlify.app' ||
+      #   github.ref == 'refs/heads/master' && 'https://master--tezos-homebase.netlify.app' }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: dOrgTech/homebase-app-tests
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright
+      run: npx playwright install --with-deps
+    - name: TC01 - Run Playwright tests 
+      run: npm run test:tc01
+    - name: TC02 - Run Playwright tests 
+      run: npm run test:tc02
+    - name: TC03 - Run Playwright tests 
+      run: npm run test:tc03
+    - name: TC04 - Run Playwright tests 
+      run: npm run test:tc04
+    - name: TC05 - Run Playwright tests 
+      run: npm run test:tc05
+    - name: TC06 - Run Playwright tests 
+      run: npm run test:tc06

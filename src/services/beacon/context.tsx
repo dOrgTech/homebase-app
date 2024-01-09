@@ -1,8 +1,11 @@
 import React, { createContext, useEffect, useReducer } from "react"
 import mixpanel from "mixpanel-browser"
-import { createTezos, createWallet, getTezosNetwork } from "./utils"
+import { ALICE_PRIV_KEY, createTezos, createWallet, getTezosNetwork } from "./utils"
 import { INITIAL_STATE, reducer, TezosState } from "./reducer"
 import { TezosAction, TezosActionType } from "./actions"
+import { InMemorySigner } from "@taquito/signer"
+import { EnvKey, getEnv } from "services/config"
+import { BeaconWallet } from "@taquito/beacon-wallet"
 
 interface TezosProvider {
   state: TezosState
@@ -19,20 +22,29 @@ const getSavedState = async (): Promise<TezosState> => {
   try {
     const network = getTezosNetwork()
     const tezos = createTezos(network)
-    const wallet = createWallet(network)
-    const activeAccount = await wallet.client.getActiveAccount()
 
-    if (!activeAccount?.address) {
-      throw new Error("No wallet address found")
+    let wallet, account
+
+    if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) === "true") {
+      wallet = createWallet(network)
+      account = await tezos.wallet.pkh()
+      tezos.setProvider({ wallet })
+    } else {
+      const signer = await InMemorySigner.fromSecretKey(ALICE_PRIV_KEY)
+      wallet = signer
+      account = await signer.publicKeyHash()
+      tezos.setProvider({ signer })
     }
 
-    tezos.setProvider({ wallet })
+    if (!account) {
+      throw new Error("No wallet address found")
+    }
 
     return {
       network,
       tezos,
-      wallet,
-      account: activeAccount.address
+      wallet: wallet as BeaconWallet,
+      account
     }
   } catch (error) {
     return INITIAL_STATE
