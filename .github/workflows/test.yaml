@@ -21,7 +21,7 @@ jobs:
 # TODO: Add something like https://github.com/JakePartusch/wait-for-netlify-action
   test:
     # TODO: Remove this when playwright tests are working again
-    if: false
+    # if: false
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
