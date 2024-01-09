@@ -33,6 +33,7 @@ import CodeOffIcon from "@mui/icons-material/CodeOff"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
+import { getEnv, EnvKey } from "services/config"
 
 const CodeButton = styled(CodeIcon)(({ theme }) => ({
   background: theme.palette.primary.dark,
