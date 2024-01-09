@@ -1,21 +1,21 @@
 name: Playwright Tests
 
 on:
-# TODO: uncomment below actual branch constraints
-  # push:
-    # branches:
+  push:
+    branches:
+      # TODO: comment out testing branch constraints
+      - '**'
+      # TODO: uncomment below actual branch constraints
       # - develop
       # - staging
       # - master
-  pull_request:
-    branches:
-      # TODO: uncomment below actual branch constraints
+  # TODO: uncomment below actual branch constraints
+  # pull_request:
+  #   branches:
       # types: [opened]
       # - develop
       # - staging
       # - master
-      # TODO: comment out testing branch constraints
-      - '**'
 
 jobs:
 # TODO: Add something like https://github.com/JakePartusch/wait-for-netlify-action
