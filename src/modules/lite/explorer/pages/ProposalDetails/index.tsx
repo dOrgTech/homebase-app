@@ -20,6 +20,7 @@ import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
 import { ArrowBackIosOutlined } from "@material-ui/icons"
+import { EnvKey, getEnv } from "services/config"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -57,7 +58,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
   const navigate = useHistory()
   const { data: dao } = useDAO(state?.daoId)
-  const { account, wallet } = useTezos()
+  const { account, wallet, network, tezos } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
@@ -91,8 +92,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     }
 
     try {
-      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
+      const { signature, payloadBytes } = await getSignature(account, wallet, network, JSON.stringify(votesData), tezos)
+      let publicKey
+      if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) !== "true") {
+        publicKey = await tezos.signer.publicKey()
+      } else {
+        publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+      }
+
       if (!signature) {
         openNotification({
           message: `Issue with Signature`,

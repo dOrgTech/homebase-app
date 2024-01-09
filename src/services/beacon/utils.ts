@@ -6,7 +6,8 @@ import { EnvKey, getEnv } from "services/config"
 
 export type Network = "mainnet" | "ghostnet"
 
-export const ALICE_PRIV_KEY = "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
+export const ALICE_PRIV_KEY =
+  "edskS1q2utmfdhVsqFKvKbQHShFg7eme6xbVKoc5iRPeW1fX8a4M5iXdhzbyTca3r6CMfCfVQZAZ6yqiE5wqi9UyMr1VZ6S6dA"
 
 export const rpcNodes: Record<Network, string> = {
   mainnet: "https://mainnet.api.tez.ie",

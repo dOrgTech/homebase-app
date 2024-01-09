@@ -8,6 +8,8 @@ import { BeaconWallet } from "@taquito/beacon-wallet"
 import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
+import { TezosToolkit } from "@taquito/taquito"
+import { EnvKey, getEnv } from "services/config"
 
 export const getCurrentBlock = async (network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/head`
@@ -150,7 +152,13 @@ export const formatByDecimals = (value: string, decimals: string) => {
   return nFormatter(new BigNumber(value).div(new BigNumber(10).pow(decimals)), 1)
 }
 
-export const getSignature = async (userAddress: string, wallet: BeaconWallet, data?: string) => {
+export const getSignature = async (
+  userAddress: string,
+  wallet: BeaconWallet,
+  network: Network,
+  data?: string,
+  tezos?: TezosToolkit
+) => {
   const formattedInput: string = [
     "Tezos Signed Message:",
     process.env.REACT_APP_BASE_URL,
@@ -167,8 +175,16 @@ export const getSignature = async (userAddress: string, wallet: BeaconWallet, da
     sourceAddress: userAddress
   }
 
-  const signedPayload = await wallet?.client.requestSignPayload(payload)
-  const { signature } = signedPayload
+  let signature
+
+  if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) !== "true" && tezos) {
+    const { sig: walletSign } = await tezos?.signer.sign(payloadBytes)
+    signature = walletSign
+  } else {
+    const signedPayload = await wallet?.client.requestSignPayload(payload)
+    const { signature: walletSign } = signedPayload
+    signature = walletSign
+  }
 
   return { signature, payloadBytes }
 }

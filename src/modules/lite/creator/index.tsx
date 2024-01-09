@@ -459,7 +459,7 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 
 export const CommunityCreator: React.FC = () => {
   const navigate = useHistory()
-  const { network, account, wallet } = useTezos()
+  const { network, account, wallet, tezos } = useTezos()
   const openNotification = useNotification()
 
   const initialState: Community = {
@@ -489,8 +489,15 @@ export const CommunityCreator: React.FC = () => {
       values.members.push(account)
 
       try {
-        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const { signature, payloadBytes } = await getSignature(account, wallet, network, JSON.stringify(values), tezos)
+        let publicKey
+
+        if (getEnv(EnvKey.REACT_APP_IS_NOT_TESTING) !== "true") {
+          publicKey = await tezos.signer.publicKey()
+        } else {
+          publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        }
+
         if (!signature) {
           openNotification({
             message: `Issue with Signature`,
