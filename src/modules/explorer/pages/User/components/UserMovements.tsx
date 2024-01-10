@@ -86,8 +86,9 @@ export const UserMovements: React.FC<{
   cycleInfo: CycleInfo | undefined
   pollsPosted: Poll[] | undefined
   proposalsVoted: Proposal[] | undefined
+  pollsVoted: any
   getVoteDecision: (proposal: any) => boolean
-}> = ({ proposalsCreated, cycleInfo, pollsPosted, proposalsVoted, getVoteDecision, daoId }) => {
+}> = ({ proposalsCreated, cycleInfo, pollsPosted, proposalsVoted, getVoteDecision, daoId, pollsVoted }) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [selectedTabProposals, setSelectedTabProposals] = React.useState(0)
   const [selectedTabVotes, setSelectedTabVotes] = React.useState(0)
@@ -108,6 +109,7 @@ export const UserMovements: React.FC<{
 
   useEffect(() => {
     setFilteredTransactions(transfers)
+    setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
   }, [transfers])
 
   const [currentPage, setCurrentPage] = useState(0)
@@ -244,7 +246,6 @@ export const UserMovements: React.FC<{
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposalsCreated}
-                  title={"Proposals Posted"}
                   liteProposals={pollsPosted}
                 />
               )}
@@ -253,24 +254,14 @@ export const UserMovements: React.FC<{
           <TabPanel value={selectedTabProposals} index={1}>
             <Grid item style={{ marginTop: 38 }}>
               {proposalsCreated && cycleInfo && (
-                <ProposalsList
-                  currentLevel={cycleInfo.currentLevel}
-                  proposals={proposalsCreated}
-                  title={"Proposals Posted"}
-                  liteProposals={[]}
-                />
+                <ProposalsList currentLevel={cycleInfo.currentLevel} proposals={proposalsCreated} liteProposals={[]} />
               )}
             </Grid>
           </TabPanel>
           <TabPanel value={selectedTabProposals} index={2}>
             <Grid item style={{ marginTop: 38 }}>
               {proposalsCreated && cycleInfo && (
-                <ProposalsList
-                  currentLevel={cycleInfo.currentLevel}
-                  proposals={[]}
-                  title={"Proposals Posted"}
-                  liteProposals={pollsPosted}
-                />
+                <ProposalsList currentLevel={cycleInfo.currentLevel} proposals={[]} liteProposals={pollsPosted} />
               )}
             </Grid>
           </TabPanel>
@@ -320,7 +311,6 @@ export const UserMovements: React.FC<{
             <Grid item style={{ marginTop: 38 }}>
               {proposalsVoted && cycleInfo && (
                 <ProposalsList
-                  title={"Voting History"}
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposalsVoted}
                   rightItem={proposal => {
@@ -338,7 +328,7 @@ export const UserMovements: React.FC<{
                       </Grid>
                     )
                   }}
-                  liteProposals={pollsPosted}
+                  liteProposals={pollsVoted}
                 />
               )}
             </Grid>
@@ -347,7 +337,6 @@ export const UserMovements: React.FC<{
             <Grid item style={{ marginTop: 38 }}>
               {proposalsVoted && cycleInfo && (
                 <ProposalsList
-                  title={"Voting History"}
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposalsVoted}
                   rightItem={proposal => {
@@ -374,7 +363,6 @@ export const UserMovements: React.FC<{
             <Grid item style={{ marginTop: 38 }}>
               {pollsPosted && cycleInfo && (
                 <ProposalsList
-                  title={"Voting History"}
                   currentLevel={cycleInfo.currentLevel}
                   proposals={[]}
                   rightItem={proposal => {
@@ -392,7 +380,7 @@ export const UserMovements: React.FC<{
                       </Grid>
                     )
                   }}
-                  liteProposals={pollsPosted}
+                  liteProposals={pollsVoted}
                 />
               )}
             </Grid>
@@ -442,8 +430,8 @@ export const UserMovements: React.FC<{
           <TabPanel value={selectedTabTransactions} index={0}>
             {transfers && transfers.length > 0 ? (
               <Grid container item style={{ marginTop: 38, gap: 16 }}>
-                {filteredTransactions &&
-                  filteredTransactions
+                {transfers &&
+                  transfers
                     .slice(offset, offset + 2)
                     .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
                 <Grid container direction="row" justifyContent="flex-end">

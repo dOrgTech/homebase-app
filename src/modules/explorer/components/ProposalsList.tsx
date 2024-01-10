@@ -29,20 +29,12 @@ const ProposalsFooter = styled(Grid)({
 interface Props {
   currentLevel: number
   proposals: Proposal[]
-  title: string
   showFooter?: boolean
   rightItem?: (proposal: Proposal) => React.ReactElement
   liteProposals: Poll[] | undefined
 }
 
-export const ProposalsList: React.FC<Props> = ({
-  currentLevel,
-  proposals,
-  title,
-  showFooter,
-  rightItem,
-  liteProposals
-}) => {
+export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, showFooter, rightItem, liteProposals }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [open, setopen] = useState(true)
   const [offset, setOffset] = useState(0)
@@ -52,7 +44,7 @@ export const ProposalsList: React.FC<Props> = ({
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (proposals) {
-      const newOffset = (event.selected * 4) % proposals.length
+      const newOffset = (event.selected * 2) % proposals.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
@@ -114,20 +106,20 @@ export const ProposalsList: React.FC<Props> = ({
           </ProposalsFooter>
         )}
       </Grid>
-      {/* <Grid container direction="row" justifyContent="flex-end">
+      <Grid container direction="row" justifyContent="flex-end">
         <ReactPaginate
           previousLabel={"<"}
           breakLabel="..."
           nextLabel=">"
           onPageChange={handlePageClick}
-          pageRangeDisplayed={4}
+          pageRangeDisplayed={2}
           pageCount={pageCount}
           renderOnZeroPageCount={null}
           containerClassName={"pagination"}
           activeClassName={"active"}
           forcePage={currentPage}
         />
-      </Grid> */}
+      </Grid>
     </TableContainer>
   )
 }
