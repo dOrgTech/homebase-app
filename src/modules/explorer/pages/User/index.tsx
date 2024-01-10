@@ -123,6 +123,13 @@ export const User: React.FC = () => {
 
   const { data: isTokenDelegationSupported } = useTokenDelegationSupported(data?.data.token.contract)
 
+  const votedPolls: any = []
+  pollsPosted?.map((p: Poll) => {
+    if (userVotes && userVotes.filter(v => p._id === v.pollID).length > 0) {
+      return votedPolls.push(p)
+    }
+  })
+
   useEffect(() => {
     if (!account) {
       history.push(`../${daoId}`)
