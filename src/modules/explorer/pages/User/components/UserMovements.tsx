@@ -22,6 +22,11 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
   gap: 16
 }))
 
+const ProposalsFooter = styled(Grid)({
+  padding: "16px 46px",
+  minHeight: 34
+})
+
 const TransactionsFooter = styled(Grid)({
   padding: "16px 46px",
   minHeight: 34
@@ -249,6 +254,15 @@ export const UserMovements: React.FC<{
                   liteProposals={pollsPosted}
                 />
               )}
+              {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
+                <ProposalsFooter item container direction="column" justifyContent="center">
+                  <Grid item>
+                    <Typography color="textPrimary" align="center">
+                      No items
+                    </Typography>
+                  </Grid>
+                </ProposalsFooter>
+              ) : null}
             </Grid>
           </TabPanel>
           <TabPanel value={selectedTabProposals} index={1}>
@@ -256,13 +270,31 @@ export const UserMovements: React.FC<{
               {proposalsCreated && cycleInfo && (
                 <ProposalsList currentLevel={cycleInfo.currentLevel} proposals={proposalsCreated} liteProposals={[]} />
               )}
+              {!(proposalsCreated && proposalsCreated.length > 0) ? (
+                <ProposalsFooter item container direction="column" justifyContent="center">
+                  <Grid item>
+                    <Typography color="textPrimary" align="center">
+                      No items
+                    </Typography>
+                  </Grid>
+                </ProposalsFooter>
+              ) : null}
             </Grid>
           </TabPanel>
           <TabPanel value={selectedTabProposals} index={2}>
             <Grid item style={{ marginTop: 38 }}>
-              {proposalsCreated && cycleInfo && (
+              {pollsPosted && cycleInfo && (
                 <ProposalsList currentLevel={cycleInfo.currentLevel} proposals={[]} liteProposals={pollsPosted} />
               )}
+              {!(pollsPosted && pollsPosted.length > 0) ? (
+                <ProposalsFooter item container direction="column" justifyContent="center">
+                  <Grid item>
+                    <Typography color="textPrimary" align="center">
+                      No items
+                    </Typography>
+                  </Grid>
+                </ProposalsFooter>
+              ) : null}
             </Grid>
           </TabPanel>
         </TabPanel>
@@ -331,6 +363,15 @@ export const UserMovements: React.FC<{
                   liteProposals={pollsVoted}
                 />
               )}
+              {!(proposalsVoted && proposalsVoted.length > 0) && !(pollsVoted && pollsVoted.length > 0) ? (
+                <ProposalsFooter item container direction="column" justifyContent="center">
+                  <Grid item>
+                    <Typography color="textPrimary" align="center">
+                      No items
+                    </Typography>
+                  </Grid>
+                </ProposalsFooter>
+              ) : null}
             </Grid>
           </TabPanel>
           <TabPanel value={selectedTabVotes} index={1}>
@@ -357,6 +398,15 @@ export const UserMovements: React.FC<{
                   liteProposals={[]}
                 />
               )}
+              {!(proposalsVoted && proposalsVoted.length > 0) ? (
+                <ProposalsFooter item container direction="column" justifyContent="center">
+                  <Grid item>
+                    <Typography color="textPrimary" align="center">
+                      No items
+                    </Typography>
+                  </Grid>
+                </ProposalsFooter>
+              ) : null}
             </Grid>
           </TabPanel>
           <TabPanel value={selectedTabVotes} index={2}>
@@ -383,6 +433,15 @@ export const UserMovements: React.FC<{
                   liteProposals={pollsVoted}
                 />
               )}
+              {!(pollsPosted && pollsPosted.length > 0) ? (
+                <ProposalsFooter item container direction="column" justifyContent="center">
+                  <Grid item>
+                    <Typography color="textPrimary" align="center">
+                      No items
+                    </Typography>
+                  </Grid>
+                </ProposalsFooter>
+              ) : null}
             </Grid>
           </TabPanel>
         </TabPanel>

@@ -95,7 +95,7 @@ export const ProposalsList: React.FC<Props> = ({
         {liteProposals && liteProposals.length > 0
           ? liteProposals.slice(offset, offset + 4).map((poll, i) => {
               return (
-                <div key={`poll-${i}`}>
+                <div style={{ width: "inherit" }} key={`poll-${i}`}>
                   <ProposalTableRow poll={poll} />
                 </div>
               )
