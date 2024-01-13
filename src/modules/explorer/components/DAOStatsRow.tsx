@@ -124,6 +124,17 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
+              <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
+            </ItemContent>
+            <Grid item container direction="row">
+              <ItemValue color="textPrimary">{formatNumber(amountLocked)}</ItemValue>
+              <Percentage color="textPrimary">{formatNumber(amountLockedPercentage)}%</Percentage>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
               <ItemTitle color="textPrimary">Voting Addresses</ItemTitle>
             </ItemContent>
             <Grid item>

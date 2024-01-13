@@ -154,9 +154,9 @@ export const DAO: React.FC = () => {
       </HeroContainer>
       <DAOStatsRow />
 
-      <Grid item style={{ width: "inherit" }}>
+      {/* <Grid item style={{ width: "inherit" }}>
         <UsersTable data={usersTableData} symbol={symbol || ""} />
-      </Grid>
+      </Grid> */}
     </Grid>
   )
 }
