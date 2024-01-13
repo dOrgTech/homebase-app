@@ -77,7 +77,7 @@ export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ pol
           <ArrowInfo color="textPrimary">{poll.timeFormatted}</ArrowInfo>
         </Grid>
 
-        <Grid>
+        <Grid style={{ width: "inherit", wordBreak: "break-all" }}>
           <DescriptionText color="textPrimary">{ReactHtmlParser(poll.description)}</DescriptionText>
         </Grid>
       </Grid>

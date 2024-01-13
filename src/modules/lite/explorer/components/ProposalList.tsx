@@ -210,10 +210,10 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
       {communityPolls && communityPolls.length > 0 ? (
         communityPolls.map((poll, i) => {
           return (
-            <div style={{ width: "inherit" }} key={`poll-${i}`}>
-              <ProposalTableRow poll={poll} daoId={daoId} />
+            <>
+              <ProposalTableRow key={`poll-${i}`} poll={poll} daoId={daoId} />
               {communityPolls.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
-            </div>
+            </>
           )
         })
       ) : (
