@@ -3,8 +3,9 @@ import React from "react"
 import { ContentContainer } from "./ContentContainer"
 
 const Container = styled(ContentContainer)({
-  "padding": "38px 38px",
+  "padding": "0px",
   "boxSizing": "border-box",
+  "background": "inherit",
 
   "& > *": {
     height: "100%"

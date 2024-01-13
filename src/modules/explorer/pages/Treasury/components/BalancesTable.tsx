@@ -10,6 +10,8 @@ import { useIsProposalButtonDisabled } from "../../../../../services/contracts/b
 import { SmallButton } from "../../../../common/SmallButton"
 import { toShortAddress } from "services/contracts/utils"
 import { CopyButton } from "modules/common/CopyButton"
+import ReactPaginate from "react-paginate"
+import "../../DAOList/styles.css"
 
 const TokenSymbol = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -104,9 +106,22 @@ const BalancesList: React.FC<TableProps> = ({
   shouldDisable,
   isMobileSmall
 }) => {
+  const [currentPage, setCurrentPage] = useState(0)
+  const [offset, setOffset] = useState(0)
+  const value = isMobileSmall ? 6 : 2
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (rows) {
+      const newOffset = (event.selected * value) % rows.length
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
+  }
+
+  const pageCount = Math.ceil(rows ? rows.length / value : 0)
   return (
     <Grid container direction="row" spacing={2}>
-      <Grid item xs={isMobileSmall ? 12 : 3}>
+      <Grid item xs={isMobileSmall ? 12 : 4}>
         <TokenCard>
           <CustomCardContent>
             <TokenSymbol>XTZ</TokenSymbol>
@@ -129,8 +144,8 @@ const BalancesList: React.FC<TableProps> = ({
         </TokenCard>
       </Grid>
 
-      {rows.map((row, i) => (
-        <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 3}>
+      {rows.slice(offset, offset + value).map((row, i) => (
+        <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 4}>
           <TokenCard>
             <CustomCardContent>
               <TokenSymbol>{row.symbol}</TokenSymbol>
@@ -156,6 +171,20 @@ const BalancesList: React.FC<TableProps> = ({
           </TokenCard>
         </Grid>
       ))}
+      <Grid container direction="row" justifyContent="flex-end">
+        <ReactPaginate
+          previousLabel={"<"}
+          breakLabel="..."
+          nextLabel=">"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={2}
+          pageCount={pageCount}
+          renderOnZeroPageCount={null}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+          forcePage={currentPage}
+        />
+      </Grid>
     </Grid>
   )
 }

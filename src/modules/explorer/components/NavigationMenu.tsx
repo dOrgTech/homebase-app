@@ -86,10 +86,9 @@ const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected
   "borderTop": "2px solid transparent",
   "backgroundColor": isSelected ? "#24282D" : "inherit",
   "height": 50,
-  "padding": "20px 20px",
+  "padding": "20px 16px",
   "borderRadius": 8,
   "transition": isSelected ? "0s ease-in" : ".1s ease-out",
-  "width": 180,
   "justifyContent": "center",
 
   "& > a > *": {

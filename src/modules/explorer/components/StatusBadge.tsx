@@ -26,7 +26,7 @@ const statusColors = (status: ProposalStatus | "all") => {
       return {
         background: "#35796F",
         color: "#5AFFE1",
-        text: "Passed - Executable"
+        text: "Executable"
       }
     case ProposalStatus.REJECTED:
       return {
@@ -56,7 +56,7 @@ const statusColors = (status: ProposalStatus | "all") => {
       return {
         background: "#2F7952",
         color: "#58FF98",
-        text: "Passed - Executed"
+        text: "Executed"
       }
     case "all":
       return {

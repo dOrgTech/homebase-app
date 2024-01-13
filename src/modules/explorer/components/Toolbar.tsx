@@ -138,7 +138,6 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                       <Grid item>
                         <ChangeNetworkButton />
                       </Grid>
-
                       <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
                           container

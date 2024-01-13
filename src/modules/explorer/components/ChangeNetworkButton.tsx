@@ -48,20 +48,18 @@ export const ChangeNetworkButton = () => {
 
   return (
     <>
-      {canShow ? (
-        <StyledConnectedButton onClick={() => open()}>
-          <Grid container style={{ gap: 8 }} alignItems="center" wrap="nowrap">
-            <Grid item>
-              <ColorDot color={networkDotColorMap[network]} />
-            </Grid>
-            <Grid item>
-              <Typography variant="body2" color="textPrimary">
-                {capitalize(network)}
-              </Typography>
-            </Grid>
+      <StyledConnectedButton onClick={() => open()}>
+        <Grid container style={{ gap: 8 }} alignItems="center" wrap="nowrap">
+          <Grid item>
+            <ColorDot color={networkDotColorMap[network]} />
           </Grid>
-        </StyledConnectedButton>
-      ) : null}
+          <Grid item>
+            <Typography variant="body2" color="textPrimary">
+              {capitalize(network)}
+            </Typography>
+          </Grid>
+        </Grid>
+      </StyledConnectedButton>
     </>
   )
 }

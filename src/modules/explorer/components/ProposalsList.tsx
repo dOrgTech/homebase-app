@@ -28,23 +28,39 @@ const ProposalsFooter = styled(Grid)({
 
 interface Props {
   currentLevel: number
-  proposals: Proposal[]
+  proposals: Proposal[] | undefined
   showFooter?: boolean
   rightItem?: (proposal: Proposal) => React.ReactElement
   liteProposals: Poll[] | undefined
+  proposalStyle?: any
 }
 
-export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, showFooter, rightItem, liteProposals }) => {
+export const ProposalsList: React.FC<Props> = ({
+  currentLevel,
+  proposals,
+  showFooter,
+  rightItem,
+  liteProposals,
+  proposalStyle
+}) => {
   const [currentPage, setCurrentPage] = useState(0)
-  const [open, setopen] = useState(true)
   const [offset, setOffset] = useState(0)
+  const [open, setopen] = useState(true)
 
-  const pageCount = Math.ceil(proposals && liteProposals ? proposals.length + liteProposals.length / 16 : 0)
+  const pageCount = Math.ceil(
+    proposals && liteProposals
+      ? proposals.length + liteProposals.length / 4
+      : proposals && liteProposals?.length === undefined
+      ? proposals.length / 4
+      : proposals?.length === undefined && liteProposals
+      ? liteProposals.length / 4
+      : 0
+  )
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (proposals) {
-      const newOffset = (event.selected * 2) % proposals.length
+      const newOffset = (event.selected * 4) % proposals.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
@@ -53,7 +69,7 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, showFo
   return (
     <TableContainer item>
       <Grid container direction="column" wrap={"nowrap"} style={{ gap: 16 }}>
-        {proposals.length && proposals.length > 0 ? (
+        {proposals && proposals.length && proposals.length > 0 ? (
           <Grid
             item
             container
@@ -62,10 +78,11 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, showFo
             in={open}
             timeout="auto"
             unmountOnExit
+            // style={{ display: "block" }}
             direction="column"
           >
-            {proposals.map((p, i) => (
-              <Grid item key={`proposal-${i}`}>
+            {proposals.slice(offset, offset + 4).map((p, i) => (
+              <Grid item key={`proposal-${i}`} style={proposalStyle}>
                 <Link to={`proposal/${p.id}`}>
                   <ProposalItem proposal={p} status={p.getStatus(currentLevel).status}>
                     {rightItem ? rightItem(p) : null}
@@ -76,7 +93,7 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, showFo
           </Grid>
         ) : null}
         {liteProposals && liteProposals.length > 0
-          ? liteProposals.map((poll, i) => {
+          ? liteProposals.slice(offset, offset + 4).map((poll, i) => {
               return (
                 <div key={`poll-${i}`}>
                   <ProposalTableRow poll={poll} />
@@ -85,15 +102,6 @@ export const ProposalsList: React.FC<Props> = ({ currentLevel, proposals, showFo
             })
           : null}
 
-        {!(proposals.length && proposals.length > 0) && !(liteProposals && liteProposals.length > 0) ? (
-          <ProposalsFooter item container direction="column" justifyContent="center">
-            <Grid item>
-              <Typography color="textPrimary" align="center">
-                No items
-              </Typography>
-            </Grid>
-          </ProposalsFooter>
-        ) : null}
         {showFooter && (
           <ProposalsFooter item container direction="column" justifyContent="center">
             <Grid item>
