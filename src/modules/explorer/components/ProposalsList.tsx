@@ -86,7 +86,7 @@ export const ProposalsList: React.FC<Props> = ({
         {liteProposals && liteProposals.length > 0
           ? liteProposals.map((poll, i) => {
               return (
-                <div key={`poll-${i}`}>
+                <div style={{ width: "inherit" }} key={`poll-${i}`}>
                   <ProposalTableRow poll={poll} />
                   {liteProposals.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
                 </div>
