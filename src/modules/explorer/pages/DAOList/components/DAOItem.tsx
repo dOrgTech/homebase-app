@@ -2,10 +2,6 @@ import { styled, Grid, Theme, Typography, Link, useTheme, useMediaQuery } from "
 import React from "react"
 import { EnvKey, getEnv } from "services/config"
 import ReactHtmlParser from "react-html-parser"
-import { useProposals } from "services/services/dao/hooks/useProposals"
-import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
-import { usePolls } from "modules/lite/explorer/hooks/usePolls"
-import dayjs from "dayjs"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import BigNumber from "bignumber.js"
 
@@ -27,6 +23,12 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
     maxWidth: "86vw",
     padding: "17px 24px",
     minWidth: "inherit"
+  },
+
+  ["@media only screen and (min-device-width: 768px)"]: {
+    maxWidth: "86vw",
+    padding: "17px 24px",
+    minWidth: "320px"
   },
 
   "&:hover": {
@@ -85,12 +87,6 @@ const DescriptionText = styled(Typography)({
   "line-clamp": 2,
   "-webkit-box-orient": "vertical",
   "maxHeight": 60
-})
-
-const ItemText = styled(Typography)({
-  fontWeight: 600,
-  fontSize: 16,
-  whiteSpace: "pre"
 })
 
 const ItemTextSmall = styled(Typography)({

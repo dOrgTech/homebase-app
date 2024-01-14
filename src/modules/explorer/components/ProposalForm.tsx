@@ -43,7 +43,8 @@ const IconSwap = styled(SwapIcon)({
 const DialogTitle = styled(Typography)({
   fontSize: 20,
   fontWeight: 500,
-  textTransform: "capitalize"
+  textTransform: "capitalize",
+  color: "#fff"
 })
 
 type RecursivePartial<T> = {

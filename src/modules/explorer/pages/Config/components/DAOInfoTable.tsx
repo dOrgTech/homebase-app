@@ -127,8 +127,8 @@ export const DaoInfoTables: React.FC = () => {
           </TableBody>
         </Table>
       </CustomTableContainer>
-      <CustomTableContainer>
-        <Typography>Proposal & Voting Settings</Typography>
+      <CustomTableContainer style={isMobileSmall ? { marginTop: 46 } : {}}>
+        <Typography color="textPrimary">Proposal & Voting Settings</Typography>
         <Table style={{ marginTop: 32 }} aria-label="simple table">
           <TableBody>
             {dao ? (
@@ -221,8 +221,8 @@ export const DaoInfoTables: React.FC = () => {
         </Table>
       </CustomTableContainer>
 
-      <CustomTableContainer>
-        <Typography>Quorum Settings</Typography>
+      <CustomTableContainer style={isMobileSmall ? { marginTop: 46 } : {}}>
+        <Typography color="textPrimary">Quorum Settings</Typography>
         <Table style={{ marginTop: 32 }} aria-label="simple table">
           <TableBody>
             {dao ? (

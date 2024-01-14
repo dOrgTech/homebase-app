@@ -114,7 +114,7 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
 }))
 
 export const DAOList: React.FC = () => {
-  const { network, account, tezos } = useTezos()
+  const { network, account } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()
@@ -215,7 +215,7 @@ export const DAOList: React.FC = () => {
       <Navbar disableMobileMenu />
       <PageContainer>
         <Grid container style={{ gap: 32 }} direction="column">
-          <Grid item style={isMobileSmall ? {} : { height: "10vh" }}>
+          <Grid item>
             <Grid
               container
               justifyContent={isMobileExtraSmall ? "center" : "space-between"}

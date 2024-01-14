@@ -46,6 +46,11 @@ const NFTTitle = styled(Typography)({
   fontWeight: 500
 })
 
+const ProposalsFooter = styled(Grid)({
+  padding: "16px 46px",
+  minHeight: 34
+})
+
 export const NFTs: React.FC = () => {
   const theme = useTheme()
   const daoId = useDAOID()
@@ -183,6 +188,15 @@ export const NFTs: React.FC = () => {
                     </Grid>
                   </Card>
                 ))}
+                {!(nftHoldings && nftHoldings.length > 0) ? (
+                  <ProposalsFooter item container direction="column" justifyContent="center">
+                    <Grid item>
+                      <Typography color="textPrimary" align="center">
+                        No items
+                      </Typography>
+                    </Grid>
+                  </ProposalsFooter>
+                ) : null}
                 <Grid container direction="row" justifyContent="flex-end">
                   <ReactPaginate
                     previousLabel={"<"}

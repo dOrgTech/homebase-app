@@ -7,10 +7,10 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAOID } from "../pages/DAO/router"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
-import { formatNumber } from "../utils/FormatNumber"
 import { useDAOHoldings, useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
+import numbro from "numbro"
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#24282d",
@@ -38,6 +38,8 @@ const ItemTitle = styled(Typography)(({ theme }) => ({
 const ItemValue = styled(Typography)(({ theme }) => ({
   fontSize: 32,
   fontWeight: 300,
+  overflowX: "scroll",
+  cursor: "default",
   [theme.breakpoints.down("sm")]: {
     fontSize: 28
   }
@@ -49,6 +51,13 @@ const Percentage = styled(Typography)({
   marginTop: 20,
   paddingLeft: 18
 })
+
+const formatConfig = {
+  average: true,
+  mantissa: 1,
+  thousandSeparated: true,
+  trimMantissa: true
+}
 
 export const DAOStatsRow: React.FC = () => {
   const daoId = useDAOID()
@@ -96,7 +105,7 @@ export const DAOStatsRow: React.FC = () => {
               <ItemTitle color="textPrimary">Total {symbol}</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{formatNumber(totalTokens)}</ItemValue>
+              <ItemValue color="textPrimary"> {numbro(totalTokens).format(formatConfig)}</ItemValue>
             </Grid>
           </Item>
         </Grid>
@@ -106,8 +115,8 @@ export const DAOStatsRow: React.FC = () => {
               <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
             </ItemContent>
             <Grid item container direction="row">
-              <ItemValue color="textPrimary">{formatNumber(amountLocked)}</ItemValue>
-              <Percentage color="textPrimary">{formatNumber(amountLockedPercentage)}%</Percentage>
+              <ItemValue color="textPrimary">{numbro(amountLocked).format(formatConfig)}</ItemValue>
+              <Percentage color="textPrimary">{numbro(amountLockedPercentage).format(formatConfig)}%</Percentage>
             </Grid>
           </Item>
         </Grid>

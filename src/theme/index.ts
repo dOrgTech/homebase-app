@@ -369,7 +369,8 @@ export const theme = createTheme({
     MuiTable: {
       root: {
         borderRadius: "8px",
-        backgroundColor: "#2F3438"
+        backgroundColor: "#2F3438",
+        overflow: "hidden"
       }
     },
     MuiTableHead: {
@@ -393,8 +394,8 @@ export const theme = createTheme({
     },
     MuiTableBody: {
       root: {
-        "& > *:not(:first-child)": {
-          borderTop: "0.3px solid rgba(125,140,139, 0.2)",
+        "& > *:not(:last-child)": {
+          borderBottom: "0.3px solid #575757",
           minHeight: 90
         }
       }
@@ -404,6 +405,9 @@ export const theme = createTheme({
         borderBottom: "unset"
       },
       head: {
+        fontWeight: 300
+      },
+      body: {
         fontWeight: 300
       }
     },
@@ -416,12 +420,30 @@ export const theme = createTheme({
         },
         "& th:last-child, & td:last-child": {
           paddingRight: 46
+        },
+        "&:nth-of-type(odd)": {
+          backgroundColor: "#2A2E32"
+        },
+        "&:nth-of-type(even)": {
+          backgroundColor: "#383E43"
         }
+      },
+      head: {
+        backgroundColor: "#383E43 !important",
+        borderBottom: "0.3px solid #575757"
       }
     },
     MuiGrid: {
       "align-items-xs-center": {
         alignItems: "center"
+      }
+    },
+    MuiLink: {
+      underlineHover: {
+        "&:hover": {
+          textUnderlineOffset: "4px",
+          textDecorationColor: "#fdfdfd"
+        }
       }
     },
     MuiLinearProgress: {

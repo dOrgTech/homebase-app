@@ -133,7 +133,7 @@ const PageContainer = styled("div")({
   ["@media (max-width:1335px)"]: {},
 
   ["@media (max-width:1167px)"]: {
-    width: "86vw !important"
+    width: "inherit !important"
   },
 
   ["@media (max-width:1030px)"]: {},
