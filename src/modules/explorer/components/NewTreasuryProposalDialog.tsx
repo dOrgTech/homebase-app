@@ -291,7 +291,7 @@ export const NewTreasuryProposalDialog: React.FC<{ open: boolean }> = ({ open })
 
                   <Grid item xs={isMobileSmall ? 12 : true}>
                     <CustomLabelContainer container direction="row" item justifyContent="space-between">
-                      <Typography>{"Amount"}</Typography>
+                      <Typography color="textPrimary">{"Amount"}</Typography>
                       {showMax ? (
                         <CustomMaxLabel
                           color="secondary"
