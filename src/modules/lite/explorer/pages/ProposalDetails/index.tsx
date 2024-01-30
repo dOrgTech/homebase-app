@@ -69,6 +69,8 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   )
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
 
+  const votingPower = poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight
+
   useEffect(() => {
     // refetch()
     choices.map(elem => {
@@ -85,6 +87,11 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     }
   })
 
+  const dataForBack = {
+    isXTZ: poll?.isXTZ,
+    votesData: votesData
+  }
+
   const saveVote = async () => {
     if (!wallet) {
       return
@@ -92,7 +99,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
     try {
       const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
+      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(dataForBack))
       if (!signature) {
         openNotification({
           message: `Issue with Signature`,
@@ -172,12 +179,12 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
               </Grid>
               {poll?.isActive === ProposalStatus.ACTIVE ? (
                 <Button
-                  disabled={selectedVotes.length === 0 || voteWeight?.eq(new BigNumber(0))}
+                  disabled={selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))}
                   variant="contained"
                   color="secondary"
                   onClick={() => saveVote()}
                 >
-                  {voteWeight?.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
+                  {votingPower && votingPower.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
                 </Button>
               ) : null}
             </GridContainer>
@@ -185,7 +192,13 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         </Grid>
         <Grid item xs={12}>
           {poll && poll !== undefined ? (
-            <VoteDetails poll={poll} choices={choices} token={community?.tokenAddress} communityId={community?._id} />
+            <VoteDetails
+              isXTZ={poll.isXTZ}
+              poll={poll}
+              choices={choices}
+              token={community?.tokenAddress}
+              communityId={community?._id}
+            />
           ) : null}
         </Grid>
       </Grid>

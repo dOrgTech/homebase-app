@@ -1,29 +1,13 @@
 import React from "react"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  styled,
-  Grid,
-  Typography,
-  useTheme,
-  useMediaQuery
-} from "@material-ui/core"
+import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 import dayjs from "dayjs"
-import { UserBadge } from "modules/explorer/components/UserBadge"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "./CopyButton"
 import { toShortAddress } from "services/contracts/utils"
-import { formatNumber } from "../utils/FormatNumber"
-import BigNumber from "bignumber.js"
 import numbro from "numbro"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
-
-const titles = ["Rank", "Votes", "Available Staked", "Total Staked", "Proposals Voted"] as const
 
 interface RowData {
   address: string
@@ -32,36 +16,6 @@ interface RowData {
   totalStaked: string
   proposalsVoted: string
 }
-
-const OverflowCell = styled(TableCell)({
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  maxWidth: 300
-})
-
-const StyledTableHead = styled(TableHead)({
-  minHeight: 34
-})
-
-const StyledTableRow = styled(TableRow)({
-  borderBottom: ".6px solid rgba(125,140,139, 0.2)"
-})
-
-const MobileTableRow = styled(Grid)({
-  padding: "30px",
-  borderBottom: "0.3px solid rgba(125,140,139, 0.2)"
-})
-
-const TableText = styled(Typography)({
-  fontSize: "16px",
-  fontWeight: 500,
-
-  ["@media (max-width:1155px)"]: {
-    fontSize: "15px",
-    whiteSpace: "nowrap"
-  }
-})
 
 const Title = styled(Typography)({
   fontSize: 20

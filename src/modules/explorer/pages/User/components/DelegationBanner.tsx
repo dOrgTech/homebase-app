@@ -43,8 +43,7 @@ const CustomCopyButton = withStyles({
     "& .MuiBox-root": {
       padding: "0px !important"
     }
-  },
-  disabled: {}
+  }
 })(Grid)
 
 export const matchTextToStatus = (value: DelegationsType | undefined) => {
@@ -108,10 +107,12 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
         <Grid container style={{ gap: 12 }} direction="column">
           <Typography color="textPrimary">Voting Weight</Typography>
           <Balance color="secondary">
-            {!voteWeight || voteWeight.eq(new BigNumber(0)) ? (
+            {!voteWeight || voteWeight.votingWeight.eq(new BigNumber(0)) ? (
               "-"
             ) : (
-              <>{`${parseUnits(voteWeight, dao.data.token.decimals).toString()} ${dao.data.token.symbol}`}</>
+              <>{`${parseUnits(voteWeight.votingWeight, dao.data.token.decimals).toString()} ${
+                dao.data.token.symbol
+              }`}</>
             )}
           </Balance>
         </Grid>

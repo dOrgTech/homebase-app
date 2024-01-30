@@ -219,8 +219,7 @@ export const theme = createTheme({
         "&:active:not($disabled):not($focused):not($error):before": {
           borderBottom: "none"
         }
-      },
-      disabled: {}
+      }
     },
 
     MuiButton: {
@@ -249,8 +248,7 @@ export const theme = createTheme({
         "borderRadius": "4px",
         "padding": "1px 8px",
         "fontSize": "1rem"
-      },
-      disabled: {}
+      }
     },
     MuiInputBase: {
       input: {

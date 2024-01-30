@@ -61,8 +61,7 @@ const CustomFormikTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  },
-  disabled: {}
+  }
 })(FormikTextField)
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({

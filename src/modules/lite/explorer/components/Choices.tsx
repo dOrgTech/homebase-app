@@ -13,8 +13,7 @@ import {
   withStyles
 } from "@material-ui/core"
 import { theme } from "theme"
-
-import { AddCircleOutline, RemoveCircleOutline, DeleteTwoTone } from "@material-ui/icons"
+import { AddCircleOutline, DeleteTwoTone } from "@material-ui/icons"
 import { FieldArray, Field } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
@@ -104,8 +103,7 @@ const CustomFormikChoiceTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  },
-  disabled: {}
+  }
 })(FormikTextField)
 
 const MainButton = styled(Button)(({ theme }) => ({
@@ -131,8 +129,7 @@ export const Choices: React.FC<any> = ({
   const community = useCommunity(id)
 
   const { data: userTokenVoteWeight } = useTokenVoteWeight(data?.data?.token?.contract || community?.tokenAddress)
-  const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.gt(0) ? true : false
-
+  const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.votingWeight.gt(0) ? true : false
   const classes = useStyles()
 
   return (

@@ -14,6 +14,7 @@ import {
   getTreasuryPercentage,
   nFormatter
 } from "services/lite/utils"
+import numbro from "numbro"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useCommunityToken } from "../hooks/useCommunityToken"
 import { getTurnoutValue } from "services/utils/utils"
@@ -49,12 +50,13 @@ const GraphicsContainer = styled(Grid)({
   paddingBottom: 25
 })
 
-export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; token: any; communityId: any }> = ({
-  poll,
-  choices,
-  token,
-  communityId
-}) => {
+export const VoteDetails: React.FC<{
+  poll: Poll | undefined
+  choices: Choice[]
+  token: any
+  communityId: any
+  isXTZ: boolean
+}> = ({ poll, choices, token, communityId, isXTZ }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
@@ -72,6 +74,13 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
 
   const handleClose = () => {
     setOpen(false)
+  }
+
+  const formatConfig = {
+    average: true,
+    mantissa: 1,
+    thousandSeparated: true,
+    trimMantissa: true
   }
 
   useMemo(async () => {
@@ -110,7 +119,11 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
                   {choice && choice.walletAddresses ? (
                     <Typography color="textPrimary" variant="body2">
                       {choice.walletAddresses.length} Voters -{" "}
-                      {nFormatter(calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals), 1)}{" "}
+                      {!isMobile
+                        ? nFormatter(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals), 1)
+                        : numbro(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals)).format(
+                            formatConfig
+                          )}{" "}
                       {tokenData?.symbol}
                     </Typography>
                   ) : null}
@@ -123,8 +136,8 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
                     color="secondary"
                     value={calculateWeight(
                       poll?.totalSupplyAtReferenceBlock,
-                      calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals),
-                      tokenData?.decimals
+                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals),
+                      isXTZ ? 0 : tokenData?.decimals
                     )
                       .dp(2, 1)
                       .toNumber()}
@@ -135,8 +148,8 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
                   <Typography color="textPrimary" variant="body2">
                     {calculateWeight(
                       poll?.totalSupplyAtReferenceBlock,
-                      calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals),
-                      tokenData?.decimals
+                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals),
+                      isXTZ ? 0 : tokenData?.decimals
                     )
                       .dp(2, 1)
                       .toString()}
@@ -174,7 +187,7 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
             justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
           >
             <Typography color="textPrimary" variant="body1">
-              {nFormatter(calculateProposalTotal(choices, tokenData?.decimals), 1)}
+              {numbro(calculateProposalTotal(choices, isXTZ ? 0 : tokenData?.decimals)).format(formatConfig)}
             </Typography>
             <Typography color="textPrimary" variant="body1">
               {poll?.tokenSymbol}
@@ -182,9 +195,9 @@ export const VoteDetails: React.FC<{ poll: Poll | undefined; choices: Choice[]; 
             <Typography color="textPrimary" variant="body1">
               (
               {getTreasuryPercentage(
-                calculateProposalTotal(choices, tokenData?.decimals),
+                calculateProposalTotal(choices, isXTZ ? 0 : tokenData?.decimals),
                 poll?.totalSupplyAtReferenceBlock,
-                tokenData?.decimals
+                isXTZ ? 0 : tokenData?.decimals
               )
                 .dp(5, 1)
                 .toString()}
