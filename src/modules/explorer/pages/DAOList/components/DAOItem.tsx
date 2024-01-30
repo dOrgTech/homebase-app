@@ -25,7 +25,7 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
     minWidth: "inherit"
   },
 
-  ["@media only screen and (min-device-width: 768px)"]: {
+  ["@media only screen and (max-device-width: 768px)"]: {
     maxWidth: "86vw",
     padding: "17px 24px",
     minWidth: "320px"
