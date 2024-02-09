@@ -7,7 +7,7 @@ import { StatusBadge, statusColors } from "modules/explorer/components/StatusBad
 import { UserBadge } from "modules/explorer/components/UserBadge"
 import { VotersProgress } from "modules/explorer/components/VotersProgress"
 import { useCanDropProposal } from "modules/explorer/hooks/useCanDropProposal"
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useParams } from "react-router"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { BaseDAO } from "services/contracts/baseDAO"
@@ -37,6 +37,7 @@ import { TableStatusBadge } from "modules/explorer/components/ProposalTableRowSt
 import dayjs from "dayjs"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import ThumbDownIcon from "@mui/icons-material/ThumbDown"
+import { getStatusDate } from "services/utils/utils"
 
 const TitleText = styled(Typography)({
   fontSize: 36,
@@ -146,6 +147,7 @@ export const ProposalDetails: React.FC = () => {
   const daoId = useDAOID()
   const [openVote, setOpenVote] = useState(false)
   const [voteIsSupport, setVoteIsSupport] = useState(false)
+  const [endDate, setEndDate] = useState("")
   const theme = useTheme<Theme>()
   const { data: proposal } = useProposal(daoId, proposalId)
   const { data: dao, cycleInfo } = useDAO(daoId)
@@ -154,6 +156,7 @@ export const ProposalDetails: React.FC = () => {
   const { data: holdings } = useDAOHoldings(daoId)
   const canDropProposal = useCanDropProposal(daoId, proposalId)
   const { data: agoraPost } = useAgoraTopic(Number(proposal?.metadata?.agoraPostId))
+  const { network } = useTezos()
 
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const { mutate: mutateUnstake } = useUnstakeVotes()
@@ -188,6 +191,24 @@ export const ProposalDetails: React.FC = () => {
     downVotes: proposal?.downVotes || new BigNumber(0),
     quorumThreshold
   })
+
+  useEffect(() => {
+    const findEndDate = async () => {
+      if (proposal && cycleInfo) {
+        const date = proposal?.getStatus(cycleInfo.currentLevel).statusHistory.filter(item => {
+          return item.status === proposal.getStatus(cycleInfo.currentLevel).status
+        })
+        if (date.length > 0) {
+          const timestamp = await getStatusDate(date[0].level, network)
+          if (timestamp) {
+            const day = dayjs(timestamp).format("LL").toString()
+            setEndDate(day)
+          }
+        }
+      }
+    }
+    findEndDate()
+  }, [cycleInfo, proposal, network])
 
   const list = useMemo(() => {
     if (!proposal || !(proposal instanceof LambdaProposal)) {
@@ -225,27 +246,6 @@ export const ProposalDetails: React.FC = () => {
         default:
           return value.toString()
       }
-    }
-  }
-
-  const findEndDate = () => {
-    if (proposal && cycleInfo) {
-      const date = proposal?.getStatus(cycleInfo.currentLevel).statusHistory.filter((item, index) => {
-        console.log(item)
-        return item.status === proposal.getStatus(cycleInfo.currentLevel).status
-      })
-      if (date.length > 0) {
-        const dateSubstring = date[0].timestamp.substring(
-          date[0].timestamp.indexOf("(") + 1,
-          date[0].timestamp.lastIndexOf(")")
-        )
-
-        if (dateSubstring !== "") {
-          return dateSubstring
-        }
-        return date[0].timestamp
-      }
-      return
     }
   }
 
@@ -298,9 +298,22 @@ export const ProposalDetails: React.FC = () => {
               </Grid> */}
             </Grid>
             <Grid item>
-              <Grid container justifyContent="space-between" alignItems="center">
+              <Grid
+                container
+                direction={isMobileSmall ? "column" : "row"}
+                justifyContent={isMobileSmall ? "center" : "space-between"}
+                alignItems="center"
+                style={isMobileSmall ? { gap: 18 } : {}}
+              >
                 {proposal && cycleInfo && (
-                  <Grid item container xs={9} spacing={2} alignItems="flex-end">
+                  <Grid
+                    item
+                    container
+                    xs={isMobileSmall ? 12 : 9}
+                    justifyContent={isMobileSmall ? "center" : "flex-start"}
+                    spacing={2}
+                    alignItems="flex-end"
+                  >
                     <Grid item>
                       {" "}
                       <StatusBadge status={proposal.getStatus(cycleInfo?.currentLevel).status} />{" "}
@@ -315,15 +328,14 @@ export const ProposalDetails: React.FC = () => {
                           ProposalStatus.PENDING ? (
                           <>
                             {" "}
-                            • {statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text}
-                            {findEndDate()}{" "}
+                            • {statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text} {endDate}
                           </>
                         ) : null}
                       </DescriptionText>
                     </Grid>
                   </Grid>
                 )}
-                <Grid item xs={3}>
+                <Grid item xs={isMobileSmall ? 12 : 3}>
                   <Grid container justifyContent="flex-end" style={{ gap: 28 }}>
                     <Grid item>
                       <VoteButton
