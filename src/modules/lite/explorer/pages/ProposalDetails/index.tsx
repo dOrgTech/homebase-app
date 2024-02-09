@@ -87,11 +87,6 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     }
   })
 
-  const dataForBack = {
-    isXTZ: poll?.isXTZ,
-    votesData: votesData
-  }
-
   const saveVote = async () => {
     if (!wallet) {
       return
@@ -99,7 +94,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
     try {
       const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(dataForBack))
+      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
       if (!signature) {
         openNotification({
           message: `Issue with Signature`,
