@@ -2,7 +2,7 @@ import React from "react"
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
-const statusColors = (status: ProposalStatus | "all") => {
+export const statusColors = (status: ProposalStatus | "all") => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return {

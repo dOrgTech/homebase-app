@@ -14,8 +14,8 @@ export const UserBadge: React.FC<{
   size?: number
   gap?: number
   short?: boolean
-  smallText?: boolean
-}> = ({ address, size, smallText, gap, short }) => {
+  textStyle?: any
+}> = ({ address, size, gap, short, textStyle }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const isMediumSmall = useMediaQuery(theme.breakpoints.down("md"))
@@ -28,7 +28,7 @@ export const UserBadge: React.FC<{
       </Grid>
       <Grid item>
         <Link href={`https://${networkNameMap[network]}.tzkt.io/` + address} target="_blank">
-          <Text variant="body1" color="textPrimary" style={{ fontSize: smallText ? 13 : undefined }}>
+          <Text variant="body1" color="textPrimary" style={textStyle ? textStyle : null}>
             <UserProfileName address={address} short={short || isMobileSmall || isMediumSmall} />
           </Text>
         </Link>

@@ -3,7 +3,7 @@ import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, Collapse, styl
 import ReactHtmlParser from "react-html-parser"
 import { BigNumber } from "bignumber.js"
 import ProgressBar from "react-customizable-progressbar"
-import { StatusBadge } from "modules/explorer/components/StatusBadge"
+import { StatusBadge, statusColors } from "modules/explorer/components/StatusBadge"
 import { UserBadge } from "modules/explorer/components/UserBadge"
 import { VotersProgress } from "modules/explorer/components/VotersProgress"
 import { useCanDropProposal } from "modules/explorer/hooks/useCanDropProposal"
@@ -33,6 +33,20 @@ import { CopyButton } from "modules/common/CopyButton"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import { CodeCollapse } from "modules/explorer/components/CodeCollapse"
+import { TableStatusBadge } from "modules/explorer/components/ProposalTableRowStatusBadge"
+import dayjs from "dayjs"
+import ThumbUpIcon from "@mui/icons-material/ThumbUp"
+import ThumbDownIcon from "@mui/icons-material/ThumbDown"
+
+const TitleText = styled(Typography)({
+  fontSize: 36,
+  fontWeight: 500,
+  lineHeight: 0.9,
+
+  ["@media (max-width:1030px)"]: {
+    fontSize: 26
+  }
+})
 
 const Container = styled(ContentContainer)({
   "padding": "36px 45px",
@@ -83,7 +97,8 @@ const DetailsText = styled(Typography)({
 })
 
 const VoteButton = styled(Button)(({ favor }: { favor: boolean }) => ({
-  backgroundColor: favor ? "#3FE888" : "#FF486E"
+  backgroundColor: favor ? "#3FE888" : "#FF486E",
+  borderRadius: 8
 }))
 
 const InfoTitle = styled(Typography)({
@@ -99,6 +114,11 @@ const InfoItem = styled(Typography)({
   fontSize: 16,
   lineHeight: "24px"
 })
+
+const DescriptionText = styled(Typography)(({ theme }: { theme: Theme }) => ({
+  color: theme.palette.primary.light,
+  fontWeight: 300
+}))
 
 const InfoCopyIcon = styled(CopyButton)({
   "height": 15,
@@ -208,18 +228,53 @@ export const ProposalDetails: React.FC = () => {
     }
   }
 
+  const findEndDate = () => {
+    if (proposal && cycleInfo) {
+      const date = proposal?.getStatus(cycleInfo.currentLevel).statusHistory.filter((item, index) => {
+        console.log(item)
+        return item.status === proposal.getStatus(cycleInfo.currentLevel).status
+      })
+      if (date.length > 0) {
+        const dateSubstring = date[0].timestamp.substring(
+          date[0].timestamp.indexOf("(") + 1,
+          date[0].timestamp.lastIndexOf(")")
+        )
+
+        if (dateSubstring !== "") {
+          return dateSubstring
+        }
+        return date[0].timestamp
+      }
+      return
+    }
+  }
+
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
-        <Container item>
+        <Grid item>
           <Grid container direction="column" style={{ gap: 18 }}>
             <Grid item container style={{ gap: 21 }}>
               <Grid item>
-                <Typography variant="h3" color="textPrimary" align={isMobileSmall ? "center" : "left"}>
+                <TitleText variant="h3" color="textPrimary" align={isMobileSmall ? "center" : "left"}>
                   {agoraPost ? agoraPost.title : `Proposal ${toShortAddress(proposal?.id || "")}`}
-                </Typography>
+                </TitleText>
               </Grid>
-              <Grid>
+              <Grid container direction="row">
+                <Grid item>
+                  <DescriptionText variant="body1">Treasury Proposal • Created by</DescriptionText>
+                </Grid>
+                <Grid style={{ marginLeft: 8 }}>
+                  {proposal && cycleInfo && (
+                    <UserBadge
+                      textStyle={{ fontWeight: 300, color: theme.palette.primary.light }}
+                      address={proposal.proposer}
+                      short={true}
+                    />
+                  )}
+                </Grid>
+              </Grid>
+              {/* <Grid>
                 <Button variant="contained" color="secondary" disabled={!canDropProposal} onClick={onDropProposal}>
                   Drop Proposal
                 </Button>
@@ -229,7 +284,7 @@ export const ProposalDetails: React.FC = () => {
                 >
                   <InfoIcon color="secondary" />
                 </Tooltip>
-              </Grid>
+              </Grid> */}
               {/* <Grid>
                 <Button variant="contained" color="secondary" disabled={!canUnstakeVotes} onClick={onUnstakeVotes}>
                   Unstake votes
@@ -244,25 +299,32 @@ export const ProposalDetails: React.FC = () => {
             </Grid>
             <Grid item>
               <Grid container justifyContent="space-between" alignItems="center">
-                <Grid item>
-                  {proposal && cycleInfo && (
-                    <Grid container style={{ gap: 20 }}>
-                      <Grid item>
-                        <StatusBadge status={proposal.getStatus(cycleInfo.currentLevel).status} />
-                      </Grid>
-                      <Grid item>
-                        <Typography color="textPrimary" variant="subtitle2">
-                          CREATED BY
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <UserBadge address={proposal.proposer} short={true} />
-                      </Grid>
+                {proposal && cycleInfo && (
+                  <Grid item container xs={9} spacing={2} alignItems="flex-end">
+                    <Grid item>
+                      {" "}
+                      <StatusBadge status={proposal.getStatus(cycleInfo?.currentLevel).status} />{" "}
                     </Grid>
-                  )}
-                </Grid>
-                <Grid item>
-                  <Grid container style={{ gap: 28 }}>
+
+                    <Grid item>
+                      <DescriptionText>
+                        Created {dayjs(proposal.startDate).format("LL")}
+                        {statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text !==
+                          ProposalStatus.ACTIVE ||
+                        statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text !==
+                          ProposalStatus.PENDING ? (
+                          <>
+                            {" "}
+                            • {statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text}
+                            {findEndDate()}{" "}
+                          </>
+                        ) : null}
+                      </DescriptionText>
+                    </Grid>
+                  </Grid>
+                )}
+                <Grid item xs={3}>
+                  <Grid container justifyContent="flex-end" style={{ gap: 28 }}>
                     <Grid item>
                       <VoteButton
                         variant="contained"
@@ -270,7 +332,8 @@ export const ProposalDetails: React.FC = () => {
                         onClick={() => onClickVote(true)}
                         disabled={!canVote}
                       >
-                        Vote For
+                        <ThumbUpIcon style={{ marginRight: 8 }} />
+                        For
                       </VoteButton>
                     </Grid>
                     <Grid item>
@@ -280,7 +343,8 @@ export const ProposalDetails: React.FC = () => {
                         onClick={() => onClickVote(false)}
                         disabled={!canVote}
                       >
-                        Vote Against
+                        <ThumbDownIcon style={{ marginRight: 8 }} />
+                        Against
                       </VoteButton>
                     </Grid>
                   </Grid>
@@ -288,7 +352,7 @@ export const ProposalDetails: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
-        </Container>
+        </Grid>
         <Grid item>
           <Grid container style={{ gap: 45 }}>
             <Container item xs={12} md={7}>
@@ -510,6 +574,7 @@ export const ProposalDetails: React.FC = () => {
                       style={{ gap: 32 }}
                     >
                       <Grid item>
+                        <TableStatusBadge status={item.status || ProposalStatus.ACTIVE} />
                         <StatusBadge item status={item.status} />
                       </Grid>
                       <Grid item>

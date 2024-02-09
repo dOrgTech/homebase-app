@@ -198,7 +198,8 @@ export abstract class Proposal {
       }[] = this.indexer_status_history.map(update => ({
         timestamp: update.timestamp,
         status: INDEXER_TO_PROPOSAL_STATUS_MAP[update.description],
-        level: update.level
+        level: update.level,
+        date: update.timestamp
       }))
 
       if (currentLevel >= activeThreshold) {
