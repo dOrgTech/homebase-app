@@ -163,7 +163,12 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
 
           <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} alignItems={"center"}>
             <Grid item>
-              <Grid container style={{ gap: 23 }} justifyContent={isMobileSmall ? "center" : "flex-start"}>
+              <Grid
+                container
+                style={{ gap: 23 }}
+                alignItems="center"
+                justifyContent={isMobileSmall ? "center" : "flex-start"}
+              >
                 <Grid item>
                   <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} />
                 </Grid>

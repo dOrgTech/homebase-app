@@ -137,7 +137,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         <Grid
           container
           style={{ gap: 15, cursor: "pointer", marginBottom: 23 }}
-          onClick={() => navigate.push(`/explorer/lite/dao/${id}/community/`)}
+          onClick={() => navigate.goBack()}
           alignItems="center"
         >
           <ArrowBackIosOutlined color="secondary" />
