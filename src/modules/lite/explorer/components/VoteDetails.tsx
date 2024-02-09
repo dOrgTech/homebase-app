@@ -120,8 +120,8 @@ export const VoteDetails: React.FC<{
                     <Typography color="textPrimary" variant="body2">
                       {choice.walletAddresses.length} Voters -{" "}
                       {!isMobile
-                        ? nFormatter(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals), 1)
-                        : numbro(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals)).format(
+                        ? nFormatter(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals), 1)
+                        : numbro(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals)).format(
                             formatConfig
                           )}{" "}
                       {tokenData?.symbol}
@@ -136,8 +136,8 @@ export const VoteDetails: React.FC<{
                     color="secondary"
                     value={calculateWeight(
                       poll?.totalSupplyAtReferenceBlock,
-                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals),
-                      isXTZ ? 0 : tokenData?.decimals
+                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals),
+                      isXTZ ? 6 : tokenData?.decimals
                     )
                       .dp(2, 1)
                       .toNumber()}
@@ -148,8 +148,8 @@ export const VoteDetails: React.FC<{
                   <Typography color="textPrimary" variant="body2">
                     {calculateWeight(
                       poll?.totalSupplyAtReferenceBlock,
-                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 0 : tokenData?.decimals),
-                      isXTZ ? 0 : tokenData?.decimals
+                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals),
+                      isXTZ ? 6 : tokenData?.decimals
                     )
                       .dp(2, 1)
                       .toString()}
@@ -187,7 +187,7 @@ export const VoteDetails: React.FC<{
             justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
           >
             <Typography color="textPrimary" variant="body1">
-              {numbro(calculateProposalTotal(choices, isXTZ ? 0 : tokenData?.decimals)).format(formatConfig)}
+              {numbro(calculateProposalTotal(choices, isXTZ ? 6 : tokenData?.decimals)).format(formatConfig)}
             </Typography>
             <Typography color="textPrimary" variant="body1">
               {poll?.tokenSymbol}
@@ -195,9 +195,9 @@ export const VoteDetails: React.FC<{
             <Typography color="textPrimary" variant="body1">
               (
               {getTreasuryPercentage(
-                calculateProposalTotal(choices, isXTZ ? 0 : tokenData?.decimals),
+                calculateProposalTotal(choices, isXTZ ? 6 : tokenData?.decimals),
                 poll?.totalSupplyAtReferenceBlock,
-                isXTZ ? 0 : tokenData?.decimals
+                isXTZ ? 6 : tokenData?.decimals
               )
                 .dp(5, 1)
                 .toString()}
