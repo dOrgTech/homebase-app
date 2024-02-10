@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, Collapse, styled, useTheme } from "@material-ui/core"
+import { Button, Grid, Theme, Typography, useMediaQuery, styled, useTheme } from "@material-ui/core"
 import ReactHtmlParser from "react-html-parser"
 import { BigNumber } from "bignumber.js"
 import ProgressBar from "react-customizable-progressbar"
@@ -25,7 +25,6 @@ import { FA2Transfer, LambdaProposal, Proposal, ProposalStatus } from "services/
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { VoteDialog } from "../../components/VoteDialog"
 import { XTZTransferBadge } from "../../components/XTZTransferBadge"
-import { InfoIcon } from "../../components/styled/InfoIcon"
 import { ProposalTransferBadge } from "modules/explorer/components/ProposalTransferBadge"
 import { useUnstakeVotes } from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes"
 import { useTezos } from "../../../../services/beacon/hooks/useTezos"
@@ -33,11 +32,11 @@ import { CopyButton } from "modules/common/CopyButton"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import { CodeCollapse } from "modules/explorer/components/CodeCollapse"
-import { TableStatusBadge } from "modules/explorer/components/ProposalTableRowStatusBadge"
 import dayjs from "dayjs"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import ThumbDownIcon from "@mui/icons-material/ThumbDown"
 import { getStatusDate } from "services/utils/utils"
+import numbro from "numbro"
 
 const TitleText = styled(Typography)({
   fontSize: 36,
@@ -49,17 +48,26 @@ const TitleText = styled(Typography)({
   }
 })
 
-const Container = styled(ContentContainer)({
-  "padding": "36px 45px",
+const Container = styled(ContentContainer)(({ theme }: { theme: Theme }) => ({
+  "padding": "40px 48px 43px 48px",
+  "backgroundColor": theme.palette.primary.contrastText,
   "& a": {
     color: "#81feb7",
     textDecoration: "underline"
+  },
+  [theme.breakpoints.down("sm")]: {
+    padding: "30px 38px"
   }
+}))
+
+const ContainerTitle = styled(Typography)({
+  fontSize: 24,
+  fontWeight: 600
 })
 
 const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  marginTop: 20,
-  paddingBottom: 12,
+  marginTop: 8,
+  paddingBottom: 4,
   display: "flex",
   height: "auto",
 
@@ -67,15 +75,6 @@ const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
     width: "unset"
   }
 }))
-
-const QuorumTitle = styled(Typography)(() => ({
-  color: "#3866F9"
-}))
-
-const ViewCodeButton = styled(Button)({
-  height: 31,
-  fontSize: 16
-})
 
 const ProgressText = styled(Typography)(({ textColor }: { textColor: string }) => ({
   color: textColor,
@@ -121,11 +120,16 @@ const DescriptionText = styled(Typography)(({ theme }: { theme: Theme }) => ({
   fontWeight: 300
 }))
 
-const InfoCopyIcon = styled(CopyButton)({
-  "height": 15,
-  "& svg": {
-    height: 15
-  }
+const HistoryKey = styled(Typography)({
+  fontSize: 18,
+  fontWeight: 500,
+  textTransform: "capitalize"
+})
+
+const HistoryValue = styled(Typography)({
+  fontSize: 18,
+  fontWeight: 300,
+  color: "#BFC5CA"
 })
 
 const getReadableConfig = (configKey: any) => {
@@ -140,6 +144,13 @@ const getReadableConfig = (configKey: any) => {
   }
 }
 
+const formatConfig = {
+  average: true,
+  mantissa: 1,
+  thousandSeparated: true,
+  trimMantissa: true
+}
+
 export const ProposalDetails: React.FC = () => {
   const { proposalId } = useParams<{
     proposalId: string
@@ -148,6 +159,7 @@ export const ProposalDetails: React.FC = () => {
   const [openVote, setOpenVote] = useState(false)
   const [voteIsSupport, setVoteIsSupport] = useState(false)
   const [endDate, setEndDate] = useState("")
+  const [historyItems, setHistoryItems] = useState<any>([])
   const theme = useTheme<Theme>()
   const { data: proposal } = useProposal(daoId, proposalId)
   const { data: dao, cycleInfo } = useDAO(daoId)
@@ -184,8 +196,6 @@ export const ProposalDetails: React.FC = () => {
     })
   }, [dao, mutateUnstake, proposalId])
 
-  const proposalCycle = proposal ? proposal.period : "-"
-
   const { votesQuorumPercentage } = useVotesStats({
     upVotes: proposal?.upVotes || new BigNumber(0),
     downVotes: proposal?.downVotes || new BigNumber(0),
@@ -208,6 +218,21 @@ export const ProposalDetails: React.FC = () => {
       }
     }
     findEndDate()
+  }, [cycleInfo, proposal, network])
+
+  useEffect(() => {
+    const findDate = async () => {
+      if (proposal && cycleInfo) {
+        const mappedArray = await Promise.all(
+          proposal?.getStatus(cycleInfo.currentLevel).statusHistory.map(async p => {
+            p.date = await getStatusDate(p.level, network).then(i => i)
+            return p
+          })
+        )
+        setHistoryItems(mappedArray)
+      }
+    }
+    findDate()
   }, [cycleInfo, proposal, network])
 
   const list = useMemo(() => {
@@ -252,7 +277,7 @@ export const ProposalDetails: React.FC = () => {
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
-        <Grid item>
+        <Grid item container>
           <Grid container direction="column" style={{ gap: 18 }}>
             <Grid item container style={{ gap: 21 }}>
               <Grid item>
@@ -297,7 +322,7 @@ export const ProposalDetails: React.FC = () => {
                 </Tooltip>
               </Grid> */}
             </Grid>
-            <Grid item>
+            <Grid item container>
               <Grid
                 container
                 direction={isMobileSmall ? "column" : "row"}
@@ -365,38 +390,82 @@ export const ProposalDetails: React.FC = () => {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item>
+
+        {/* Transfers */}
+        <Grid item style={{ width: "inherit" }}>
           <Grid container style={{ gap: 45 }}>
-            <Container item xs={12} md={7}>
+            <Container item xs={12}>
+              <Grid container direction="column" style={{ gap: 18 }}>
+                <Grid item>
+                  <Grid container style={{ gap: 32 }}>
+                    <Grid item>
+                      <ContainerTitle color="textPrimary">Token Transfer</ContainerTitle>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                {transfers?.map((transfer, index) => {
+                  return (
+                    <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                      {transfer.type === "XTZ" ? (
+                        <XTZTransferBadge amount={transfer.amount} address={transfer.beneficiary} />
+                      ) : (
+                        <TransferBadge
+                          amount={transfer.amount}
+                          address={transfer.beneficiary}
+                          contract={(transfer as FA2Transfer).contractAddress}
+                          tokenId={(transfer as FA2Transfer).tokenId}
+                        />
+                      )}
+                    </Grid>
+                  )
+                })}{" "}
+              </Grid>
+            </Container>
+          </Grid>
+        </Grid>
+
+        {/* VOTES */}
+        <Grid item style={{ width: "inherit" }}>
+          <Grid container style={{ gap: 45 }}>
+            <Container item xs={12}>
               <Grid container direction="column" style={{ gap: 18 }}>
                 <Grid item>
                   <Grid container style={{ gap: 18 }}>
                     <Grid item>
-                      <Typography color="secondary">Votes</Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography color="textPrimary">Cycle: {proposalCycle}</Typography>
+                      <ContainerTitle color="textPrimary">Votes</ContainerTitle>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item>
-                  <VotersProgress showButton={true} daoId={daoId} proposalId={proposalId} />
-                </Grid>
+                <VotersProgress showButton={true} daoId={daoId} proposalId={proposalId} />
               </Grid>
             </Container>
+          </Grid>
+        </Grid>
+
+        <Grid item container direction="row" spacing={4}>
+          {/* Quorum */}
+          <Grid item xs={isMobileSmall ? 12 : 4} container>
             <Container item xs>
-              <Grid container direction="row" style={{ height: "100%" }} alignItems="center" wrap="nowrap">
+              <ContainerTitle color="textPrimary">Quorum</ContainerTitle>
+              <Grid
+                container
+                direction="column"
+                justifyContent={isMobileSmall ? "flex-start" : "center"}
+                style={{ height: "100%" }}
+                alignItems="center"
+                wrap="nowrap"
+              >
                 <Grid item>
                   <ProgressBar
                     progress={proposal ? votesQuorumPercentage.toNumber() : 0}
-                    radius={50}
+                    radius={70}
                     strokeWidth={7}
-                    strokeColor="#3866F9"
+                    strokeColor="#81FEB7"
                     trackStrokeWidth={4}
                     trackStrokeColor={theme.palette.primary.light}
                   >
                     <div className="indicator">
-                      <ProgressText textColor="#3866F9">
+                      <ProgressText textColor="#81FEB7">
                         {proposal ? `${formatNumber(votesQuorumPercentage)}%` : "-"}
                       </ProgressText>
                     </div>
@@ -412,31 +481,69 @@ export const ProposalDetails: React.FC = () => {
                     style={{ height: "100%" }}
                   >
                     <Grid item>
-                      {proposal && (
-                        <Tooltip
-                          placement="bottom"
-                          title={`Amount of ${
-                            dao?.data.token.symbol
-                          } required to be locked through voting for a proposal to be passed/rejected. ${
-                            proposal.upVotes.gte(proposal.downVotes)
-                              ? proposal.upVotes.toString()
-                              : proposal.downVotes.toString()
-                          }/${quorumThreshold} votes.`}
-                        >
-                          <InfoIcon color="secondary" />
-                        </Tooltip>
-                      )}
-                      <QuorumTitle color="textPrimary">Quorum Threshold:</QuorumTitle>
-                    </Grid>
-                    <Grid item>
-                      <Typography color="textPrimary">{proposal ? quorumThreshold.toString() : "-"}</Typography>
+                      <Typography color="textPrimary">
+                        {proposal
+                          ? `${numbro(quorumThreshold).format(formatConfig)} of ${numbro(
+                              dao?.data.quorum_threshold
+                            ).format(formatConfig)}`
+                          : "-"}
+                      </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
               </Grid>
             </Container>
           </Grid>
+          {/* History */}
+          <Grid item xs={isMobileSmall ? 12 : 8} container>
+            <Grid container>
+              <Container item md={12} xs={12}>
+                <ContainerTitle color="textPrimary" style={{ marginBottom: 24 }}>
+                  History
+                </ContainerTitle>
+                {historyItems.map((item: any, index: number) => {
+                  return (
+                    <HistoryItem
+                      container
+                      direction="row"
+                      key={index}
+                      justifyContent="space-between"
+                      alignItems="center"
+                      wrap="nowrap"
+                      xs={12}
+                      style={{ gap: 8 }}
+                    >
+                      <Grid item xs={5}>
+                        <HistoryKey color="textPrimary">{item.status}</HistoryKey>
+                      </Grid>
+                      <Grid item xs={5}>
+                        <HistoryValue align="right" color="textPrimary" variant="subtitle2">
+                          {dayjs(item.date).format("LLL")}
+                        </HistoryValue>
+                      </Grid>
+                    </HistoryItem>
+                  )
+                })}
+
+                {/* {isLambdaProposal ? (
+                <>
+                  <Grid container direction="column">
+                    <Grid item>
+                      <InfoTitle color="secondary">Information</InfoTitle>
+                    </Grid>
+                    <Grid item container direction="row">
+                      <InfoItem color="textPrimary">
+                        Proposal Type: {_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
+                      </InfoItem>
+                    </Grid>
+                  </Grid>
+                </>
+              ) : null} */}
+              </Container>
+            </Grid>
+          </Grid>
         </Grid>
+
         <Container item>
           <Grid container direction="column" style={{ gap: 40 }}>
             {agoraPost && (
@@ -464,22 +571,6 @@ export const ProposalDetails: React.FC = () => {
                       </HighlightedBadge>
                     </Grid>
                   )}
-                  {transfers?.map((transfer, index) => {
-                    return (
-                      <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
-                        {transfer.type === "XTZ" ? (
-                          <XTZTransferBadge amount={transfer.amount} address={transfer.beneficiary} />
-                        ) : (
-                          <TransferBadge
-                            amount={transfer.amount}
-                            address={transfer.beneficiary}
-                            contract={(transfer as FA2Transfer).contractAddress}
-                            tokenId={(transfer as FA2Transfer).tokenId}
-                          />
-                        )}
-                      </Grid>
-                    )
-                  })}
                   {proposal.metadata.config.map(({ key, value }, index) => (
                     <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
                       <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
@@ -570,51 +661,6 @@ export const ProposalDetails: React.FC = () => {
             </Grid>
           </Grid>
         </Container>
-        <Grid item>
-          <Grid container>
-            <Container item md={12} xs={12}>
-              {cycleInfo &&
-                proposal?.getStatus(cycleInfo.currentLevel).statusHistory.map((item, index) => {
-                  return (
-                    <HistoryItem
-                      container
-                      direction="row"
-                      key={index}
-                      alignItems="baseline"
-                      wrap="nowrap"
-                      xs={12}
-                      style={{ gap: 32 }}
-                    >
-                      <Grid item>
-                        <TableStatusBadge status={item.status || ProposalStatus.ACTIVE} />
-                        <StatusBadge item status={item.status} />
-                      </Grid>
-                      <Grid item>
-                        <Typography color="textPrimary" variant="subtitle2">
-                          {item.timestamp}
-                        </Typography>
-                      </Grid>
-                    </HistoryItem>
-                  )
-                })}
-
-              {/* {isLambdaProposal ? (
-                <>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <InfoTitle color="secondary">Information</InfoTitle>
-                    </Grid>
-                    <Grid item container direction="row">
-                      <InfoItem color="textPrimary">
-                        Proposal Type: {_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
-                      </InfoItem>
-                    </Grid>
-                  </Grid>
-                </>
-              ) : null} */}
-            </Container>
-          </Grid>
-        </Grid>
       </Grid>
       <VoteDialog open={openVote} support={voteIsSupport} onClose={onCloseVote} />
     </>

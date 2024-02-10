@@ -137,6 +137,7 @@ export abstract class Proposal {
           status: ProposalStatus
           timestamp: string
           level: number
+          date?: any
         }[]
       }
     | undefined
@@ -195,6 +196,7 @@ export abstract class Proposal {
         status: ProposalStatus
         timestamp: string
         level: number
+        date?: any
       }[] = this.indexer_status_history.map(update => ({
         timestamp: update.timestamp,
         status: INDEXER_TO_PROPOSAL_STATUS_MAP[update.description],

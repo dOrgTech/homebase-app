@@ -17,7 +17,7 @@ export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
       }}
     >
       <Tooltip placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
-        <CopyIcon />
+        <CopyIcon style={{ cursor: "pointer" }} />
       </Tooltip>
     </Box>
   )
