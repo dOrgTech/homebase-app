@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import { Button, Grid, Paper, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -16,6 +16,11 @@ import { ProposalActionsDialog } from "modules/explorer/components/ProposalActio
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { ProposalsList } from "modules/explorer/components/ProposalsList"
+import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
+import { useDropAllExpired } from "services/contracts/baseDAO/hooks/useDropAllExpired"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import NewReleasesIcon from "@mui/icons-material/NewReleases"
+import DeleteIcon from "@mui/icons-material/Delete"
 
 const TabsContainer = styled(Grid)({
   borderRadius: 8,
@@ -80,6 +85,10 @@ const ProposalsFooter = styled(Grid)({
   minHeight: 34
 })
 
+const NotContainedButton = styled(Button)({
+  fontSize: "18px"
+})
+
 export const DropButton = styled(Button)({
   verticalAlign: "text-bottom",
   fontSize: "16px"
@@ -95,34 +104,35 @@ export const Proposals: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const [openDialog, setOpenDialog] = useState(false)
 
-  // const { mutate } = useFlush()
-  // const { mutate: dropAllExpired } = useDropAllExpired()
-  // const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
+  const { mutate } = useFlush()
+  const { mutate: dropAllExpired } = useDropAllExpired()
+  const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
+  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
 
   const handleCloseModal = () => {
     setOpenDialog(false)
   }
 
-  // const onFlush = useCallback(async () => {
-  //   if (executableProposals && expiredProposals && executableProposals.length && data) {
-  //     mutate({
-  //       dao: data,
-  //       numOfProposalsToFlush: executableProposals.length,
-  //       expiredProposalIds: expiredProposals.map(p => p.id)
-  //     })
-  //     return
-  //   }
-  // }, [data, mutate, executableProposals, expiredProposals])
+  const onFlush = useCallback(async () => {
+    if (executableProposals && expiredProposals && executableProposals.length && data) {
+      mutate({
+        dao: data,
+        numOfProposalsToFlush: executableProposals.length,
+        expiredProposalIds: expiredProposals.map(p => p.id)
+      })
+      return
+    }
+  }, [data, mutate, executableProposals, expiredProposals])
 
-  // const onDropAllExpired = useCallback(async () => {
-  //   if (expiredProposals && expiredProposals.length && data) {
-  //     dropAllExpired({
-  //       dao: data,
-  //       expiredProposalIds: expiredProposals.map(p => p.id)
-  //     })
-  //     return
-  //   }
-  // }, [data, dropAllExpired, expiredProposals])
+  const onDropAllExpired = useCallback(async () => {
+    if (expiredProposals && expiredProposals.length && data) {
+      dropAllExpired({
+        dao: data,
+        expiredProposalIds: expiredProposals.map(p => p.id)
+      })
+      return
+    }
+  }, [data, dropAllExpired, expiredProposals])
 
   const { data: polls } = usePolls(data?.liteDAOData?._id)
 
@@ -142,7 +152,7 @@ export const Proposals: React.FC = () => {
                 alignItems={isMobileSmall ? "baseline" : "center"}
                 direction={isMobileSmall ? "column" : "row"}
               >
-                <Grid item xs={isMobileSmall ? undefined : 8}>
+                <Grid item xs={isMobileSmall ? undefined : 4}>
                   <TitleText color="textPrimary">Proposals</TitleText>
                 </Grid>
                 <Grid
@@ -153,32 +163,33 @@ export const Proposals: React.FC = () => {
                   direction={isMobileSmall ? "column" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
+                  <NotContainedButton
+                    color="secondary"
+                    onClick={onFlush}
+                    disabled={!executableProposals || !executableProposals.length}
+                  >
+                    <NewReleasesIcon style={{ marginRight: 8, fontSize: 20 }} />
+                    Execute
+                  </NotContainedButton>
+                  <NotContainedButton
+                    color="secondary"
+                    onClick={onDropAllExpired}
+                    disabled={!expiredProposals || !expiredProposals.length}
+                  >
+                    <DeleteIcon style={{ marginRight: 4, fontSize: 20 }} />
+                    Drop Expired
+                  </NotContainedButton>
                   <SmallButton variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
                     New Proposal
                   </SmallButton>
                   {/* <Grid>
-                    <SmallButton
-                      variant="contained"
-                      color="secondary"
-                      onClick={onFlush}
-                      disabled={!executableProposals || !executableProposals.length}
-                    >
-                      Execute
-                    </SmallButton>
                     <Tooltip placement="bottom" title="Execute all passed proposals and drop all expired or rejected">
                       <InfoIcon style={{ height: 16 }} color="secondary" />
                     </Tooltip>
                   </Grid> */}
 
                   {/* <Grid>
-                    <DropButton
-                      variant="contained"
-                      color="secondary"
-                      onClick={onDropAllExpired}
-                      disabled={!expiredProposals || !expiredProposals.length}
-                    >
-                      Drop Expired
-                    </DropButton>
+
                     <Tooltip placement="bottom" title="Drop all expired proposals">
                       <InfoIcon style={{ height: 16 }} color="secondary" />
                     </Tooltip>

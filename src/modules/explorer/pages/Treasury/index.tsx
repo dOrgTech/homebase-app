@@ -127,20 +127,21 @@ export const Treasury: React.FC = () => {
                   <Grid item xs={isMobileSmall ? 12 : 2}>
                     <TitleText color="textPrimary">Treasury</TitleText>
                   </Grid>
-                  {dao && (
-                    <Grid item xs container direction="row" style={isMobileSmall ? {} : { marginLeft: 30 }}>
-                      <CopyButton style={{ marginRight: 4 }} text={dao?.data.address} displayedText="Copy Address" />
-                    </Grid>
-                  )}
                 </Grid>
                 <Grid
                   item
                   container
                   justifyContent="flex-end"
+                  alignItems="center"
                   style={{ gap: 15 }}
                   direction={isMobileSmall ? "column" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
+                  {dao && (
+                    <Grid item xs container direction="row" style={isMobileSmall ? {} : { marginLeft: 30 }}>
+                      <CopyButton style={{ marginRight: 4 }} text={dao?.data.address} displayedText="Copy Address" />
+                    </Grid>
+                  )}
                   <SmallButton
                     variant="contained"
                     color="secondary"
