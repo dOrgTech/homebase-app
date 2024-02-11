@@ -40,6 +40,7 @@ export interface Transfer {
   amount: BigNumber
   beneficiary: string
   type: "XTZ" | "FA2" | "FA1.2"
+  tokenId?: string | BigNumber
 }
 
 export interface FA2Transfer extends Transfer {

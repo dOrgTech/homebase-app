@@ -21,7 +21,13 @@ import { useVotesStats } from "modules/explorer/hooks/useVotesStats"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge"
 import { TransferBadge } from "modules/explorer/components/TransferBadge"
-import { FA2Transfer, LambdaProposal, Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import {
+  FA2Transfer,
+  LambdaProposal,
+  Proposal,
+  ProposalStatus,
+  Transfer
+} from "services/services/dao/mappers/proposal/types"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { VoteDialog } from "../../components/VoteDialog"
 import { XTZTransferBadge } from "../../components/XTZTransferBadge"
@@ -253,6 +259,37 @@ export const ProposalDetails: React.FC = () => {
 
   const canVote = cycleInfo && proposal?.getStatus(cycleInfo.currentLevel).status === ProposalStatus.ACTIVE
 
+  const hasNFTs = useMemo(() => {
+    let NTFFound = false
+
+    transfers.map((transfer: Transfer) => {
+      if (
+        transfer.tokenId !== undefined &&
+        transfer.type === "FA2" &&
+        new BigNumber(transfer.tokenId).toNumber() !== 0
+      ) {
+        NTFFound = true
+      }
+    })
+
+    return NTFFound
+  }, [transfers])
+
+  const hasToken = useMemo(() => {
+    let NTFFound = false
+
+    transfers.map((transfer: Transfer) => {
+      if (
+        transfer.tokenId !== undefined &&
+        transfer.type === "FA2" &&
+        new BigNumber(transfer.tokenId).toNumber() === 0
+      ) {
+        NTFFound = true
+      }
+    })
+
+    return NTFFound
+  }, [transfers])
   // const canUnstakeVotes =
   //   cycleInfo &&
   //   proposal &&
@@ -392,37 +429,78 @@ export const ProposalDetails: React.FC = () => {
         </Grid>
 
         {/* Transfers */}
-        <Grid item style={{ width: "inherit" }}>
-          <Grid container style={{ gap: 45 }}>
-            <Container item xs={12}>
-              <Grid container direction="column" style={{ gap: 18 }}>
-                <Grid item>
-                  <Grid container style={{ gap: 32 }}>
-                    <Grid item>
-                      <ContainerTitle color="textPrimary">Token Transfer</ContainerTitle>
+        {transfers && transfers.length > 0 && hasToken && (
+          <Grid item style={{ width: "inherit" }}>
+            <Grid container style={{ gap: 45 }}>
+              <Container item xs={12}>
+                <Grid container direction="column" style={{ gap: 18 }}>
+                  <Grid item>
+                    <Grid container style={{ gap: 32 }}>
+                      <Grid item>
+                        <ContainerTitle color="textPrimary">Token Transfer</ContainerTitle>
+                      </Grid>
                     </Grid>
                   </Grid>
+                  {transfers.map((transfer, index) => {
+                    return (
+                      <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
+                        {transfer.type === "XTZ" ? (
+                          <XTZTransferBadge amount={transfer.amount} address={transfer.beneficiary} />
+                        ) : transfer.tokenId && new BigNumber(transfer.tokenId).toNumber() === 0 ? (
+                          <TransferBadge
+                            amount={transfer.amount}
+                            address={transfer.beneficiary}
+                            contract={(transfer as FA2Transfer).contractAddress}
+                            tokenId={(transfer as FA2Transfer).tokenId}
+                          />
+                        ) : null}
+                      </Grid>
+                    )
+                  })}{" "}
                 </Grid>
-                {transfers?.map((transfer, index) => {
-                  return (
-                    <Grid key={index} item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
-                      {transfer.type === "XTZ" ? (
-                        <XTZTransferBadge amount={transfer.amount} address={transfer.beneficiary} />
-                      ) : (
-                        <TransferBadge
-                          amount={transfer.amount}
-                          address={transfer.beneficiary}
-                          contract={(transfer as FA2Transfer).contractAddress}
-                          tokenId={(transfer as FA2Transfer).tokenId}
-                        />
-                      )}
-                    </Grid>
-                  )
-                })}{" "}
-              </Grid>
-            </Container>
+              </Container>
+            </Grid>
           </Grid>
-        </Grid>
+        )}
+
+        {/* Transfers */}
+        {transfers && transfers.length > 0 && hasNFTs && (
+          <Grid item style={{ width: "inherit" }}>
+            <Grid container style={{ gap: 45 }}>
+              <Container item xs={12}>
+                <Grid container direction="column" style={{ gap: 18 }}>
+                  <Grid item>
+                    <Grid container style={{ gap: 32 }}>
+                      <Grid item>
+                        <ContainerTitle color="textPrimary">NFT Transfer</ContainerTitle>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  {transfers
+                    .filter(transfer => transfer.tokenId && new BigNumber(transfer.tokenId).toNumber() !== 0)
+                    .map((transfer, index) => {
+                      return (
+                        <Grid
+                          key={index}
+                          item
+                          container
+                          alignItems="center"
+                          direction={isMobileSmall ? "column" : "row"}
+                        >
+                          <TransferBadge
+                            amount={transfer.amount}
+                            address={transfer.beneficiary}
+                            contract={(transfer as FA2Transfer).contractAddress}
+                            tokenId={(transfer as FA2Transfer).tokenId}
+                          />
+                        </Grid>
+                      )
+                    })}{" "}
+                </Grid>
+              </Container>
+            </Grid>
+          </Grid>
+        )}
 
         {/* VOTES */}
         <Grid item style={{ width: "inherit" }}>
