@@ -103,6 +103,16 @@ export const calculateChoiceTotal = (choice_voters: any[], decimals: any) => {
   return result
 }
 
+export const calculateXTZTotal = (choices: Choice[] | undefined) => {
+  let totalVoters = 0
+  if (choices) {
+    choices.map((choice: Choice) => {
+      totalVoters += choice.walletAddresses.length
+    })
+  }
+  return totalVoters
+}
+
 export const calculateProposalTotal = (choices: Choice[], decimals: any) => {
   let total = new BigNumber(0)
   choices.map((choice: any) => {

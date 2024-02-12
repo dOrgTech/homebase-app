@@ -10,6 +10,7 @@ import {
   calculateChoiceTotal,
   calculateProposalTotal,
   calculateWeight,
+  calculateXTZTotal,
   getTotalVoters,
   getTreasuryPercentage,
   nFormatter
@@ -66,10 +67,18 @@ export const VoteDetails: React.FC<{
   const [votes, setVotes] = useState<Choice[]>([])
   const tokenData = useCommunityToken(communityId)
   const { data: isTokenDelegationSupported } = useTokenDelegationSupported(tokenData?.tokenAddress)
+  const totalVoters = calculateXTZTotal(choices)
 
   const handleClickOpen = () => {
     setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
     setOpen(true)
+  }
+
+  const calculateWeightXTZ = (choice: Choice) => {
+    if (choice && choice.walletAddresses.length > 0) {
+      return (choice.walletAddresses.length / totalVoters) * 100
+    }
+    return 0
   }
 
   const handleClose = () => {
@@ -134,25 +143,31 @@ export const VoteDetails: React.FC<{
                   <LinearProgress
                     style={{ width: "100%", marginRight: "4px" }}
                     color="secondary"
-                    value={calculateWeight(
-                      poll?.totalSupplyAtReferenceBlock,
-                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals),
-                      isXTZ ? 6 : tokenData?.decimals
-                    )
-                      .dp(2, 1)
-                      .toNumber()}
+                    value={
+                      !poll?.isXTZ
+                        ? calculateWeight(
+                            poll?.totalSupplyAtReferenceBlock,
+                            calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals),
+                            tokenData?.decimals
+                          )
+                            .dp(2, 1)
+                            .toNumber()
+                        : calculateWeightXTZ(choice)
+                    }
                     variant="determinate"
                   />
                 </Grid>
                 <Grid item xs={2} lg={1} sm={1} container justifyContent="flex-end">
                   <Typography color="textPrimary" variant="body2">
-                    {calculateWeight(
-                      poll?.totalSupplyAtReferenceBlock,
-                      calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals),
-                      isXTZ ? 6 : tokenData?.decimals
-                    )
-                      .dp(2, 1)
-                      .toString()}
+                    {!poll?.isXTZ
+                      ? calculateWeight(
+                          poll?.totalSupplyAtReferenceBlock,
+                          calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals),
+                          isXTZ ? 6 : tokenData?.decimals
+                        )
+                          .dp(2, 1)
+                          .toString()
+                      : numbro(calculateWeightXTZ(choice)).format(formatConfig)}
                     %
                   </Typography>
                 </Grid>
@@ -168,7 +183,7 @@ export const VoteDetails: React.FC<{
             <Typography color="textPrimary" variant="body1" onClick={() => handleClickOpen()}>
               Votes
             </Typography>
-            {isTokenDelegationSupported && turnout ? (
+            {isTokenDelegationSupported && turnout && !poll?.isXTZ ? (
               <Typography color="textPrimary" variant="body1">
                 ({turnout.toFixed(2)} % Turnout)
               </Typography>
@@ -192,17 +207,19 @@ export const VoteDetails: React.FC<{
             <Typography color="textPrimary" variant="body1">
               {isXTZ ? "XTZ" : poll?.tokenSymbol}
             </Typography>
-            <Typography color="textPrimary" variant="body1">
-              (
-              {getTreasuryPercentage(
-                calculateProposalTotal(choices, isXTZ ? 6 : tokenData?.decimals),
-                poll?.totalSupplyAtReferenceBlock,
-                isXTZ ? 6 : tokenData?.decimals
-              )
-                .dp(5, 1)
-                .toString()}
-              % of Total Supply)
-            </Typography>
+            {!poll?.isXTZ && (
+              <Typography color="textPrimary" variant="body1">
+                (
+                {getTreasuryPercentage(
+                  calculateProposalTotal(choices, isXTZ ? 6 : tokenData?.decimals),
+                  poll?.totalSupplyAtReferenceBlock,
+                  isXTZ ? 6 : tokenData?.decimals
+                )
+                  .dp(5, 1)
+                  .toString()}
+                % of Total Supply)
+              </Typography>
+            )}
           </Grid>
         </LegendContainer>
         <VotesDialog

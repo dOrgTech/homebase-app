@@ -20,6 +20,7 @@ import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
 import { ArrowBackIosOutlined } from "@material-ui/icons"
+import { useIsMember } from "../../hooks/useIsMember"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -67,7 +68,9 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     dao?.data.token.contract || community?.tokenAddress,
     poll?.referenceBlock
   )
+  const { network } = useTezos()
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
+  const isMember = useIsMember(network, community?.tokenAddress || "", account)
 
   const votingPower = poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight
 
@@ -174,7 +177,9 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
               </Grid>
               {poll?.isActive === ProposalStatus.ACTIVE ? (
                 <Button
-                  disabled={selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))}
+                  disabled={
+                    (selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))) && isMember
+                  }
                   variant="contained"
                   color="secondary"
                   onClick={() => saveVote()}

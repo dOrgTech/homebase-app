@@ -20,6 +20,7 @@ import { useDAOID } from "modules/explorer/pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import { useCommunity } from "../hooks/useCommunity"
+import BigNumber from "bignumber.js"
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
   marginTop: 24,
