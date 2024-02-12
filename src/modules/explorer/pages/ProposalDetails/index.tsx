@@ -549,26 +549,6 @@ export const ProposalDetails: React.FC = () => {
                     </div>
                   </ProgressBar>
                 </Grid>
-                <Grid item>
-                  <Grid
-                    container
-                    direction="column"
-                    alignItems="flex-start"
-                    justifyContent="center"
-                    wrap="nowrap"
-                    style={{ height: "100%" }}
-                  >
-                    <Grid item>
-                      <Typography color="textPrimary">
-                        {proposal
-                          ? `${numbro(quorumThreshold).format(formatConfig)} of ${numbro(
-                              dao?.data.quorum_threshold
-                            ).format(formatConfig)}`
-                          : "-"}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
               </Grid>
             </Container>
           </Grid>
