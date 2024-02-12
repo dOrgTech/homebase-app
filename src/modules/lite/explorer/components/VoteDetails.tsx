@@ -124,7 +124,7 @@ export const VoteDetails: React.FC<{
                         : numbro(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals)).format(
                             formatConfig
                           )}{" "}
-                      {tokenData?.symbol}
+                      {isXTZ ? "XTZ" : tokenData?.symbol}
                     </Typography>
                   ) : null}
                 </Grid>
@@ -190,7 +190,7 @@ export const VoteDetails: React.FC<{
               {numbro(calculateProposalTotal(choices, isXTZ ? 6 : tokenData?.decimals)).format(formatConfig)}
             </Typography>
             <Typography color="textPrimary" variant="body1">
-              {poll?.tokenSymbol}
+              {isXTZ ? "XTZ" : poll?.tokenSymbol}
             </Typography>
             <Typography color="textPrimary" variant="body1">
               (
@@ -207,7 +207,7 @@ export const VoteDetails: React.FC<{
         </LegendContainer>
         <VotesDialog
           decimals={tokenData?.decimals ? tokenData?.decimals : ""}
-          symbol={tokenData?.symbol ? tokenData?.symbol : ""}
+          symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
           choices={votes}
           open={open}
           handleClose={handleClose}
