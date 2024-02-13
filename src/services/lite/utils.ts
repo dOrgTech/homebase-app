@@ -103,6 +103,13 @@ export const calculateChoiceTotal = (choice_voters: any[], decimals: any) => {
   return result
 }
 
+export const calculateWeightXTZ = (choice: Choice, totalVoters: number) => {
+  if (choice && choice.walletAddresses.length > 0) {
+    return (choice.walletAddresses.length / totalVoters) * 100
+  }
+  return 0
+}
+
 export const calculateXTZTotal = (choices: Choice[] | undefined) => {
   let totalVoters = 0
   if (choices) {

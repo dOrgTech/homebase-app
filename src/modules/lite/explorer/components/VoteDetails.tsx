@@ -10,6 +10,7 @@ import {
   calculateChoiceTotal,
   calculateProposalTotal,
   calculateWeight,
+  calculateWeightXTZ,
   calculateXTZTotal,
   getTotalVoters,
   getTreasuryPercentage,
@@ -72,13 +73,6 @@ export const VoteDetails: React.FC<{
   const handleClickOpen = () => {
     setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
     setOpen(true)
-  }
-
-  const calculateWeightXTZ = (choice: Choice) => {
-    if (choice && choice.walletAddresses.length > 0) {
-      return (choice.walletAddresses.length / totalVoters) * 100
-    }
-    return 0
   }
 
   const handleClose = () => {
@@ -152,7 +146,7 @@ export const VoteDetails: React.FC<{
                           )
                             .dp(2, 1)
                             .toNumber()
-                        : calculateWeightXTZ(choice)
+                        : calculateWeightXTZ(choice, totalVoters)
                     }
                     variant="determinate"
                   />
@@ -167,7 +161,7 @@ export const VoteDetails: React.FC<{
                         )
                           .dp(2, 1)
                           .toString()
-                      : numbro(calculateWeightXTZ(choice)).format(formatConfig)}
+                      : numbro(calculateWeightXTZ(choice, totalVoters)).format(formatConfig)}
                     %
                   </Typography>
                 </Grid>
@@ -227,6 +221,7 @@ export const VoteDetails: React.FC<{
           symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
           choices={votes}
           open={open}
+          isXTZ={isXTZ}
           handleClose={handleClose}
         />
       </GraphicsContainer>
