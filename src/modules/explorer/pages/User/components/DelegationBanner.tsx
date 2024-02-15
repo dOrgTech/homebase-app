@@ -8,7 +8,7 @@ import { useDelegationStatus } from "services/contracts/token/hooks/useDelegatio
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
-import { parseUnits } from "services/contracts/utils"
+import { parseUnits, toShortAddress } from "services/contracts/utils"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { CopyButton } from "modules/common/CopyButton"
 
@@ -19,8 +19,6 @@ export enum DelegationsType {
 
 const DelegationBox = styled(Grid)(({ theme }: { theme: Theme }) => ({
   minHeight: "178px",
-  padding: "46px 55px",
-  background: theme.palette.primary.main,
   boxSizing: "border-box",
   borderRadius: 8,
   boxShadow: "none",
@@ -28,14 +26,14 @@ const DelegationBox = styled(Grid)(({ theme }: { theme: Theme }) => ({
 }))
 
 const Subtitle = styled(Typography)({
-  fontWeight: 200,
-  color: "#fff",
-  fontSize: 16
+  fontWeight: 300,
+  color: "#bfc5ca",
+  fontSize: 18
 })
 
 const Balance = styled(Typography)({
-  fontSize: 24,
-  fontWeight: 200
+  fontSize: 32,
+  fontWeight: 300
 })
 
 const CustomCopyButton = withStyles({
@@ -46,6 +44,24 @@ const CustomCopyButton = withStyles({
   },
   disabled: {}
 })(Grid)
+
+const OffChainBox = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  padding: "36px 48px 33px 48px",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "flex-start",
+  gap: 24,
+  flexShrink: 0,
+  borderRadius: 8,
+  background: theme.palette.primary.main
+}))
+
+const DelegationText = styled(Grid)({
+  fontSize: 24,
+  fontWeight: 300,
+  color: "#fff"
+})
 
 export const matchTextToStatus = (value: DelegationsType | undefined) => {
   switch (value) {
@@ -97,65 +113,74 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
   }, [delegatedTo])
 
   return (
-    <DelegationBox container direction="column">
+    <DelegationBox container direction="row">
       <Grid container style={{ gap: 12 }} direction="column">
         <Typography variant="h4" color="textPrimary">
           Off-chain Delegation
         </Typography>
-        <Subtitle variant="body1">These settings only affect your participation in off-chain polls</Subtitle>
+        <Subtitle>These settings only affect your participation in off-chain polls</Subtitle>
       </Grid>
-      {dao && voteWeight && (
-        <Grid container style={{ gap: 12 }} direction="column">
-          <Typography color="textPrimary">Voting Weight</Typography>
-          <Balance color="secondary">
-            {!voteWeight || voteWeight.eq(new BigNumber(0)) ? (
-              "-"
-            ) : (
-              <>{`${parseUnits(voteWeight, dao.data.token.decimals).toString()} ${dao.data.token.symbol}`}</>
-            )}
-          </Balance>
-        </Grid>
-      )}
-      <Grid container style={{ gap: 12 }} direction="column">
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <Grid item xs={6}>
-            <Typography color="textPrimary">Delegation Status</Typography>
-          </Grid>
-          <Grid
-            item
+      <Grid container direction="row" justifyContent="space-between">
+        {dao && voteWeight && (
+          <OffChainBox
+            style={{ gap: 12, flexBasis: "32%", maxWidth: "32%" }}
             container
-            direction="row"
-            xs={6}
-            alignItems="center"
-            justifyContent="flex-end"
-            style={{ gap: 4, cursor: "pointer" }}
+            item
+            md={4}
+            xs={4}
+            direction="column"
           >
-            <Edit color="secondary" fontSize="small" onClick={() => setOpenModal(true)} />
-            <Typography color="secondary" onClick={() => setOpenModal(true)}>
-              Edit
-            </Typography>
+            <Typography color="textPrimary">Voting Weight</Typography>
+            <Balance color="textPrimary">
+              {!voteWeight || voteWeight.eq(new BigNumber(0)) ? (
+                "-"
+              ) : (
+                <>{`${parseUnits(voteWeight, dao.data.token.decimals).toString()} ${dao.data.token.symbol}`}</>
+              )}
+            </Balance>
+          </OffChainBox>
+        )}
+        <OffChainBox container item md={7} xs style={{ gap: 12, flexBasis: "66%", maxWidth: "66%" }} direction="column">
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+            <Grid item xs={6}>
+              <Typography color="textPrimary">Delegation Status</Typography>
+            </Grid>
+            <Grid
+              item
+              container
+              direction="row"
+              xs={6}
+              alignItems="center"
+              justifyContent="flex-end"
+              style={{ gap: 4, cursor: "pointer" }}
+            >
+              <Edit color="secondary" fontSize="small" onClick={() => setOpenModal(true)} />
+              <Typography color="secondary" onClick={() => setOpenModal(true)}>
+                Change Status
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
-        <Subtitle variant="body1">
-          {isLoading || loadingRes ? (
-            <CircularProgress color="secondary" />
-          ) : (
-            <>
-              <Grid container direction="row" alignItems="center" style={{ gap: 8 }}>
-                {matchTextToStatus(delegationStatus)}
-                {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
-                  <ProfileAvatar size={22} address={delegatedTo ? delegatedTo : ""} />
-                )}
-                {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
-                {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
-                  <CustomCopyButton>
-                    <CopyButton text={delegatedTo ? delegatedTo : ""} />
-                  </CustomCopyButton>
-                )}
-              </Grid>
-            </>
-          )}
-        </Subtitle>
+          <Subtitle variant="body1">
+            {isLoading || loadingRes ? (
+              <CircularProgress color="secondary" />
+            ) : (
+              <>
+                <DelegationText container direction="row" alignItems="center" style={{ gap: 8 }}>
+                  {matchTextToStatus(delegationStatus)}
+                  {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
+                    <ProfileAvatar size={22} address={delegatedTo ? toShortAddress(delegatedTo) : ""} />
+                  )}
+                  {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
+                  {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
+                    <CustomCopyButton>
+                      <CopyButton text={delegatedTo ? delegatedTo : ""} />
+                    </CustomCopyButton>
+                  )}
+                </DelegationText>
+              </>
+            )}
+          </Subtitle>
+        </OffChainBox>
       </Grid>
       <DelegationDialog
         open={openModal}

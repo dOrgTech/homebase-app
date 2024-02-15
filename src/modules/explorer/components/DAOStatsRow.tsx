@@ -7,11 +7,13 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAOID } from "../pages/DAO/router"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
-import { formatNumber } from "../utils/FormatNumber"
 import { useDAOHoldings, useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
+import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
+import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
+import numbro from "numbro"
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.primary.main,
+  backgroundColor: "#24282d",
   borderRadius: 8,
   color: theme.palette.text.primary,
   height: 84,
@@ -36,6 +38,8 @@ const ItemTitle = styled(Typography)(({ theme }) => ({
 const ItemValue = styled(Typography)(({ theme }) => ({
   fontSize: 32,
   fontWeight: 300,
+  overflowX: "scroll",
+  cursor: "default",
   [theme.breakpoints.down("sm")]: {
     fontSize: 28
   }
@@ -48,9 +52,16 @@ const Percentage = styled(Typography)({
   paddingLeft: 18
 })
 
+const formatConfig = {
+  average: true,
+  mantissa: 1,
+  thousandSeparated: true,
+  trimMantissa: true
+}
+
 export const DAOStatsRow: React.FC = () => {
   const daoId = useDAOID()
-  const { data, ledger } = useDAO(daoId)
+  const { data, ledger, cycleInfo } = useDAO(daoId)
   const symbol = data && data.data.token.symbol.toUpperCase()
   const theme = useTheme()
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
@@ -58,6 +69,9 @@ export const DAOStatsRow: React.FC = () => {
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
   const { tokenHoldings } = useDAOHoldings(daoId)
   const { nftHoldings } = useDAONFTHoldings(daoId)
+  const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
+  const { hours, minutes, days } = useTimeLeftInCycle()
+  const shouldDisable = useIsProposalButtonDisabled(daoId)
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -91,7 +105,18 @@ export const DAOStatsRow: React.FC = () => {
               <ItemTitle color="textPrimary">Total {symbol}</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{formatNumber(totalTokens)}</ItemValue>
+              <ItemValue color="textPrimary"> {numbro(totalTokens).format(formatConfig)}</ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
+            </ItemContent>
+            <Grid item container direction="row">
+              <ItemValue color="textPrimary">{numbro(amountLocked).format(formatConfig)}</ItemValue>
+              <Percentage color="textPrimary">{numbro(amountLockedPercentage).format(formatConfig)}%</Percentage>
             </Grid>
           </Item>
         </Grid>
@@ -108,21 +133,43 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <ItemTitle color="textPrimary">Tokens</ItemTitle>
+              <ItemTitle color="textPrimary">Cycle Status</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{tokenHoldings.length || "-"}</ItemValue>
+              <ItemValue color="textPrimary">{shouldDisable ? "Voting" : "Creating"}</ItemValue>
             </Grid>
           </Item>
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
+              <ItemTitle color="textPrimary">Current Cycle</ItemTitle>
             </ItemContent>
-            <Grid item container direction="row">
-              <ItemValue color="textPrimary">{formatNumber(amountLocked)}</ItemValue>
-              <Percentage color="textPrimary">{formatNumber(amountLockedPercentage)}%</Percentage>
+            <Grid item>
+              <ItemValue color="textPrimary">{cycleInfo?.currentCycle}</ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <ItemTitle color="textPrimary">Time Left in Cycle</ItemTitle>
+            </ItemContent>
+            <Grid item>
+              <ItemValue color="textPrimary">
+                {" "}
+                {days}d {hours}h {minutes}m{" "}
+              </ItemValue>
+            </Grid>
+          </Item>
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <Item>
+            <ItemContent item container direction="row" alignItems="center">
+              <ItemTitle color="textPrimary">Total Tokens</ItemTitle>
+            </ItemContent>
+            <Grid item>
+              <ItemValue color="textPrimary">{tokenHoldings.length || "-"}</ItemValue>
             </Grid>
           </Item>
         </Grid>
@@ -144,10 +191,10 @@ export const DAOStatsRow: React.FC = () => {
         <Grid item xs={12} sm={6} md={4}>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
-              <ItemTitle color="textPrimary">NFTs</ItemTitle>
+              <ItemTitle color="textPrimary">Executable Proposals</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{nftHoldings?.length || "-"}</ItemValue>
+              <ItemValue color="textPrimary">{executableProposals?.length}</ItemValue>
             </Grid>
           </Item>
         </Grid>

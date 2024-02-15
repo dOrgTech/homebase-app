@@ -16,7 +16,7 @@ import { SmallButton } from "../../../common/SmallButton"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
 import { DaoSettingModal } from "./components/Settings"
-import { Visibility } from "@material-ui/icons"
+import SettingsIcon from "@mui/icons-material/Settings"
 
 export const StyledAvatar = styled(Avatar)({
   height: 50,
@@ -61,8 +61,9 @@ const ViewSettings = styled(Grid)({
   }
 })
 
-const SubtitleText = styled(Typography)({
+const SubtitleText = styled(Typography)(({ theme }) => ({
   fontSize: 18,
+  color: theme.palette.primary.light,
   width: "875px",
   fontWeight: 300,
   maxHeight: "200px",
@@ -80,7 +81,7 @@ const SubtitleText = styled(Typography)({
     width: "100%",
     margin: "-15px auto 0 auto"
   }
-})
+}))
 
 export const DAO: React.FC = () => {
   const daoId = useDAOID()
@@ -125,7 +126,7 @@ export const DAO: React.FC = () => {
               </Grid>
               <Grid item>
                 <ViewSettings container direction="row" alignItems="center" onClick={() => setOpenDialog(true)}>
-                  <Visibility fontSize="small" color="secondary" />
+                  <SettingsIcon style={{ fontSize: 18, color: theme.palette.secondary.main }} color="secondary" />
                   <Typography variant="body2" color="secondary">
                     View Settings
                   </Typography>
@@ -135,15 +136,15 @@ export const DAO: React.FC = () => {
             </Grid>
           </Grid>
           <Grid item>
-            <SubtitleText color="textPrimary">{description}</SubtitleText>
+            <SubtitleText>{description}</SubtitleText>
           </Grid>
         </Grid>
       </HeroContainer>
       <DAOStatsRow />
 
-      <Grid item style={{ width: "inherit" }}>
+      {/* <Grid item style={{ width: "inherit" }}>
         <UsersTable data={usersTableData} symbol={symbol || ""} />
-      </Grid>
+      </Grid> */}
     </Grid>
   )
 }

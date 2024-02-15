@@ -9,8 +9,10 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { ProposalTableRow } from "modules/lite/explorer/components/ProposalTableRow"
 import { StyledDivider } from "modules/lite/explorer/components/ProposalList"
 import { Poll } from "models/Polls"
+import ReactPaginate from "react-paginate"
+import "../pages/DAOList/styles.css"
 
-const TableContainer = styled(ContentContainer)({
+const TableContainer = styled(Grid)({
   width: "100%"
 })
 
@@ -21,47 +23,53 @@ const TableHeader = styled(Grid)({
 
 const ProposalsFooter = styled(Grid)({
   padding: "16px 46px",
-  borderTop: ".6px solid rgba(125,140,139, 0.2)",
   minHeight: 34
 })
 
 interface Props {
   currentLevel: number
-  proposals: Proposal[]
-  title: string
+  proposals: Proposal[] | undefined
   showFooter?: boolean
   rightItem?: (proposal: Proposal) => React.ReactElement
   liteProposals: Poll[] | undefined
+  proposalStyle?: any
 }
 
 export const ProposalsList: React.FC<Props> = ({
   currentLevel,
   proposals,
-  title,
   showFooter,
   rightItem,
-  liteProposals
+  liteProposals,
+  proposalStyle
 }) => {
+  const [currentPage, setCurrentPage] = useState(0)
+  const [offset, setOffset] = useState(0)
   const [open, setopen] = useState(true)
+
+  const pageCount = Math.ceil(
+    proposals && liteProposals
+      ? proposals.length + liteProposals.length / 4
+      : proposals && liteProposals?.length === undefined
+      ? proposals.length / 4
+      : proposals?.length === undefined && liteProposals
+      ? liteProposals.length / 4
+      : 0
+  )
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (proposals) {
+      const newOffset = (event.selected * 4) % proposals.length
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
+  }
 
   return (
     <TableContainer item>
-      <Grid container direction="column" wrap={"nowrap"}>
-        <TableHeader item container justifyContent="space-between">
-          <Grid item>
-            <Typography variant="body2" style={{ fontWeight: "500" }} color="textPrimary">
-              {title}
-            </Typography>
-          </Grid>
-          {proposals.length && proposals.length > 0 ? (
-            <Grid item>
-              <IconButton aria-label="expand row" size="small" onClick={() => setopen(!open)}>
-                {open ? <KeyboardArrowUpIcon htmlColor="#FFF" /> : <KeyboardArrowDownIcon htmlColor="#FFF" />}
-              </IconButton>
-            </Grid>
-          ) : null}
-        </TableHeader>
-        {proposals.length && proposals.length > 0 ? (
+      <Grid container direction="column" wrap={"nowrap"} style={{ gap: 16 }}>
+        {proposals && proposals.length && proposals.length > 0 ? (
           <Grid
             item
             container
@@ -70,10 +78,11 @@ export const ProposalsList: React.FC<Props> = ({
             in={open}
             timeout="auto"
             unmountOnExit
+            // style={{ display: "block" }}
             direction="column"
           >
-            {proposals.map((p, i) => (
-              <Grid item key={`proposal-${i}`}>
+            {proposals.slice(offset, offset + 4).map((p, i) => (
+              <Grid item key={`proposal-${i}`} style={proposalStyle}>
                 <Link to={`proposal/${p.id}`}>
                   <ProposalItem proposal={p} status={p.getStatus(currentLevel).status}>
                     {rightItem ? rightItem(p) : null}
@@ -84,25 +93,15 @@ export const ProposalsList: React.FC<Props> = ({
           </Grid>
         ) : null}
         {liteProposals && liteProposals.length > 0
-          ? liteProposals.map((poll, i) => {
+          ? liteProposals.slice(offset, offset + 4).map((poll, i) => {
               return (
-                <div key={`poll-${i}`}>
+                <div style={{ width: "inherit" }} key={`poll-${i}`}>
                   <ProposalTableRow poll={poll} />
-                  {liteProposals.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
                 </div>
               )
             })
           : null}
 
-        {!(proposals.length && proposals.length > 0) && !(liteProposals && liteProposals.length > 0) ? (
-          <ProposalsFooter item container direction="column" justifyContent="center">
-            <Grid item>
-              <Typography color="textPrimary" align="center">
-                No items
-              </Typography>
-            </Grid>
-          </ProposalsFooter>
-        ) : null}
         {showFooter && (
           <ProposalsFooter item container direction="column" justifyContent="center">
             <Grid item>
@@ -114,6 +113,20 @@ export const ProposalsList: React.FC<Props> = ({
             </Grid>
           </ProposalsFooter>
         )}
+      </Grid>
+      <Grid container direction="row" justifyContent="flex-end">
+        <ReactPaginate
+          previousLabel={"<"}
+          breakLabel="..."
+          nextLabel=">"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={2}
+          pageCount={pageCount}
+          renderOnZeroPageCount={null}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+          forcePage={currentPage}
+        />
       </Grid>
     </TableContainer>
   )

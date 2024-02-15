@@ -73,7 +73,7 @@ const ProgressText = styled(Typography)(({ textColor }: { textColor: string }) =
   userSelect: "none",
   boxShadow: "none",
   background: "inherit",
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   justifyContent: "center",
   top: 0
 }))
@@ -463,7 +463,7 @@ export const ProposalDetails: React.FC = () => {
                         padding={10}
                         style={{
                           minHeight: 500,
-                          fontFamily: "Roboto Mono",
+                          fontFamily: "Roboto Flex",
                           fontSize: 14,
                           fontWeight: 400,
                           outlineWidth: 0

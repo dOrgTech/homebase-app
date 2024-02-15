@@ -3,37 +3,34 @@ import { styled, Grid, Typography, useTheme, useMediaQuery, LinearProgress } fro
 import { RowContainer } from "./tables/RowContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { useHistory } from "react-router"
-import { Blockie } from "modules/common/Blockie"
-import { toShortAddress } from "services/contracts/utils"
 import { Poll } from "models/Polls"
 import ReactHtmlParser from "react-html-parser"
-
+import dayjs from "dayjs"
 export interface ProposalTableRowData {
   daoId?: string
   id: string
 }
 
 const ArrowInfo = styled(Typography)(({ theme }) => ({
-  fontFamily: "Roboto Mono",
-  fontWeight: 500,
+  fontFamily: "Roboto Flex",
+  fontWeight: 300,
   fontSize: 16,
+  color: "#bfc5ca",
   [theme.breakpoints.down("xs")]: {
     marginTop: 5
   }
 }))
 
-const Address = styled(Typography)({
-  marginLeft: 12
-})
-
-const BlockieContainer = styled(Grid)({
-  marginBottom: 19
+const Title = styled(Typography)({
+  fontWeight: 600,
+  fontSize: 18
 })
 
 const DescriptionText = styled(Typography)(({ theme }) => ({
   fontWeight: 300,
   fontSize: 18,
   width: "inherit",
+  color: "#BFC5CA",
   wordBreak: "break-word",
   [theme.breakpoints.down("sm")]: {
     fontSize: 16
@@ -48,37 +45,35 @@ export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ pol
 
   return (
     <RowContainer
+      style={{ background: "#2F3438", borderRadius: 8 }}
       item
       container
-      alignItems="center"
+      alignItems="baseline"
       onClick={() =>
         navigate.push(`/explorer/lite/dao/${poll.daoID}/community/proposal/${poll._id}`, { poll: poll, daoId: daoId })
       }
     >
-      <BlockieContainer container direction="row">
-        <Blockie address={"tz1bQgEea45ciBpYdFj4y4P3hNyDM8aMF6WB"} size={24} />
-        <Address color="textPrimary" variant="subtitle2">
-          {toShortAddress(poll.author)}
-        </Address>
-      </BlockieContainer>
-      <Grid container item style={{ gap: 25 }} xs={12} md={12} justifyContent={isMobile ? "center" : "flex-start"}>
-        <Typography variant="h4" color="textPrimary" align={isMobile ? "center" : "left"}>
+      <Grid container item style={{ gap: 16 }} xs={12} md={12} justifyContent={isMobile ? "center" : "flex-start"}>
+        <Title color="textPrimary" align={isMobile ? "center" : "left"}>
           {poll.name}
-        </Typography>
+        </Title>
+
+        <Grid container direction="row">
+          <DescriptionText>{ReactHtmlParser(poll.description)}</DescriptionText>
+        </Grid>
 
         <Grid
           container
           direction={isMobile ? "column" : "row"}
-          alignItems={isMobileSmall ? "center" : "flex-start"}
+          alignItems={isMobileSmall ? "center" : "center"}
           wrap="nowrap"
           style={{ gap: 18 }}
         >
           <TableStatusBadge status={poll.isActive || ProposalStatus.ACTIVE} />
           <ArrowInfo color="textPrimary">{poll.timeFormatted}</ArrowInfo>
-        </Grid>
-
-        <Grid>
-          <DescriptionText color="textPrimary">{ReactHtmlParser(poll.description)}</DescriptionText>
+          {poll.isActive === ProposalStatus.ACTIVE ? (
+            <ArrowInfo> • &nbsp; Created {dayjs(poll.startTime).format("LL")}</ArrowInfo>
+          ) : null}
         </Grid>
       </Grid>
     </RowContainer>

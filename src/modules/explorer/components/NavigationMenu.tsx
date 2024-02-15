@@ -31,23 +31,10 @@ const Container = styled(Grid)(({ theme }) => ({
 
 const InnerContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
   width: "1000px",
+  paddingLeft: 0,
+  paddingRight: 0,
   margin: "auto",
   borderRadius: 8,
-  backgroundColor: theme.palette.primary.main,
-  padding: 16,
-  alignItems: "center",
-  justifyContent: "space-between",
-
-  ["@media (max-width:1167px)"]: {
-    width: "86vw"
-  }
-}))
-
-const InnerContainerExplorer = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  width: "1000px",
-  margin: "auto",
-  borderRadius: 8,
-  backgroundColor: theme.palette.primary.dark,
   padding: 16,
   alignItems: "center",
   justifyContent: "space-between",
@@ -61,7 +48,7 @@ const PageItemMobile = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSe
   "display": "flex",
   "alignItems": "center",
   "borderTop": "2px solid transparent",
-  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
+  "backgroundColor": isSelected ? "#24282D" : "inherit",
   "height": "auto",
   "padding": "20px 20px",
   "borderRadius": 8,
@@ -97,12 +84,11 @@ const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected
   "display": "flex",
   "alignItems": "center",
   "borderTop": "2px solid transparent",
-  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
-  "height": 40,
-  "padding": "20px 20px",
+  "backgroundColor": isSelected ? "#24282D" : "inherit",
+  "height": 50,
+  "padding": "20px 16px",
   "borderRadius": 8,
   "transition": isSelected ? "0s ease-in" : ".1s ease-out",
-  "width": 180,
   "justifyContent": "center",
 
   "& > a > *": {

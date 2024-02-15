@@ -543,7 +543,7 @@ export const Quorum: React.FC = () => {
 
     updateCache(newState)
     setSubmitting(true)
-    dispatch({ type: ActionTypes.UPDATE_QUORUM_SETTINGS, quorum: values })
+    dispatch({ type: ActionTypes.UPDATE_QUORUM_SETTINGS, quorum: typeOfQuorum ? values : fixedValues })
     history.push(`summary`)
   }
 

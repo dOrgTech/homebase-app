@@ -45,7 +45,7 @@ const codeEditorcontainerstyles = {
 
 const codeEditorStyles = {
   minHeight: 500,
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   fontSize: 14,
   fontWeight: 400,
   outlineWidth: 0
