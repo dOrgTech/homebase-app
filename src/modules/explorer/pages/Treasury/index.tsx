@@ -1,11 +1,8 @@
 import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { CopyAddress } from "modules/common/CopyAddress"
 import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
 
 import React, { useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { Hero } from "../../components/Hero"
-import { HeroTitle } from "../../components/HeroTitle"
 import { useDAOID } from "../DAO/router"
 import { BalancesTable } from "./components/BalancesTable"
 import { TransfersTable } from "./components/TransfersTable"
@@ -122,25 +119,33 @@ export const Treasury: React.FC = () => {
                   justifyContent="flex-start"
                   alignItems="center"
                   item
-                  xs={isMobileSmall ? undefined : 8}
+                  xs={isMobileSmall ? undefined : 7}
                 >
                   <Grid item xs={isMobileSmall ? 12 : 2}>
                     <TitleText color="textPrimary">Treasury</TitleText>
                   </Grid>
-                  {dao && (
-                    <Grid item xs container direction="row" style={isMobileSmall ? {} : { marginLeft: 30 }}>
-                      <CopyButton style={{ marginRight: 4 }} text={dao?.data.address} displayedText="Copy Address" />
-                    </Grid>
-                  )}
                 </Grid>
                 <Grid
                   item
                   container
                   justifyContent="flex-end"
+                  alignItems="center"
                   style={{ gap: 15 }}
                   direction={isMobileSmall ? "column" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
+                  {dao && (
+                    <Grid
+                      item
+                      xs
+                      container
+                      direction="row"
+                      justifyContent="flex-end"
+                      style={isMobileSmall ? {} : { marginLeft: 30 }}
+                    >
+                      <CopyButton style={{ marginRight: 4 }} text={dao?.data.address} displayedText="Copy Address" />
+                    </Grid>
+                  )}
                   <SmallButton
                     variant="contained"
                     color="secondary"

@@ -57,7 +57,8 @@ const ProposalTitle = styled(Typography)({
 })
 
 const CreatedText = styled(Typography)({
-  fontWeight: 300
+  fontWeight: 300,
+  color: "#bfc5ca"
 })
 
 const TitleText = styled(Typography)({

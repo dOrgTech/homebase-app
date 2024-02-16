@@ -4,6 +4,20 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import CancelIcon from "@mui/icons-material/Cancel"
 
+const BalancesBox = styled(Grid)(({ theme }) => ({
+  minHeight: "137px",
+  maxHeight: "344px",
+  padding: "38px 38px",
+  background: theme.palette.primary.main,
+  boxSizing: "border-box",
+  borderRadius: 8,
+  boxShadow: "none",
+
+  ["@media (max-width:409.99px)"]: {
+    maxHeight: "325px"
+  }
+}))
+
 interface Balances {
   available: {
     displayName: string
