@@ -65,7 +65,7 @@ export const CodeCollapse: React.FC<Props> = ({ code }) => {
             padding={10}
             style={{
               minHeight: 500,
-              fontFamily: "Roboto Mono",
+              fontFamily: "Roboto Flex",
               fontSize: 14,
               fontWeight: 400,
               outlineWidth: 0

@@ -59,7 +59,7 @@ export const CodeVisor: React.FC<Props> = ({ open, title = "View Code", code, ha
               highlight={code => highlight(code, grammar, "javascript")}
               padding={10}
               style={{
-                fontFamily: "Roboto Mono",
+                fontFamily: "Roboto Flex",
                 fontSize: 14,
                 fontWeight: 400,
                 outlineWidth: 0

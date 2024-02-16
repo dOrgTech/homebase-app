@@ -103,7 +103,7 @@ export const DelegationChangeProposalForm: React.FC<Props> = ({ open, handleClos
         <Content container direction={"column"} style={{ gap: 18 }}>
           {dao && (
             <Grid item>
-              <Typography color={"inherit"} style={{ marginBottom: "7px" }}>
+              <Typography color="textPrimary" style={{ marginBottom: "7px" }}>
                 Current Delegate:{" "}
               </Typography>
               <Typography variant="subtitle2" color="secondary">

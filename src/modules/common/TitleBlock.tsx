@@ -2,8 +2,6 @@ import { Grid, Link, Paper, styled, Tooltip, Typography } from "@material-ui/cor
 import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
 import { InfoRounded } from "@material-ui/icons"
-import { HashLink } from "react-router-hash-link"
-import { CopyButton } from "./CopyButton"
 
 const StyledGrid = styled(Grid)({
   height: "fit-content",

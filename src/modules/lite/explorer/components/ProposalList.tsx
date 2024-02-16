@@ -4,7 +4,7 @@ import { Divider, Grid, Typography, styled, useTheme, useMediaQuery } from "@mat
 import { ProposalTableRow } from "./ProposalTableRow"
 import { ProposalStatus } from "./ProposalTableRowStatusBadge"
 import { Poll } from "models/Polls"
-import { useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import { CommunityToken } from "models/Community"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { Dropdown } from "modules/explorer/components/Dropdown"
@@ -15,14 +15,9 @@ export enum ProposalPopularity {
   POPULAR = "popular"
 }
 
-const ProposalListContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  borderRadius: 8
-}))
-
-const Header = styled(Grid)({
+const Header = styled(Grid)(({ theme }) => ({
   padding: "24px 41px"
-})
+}))
 
 export const StyledDivider = styled(Divider)({
   height: 0.3,
@@ -55,9 +50,11 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
   const [isFilter, setIsFilter] = useState(false)
   const [isFilterByStatus, setIsFilterByStatus] = useState(1)
   const [statusFilter, setStatusFilter] = useState("")
+  const { pathname } = useLocation()
 
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const shouldShowBar = pathname.includes("/lite") ? true : false
 
   useEffect(() => {
     setCommunityPolls(polls)
@@ -177,8 +174,13 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
   )
 
   return (
-    <ProposalListContainer container direction="column">
-      <Header container justifyContent="space-between" alignItems="center">
+    <Grid container direction="column" style={{ gap: 16 }}>
+      <Header
+        style={shouldShowBar ? { background: theme.palette.primary.main, borderRadius: 8 } : {}}
+        container
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Grid item xs={isMobileSmall ? 12 : 3}>
           <Title variant={"body2"} color="textPrimary">
             Off-Chain
@@ -206,14 +208,12 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
           />
         </Grid>
       </Header>
-      <StyledDivider />
       {communityPolls && communityPolls.length > 0 ? (
         communityPolls.map((poll, i) => {
           return (
-            <>
-              <ProposalTableRow key={`poll-${i}`} poll={poll} daoId={daoId} />
-              {communityPolls.length - 1 !== i ? <StyledDivider key={`divider-${i}`} /> : null}
-            </>
+            <div style={{ width: "inherit" }} key={`poll-${i}`}>
+              <ProposalTableRow poll={poll} daoId={daoId} />
+            </div>
           )
         })
       ) : (
@@ -221,6 +221,6 @@ export const ProposalList: React.FC<{ polls: Poll[]; id: string | undefined; dao
           <NoProposalsText color="textPrimary">No proposals</NoProposalsText>
         </Header>
       )}
-    </ProposalListContainer>
+    </Grid>
   )
 }

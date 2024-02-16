@@ -13,7 +13,7 @@ export const theme = createTheme({
     primary: {
       main: "#2F3438",
       dark: "#1C1F23",
-      light: "#383e43"
+      light: "#bfc5ca"
     },
     secondary: {
       main: "#81FEB7",
@@ -21,7 +21,7 @@ export const theme = createTheme({
       contrastText: "#1C1F23"
     },
     text: {
-      primary: "#FFFFFF"
+      primary: "#FDFDFD"
     },
     error: {
       main: "#ED254E"
@@ -34,7 +34,7 @@ export const theme = createTheme({
     }
   },
   typography: {
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto Flex",
     h1: {
       fontSize: 30,
       [breakpoints.down("xs")]: {
@@ -123,7 +123,7 @@ export const theme = createTheme({
     MuiStepLabel: {
       label: {
         "cursor": "pointer",
-        "color": "#fff",
+        "color": "#FDFDFD",
         "opacity": 0.5,
         "marginLeft": 15,
         "lineHeight": "40px",
@@ -138,11 +138,11 @@ export const theme = createTheme({
         }
       },
       active: {
-        color: "#fff !important",
+        color: "#FDFDFD !important",
         opacity: 1
       },
       completed: {
-        color: "#fff !important",
+        color: "#FDFDFD !important",
         opacity: 0.5,
         fontWeight: 300
       }
@@ -167,7 +167,7 @@ export const theme = createTheme({
         color: "#1C1F23 !important"
       },
       completed: {
-        color: "#fff !important"
+        color: "#FDFDFD !important"
       },
       root: {
         "height": 32,
@@ -176,7 +176,7 @@ export const theme = createTheme({
         "border": "1px solid #3D3D3D",
         "borderRadius": "50%",
         "&$active": {
-          "fill": "#fff",
+          "fill": "#FDFDFD",
           "border": "1px solid #3D3D3D",
           "borderRadius": "50%",
           "& $text": {
@@ -186,7 +186,7 @@ export const theme = createTheme({
         }
       },
       text: {
-        fill: "#fff"
+        fill: "#FDFDFD"
       }
     },
     MuiIconButton: {
@@ -248,17 +248,25 @@ export const theme = createTheme({
         "borderRadius": "4px",
         "padding": "1px 8px",
         "fontSize": "1rem"
+      },
+      disabled: {},
+      text: {
+        "color": "#81FEB7",
+        "&$disabled": {
+          color: "#bfc5ca !important",
+          background: "inherit !important"
+        }
       }
     },
     MuiInputBase: {
       input: {
         textAlign: "center",
-        color: "#fff"
+        color: "#FDFDFD"
       }
     },
     MuiRadio: {
       root: {
-        color: "#fff"
+        color: "#FDFDFD"
       }
     },
     MuiDivider: {
@@ -300,7 +308,7 @@ export const theme = createTheme({
         textTransform: "capitalize"
       },
       icon: {
-        color: "#fff"
+        color: "#FDFDFD"
       }
     },
     MuiDialogContentText: {
@@ -326,7 +334,7 @@ export const theme = createTheme({
       track: {
         "borderRadius": "40px",
         "backgroundColor": "inherit",
-        "border": "1px solid #fff",
+        "border": "1px solid #FDFDFD",
         "opacity": 0.5,
         "$checked$checked + &": {
           opacity: 1,
@@ -343,7 +351,7 @@ export const theme = createTheme({
         }
       },
       colorSecondary: {
-        "color": "#fff",
+        "color": "#FDFDFD",
         "$checked$checked + &": {
           color: "#81FEB7"
         },
@@ -360,7 +368,8 @@ export const theme = createTheme({
     MuiTable: {
       root: {
         borderRadius: "8px",
-        backgroundColor: "#2F3438"
+        backgroundColor: "#2F3438",
+        overflow: "hidden"
       }
     },
     MuiTableHead: {
@@ -384,8 +393,8 @@ export const theme = createTheme({
     },
     MuiTableBody: {
       root: {
-        "& > *:not(:first-child)": {
-          borderTop: "0.3px solid rgba(125,140,139, 0.2)",
+        "& > *:not(:last-child)": {
+          borderBottom: "0.3px solid #575757",
           minHeight: 90
         }
       }
@@ -395,6 +404,9 @@ export const theme = createTheme({
         borderBottom: "unset"
       },
       head: {
+        fontWeight: 300
+      },
+      body: {
         fontWeight: 300
       }
     },
@@ -407,12 +419,30 @@ export const theme = createTheme({
         },
         "& th:last-child, & td:last-child": {
           paddingRight: 46
+        },
+        "&:nth-of-type(odd)": {
+          backgroundColor: "#2A2E32"
+        },
+        "&:nth-of-type(even)": {
+          backgroundColor: "#383E43"
         }
+      },
+      head: {
+        backgroundColor: "#383E43 !important",
+        borderBottom: "0.3px solid #575757"
       }
     },
     MuiGrid: {
       "align-items-xs-center": {
         alignItems: "center"
+      }
+    },
+    MuiLink: {
+      underlineHover: {
+        "&:hover": {
+          textUnderlineOffset: "4px",
+          textDecorationColor: "#fdfdfd"
+        }
       }
     },
     MuiLinearProgress: {

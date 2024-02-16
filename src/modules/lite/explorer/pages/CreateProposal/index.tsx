@@ -131,7 +131,7 @@ const PageContainer = styled("div")({
   ["@media (max-width:1335px)"]: {},
 
   ["@media (max-width:1167px)"]: {
-    width: "86vw !important"
+    width: "inherit !important"
   },
 
   ["@media (max-width:1030px)"]: {},
@@ -177,7 +177,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "borderRadius": 8,
   "paddingRight": 40,
   "wordBreak": "break-word",
-  "fontFamily": "Roboto Mono",
+  "fontFamily": "Roboto Flex",
   "&:focus-visible": {
     outline: "none"
   },
@@ -343,7 +343,7 @@ export const ProposalForm = ({
 
   const codeEditorStyles = {
     minHeight: 500,
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto Flex",
     fontSize: 14,
     fontWeight: 400,
     outlineWidth: 0,

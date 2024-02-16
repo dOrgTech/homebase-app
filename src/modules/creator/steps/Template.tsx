@@ -14,12 +14,13 @@ const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   "marginTop": 30,
   "background": "#2F3438",
   "borderRadius": 8,
-  "maxWidth": 320,
+  "maxWidth": 342,
   "width": "-webkit-fill-available",
   "padding": "40px 44px",
   "textAlign": "start",
   "cursor": "pointer",
   "paddingBottom": 0,
+  "flexBasis": "47%",
   "&:hover": {
     border: "3px solid rgba(129, 254, 183, 0.4)",
     paddingTop: 37,
@@ -50,7 +51,7 @@ const ErrorText = styled(Typography)({
 const BoxTitle = styled(Typography)({
   fontSize: 18,
   fontWeight: 500,
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   marginBottom: 10
 })
 
@@ -120,7 +121,7 @@ export const Template = (): JSX.Element => {
           direction="column"
           justifyContent="flex-start"
           alignItems="center"
-          xs={isMobileSmall ? 12 : 6}
+          xs={isMobileSmall ? 12 : 5}
           onClick={() => update("lambda")}
           className={selectedTemplate === "lambda" ? style.selected : ""}
         >
@@ -136,7 +137,7 @@ export const Template = (): JSX.Element => {
           direction="column"
           justifyContent="flex-start"
           alignItems="center"
-          xs={isMobileSmall ? 12 : 6}
+          xs={isMobileSmall ? 12 : 5}
           onClick={() => update("lite")}
           className={selectedTemplate === "lite" ? style.selected : ""}
         >

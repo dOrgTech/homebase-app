@@ -55,7 +55,7 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   userSelect: "none",
   boxShadow: "none",
   background: "inherit",
-  fontFamily: "Roboto Mono"
+  fontFamily: "Roboto Flex"
 }))
 
 const StepContentContainer = styled(Grid)({
