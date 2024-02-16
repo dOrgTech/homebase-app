@@ -56,7 +56,15 @@ export const ChoiceItemSelected: React.FC<{
       spacing={isMobileSmall ? 1 : 2}
       container
       item
-      style={isPartOfVotes() ? { border: "1px solid", borderColor: theme.palette.secondary.main } : {}}
+      style={
+        isPartOfVotes()
+          ? {
+              border: "1px solid",
+              borderColor: theme.palette.secondary.main,
+              backgroundColor: "#334d43"
+            }
+          : {}
+      }
       xs={isMobileSmall ? 12 : 6}
       justifyContent={"center"}
       alignItems="center"

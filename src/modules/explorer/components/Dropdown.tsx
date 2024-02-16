@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   option: {
     "padding": 8,
-    "fontFamily": "Roboto Mono",
+    "fontFamily": "Roboto Flex",
     "cursor": "pointer",
     "text-transform": "capitalize",
     "&:hover": {

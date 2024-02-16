@@ -71,7 +71,7 @@ const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "26px",
   cursor: "pointer",
-  fontFamily: "Roboto",
+  fontFamily: "Roboto Flex",
   letterSpacing: "initial"
 })
 
@@ -138,7 +138,6 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                       <Grid item>
                         <ChangeNetworkButton />
                       </Grid>
-
                       <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
                           container

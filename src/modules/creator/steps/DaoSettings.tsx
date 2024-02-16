@@ -102,7 +102,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "padding": "21px 20px",
   "border": "none",
   "fontSize": 16,
-  "fontFamily": "Roboto Mono",
+  "fontFamily": "Roboto Flex",
   "color": props.theme.palette.text.secondary,
   "background": "#2F3438",
   "lineHeight": "135%",
