@@ -14,13 +14,15 @@ import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, TokenContractSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
-import { SmallButton } from "modules/common/SmallButton"
-import { TitleBlock } from "modules/common/TitleBlock"
 import { FieldChange, handleChange, handleNegativeInput } from "modules/creator/utils"
 
-const ButtonContainer = styled(Grid)({
-  marginTop: 40
-})
+const Title = styled(Typography)(({ theme }) => ({
+  fontSize: 32,
+  fontWeight: 600,
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 26
+  }
+}))
 
 const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "minHeight": 152,
@@ -61,8 +63,7 @@ const CustomFormikTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  },
-  disabled: {}
+  }
 })(FormikTextField)
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({
@@ -180,7 +181,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
           {errors.description && touched.description ? <ErrorText>{errors.description}</ErrorText> : null}
         </Grid>
         <Grid item container direction="row" spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={isMobileSmall ? 12 : 6}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Supply{" "}
@@ -197,7 +198,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
             </CustomInputContainer>
             {errors.totalSupply && touched.totalSupply ? <ErrorText>{errors.totalSupply}</ErrorText> : null}
           </Grid>
-          <Grid item xs={isMobileSmall ? 6 : 3}>
+          <Grid item xs={isMobileSmall ? 12 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Decimals{" "}
@@ -217,7 +218,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
         </Grid>
 
         <Grid item container direction="row" spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={isMobileSmall ? 12 : 6}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Icon{" "}
@@ -226,7 +227,7 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
               <Field id="outlined-basic" placeholder="URL" name="icon" component={CustomFormikTextField} />
             </CustomInputContainer>
           </Grid>
-          <Grid item xs={isMobileSmall ? 6 : 3}>
+          <Grid item xs={isMobileSmall ? 12 : 3}>
             <Typography variant="subtitle1" color="textSecondary">
               {" "}
               Symbol{" "}
@@ -263,9 +264,9 @@ export const ConfigContract: React.FC = () => {
     <>
       <Grid container direction="column">
         <Grid>
-          <Typography style={{ marginBottom: 32 }} variant="h5" color="textSecondary">
+          <Title style={{ marginBottom: 32 }} color="textSecondary">
             Configure Token Contract
-          </Typography>
+          </Title>
         </Grid>
 
         <Formik

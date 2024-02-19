@@ -1,5 +1,5 @@
-import { createMuiTheme } from "@material-ui/core/styles"
-export const legacyTheme = createMuiTheme({
+import { createTheme } from "@material-ui/core/styles"
+export const legacyTheme = createTheme({
   palette: {
     primary: {
       main: "#1C1F23",
@@ -94,8 +94,8 @@ export const legacyTheme = createMuiTheme({
         "color": "#FDFDFD",
         "opacity": 0.5,
         "marginLeft": 15,
-        "fontSize": 14,
-        "lineHeight": "18.5px",
+        "fontSize": 16,
+        "lineHeight": "21.6px",
         "height": 40,
         "display": "flex",
         "alignItems": "center",
@@ -122,11 +122,12 @@ export const legacyTheme = createMuiTheme({
     MuiStepConnector: {
       vertical: {
         padding: "0px",
-        marginLeft: 17
+        marginLeft: 17,
+        marginBottom: 2
       },
       lineVertical: {
-        borderLeftWidth: 2,
-        minHeight: 28,
+        borderLeftWidth: 3,
+        minHeight: 30,
         marginTop: -16
       },
       line: {
@@ -167,11 +168,11 @@ export const legacyTheme = createMuiTheme({
         "height": 32,
         "width": 32,
         "color": "#2f3438",
-        "border": "2px solid rgba(255, 255, 255, 0.2)",
+        "border": "3px solid rgba(255, 255, 255, 0.2)",
         "borderRadius": "50%",
         "&$active": {
           "fill": "#81feb7",
-          "border": "2px solid #81feb7",
+          "border": "3px solid #81feb7",
           "borderRadius": "50%",
           "& $text": {
             fill: "#1C1F23",
@@ -180,7 +181,7 @@ export const legacyTheme = createMuiTheme({
         },
         "&$completed": {
           fill: "#81feb7",
-          border: "2px solid #81feb7"
+          border: "3px solid #81feb7"
         }
       },
       text: {
