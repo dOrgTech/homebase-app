@@ -107,14 +107,17 @@ const ItemContainer = styled(Grid)(({ theme }) => ({
   padding: "12px 25px"
 }))
 
-const ValueText = styled(Typography)({
-  fontSize: 14
-})
+const ValueText = styled(Typography)(({ theme }) => ({
+  fontSize: 16,
+  color: theme.palette.secondary.dark,
+  fontWeight: 200
+}))
 
 const StyledSlider = withStyles({
   root: {
     textAlign: "center",
-    width: "100%"
+    width: "100%",
+    height: 4.5
   },
   valueLabel: {
     textAlign: "center"
@@ -129,7 +132,10 @@ const StyledSlider = withStyles({
   track: {
     backgroundColor: "#4BCF93",
     borderRadius: "4px",
-    height: 2
+    height: 4.5
+  },
+  rail: {
+    height: 4.5
   }
 })(Slider)
 
@@ -141,7 +147,7 @@ const CustomSliderValue = styled(withTheme(Paper))(props => ({
   justifyContent: "center",
   background: "#2F3438",
   borderRadius: 8,
-  width: 97
+  width: "100%"
 }))
 
 const Value = styled(Typography)({
@@ -154,7 +160,8 @@ const styles = {
     marginTop: 6,
     marginBottom: 16,
     fontWeight: 400,
-    fontSize: 17
+    fontSize: 18,
+    width: "75%"
   }
 }
 
@@ -172,10 +179,6 @@ const CustomFormikTextField = withStyles({
     }
   }
 })(TextField)
-
-const GridNoPadding = styled(Grid)({
-  paddingLeft: "8px !important"
-})
 
 const InfoBox = styled(Paper)({
   boxShadow: "none",
@@ -409,6 +412,12 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           <SecondContainer container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Voting Cycle Duration
+              <CustomTooltip
+                placement="bottom"
+                title="levels = blocks, if you’re familiar with that term from other blockchains. In Tezos levels are at least 60 seconds long, so this roughly equates to time. 7,000 levels would be approximately 5 days."
+              >
+                {errors.proposalFlushBlocks ? <InfoIconDanger /> : <InfoIconCorrect />}
+              </CustomTooltip>
             </Typography>
           </SecondContainer>
 
@@ -778,7 +787,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 />
               </GridItemCenter>
               <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
-                <Typography color="textSecondary">{orgSettings.governanceToken.tokenMetadata?.symbol || ""}</Typography>
+                <ValueText>{orgSettings.governanceToken.tokenMetadata?.symbol || ""}</ValueText>
                 <Tooltip
                   placement="bottom"
                   title={`Amount of ${
@@ -802,7 +811,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
         </Typography>
 
         <Grid container direction="row" alignItems="center" style={{ marginTop: 8 }}>
-          <GridNoPadding item xs={8} sm={10}>
+          <Grid item xs={8} sm={10}>
             <Field name="returnedTokenPercentage">
               {() => (
                 <StyledSlider
@@ -811,67 +820,76 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
                 />
               )}
             </Field>
-          </GridNoPadding>
-          <GridNoPadding item xs={4} sm={2} container direction="row" justifyContent="flex-end">
+          </Grid>
+          <Grid item xs={4} sm={2} container direction="row" justifyContent="flex-end">
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
                 {getIn(values, "returnedTokenPercentage")}%
               </Value>
             </CustomSliderValue>
-          </GridNoPadding>
+          </Grid>
         </Grid>
       </SecondContainer>
 
-      <SpacingContainer direction="row" container alignItems="center">
-        <Typography variant="subtitle1" color="textSecondary">
-          Min & Max Transfer Amounts
-        </Typography>
-      </SpacingContainer>
       <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
-            <GridItemCenter item xs={5}>
-              <Field
-                name="minXtzAmount"
-                type="number"
-                inputProps={{ min: 0.000001, defaultValue: 0, step: 0.01 }}
-                placeholder="00"
-                component={TextField}
-                onClick={() => setFieldTouched("minXtzAmount")}
-                // onChange={(e: any) => controlMaxFieldLimit("minXtzAmount", e)}
-              />
-            </GridItemCenter>
-            <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
-              <ValueText color="textSecondary">Min. XTZ</ValueText>
-              <Tooltip placement="bottom" title="Minimum amount of XTZ that can be transferred">
-                <InfoIconInput />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.minXtzAmount && touched.minXtzAmount ? <ErrorText>{errors.minXtzAmount}</ErrorText> : null}
-        </AdditionContainer>
-        <AdditionContainer item xs={12} sm={4}>
-          <ItemContainer container direction="row" alignItems="center" justifyContent="center">
-            <GridItemCenter item xs={5}>
-              <Field
-                name="maxXtzAmount"
-                type="number"
-                placeholder="00"
-                component={TextField}
-                inputProps={{ min: 0.000001, defaultValue: 0, step: 0.01 }}
-                onClick={() => setFieldTouched("maxXtzAmount")}
-                // onChange={(e: any) => controlMaxFieldLimit("maxXtzAmount", e)}
-              />
-            </GridItemCenter>
-            <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
-              <ValueText color="textSecondary">Max. XTZ </ValueText>
-              <Tooltip placement="bottom" title="Maximum amount of XTZ that can be transferred">
-                <InfoIconInput />
-              </Tooltip>
-            </GridItemCenter>
-          </ItemContainer>
-          {errors.maxXtzAmount && touched.maxXtzAmount ? <ErrorText>{errors.maxXtzAmount}</ErrorText> : null}
-        </AdditionContainer>
+        <Grid item xs={12} sm={6}>
+          <SpacingContainer direction="row" container alignItems="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              Minimum XTZ Transfer Amount
+            </Typography>
+          </SpacingContainer>
+          <AdditionContainer>
+            <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+              <GridItemCenter item xs={5}>
+                <Field
+                  name="minXtzAmount"
+                  type="number"
+                  inputProps={{ min: 0.000001, defaultValue: 0, step: 0.01 }}
+                  placeholder="00"
+                  component={TextField}
+                  onClick={() => setFieldTouched("minXtzAmount")}
+                  // onChange={(e: any) => controlMaxFieldLimit("minXtzAmount", e)}
+                />
+              </GridItemCenter>
+              <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
+                <ValueText color="textSecondary">XTZ</ValueText>
+                <Tooltip placement="bottom" title="Minimum amount of XTZ that can be transferred">
+                  <InfoIconInput />
+                </Tooltip>
+              </GridItemCenter>
+            </ItemContainer>
+            {errors.minXtzAmount && touched.minXtzAmount ? <ErrorText>{errors.minXtzAmount}</ErrorText> : null}
+          </AdditionContainer>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <SpacingContainer direction="row" container alignItems="center">
+            <Typography variant="subtitle1" color="textSecondary">
+              Maximum XTZ Transfer Amount
+            </Typography>
+          </SpacingContainer>
+          <AdditionContainer>
+            <ItemContainer container direction="row" alignItems="center" justifyContent="center">
+              <GridItemCenter item xs={5}>
+                <Field
+                  name="maxXtzAmount"
+                  type="number"
+                  placeholder="00"
+                  component={TextField}
+                  inputProps={{ min: 0.000001, defaultValue: 0, step: 0.01 }}
+                  onClick={() => setFieldTouched("maxXtzAmount")}
+                  // onChange={(e: any) => controlMaxFieldLimit("maxXtzAmount", e)}
+                />
+              </GridItemCenter>
+              <GridItemCenter item xs={7} container direction="row" justifyContent="space-around">
+                <ValueText color="textSecondary">XTZ </ValueText>
+                <Tooltip placement="bottom" title="Maximum amount of XTZ that can be transferred">
+                  <InfoIconInput />
+                </Tooltip>
+              </GridItemCenter>
+            </ItemContainer>
+            {errors.maxXtzAmount && touched.maxXtzAmount ? <ErrorText>{errors.maxXtzAmount}</ErrorText> : null}
+          </AdditionContainer>
+        </Grid>
       </Grid>
     </>
   )

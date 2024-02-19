@@ -7,8 +7,9 @@ export const legacyTheme = createTheme({
       dark: "#2F3438"
     },
     secondary: {
-      main: "#4BCF93",
-      light: "#81FEB7"
+      main: "#81FEB7",
+      light: "#81FEB7",
+      dark: "#BFC5CA"
     },
     text: {
       primary: "#000000",
@@ -44,7 +45,7 @@ export const legacyTheme = createTheme({
     },
     h3: {
       fontSize: 32,
-      fontWeight: 500,
+      fontWeight: 600,
       fontFamily: "Roboto Flex"
     },
     h2: {

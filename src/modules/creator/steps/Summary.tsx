@@ -1,17 +1,9 @@
-import { Box, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import React, { useContext, useEffect } from "react"
+import { Box, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { ActionTypes, CreatorContext } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { toShortAddress } from "services/contracts/utils"
-
-const SecondContainer = styled(Grid)({
-  marginTop: 42,
-  background: "#2F3438",
-  borderRadius: 8,
-  padding: "26px 48px",
-  boxSizing: "border-box"
-})
 
 const ThirdContainer = styled(Grid)({
   marginTop: 42,
@@ -73,11 +65,12 @@ const FirstContainer = styled(Grid)({
 })
 
 const TitleSpacing = styled(Typography)({
-  marginTop: 8
+  marginTop: 8,
+  fontWeight: 600
 })
 
-const DescriptionSpacing = styled(Typography)({
-  marginTop: 16
+const KeyLabel = styled(Typography)({
+  fontWeight: 500
 })
 
 const ContainerEdit = styled(Typography)({
@@ -132,29 +125,6 @@ export const Summary = (): JSX.Element => {
           description={"Review your settings to ensure you’ve made the correct choices."}
         ></TitleBlock>
 
-        <FirstContainer container direction="row">
-          <Grid item xs={12}>
-            <Grid container direction="row" justifyContent="space-between" alignItems="center">
-              <TitleSpacing color="secondary" variant="subtitle1">
-                {state.data.orgSettings.symbol}
-              </TitleSpacing>
-              <ContainerEdit color="secondary" onClick={goToSettings}>
-                Edit
-              </ContainerEdit>
-            </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <TitleSpacing color="textSecondary" variant="h3">
-              {state.data.orgSettings.name}
-            </TitleSpacing>
-          </Grid>
-          <Grid item xs={12}>
-            <DescriptionSpacing color="textSecondary" variant="body1">
-              {state.data.orgSettings.description}
-            </DescriptionSpacing>
-          </Grid>
-        </FirstContainer>
-
         <ThirdContainer container direction="row">
           <ThirdContainerFirstRow item xs={12}>
             <Grid
@@ -164,7 +134,7 @@ export const Summary = (): JSX.Element => {
               justifyContent="space-between"
             >
               <TitleSpacing color="textSecondary" variant="subtitle1">
-                DAO SETTINGS
+                DAO Basis
               </TitleSpacing>
               <ContainerEdit color="secondary" onClick={goToSettings}>
                 Edit
@@ -175,9 +145,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid container direction="row" alignItems="center">
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Administrator
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={7}>
                 <AdminAddress variant="subtitle2" color="textSecondary" align="right">
@@ -192,9 +162,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid container direction="row" alignItems="center">
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Guardian
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={7}>
                 <AdminAddress variant="subtitle2" color="textSecondary" align="right">
@@ -207,9 +177,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Governance Token Address
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={7}>
                 <AdminAddress variant="subtitle2" color="textSecondary" align="right">
@@ -224,9 +194,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerLastRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Governance Token ID
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={7}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -246,7 +216,7 @@ export const Summary = (): JSX.Element => {
               justifyContent="space-between"
             >
               <TitleSpacing color="textSecondary" variant="subtitle1">
-                PROPOSAL & VOTING SETTINGS
+                Proposal & Voting
               </TitleSpacing>
               <ContainerEdit color="secondary" onClick={goToVoting}>
                 Edit
@@ -257,9 +227,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Voting Period Duration
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -272,9 +242,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Proposal Execution Delay
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -287,9 +257,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Proposal blocks to expire
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -302,9 +272,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Stake required to propose
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -317,9 +287,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerLastRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Stake returned if rejected
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -332,9 +302,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerSpecialRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Transfer maximum XTZ amount
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -347,9 +317,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerLastRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Transfer minimum XTZ amount
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -369,7 +339,7 @@ export const Summary = (): JSX.Element => {
               justifyContent="space-between"
             >
               <TitleSpacing color="textSecondary" variant="subtitle1">
-                QUORUM SETTINGS
+                Quorum
               </TitleSpacing>
               <ContainerEdit color="secondary" onClick={goToQuorum}>
                 Edit
@@ -380,9 +350,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item sm={6} xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Quorum threshold
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item sm={6} xs={5}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -395,9 +365,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item sm={6} xs={7}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Quorum Change
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -410,9 +380,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Quorum Max Change
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -425,9 +395,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Quorum Min. Amount
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">
@@ -440,9 +410,9 @@ export const Summary = (): JSX.Element => {
           <ThirdContainerLastRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary">
+                <KeyLabel variant="subtitle2" color="textSecondary">
                   Quorum Max. Amount
-                </Typography>
+                </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
                 <Typography variant="subtitle2" color="textSecondary" align="right">

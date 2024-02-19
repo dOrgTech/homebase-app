@@ -16,11 +16,12 @@ const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   "borderRadius": 8,
   "maxWidth": 342,
   "width": "-webkit-fill-available",
-  "padding": "40px 44px",
+
   "textAlign": "start",
   "cursor": "pointer",
   "paddingBottom": 0,
   "flexBasis": "47%",
+  "padding": "37px 41px",
   "&:hover": {
     border: "3px solid rgba(129, 254, 183, 0.4)",
     paddingTop: 37,
@@ -37,7 +38,8 @@ const LambdaCustomBox = styled(Grid)(({ theme }) => ({
 const styles = makeStyles({
   selected: {
     border: "3px solid rgba(129, 254, 183, 0.4)",
-    padding: "37px 41px"
+    padding: "37px 41px",
+    paddingBottom: 0
   }
 })
 
@@ -50,16 +52,15 @@ const ErrorText = styled(Typography)({
 
 const BoxTitle = styled(Typography)({
   fontSize: 18,
-  fontWeight: 500,
+  fontWeight: 600,
   fontFamily: "Roboto Flex",
   marginBottom: 10
 })
 
 const BoxDescription = styled(Typography)({
   fontWeight: 300,
-  fontSize: 16,
-  lineHeight: "135%",
-  letterSpacing: -0.18,
+  fontSize: 18,
+  lineHeight: "160%",
   alignSelf: "stretch"
 })
 
