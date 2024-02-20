@@ -29,7 +29,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "marginTop": 14,
   "fontWeight": 300,
   "padding": "21px 20px",
-  "fontFamily": "Roboto Mono",
+  "fontFamily": "Roboto Flex",
   "border": "none",
   "fontSize": 16,
   "color": props.theme.palette.text.secondary,
@@ -61,8 +61,7 @@ const CustomFormikTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  },
-  disabled: {}
+  }
 })(FormikTextField)
 
 const CustomInputContainer = styled(Grid)(({ theme }) => ({

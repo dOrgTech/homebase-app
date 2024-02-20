@@ -8,6 +8,14 @@ import { BigNumber } from "bignumber.js"
 import { getXTZTransfers } from "services/services/dao/services"
 import dayjs from "dayjs"
 
+interface BNToken {
+  contract: string
+  decimals: number
+  name: string
+  network: string
+  symbol: string
+  token_id: number
+}
 export interface TransferWithBN {
   name: string
   amount: BigNumber
@@ -15,6 +23,8 @@ export interface TransferWithBN {
   sender: string
   date: string
   hash: string
+  type?: "Withdrawal" | "Deposit"
+  token?: BNToken
 }
 
 export const useTransfers = (contractAddress: string) => {
@@ -45,7 +55,8 @@ export const useTransfers = (contractAddress: string) => {
         date: t.timestamp,
         name: t.token.symbol === "OBJKT" ? `${t.token.symbol}#${t.token.token_id}` : t.token.symbol || "-",
         hash: t.hash,
-        amount: parseUnits(new BigNumber(t.amount), t.token.decimals)
+        amount: parseUnits(new BigNumber(t.amount), t.token.decimals),
+        type: t.to === dao?.data.address ? "Deposit" : "Withdrawal"
       }))
 
       return tokenTransfers.concat(xtzTransfers).sort((a, b) => (dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1))

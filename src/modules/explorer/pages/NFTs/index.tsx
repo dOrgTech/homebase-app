@@ -1,17 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Grid,
-  styled,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from "@material-ui/core"
+import { Box, CircularProgress, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { NFT as NFTModel } from "models/Token"
-import { CopyAddress } from "modules/common/CopyAddress"
 import { NFT } from "modules/explorer/components/NFT"
 import { NFTDialog } from "modules/explorer/components/NFTDialog"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
@@ -23,22 +12,21 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { ContentContainer } from "../../components/ContentContainer"
-import { Hero } from "../../components/Hero"
-import { HeroTitle } from "../../components/HeroTitle"
 import { useDAOID } from "../DAO/router"
-import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { SmallButton } from "../../../common/SmallButton"
-import { MainButton } from "../../../common/MainButton"
 import { parseUnits } from "services/contracts/utils"
+import ReactPaginate from "react-paginate"
+import "../DAOList/styles.css"
 
-const Card = styled(ContentContainer)({
+const Card = styled(ContentContainer)(({ theme }) => ({
   boxSizing: "border-box",
   padding: 30,
   width: 325,
   minHeight: 500,
-  cursor: "pointer"
-})
+  cursor: "pointer",
+  background: theme.palette.primary.main
+}))
 
 const FullWidthContainer = styled(Grid)({
   width: "100%"
@@ -56,6 +44,11 @@ const NFTId = styled(Typography)({
 
 const NFTTitle = styled(Typography)({
   fontWeight: 500
+})
+
+const ProposalsFooter = styled(Grid)({
+  padding: "16px 46px",
+  minHeight: 34
 })
 
 export const NFTs: React.FC = () => {
@@ -101,14 +94,27 @@ export const NFTs: React.FC = () => {
   const onCloseTransfer = () => {
     setOpenTransfer(false)
   }
-
+  const value = isMobileSmall ? 6 : 3
   const shouldDisable = useIsProposalButtonDisabled(daoId)
+
+  const [currentPage, setCurrentPage] = useState(0)
+  const [offset, setOffset] = useState(0)
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (nftHoldings) {
+      const newOffset = (event.selected * value) % nftHoldings.length
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
+  }
+
+  const pageCount = Math.ceil(nftHoldings ? nftHoldings.length / value : 0)
 
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
-        <Grid item>
-          <Grid container justifyContent={isMobileSmall ? "center" : "flex-start"} style={{ gap: 12 }}>
+        <Grid item style={{ width: "inherit" }}>
+          <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} style={{ gap: 12 }}>
             {!nftHoldings ? (
               <>
                 <Grid container direction="row" justifyContent="center">
@@ -117,14 +123,14 @@ export const NFTs: React.FC = () => {
               </>
             ) : (
               <>
-                {nftHoldings.map((nft, i) => (
+                {nftHoldings.slice(offset, offset + value).map((nft, i) => (
                   <Card
                     key={`nft-${i}`}
                     item
                     container
-                    xs={isMobileSmall ? 12 : undefined}
+                    xs={isMobileSmall ? 12 : 6}
                     direction="column"
-                    style={{ gap: 20 }}
+                    style={isMobileSmall ? { gap: 20 } : { gap: 20, flexBasis: "49%", maxWidth: "49%" }}
                     onClick={() => onClickNFT(nft)}
                   >
                     <Grid item>
@@ -182,6 +188,29 @@ export const NFTs: React.FC = () => {
                     </Grid>
                   </Card>
                 ))}
+                {!(nftHoldings && nftHoldings.length > 0) ? (
+                  <ProposalsFooter item container direction="column" justifyContent="center">
+                    <Grid item>
+                      <Typography color="textPrimary" align="center">
+                        No items
+                      </Typography>
+                    </Grid>
+                  </ProposalsFooter>
+                ) : null}
+                <Grid container direction="row" justifyContent="flex-end">
+                  <ReactPaginate
+                    previousLabel={"<"}
+                    breakLabel="..."
+                    nextLabel=">"
+                    onPageChange={handlePageClick}
+                    pageRangeDisplayed={6}
+                    pageCount={pageCount}
+                    renderOnZeroPageCount={null}
+                    containerClassName={"pagination"}
+                    activeClassName={"active"}
+                    forcePage={currentPage}
+                  />
+                </Grid>
               </>
             )}
           </Grid>

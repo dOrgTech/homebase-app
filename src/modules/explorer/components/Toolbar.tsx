@@ -12,7 +12,7 @@ import {
   Theme
 } from "@material-ui/core"
 
-import HomeButton from "assets/logos/homebase_logo.svg"
+import HomeButton from "assets/logos/homebase-logo.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
 import { UserProfileName } from "modules/explorer/components/UserProfileName"
@@ -69,20 +69,21 @@ const AddressContainer = styled(Grid)({
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
-  fontSize: "24px",
+  fontSize: "26px",
   cursor: "pointer",
-  fontFamily: "Roboto",
+  fontFamily: "Roboto Flex",
   letterSpacing: "initial"
 })
 
-const AddressBarWrapper = styled(Grid)({
-  "boxSizing": "border-box",
-  "padding": "8px 16px",
-  "borderRadius": 4,
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)"
-  }
-})
+const AddressBarWrapper = styled(Grid)(({ theme }) => ({
+  borderRadius: 8,
+  background: theme.palette.primary.main,
+  paddingLeft: 16,
+  paddingRight: 16,
+  paddingTop: 5,
+  paddingBottom: 6,
+  boxSizing: "border-box"
+}))
 
 const LogoItem = styled("img")({
   height: "30px",
@@ -133,24 +134,23 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                 >
                   {children}
                   <Grid item>
-                    <Grid container alignItems="center" style={{ gap: 8 }}>
+                    <Grid container alignItems="center" style={{ gap: 16 }}>
                       <Grid item>
                         <ChangeNetworkButton />
                       </Grid>
-
                       <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
                         <AddressContainer
                           container
                           alignItems="center"
                           wrap="nowrap"
                           justifyContent="flex-end"
-                          style={{ gap: 8 }}
+                          style={{ gap: 16 }}
                         >
                           <Grid item>
                             <ProfileAvatar size={22} address={account} />
                           </Grid>
                           <Grid item>
-                            <Typography>
+                            <Typography variant="body2">
                               <UserProfileName address={account} short={true} />
                             </Typography>
                           </Grid>

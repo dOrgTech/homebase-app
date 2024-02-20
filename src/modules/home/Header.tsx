@@ -23,7 +23,7 @@ const LogoText = styled(Typography)({
   fontWeight: "bold",
   fontSize: "24px",
   cursor: "pointer",
-  fontFamily: "Roboto",
+  fontFamily: "Roboto Flex",
   letterSpacing: "initial"
 })
 

@@ -9,11 +9,16 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
   "& > *": {
     height: "100%"
   },
-  "background": theme.palette.primary.dark,
-  "borderRadius": 4,
-  "padding": "5px 10px",
+  "background": "rgb(47, 52, 56)",
+  "height": 23,
+  "borderRadius": 8,
+  "paddingLeft": 16,
+  "paddingRight": 16,
+  "paddingTop": 5,
+  "paddingBottom": 6,
   "cursor": "pointer",
   "transition": ".15s ease-out",
+  "color": "#fff",
 
   "&:hover": {
     background: theme.palette.secondary.dark,
@@ -33,11 +38,6 @@ export const ColorDot = styled(Box)({
   borderRadius: "50%"
 })
 
-const NetworkText = styled(Typography)({
-  fontSize: "14px",
-  color: "#ddd"
-})
-
 export const ChangeNetworkButton = () => {
   const { network } = useTezos()
   const { open } = useActionSheet(ActionSheet.Network)
@@ -51,12 +51,12 @@ export const ChangeNetworkButton = () => {
     <>
       {canShow ? (
         <StyledConnectedButton onClick={() => open()}>
-          <Grid container style={{ gap: 5 }} alignItems="center" wrap="nowrap">
+          <Grid container style={{ gap: 8 }} alignItems="center" wrap="nowrap">
             <Grid item>
               <ColorDot color={networkDotColorMap[network]} />
             </Grid>
             <Grid item>
-              <NetworkText>{capitalize(network)}</NetworkText>
+              <Typography color="textSecondary">{capitalize(network)}</Typography>
             </Grid>
           </Grid>
         </StyledConnectedButton>

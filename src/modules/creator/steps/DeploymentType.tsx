@@ -43,7 +43,7 @@ const styles = makeStyles({
 const BoxTitle = styled(Typography)({
   fontSize: 18,
   fontWeight: 500,
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   marginBottom: 10
 })
 

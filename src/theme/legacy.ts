@@ -1,5 +1,5 @@
-import { createMuiTheme } from "@material-ui/core/styles"
-export const legacyTheme = createMuiTheme({
+import { createTheme } from "@material-ui/core/styles"
+export const legacyTheme = createTheme({
   palette: {
     primary: {
       main: "#1C1F23",
@@ -12,7 +12,7 @@ export const legacyTheme = createMuiTheme({
     },
     text: {
       primary: "#000000",
-      secondary: "#fff"
+      secondary: "#FDFDFD"
     },
     error: {
       main: "#ED254E"
@@ -25,7 +25,7 @@ export const legacyTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto Flex",
     h1: {
       fontSize: 35,
       letterSpacing: "-0.01em"
@@ -45,7 +45,7 @@ export const legacyTheme = createMuiTheme({
     h3: {
       fontSize: 32,
       fontWeight: 500,
-      fontFamily: "Roboto Mono"
+      fontFamily: "Roboto Flex"
     },
     h2: {
       color: "#000000",
@@ -91,7 +91,7 @@ export const legacyTheme = createMuiTheme({
         marginTop: -3
       },
       label: {
-        "color": "#fff",
+        "color": "#FDFDFD",
         "opacity": 0.5,
         "marginLeft": 15,
         "fontSize": 14,
@@ -110,11 +110,11 @@ export const legacyTheme = createMuiTheme({
         }
       },
       active: {
-        color: "#fff !important",
+        color: "#FDFDFD !important",
         opacity: 1
       },
       completed: {
-        color: "#fff !important",
+        color: "#FDFDFD !important",
         opacity: 0.5,
         fontWeight: 300
       }
@@ -130,7 +130,7 @@ export const legacyTheme = createMuiTheme({
         marginTop: -16
       },
       line: {
-        borderColor: "#fff",
+        borderColor: "#FDFDFD",
         opacity: 0.2
       },
       active: {
@@ -161,7 +161,7 @@ export const legacyTheme = createMuiTheme({
         color: "#1C1F23 !important"
       },
       completed: {
-        color: "#fff !important"
+        color: "#FDFDFD !important"
       },
       root: {
         "height": 32,
@@ -184,7 +184,7 @@ export const legacyTheme = createMuiTheme({
         }
       },
       text: {
-        fill: "#fff"
+        fill: "#FDFDFD"
       }
     },
     MuiInput: {
@@ -210,8 +210,7 @@ export const legacyTheme = createMuiTheme({
         "&:active:not($disabled):not($focused):not($error):before": {
           borderBottom: "none"
         }
-      },
-      disabled: {}
+      }
     },
     MuiInputAdornment: {
       positionStart: {
@@ -224,7 +223,6 @@ export const legacyTheme = createMuiTheme({
           color: "#3d3d3d"
         }
       },
-      disabled: {},
       outlined: {
         "&$disabled": {
           border: "2px solid #3d3d3d"
@@ -238,7 +236,7 @@ export const legacyTheme = createMuiTheme({
     MuiInputBase: {
       input: {
         textAlign: "start",
-        color: "#fff"
+        color: "#FDFDFD"
       },
       root: {
         fontWeight: 300
@@ -303,7 +301,7 @@ export const legacyTheme = createMuiTheme({
       track: {
         "borderRadius": "40px",
         "backgroundColor": "inherit",
-        "border": "1px solid #fff",
+        "border": "1px solid #FDFDFD",
         "opacity": 0.5,
         "$checked$checked + &": {
           opacity: 1,
@@ -319,7 +317,7 @@ export const legacyTheme = createMuiTheme({
         }
       },
       colorSecondary: {
-        "color": "#fff",
+        "color": "#FDFDFD",
         "$checked$checked + &": {
           color: "#81FEB7"
         },

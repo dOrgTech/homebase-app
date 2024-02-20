@@ -139,7 +139,7 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "width": "100%",
   "fontWeight": 400,
   "padding": "21px 20px",
-  "fontFamily": "Roboto Mono",
+  "fontFamily": "Roboto Flex",
   "borderTopRightRadius": 0,
   "border": "none",
   "fontSize": 16,
@@ -159,7 +159,7 @@ const CustomSelect = styled(Field)(({ theme }) => ({
   background: theme.palette.primary.dark,
   border: "none",
   color: theme.palette.text.secondary,
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   fontSize: 18,
   borderRight: "26px solid transparent",
   borderRadius: 4,
@@ -224,7 +224,7 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 
   const codeEditorStyles = {
     minHeight: 500,
-    fontFamily: "Roboto Mono",
+    fontFamily: "Roboto Flex",
     fontSize: 14,
     fontWeight: 400,
     outlineWidth: 0,
@@ -313,7 +313,6 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
                     padding={10}
                     value={getIn(values, "description")}
                     onValueChange={(newValue: string) => {
-                      console.log(newValue)
                       setFieldValue("description", newValue)
                     }}
                     highlight={code => highlight(code, grammar, "javascript")}

@@ -9,6 +9,7 @@ export const SmallButton = styled(Button)({
   "borderRadius": 8,
   "backgroundColor": "#81feb7 !important",
   "color": "#1c1f23",
+  "padding": "8px 16px",
 
   "&$disabled": {
     boxShadow: "none"

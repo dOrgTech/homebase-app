@@ -3,7 +3,7 @@
   "name": "Tezos dApp for creating and interacting with DAOs using BaseDAO framework",
   "icons": [
     {
-      "src": "favicon.svg",
+      "src": "favicon.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/svg+xml"
     }

@@ -153,7 +153,8 @@ const styles = {
   voting: {
     marginTop: 6,
     marginBottom: 16,
-    fontWeight: 400
+    fontWeight: 400,
+    fontSize: 17
   }
 }
 

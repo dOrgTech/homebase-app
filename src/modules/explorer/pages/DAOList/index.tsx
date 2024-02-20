@@ -7,7 +7,8 @@ import {
   Typography,
   useMediaQuery,
   Theme,
-  useTheme
+  useTheme,
+  Icon
 } from "@material-ui/core"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
@@ -18,6 +19,10 @@ import { ConnectMessage } from "./components/ConnectMessage"
 import { DAOItem } from "./components/DAOItem"
 import { SearchInput } from "./components/Searchbar"
 import { MainButton } from "../../../common/MainButton"
+import { ReactComponent as TabsIcon } from "assets/img/tabs-icon.svg"
+import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
+import { ReactComponent as MyDAOsIcon } from "assets/img/my-daos-icon.svg"
+import { ReactComponent as MyDAOsSelectedIcon } from "assets/img/my-daos-selected-icon.svg"
 import ReactPaginate from "react-paginate"
 import "./styles.css"
 
@@ -40,13 +45,23 @@ const PageContainer = styled("div")(({ theme }) => ({
 }))
 
 const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "fontSize": 16,
-  "color": isSelected ? theme.palette.primary.dark : "#fff",
-
-  "backgroundColor": isSelected ? theme.palette.secondary.main : theme.palette.primary.main,
-
+  "fontSize": 18,
+  "height": 40,
+  "fontWeight": 400,
+  "paddingLeft": 20,
+  "paddingRight": 20,
+  "paddingTop": 0,
+  "paddingBottom": 0,
+  "borderRadius": 8,
+  "color": isSelected ? theme.palette.secondary.main : "#fff",
+  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
   "&:hover": {
-    backgroundColor: isSelected ? theme.palette.secondary.main : theme.palette.secondary.dark
+    backgroundColor: isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.secondary.dark,
+    borderRadius: 8,
+    borderTopLeftRadius: "8px !important",
+    borderTopRightRadius: "8px !important",
+    borderBottomLeftRadius: "8px !important",
+    borderBottomRightRadius: "8px !important"
   }
 }))
 
@@ -60,31 +75,46 @@ const Search = styled(Grid)({
 })
 
 const DAOItemGrid = styled(Grid)({
-  gap: "18px",
-
+  gap: "30px",
+  minHeight: "50vh",
+  justifyContent: "space-between",
   ["@media (max-width: 1155px)"]: {
-    gap: "16px"
+    gap: "32px"
   },
 
   ["@media (max-width:960px)"]: {
-    gap: "14px"
+    gap: "20px"
   },
 
   ["@media (max-width:830px)"]: {
-    gap: "12px"
+    width: "86vw",
+    gap: "20px"
   }
 })
 
 const DAOItemCard = styled(Grid)({
-  flexBasis: "49%",
+  flexBasis: "48.5%",
+
+  ["@media (max-width:1500px)"]: {
+    flexBasis: "48.5%"
+  },
+
+  ["@media (max-width:1200px)"]: {
+    flexBasis: "47.5%"
+  },
 
   ["@media (max-width:760px)"]: {
     minWidth: "100%"
   }
 })
 
+const TabsContainer = styled(Grid)(({ theme }) => ({
+  borderRadius: 8,
+  gap: 16
+}))
+
 export const DAOList: React.FC = () => {
-  const { network, account, tezos } = useTezos()
+  const { network, account } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()
@@ -104,6 +134,7 @@ export const DAOList: React.FC = () => {
         .map(dao => ({
           id: dao.address,
           name: dao.name,
+          description: dao.description,
           symbol: dao.token.symbol,
           votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
           votingAddressesCount:
@@ -144,6 +175,7 @@ export const DAOList: React.FC = () => {
           dao_type: {
             name: dao.dao_type.name
           },
+          description: dao.description,
           allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
         }))
         .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
@@ -155,11 +187,11 @@ export const DAOList: React.FC = () => {
             (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
         )
       }
-      return formattedDAOs
+      return formattedDAOs.filter(dao => dao.votingAddresses.includes(account))
     }
 
     return []
-  }, [daos, searchText])
+  }, [daos, searchText, account])
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())
@@ -182,13 +214,13 @@ export const DAOList: React.FC = () => {
     <>
       <Navbar disableMobileMenu />
       <PageContainer>
-        <Grid container style={{ gap: 42 }} direction="column">
-          <Grid item>
+        <Grid container style={{ gap: 32 }} direction="column">
+          <Grid item style={{ width: "inherit" }}>
             <Grid
               container
               justifyContent={isMobileExtraSmall ? "center" : "space-between"}
               alignItems="center"
-              style={{ gap: 42 }}
+              style={isMobileExtraSmall ? { gap: 24 } : { gap: 42 }}
             >
               <Search>
                 <SearchInput search={filterDAOs} />
@@ -218,15 +250,11 @@ export const DAOList: React.FC = () => {
           <Grid item>
             <Grid container>
               <Grid item>
-                <Grid container>
+                <TabsContainer container>
                   <Grid item>
                     <StyledTab
+                      startIcon={selectedTab === 0 ? <TabsSelectedIcon /> : <TabsIcon />}
                       variant="contained"
-                      style={
-                        selectedTab !== 0
-                          ? { borderTopRightRadius: 0, borderBottomRightRadius: 0, zIndex: 0 }
-                          : { borderRadius: 4, zIndex: 1 }
-                      }
                       disableElevation={true}
                       onClick={() => handleChangeTab(0)}
                       isSelected={selectedTab === 0}
@@ -236,20 +264,16 @@ export const DAOList: React.FC = () => {
                   </Grid>
                   <Grid item>
                     <StyledTab
+                      startIcon={selectedTab === 1 ? <MyDAOsSelectedIcon /> : <MyDAOsIcon />}
                       disableElevation={true}
                       variant="contained"
-                      style={
-                        selectedTab !== 1
-                          ? { borderTopLeftRadius: 0, borderBottomLeftRadius: 0, marginLeft: -1, zIndex: 0 }
-                          : { borderRadius: 4, marginLeft: -1, zIndex: 1 }
-                      }
                       onClick={() => handleChangeTab(1)}
                       isSelected={selectedTab === 1}
                     >
                       My DAOs
                     </StyledTab>
                   </Grid>
-                </Grid>
+                </TabsContainer>
               </Grid>
             </Grid>
           </Grid>
@@ -286,17 +310,17 @@ export const DAOList: React.FC = () => {
               </DAOItemGrid>
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
-              <DAOItemGrid container style={{ gap: 18 }} justifyContent={isMobileSmall ? "center" : "flex-start"}>
+              <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
                 {!account ? (
                   <ConnectMessage />
+                ) : myDAOs.length > 0 ? (
+                  myDAOs.map((dao, i) => (
+                    <DAOItemCard key={`mine-${i}`} item>
+                      <DAOItem dao={dao} />
+                    </DAOItemCard>
+                  ))
                 ) : (
-                  myDAOs
-                    .filter(dao => dao.votingAddresses.includes(account))
-                    .map((dao, i) => (
-                      <DAOItemCard key={`mine-${i}`} item>
-                        <DAOItem dao={dao} />
-                      </DAOItemCard>
-                    ))
+                  <Typography color="textPrimary">You have not joined any DAO</Typography>
                 )}
               </DAOItemGrid>
             </TabPanel>

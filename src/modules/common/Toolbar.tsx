@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import {
   AppBar,
   Toolbar,
-  Button,
   styled,
   Typography,
   Box,
@@ -15,7 +14,7 @@ import {
 import { useHistory } from "react-router-dom"
 import { TezosToolkit } from "@taquito/taquito"
 
-import HomeButton from "assets/logos/homebase_logo.svg"
+import HomeButton from "assets/logos/homebase-logo.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { toShortAddress } from "services/contracts/utils"
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons"
@@ -106,20 +105,21 @@ const AddressContainer = styled(Grid)({
 
 const LogoText = styled(Typography)({
   fontWeight: "bold",
-  fontSize: "24px",
+  fontSize: "26px",
   cursor: "pointer",
-  fontFamily: "Roboto",
+  fontFamily: "Roboto Flex",
   letterSpacing: "initial"
 })
 
-const AddressBarWrapper = styled(Grid)({
-  "boxSizing": "border-box",
-  "padding": "8px 16px",
-  "borderRadius": 4,
-  "&:hover": {
-    background: "rgba(129, 254, 183, 0.03)"
-  }
-})
+const AddressBarWrapper = styled(Grid)(({ theme }) => ({
+  borderRadius: 8,
+  background: theme.palette.primary.dark,
+  paddingLeft: 16,
+  paddingRight: 16,
+  paddingTop: 5,
+  paddingBottom: 6,
+  boxSizing: "border-box"
+}))
 
 const LogoItem = styled("img")({
   height: "30px",

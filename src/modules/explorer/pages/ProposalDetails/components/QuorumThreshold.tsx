@@ -22,7 +22,7 @@ const ProgressText = styled(Typography)(({ textColor }: { textColor: string }) =
   userSelect: "none",
   boxShadow: "none",
   background: "inherit",
-  fontFamily: "Roboto Mono",
+  fontFamily: "Roboto Flex",
   justifyContent: "center",
   top: 0
 }))

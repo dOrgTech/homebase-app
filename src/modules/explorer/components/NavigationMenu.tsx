@@ -1,4 +1,14 @@
-import { Grid, styled, Theme, Typography, useMediaQuery, useTheme, alpha } from "@material-ui/core"
+import {
+  Grid,
+  styled,
+  Theme,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  alpha,
+  withStyles,
+  makeStyles
+} from "@material-ui/core"
 import { ReactComponent as HouseIcon } from "assets/logos/home.svg"
 import { ReactComponent as VotingIcon } from "assets/logos/voting.svg"
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg"
@@ -14,14 +24,19 @@ import { debounce } from "../utils/debounce"
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
-  background: theme.palette.primary.main,
+  background: theme.palette.primary.dark,
   position: "sticky",
   top: "0px"
 }))
 
-const InnerContainer = styled(Grid)(({ theme }) => ({
+const InnerContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
   width: "1000px",
+  paddingLeft: 0,
+  paddingRight: 0,
   margin: "auto",
+  borderRadius: 8,
+  padding: 16,
+  alignItems: "center",
   justifyContent: "space-between",
 
   ["@media (max-width:1167px)"]: {
@@ -29,14 +44,52 @@ const InnerContainer = styled(Grid)(({ theme }) => ({
   }
 }))
 
-const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "height": "60px",
+const PageItemMobile = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
   "display": "flex",
   "alignItems": "center",
-  "padding": "0 8px",
   "borderTop": "2px solid transparent",
-  "borderBottom": isSelected ? "2px solid" + theme.palette.secondary.main : "2px solid transparent",
+  "backgroundColor": isSelected ? "#24282D" : "inherit",
+  "height": "auto",
+  "padding": "20px 20px",
+  "borderRadius": 8,
   "transition": isSelected ? "0s ease-in" : ".1s ease-out",
+  "width": 180,
+  "justifyContent": "center",
+
+  "& > a > *": {
+    height: "100%"
+  },
+
+  "&:hover": {
+    "& > a > * > * > * > * > *": {
+      fill: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+      stroke: isSelected ? theme.palette.secondary.main : theme.palette.secondary.main,
+      transition: isSelected ? "none" : ".15s ease-in"
+    }
+  },
+
+  "& > a > * > * > * > * > *": {
+    transition: ".15s ease-out"
+  },
+
+  "& > a > * > * > *": {
+    transition: ".15s ease-out"
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "45px"
+  }
+}))
+
+const PageItem = styled(Grid)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+  "display": "flex",
+  "alignItems": "center",
+  "borderTop": "2px solid transparent",
+  "backgroundColor": isSelected ? "#24282D" : "inherit",
+  "height": 50,
+  "padding": "20px 16px",
+  "borderRadius": 8,
+  "transition": isSelected ? "0s ease-in" : ".1s ease-out",
+  "justifyContent": "center",
 
   "& > a > *": {
     height: "100%"
@@ -128,12 +181,21 @@ const getPages = (daoId: string): Page[] => [
   }
 ]
 
+const styles = makeStyles(theme => ({
+  explorer: {
+    backgroundColor: theme.palette.primary.dark
+  },
+  lite: {
+    display: "none"
+  },
+  home: {}
+}))
+
 const StyledBottomBar = styled(Grid)(({ theme }: { theme: Theme }) => ({
   position: "fixed",
   height: 55,
   width: "100%",
   bottom: /*visible ? 0 : -55*/ 0,
-  backgroundColor: theme.palette.primary.main,
   boxShadow: "0px -4px 7px -4px rgba(0,0,0,0.2)",
   zIndex: 10000,
   transition: "bottom 0.5s"
@@ -148,6 +210,8 @@ const BottomBarItems = styled(Grid)({
 const BottomNavBar: React.FC = ({ children }) => {
   const [prevScrollPos, setPrevScrollPos] = useState(0)
   const [visible, setVisible] = useState(true)
+
+  const classes = styles()
 
   useEffect(() => {
     const handleScroll = debounce(() => {
@@ -179,6 +243,8 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
   const pathId = path.pathname.split("/").slice(-1)[0]
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down(960))
+  const classes = styles()
+  const location = useLocation()
 
   useEffect(() => {
     if (dao) {
@@ -194,7 +260,16 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
 
   return !isMobileSmall || disableMobileMenu ? (
     <Container container>
-      <InnerContainer container>
+      <InnerContainer
+        container
+        className={
+          location.pathname.match("/explorer/daos")
+            ? classes.explorer
+            : location.pathname.match("/explorer/lite")
+            ? classes.lite
+            : classes.home
+        }
+      >
         {pages.map((page, i) => (
           <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} item>
             <Link to={page.href}>
@@ -216,7 +291,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
   ) : (
     <BottomNavBar>
       {pages.map((page, i) => (
-        <PageItem key={`page-${i}`} isSelected={pathId === page.pathId} container item alignItems="center">
+        <PageItemMobile key={`page-${i}`} isSelected={pathId === page.pathId} container item alignItems="center">
           <Link to={page.href}>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item>
@@ -226,7 +301,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
               </Grid>
             </Grid>
           </Link>
-        </PageItem>
+        </PageItemMobile>
       ))}
     </BottomNavBar>
   )

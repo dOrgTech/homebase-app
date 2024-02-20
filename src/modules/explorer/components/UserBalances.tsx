@@ -1,7 +1,8 @@
-import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import React, { useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAO } from "services/services/dao/hooks/useDAO"
+import CancelIcon from "@mui/icons-material/Cancel"
 
 const BalancesBox = styled(Grid)(({ theme }) => ({
   minHeight: "137px",
@@ -35,6 +36,7 @@ interface Balances {
 const BalanceHeaderText = styled(Typography)({
   paddingBottom: 10,
   fontSize: 18,
+  fontWeight: 600,
 
   ["@media (max-width:710px)"]: {
     fontSize: 16
@@ -61,7 +63,7 @@ const BalanceGrid = styled(Grid)({
 })
 
 const Balance = styled(Typography)({
-  fontSize: 36,
+  fontSize: 32,
   lineHeight: "0.9",
   fontWeight: 300,
 
@@ -70,14 +72,57 @@ const Balance = styled(Typography)({
   }
 })
 
-const BalanceToken = styled(Typography)({
+const OnChainTitle = styled(Typography)({
   fontSize: 24,
-  fontWeight: 300
+  fontWeight: 600
 })
 
-export const UserBalances: React.FC<{ daoId: string }> = ({ daoId, children }) => {
+const OnChainSubtitle = styled(Typography)({
+  fontSize: 18,
+  fontWeight: 300,
+  color: "#bfc5ca",
+  lineHeight: "160%"
+})
+
+const OnChainBox = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  padding: "36px 48px 33px 48px",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "flex-start",
+  gap: 24,
+  flexShrink: 0,
+  borderRadius: 8,
+  background: theme.palette.primary.main,
+  maxWidth: "32% !important",
+  [theme.breakpoints.down("sm")]: {
+    maxWidth: "100% !important",
+    marginBottom: 12
+  }
+}))
+
+const UnstakeText = styled(Typography)({
+  marginLeft: 4,
+  fontSize: 18
+})
+
+const UnstakeButton = styled(Button)({
+  "padding": 0,
+  "&:hover": {
+    backgroundColor: "inherit",
+    background: "inherit"
+  }
+})
+
+export const UserBalances: React.FC<{ daoId: string; canUnstakeVotes: boolean; onUnstakeFromAllProposals: any }> = ({
+  daoId,
+  children,
+  canUnstakeVotes,
+  onUnstakeFromAllProposals
+}) => {
   const { account } = useTezos()
   const { data: dao, ledger } = useDAO(daoId)
+  const symbol = dao && dao.data.token.symbol.toUpperCase()
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down(635))
 
@@ -120,36 +165,43 @@ export const UserBalances: React.FC<{ daoId: string }> = ({ daoId, children }) =
     <Grid container direction="column" style={{ gap: 40 }}>
       {children}
       <Grid item container direction={isExtraSmall ? "column" : "row"} justifyContent="space-between">
-        {dao &&
-          balancesList.map(({ displayName, balance }, i) => (
-            <Grid item key={`balance-${i}`}>
-              <BalanceHeaderText color="secondary" align={isExtraSmall ? "center" : "left"}>
-                {displayName}
-              </BalanceHeaderText>
-              <BalanceGrid
-                container
-                alignItems="baseline"
-                spacing={1}
-                justifyContent={isExtraSmall ? "center" : "flex-start"}
-              >
-                <Grid item>
-                  <Balance color="textPrimary">{balance}</Balance>
-                </Grid>
-                <Grid item>
-                  <BalanceToken color="textPrimary">{balance !== "-" ? dao.data.token.symbol : ""}</BalanceToken>
-                </Grid>
-              </BalanceGrid>
-            </Grid>
-          ))}
+        <Grid container item direction="row">
+          <OnChainTitle align="center" color="textPrimary">
+            On-Chain {symbol} Balances
+          </OnChainTitle>
+        </Grid>
+        <Grid style={{ marginBottom: 24 }} container item direction="row">
+          <OnChainSubtitle>These settings only affect your participation in on-chain polls</OnChainSubtitle>
+        </Grid>
+        <Grid container direction={isExtraSmall ? "column" : "row"} justifyContent="space-between">
+          {dao &&
+            balancesList.map(({ displayName, balance }, i) => (
+              <OnChainBox item xs key={`balance-${i}`}>
+                <BalanceHeaderText color="textPrimary" align={isExtraSmall ? "center" : "left"}>
+                  {displayName}
+                </BalanceHeaderText>
+                <BalanceGrid
+                  container
+                  alignItems="baseline"
+                  justifyContent={isExtraSmall ? "center" : "flex-start"}
+                  direction="row"
+                >
+                  <Grid item xs={6}>
+                    <Balance color="textPrimary">{balance}</Balance>
+                  </Grid>
+                  {i === 2 ? (
+                    <Grid item xs container direction="row" alignItems="center" justifyContent="flex-end">
+                      <UnstakeButton variant="text" disabled={!canUnstakeVotes} onClick={onUnstakeFromAllProposals}>
+                        <CancelIcon style={{ fontSize: 16 }} />
+                        <UnstakeText>Unstake</UnstakeText>
+                      </UnstakeButton>
+                    </Grid>
+                  ) : null}
+                </BalanceGrid>
+              </OnChainBox>
+            ))}
+        </Grid>
       </Grid>
     </Grid>
-  )
-}
-
-export const UserBalancesBox: React.FC<{ daoId: string }> = ({ daoId }) => {
-  return (
-    <BalancesBox item>
-      <UserBalances daoId={daoId} />
-    </BalancesBox>
   )
 }
