@@ -1,5 +1,5 @@
-import { createMuiTheme } from "@material-ui/core/styles"
-export const legacyTheme = createMuiTheme({
+import { createTheme } from "@material-ui/core/styles"
+export const legacyTheme = createTheme({
   palette: {
     primary: {
       main: "#1C1F23",
@@ -210,8 +210,7 @@ export const legacyTheme = createMuiTheme({
         "&:active:not($disabled):not($focused):not($error):before": {
           borderBottom: "none"
         }
-      },
-      disabled: {}
+      }
     },
     MuiInputAdornment: {
       positionStart: {
@@ -224,7 +223,6 @@ export const legacyTheme = createMuiTheme({
           color: "#3d3d3d"
         }
       },
-      disabled: {},
       outlined: {
         "&$disabled": {
           border: "2px solid #3d3d3d"

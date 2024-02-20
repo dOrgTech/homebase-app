@@ -16,7 +16,7 @@ import {
 import { Choices } from "../../components/Choices"
 import { useHistory, useLocation } from "react-router-dom"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
-import { TextField as FormikTextField } from "formik-material-ui"
+import { TextField as FormikTextField, Switch } from "formik-material-ui"
 import { Poll } from "models/Polls"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getSignature } from "services/lite/utils"
@@ -91,8 +91,7 @@ const CustomFormikTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  },
-  disabled: {}
+  }
 })(FormikTextField)
 
 const CustomFormikTimeTextField = withStyles({
@@ -117,8 +116,7 @@ const CustomFormikTimeTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottom: "none !important"
     }
-  },
-  disabled: {}
+  }
 })(FormikTextField)
 
 const PageContainer = styled("div")({
@@ -155,6 +153,15 @@ const ProposalChoices = styled(Grid)({
   flexGrow: 1
 })
 
+const LabelText = styled(Typography)(({ theme }) => ({
+  fontWeight: 300,
+  fontSize: 18,
+  color: "#bfc5ca",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 16
+  }
+}))
+
 const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   "minHeight": 192,
   "boxSizing": "border-box",
@@ -176,6 +183,23 @@ const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
   },
   "resize": "none"
 }))
+
+const SwitchContainer = styled(Grid)({
+  "boxShadow": "none",
+  "marginLeft": -12,
+
+  "& .Mui-checked.Mui-checked + .MuiSwitch-track": {
+    background: "#81FEB7"
+  },
+
+  "& .MuiSwitch-colorSecondary.Mui-checked": {
+    color: "#FFFFFF"
+  },
+
+  "& .MuiSwitch-thumb": {
+    boxShadow: "none"
+  }
+})
 
 const CommunityLabel = styled(Grid)({
   minWidth: 212,
@@ -374,7 +398,7 @@ export const ProposalForm = ({
                   container
                   item
                   direction={"row"}
-                  style={{ gap: 10, flexBasis: "20% !important;" }}
+                  style={{ gap: 10, flexBasis: "20% !important" }}
                   xs={12}
                 >
                   <Grid item container direction="row" xs={12}>
@@ -476,6 +500,19 @@ export const ProposalForm = ({
                 </TimeContainer>
               </>
             ) : null}
+
+            <Grid item xs={12}>
+              <SwitchContainer item container direction="row" xs={12} alignItems="center">
+                <Field name="isXTZ" type="text" placeholder="XTZ-weighted" component={Switch} />
+                <Typography color="textPrimary"> XTZ-weighted</Typography>
+              </SwitchContainer>
+              <Grid item>
+                <LabelText color="textPrimary">
+                  {" "}
+                  If enabled, the poll will use the voters XTZ balance instead of their balance
+                </LabelText>
+              </Grid>
+            </Grid>
 
             <Grid item xs={12}>
               <Typography color="textPrimary">Description</Typography>
@@ -668,7 +705,6 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const id = data?.liteDAOData?._id ? data?.liteDAOData?._id : props.id
-  const tokenAddress = useToken(id)
 
   const initialState: Poll = {
     name: "",
@@ -682,11 +718,13 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
     votingStrategy: 0,
     endTimeDays: null,
     endTimeHours: null,
-    endTimeMinutes: null
+    endTimeMinutes: null,
+    isXTZ: false
   }
 
   const saveProposal = useCallback(
     async (values: Poll) => {
+      console.log(values)
       try {
         setIsLoading(true)
         if (!wallet) {
@@ -746,7 +784,7 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
         return
       }
     },
-    [navigate, id, network, tokenAddress]
+    [navigate, id, network]
   )
 
   return (

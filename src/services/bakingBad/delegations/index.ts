@@ -49,10 +49,16 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
     throw new Error(data.message)
   }
 
-  const result: { votingWeight: string } = await response.json()
+  const result: { votingWeight: string; votingXTZWeight: string } = await response.json()
   if (result) {
-    return new BigNumber(result.votingWeight)
+    return {
+      votingWeight: new BigNumber(result.votingWeight),
+      votingXTZWeight: new BigNumber(result.votingXTZWeight)
+    }
   }
 
-  return new BigNumber(0)
+  return {
+    votingWeight: new BigNumber(0),
+    votingXTZWeight: new BigNumber(0)
+  }
 }

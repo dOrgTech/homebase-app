@@ -41,8 +41,7 @@ const CustomCopyButton = withStyles({
     "& .MuiBox-root": {
       padding: "0px !important"
     }
-  },
-  disabled: {}
+  }
 })(Grid)
 
 const OffChainBox = styled(Grid)(({ theme }) => ({
@@ -132,10 +131,12 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
           >
             <Typography color="textPrimary">Voting Weight</Typography>
             <Balance color="textPrimary">
-              {!voteWeight || voteWeight.eq(new BigNumber(0)) ? (
+              {!voteWeight || voteWeight.votingWeight.eq(new BigNumber(0)) ? (
                 "-"
               ) : (
-                <>{`${parseUnits(voteWeight, dao.data.token.decimals).toString()} ${dao.data.token.symbol}`}</>
+                <>{`${parseUnits(voteWeight.votingWeight, dao.data.token.decimals).toString()} ${
+                  dao.data.token.symbol
+                }`}</>
               )}
             </Balance>
           </OffChainBox>

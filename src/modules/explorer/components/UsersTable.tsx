@@ -1,5 +1,5 @@
 import React from "react"
-import { TableCell, TableHead, TableRow, styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
+import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "./CopyButton"

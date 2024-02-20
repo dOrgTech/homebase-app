@@ -39,9 +39,6 @@ const StyledInput = withStyles((theme: Theme) => ({
     "& .MuiInput-underline:after": {
       borderBottomColor: "transparent"
     }
-  },
-  input: {
-    disabled: {}
   }
 }))(TextField)
 
