@@ -122,7 +122,7 @@ export const Treasury: React.FC = () => {
                   justifyContent="flex-start"
                   alignItems="center"
                   item
-                  xs={isMobileSmall ? undefined : 8}
+                  xs={isMobileSmall ? undefined : 7}
                 >
                   <Grid item xs={isMobileSmall ? 12 : 2}>
                     <TitleText color="textPrimary">Treasury</TitleText>
@@ -138,7 +138,14 @@ export const Treasury: React.FC = () => {
                   xs={isMobileSmall ? undefined : true}
                 >
                   {dao && (
-                    <Grid item xs container direction="row" style={isMobileSmall ? {} : { marginLeft: 30 }}>
+                    <Grid
+                      item
+                      xs
+                      container
+                      justifyContent="flex-end"
+                      direction="row"
+                      style={isMobileSmall ? {} : { marginLeft: 30 }}
+                    >
                       <CopyButton style={{ marginRight: 4 }} text={dao?.data.address} displayedText="Copy Address" />
                     </Grid>
                   )}

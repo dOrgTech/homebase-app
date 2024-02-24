@@ -219,8 +219,7 @@ export const theme = createTheme({
         "&:active:not($disabled):not($focused):not($error):before": {
           borderBottom: "none"
         }
-      },
-      disabled: {}
+      }
     },
 
     MuiButton: {

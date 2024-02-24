@@ -212,8 +212,7 @@ export const legacyTheme = createTheme({
         "&:active:not($disabled):not($focused):not($error):before": {
           borderBottom: "none"
         }
-      },
-      disabled: {}
+      }
     },
     MuiInputAdornment: {
       positionStart: {
@@ -226,7 +225,6 @@ export const legacyTheme = createTheme({
           color: "#3d3d3d"
         }
       },
-      disabled: {},
       outlined: {
         "&$disabled": {
           border: "2px solid #3d3d3d"
