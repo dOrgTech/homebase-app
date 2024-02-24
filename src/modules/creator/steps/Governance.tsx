@@ -22,7 +22,10 @@ const TimeBox = styled(Grid)(({ theme }) => ({
   width: 72,
   minHeight: 59,
   marginBottom: 16,
-  display: "grid"
+  display: "grid",
+  [theme.breakpoints.down("sm")]: {
+    width: 160
+  }
 }))
 
 const TimeText = styled(Typography)({
@@ -155,6 +158,11 @@ const Value = styled(Typography)({
   padding: "15%"
 })
 
+const ProgressBarContainer = styled(Grid)({
+  marginTop: 8,
+  paddingLeft: 6
+})
+
 const styles = {
   voting: {
     marginTop: 6,
@@ -180,7 +188,7 @@ const CustomFormikTextField = withStyles({
   }
 })(TextField)
 
-const InfoBox = styled(Paper)({
+const InfoBox = styled(Paper)(({ theme }) => ({
   boxShadow: "none",
   border: "none",
   marginTop: 20,
@@ -189,8 +197,11 @@ const InfoBox = styled(Paper)({
   gap: 10,
   backgroundColor: "#2F3438",
   borderRadius: 8,
-  padding: "32px 48px"
-})
+  padding: "32px 48px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "28px 38px"
+  }
+}))
 
 const validateForm = (values: VotingSettings) => {
   const errors: FormikErrors<VotingSettings> = {}
@@ -810,7 +821,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
           Returned Stake After Proposal Rejection
         </Typography>
 
-        <Grid container direction="row" alignItems="center" style={{ marginTop: 8 }}>
+        <ProgressBarContainer container direction="row" alignItems="center">
           <Grid item xs={8} sm={10}>
             <Field name="returnedTokenPercentage">
               {() => (
@@ -828,7 +839,7 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
               </Value>
             </CustomSliderValue>
           </Grid>
-        </Grid>
+        </ProgressBarContainer>
       </SecondContainer>
 
       <Grid container direction="row" alignItems="center" style={{ marginTop: 14 }}>

@@ -54,7 +54,8 @@ export const legacyTheme = createTheme({
       fontWeight: 500
     },
     h4: {
-      fontSize: 20
+      fontSize: 24,
+      fontWeight: 600
     },
     h5: {
       fontSize: 35
@@ -70,6 +71,12 @@ export const legacyTheme = createTheme({
     }
   },
   overrides: {
+    MuiLinearProgress: {
+      colorSecondary: {
+        borderRadius: 8,
+        height: 8
+      }
+    },
     MuiSlider: {
       root: {
         color: "#3D3D3D"

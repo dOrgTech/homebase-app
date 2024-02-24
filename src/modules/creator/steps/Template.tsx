@@ -21,13 +21,10 @@ const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   "cursor": "pointer",
   "paddingBottom": 0,
   "flexBasis": "47%",
-  "padding": "37px 41px",
+  "padding": "33px 38px 0px",
   "&:hover": {
     border: "3px solid rgba(129, 254, 183, 0.4)",
-    paddingTop: 37,
-    paddingBottom: 0,
-    paddingRight: 41,
-    paddingLeft: 41
+    padding: "30px 35px 0px"
   },
   ["@media (max-width:1167px)"]: {
     marginBottom: 20,
@@ -38,8 +35,8 @@ const LambdaCustomBox = styled(Grid)(({ theme }) => ({
 const styles = makeStyles({
   selected: {
     border: "3px solid rgba(129, 254, 183, 0.4)",
-    padding: "37px 41px",
-    paddingBottom: 0
+    paddingBottom: 0,
+    padding: "30px 35px 0px"
   }
 })
 

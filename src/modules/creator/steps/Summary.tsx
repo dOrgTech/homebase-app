@@ -4,9 +4,11 @@ import { useHistory, useRouteMatch } from "react-router-dom"
 import { ActionTypes, CreatorContext } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { toShortAddress } from "services/contracts/utils"
+import { Blockie } from "modules/common/Blockie"
+import { CopyButton } from "modules/explorer/components/CopyButton"
 
 const ThirdContainer = styled(Grid)({
-  marginTop: 42,
+  marginTop: 40,
   background: "#2F3438",
   borderRadius: 8,
   boxSizing: "border-box"
@@ -14,7 +16,10 @@ const ThirdContainer = styled(Grid)({
 
 const ThirdContainerFirstRow = styled(Grid)({
   padding: "19px 48px",
-  borderBottom: "0.3px solid #7D8C8B",
+  backgroundColor: "#2f3438",
+  borderTopLeftRadius: 8,
+  borderTopRightRadius: 8,
+  borderBottom: "0.3px solid #575757",
   alignItems: "center",
   display: "flex",
   maxHeight: 70,
@@ -36,7 +41,43 @@ const ThirdContainerLastRow = styled(Grid)({
 })
 
 const ThirdContainerRow = styled(Grid)({
-  borderBottom: "0.3px solid #7D8C8B",
+  borderBottom: "0.3px solid #575757",
+  backgroundColor: "#24282d",
+  padding: "24px 48px",
+  maxHeight: 70,
+  ["@media (max-width:1167px)"]: {
+    padding: "12px 15px",
+    maxHeight: "inherit"
+  }
+})
+
+const ThirdContainerRowDescription = styled(Grid)({
+  backgroundColor: "#2f3438",
+  padding: "24px 48px",
+  maxHeight: "inherit",
+  borderBottomLeftRadius: 8,
+  borderBottomRightRadius: 8,
+  ["@media (max-width:1167px)"]: {
+    padding: "12px 15px",
+    maxHeight: "inherit"
+  }
+})
+
+const ThirdContainerRowOdd = styled(Grid)({
+  backgroundColor: "#2a2e32",
+  borderBottom: "0.3px solid #575757",
+  padding: "24px 48px",
+  maxHeight: 70,
+  ["@media (max-width:1167px)"]: {
+    padding: "12px 15px",
+    maxHeight: "inherit"
+  }
+})
+
+const ThirdContainerRowOddLast = styled(Grid)({
+  backgroundColor: "#2a2e32",
+  borderBottomLeftRadius: 8,
+  borderBottomRightRadius: 8,
   padding: "24px 48px",
   maxHeight: 70,
   ["@media (max-width:1167px)"]: {
@@ -46,8 +87,8 @@ const ThirdContainerRow = styled(Grid)({
 })
 
 const ThirdContainerSpecialRow = styled(Grid)({
-  borderBottom: "0.3px solid #7D8C8B",
-  borderTop: "0.3px solid #7D8C8B",
+  borderBottom: "0.3px solid #575757",
+  borderTop: "0.3px solid #575757",
   padding: "24px 48px",
   maxHeight: 70,
   ["@media (max-width:1167px)"]: {
@@ -56,21 +97,14 @@ const ThirdContainerSpecialRow = styled(Grid)({
   }
 })
 
-const FirstContainer = styled(Grid)({
-  background: "#2F3438",
-  borderRadius: 8,
-  padding: "22px 48px",
-  boxSizing: "border-box",
-  marginTop: 4
-})
-
 const TitleSpacing = styled(Typography)({
   marginTop: 8,
   fontWeight: 600
 })
 
 const KeyLabel = styled(Typography)({
-  fontWeight: 500
+  fontWeight: 500,
+  cursor: "default"
 })
 
 const ContainerEdit = styled(Typography)({
@@ -78,7 +112,12 @@ const ContainerEdit = styled(Typography)({
 })
 
 const AdminAddress = styled(Typography)({
-  wordBreak: "break-all"
+  wordBreak: "break-all",
+  cursor: "default"
+})
+
+const ValueLabel = styled(Typography)({
+  cursor: "default"
 })
 
 export const Summary = (): JSX.Element => {
@@ -142,69 +181,103 @@ export const Summary = (): JSX.Element => {
             </Grid>
           </ThirdContainerFirstRow>
 
-          <ThirdContainerRow item xs={12}>
+          <ThirdContainerRowOdd item xs={12}>
             <Grid container direction="row" alignItems="center">
               <Grid item xs={5}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
-                  Administrator
+                  DAO Name
                 </KeyLabel>
               </Grid>
               <Grid item xs={7}>
                 <AdminAddress variant="subtitle2" color="textSecondary" align="right">
-                  {isMobile
-                    ? toShortAddress(state.data.orgSettings.administrator)
-                    : state.data.orgSettings.administrator}
+                  {state.data.orgSettings.name}
+                </AdminAddress>
+              </Grid>
+            </Grid>
+          </ThirdContainerRowOdd>
+
+          <ThirdContainerRow item xs={12}>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={5}>
+                <KeyLabel variant="subtitle2" color="textSecondary">
+                  Token Symbol
+                </KeyLabel>
+              </Grid>
+              <Grid item xs={7}>
+                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
+                  {state.data.orgSettings.symbol}
                 </AdminAddress>
               </Grid>
             </Grid>
           </ThirdContainerRow>
 
+          <ThirdContainerRowOdd item xs={12}>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={5}>
+                <KeyLabel variant="subtitle2" color="textSecondary">
+                  Token Address
+                </KeyLabel>
+              </Grid>
+              <Grid item xs={7} container direction="row" alignItems="center" justifyContent="flex-end">
+                <Blockie
+                  style={{ marginRight: 8 }}
+                  address={state.data.orgSettings.governanceToken.address}
+                  size={24}
+                />
+                <AdminAddress variant="subtitle2" color="textSecondary" align="right" style={{ marginRight: 8 }}>
+                  {toShortAddress(state.data.orgSettings.governanceToken.address)}
+                </AdminAddress>
+                <CopyButton text={state.data.orgSettings.governanceToken.address} />
+              </Grid>
+            </Grid>
+          </ThirdContainerRowOdd>
+
           <ThirdContainerRow item xs={12}>
+            <Grid container direction="row" alignItems="center">
+              <Grid item xs={5}>
+                <KeyLabel variant="subtitle2" color="textSecondary">
+                  Token ID
+                </KeyLabel>
+              </Grid>
+              <Grid item xs={7}>
+                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
+                  {state.data.orgSettings.governanceToken.tokenId}
+                </AdminAddress>
+              </Grid>
+            </Grid>
+          </ThirdContainerRow>
+
+          <ThirdContainerRowOdd item xs={12}>
             <Grid container direction="row" alignItems="center">
               <Grid item xs={5}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
                   Guardian
                 </KeyLabel>
               </Grid>
-              <Grid item xs={7}>
-                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
-                  {isMobile ? toShortAddress(state.data.orgSettings.guardian) : state.data.orgSettings.guardian}
+              <Grid item xs={7} container direction="row" alignItems="center" justifyContent="flex-end">
+                <Blockie style={{ marginRight: 8 }} address={state.data.orgSettings.guardian} size={24} />
+                <AdminAddress variant="subtitle2" color="textSecondary" align="right" style={{ marginRight: 8 }}>
+                  {toShortAddress(state.data.orgSettings.guardian)}
+                </AdminAddress>
+                <CopyButton text={state.data.orgSettings.guardian} />
+              </Grid>
+            </Grid>
+          </ThirdContainerRowOdd>
+
+          <ThirdContainerRowDescription item xs={12}>
+            <Grid item container direction="column" alignItems="flex-start">
+              <Grid item xs={12} style={{ marginBottom: 16 }}>
+                <KeyLabel variant="subtitle2" color="textSecondary">
+                  Description
+                </KeyLabel>
+              </Grid>
+              <Grid item xs={12}>
+                <AdminAddress variant="subtitle2" color="textSecondary" align="left">
+                  {state.data.orgSettings.description}
                 </AdminAddress>
               </Grid>
             </Grid>
-          </ThirdContainerRow>
-
-          <ThirdContainerRow item xs={12}>
-            <Grid item container direction="row" alignItems="center">
-              <Grid item xs={5}>
-                <KeyLabel variant="subtitle2" color="textSecondary">
-                  Governance Token Address
-                </KeyLabel>
-              </Grid>
-              <Grid item xs={7}>
-                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
-                  {isMobile
-                    ? toShortAddress(state.data.orgSettings.governanceToken.address)
-                    : state.data.orgSettings.governanceToken.address}
-                </AdminAddress>
-              </Grid>
-            </Grid>
-          </ThirdContainerRow>
-
-          <ThirdContainerLastRow item xs={12}>
-            <Grid item container direction="row" alignItems="center">
-              <Grid item xs={5}>
-                <KeyLabel variant="subtitle2" color="textSecondary">
-                  Governance Token ID
-                </KeyLabel>
-              </Grid>
-              <Grid item xs={7}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
-                  {state.data.orgSettings.governanceToken.tokenId}
-                </Typography>
-              </Grid>
-            </Grid>
-          </ThirdContainerLastRow>
+          </ThirdContainerRowDescription>
         </ThirdContainer>
 
         <ThirdContainer container direction="row">
@@ -224,7 +297,7 @@ export const Summary = (): JSX.Element => {
             </Grid>
           </ThirdContainerFirstRow>
 
-          <ThirdContainerRow item xs={12}>
+          <ThirdContainerRowOdd item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -232,12 +305,12 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.votingSettings.votingBlocks} blocks
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerRow>
+          </ThirdContainerRowOdd>
 
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
@@ -247,14 +320,14 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.votingSettings.proposalFlushBlocks} blocks
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
           </ThirdContainerRow>
 
-          <ThirdContainerRow item xs={12}>
+          <ThirdContainerRowOdd item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -262,12 +335,12 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.votingSettings.proposalExpiryBlocks} blocks
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerRow>
+          </ThirdContainerRowOdd>
 
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
@@ -277,14 +350,14 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.votingSettings.proposeStakeRequired} locked tokens
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
           </ThirdContainerRow>
 
-          <ThirdContainerLastRow item xs={12}>
+          <ThirdContainerRowOdd item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -292,14 +365,14 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.votingSettings.returnedTokenPercentage}% of locked tokens
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerLastRow>
+          </ThirdContainerRowOdd>
 
-          <ThirdContainerSpecialRow item xs={12}>
+          <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -307,14 +380,14 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.votingSettings.maxXtzAmount} XTZ
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerSpecialRow>
+          </ThirdContainerRow>
 
-          <ThirdContainerLastRow item xs={12}>
+          <ThirdContainerRowOddLast item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -322,12 +395,12 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.votingSettings.minXtzAmount} XTZ
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerLastRow>
+          </ThirdContainerRowOddLast>
         </ThirdContainer>
 
         <ThirdContainer container direction="row">
@@ -347,7 +420,7 @@ export const Summary = (): JSX.Element => {
             </Grid>
           </ThirdContainerFirstRow>
 
-          <ThirdContainerRow item xs={12}>
+          <ThirdContainerRowOdd item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item sm={6} xs={7}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -355,12 +428,12 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item sm={6} xs={5}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.quorumSettings.quorumThreshold}%
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerRow>
+          </ThirdContainerRowOdd>
 
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
@@ -370,14 +443,14 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.quorumSettings.quorumChange}%
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
           </ThirdContainerRow>
 
-          <ThirdContainerRow item xs={12}>
+          <ThirdContainerRowOdd item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7} sm={6}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -385,12 +458,12 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.quorumSettings.quorumMaxChange}%
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerRow>
+          </ThirdContainerRowOdd>
 
           <ThirdContainerRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
@@ -400,14 +473,14 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.quorumSettings.minQuorumAmount}%
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
           </ThirdContainerRow>
 
-          <ThirdContainerLastRow item xs={12}>
+          <ThirdContainerRowOddLast item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={7} sm={6}>
                 <KeyLabel variant="subtitle2" color="textSecondary">
@@ -415,12 +488,12 @@ export const Summary = (): JSX.Element => {
                 </KeyLabel>
               </Grid>
               <Grid item xs={5} sm={6}>
-                <Typography variant="subtitle2" color="textSecondary" align="right">
+                <ValueLabel variant="subtitle2" color="textSecondary" align="right">
                   {state.data.quorumSettings.maxQuorumAmount}%
-                </Typography>
+                </ValueLabel>
               </Grid>
             </Grid>
-          </ThirdContainerLastRow>
+          </ThirdContainerRowOddLast>
         </ThirdContainer>
       </Grid>
     </Box>

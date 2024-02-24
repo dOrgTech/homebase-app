@@ -35,14 +35,17 @@ const CustomTooltipText = styled(Typography)({
   fontWeight: 200
 })
 
-const CustomTextContainer = styled(Paper)({
+const CustomTextContainer = styled(Paper)(({ theme }) => ({
   maxWidth: "fit-content",
   background: "inherit",
   boxShadow: "none",
   display: "flex",
   alignItems: "center",
-  marginRight: 24
-})
+  marginRight: 24,
+  [theme.breakpoints.down("sm")]: {
+    alignItems: "baseline"
+  }
+}))
 
 interface Props {
   title?: ReactElement | string
