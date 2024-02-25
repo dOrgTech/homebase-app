@@ -5,7 +5,6 @@ import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreas
 import React, { useState } from "react"
 import { NFTTransferFormValues } from "./NFTTransfer"
 import { useDAOID } from "../pages/DAO/router"
-import { ProposalFormContainer } from "./ProposalForm"
 import { ConfigProposalForm } from "./ConfigProposalForm"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { GuardianChangeProposalForm } from "./GuardianChangeProposalForm"

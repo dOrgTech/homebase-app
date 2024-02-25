@@ -21,6 +21,14 @@ import { useDropAllExpired } from "services/contracts/baseDAO/hooks/useDropAllEx
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import NewReleasesIcon from "@mui/icons-material/NewReleases"
 import DeleteIcon from "@mui/icons-material/Delete"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
+
+const FiltersContainer = styled(Grid)({
+  marginTop: 45,
+  gap: 8,
+  cursor: "pointer"
+})
 
 const TabsContainer = styled(Grid)({
   borderRadius: 8,
@@ -103,6 +111,7 @@ export const Proposals: React.FC = () => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const [openDialog, setOpenDialog] = useState(false)
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
 
   const { mutate } = useFlush()
   const { mutate: dropAllExpired } = useDropAllExpired()
@@ -111,6 +120,10 @@ export const Proposals: React.FC = () => {
 
   const handleCloseModal = () => {
     setOpenDialog(false)
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
   }
 
   const onFlush = useCallback(async () => {
@@ -233,6 +246,18 @@ export const Proposals: React.FC = () => {
             </TabsContainer>
           </Grid>
 
+          <FiltersContainer
+            onClick={() => setOpenFiltersDialog(true)}
+            xs={isMobileSmall ? 12 : 2}
+            item
+            container
+            direction="row"
+            alignItems="center"
+          >
+            <FilterAltIcon color="secondary" fontSize="small" />
+            <Typography color="secondary">Filter & Sort</Typography>
+          </FiltersContainer>
+
           <TabPanel value={selectedTab} index={0}>
             <Grid item xs={12} style={{ marginTop: 38, gap: 16 }}>
               {proposals && cycleInfo && (
@@ -279,6 +304,7 @@ export const Proposals: React.FC = () => {
         </TabsBox>
 
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
+        <FilterProposalsDialog open={openFiltersDialog} handleClose={handleCloseFiltersModal} />
       </Grid>
     </>
   )
