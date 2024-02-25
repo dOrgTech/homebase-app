@@ -54,13 +54,12 @@ export const DeploymentLoader: React.FC<Props> = ({ states, activeStep, error })
         setFocusedState(states.length - 1)
       } else {
         setFocusedState(activeStep)
-        // setProgress(progress + 25)
       }
     }
   }, [activeStep, isFinished, states.length])
 
   useEffect(() => {
-    setProgress(progress + 25)
+    setProgress(progress + 20)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusedState])
 
