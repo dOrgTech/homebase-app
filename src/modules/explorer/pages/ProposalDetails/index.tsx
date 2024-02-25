@@ -42,7 +42,6 @@ import dayjs from "dayjs"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import ThumbDownIcon from "@mui/icons-material/ThumbDown"
 import { getStatusDate } from "services/utils/utils"
-import numbro from "numbro"
 
 const TitleText = styled(Typography)({
   fontSize: 36,
