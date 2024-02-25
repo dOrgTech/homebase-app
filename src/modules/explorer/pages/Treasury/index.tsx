@@ -10,7 +10,6 @@ import { useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTr
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { styled } from "@material-ui/core"
-import { MainButton } from "../../../common/MainButton"
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import { NFTs } from "../NFTs"
 import TollIcon from "@mui/icons-material/Toll"
@@ -139,8 +138,8 @@ export const Treasury: React.FC = () => {
                       item
                       xs
                       container
-                      direction="row"
                       justifyContent="flex-end"
+                      direction="row"
                       style={isMobileSmall ? {} : { marginLeft: 30 }}
                     >
                       <CopyButton style={{ marginRight: 4 }} text={dao?.data.address} displayedText="Copy Address" />

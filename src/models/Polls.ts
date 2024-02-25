@@ -24,6 +24,7 @@ export interface Poll {
   endTimeMinutes?: number | null
   endTimeHours?: number | null
   endTimeDays?: number | null
+  isXTZ: boolean
 }
 
 export interface Vote {

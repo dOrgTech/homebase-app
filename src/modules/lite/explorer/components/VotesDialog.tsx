@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import {
-  Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
-  DialogTitle,
   styled,
   Typography,
   Button,
@@ -15,9 +12,10 @@ import {
 import { toShortAddress } from "services/contracts/utils"
 import { FileCopyOutlined } from "@material-ui/icons"
 import { Choice } from "models/Choice"
-import { formatByDecimals, getTotalVoters } from "services/lite/utils"
+import { calculateWeightXTZ, formatByDecimals, getTotalVoters } from "services/lite/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import numbro from "numbro"
 
 const CustomContent = styled(DialogContent)(({ theme }) => ({
   padding: 0,
@@ -60,13 +58,19 @@ const Row = styled(Grid)(({ theme }) => ({
   }
 }))
 
+const formatConfig = {
+  mantissa: 4,
+  trimMantissa: true
+}
+
 export const VotesDialog: React.FC<{
   open: boolean
   handleClose: any
   choices: Choice[]
   symbol: string
   decimals: string
-}> = ({ open, handleClose, choices, symbol, decimals }) => {
+  isXTZ: boolean
+}> = ({ open, handleClose, choices, symbol, decimals, isXTZ }) => {
   const descriptionElementRef = React.useRef<HTMLElement>(null)
   const openNotification = useNotification()
 
@@ -143,7 +147,10 @@ export const VotesDialog: React.FC<{
                     >
                       <Typography color="textPrimary" variant="body1">
                         {" "}
-                        {formatByDecimals(choice.balanceAtReferenceBlock, decimals)} {symbol}{" "}
+                        {!isXTZ
+                          ? formatByDecimals(choice.balanceAtReferenceBlock, decimals)
+                          : numbro(formatByDecimals(choice.balanceAtReferenceBlock, "6")).format(formatConfig)}{" "}
+                        {symbol}{" "}
                       </Typography>
                     </Grid>
                   </Row>
