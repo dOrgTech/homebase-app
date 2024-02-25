@@ -133,20 +133,22 @@ export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, propos
           </Grid>
           {showButton ? (
             <Grid container direction="row" alignItems="center" justifyContent="flex-end">
-              <Grid
-                xs={isMobileSmall ? 6 : 2}
-                item
-                container
-                alignItems="center"
-                justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
-                style={{ cursor: "pointer" }}
-              >
-                <DownloadCSVIcon style={{ marginRight: 8 }} />
-                <Typography color="secondary" onClick={downloadCvs}>
-                  {" "}
-                  Download CSV
-                </Typography>
-              </Grid>
+              {proposal?.voters && proposal?.voters.length > 0 && (
+                <Grid
+                  xs={isMobileSmall ? 6 : 2}
+                  item
+                  container
+                  alignItems="center"
+                  justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
+                  style={{ cursor: "pointer" }}
+                >
+                  <DownloadCSVIcon style={{ marginRight: 8 }} />
+                  <Typography color="secondary" onClick={downloadCvs}>
+                    {" "}
+                    Download CSV
+                  </Typography>
+                </Grid>
+              )}
               <Grid item xs={isMobileSmall ? 6 : 2} container justifyContent="flex-end">
                 <SmallButton onClick={() => setOpen(true)}>View Votes</SmallButton>
               </Grid>

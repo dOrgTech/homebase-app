@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react"
-import { Grid, Table, TableBody, TableCell, TableHead, TableRow, useTheme } from "@material-ui/core"
+import { Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography, styled } from "@material-ui/core"
 import { toShortAddress } from "../../../services/contracts/utils"
 import { Blockie } from "modules/common/Blockie"
 import ReactPaginate from "react-paginate"
 import numbro from "numbro"
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore"
+
+const StyledRow = styled(Grid)({
+  paddingLeft: 46,
+  paddingTop: 10,
+  paddingBottom: 10
+})
 
 const titles = ["Address", "Votes"] as const
 
@@ -19,7 +25,6 @@ const formatConfig = {
 }
 
 export const VotesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
-  const theme = useTheme()
   const [columns, setColumns] = useState<RowData[]>([])
   const [countAddress, setCountAddress] = useState(0)
   const [countVotes, setCountVotes] = useState(0)
@@ -84,17 +89,27 @@ export const VotesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {columns.slice(offset, offset + 6).map((row, i) => (
-            <TableRow key={`votesrow-${i}`}>
-              <TableCell>
-                <Grid item container>
-                  <Blockie address={row.address} size={24} style={{ marginRight: 16 }} />
-                  {toShortAddress(row.address)}
-                </Grid>
-              </TableCell>
-              <TableCell>{numbro(row.votes).format(formatConfig)}</TableCell>
+          {columns.length > 0 ? (
+            columns.slice(offset, offset + 6).map((row, i) => (
+              <TableRow key={`votesrow-${i}`}>
+                <TableCell>
+                  <Grid item container>
+                    <Blockie address={row.address} size={24} style={{ marginRight: 16 }} />
+                    {toShortAddress(row.address)}
+                  </Grid>
+                </TableCell>
+                <TableCell>{numbro(row.votes).format(formatConfig)}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <StyledRow item>
+                <Typography color="textPrimary" align="left">
+                  No items
+                </Typography>
+              </StyledRow>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
       <Grid container direction="row" justifyContent="flex-end">

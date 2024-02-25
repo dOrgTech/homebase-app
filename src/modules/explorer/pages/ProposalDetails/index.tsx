@@ -34,7 +34,6 @@ import { XTZTransferBadge } from "../../components/XTZTransferBadge"
 import { ProposalTransferBadge } from "modules/explorer/components/ProposalTransferBadge"
 import { useUnstakeVotes } from "../../../../services/contracts/baseDAO/hooks/useUnstakeVotes"
 import { useTezos } from "../../../../services/beacon/hooks/useTezos"
-import { CopyButton } from "modules/common/CopyButton"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import { CodeCollapse } from "modules/explorer/components/CodeCollapse"
@@ -42,7 +41,6 @@ import dayjs from "dayjs"
 import ThumbUpIcon from "@mui/icons-material/ThumbUp"
 import ThumbDownIcon from "@mui/icons-material/ThumbDown"
 import { getStatusDate } from "services/utils/utils"
-import numbro from "numbro"
 
 const TitleText = styled(Typography)({
   fontSize: 36,
@@ -82,8 +80,8 @@ const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   }
 }))
 
-const ProgressText = styled(Typography)(({ textColor }: { textColor: string }) => ({
-  color: textColor,
+const ProgressText = styled(Typography)(({ textcolor }: { textcolor: string }) => ({
+  color: textcolor,
   display: "flex",
   alignItems: "center",
   position: "absolute",
@@ -97,6 +95,10 @@ const ProgressText = styled(Typography)(({ textColor }: { textColor: string }) =
   justifyContent: "center",
   top: 0
 }))
+
+const ValueText = styled(Typography)({
+  marginLeft: 8
+})
 
 const DetailsText = styled(Typography)({
   wordBreak: "break-all"
@@ -543,7 +545,7 @@ export const ProposalDetails: React.FC = () => {
                     trackStrokeColor={theme.palette.primary.light}
                   >
                     <div className="indicator">
-                      <ProgressText textColor="#81FEB7">
+                      <ProgressText textcolor="#81FEB7">
                         {proposal ? `${formatNumber(votesQuorumPercentage)}%` : "-"}
                       </ProgressText>
                     </div>
@@ -562,6 +564,7 @@ export const ProposalDetails: React.FC = () => {
                 {historyItems.map((item: any, index: number) => {
                   return (
                     <HistoryItem
+                      item
                       container
                       direction="row"
                       key={index}
@@ -618,13 +621,13 @@ export const ProposalDetails: React.FC = () => {
                   {(proposal as LambdaProposal).metadata.lambdaType === "execute_handler" && (
                     <Grid item container alignItems="center" direction={isMobileSmall ? "column" : "row"}>
                       <HighlightedBadge justifyContent="center" alignItems="center" direction="row" container>
-                        <Grid item>
+                        <Grid item container direction="row">
                           <DetailsText variant="body1" color="textPrimary">
                             Execute Function{" "}
-                            <Typography variant="body1" color="secondary" display={"inline"}>
-                              {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler.handler_name)}
-                            </Typography>{" "}
                           </DetailsText>
+                          <ValueText variant="body1" color="secondary" display={"inline"}>
+                            {_.startCase((proposal as LambdaProposal).metadata.lambdaHandler.handler_name)}
+                          </ValueText>{" "}
                         </Grid>
                       </HighlightedBadge>
                     </Grid>
