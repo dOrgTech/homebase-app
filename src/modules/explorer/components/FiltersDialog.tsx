@@ -34,20 +34,49 @@ const StatusButton = styled(Grid)(({ theme }) => ({
   }
 }))
 
-export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) => {
-  const [filters, setFilters] = useState<string[]>([])
-  const [status, setStatus] = useState<any[]>([])
+interface StatusOption {
+  label: string
+  selected: boolean
+}
 
-  const filterProposalByPopularity = (status: string | undefined) => {
-    if (status) {
-      setFilters([...status])
+export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) => {
+  const [filters, setFilters] = useState<StatusOption[]>([])
+  const [status, setStatus] = useState<StatusOption[]>([])
+
+  // const filterProposalByPopularity = (status: string | undefined) => {
+  //   if (status) {
+  //     setFilters([...status])
+  //   }
+  // }
+
+  const isSelected = (item: StatusOption) => {
+    return filters.includes(item) ? true : false
+  }
+
+  const saveStatus = (status: StatusOption) => {
+    let updated: StatusOption[] = []
+    if (filters.includes(status)) {
+      status.selected = false
+      updated = filters.filter(item => item.label !== status.label)
+    } else {
+      updated = filters.slice()
+      updated.push(status)
     }
+    setFilters(updated)
+  }
+
+  const showFilters = () => {
+    console.log(filters)
   }
 
   const findStatus = () => {
     const values = Object.values(ProposalStatus)
     for (const item in values) {
-      setStatus(oldArray => [...oldArray, values[item]])
+      const obj = {
+        label: values[item],
+        selected: false
+      }
+      setStatus(oldArray => [...oldArray, obj])
     }
   }
 
@@ -70,7 +99,7 @@ export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) =>
                 { name: "Most Popular to Least Popular", value: "popular" }
               ]}
               value={"recent"}
-              onSelected={filterProposalByPopularity}
+              // onSelected={filterProposalByPopularity}
               isFilter={true}
             />
           </Grid>
@@ -83,15 +112,19 @@ export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) =>
             {status.length > 0 &&
               status.map((item, index) => {
                 return (
-                  <StatusButton item key={`status-${index}`}>
-                    <Typography>{item}</Typography>
+                  <StatusButton
+                    item
+                    key={`status-${index}`}
+                    style={isSelected(item) ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+                  >
+                    <Typography onClick={() => saveStatus(item)}>{item.label}</Typography>
                   </StatusButton>
                 )
               })}
           </Grid>
         </Container>
         <Container container direction="row" justifyContent="flex-end">
-          <SmallButton color="secondary" variant="contained">
+          <SmallButton color="secondary" variant="contained" onClick={showFilters}>
             Apply
           </SmallButton>
         </Container>
