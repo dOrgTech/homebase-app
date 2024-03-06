@@ -509,7 +509,7 @@ export const ProposalForm = ({
               <Grid item>
                 <LabelText color="textPrimary">
                   {" "}
-                  If enabled, the poll will use the voter's XTZ balance instead of their governance token balance
+                  If enabled, the poll will use the voter&apos;s XTZ balance instead of their governance token balance
                 </LabelText>
               </Grid>
             </Grid>
