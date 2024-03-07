@@ -17,6 +17,7 @@ import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
 import { DaoSettingModal } from "./components/Settings"
 import SettingsIcon from "@mui/icons-material/Settings"
+import { SettingsDialog } from "./components/SettingsDialog"
 
 export const StyledAvatar = styled(Avatar)({
   height: 50,
@@ -94,9 +95,14 @@ export const DAO: React.FC = () => {
   const description = data && data.data.description
 
   const [openDialog, setOpenDialog] = useState(false)
+  const [openChangeDialog, setChangeOpenDialog] = useState(false)
 
   const handleCloseModal = () => {
     setOpenDialog(false)
+  }
+
+  const handleCloseChangeModal = () => {
+    setChangeOpenDialog(false)
   }
 
   const usersTableData = useMemo(() => {
@@ -121,7 +127,7 @@ export const DAO: React.FC = () => {
         <Grid container direction="column" style={{ gap: isExtraSmall ? 40 : 20 }}>
           <Grid item>
             <Grid container justifyContent="space-between" alignItems="center" style={isExtraSmall ? { gap: 20 } : {}}>
-              <Grid item>
+              <Grid item xs={8}>
                 <TitleText color="textPrimary">{name}</TitleText>
               </Grid>
               <Grid item>
@@ -132,6 +138,12 @@ export const DAO: React.FC = () => {
                   </Typography>
                 </ViewSettings>
                 <DaoSettingModal open={openDialog} handleClose={handleCloseModal} />
+              </Grid>
+              <Grid item>
+                <SmallButton onClick={() => setChangeOpenDialog(true)}>
+                  <Typography color="primary">Change Settings</Typography>
+                </SmallButton>
+                <SettingsDialog open={openChangeDialog} handleClose={handleCloseChangeModal} />
               </Grid>
             </Grid>
           </Grid>

@@ -41,10 +41,14 @@ const IconSwap = styled(SwapIcon)({
 })
 
 const DialogTitle = styled(Typography)({
-  fontSize: 20,
+  fontSize: 24,
   fontWeight: 500,
   textTransform: "capitalize",
   color: "#fff"
+})
+
+const FeeText = styled(Typography)({
+  fontSize: 18
 })
 
 type RecursivePartial<T> = {
@@ -64,7 +68,6 @@ interface Props {
   handleClose: () => void
   defaultValues?: ProposalFormDefaultValues
   defaultTab: number
-  handleChangeTab?: (value: number) => void
 }
 
 const enabledForms: Record<
@@ -102,13 +105,7 @@ const SwapText = styled(Typography)({
   color: "#fff"
 })
 
-export const ProposalFormContainer: React.FC<Props> = ({
-  open,
-  handleClose,
-  defaultValues,
-  defaultTab,
-  handleChangeTab
-}) => {
+export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defaultValues, defaultTab }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const { data: daoHoldings } = useDAOHoldings(daoId)
@@ -180,28 +177,6 @@ export const ProposalFormContainer: React.FC<Props> = ({
     [dao, handleClose, methods, registryMutate]
   )
 
-  const getLabel = (selectedTab: number) => {
-    switch (selectedTab) {
-      case 0:
-        return "NFT"
-      case 1:
-        return "Funds"
-      case 2:
-        return ""
-    }
-  }
-
-  const changeTab = (state: number) => {
-    setState(state)
-    if (state === 0) {
-      handleChangeTab?.(1)
-    } else if (state === 1) {
-      handleChangeTab?.(0)
-    } else {
-      return
-    }
-  }
-
   return (
     <FormProvider {...methods}>
       <ProposalFormResponsiveDialog open={open} onClose={handleClose}>
@@ -210,8 +185,6 @@ export const ProposalFormContainer: React.FC<Props> = ({
             <CustomContainer container direction="row" justifyContent="space-between" alignItems="center">
               <Grid item container direction="row" alignItems="center" style={{ width: "80%" }}>
                 <DialogTitle>{forms[defaultTab].label.toLowerCase()}</DialogTitle>
-                {defaultTab === 0 || defaultTab === 1 ? <IconSwap onClick={() => changeTab(defaultTab)} /> : null}
-                <SwapText>{getLabel(defaultTab)}</SwapText>
               </Grid>
               <Grid item>
                 <CloseButton onClose={handleClose} />
@@ -242,9 +215,9 @@ export const ProposalFormContainer: React.FC<Props> = ({
               </Grid>
               <Grid item container direction="row" alignItems="center" justifyContent="space-between">
                 <Grid item>
-                  <Typography align="left" variant="subtitle2" color="textPrimary" display={"inline"}>
+                  <FeeText align="left" color="textPrimary" display={"inline"}>
                     Proposal Fee:{" "}
-                  </Typography>
+                  </FeeText>
                   <Typography
                     align="left"
                     variant="subtitle2"

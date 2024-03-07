@@ -39,7 +39,7 @@ const OptionContainer = styled(Grid)(({ theme }) => ({
   "marginBottom": 16,
   "cursor": "pointer",
   "height": 110,
-  "&:hover": {
+  "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,
     transition: "0.15s ease-in"
@@ -57,6 +57,10 @@ const ActionDescriptionText = styled(Typography)(({ theme }) => ({
   fontSize: 16
 }))
 
+const TitleContainer = styled(Grid)({
+  marginBottom: 24
+})
+
 interface Action {
   id: any
   name: string
@@ -65,6 +69,24 @@ interface Action {
 }
 
 const getActions = (): Action[] => [
+  {
+    name: "Fee Configuration",
+    description: "Change proposal fee and returned token amount",
+    id: SupportedLambdaProposalKey.ConfigurationProposal,
+    isLambda: false
+  },
+  {
+    name: "Change Guardian",
+    description: "Change the DAO Guardian Address",
+    id: SupportedLambdaProposalKey.UpdateGuardianProposal,
+    isLambda: false
+  },
+  {
+    name: "Change Delegate",
+    description: "Change the DAO Delegate Address",
+    id: SupportedLambdaProposalKey.UpdateContractDelegateProposal,
+    isLambda: false
+  },
   {
     name: "Add Function",
     description: "Write Michelson code to add Function",
@@ -82,24 +104,6 @@ const getActions = (): Action[] => [
     description: "Execute a Function already installed on DAO",
     id: ProposalAction.execute,
     isLambda: true
-  },
-  {
-    name: "DAO Configuration",
-    description: "Change proposal fee and returned token amount",
-    id: SupportedLambdaProposalKey.ConfigurationProposal,
-    isLambda: false
-  },
-  {
-    name: "Change Guardian",
-    description: "Change the DAO Guardian Address",
-    id: SupportedLambdaProposalKey.UpdateGuardianProposal,
-    isLambda: false
-  },
-  {
-    name: "Change Delegate",
-    description: "Change the DAO Delegate Address",
-    id: SupportedLambdaProposalKey.UpdateContractDelegateProposal,
-    isLambda: false
   },
   {
     name: "Off Chain Poll",
@@ -164,33 +168,75 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
   return (
     <>
       <ResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
-        <Grid container style={{ marginTop: 32 }} spacing={2}>
-          {getActions().map((elem, index) =>
-            !liteDAOId && elem.id === "off-chain" ? null : (
-              <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
-                <OptionContainer
-                  onClick={() =>
-                    elem.id === "off-chain"
-                      ? handleLiteProposal()
-                      : !shouldDisable
-                      ? elem.isLambda
-                        ? handleOpenCustomProposalModal(elem.id)
-                        : handleOpenSupportedExecuteProposalModal(elem.id)
-                      : null
-                  }
-                >
-                  <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
-                    {elem.name}
-                  </ActionText>
-                  <ActionDescriptionText
-                    color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
-                  >
-                    {elem.description}{" "}
-                  </ActionDescriptionText>
-                </OptionContainer>
-              </Grid>
-            )
-          )}
+        <Grid container>
+          <TitleContainer container direction="row">
+            <Typography color="textPrimary">Configuration Proposal</Typography>
+          </TitleContainer>
+          <Grid container spacing={2}>
+            {getActions()
+              .slice(0, 3)
+              .map((elem, index) =>
+                !liteDAOId && elem.id === "off-chain" ? null : (
+                  <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
+                    <OptionContainer
+                      onClick={() =>
+                        elem.id === "off-chain"
+                          ? handleLiteProposal()
+                          : !shouldDisable
+                          ? elem.isLambda
+                            ? handleOpenCustomProposalModal(elem.id)
+                            : handleOpenSupportedExecuteProposalModal(elem.id)
+                          : null
+                      }
+                    >
+                      <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
+                        {elem.name}
+                      </ActionText>
+                      <ActionDescriptionText
+                        color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
+                      >
+                        {elem.description}{" "}
+                      </ActionDescriptionText>
+                    </OptionContainer>
+                  </Grid>
+                )
+              )}
+          </Grid>
+        </Grid>
+        <Grid container>
+          <TitleContainer container direction="row">
+            <Typography color="textPrimary">Configuration Proposal</Typography>
+          </TitleContainer>
+          <Grid container spacing={2}>
+            {getActions()
+              .slice(3, 6)
+              .map((elem, index) =>
+                !liteDAOId && elem.id === "off-chain" ? null : (
+                  <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
+                    <OptionContainer
+                      onClick={() =>
+                        elem.id === "off-chain"
+                          ? handleLiteProposal()
+                          : !shouldDisable
+                          ? elem.isLambda
+                            ? handleOpenCustomProposalModal(elem.id)
+                            : handleOpenSupportedExecuteProposalModal(elem.id)
+                          : null
+                      }
+                    >
+                      <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
+                        {elem.name}
+                      </ActionText>
+                      <ActionDescriptionText
+                        color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
+                      >
+                        {elem.description}{" "}
+                      </ActionDescriptionText>
+                    </OptionContainer>
+                  </Grid>
+                )
+              )}
+          </Grid>
         </Grid>
       </ResponsiveDialog>
 

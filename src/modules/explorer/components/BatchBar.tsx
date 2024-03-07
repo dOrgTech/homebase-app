@@ -1,7 +1,7 @@
 import React from "react"
 import { Grid, Paper, styled, Switch, Typography } from "@material-ui/core"
 import { ProposalFormInput } from "./ProposalFormInput"
-
+import AddIcon from "@mui/icons-material/Add"
 const BatchBarContainer = styled(Grid)(({ theme }) => ({
   height: 47,
   alignItems: "start",
@@ -41,8 +41,6 @@ const TransferActive = styled(Grid)({
 
 const AddButton = styled(Paper)({
   "marginLeft": 12,
-  "minHeight": 31,
-  "minWidth": 31,
   "textAlign": "center",
   "padding": 0,
   "background": "inherit",
@@ -90,13 +88,13 @@ export const BatchBar = ({ isBatch, handleIsBatchChange, onClickAdd, items, acti
                 item
                 key={index}
                 onClick={() => setActiveItem(index)}
-                style={Number(index + 1) === activeItem ? { background: "#81FEB7" } : { background: "inherit" }}
+                style={Number(index + 1) === activeItem ? { background: "#24282D" } : { background: "inherit" }}
               >
                 <Typography
                   variant="subtitle2"
                   style={
                     Number(index + 1) === activeItem
-                      ? { color: "#1C1F23", fontWeight: 500 }
+                      ? { color: "#81FEB7", fontWeight: 500 }
                       : { color: "#fff", opacity: 0.65, fontWeight: 500 }
                   }
                 >
@@ -106,7 +104,10 @@ export const BatchBar = ({ isBatch, handleIsBatchChange, onClickAdd, items, acti
             )
           })}
 
-          <AddButton onClick={onClickAdd}>+</AddButton>
+          <AddButton onClick={onClickAdd}>
+            {" "}
+            <AddIcon />{" "}
+          </AddButton>
         </BatchBarContainer>
       ) : null}
     </Grid>
