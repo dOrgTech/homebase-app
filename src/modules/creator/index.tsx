@@ -75,11 +75,17 @@ const FAQClickToAction = styled(Typography)(({ theme }) => ({
   fontWeight: 300
 }))
 
+const FAQReadMe = styled(Typography)(({ theme }) => ({
+  fontSize: "14px",
+  cursor: "pointer",
+  fontWeight: 300
+}))
+
 const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 650,
+  maxHeight: 680,
   paddingTop: 20,
   position: "sticky",
   top: 130
@@ -142,10 +148,10 @@ export const DAOCreate: React.FC = () => {
             <Grid item container direction="column" alignItems="center" xs>
               <ProgressBar
                 progress={Math.floor((step / (Object.keys(urlToStepMap).length - 1)) * 100)}
-                radius={52}
-                strokeWidth={5}
+                radius={62}
+                strokeWidth={8}
                 strokeColor={theme.palette.secondary.main}
-                trackStrokeWidth={4}
+                trackStrokeWidth={7}
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
@@ -153,7 +159,7 @@ export const DAOCreate: React.FC = () => {
                 </Box>
               </ProgressBar>
               <Box>
-                <FAQClickToAction>New to DAOs?</FAQClickToAction>
+                <FAQReadMe color="textSecondary">New to DAOs?</FAQReadMe>
                 <Link target="_blank" href="https://faq.tezos-homebase.io" color="secondary">
                   <FAQClickToAction style={{ textDecoration: "underline" }}>Read our FAQ</FAQClickToAction>
                 </Link>

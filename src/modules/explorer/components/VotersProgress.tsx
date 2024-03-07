@@ -63,8 +63,12 @@ export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, propos
       showTitle: false
     })
     const votesData = proposal ? proposal?.voters : []
-    const csv = generateCsv(csvConfig)(votesData)
-    download(csvConfig)(csv)
+    try {
+      const csv = generateCsv(csvConfig)(votesData)
+      download(csvConfig)(csv)
+    } catch (error) {
+      console.warn(`Error downloading csv file: `, error)
+    }
   }
 
   return (

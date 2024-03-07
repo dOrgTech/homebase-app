@@ -6,11 +6,13 @@ import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, Holder, TokenContractSettings, TokenDistributionSettings } from "../state/types"
 import { TextField as FormikTextField } from "formik-material-ui"
-import { AddCircleOutline, RemoveCircleOutline } from "@material-ui/icons"
+import { RemoveCircleOutline } from "@material-ui/icons"
 import BigNumber from "bignumber.js"
 import { numberWithCommas } from "../state/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { FieldChange, handleNegativeInput } from "modules/creator/utils"
+import AddCircleIcon from "@mui/icons-material/AddCircle"
+import { validateContractAddress, validateAddress } from "@taquito/utils"
 
 const RemoveButton = styled(RemoveCircleOutline)({
   marginTop: 0,
@@ -101,6 +103,9 @@ const ErrorText = styled(Typography)({
   marginTop: 4
 })
 
+const isInvalidKtOrTzAddress = (address: string) =>
+  validateContractAddress(address) !== 3 && validateAddress(address) !== 3
+
 const hasDuplicates = (options: Holder[]) => {
   const trimOptions = options.map(option => option.walletAddress.trim())
   return new Set(trimOptions).size !== trimOptions.length
@@ -125,12 +130,15 @@ const validateForm = (values: TokenDistributionSettings) => {
     if (values.totalAmount && values.totalAmount.gt(new BigNumber(getTotal(values.holders)))) {
       errors.totalAmount = "Total Supply not fully allocated"
     }
+    if (isInvalidKtOrTzAddress(values.holders[index].walletAddress)) {
+      errors.holders = "Invalid address"
+    }
   })
 
   return errors
 }
 
-const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
+const TokenSettingsForm = ({ submitForm, values, errors, touched }: any) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
@@ -229,13 +237,13 @@ const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue,
                               style={{ cursor: "pointer", padding: 0 }}
                               onClick={() => arrayHelpers.insert(values.holders.length, newValue)}
                             >
-                              <AddCircleOutline
+                              <AddCircleIcon
                                 style={{ cursor: "pointer", fontSize: 18 }}
                                 htmlColor={theme.palette.secondary.main}
                               />
                             </IconButton>
                             <Typography
-                              variant={"body2"}
+                              variant={"body1"}
                               style={{ cursor: "pointer" }}
                               onClick={() => arrayHelpers.insert(values.holders.length, newValue)}
                               color={"secondary"}

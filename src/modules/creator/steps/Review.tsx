@@ -13,7 +13,8 @@ import { ConnectWalletButton } from "modules/common/Toolbar"
 
 const RocketImg = styled("img")({
   marginBottom: 46,
-  height: 128
+  height: 245,
+  marginTop: 40
 })
 
 const CustomButton = styled(Button)({
@@ -103,23 +104,22 @@ export const Review: React.FC = () => {
               <Grid item>
                 <RocketImg src={Rocket} alt="rocket" />
               </Grid>
-              {data && !data.address ? (
-                <Grid item container direction="row" justifyContent="center">
-                  <Typography variant="h4" color="textSecondary">
-                    Deploying
-                  </Typography>
-                  <CustomText color="secondary" variant="h4">
-                    {" "}
-                    {state.data.orgSettings.name}
-                  </CustomText>
-                  <Typography variant="h4" color="textSecondary">
-                    {" "}
-                    to the Tezos Network
-                  </Typography>
-                </Grid>
-              ) : null}
+
+              <Grid item container direction="row" justifyContent="center">
+                <Typography variant="h4" color="textSecondary">
+                  Deploying
+                </Typography>
+                <CustomText color="secondary" variant="h4">
+                  {" "}
+                  {state.data.orgSettings.name}
+                </CustomText>
+                <Typography variant="h4" color="textSecondary">
+                  {" "}
+                  to the Tezos Network
+                </Typography>
+              </Grid>
+              <DeploymentLoader states={states} activeStep={activeState} error={error} />
             </Grid>
-            <DeploymentLoader states={states} activeStep={activeState} error={error} />
 
             <Grid item xs={12} container justifyContent="center">
               <Box>
@@ -137,14 +137,19 @@ export const Review: React.FC = () => {
 
             {states[0].activeText !== "" && states[2].completedText === "" && error === null ? (
               data && data.address ? null : (
-                <Grid container direction="row" justifyContent="center" alignContent="center">
+                <Grid container direction="row" style={{ marginTop: 40 }} justifyContent="center" alignContent="center">
                   <Typography color="secondary"> This may take several minutes, Do not close the tab </Typography>
                 </Grid>
               )
             ) : null}
           </>
         ) : (
-          <ConnectWalletButton connect={connect} />
+          <Box width={400} margin={"auto"} textAlign={"center"}>
+            <Typography variant="subtitle2" color="textSecondary" style={{ marginBottom: 16 }}>
+              In order to continue, you must be connected to a wallet
+            </Typography>
+            <ConnectWalletButton connect={connect} />
+          </Box>
         )}
       </Grid>
     </StyledContainer>

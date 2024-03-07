@@ -38,7 +38,7 @@ const CustomSliderValue = styled(withTheme(Paper))(props => ({
   justifyContent: "center",
   background: "#2F3438",
   borderRadius: 8,
-  width: 97
+  width: "100%"
 }))
 
 const Value = styled(Typography)({
@@ -49,7 +49,8 @@ const Value = styled(Typography)({
 const StyledSlider = withStyles({
   root: {
     textAlign: "center",
-    width: "100%"
+    width: "100%",
+    height: 4.5
   },
   valueLabel: {
     textAlign: "center"
@@ -64,7 +65,10 @@ const StyledSlider = withStyles({
   track: {
     backgroundColor: "#4BCF93",
     borderRadius: "4px",
-    height: 2
+    height: 4.5
+  },
+  rail: {
+    height: 4.5
   }
 })(Slider)
 
@@ -506,13 +510,13 @@ const QuorumForm = ({
               }}
             />
           </GridNoPadding>
-          <GridNoPadding item xs={4} sm={2} container direction="row" justifyContent="flex-end">
+          <Grid item xs={4} sm={2} container direction="row" justifyContent="flex-end">
             <CustomSliderValue>
               <Value variant="subtitle1" color="textSecondary">
                 {fixedQuorum}%
               </Value>
             </CustomSliderValue>
-          </GridNoPadding>
+          </Grid>
         </StylerContainer>
       )}
     </>
