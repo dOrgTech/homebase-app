@@ -68,7 +68,7 @@ export const VoteDetails: React.FC<{
   const [votes, setVotes] = useState<Choice[]>([])
   const tokenData = useCommunityToken(communityId)
   const { data: isTokenDelegationSupported } = useTokenDelegationSupported(tokenData?.tokenAddress)
-  const totalVoters = calculateXTZTotal(choices)
+  const totalXTZ = calculateXTZTotal(choices)
 
   const handleClickOpen = () => {
     setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
@@ -146,7 +146,7 @@ export const VoteDetails: React.FC<{
                           )
                             .dp(2, 1)
                             .toNumber()
-                        : calculateWeightXTZ(choice, totalVoters)
+                        : calculateWeightXTZ(choice, totalXTZ)
                     }
                     variant="determinate"
                   />
@@ -161,7 +161,7 @@ export const VoteDetails: React.FC<{
                         )
                           .dp(2, 1)
                           .toString()
-                      : numbro(calculateWeightXTZ(choice, totalVoters)).format(formatConfig)}
+                      : numbro(calculateWeightXTZ(choice, totalXTZ)).format(formatConfig)}
                     %
                   </Typography>
                 </Grid>
