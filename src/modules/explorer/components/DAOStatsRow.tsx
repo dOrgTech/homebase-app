@@ -72,6 +72,8 @@ export const DAOStatsRow: React.FC = () => {
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { hours, minutes, days } = useTimeLeftInCycle()
   const shouldDisable = useIsProposalButtonDisabled(daoId)
+  const tokenDecimals = data?.data.token.decimals || 0
+  const tokenScaleFactor = new BigNumber(10).pow(tokenDecimals)
 
   const amountLocked = useMemo(() => {
     if (!ledger) {
@@ -85,16 +87,15 @@ export const DAOStatsRow: React.FC = () => {
   }, [ledger])
 
   const amountNotLocked = useMemo(() => {
-    if (!data) {
-      return new BigNumber(0)
-    }
-
-    return data.data.token.supply
+    return data?.data.token.supply || new BigNumber(0)
   }, [data])
 
   const totalTokens = amountLocked.plus(amountNotLocked)
 
   const amountLockedPercentage = totalTokens ? amountLocked.div(totalTokens).multipliedBy(100) : new BigNumber(0)
+
+  const totalTokensWithoutDecimals = totalTokens.dividedBy(tokenScaleFactor)
+  const amountLockedWithoutDecimals = amountLocked.dividedBy(tokenScaleFactor)
 
   return (
     <Box sx={{ flexGrow: 1, width: "inherit" }}>
@@ -105,7 +106,7 @@ export const DAOStatsRow: React.FC = () => {
               <ItemTitle color="textPrimary">Total {symbol}</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary"> {numbro(totalTokens).format(formatConfig)}</ItemValue>
+              <ItemValue color="textPrimary">{numbro(totalTokensWithoutDecimals).format(formatConfig)}</ItemValue>
             </Grid>
           </Item>
         </Grid>
@@ -115,7 +116,7 @@ export const DAOStatsRow: React.FC = () => {
               <ItemTitle color="textPrimary">{symbol} Locked</ItemTitle>
             </ItemContent>
             <Grid item container direction="row">
-              <ItemValue color="textPrimary">{numbro(amountLocked).format(formatConfig)}</ItemValue>
+              <ItemValue color="textPrimary">{numbro(amountLockedWithoutDecimals).format(formatConfig)}</ItemValue>
               <Percentage color="textPrimary">{numbro(amountLockedPercentage).format(formatConfig)}%</Percentage>
             </Grid>
           </Item>
