@@ -88,6 +88,9 @@ export const theme = createTheme({
   },
   overrides: {
     MuiSvgIcon: {
+      root: {
+        color: "#fff"
+      },
       colorSecondary: {
         color: "#81FEB7 !important"
       }

@@ -10,12 +10,12 @@ const Content = styled(Grid)({
 
 const TitleText = styled(Typography)(({ theme }) => ({
   color: "#ffff",
-  fontWeight: 550,
+  fontWeight: 600,
   lineHeight: ".80",
   textTransform: "capitalize",
-  fontSize: 20,
+  fontSize: 24,
   [theme.breakpoints.down("sm")]: {
-    fontSize: 18
+    fontSize: 20
   }
 }))
 
