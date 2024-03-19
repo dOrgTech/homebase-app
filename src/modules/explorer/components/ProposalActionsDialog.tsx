@@ -205,7 +205,7 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
         </Grid>
         <Grid container>
           <TitleContainer container direction="row">
-            <Typography color="textPrimary">Configuration Proposal</Typography>
+            <Typography color="textPrimary">Function Proposal</Typography>
           </TitleContainer>
           <Grid container spacing={2}>
             {getActions()
