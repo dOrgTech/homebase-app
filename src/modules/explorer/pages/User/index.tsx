@@ -1,7 +1,7 @@
 import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
-import React, { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo } from "react"
 import { useHistory } from "react-router"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { useTezos } from "services/beacon/hooks/useTezos"
