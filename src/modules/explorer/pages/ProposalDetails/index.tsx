@@ -177,6 +177,7 @@ export const ProposalDetails: React.FC = () => {
   const canDropProposal = useCanDropProposal(daoId, proposalId)
   const { data: agoraPost } = useAgoraTopic(Number(proposal?.metadata?.agoraPostId))
   const { network } = useTezos()
+  const status = cycleInfo && proposal ? proposal.getStatus(cycleInfo?.currentLevel).status : ProposalStatus.PENDING
 
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const { mutate: mutateUnstake } = useUnstakeVotes()
@@ -260,7 +261,6 @@ export const ProposalDetails: React.FC = () => {
   }, [holdings, proposal])
 
   const canVote = cycleInfo && proposal?.getStatus(cycleInfo.currentLevel).status === ProposalStatus.ACTIVE
-
   const hasNFTs = useMemo(() => {
     let NTFFound = false
 
@@ -380,19 +380,17 @@ export const ProposalDetails: React.FC = () => {
                   >
                     <Grid item>
                       {" "}
-                      <StatusBadge status={proposal.getStatus(cycleInfo?.currentLevel).status} />{" "}
+                      <StatusBadge status={status} />{" "}
                     </Grid>
 
                     <Grid item>
                       <DescriptionText>
                         Created {dayjs(proposal.startDate).format("LL")}
-                        {statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text !==
-                          ProposalStatus.ACTIVE ||
-                        statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text !==
-                          ProposalStatus.PENDING ? (
+                        {statusColors(status).text !== ProposalStatus.ACTIVE ||
+                        statusColors(status).text !== ProposalStatus.PENDING ? (
                           <>
                             {" "}
-                            • {statusColors(proposal.getStatus(cycleInfo?.currentLevel).status).text} {endDate}
+                            • {statusColors(status).text} {endDate}
                           </>
                         ) : null}
                       </DescriptionText>
