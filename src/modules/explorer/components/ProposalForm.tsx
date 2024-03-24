@@ -13,7 +13,6 @@ import {
 } from "modules/explorer/components/NewTreasuryProposalDialog"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { AppTabBar } from "./AppTabBar"
 import { SendButton } from "./ProposalFormSendButton"
 import { TabPanel } from "./TabPanel"
 import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
