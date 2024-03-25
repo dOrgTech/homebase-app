@@ -22,46 +22,48 @@ const PageContent = styled(Grid)(({ theme }) => ({
   }
 }))
 
-const Title = styled(Typography)({
-  fontSize: 24,
-  textAlign: "center"
-})
+const Title = styled(Typography)(({ theme }) => ({
+  fontSize: 32,
+  fontWeight: 600,
+  textAlign: "center",
+  [theme.breakpoints.down("sm")]: {
+    fontSize: 26
+  }
+}))
 
 const CardContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
+  gap: 32,
   borderRadius: 8,
-  padding: "36px 47px"
+  padding: "40px 48px",
+  [theme.breakpoints.down("sm")]: {
+    padding: "30px 38px"
+  }
 }))
 
 const DescriptionContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 32,
   [theme.breakpoints.down("sm")]: {
     paddingLeft: "4%",
-    paddingRight: "4%",
-    marginTop: 40
+    paddingRight: "4%"
   }
 }))
 
 const OptionsContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 20,
   [theme.breakpoints.down("sm")]: {
     paddingLeft: "4%",
-    paddingRight: "4%",
-    marginTop: 40
+    paddingRight: "4%"
   }
 }))
 
 const ChoicesContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 50,
   [theme.breakpoints.down("sm")]: {
-    paddingLeft: "2%",
-    paddingRight: "2%",
-    gap: 20
+    gap: 32
   }
 }))
 
 const DescriptionText = styled(Typography)(({ theme }) => ({
-  fontWeight: 200,
+  fontWeight: 300,
+  fontSize: 18,
   color: theme.palette.text.secondary,
   [theme.breakpoints.down("sm")]: {
     fontSize: 14
@@ -70,7 +72,6 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
 
 const OptionButton = styled(Link)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
-    width: "95%",
     display: "flex",
     textAlign: "center"
   }
@@ -85,19 +86,20 @@ export const Ownership: React.FC = () => {
       <PageContainer container direction="row">
         <Navbar mode="creator" />
         <PageContent>
-          <CardContainer>
+          <CardContainer container>
             <Grid container direction="row">
               <Title color="textSecondary">Do you already have a governance token?</Title>
             </Grid>
 
-            <Grid container direction="column">
+            <Grid container direction="row">
               <DescriptionContainer item>
                 <DescriptionText>
                   This would be an FA2-compatible token contract that will serve to assign voting weight based on
                   ownership.
                 </DescriptionText>
               </DescriptionContainer>
-
+            </Grid>
+            <Grid container direction="row">
               <OptionsContainer item>
                 <DescriptionText>
                   If you already have this asset deployed, click YES. If not, click NO and we will configure and deploy
@@ -112,14 +114,14 @@ export const Ownership: React.FC = () => {
               alignContent="center"
               justifyContent={isMobileSmall ? "center" : "flex-start"}
             >
-              <Grid item xs={isMobileSmall ? undefined : 3}>
+              <Grid item xs={isMobileSmall ? 12 : 3} container justifyContent={isMobileSmall ? "center" : "flex-start"}>
                 <OptionButton underline="none" href={`/creator/build`}>
                   <MainButton variant="contained" color="secondary">
                     Yes, I have one
                   </MainButton>
                 </OptionButton>
               </Grid>
-              <Grid item xs={isMobileSmall ? undefined : 3}>
+              <Grid item xs={isMobileSmall ? 12 : 3} container justifyContent={isMobileSmall ? "center" : "flex-start"}>
                 <OptionButton underline="none" href={`/creator/deployment`}>
                   <MainButton variant="contained" color="secondary">
                     No, I need one

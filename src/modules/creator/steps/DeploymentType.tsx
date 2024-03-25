@@ -94,7 +94,7 @@ export const DeploymentType = (): JSX.Element => {
       <TitleBlock
         title={"Choose Deployment Type"}
         description={
-          <Typography variant="subtitle1" color="textSecondary">
+          <Typography variant="subtitle1">
             Learn more about the two available deployment options in{" "}
             <Link
               target="_blank"

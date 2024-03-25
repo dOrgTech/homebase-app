@@ -7,8 +7,9 @@ export const legacyTheme = createTheme({
       dark: "#2F3438"
     },
     secondary: {
-      main: "#4BCF93",
-      light: "#81FEB7"
+      main: "#81FEB7",
+      light: "#81FEB7",
+      dark: "#BFC5CA"
     },
     text: {
       primary: "#000000",
@@ -44,7 +45,7 @@ export const legacyTheme = createTheme({
     },
     h3: {
       fontSize: 32,
-      fontWeight: 500,
+      fontWeight: 600,
       fontFamily: "Roboto Flex"
     },
     h2: {
@@ -53,7 +54,8 @@ export const legacyTheme = createTheme({
       fontWeight: 500
     },
     h4: {
-      fontSize: 20
+      fontSize: 24,
+      fontWeight: 600
     },
     h5: {
       fontSize: 35
@@ -69,6 +71,12 @@ export const legacyTheme = createTheme({
     }
   },
   overrides: {
+    MuiLinearProgress: {
+      colorSecondary: {
+        borderRadius: 8,
+        height: 8
+      }
+    },
     MuiSlider: {
       root: {
         color: "#3D3D3D"
@@ -94,8 +102,8 @@ export const legacyTheme = createTheme({
         "color": "#FDFDFD",
         "opacity": 0.5,
         "marginLeft": 15,
-        "fontSize": 14,
-        "lineHeight": "18.5px",
+        "fontSize": 16,
+        "lineHeight": "21.6px",
         "height": 40,
         "display": "flex",
         "alignItems": "center",
@@ -122,11 +130,12 @@ export const legacyTheme = createTheme({
     MuiStepConnector: {
       vertical: {
         padding: "0px",
-        marginLeft: 17
+        marginLeft: 17,
+        marginBottom: 2
       },
       lineVertical: {
-        borderLeftWidth: 2,
-        minHeight: 28,
+        borderLeftWidth: 3,
+        minHeight: 30,
         marginTop: -16
       },
       line: {
@@ -167,11 +176,11 @@ export const legacyTheme = createTheme({
         "height": 32,
         "width": 32,
         "color": "#2f3438",
-        "border": "2px solid rgba(255, 255, 255, 0.2)",
+        "border": "3px solid rgba(255, 255, 255, 0.2)",
         "borderRadius": "50%",
         "&$active": {
           "fill": "#81feb7",
-          "border": "2px solid #81feb7",
+          "border": "3px solid #81feb7",
           "borderRadius": "50%",
           "& $text": {
             fill: "#1C1F23",
@@ -180,7 +189,7 @@ export const legacyTheme = createTheme({
         },
         "&$completed": {
           fill: "#81feb7",
-          border: "2px solid #81feb7"
+          border: "3px solid #81feb7"
         }
       },
       text: {

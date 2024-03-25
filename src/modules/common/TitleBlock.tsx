@@ -3,6 +3,10 @@ import React from "react"
 import { ReactElement } from "react-markdown/lib/react-markdown"
 import { InfoRounded } from "@material-ui/icons"
 
+const DescriptionText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.dark
+}))
+
 const StyledGrid = styled(Grid)({
   height: "fit-content",
   borderRadius: 8,
@@ -26,17 +30,22 @@ const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
 }))
 
 const CustomTooltipText = styled(Typography)({
-  fontSize: 14,
-  marginLeft: 2
+  fontSize: 18,
+  marginLeft: 2,
+  fontWeight: 200
 })
 
-const CustomTextContainer = styled(Paper)({
+const CustomTextContainer = styled(Paper)(({ theme }) => ({
   maxWidth: "fit-content",
   background: "inherit",
   boxShadow: "none",
   display: "flex",
-  alignItems: "center"
-})
+  alignItems: "center",
+  marginRight: 24,
+  [theme.breakpoints.down("sm")]: {
+    alignItems: "baseline"
+  }
+}))
 
 interface Props {
   title?: ReactElement | string
@@ -55,7 +64,7 @@ export const TitleBlock: React.FC<Props> = ({
 }) => {
   return (
     <StyledGrid container direction="row" justifyContent="space-between">
-      <Grid item xs={12} container direction="row" alignItems="flex-end">
+      <Grid item xs={12} container direction="row" alignItems="baseline">
         <CustomTextContainer>
           <Typography variant="h3" color="textSecondary">
             {title}
@@ -74,14 +83,9 @@ export const TitleBlock: React.FC<Props> = ({
       </Grid>
       <Grid item xs={12}>
         {title === "" ? (
-          <Typography variant="subtitle1" color="textSecondary">
-            {" "}
-            {description}
-          </Typography>
+          <DescriptionText variant="subtitle1"> {description}</DescriptionText>
         ) : description ? (
-          <Typography variant="subtitle1" color="textSecondary">
-            {description}
-          </Typography>
+          <DescriptionText variant="subtitle1">{description}</DescriptionText>
         ) : null}
       </Grid>
       <Grid item xs={12}></Grid>

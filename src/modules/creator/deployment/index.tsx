@@ -51,6 +51,7 @@ const IndicatorValue = styled(Paper)(({ theme }) => ({
   height: "100%",
   margin: "0 auto",
   fontSize: 25,
+  fontWeight: 300,
   color: theme.palette.text.secondary,
   userSelect: "none",
   boxShadow: "none",
@@ -76,7 +77,7 @@ const ProgressContainer = styled(Grid)(({ theme }) => ({
   background: "#2F3438",
   display: "grid",
   borderRadius: 8,
-  maxHeight: 460,
+  maxHeight: 480,
   paddingTop: 20,
   position: "sticky",
   top: 125
@@ -101,7 +102,7 @@ const FAQClickToAction = styled(Typography)(({ theme }) => ({
 }))
 
 const FAQClickText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.secondary.main,
+  color: theme.palette.text.secondary,
   fontSize: "14px",
   cursor: "pointer",
   textAlign: "center"
@@ -132,10 +133,10 @@ export const Deployment: React.FC = () => {
             <Grid item container direction="column" alignItems="center" xs>
               <ProgressBar
                 progress={progress}
-                radius={52}
-                strokeWidth={5}
+                radius={62}
+                strokeWidth={8}
                 strokeColor={theme.palette.secondary.main}
-                trackStrokeWidth={4}
+                trackStrokeWidth={7}
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">

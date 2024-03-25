@@ -1,6 +1,10 @@
 import React, { useState } from "react"
-import { Box, Tooltip } from "@material-ui/core"
+import { Box, Tooltip, styled } from "@material-ui/core"
 import { ReactComponent as CopyIcon } from "assets/img/copy_icon.svg"
+
+const TooltipButton = styled(Tooltip)({
+  cursor: "pointer"
+})
 
 export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
   const [copied, setCopied] = useState(false)
@@ -16,9 +20,9 @@ export const CopyButton: React.FC<{ text: string }> = ({ text }) => {
         }, 2000)
       }}
     >
-      <Tooltip placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
+      <TooltipButton placement="bottom" title={!copied ? "Copy to Clipboard" : "Copied!"}>
         <CopyIcon />
-      </Tooltip>
+      </TooltipButton>
     </Box>
   )
 }

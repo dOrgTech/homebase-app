@@ -6,11 +6,9 @@ import { DeploymentContext } from "../state/context"
 import { numberWithCommas } from "../state/utils"
 import BigNumber from "bignumber.js"
 import { Blockie } from "modules/common/Blockie"
-import { CopyButton } from "modules/common/CopyButton"
 import { ActionTypes } from "../state/types"
-import { TitleBlock } from "modules/common/TitleBlock"
 import { useTokenOriginate } from "services/contracts/token/hooks/useToken"
-import { useNotification } from "modules/common/hooks/useNotification"
+import { CopyButton } from "modules/explorer/components/CopyButton"
 
 const ThirdContainer = styled(Grid)({
   background: "#2F3438",
@@ -18,9 +16,11 @@ const ThirdContainer = styled(Grid)({
   boxSizing: "border-box"
 })
 
-const ThirdContainerFirstRow = styled(Grid)({
+const ThirdContainerFirstRow = styled(Grid)(({ theme }) => ({
   padding: "19px 48px",
-  borderBottom: "0.3px solid #7D8C8B",
+  borderBottom: "0.3px solid #575757",
+  backgroundColor: theme.palette.primary.dark,
+  borderRadius: "8px 8px 0px 0px",
   alignItems: "center",
   display: "flex",
   minHeight: 70,
@@ -28,12 +28,14 @@ const ThirdContainerFirstRow = styled(Grid)({
     padding: "12px 15px",
     maxHeight: "inherit"
   }
-})
+}))
 
 const ThirdContainerLastRow = styled(Grid)({
   padding: "19px 48px",
   alignItems: "center",
   display: "flex",
+  backgroundColor: "#24282D",
+  borderRadius: "0px 0px 8px 8px",
   minHeight: 70,
   ["@media (max-width:1167px)"]: {
     padding: "12px 15px",
@@ -42,7 +44,8 @@ const ThirdContainerLastRow = styled(Grid)({
 })
 
 const ThirdContainerRow = styled(Grid)({
-  "borderBottom": "0.3px solid #7D8C8B",
+  "borderBottom": "0.3px solid #575757",
+  "backgroundColor": "#24282D",
   "padding": "24px 48px",
   "minHeight": 70,
   ["@media (max-width:1167px)"]: {
@@ -60,12 +63,19 @@ const TitleSpacing = styled(Typography)({
   fontSize: 18
 })
 
-const ContainerEdit = styled(Typography)({
-  cursor: "pointer"
-})
+const ContainerEdit = styled(Typography)(({ theme }) => ({
+  cursor: "pointer",
+  color: theme.palette.secondary.light
+}))
 
 const AdminAddress = styled(Typography)({
   wordBreak: "break-all"
+})
+
+const AdminAddressIcon = styled(Typography)({
+  wordBreak: "break-all",
+  display: "flex",
+  alignItems: "center"
 })
 
 const KeyText = styled(Typography)({
@@ -74,7 +84,8 @@ const KeyText = styled(Typography)({
 
 const AddressText = styled(Typography)({
   marginLeft: 12,
-  fontWeight: 300
+  fontWeight: 300,
+  marginRight: 8
 })
 
 export const ContractSummary: React.FC = () => {
@@ -82,7 +93,6 @@ export const ContractSummary: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const history = useHistory()
   const match = useRouteMatch()
-  const openNotification = useNotification()
 
   const { state, dispatch } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
@@ -155,9 +165,7 @@ export const ContractSummary: React.FC = () => {
               <TitleSpacing color="textSecondary" variant="subtitle1">
                 Token Contract Settings
               </TitleSpacing>
-              <ContainerEdit color="secondary" onClick={goToSettings}>
-                Edit
-              </ContainerEdit>
+              <ContainerEdit onClick={goToSettings}>Edit</ContainerEdit>
             </Grid>
           </ThirdContainerFirstRow>
 
@@ -228,10 +236,17 @@ export const ContractSummary: React.FC = () => {
                   Icon
                 </KeyText>
               </Grid>
-              <Grid item xs={7}>
-                <AdminAddress variant="subtitle2" color="textSecondary" align="right">
+              <Grid item xs={7} container direction="row" alignItems="center" justifyContent="flex-end">
+                <AdminAddressIcon variant="subtitle2" color="textSecondary" align="right">
+                  <img
+                    style={{ borderRadius: 50, marginRight: 8 }}
+                    height={30}
+                    width={30}
+                    src={tokenSettings.icon}
+                    alt="icon"
+                  />
                   {tokenSettings.icon}
-                </AdminAddress>
+                </AdminAddressIcon>
               </Grid>
             </Grid>
           </ThirdContainerLastRow>
@@ -248,23 +263,21 @@ export const ContractSummary: React.FC = () => {
               <TitleSpacing color="textSecondary" variant="subtitle1">
                 Initial Distribution
               </TitleSpacing>
-              <ContainerEdit color="secondary" onClick={goToDistribution}>
-                Edit
-              </ContainerEdit>
+              <ContainerEdit onClick={goToDistribution}>Edit</ContainerEdit>
             </Grid>
           </ThirdContainerFirstRow>
 
           {tokenDistribution.holders && tokenDistribution.holders.length > 0
             ? tokenDistribution.holders.map((holder, index) => {
                 return (
-                  <ThirdContainerRow key={"holder-" + index} item xs={12}>
+                  <ThirdContainerLastRow key={"holder-" + index} item xs={12}>
                     <Grid container direction="row" alignItems="center">
                       <Grid item xs={isMobile ? 12 : 5} container direction="row">
                         <Blockie address={holder.walletAddress} size={24} />
                         <AddressText variant="subtitle2" color="textSecondary">
                           {toShortAddress(holder.walletAddress)}
                         </AddressText>
-                        <CopyButton style={{ fontSize: 16 }} text={holder.walletAddress} />
+                        <CopyButton text={holder.walletAddress} />
                       </Grid>
                       <Grid item xs={isMobile ? 12 : 7}>
                         <AdminAddress
@@ -277,7 +290,7 @@ export const ContractSummary: React.FC = () => {
                         </AdminAddress>
                       </Grid>
                     </Grid>
-                  </ThirdContainerRow>
+                  </ThirdContainerLastRow>
                 )
               })
             : null}

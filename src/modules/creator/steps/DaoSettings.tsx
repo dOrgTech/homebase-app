@@ -121,6 +121,10 @@ const ErrorText = styled(Typography)({
   marginTop: 4
 })
 
+const DescriptionText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.dark
+}))
+
 const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
@@ -394,14 +398,14 @@ export const DaoSettings = (): JSX.Element => {
       <TitleBlock
         title="DAO Basics"
         description={
-          <Typography variant="subtitle1" color="textSecondary">
+          <DescriptionText variant="subtitle1">
             These settings will define the name, symbol, and initial distribution of your token. You will need a
             pre-existing FA2 token to use as governance token. To deploy your own governance token you can go{" "}
             <Link target="_blank" href="https://fa2-bakery.netlify.app/" color="secondary">
               here
             </Link>{" "}
             and then come back.
-          </Typography>
+          </DescriptionText>
         }
       ></TitleBlock>
 
