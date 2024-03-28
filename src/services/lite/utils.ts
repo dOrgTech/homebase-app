@@ -2,7 +2,7 @@ import { bytes2Char, char2Bytes } from "@taquito/tzip16"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocale from "dayjs/plugin/updateLocale"
-import { Choice } from "models/Choice"
+import { Choice, WalletAddress } from "models/Choice"
 import { networkNameMap } from "services/bakingBad"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
@@ -103,21 +103,26 @@ export const calculateChoiceTotal = (choice_voters: any[], decimals: any) => {
   return result
 }
 
-export const calculateWeightXTZ = (choice: Choice, totalVoters: number) => {
+export const calculateWeightXTZ = (choice: Choice, totalXTZ: BigNumber) => {
+  let choiceTotal = new BigNumber(0)
+  let percent = new BigNumber(0)
   if (choice && choice.walletAddresses.length > 0) {
-    return (choice.walletAddresses.length / totalVoters) * 100
+    choiceTotal = calculateChoiceTotal(choice.walletAddresses, 6)
+    percent = choiceTotal.div(totalXTZ).multipliedBy(100)
   }
-  return 0
+  return percent
 }
 
 export const calculateXTZTotal = (choices: Choice[] | undefined) => {
-  let totalVoters = 0
+  let totalXTZ = new BigNumber(0)
+  let choiceTotal = new BigNumber(0)
   if (choices) {
-    choices.map((choice: Choice) => {
-      totalVoters += choice.walletAddresses.length
+    choices.forEach((choice: Choice) => {
+      choiceTotal = calculateChoiceTotal(choice.walletAddresses, 6)
+      totalXTZ = totalXTZ.plus(choiceTotal)
     })
   }
-  return totalVoters
+  return totalXTZ
 }
 
 export const calculateProposalTotal = (choices: Choice[], decimals: any) => {
