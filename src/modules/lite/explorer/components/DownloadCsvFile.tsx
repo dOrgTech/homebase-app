@@ -1,0 +1,69 @@
+import React, { useEffect, useState } from "react"
+import { Button, Typography } from "@material-ui/core"
+import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
+import { Choice, WalletAddress } from "models/Choice"
+import { mkConfig, generateCsv, download, asString } from "export-to-csv"
+import { writeFile } from "node:fs"
+
+type DownloadCsvFileProps = {
+  data: Choice[]
+  pollId: string | undefined
+  symbol: string
+}
+
+export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, symbol }) => {
+  const [votesDetails, setVotesDetails] = useState<any>()
+
+  useEffect(() => {
+    const arr: any = []
+    data.map(item => {
+      item.walletAddresses.map(vote => {
+        const formattedVote = {
+          address: vote.address,
+          choice: item.name,
+          balance: vote.balanceAtReferenceBlock,
+          signature: vote.signature,
+          ipfsStorage: vote.cidLink
+        }
+        return arr.push(formattedVote)
+      })
+    })
+    setVotesDetails(arr)
+  }, [data])
+
+  const downloadCvs = () => {
+    console.log(votesDetails)
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `proposal-${pollId}`,
+      showTitle: false
+    })
+
+    const votesData = votesDetails.map((row: any) => {
+      return {
+        "Address": row.address,
+        "Choice": row.choice,
+        "Token": symbol,
+        "Vote Weight": row.balance,
+        "Signature": row.signature,
+        "IPFS Storage Link": row.ipfsStorage
+      }
+    })
+    try {
+      const csv = generateCsv(csvConfig)(votesData)
+      download(csvConfig)(csv)
+    } catch (error) {
+      console.warn(`Error downloading csv file: `, error)
+    }
+  }
+
+  return (
+    <Button>
+      <DownloadCSVIcon style={{ marginRight: 8 }} />
+      <Typography color="secondary" onClick={downloadCvs}>
+        {" "}
+        Download CSV
+      </Typography>
+    </Button>
+  )
+}

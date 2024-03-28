@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect, useMemo, useState } from "react"
-import { Grid, LinearProgress, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, LinearProgress, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { GridContainer } from "modules/common/GridContainer"
 import { VotesDialog } from "./VotesDialog"
 import { Poll } from "models/Polls"
@@ -21,6 +21,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { useCommunityToken } from "../hooks/useCommunityToken"
 import { getTurnoutValue } from "services/utils/utils"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
+import { DownloadCsvFile } from "./DownloadCsvFile"
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -193,6 +194,7 @@ export const VoteDetails: React.FC<{
             sm={6}
             lg={6}
             style={{ gap: 10 }}
+            alignItems="baseline"
             justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
           >
             <Typography color="textPrimary" variant="body1">
@@ -214,6 +216,13 @@ export const VoteDetails: React.FC<{
                 % of Total Supply)
               </Typography>
             )}
+            {getTotalVoters(choices) > 0 ? (
+              <DownloadCsvFile
+                data={choices}
+                pollId={poll?._id}
+                symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
+              />
+            ) : null}
           </Grid>
         </LegendContainer>
         <VotesDialog
