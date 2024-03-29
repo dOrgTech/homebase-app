@@ -198,7 +198,8 @@ const StyledBottomBar = styled(Grid)(({ theme }: { theme: Theme }) => ({
   bottom: /*visible ? 0 : -55*/ 0,
   boxShadow: "0px -4px 7px -4px rgba(0,0,0,0.2)",
   zIndex: 10000,
-  transition: "bottom 0.5s"
+  transition: "bottom 0.5s",
+  background: theme.palette.secondary.light
 }))
 
 const BottomBarItems = styled(Grid)({
