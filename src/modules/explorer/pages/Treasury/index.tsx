@@ -18,6 +18,7 @@ import ReceiptIcon from "@mui/icons-material/Receipt"
 import { SmallButton } from "modules/common/SmallButton"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { CopyButton } from "modules/common/CopyButton"
+import { TreasuryDialog } from "./components/TreasuryDialog"
 
 const ItemGrid = styled(Grid)({
   width: "inherit"
@@ -89,15 +90,15 @@ export const Treasury: React.FC = () => {
   const [openTransfer, setOpenTransfer] = useState(false)
   const [selectedTab, setSelectedTab] = React.useState(0)
 
-  const onCloseTransfer = () => {
-    setOpenTransfer(false)
-  }
   const { data: transfers } = useTransfers(daoId)
 
   const shouldDisable = useIsProposalButtonDisabled(daoId)
 
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
+  }
+  const onCloseTransfer = () => {
+    setOpenTransfer(false)
   }
 
   return (
@@ -151,7 +152,7 @@ export const Treasury: React.FC = () => {
                     onClick={() => setOpenTransfer(true)}
                     disabled={shouldDisable}
                   >
-                    New Proposal
+                    New Transfer
                   </SmallButton>
                   {shouldDisable && (
                     <Tooltip placement="bottom" title="Not on proposal creation period">
@@ -223,11 +224,11 @@ export const Treasury: React.FC = () => {
           </ItemGrid>
         </TabsBox>
       </Grid>
-      <ProposalFormContainer
+      <TreasuryDialog
+        shouldDisable={shouldDisable}
+        handleChangeTab={handleChangeTab}
         open={openTransfer}
         handleClose={onCloseTransfer}
-        defaultTab={selectedTab}
-        handleChangeTab={handleChangeTab}
       />
     </>
   )

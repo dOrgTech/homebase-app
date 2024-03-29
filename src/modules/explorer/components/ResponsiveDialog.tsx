@@ -1,5 +1,5 @@
 import React from "react"
-import { useTheme, useMediaQuery, Dialog, styled, Grid, Typography, makeStyles } from "@material-ui/core"
+import { useTheme, useMediaQuery, Dialog, styled, Grid, Typography } from "@material-ui/core"
 import { BottomSheet } from "./BottomSheet"
 import CloseButton from "modules/common/CloseButton"
 import BackButton from "modules/common/BackButton"
@@ -11,6 +11,7 @@ const Content = styled(Grid)({
 const TitleText = styled(Typography)(({ theme }) => ({
   color: "#ffff",
   fontWeight: 600,
+  lineHeight: ".80",
   textTransform: "capitalize",
   fontSize: 24,
   [theme.breakpoints.down("sm")]: {
