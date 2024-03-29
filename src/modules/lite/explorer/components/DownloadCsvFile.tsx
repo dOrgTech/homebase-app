@@ -4,6 +4,7 @@ import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
 import { Choice, WalletAddress } from "models/Choice"
 import { mkConfig, generateCsv, download, asString } from "export-to-csv"
 import { writeFile } from "node:fs"
+import { useNotification } from "modules/lite/components/hooks/useNotification"
 
 type DownloadCsvFileProps = {
   data: Choice[]
@@ -13,6 +14,7 @@ type DownloadCsvFileProps = {
 
 export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, symbol }) => {
   const [votesDetails, setVotesDetails] = useState<any>()
+  const openNotification = useNotification()
 
   useEffect(() => {
     const arr: any = []
@@ -53,7 +55,11 @@ export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, 
       const csv = generateCsv(csvConfig)(votesData)
       download(csvConfig)(csv)
     } catch (error) {
-      console.warn(`Error downloading csv file: `, error)
+      openNotification({
+        message: `Error downloading csv file`,
+        autoHideDuration: 3000,
+        variant: "error"
+      })
     }
   }
 

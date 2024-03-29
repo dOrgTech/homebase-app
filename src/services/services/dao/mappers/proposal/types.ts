@@ -40,6 +40,7 @@ export interface Transfer {
   amount: BigNumber
   beneficiary: string
   type: "XTZ" | "FA2" | "FA1.2"
+  tokenId?: string | BigNumber
 }
 
 export interface FA2Transfer extends Transfer {
@@ -137,6 +138,7 @@ export abstract class Proposal {
           status: ProposalStatus
           timestamp: string
           level: number
+          date?: any
         }[]
       }
     | undefined
@@ -195,10 +197,12 @@ export abstract class Proposal {
         status: ProposalStatus
         timestamp: string
         level: number
+        date?: any
       }[] = this.indexer_status_history.map(update => ({
         timestamp: update.timestamp,
         status: INDEXER_TO_PROPOSAL_STATUS_MAP[update.description],
-        level: update.level
+        level: update.level,
+        date: update.timestamp
       }))
 
       if (currentLevel >= activeThreshold) {
