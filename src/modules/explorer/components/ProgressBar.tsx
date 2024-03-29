@@ -2,6 +2,7 @@ import { styled, LinearProgress, Theme } from "@material-ui/core"
 
 export const ProgressBar = styled(LinearProgress)(({ theme, favor }: { theme: Theme; favor: boolean }) => ({
   "marginTop": 10,
+  "height": 8,
   "&.MuiLinearProgress-colorSecondary, &.MuiLinearProgress-colorPrimary": {
     "background": theme.palette.primary.light,
     "color": theme.palette.primary.light,
