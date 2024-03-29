@@ -1,13 +1,9 @@
-import { Collapse, Grid, IconButton, styled, Typography } from "@material-ui/core"
+import { Collapse, Grid, styled, Typography } from "@material-ui/core"
 import { ProposalItem } from "modules/explorer/pages/User"
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
-import { ContentContainer } from "./ContentContainer"
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { ProposalTableRow } from "modules/lite/explorer/components/ProposalTableRow"
-import { StyledDivider } from "modules/lite/explorer/components/ProposalList"
 import { Poll } from "models/Polls"
 import ReactPaginate from "react-paginate"
 import "../pages/DAOList/styles.css"
@@ -16,9 +12,10 @@ const TableContainer = styled(Grid)({
   width: "100%"
 })
 
-const TableHeader = styled(Grid)({
-  padding: "16px 46px",
-  minHeight: 34
+const CustomGrid = styled(Grid)({
+  "&:not(:last-child)": {
+    marginBottom: 16
+  }
 })
 
 const ProposalsFooter = styled(Grid)({
@@ -82,13 +79,13 @@ export const ProposalsList: React.FC<Props> = ({
             direction="column"
           >
             {proposals.slice(offset, offset + 4).map((p, i) => (
-              <Grid item key={`proposal-${i}`} style={proposalStyle}>
+              <CustomGrid item key={`proposal-${i}`} style={proposalStyle}>
                 <Link to={`proposal/${p.id}`}>
                   <ProposalItem proposal={p} status={p.getStatus(currentLevel).status}>
                     {rightItem ? rightItem(p) : null}
                   </ProposalItem>
                 </Link>
-              </Grid>
+              </CustomGrid>
             ))}
           </Grid>
         ) : null}
