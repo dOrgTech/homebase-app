@@ -132,6 +132,7 @@ export const UserMovements: React.FC<{
 }> = ({ proposalsCreated, cycleInfo, proposalsVoted, daoId, setShowActivity, showActivity }) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [filteredTransactions, setFilteredTransactions] = React.useState<TransferWithBN[] | undefined>()
+  const [showFullList, setShowFullList] = useState(false)
   const { account } = useTezos()
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
@@ -218,7 +219,7 @@ export const UserMovements: React.FC<{
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (transfers) {
-      const newOffset = (event.selected * 2) % (filteredTransactions ? filteredTransactions.length : 1)
+      const newOffset = (event.selected * count) % (filteredTransactions ? filteredTransactions.length : 1)
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
