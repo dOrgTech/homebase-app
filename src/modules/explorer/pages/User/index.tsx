@@ -18,10 +18,10 @@ import { UserProfileName } from "../../components/UserProfileName"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { Delegation } from "./components/DelegationBanner"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
-import { CopyButton } from "modules/common/CopyButton"
 import { UserMovements } from "./components/UserMovements"
 import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
 import { Poll } from "models/Polls"
+import { CopyButton } from "modules/explorer/components/CopyButton"
 
 const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   padding: "37px 42px",
@@ -47,7 +47,8 @@ const MainContainer = styled(Box)({
 const UsernameText = styled(Typography)({
   fontSize: 18,
   wordBreak: "break-all",
-  marginLeft: 10
+  marginLeft: 10,
+  marginRight: 10
 })
 
 const ProposalTitle = styled(Typography)({
@@ -65,7 +66,7 @@ const TitleText = styled(Typography)({
 })
 
 export const ProposalItem: React.FC<{
-  proposal: Proposal
+  proposal: Proposal | any
   status: ProposalStatus
 }> = ({ proposal, status, children }) => {
   const { data: agoraPost } = useAgoraTopic(Number(proposal.metadata.agoraPostId))
@@ -82,7 +83,7 @@ export const ProposalItem: React.FC<{
             </ProposalTitle>
           </Grid>
           <Grid item>
-            <Grid container style={{ gap: 20 }} alignItems="center">
+            <Grid container style={{ gap: 16 }} alignItems="center">
               <Grid item>
                 <StatusBadge status={status} />
               </Grid>
@@ -226,7 +227,6 @@ export const User: React.FC = () => {
 
         <UserMovements
           daoId={daoId}
-          getVoteDecision={getVoteDecision}
           proposalsVoted={proposalsVoted}
           cycleInfo={cycleInfo}
           proposalsCreated={proposalsCreated}

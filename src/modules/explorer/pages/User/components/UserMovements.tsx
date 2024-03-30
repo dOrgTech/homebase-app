@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { Button, Grid, Theme, Typography, styled } from "@material-ui/core"
+import { Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { ReactComponent as VotingInactiveIcon } from "assets/logos/voting_inactive.svg"
 import { ReactComponent as VotingActiveIcon } from "assets/logos/voting_active.svg"
 import { ReactComponent as VotesActiveIcon } from "assets/logos/votes_active.svg"
@@ -16,6 +16,8 @@ import { TransactionItem } from "./TransactionItem"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
+import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -32,30 +34,30 @@ const TransactionsFooter = styled(Grid)({
   minHeight: 34
 })
 
-const VotedText = styled(Typography)({
-  fontSize: 18
+const TitleText = styled(Typography)({
+  fontWeight: 600,
+  fontSize: 24
 })
 
-const StatusText = styled(Typography)({
-  textTransform: "uppercase",
-  marginLeft: 10,
+const SubtitleText = styled(Typography)(({ theme }) => ({
+  fontWeight: 300,
   fontSize: 18,
-  marginRight: 30
-})
+  color: theme.palette.primary.light
+}))
 
 const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
   "fontSize": 18,
   "height": 40,
-  "fontWeight": 400,
+  "fontWeight": 600,
   "paddingLeft": 20,
   "paddingRight": 20,
   "paddingTop": 0,
   "paddingBottom": 0,
   "borderRadius": 8,
   "color": isSelected ? theme.palette.secondary.main : "#fff",
-  "backgroundColor": isSelected ? "#24282D" : "inherit",
+  "backgroundColor": isSelected ? "#2B3036" : "inherit",
   "&:hover": {
-    backgroundColor: isSelected ? "#24282D" : theme.palette.secondary.dark,
+    backgroundColor: isSelected ? "#2B3036" : theme.palette.secondary.dark,
     borderRadius: 8,
     borderTopLeftRadius: "8px !important",
     borderTopRightRadius: "8px !important",
@@ -64,24 +66,23 @@ const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelec
   }
 }))
 
-const StyledTabInner = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "fontSize": 16,
-  "height": 32,
-  "fontWeight": 500,
-  "paddingLeft": 20,
-  "paddingRight": 20,
-  "paddingTop": 0,
-  "paddingBottom": 0,
-  "borderRadius": 50,
-  "color": isSelected ? theme.palette.secondary.main : "#bfc5ca",
-  "backgroundColor": isSelected ? "#24282D" : "#2F3438",
-  "&:hover": {
-    backgroundColor: isSelected ? "#24282D" : theme.palette.secondary.dark,
-    borderRadius: 50,
-    borderTopLeftRadius: "50px !important",
-    borderTopRightRadius: "50px !important",
-    borderBottomLeftRadius: "50px !important",
-    borderBottomRightRadius: "50px !important"
+const ActivityContainer = styled(Grid)(({ theme }) => ({
+  background: theme.palette.primary.contrastText,
+  padding: "40px 56px",
+  borderRadius: 8,
+  marginTop: 32,
+  [theme.breakpoints.down("sm")]: {
+    padding: "30px 36px"
+  }
+}))
+
+const ViewAll = styled(Grid)(({ theme }) => ({
+  "cursor": "pointer",
+  "width": "fit-content",
+  "marginTop": 45,
+  "& svg": {
+    marginRight: 10,
+    color: theme.palette.secondary.main
   }
 }))
 
@@ -92,14 +93,13 @@ export const UserMovements: React.FC<{
   pollsPosted: Poll[] | undefined
   proposalsVoted: Proposal[] | undefined
   pollsVoted: any
-  getVoteDecision: (proposal: any) => boolean
-}> = ({ proposalsCreated, cycleInfo, pollsPosted, proposalsVoted, getVoteDecision, daoId, pollsVoted }) => {
+}> = ({ proposalsCreated, cycleInfo, pollsPosted, proposalsVoted, daoId, pollsVoted }) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
-  const [selectedTabProposals, setSelectedTabProposals] = React.useState(0)
-  const [selectedTabVotes, setSelectedTabVotes] = React.useState(0)
-  const [selectedTabTransactions, setSelectedTabTransactions] = React.useState(0)
   const [filteredTransactions, setFilteredTransactions] = React.useState<TransferWithBN[] | undefined>()
+  const [showFullList, setShowFullList] = useState(false)
   const { account } = useTezos()
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const useUserTransfers = (): TransferWithBN[] | undefined => {
     const { data: transfers } = useTransfers(daoId)
@@ -112,14 +112,9 @@ export const UserMovements: React.FC<{
 
   const transfers = useUserTransfers()
 
-  useEffect(() => {
-    setFilteredTransactions(transfers)
-    setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
-  }, [transfers])
-
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const count = Math.ceil(transfers ? transfers.length / 2 : 0)
+  const count = 4
 
   const [pageCount, setPageCount] = React.useState(count)
 
@@ -127,36 +122,33 @@ export const UserMovements: React.FC<{
     setSelectedTab(newValue)
   }
 
-  const handleChangeTabProposals = (newValue: number) => {
-    setSelectedTabProposals(newValue)
-  }
+  useEffect(() => {
+    setFilteredTransactions(transfers)
+    setPageCount(Math.ceil(transfers ? transfers.length / count : 0))
+  }, [transfers])
 
-  const handleChangeTabVotes = (newValue: number) => {
-    setSelectedTabVotes(newValue)
-  }
-
-  const handleChangeTabTransactions = (newValue: number) => {
-    if (newValue === 0) {
-      setFilteredTransactions(transfers)
-      setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
-    }
-    if (newValue === 1) {
-      const newArray = transfers?.filter(item => item.type === "Withdrawal")
-      setFilteredTransactions(newArray)
-      setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
-    }
-    if (newValue === 2) {
-      const newArray = transfers?.filter(item => item.type === "Deposit")
-      setFilteredTransactions(newArray)
-      setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
-    }
-    setSelectedTabTransactions(newValue)
-  }
+  // const handleChangeTabTransactions = (newValue: number) => {
+  //   if (newValue === 0) {
+  //     setFilteredTransactions(transfers)
+  //     setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
+  //   }
+  //   if (newValue === 1) {
+  //     const newArray = transfers?.filter(item => item.type === "Withdrawal")
+  //     setFilteredTransactions(newArray)
+  //     setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
+  //   }
+  //   if (newValue === 2) {
+  //     const newArray = transfers?.filter(item => item.type === "Deposit")
+  //     setFilteredTransactions(newArray)
+  //     setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
+  //   }
+  //   setSelectedTabTransactions(newValue)
+  // }
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (transfers) {
-      const newOffset = (event.selected * 2) % (filteredTransactions ? filteredTransactions.length : 1)
+      const newOffset = (event.selected * count) % (filteredTransactions ? filteredTransactions.length : 1)
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
@@ -164,94 +156,81 @@ export const UserMovements: React.FC<{
 
   return (
     <Grid item>
-      <Grid container style={{ marginTop: 8 }}>
+      <Grid container direction="column">
         <Grid item>
-          <TabsContainer container>
-            <Grid item>
-              <StyledTab
-                startIcon={selectedTab === 0 ? <VotingActiveIcon /> : <VotingInactiveIcon />}
-                variant="contained"
-                disableElevation={true}
-                onClick={() => handleChangeTab(0)}
-                isSelected={selectedTab === 0}
-              >
-                Proposals
-              </StyledTab>
-            </Grid>
-            <Grid item>
-              <StyledTab
-                startIcon={selectedTab === 1 ? <VotesActiveIcon /> : <VotesInactiveIcon />}
-                disableElevation={true}
-                variant="contained"
-                onClick={() => handleChangeTab(1)}
-                isSelected={selectedTab === 1}
-              >
-                Votes
-              </StyledTab>
-            </Grid>
-
-            <Grid item>
-              <StyledTab
-                startIcon={selectedTab === 2 ? <TransactionsActiveIcon /> : <TransactionsInactiveIcon />}
-                disableElevation={true}
-                variant="contained"
-                onClick={() => handleChangeTab(2)}
-                isSelected={selectedTab === 2}
-              >
-                Transactions
-              </StyledTab>
-            </Grid>
-          </TabsContainer>
+          <TitleText color="textPrimary">My Activity</TitleText>
+        </Grid>
+        <Grid item>
+          <SubtitleText>View your proposal and transaction activity</SubtitleText>
         </Grid>
       </Grid>
+      <ActivityContainer>
+        <Grid container>
+          <Grid item>
+            <TabsContainer container>
+              <Grid item>
+                <StyledTab
+                  startIcon={selectedTab === 0 ? <VotingActiveIcon /> : <VotingInactiveIcon />}
+                  variant="contained"
+                  disableElevation={true}
+                  onClick={() => handleChangeTab(0)}
+                  isSelected={selectedTab === 0}
+                >
+                  Proposals
+                </StyledTab>
+              </Grid>
+              <Grid item>
+                <StyledTab
+                  startIcon={selectedTab === 1 ? <VotesActiveIcon /> : <VotesInactiveIcon />}
+                  disableElevation={true}
+                  variant="contained"
+                  onClick={() => handleChangeTab(1)}
+                  isSelected={selectedTab === 1}
+                >
+                  Votes
+                </StyledTab>
+              </Grid>
 
-      <Grid item style={{ marginTop: 38 }}>
-        <TabPanel value={selectedTab} index={0}>
-          <Grid container>
-            <Grid item>
-              <TabsContainer container>
-                <Grid item>
-                  <StyledTabInner
-                    variant="contained"
-                    disableElevation={true}
-                    onClick={() => handleChangeTabProposals(0)}
-                    isSelected={selectedTabProposals === 0}
-                  >
-                    All
-                  </StyledTabInner>
-                </Grid>
-                <Grid item>
-                  <StyledTabInner
-                    disableElevation={true}
-                    variant="contained"
-                    onClick={() => handleChangeTabProposals(1)}
-                    isSelected={selectedTabProposals === 1}
-                  >
-                    On-Chain
-                  </StyledTabInner>
-                </Grid>
-
-                <Grid item>
-                  <StyledTabInner
-                    disableElevation={true}
-                    variant="contained"
-                    onClick={() => handleChangeTabProposals(2)}
-                    isSelected={selectedTabProposals === 2}
-                  >
-                    Off-Chain
-                  </StyledTabInner>
-                </Grid>
-              </TabsContainer>
-            </Grid>
+              <Grid item>
+                <StyledTab
+                  startIcon={selectedTab === 2 ? <TransactionsActiveIcon /> : <TransactionsInactiveIcon />}
+                  disableElevation={true}
+                  variant="contained"
+                  onClick={() => handleChangeTab(2)}
+                  isSelected={selectedTab === 2}
+                >
+                  Transactions
+                </StyledTab>
+              </Grid>
+            </TabsContainer>
           </Grid>
+        </Grid>
 
-          <TabPanel value={selectedTabProposals} index={0}>
+        {!showFullList ? (
+          <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setShowFullList(true)}>
+            <Grid item container direction="row" alignItems="center">
+              <TabsSelectedIcon />
+              <Typography color="secondary">View All</Typography>
+            </Grid>
+          </ViewAll>
+        ) : (
+          <ViewAll item xs={isMobileSmall ? 12 : 2}>
+            <Grid item container direction="row" alignItems="center">
+              <FilterAltIcon color="secondary" />
+              <Typography color="secondary">Filter & Sort</Typography>
+            </Grid>
+          </ViewAll>
+        )}
+
+        <Grid item style={{ marginTop: 38 }}>
+          <TabPanel value={selectedTab} index={0}>
             <Grid item style={{ marginTop: 38 }}>
               {proposalsCreated && cycleInfo && (
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
-                  proposals={proposalsCreated}
-                  liteProposals={pollsPosted}
+                  proposals={showFullList ? proposalsCreated : proposalsCreated.slice(0, 2)}
+                  liteProposals={showFullList ? pollsPosted : pollsPosted?.slice(0, 2)}
+                  showFullList={showFullList}
                 />
               )}
               {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
@@ -265,102 +244,16 @@ export const UserMovements: React.FC<{
               ) : null}
             </Grid>
           </TabPanel>
-          <TabPanel value={selectedTabProposals} index={1}>
-            <Grid item style={{ marginTop: 38 }}>
-              {proposalsCreated && cycleInfo && (
-                <ProposalsList currentLevel={cycleInfo.currentLevel} proposals={proposalsCreated} liteProposals={[]} />
-              )}
-              {!(proposalsCreated && proposalsCreated.length > 0) ? (
-                <ProposalsFooter item container direction="column" justifyContent="center">
-                  <Grid item>
-                    <Typography color="textPrimary" align="center">
-                      No items
-                    </Typography>
-                  </Grid>
-                </ProposalsFooter>
-              ) : null}
-            </Grid>
-          </TabPanel>
-          <TabPanel value={selectedTabProposals} index={2}>
-            <Grid item style={{ marginTop: 38 }}>
-              {pollsPosted && cycleInfo && (
-                <ProposalsList currentLevel={cycleInfo.currentLevel} proposals={[]} liteProposals={pollsPosted} />
-              )}
-              {!(pollsPosted && pollsPosted.length > 0) ? (
-                <ProposalsFooter item container direction="column" justifyContent="center">
-                  <Grid item>
-                    <Typography color="textPrimary" align="center">
-                      No items
-                    </Typography>
-                  </Grid>
-                </ProposalsFooter>
-              ) : null}
-            </Grid>
-          </TabPanel>
-        </TabPanel>
 
-        {/* TAB VOTES CONTENT */}
-        <TabPanel value={selectedTab} index={1}>
-          <Grid container>
-            <Grid item>
-              <TabsContainer container>
-                <Grid item>
-                  <StyledTabInner
-                    variant="contained"
-                    disableElevation={true}
-                    onClick={() => handleChangeTabVotes(0)}
-                    isSelected={selectedTabVotes === 0}
-                  >
-                    All
-                  </StyledTabInner>
-                </Grid>
-                <Grid item>
-                  <StyledTabInner
-                    disableElevation={true}
-                    variant="contained"
-                    onClick={() => handleChangeTabVotes(1)}
-                    isSelected={selectedTabVotes === 1}
-                  >
-                    On-Chain
-                  </StyledTabInner>
-                </Grid>
-
-                <Grid item>
-                  <StyledTabInner
-                    disableElevation={true}
-                    variant="contained"
-                    onClick={() => handleChangeTabVotes(2)}
-                    isSelected={selectedTabVotes === 2}
-                  >
-                    Off-Chain
-                  </StyledTabInner>
-                </Grid>
-              </TabsContainer>
-            </Grid>
-          </Grid>
-
-          <TabPanel value={selectedTabVotes} index={0}>
+          {/* TAB VOTES CONTENT */}
+          <TabPanel value={selectedTab} index={1}>
             <Grid item style={{ marginTop: 38 }}>
               {proposalsVoted && cycleInfo && (
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
-                  proposals={proposalsVoted}
-                  rightItem={proposal => {
-                    const voteDecision = getVoteDecision(proposal)
-                    return (
-                      <Grid container>
-                        <Grid item>
-                          <VotedText color="textPrimary">Voted</VotedText>
-                        </Grid>
-                        <Grid item>
-                          <StatusText color={voteDecision ? "secondary" : "error"}>
-                            {voteDecision ? "YES" : "NO"}
-                          </StatusText>
-                        </Grid>
-                      </Grid>
-                    )
-                  }}
-                  liteProposals={pollsVoted}
+                  proposals={showFullList ? proposalsVoted : proposalsVoted.slice(0, 2)}
+                  showFullList={showFullList}
+                  liteProposals={showFullList ? pollsVoted : pollsVoted.slice(0, 2)}
                 />
               )}
               {!(proposalsVoted && proposalsVoted.length > 0) && !(pollsVoted && pollsVoted.length > 0) ? (
@@ -374,139 +267,31 @@ export const UserMovements: React.FC<{
               ) : null}
             </Grid>
           </TabPanel>
-          <TabPanel value={selectedTabVotes} index={1}>
-            <Grid item style={{ marginTop: 38 }}>
-              {proposalsVoted && cycleInfo && (
-                <ProposalsList
-                  currentLevel={cycleInfo.currentLevel}
-                  proposals={proposalsVoted}
-                  rightItem={proposal => {
-                    const voteDecision = getVoteDecision(proposal)
-                    return (
-                      <Grid container>
-                        <Grid item>
-                          <VotedText color="textPrimary">Voted</VotedText>
-                        </Grid>
-                        <Grid item>
-                          <StatusText color={voteDecision ? "secondary" : "error"}>
-                            {voteDecision ? "YES" : "NO"}
-                          </StatusText>
-                        </Grid>
-                      </Grid>
-                    )
-                  }}
-                  liteProposals={[]}
-                />
-              )}
-              {!(proposalsVoted && proposalsVoted.length > 0) ? (
-                <ProposalsFooter item container direction="column" justifyContent="center">
-                  <Grid item>
-                    <Typography color="textPrimary" align="center">
-                      No items
-                    </Typography>
-                  </Grid>
-                </ProposalsFooter>
-              ) : null}
-            </Grid>
-          </TabPanel>
-          <TabPanel value={selectedTabVotes} index={2}>
-            <Grid item style={{ marginTop: 38 }}>
-              {pollsPosted && cycleInfo && (
-                <ProposalsList
-                  currentLevel={cycleInfo.currentLevel}
-                  proposals={[]}
-                  rightItem={proposal => {
-                    const voteDecision = getVoteDecision(proposal)
-                    return (
-                      <Grid container>
-                        <Grid item>
-                          <VotedText color="textPrimary">Voted</VotedText>
-                        </Grid>
-                        <Grid item>
-                          <StatusText color={voteDecision ? "secondary" : "error"}>
-                            {voteDecision ? "YES" : "NO"}
-                          </StatusText>
-                        </Grid>
-                      </Grid>
-                    )
-                  }}
-                  liteProposals={pollsVoted}
-                />
-              )}
-              {!(pollsPosted && pollsPosted.length > 0) ? (
-                <ProposalsFooter item container direction="column" justifyContent="center">
-                  <Grid item>
-                    <Typography color="textPrimary" align="center">
-                      No items
-                    </Typography>
-                  </Grid>
-                </ProposalsFooter>
-              ) : null}
-            </Grid>
-          </TabPanel>
-        </TabPanel>
 
-        {/* TAB TRANSACTIONS CONTENT */}
-        <TabPanel value={selectedTab} index={2}>
-          <Grid container>
-            <Grid item>
-              <TabsContainer container>
-                <Grid item>
-                  <StyledTabInner
-                    variant="contained"
-                    disableElevation={true}
-                    onClick={() => handleChangeTabTransactions(0)}
-                    isSelected={selectedTabTransactions === 0}
-                  >
-                    All
-                  </StyledTabInner>
-                </Grid>
-                <Grid item>
-                  <StyledTabInner
-                    disableElevation={true}
-                    variant="contained"
-                    onClick={() => handleChangeTabTransactions(1)}
-                    isSelected={selectedTabTransactions === 1}
-                  >
-                    Withdrawals
-                  </StyledTabInner>
-                </Grid>
-
-                <Grid item>
-                  <StyledTabInner
-                    disableElevation={true}
-                    variant="contained"
-                    onClick={() => handleChangeTabTransactions(2)}
-                    isSelected={selectedTabTransactions === 2}
-                  >
-                    Deposits
-                  </StyledTabInner>
-                </Grid>
-              </TabsContainer>
-            </Grid>
-          </Grid>
-
-          <TabPanel value={selectedTabTransactions} index={0}>
+          {/* TAB TRANSACTIONS CONTENT */}
+          <TabPanel value={selectedTab} index={2}>
             {transfers && transfers.length > 0 ? (
               <Grid container item style={{ marginTop: 38, gap: 16 }}>
                 {transfers &&
                   transfers
-                    .slice(offset, offset + 2)
+                    .slice(showFullList ? offset : 0, showFullList ? offset + count : count)
                     .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
-                <Grid container direction="row" justifyContent="flex-end">
-                  <ReactPaginate
-                    previousLabel={"<"}
-                    breakLabel="..."
-                    nextLabel=">"
-                    onPageChange={handlePageClick}
-                    pageRangeDisplayed={2}
-                    pageCount={pageCount}
-                    renderOnZeroPageCount={null}
-                    containerClassName={"pagination"}
-                    activeClassName={"active"}
-                    forcePage={currentPage}
-                  />
-                </Grid>
+                {showFullList ? (
+                  <Grid container direction="row" justifyContent="flex-end">
+                    <ReactPaginate
+                      previousLabel={"<"}
+                      breakLabel="..."
+                      nextLabel=">"
+                      onPageChange={handlePageClick}
+                      pageRangeDisplayed={2}
+                      pageCount={pageCount}
+                      renderOnZeroPageCount={null}
+                      containerClassName={"pagination"}
+                      activeClassName={"active"}
+                      forcePage={currentPage}
+                    />
+                  </Grid>
+                ) : null}
               </Grid>
             ) : (
               <TransactionsFooter item container direction="column" justifyContent="center">
@@ -518,72 +303,8 @@ export const UserMovements: React.FC<{
               </TransactionsFooter>
             )}
           </TabPanel>
-          <TabPanel value={selectedTabTransactions} index={1}>
-            {transfers && transfers.length > 0 ? (
-              <Grid container item style={{ marginTop: 38, gap: 16 }}>
-                {filteredTransactions &&
-                  filteredTransactions
-                    .slice(offset, offset + 2)
-                    .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
-                <Grid container direction="row" justifyContent="flex-end">
-                  <ReactPaginate
-                    previousLabel={"<"}
-                    breakLabel="..."
-                    nextLabel=">"
-                    onPageChange={handlePageClick}
-                    pageRangeDisplayed={2}
-                    pageCount={pageCount}
-                    renderOnZeroPageCount={null}
-                    containerClassName={"pagination"}
-                    activeClassName={"active"}
-                    forcePage={currentPage}
-                  />
-                </Grid>
-              </Grid>
-            ) : (
-              <TransactionsFooter item container direction="column" justifyContent="center">
-                <Grid item>
-                  <Typography color="textPrimary" align="center">
-                    No items
-                  </Typography>
-                </Grid>
-              </TransactionsFooter>
-            )}
-          </TabPanel>
-          <TabPanel value={selectedTabTransactions} index={2}>
-            {transfers && transfers.length > 0 ? (
-              <Grid container item style={{ marginTop: 38, gap: 16 }}>
-                {filteredTransactions &&
-                  filteredTransactions
-                    .slice(offset, offset + 2)
-                    .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
-                <Grid container direction="row" justifyContent="flex-end">
-                  <ReactPaginate
-                    previousLabel={"<"}
-                    breakLabel="..."
-                    nextLabel=">"
-                    onPageChange={handlePageClick}
-                    pageRangeDisplayed={2}
-                    pageCount={pageCount}
-                    renderOnZeroPageCount={null}
-                    containerClassName={"pagination"}
-                    activeClassName={"active"}
-                    forcePage={currentPage}
-                  />
-                </Grid>
-              </Grid>
-            ) : (
-              <TransactionsFooter item container direction="column" justifyContent="center">
-                <Grid item>
-                  <Typography color="textPrimary" align="center">
-                    No items
-                  </Typography>
-                </Grid>
-              </TransactionsFooter>
-            )}
-          </TabPanel>
-        </TabPanel>
-      </Grid>
+        </Grid>
+      </ActivityContainer>
     </Grid>
   )
 }

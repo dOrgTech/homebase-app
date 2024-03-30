@@ -37,7 +37,7 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
   }
 }))
 
-export const ProposalTableRow: React.FC<{ poll: Poll; daoId?: string }> = ({ poll, daoId }) => {
+export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = ({ poll, daoId }) => {
   const navigate = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
