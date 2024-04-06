@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Collapse, Grid, styled, Typography } from "@material-ui/core"
+import { Collapse, Grid, styled } from "@material-ui/core"
 import { ProposalItem } from "modules/explorer/pages/User"
 import { Link } from "react-router-dom"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
@@ -36,8 +36,6 @@ interface Props {
 export const ProposalsList: React.FC<Props> = ({
   currentLevel,
   proposals,
-  showFooter,
-  rightItem,
   liteProposals,
   proposalStyle,
   showFullList = true
@@ -107,20 +105,6 @@ export const ProposalsList: React.FC<Props> = ({
           </Grid>
         ) : null}
       </Grid>
-      {/* <Grid container direction="row" justifyContent="flex-end">
-        <ReactPaginate
-          previousLabel={"<"}
-          breakLabel="..."
-          nextLabel=">"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={2}
-          pageCount={pageCount}
-          renderOnZeroPageCount={null}
-          containerClassName={"pagination"}
-          activeClassName={"active"}
-          forcePage={currentPage}
-        />
-      </Grid> */}
       {showFullList ? (
         <Grid container direction="row" justifyContent="flex-end">
           <ReactPaginate

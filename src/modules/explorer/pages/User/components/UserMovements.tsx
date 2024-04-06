@@ -18,6 +18,7 @@ import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
 import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import { ArrowBackIos } from "@material-ui/icons"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -79,11 +80,29 @@ const ActivityContainer = styled(Grid)(({ theme }) => ({
 const ViewAll = styled(Grid)(({ theme }) => ({
   "cursor": "pointer",
   "width": "fit-content",
-  "marginTop": 45,
+  "marginTop": 32,
   "& svg": {
     marginRight: 10,
     color: theme.palette.secondary.main
   }
+}))
+
+const BackButtonText = styled(Grid)({
+  alignItems: "baseline",
+  marginBottom: 16,
+  cursor: "pointer"
+})
+
+const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  fontSize: 12,
+  marginRight: 16
+}))
+
+const BackButton = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.main,
+  fontSize: 18,
+  fontWeight: 500
 }))
 
 export const UserMovements: React.FC<{
@@ -93,10 +112,20 @@ export const UserMovements: React.FC<{
   pollsPosted: Poll[] | undefined
   proposalsVoted: Proposal[] | undefined
   pollsVoted: any
-}> = ({ proposalsCreated, cycleInfo, pollsPosted, proposalsVoted, daoId, pollsVoted }) => {
+  setShowActivity: (arg: boolean) => void
+  showActivity: boolean
+}> = ({
+  proposalsCreated,
+  cycleInfo,
+  pollsPosted,
+  proposalsVoted,
+  daoId,
+  pollsVoted,
+  setShowActivity,
+  showActivity
+}) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [filteredTransactions, setFilteredTransactions] = React.useState<TransferWithBN[] | undefined>()
-  const [showFullList, setShowFullList] = useState(false)
   const { account } = useTezos()
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
@@ -127,24 +156,6 @@ export const UserMovements: React.FC<{
     setPageCount(Math.ceil(transfers ? transfers.length / count : 0))
   }, [transfers])
 
-  // const handleChangeTabTransactions = (newValue: number) => {
-  //   if (newValue === 0) {
-  //     setFilteredTransactions(transfers)
-  //     setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
-  //   }
-  //   if (newValue === 1) {
-  //     const newArray = transfers?.filter(item => item.type === "Withdrawal")
-  //     setFilteredTransactions(newArray)
-  //     setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
-  //   }
-  //   if (newValue === 2) {
-  //     const newArray = transfers?.filter(item => item.type === "Deposit")
-  //     setFilteredTransactions(newArray)
-  //     setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
-  //   }
-  //   setSelectedTabTransactions(newValue)
-  // }
-
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (transfers) {
@@ -156,6 +167,13 @@ export const UserMovements: React.FC<{
 
   return (
     <Grid item>
+      {showActivity ? (
+        <BackButtonText container direction="row" item xs={2} onClick={() => setShowActivity(false)}>
+          <BackButtonIcon />
+          <BackButton>Back</BackButton>
+        </BackButtonText>
+      ) : null}
+
       <Grid container direction="column">
         <Grid item>
           <TitleText color="textPrimary">My Activity</TitleText>
@@ -206,8 +224,8 @@ export const UserMovements: React.FC<{
           </Grid>
         </Grid>
 
-        {!showFullList ? (
-          <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setShowFullList(true)}>
+        {!showActivity ? (
+          <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setShowActivity(true)}>
             <Grid item container direction="row" alignItems="center">
               <TabsSelectedIcon />
               <Typography color="secondary">View All</Typography>
@@ -222,15 +240,15 @@ export const UserMovements: React.FC<{
           </ViewAll>
         )}
 
-        <Grid item style={{ marginTop: 38 }}>
+        <Grid item>
           <TabPanel value={selectedTab} index={0}>
-            <Grid item style={{ marginTop: 38 }}>
+            <Grid item style={{ marginTop: 24 }}>
               {proposalsCreated && cycleInfo && (
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
-                  proposals={showFullList ? proposalsCreated : proposalsCreated.slice(0, 2)}
-                  liteProposals={showFullList ? pollsPosted : pollsPosted?.slice(0, 2)}
-                  showFullList={showFullList}
+                  proposals={showActivity ? proposalsCreated : proposalsCreated.slice(0, 2)}
+                  liteProposals={showActivity ? pollsPosted : pollsPosted?.slice(0, 2)}
+                  showFullList={showActivity}
                 />
               )}
               {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
@@ -247,13 +265,13 @@ export const UserMovements: React.FC<{
 
           {/* TAB VOTES CONTENT */}
           <TabPanel value={selectedTab} index={1}>
-            <Grid item style={{ marginTop: 38 }}>
+            <Grid item style={{ marginTop: 24 }}>
               {proposalsVoted && cycleInfo && (
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
-                  proposals={showFullList ? proposalsVoted : proposalsVoted.slice(0, 2)}
-                  showFullList={showFullList}
-                  liteProposals={showFullList ? pollsVoted : pollsVoted.slice(0, 2)}
+                  proposals={showActivity ? proposalsVoted : proposalsVoted.slice(0, 2)}
+                  showFullList={showActivity}
+                  liteProposals={showActivity ? pollsVoted : pollsVoted.slice(0, 2)}
                 />
               )}
               {!(proposalsVoted && proposalsVoted.length > 0) && !(pollsVoted && pollsVoted.length > 0) ? (
@@ -271,12 +289,12 @@ export const UserMovements: React.FC<{
           {/* TAB TRANSACTIONS CONTENT */}
           <TabPanel value={selectedTab} index={2}>
             {transfers && transfers.length > 0 ? (
-              <Grid container item style={{ marginTop: 38, gap: 16 }}>
+              <Grid container item style={{ marginTop: 24, gap: 16 }}>
                 {transfers &&
                   transfers
-                    .slice(showFullList ? offset : 0, showFullList ? offset + count : count)
+                    .slice(showActivity ? offset : 0, showActivity ? offset + count : count)
                     .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
-                {showFullList ? (
+                {showActivity ? (
                   <Grid container direction="row" justifyContent="flex-end">
                     <ReactPaginate
                       previousLabel={"<"}

@@ -1,5 +1,5 @@
 import React from "react"
-import { styled, Grid, Typography, useTheme, useMediaQuery, LinearProgress } from "@material-ui/core"
+import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 import { RowContainer } from "./tables/RowContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { useHistory } from "react-router"

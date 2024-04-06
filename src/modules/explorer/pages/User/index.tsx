@@ -1,7 +1,7 @@
 import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
-import React, { useCallback, useEffect, useMemo } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useHistory } from "react-router"
 import { useAgoraTopic } from "services/agora/hooks/useTopic"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -116,6 +116,7 @@ export const User: React.FC = () => {
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
   const { data: polls } = usePolls(data?.liteDAOData?._id)
   const pollsPosted: Poll[] | undefined = polls?.filter(p => p.author === account)
+  const [showActivity, setShowActivity] = useState(false)
 
   const { data: userVotes } = useUserVotes()
 
@@ -181,49 +182,68 @@ export const User: React.FC = () => {
   const getVoteDecision = (proposal: Proposal) =>
     proposal.voters.find(voter => voter.address.toLowerCase())?.support as boolean
 
+  const changeState = (value: boolean) => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+    setShowActivity(value)
+  }
+
   return (
     <MainContainer>
       <Grid container direction="column" style={{ gap: 40 }} wrap={"nowrap"}>
-        <BalancesHeader item style={{ gap: 16 }}>
-          <Grid container direction="row">
-            <TitleText color="textPrimary">My Address</TitleText>
-          </Grid>
-          <Grid container alignItems="center" justifyContent="space-between" style={{ gap: isMobileSmall ? 30 : 20 }}>
-            <Grid item md={6} xs={12}>
-              <Grid container alignItems="center" wrap="nowrap">
-                <Grid item>
-                  <ProfileAvatar size={40} address={account} />
+        {!showActivity ? (
+          <>
+            <BalancesHeader item style={{ gap: 16 }}>
+              <Grid container direction="row">
+                <TitleText color="textPrimary">My Address</TitleText>
+              </Grid>
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="space-between"
+                style={{ gap: isMobileSmall ? 30 : 20 }}
+              >
+                <Grid item md={6} xs={12}>
+                  <Grid container alignItems="center" wrap="nowrap">
+                    <Grid item>
+                      <ProfileAvatar size={40} address={account} />
+                    </Grid>
+                    <Grid item>
+                      <UsernameText color="textPrimary">
+                        <UserProfileName address={account} />
+                      </UsernameText>
+                    </Grid>
+                    <Grid item>
+                      <CopyButton text={account} />
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <UsernameText color="textPrimary">
-                    <UserProfileName address={account} />
-                  </UsernameText>
-                </Grid>
-                <Grid item>
-                  <CopyButton text={account} />
+                <Grid item md={5} xs={12}>
+                  <Grid
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent={isMobileSmall ? "center" : "flex-end"}
+                  >
+                    <Grid item>
+                      <FreezeDialog freeze={true} />
+                    </Grid>
+                    <Grid item>
+                      <FreezeDialog freeze={false} />
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid item md={5} xs={12}>
-              <Grid container spacing={2} alignItems="center" justifyContent={isMobileSmall ? "center" : "flex-end"}>
-                <Grid item>
-                  <FreezeDialog freeze={true} />
-                </Grid>
-                <Grid item>
-                  <FreezeDialog freeze={false} />
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </BalancesHeader>
+            </BalancesHeader>
 
-        <UserBalances
-          daoId={daoId}
-          canUnstakeVotes={canUnstakeVotes || false}
-          onUnstakeFromAllProposals={onUnstakeFromAllProposals}
-        ></UserBalances>
+            <UserBalances
+              daoId={daoId}
+              canUnstakeVotes={canUnstakeVotes || false}
+              onUnstakeFromAllProposals={onUnstakeFromAllProposals}
+            ></UserBalances>
 
-        {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
+            {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
+          </>
+        ) : null}
 
         <UserMovements
           daoId={daoId}
@@ -232,6 +252,8 @@ export const User: React.FC = () => {
           proposalsCreated={proposalsCreated}
           pollsPosted={pollsPosted}
           pollsVoted={votedPolls}
+          setShowActivity={changeState}
+          showActivity={showActivity}
         />
       </Grid>
     </MainContainer>
