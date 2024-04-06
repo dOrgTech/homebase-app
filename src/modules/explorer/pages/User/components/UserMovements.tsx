@@ -19,6 +19,13 @@ import "../../DAOList/styles.css"
 import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { ArrowBackIos } from "@material-ui/icons"
+import {
+  FilterUserProposalsDialog,
+  OffchainStatus,
+  Order,
+  ProposalType,
+  StatusOption
+} from "modules/explorer/components/FiltersUserDialog"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -105,6 +112,13 @@ const BackButton = styled(Typography)(({ theme }) => ({
   fontWeight: 500
 }))
 
+export interface Filters {
+  type: ProposalType
+  offchainStatus: OffchainStatus
+  onchainStatus: StatusOption[]
+  order: Order
+}
+
 export const UserMovements: React.FC<{
   daoId: string
   proposalsCreated: Proposal[]
@@ -129,6 +143,8 @@ export const UserMovements: React.FC<{
   const { account } = useTezos()
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [filters, setFilters] = useState<Filters>()
 
   const useUserTransfers = (): TransferWithBN[] | undefined => {
     const { data: transfers } = useTransfers(daoId)
@@ -163,6 +179,15 @@ export const UserMovements: React.FC<{
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
+  }
+
+  const handleFilters = (filters: Filters) => {
+    console.log(filters)
+    setFilters(filters)
   }
 
   return (
@@ -232,7 +257,7 @@ export const UserMovements: React.FC<{
             </Grid>
           </ViewAll>
         ) : (
-          <ViewAll item xs={isMobileSmall ? 12 : 2}>
+          <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setOpenFiltersDialog(true)}>
             <Grid item container direction="row" alignItems="center">
               <FilterAltIcon color="secondary" />
               <Typography color="secondary">Filter & Sort</Typography>
@@ -323,6 +348,11 @@ export const UserMovements: React.FC<{
           </TabPanel>
         </Grid>
       </ActivityContainer>
+      <FilterUserProposalsDialog
+        open={openFiltersDialog}
+        handleClose={handleCloseFiltersModal}
+        saveFilters={handleFilters}
+      />
     </Grid>
   )
 }
