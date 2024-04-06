@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "./CopyButton"
 import { toShortAddress } from "services/contracts/utils"
 import numbro from "numbro"
+import ReactPaginate from "react-paginate"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
@@ -47,7 +48,16 @@ const formatConfig = {
   trimMantissa: true
 }
 
-const MobileUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data, symbol }) => {
+interface UserTable {
+  data: RowData[]
+  symbol: string
+  handlePageClick: (event: { selected: number }) => void
+  pageCount: number
+  currentPage: number
+  offset: number
+}
+
+const MobileUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset }) => {
   return (
     <>
       <Grid container style={{ gap: 32 }}>
@@ -57,7 +67,7 @@ const MobileUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data,
           </Grid>
         </Grid>
 
-        {data.map((item, i) => (
+        {data.slice(offset, offset + 8).map((item, i) => (
           <CardContainer key={`usersrow-${i}`} container direction="row" style={{ gap: 24 }}>
             <Grid item container direction="row" alignItems="center" xs={12} style={{ gap: 8 }}>
               <Blockie address={item.address} size={24} />
@@ -104,12 +114,26 @@ const MobileUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data,
             </Grid>
           </CardContainer>
         ))}
+        <Grid container direction="row" justifyContent="flex-end">
+          <ReactPaginate
+            previousLabel={"<"}
+            breakLabel="..."
+            nextLabel=">"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={2}
+            pageCount={pageCount}
+            renderOnZeroPageCount={null}
+            containerClassName={"pagination"}
+            activeClassName={"active"}
+            forcePage={currentPage}
+          />
+        </Grid>
       </Grid>
     </>
   )
 }
 
-const DesktopUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data, symbol }) => {
+const DesktopUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset }) => {
   return (
     <>
       <Grid container style={{ gap: 32 }}>
@@ -119,7 +143,7 @@ const DesktopUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data
           </Grid>
         </Grid>
 
-        {data.map((item, i) => (
+        {data.slice(offset, offset + 8).map((item, i) => (
           <CardContainer key={`usersrow-${i}`} container direction="row" style={{ gap: 24 }}>
             <Grid item container direction="row" alignItems="center" xs={12} style={{ gap: 8 }}>
               <Blockie address={item.address} size={24} />
@@ -166,6 +190,21 @@ const DesktopUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data
             </Grid>
           </CardContainer>
         ))}
+
+        <Grid container direction="row" justifyContent="flex-end">
+          <ReactPaginate
+            previousLabel={"<"}
+            breakLabel="..."
+            nextLabel=">"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={2}
+            pageCount={pageCount}
+            renderOnZeroPageCount={null}
+            containerClassName={"pagination"}
+            activeClassName={"active"}
+            forcePage={currentPage}
+          />
+        </Grid>
       </Grid>
     </>
   )
@@ -174,10 +213,36 @@ const DesktopUsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data
 export const UsersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data, symbol }) => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down(820))
+  const [currentPage, setCurrentPage] = useState(0)
+  const [offset, setOffset] = useState(0)
+  const pageCount = Math.ceil(data ? data.length / 8 : 0)
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (data) {
+      const newOffset = (event.selected * 8) % data.length
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
+  }
 
   return isExtraSmall ? (
-    <MobileUsersTable data={data} symbol={symbol} />
+    <MobileUsersTable
+      data={data}
+      symbol={symbol}
+      handlePageClick={handlePageClick}
+      pageCount={pageCount}
+      currentPage={currentPage}
+      offset={offset}
+    />
   ) : (
-    <DesktopUsersTable data={data} symbol={symbol} />
+    <DesktopUsersTable
+      data={data}
+      symbol={symbol}
+      handlePageClick={handlePageClick}
+      pageCount={pageCount}
+      currentPage={currentPage}
+      offset={offset}
+    />
   )
 }
