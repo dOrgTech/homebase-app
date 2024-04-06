@@ -132,7 +132,6 @@ export const UserMovements: React.FC<{
 }> = ({ proposalsCreated, cycleInfo, proposalsVoted, daoId, setShowActivity, showActivity }) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [filteredTransactions, setFilteredTransactions] = React.useState<TransferWithBN[] | undefined>()
-  const [showFullList, setShowFullList] = useState(false)
   const { account } = useTezos()
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
