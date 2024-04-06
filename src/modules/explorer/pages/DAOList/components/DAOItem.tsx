@@ -13,11 +13,11 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "boxSizing": "border-box",
   "cursor": "pointer",
   "transition": "0.15s ease-out",
-  "padding": "34px 48px",
+  "padding": "42px 48px",
   "minWidth": "340px",
   "alignContent": "baseline",
   "gap": 30,
-  "maxHeight": 282,
+  // "maxHeight": 282,
 
   ["@media (max-width:760px)"]: {
     maxWidth: "86vw",
