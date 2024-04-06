@@ -186,7 +186,6 @@ export const UserMovements: React.FC<{
   }
 
   const handleFilters = (filters: Filters) => {
-    console.log(filters)
     setFilters(filters)
   }
 
@@ -274,6 +273,7 @@ export const UserMovements: React.FC<{
                   proposals={showActivity ? proposalsCreated : proposalsCreated.slice(0, 2)}
                   liteProposals={showActivity ? pollsPosted : pollsPosted?.slice(0, 2)}
                   showFullList={showActivity}
+                  filters={filters}
                 />
               )}
               {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
@@ -297,6 +297,7 @@ export const UserMovements: React.FC<{
                   proposals={showActivity ? proposalsVoted : proposalsVoted.slice(0, 2)}
                   showFullList={showActivity}
                   liteProposals={showActivity ? pollsVoted : pollsVoted.slice(0, 2)}
+                  filters={filters}
                 />
               )}
               {!(proposalsVoted && proposalsVoted.length > 0) && !(pollsVoted && pollsVoted.length > 0) ? (

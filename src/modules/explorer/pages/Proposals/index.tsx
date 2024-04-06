@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react"
-import { Button, Grid, Paper, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
@@ -266,6 +266,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposals}
                   liteProposals={undefined}
+                  filters={undefined}
                 />
               )}
               {!(proposals && proposals.length > 0) ? (
@@ -288,6 +289,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={undefined}
                   liteProposals={polls}
+                  filters={undefined}
                 />
               )}
               {!(polls && polls.length > 0) ? (
