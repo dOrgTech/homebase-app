@@ -64,8 +64,12 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
   const [proposalType, setProposalType] = useState<ProposalType>(ProposalType.ALL)
   const [order, setOrder] = useState<Order>(Order.RECENT)
 
-  const filterProposalByPopularity = (status: Order) => {
-    setOrder(status)
+  const filterProposalByPopularity = (status: string | undefined) => {
+    if (status === "popular") {
+      setOrder(Order.POPULAR)
+    } else {
+      setOrder(Order.RECENT)
+    }
   }
 
   const isSelected = (item: StatusOption) => {
@@ -144,7 +148,7 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
                 { name: "Most Popular to Least Popular", value: "popular" }
               ]}
               value={"recent"}
-              onSelected={() => filterProposalByPopularity}
+              onSelected={value => filterProposalByPopularity(value)}
               isFilter={true}
             />
           </Grid>

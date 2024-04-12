@@ -26,6 +26,9 @@ import {
   ProposalType,
   StatusOption
 } from "modules/explorer/components/FiltersUserDialog"
+import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
+import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+import { useDAO } from "services/services/dao/hooks/useDAO"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -122,22 +125,11 @@ export interface Filters {
 export const UserMovements: React.FC<{
   daoId: string
   proposalsCreated: Proposal[]
+  proposalsVoted: Proposal[]
   cycleInfo: CycleInfo | undefined
-  pollsPosted: Poll[] | undefined
-  proposalsVoted: Proposal[] | undefined
-  pollsVoted: any
   setShowActivity: (arg: boolean) => void
   showActivity: boolean
-}> = ({
-  proposalsCreated,
-  cycleInfo,
-  pollsPosted,
-  proposalsVoted,
-  daoId,
-  pollsVoted,
-  setShowActivity,
-  showActivity
-}) => {
+}> = ({ proposalsCreated, cycleInfo, proposalsVoted, daoId, setShowActivity, showActivity }) => {
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [filteredTransactions, setFilteredTransactions] = React.useState<TransferWithBN[] | undefined>()
   const { account } = useTezos()
@@ -145,6 +137,22 @@ export const UserMovements: React.FC<{
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
   const [filters, setFilters] = useState<Filters>()
+
+  const { data } = useDAO(daoId)
+  const { data: polls } = usePolls(data?.liteDAOData?._id)
+  const { data: userVotes } = useUserVotes()
+
+  const pollsPosted: Poll[] | undefined = useMemo(() => {
+    return polls?.filter(p => p.author === account)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account])
+
+  const votedPolls: any = []
+  pollsPosted?.map((p: Poll) => {
+    if (userVotes && userVotes.filter(v => p._id === v.pollID).length > 0) {
+      return votedPolls.push(p)
+    }
+  })
 
   const useUserTransfers = (): TransferWithBN[] | undefined => {
     const { data: transfers } = useTransfers(daoId)
@@ -291,16 +299,16 @@ export const UserMovements: React.FC<{
           {/* TAB VOTES CONTENT */}
           <TabPanel value={selectedTab} index={1}>
             <Grid item style={{ marginTop: 24 }}>
-              {proposalsVoted && cycleInfo && (
+              {votedPolls && cycleInfo && (
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
                   proposals={showActivity ? proposalsVoted : proposalsVoted.slice(0, 2)}
                   showFullList={showActivity}
-                  liteProposals={showActivity ? pollsVoted : pollsVoted.slice(0, 2)}
+                  liteProposals={showActivity ? votedPolls : votedPolls.slice(0, 2)}
                   filters={filters}
                 />
               )}
-              {!(proposalsVoted && proposalsVoted.length > 0) && !(pollsVoted && pollsVoted.length > 0) ? (
+              {!(proposalsVoted && proposalsVoted.length > 0) && !(votedPolls && votedPolls.length > 0) ? (
                 <ProposalsFooter item container direction="column" justifyContent="center">
                   <Grid item>
                     <Typography color="textPrimary" align="center">

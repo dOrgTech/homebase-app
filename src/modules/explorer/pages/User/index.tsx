@@ -114,20 +114,9 @@ export const User: React.FC = () => {
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
-  const { data: polls } = usePolls(data?.liteDAOData?._id)
-  const pollsPosted: Poll[] | undefined = polls?.filter(p => p.author === account)
   const [showActivity, setShowActivity] = useState(false)
 
-  const { data: userVotes } = useUserVotes()
-
   const { data: isTokenDelegationSupported } = useTokenDelegationSupported(data?.data.token.contract)
-
-  const votedPolls: any = []
-  pollsPosted?.map((p: Poll) => {
-    if (userVotes && userVotes.filter(v => p._id === v.pollID).length > 0) {
-      return votedPolls.push(p)
-    }
-  })
 
   useEffect(() => {
     if (!account) {
@@ -250,8 +239,6 @@ export const User: React.FC = () => {
           proposalsVoted={proposalsVoted}
           cycleInfo={cycleInfo}
           proposalsCreated={proposalsCreated}
-          pollsPosted={pollsPosted}
-          pollsVoted={votedPolls}
           setShowActivity={changeState}
           showActivity={showActivity}
         />

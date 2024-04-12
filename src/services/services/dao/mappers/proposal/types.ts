@@ -122,6 +122,8 @@ export abstract class Proposal {
     level: number
   }[]
   packedMetadata: string
+  isActive?: boolean
+  startTime?: string
   voters: {
     address: string
     value: BigNumber
