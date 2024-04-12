@@ -23,6 +23,7 @@ import NewReleasesIcon from "@mui/icons-material/NewReleases"
 import DeleteIcon from "@mui/icons-material/Delete"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
+import { Filters } from "../User/components/UserMovements"
 
 const FiltersContainer = styled(Grid)({
   marginTop: 45,
@@ -117,6 +118,7 @@ export const Proposals: React.FC = () => {
   const { mutate: dropAllExpired } = useDropAllExpired()
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
+  const [filters, setFilters] = useState<Filters>()
 
   const handleCloseModal = () => {
     setOpenDialog(false)
@@ -151,6 +153,11 @@ export const Proposals: React.FC = () => {
 
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
+    setFilters(undefined)
+  }
+
+  const handleFilters = (filters: Filters) => {
+    setFilters(filters)
   }
 
   return (
@@ -266,7 +273,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposals}
                   liteProposals={undefined}
-                  filters={undefined}
+                  filters={filters}
                 />
               )}
               {!(proposals && proposals.length > 0) ? (
@@ -289,7 +296,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={undefined}
                   liteProposals={polls}
-                  filters={undefined}
+                  filters={filters}
                 />
               )}
               {!(polls && polls.length > 0) ? (
@@ -306,7 +313,12 @@ export const Proposals: React.FC = () => {
         </TabsBox>
 
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
-        <FilterProposalsDialog open={openFiltersDialog} handleClose={handleCloseFiltersModal} />
+        <FilterProposalsDialog
+          saveFilters={handleFilters}
+          open={openFiltersDialog}
+          handleClose={handleCloseFiltersModal}
+          selectedTab={selectedTab}
+        />
       </Grid>
     </>
   )

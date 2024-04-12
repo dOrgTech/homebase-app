@@ -5,10 +5,14 @@ import { Typography } from "@mui/material"
 import { Dropdown } from "./Dropdown"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { SmallButton } from "modules/common/SmallButton"
+import { Order, ProposalType } from "./FiltersUserDialog"
+import { Filters } from "../pages/User/components/UserMovements"
 
 interface Props {
   open: boolean
   handleClose: () => void
+  selectedTab: number
+  saveFilters: (filters: Filters) => void
 }
 
 const SectionTitle = styled(Typography)({
@@ -39,15 +43,18 @@ interface StatusOption {
   selected: boolean
 }
 
-export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) => {
+export enum OffchainStatus {
+  ACTIVE = "active",
+  CLOSED = "closed",
+  ALL = "all"
+}
+
+export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose, selectedTab, saveFilters }) => {
   const [filters, setFilters] = useState<StatusOption[]>([])
   const [status, setStatus] = useState<StatusOption[]>([])
-
-  // const filterProposalByPopularity = (status: string | undefined) => {
-  //   if (status) {
-  //     setFilters([...status])
-  //   }
-  // }
+  const [offchainStatus, setOffchainStatus] = useState<OffchainStatus>(OffchainStatus.ALL)
+  const proposalType = selectedTab === 0 ? ProposalType.ON_CHAIN : ProposalType.OFF_CHAIN
+  const [order, setOrder] = useState<Order>(Order.RECENT)
 
   const isSelected = (item: StatusOption) => {
     return filters.includes(item) ? true : false
@@ -63,10 +70,6 @@ export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) =>
       updated.push(status)
     }
     setFilters(updated)
-  }
-
-  const showFilters = () => {
-    console.log(filters)
   }
 
   const findStatus = () => {
@@ -85,10 +88,29 @@ export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) =>
     findStatus()
   }, [])
 
+  const saveOffchainStatus = (status: OffchainStatus) => {
+    if (offchainStatus === status) {
+      setOffchainStatus(OffchainStatus.ALL)
+    } else {
+      setOffchainStatus(status)
+    }
+  }
+
+  const showFilters = () => {
+    const filterObject: Filters = {
+      type: proposalType,
+      offchainStatus: offchainStatus,
+      onchainStatus: filters,
+      order: order
+    }
+    saveFilters(filterObject)
+    handleClose()
+  }
+
   return (
     <>
       <ResponsiveDialog open={open} onClose={handleClose} title={"Filter"} template="sm">
-        <Container container direction="column">
+        {/* <Container container direction="column">
           <Grid item>
             <SectionTitle>Sort By</SectionTitle>
           </Grid>
@@ -103,26 +125,46 @@ export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose }) =>
               isFilter={true}
             />
           </Grid>
-        </Container>
+        </Container> */}
         <Container container direction="column">
           <Grid item>
             <SectionTitle>Proposal Status</SectionTitle>
           </Grid>
-          <Grid item container direction="row">
-            {status.length > 0 &&
-              status.map((item, index) => {
-                return (
-                  <StatusButton
-                    item
-                    key={`status-${index}`}
-                    style={isSelected(item) ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
-                  >
-                    <Typography onClick={() => saveStatus(item)}>{item.label}</Typography>
-                  </StatusButton>
-                )
-              })}
-          </Grid>
+          {selectedTab === 0 ? (
+            <Grid item container direction="row">
+              {status.length > 0 &&
+                status.map((item, index) => {
+                  return (
+                    <StatusButton
+                      item
+                      key={`status-${index}`}
+                      style={isSelected(item) ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+                    >
+                      <Typography onClick={() => saveStatus(item)}>{item.label}</Typography>
+                    </StatusButton>
+                  )
+                })}
+            </Grid>
+          ) : (
+            <Grid item container direction="row">
+              <StatusButton
+                item
+                onClick={() => saveOffchainStatus(OffchainStatus.ACTIVE)}
+                style={offchainStatus === OffchainStatus.ACTIVE ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+              >
+                <Typography>Active</Typography>
+              </StatusButton>
+              <StatusButton
+                item
+                onClick={() => saveOffchainStatus(OffchainStatus.CLOSED)}
+                style={offchainStatus === OffchainStatus.CLOSED ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+              >
+                <Typography>Closed</Typography>
+              </StatusButton>
+            </Grid>
+          )}
         </Container>
+
         <Container container direction="row" justifyContent="flex-end">
           <SmallButton color="secondary" variant="contained" onClick={showFilters}>
             Apply
