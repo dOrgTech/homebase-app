@@ -255,7 +255,6 @@ export const UserMovements: React.FC<{
             </TabsContainer>
           </Grid>
         </Grid>
-
         {!showActivity ? (
           <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setShowActivity(true)}>
             <Grid item container direction="row" alignItems="center">
@@ -263,14 +262,14 @@ export const UserMovements: React.FC<{
               <Typography color="secondary">View All</Typography>
             </Grid>
           </ViewAll>
-        ) : (
+        ) : selectedTab !== 2 ? (
           <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setOpenFiltersDialog(true)}>
             <Grid item container direction="row" alignItems="center">
               <FilterAltIcon color="secondary" />
               <Typography color="secondary">Filter & Sort</Typography>
             </Grid>
           </ViewAll>
-        )}
+        ) : null}
 
         <Grid item>
           <TabPanel value={selectedTab} index={0}>

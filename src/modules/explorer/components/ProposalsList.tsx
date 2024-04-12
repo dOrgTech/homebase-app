@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { Collapse, Grid, Typography, styled } from "@material-ui/core"
+import { CircularProgress, Collapse, Grid, Typography, styled } from "@material-ui/core"
 import { ProposalItem } from "modules/explorer/pages/User"
 import { Link } from "react-router-dom"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
@@ -24,6 +24,11 @@ const CustomGrid = styled(Grid)({
 const ProposalsFooter = styled(Grid)({
   padding: "16px 46px",
   minHeight: 34
+})
+
+const LoaderContainer = styled(Grid)({
+  paddingTop: 40,
+  paddingBottom: 40
 })
 
 interface Props {
@@ -54,8 +59,9 @@ export const ProposalsList: React.FC<Props> = ({
   const [offset, setOffset] = useState(0)
   const [open, setopen] = useState(true)
   const [filteredProposals, setFilteredProposals] = useState<ProposalObj[]>([])
-  const [filter, setFilter] = useState<string>()
+  const [filter, setFilter] = useState<number>(0)
   const [filterOnchain, setFilterOnchain] = useState<string>()
+  const [isLoading, setIsLoading] = useState(false)
 
   const listOfProposals = useMemo(() => {
     const proposalList: { type: string; proposal: Proposal | Poll }[] = []
@@ -98,17 +104,13 @@ export const ProposalsList: React.FC<Props> = ({
 
   const filterByOffchainStatus = useCallback(
     (status: string) => {
-      switch (status) {
-        case "active": {
-          setFilteredProposals(filteredProposals.filter((item: ProposalObj) => item.proposal.isActive === "active"))
-          break
-        }
-        case "closed": {
-          setFilteredProposals(filteredProposals.filter((item: ProposalObj) => item.proposal.isActive === "closed"))
-          break
-        }
-        default:
-          break
+      if (status === "all") {
+        setIsLoading(false)
+        return
+      } else {
+        const filtered = filteredProposals.filter((item: ProposalObj) => item.proposal.isActive === status)
+        setFilteredProposals(filtered)
+        setIsLoading(false)
       }
     },
     [filter]
@@ -126,6 +128,7 @@ export const ProposalsList: React.FC<Props> = ({
         })
         setFilteredProposals(list)
       }
+      setIsLoading(false)
     },
     [filterOnchain]
   )
@@ -168,28 +171,36 @@ export const ProposalsList: React.FC<Props> = ({
       switch (type) {
         case ProposalType.ALL: {
           setFilteredProposals(list)
+          setIsLoading(false)
           break
         }
         case ProposalType.OFF_CHAIN: {
           setFilteredProposals(list.filter((item: ProposalObj) => item.type === "lite"))
-          setFilter("status")
-          filterByOffchainStatus(filters.offchainStatus)
+          setFilter(Math.random())
+          setTimeout(() => {
+            filterByOffchainStatus(filters.offchainStatus)
+          }, 500)
           break
         }
         case ProposalType.ON_CHAIN: {
           setFilteredProposals(list.filter((item: ProposalObj) => item.type === "lambda"))
           setFilterOnchain("status")
-          filterByOnChainStatus(filters.onchainStatus)
+          setTimeout(() => {
+            filterByOnChainStatus(filters.onchainStatus)
+          }, 1000)
           break
         }
         default:
           setFilteredProposals(list)
+          setIsLoading(false)
           break
       }
     }
     if (filters) {
-      const list = orderedList(filters.order)
-      filterByType(filters.type, filters, list)
+      // const list = orderedList(filters.order)
+      setIsLoading(true)
+      console.log("")
+      filterByType(filters.type, filters, listOfProposals)
     }
   }, [filters, filteredProposals])
 
@@ -200,46 +211,54 @@ export const ProposalsList: React.FC<Props> = ({
 
   return (
     <TableContainer item>
-      <Grid container direction="column" wrap={"nowrap"} style={{ gap: 16 }}>
-        {filteredProposals && filteredProposals.length && filteredProposals.length > 0 ? (
-          <Grid item container wrap={"nowrap"} direction="column">
-            {filteredProposals.slice(offset, offset + 4).map((p, i) =>
-              p.type === "lambda" ? (
-                <CustomGrid item key={`proposal-${i}`} style={proposalStyle}>
-                  <Link to={`proposal/${p.proposal.id}`}>
-                    <ProposalItem
-                      proposal={p.proposal}
-                      status={p.proposal.getStatus(currentLevel).status}
-                    ></ProposalItem>
-                  </Link>
-                </CustomGrid>
-              ) : (
-                <div style={{ width: "inherit", marginBottom: 16 }} key={`poll-${i}`}>
-                  <ProposalTableRow poll={p.proposal} />
-                </div>
-              )
+      {isLoading ? (
+        <LoaderContainer container direction="row" justifyContent="center">
+          <CircularProgress color="secondary" />
+        </LoaderContainer>
+      ) : (
+        <>
+          <Grid container direction="column" wrap={"nowrap"} style={{ gap: 16 }}>
+            {filteredProposals && filteredProposals.length && filteredProposals.length > 0 ? (
+              <Grid item container wrap={"nowrap"} direction="column">
+                {filteredProposals.slice(offset, offset + 4).map((p, i) =>
+                  p.type === "lambda" ? (
+                    <CustomGrid item key={`proposal-${i}`} style={proposalStyle}>
+                      <Link to={`proposal/${p.proposal.id}`}>
+                        <ProposalItem
+                          proposal={p.proposal}
+                          status={p.proposal.getStatus(currentLevel).status}
+                        ></ProposalItem>
+                      </Link>
+                    </CustomGrid>
+                  ) : (
+                    <div style={{ width: "inherit", marginBottom: 16 }} key={`poll-${i}`}>
+                      <ProposalTableRow poll={p.proposal} />
+                    </div>
+                  )
+                )}
+              </Grid>
+            ) : (
+              <Typography color="textPrimary">No proposals found</Typography>
             )}
           </Grid>
-        ) : (
-          <Typography color="textPrimary">No proposals found</Typography>
-        )}
-      </Grid>
-      {showFullList ? (
-        <Grid container direction="row" justifyContent="flex-end">
-          <ReactPaginate
-            previousLabel={"<"}
-            breakLabel="..."
-            nextLabel=">"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={2}
-            pageCount={pageCount}
-            renderOnZeroPageCount={null}
-            containerClassName={"pagination"}
-            activeClassName={"active"}
-            forcePage={currentPage}
-          />
-        </Grid>
-      ) : null}
+          {showFullList ? (
+            <Grid container direction="row" justifyContent="flex-end">
+              <ReactPaginate
+                previousLabel={"<"}
+                breakLabel="..."
+                nextLabel=">"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={2}
+                pageCount={pageCount}
+                renderOnZeroPageCount={null}
+                containerClassName={"pagination"}
+                activeClassName={"active"}
+                forcePage={currentPage}
+              />
+            </Grid>
+          ) : null}
+        </>
+      )}
     </TableContainer>
   )
 }

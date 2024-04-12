@@ -137,7 +137,7 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
   return (
     <>
       <ResponsiveDialog open={open} onClose={handleClose} title={"Filter"} template="sm">
-        <Container container direction="column">
+        {/* <Container container direction="column">
           <Grid item>
             <SectionTitle>Sort By</SectionTitle>
           </Grid>
@@ -152,7 +152,7 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
               isFilter={true}
             />
           </Grid>
-        </Container>
+        </Container> */}
         <Container container direction="column">
           <Grid item>
             <SectionTitle>Type</SectionTitle>
