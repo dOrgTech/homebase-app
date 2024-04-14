@@ -13,8 +13,6 @@ import {
   TableRow,
   TableHead,
   TableCell,
-  Theme,
-  Tooltip,
   makeStyles
 } from "@material-ui/core"
 import { toShortAddress } from "services/contracts/utils"
@@ -27,24 +25,6 @@ import numbro from "numbro"
 import BigNumber from "bignumber.js"
 import { Blockie } from "modules/common/Blockie"
 import "./styles.css"
-
-const styles = makeStyles({
-  root: {
-    width: "100%",
-    marginTop: 3,
-    overflowX: "auto"
-  },
-  table: {
-    minWidth: 700
-  },
-  descriptionCell: {
-    whiteSpace: "nowrap",
-    maxWidth: "200px",
-    width: "100px",
-    overflow: "hidden",
-    textOverflow: "ellipsis"
-  }
-})
 
 const CustomContent = styled(DialogContent)(({ theme }) => ({
   padding: 0,
@@ -92,33 +72,8 @@ const VotesRow = styled(Typography)({
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-  transition: "all .2s linear",
   padding: ".5rem 1rem",
   width: 400
-
-  // "&:focus": {
-  //   color: "transparent"
-  // }
-
-  // "& :focus:after, &:hover:after": {
-  //   content: "attr(data-text)",
-  //   overflow: "visible",
-  //   textOverflow: "inherit",
-  //   background: "#383E43",
-  //   position: "absolute",
-  //   color: "#FDFDFD",
-  //   borderRadius: 8,
-  //   left: "auto",
-  //   top: "auto",
-  //   width: "auto",
-  //   border: "1px solid #383E43",
-  //   padding: "16px",
-  //   boxShadow: "0 2px 4px 0 rgba(0,0,0,.28)",
-  //   whiteSpace: "normal",
-  //   wordWrap: "break-word",
-  //   display: "block",
-  //   marginTop: "-1.25rem"
-  // }
 })
 
 const AddressText = styled(Typography)({
@@ -156,8 +111,6 @@ export const VotesDialog: React.FC<{
 
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const classes = styles()
-  const [tooltipEnabled, setTooltipEnabled] = useState(false)
 
   React.useEffect(() => {
     if (open) {
@@ -200,9 +153,9 @@ export const VotesDialog: React.FC<{
       return array.push(obj)
     })
 
-    document.querySelectorAll<HTMLSpanElement>(".overflow").forEach((span: HTMLSpanElement) => {
+    document.querySelectorAll<HTMLSpanElement>(".test").forEach((span: HTMLSpanElement) => {
       if (span.scrollWidth > span.clientWidth) {
-        span.title = span.innerText
+        span.classList.add("ellipse")
       }
     })
 
@@ -217,22 +170,6 @@ export const VotesDialog: React.FC<{
       return undefined
     }
   }
-
-  // useEffect(() => {
-  //   console.log(listOfVotes)
-  //   listOfVotes.map((val: any) => {
-  //     //checking scrollWidth greater than clientWidth to display tooltip
-  //     if (val.rowref.current !== null) {
-  //       if (val.rowref.current.scrollWidth > val.rowref.current.clientWidth) {
-  //         val.open = true
-  //       }
-  //     }
-
-  //     return val
-  //   })
-  //   console.log()
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [])
 
   return (
     <div>
@@ -265,12 +202,7 @@ export const VotesDialog: React.FC<{
                         </Grid>
                       </StyledTableCell>{" "}
                       <StyledTableCell align="center">
-                        <VotesRow
-                          color="textPrimary"
-                          variant="body1"
-                          className="overflow"
-                          // data-text={shouldShouldTooltip(row.options.toLocaleString().replace(",", ", "))}
-                        >
+                        <VotesRow color="textPrimary" variant="body1" className="test">
                           {" "}
                           {row.options.toLocaleString().replace(",", ", ")}
                         </VotesRow>

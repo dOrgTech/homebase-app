@@ -1,31 +1,38 @@
-[data-title] {
-	font-size: 18px;
-	position: relative;
-	cursor: help;
-}
-
-[data-title]:hover::before {
-	content: attr(data-title);
-	position: absolute;
-	bottom: -46px;
-	padding: 10px;
-	background: #000;
-	color: #fff;
-	font-size: 14px;
-	white-space: nowrap;
-}
-[data-title]:hover::after {
-	content: '';
-	position: absolute;
-	bottom: -12px;
-	left: 8px;
-	border: 8px solid transparent;
-	border-bottom: 8px solid #000;
-}
 .overflow {
   display: inline-block;
   width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  height: 43px;
+}
+
+.ellipse {
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  background: "inherit";
+  transition: color 1s ease-in-out;
+
+}
+.content li {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.ellipse:hover {
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0px 3px 12px 2px #1c1f23;
+  white-space: normal;
+  word-break: break-word;
+  z-index: 5;
+  width: 400px;
+  position: absolute;
+  background: #383e42;
+  margin-top: -12px;
+  margin-left: 40px;
 }
