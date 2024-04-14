@@ -66,18 +66,32 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   }
 }))
 
-const VotesRow = styled(Typography)({
+const VotesRow = styled(Typography)(({ theme }) => ({
   cursor: "default",
   display: "block",
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
   padding: ".5rem 1rem",
-  width: 400
-})
+  width: 400,
+  [theme.breakpoints.down("sm")]: {
+    width: 200,
+    textAlign: "center"
+  }
+}))
 
 const AddressText = styled(Typography)({
   marginLeft: 8
+})
+
+const Header = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.light,
+  fontWeight: 300
+}))
+
+const Container = styled(Grid)({
+  gap: 16,
+  padding: 16
 })
 
 const formatConfig = {
@@ -162,15 +176,6 @@ export const VotesDialog: React.FC<{
     return array
   }, [groupedVotes, decimals, isXTZ])
 
-  const shouldShouldTooltip = (text: string) => {
-    console.log(text.length)
-    if (text.length > 20) {
-      return text
-    } else {
-      return undefined
-    }
-  }
-
   return (
     <div>
       <ResponsiveDialog
@@ -183,38 +188,86 @@ export const VotesDialog: React.FC<{
       >
         <CustomContent>
           <Table aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Address</TableCell>
-                <TableCell align="center">Option</TableCell>
-                <TableCell align="right">Votes</TableCell>
-              </TableRow>
-            </TableHead>
+            {!isMobileSmall ? (
+              <TableHead>
+                <TableRow>
+                  <TableCell>Address</TableCell>
+                  <TableCell align="center">Option</TableCell>
+                  <TableCell align="right">Votes</TableCell>
+                </TableRow>
+              </TableHead>
+            ) : null}
+
             <TableBody>
               {listOfVotes
-                ? listOfVotes.map((row: any) => (
-                    <StyledTableRow key={row.address}>
-                      <StyledTableCell component="th" scope="row">
-                        <Grid container direction="row" alignItems="center">
-                          <Blockie address={row.address} size={24} />
-                          <AddressText color="textPrimary"> {toShortAddress(row.address)}</AddressText>
-                          <CopyIcon onClick={() => copyAddress(row.address)} color="secondary" fontSize="inherit" />
-                        </Grid>
-                      </StyledTableCell>{" "}
-                      <StyledTableCell align="center">
-                        <VotesRow color="textPrimary" variant="body1" className="test">
+                ? listOfVotes.map((row: any) => {
+                    return isMobileSmall ? (
+                      <>
+                        <Container key={row.address} container direction="column" justifyContent="center">
+                          <Grid item>
+                            <Grid item direction="row" container justifyContent="center">
+                              <Header color="textPrimary"> Address</Header>
+                            </Grid>
+                            <Grid
+                              item
+                              container
+                              direction="row"
+                              alignItems="center"
+                              justifyContent="center"
+                              style={{ marginTop: 6 }}
+                            >
+                              <Blockie address={row.address} size={24} />
+                              <AddressText color="textPrimary"> {toShortAddress(row.address)}</AddressText>
+                              <CopyIcon onClick={() => copyAddress(row.address)} color="secondary" fontSize="inherit" />
+                            </Grid>
+                          </Grid>{" "}
+                          <Grid item>
+                            <Grid item direction="row" container justifyContent="center">
+                              <Header color="textPrimary"> Option</Header>
+                            </Grid>
+                            <Grid item container direction="row" alignItems="center" justifyContent="center">
+                              <VotesRow color="textPrimary" variant="body1" className="test">
+                                {" "}
+                                {row.options.toLocaleString().replace(",", ", ")}
+                              </VotesRow>
+                            </Grid>
+                          </Grid>{" "}
+                          <Grid item>
+                            <Grid item direction="row" container justifyContent="center">
+                              <Header color="textPrimary"> Votes</Header>
+                            </Grid>
+                            <Grid item container direction="row" alignItems="center" justifyContent="center">
+                              <Typography color="textPrimary" variant="body1">
+                                {numbro(row.total).format(formatConfig)} {symbol}{" "}
+                              </Typography>
+                            </Grid>
+                          </Grid>{" "}
+                        </Container>
+                      </>
+                    ) : (
+                      <StyledTableRow key={row.address}>
+                        <StyledTableCell component="th" scope="row">
+                          <Grid container direction="row" alignItems="center">
+                            <Blockie address={row.address} size={24} />
+                            <AddressText color="textPrimary"> {toShortAddress(row.address)}</AddressText>
+                            <CopyIcon onClick={() => copyAddress(row.address)} color="secondary" fontSize="inherit" />
+                          </Grid>
+                        </StyledTableCell>{" "}
+                        <StyledTableCell align="center">
+                          <VotesRow color="textPrimary" variant="body1" className="test">
+                            {" "}
+                            {row.options.toLocaleString().replace(",", ", ")}
+                          </VotesRow>
+                        </StyledTableCell>
+                        <StyledTableCell align="right">
                           {" "}
-                          {row.options.toLocaleString().replace(",", ", ")}
-                        </VotesRow>
-                      </StyledTableCell>
-                      <StyledTableCell align="right">
-                        {" "}
-                        <Typography color="textPrimary" variant="body1">
-                          {numbro(row.total).format(formatConfig)} {symbol}{" "}
-                        </Typography>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  ))
+                          <Typography color="textPrimary" variant="body1">
+                            {numbro(row.total).format(formatConfig)} {symbol}{" "}
+                          </Typography>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                    )
+                  })
                 : null}
               {!listOfVotes && <Typography>No info</Typography>}
             </TableBody>

@@ -35,4 +35,8 @@
   background: #383e42;
   margin-top: -12px;
   margin-left: 40px;
+  @media only screen and (max-width: 600px) {
+    width: 200px;
+  }
+
 }
