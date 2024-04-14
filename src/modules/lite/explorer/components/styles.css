@@ -1,0 +1,31 @@
+[data-title] {
+	font-size: 18px;
+	position: relative;
+	cursor: help;
+}
+
+[data-title]:hover::before {
+	content: attr(data-title);
+	position: absolute;
+	bottom: -46px;
+	padding: 10px;
+	background: #000;
+	color: #fff;
+	font-size: 14px;
+	white-space: nowrap;
+}
+[data-title]:hover::after {
+	content: '';
+	position: absolute;
+	bottom: -12px;
+	left: 8px;
+	border: 8px solid transparent;
+	border-bottom: 8px solid #000;
+}
+.overflow {
+  display: inline-block;
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo, useState } from "react"
 import {
   DialogActions,
   DialogContent,
@@ -7,15 +7,44 @@ import {
   Button,
   Grid,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Table,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  Theme,
+  Tooltip,
+  makeStyles
 } from "@material-ui/core"
 import { toShortAddress } from "services/contracts/utils"
 import { FileCopyOutlined } from "@material-ui/icons"
 import { Choice } from "models/Choice"
-import { calculateWeightXTZ, formatByDecimals, getTotalVoters } from "services/lite/utils"
+import { getTotalVoters } from "services/lite/utils"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import numbro from "numbro"
+import BigNumber from "bignumber.js"
+import { Blockie } from "modules/common/Blockie"
+import "./styles.css"
+
+const styles = makeStyles({
+  root: {
+    width: "100%",
+    marginTop: 3,
+    overflowX: "auto"
+  },
+  table: {
+    minWidth: 700
+  },
+  descriptionCell: {
+    whiteSpace: "nowrap",
+    maxWidth: "200px",
+    width: "100px",
+    overflow: "hidden",
+    textOverflow: "ellipsis"
+  }
+})
 
 const CustomContent = styled(DialogContent)(({ theme }) => ({
   padding: 0,
@@ -41,41 +70,94 @@ const CopyIcon = styled(FileCopyOutlined)({
   cursor: "pointer"
 })
 
-const Row = styled(Grid)(({ theme }) => ({
-  "background": theme.palette.primary.main,
-  "padding": "24px 48px",
-  "paddingBottom": "0px",
-  "borderBottom": "0.3px solid #7D8C8B",
-  "&:last-child": {
-    borderRadius: "0px 0px 8px 8px",
-    borderBottom: "none"
+const StyledTableCell = styled(TableCell)({
+  "fontWeight": 300,
+  "& p": {
+    fontWeight: 300
+  }
+})
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover
   },
-  "&:first-child": {
-    borderRadius: "8px 8px 0px 0px"
-  },
-  [theme.breakpoints.down("sm")]: {
-    padding: "12px 24px"
+  // hide last border
+  "&:last-child td, &:last-child th": {
+    border: 0
   }
 }))
 
+const VotesRow = styled(Typography)({
+  cursor: "default",
+  display: "block",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  transition: "all .2s linear",
+  padding: ".5rem 1rem",
+  width: 400
+
+  // "&:focus": {
+  //   color: "transparent"
+  // }
+
+  // "& :focus:after, &:hover:after": {
+  //   content: "attr(data-text)",
+  //   overflow: "visible",
+  //   textOverflow: "inherit",
+  //   background: "#383E43",
+  //   position: "absolute",
+  //   color: "#FDFDFD",
+  //   borderRadius: 8,
+  //   left: "auto",
+  //   top: "auto",
+  //   width: "auto",
+  //   border: "1px solid #383E43",
+  //   padding: "16px",
+  //   boxShadow: "0 2px 4px 0 rgba(0,0,0,.28)",
+  //   whiteSpace: "normal",
+  //   wordWrap: "break-word",
+  //   display: "block",
+  //   marginTop: "-1.25rem"
+  // }
+})
+
+const AddressText = styled(Typography)({
+  marginLeft: 8
+})
+
 const formatConfig = {
-  mantissa: 4,
-  trimMantissa: true
+  mantissa: 2,
+  trimMantissa: false,
+  average: true,
+  thousandSeparated: true
+}
+
+interface Votes {
+  address: string
+  options: VoteDetail[]
+}
+
+interface VoteDetail {
+  name: string
+  balance: string
 }
 
 export const VotesDialog: React.FC<{
   open: boolean
   handleClose: any
   choices: Choice[]
+  groupedVotes: Votes[]
   symbol: string
   decimals: string
   isXTZ: boolean
-}> = ({ open, handleClose, choices, symbol, decimals, isXTZ }) => {
+}> = ({ open, handleClose, choices, symbol, decimals, isXTZ, groupedVotes }) => {
   const descriptionElementRef = React.useRef<HTMLElement>(null)
   const openNotification = useNotification()
 
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const classes = styles()
+  const [tooltipEnabled, setTooltipEnabled] = useState(false)
 
   React.useEffect(() => {
     if (open) {
@@ -95,6 +177,63 @@ export const VotesDialog: React.FC<{
     })
   }
 
+  const listOfVotes = useMemo(() => {
+    const getTotal = (options: VoteDetail[]) => {
+      let total = new BigNumber(0)
+      if (options) {
+        options.map(item => {
+          total = total.plus(new BigNumber(item.balance))
+        })
+      }
+      const formatted = total.div(new BigNumber(10).pow(isXTZ ? 6 : decimals))
+      return formatted
+    }
+    const array: any = []
+    groupedVotes.map(item => {
+      const obj = {
+        address: item.address,
+        options: item.options.map(item => item.name),
+        total: getTotal(item.options),
+        rowref: React.createRef(),
+        open: false
+      }
+      return array.push(obj)
+    })
+
+    document.querySelectorAll<HTMLSpanElement>(".overflow").forEach((span: HTMLSpanElement) => {
+      if (span.scrollWidth > span.clientWidth) {
+        span.title = span.innerText
+      }
+    })
+
+    return array
+  }, [groupedVotes, decimals, isXTZ])
+
+  const shouldShouldTooltip = (text: string) => {
+    console.log(text.length)
+    if (text.length > 20) {
+      return text
+    } else {
+      return undefined
+    }
+  }
+
+  // useEffect(() => {
+  //   console.log(listOfVotes)
+  //   listOfVotes.map((val: any) => {
+  //     //checking scrollWidth greater than clientWidth to display tooltip
+  //     if (val.rowref.current !== null) {
+  //       if (val.rowref.current.scrollWidth > val.rowref.current.clientWidth) {
+  //         val.open = true
+  //       }
+  //     }
+
+  //     return val
+  //   })
+  //   console.log()
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
+
   return (
     <div>
       <ResponsiveDialog
@@ -106,58 +245,48 @@ export const VotesDialog: React.FC<{
         template="xs"
       >
         <CustomContent>
-          {choices.map((elem: Choice, index: number) => {
-            {
-              return elem.walletAddresses.map((choice, num) => {
-                return (
-                  <Row
-                    container
-                    direction={isMobileSmall ? "column" : "row"}
-                    alignItems="baseline"
-                    key={`'row-'${index}${num}`}
-                  >
-                    <Grid
-                      item
-                      xs={12}
-                      md={4}
-                      lg={4}
-                      xl={4}
-                      container
-                      direction="row"
-                      alignItems="center"
-                      justifyContent={isMobileSmall ? "center" : "flex-start"}
-                    >
-                      <Typography color="textPrimary"> {toShortAddress(choice.address)}</Typography>
-                      <CopyIcon onClick={() => copyAddress(choice.address)} color="secondary" fontSize="inherit" />
-                    </Grid>
-                    <Grid item xs={12} md={4} lg={4} xl={4} container justifyContent="center">
-                      <Typography color="textPrimary" variant="body1">
+          <Table aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Address</TableCell>
+                <TableCell align="center">Option</TableCell>
+                <TableCell align="right">Votes</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {listOfVotes
+                ? listOfVotes.map((row: any) => (
+                    <StyledTableRow key={row.address}>
+                      <StyledTableCell component="th" scope="row">
+                        <Grid container direction="row" alignItems="center">
+                          <Blockie address={row.address} size={24} />
+                          <AddressText color="textPrimary"> {toShortAddress(row.address)}</AddressText>
+                          <CopyIcon onClick={() => copyAddress(row.address)} color="secondary" fontSize="inherit" />
+                        </Grid>
+                      </StyledTableCell>{" "}
+                      <StyledTableCell align="center">
+                        <VotesRow
+                          color="textPrimary"
+                          variant="body1"
+                          className="overflow"
+                          // data-text={shouldShouldTooltip(row.options.toLocaleString().replace(",", ", "))}
+                        >
+                          {" "}
+                          {row.options.toLocaleString().replace(",", ", ")}
+                        </VotesRow>
+                      </StyledTableCell>
+                      <StyledTableCell align="right">
                         {" "}
-                        {elem.name}{" "}
-                      </Typography>
-                    </Grid>
-                    <Grid
-                      item
-                      xs={12}
-                      md={4}
-                      lg={4}
-                      xl={4}
-                      container
-                      justifyContent={isMobileSmall ? "center" : "flex-end"}
-                    >
-                      <Typography color="textPrimary" variant="body1">
-                        {" "}
-                        {!isXTZ
-                          ? formatByDecimals(choice.balanceAtReferenceBlock, decimals)
-                          : numbro(formatByDecimals(choice.balanceAtReferenceBlock, "6")).format(formatConfig)}{" "}
-                        {symbol}{" "}
-                      </Typography>
-                    </Grid>
-                  </Row>
-                )
-              })
-            }
-          })}
+                        <Typography color="textPrimary" variant="body1">
+                          {numbro(row.total).format(formatConfig)} {symbol}{" "}
+                        </Typography>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))
+                : null}
+              {!listOfVotes && <Typography>No info</Typography>}
+            </TableBody>
+          </Table>
         </CustomContent>
         <CustomDialogActions>
           <Button variant="contained" color="secondary" onClick={handleClose}>

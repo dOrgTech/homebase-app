@@ -88,8 +88,8 @@
   "devDependencies": {
     "@types/jest": "^26.0.21",
     "@types/node": "^14.14.35",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.2",
+    "@types/react": "^17.0.44",
+    "@types/react-dom": "^18.2.25",
     "@types/react-html-parser": "^2.0.2",
     "@types/react-router-dom": "^5.1.6",
     "@types/yup": "^0.29.11",
@@ -104,7 +104,7 @@
     "lint-staged": "15.2.2",
     "prettier": "^2.2.0",
     "source-map-explorer": "2.5.2",
-    "typescript": "^5.0.4"
+    "typescript": "5.4.0-beta"
   },
   "resolutions": {
     "@types/react": "~17.0.3",
