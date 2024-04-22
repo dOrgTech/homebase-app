@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   DialogActions,
   DialogContent,
@@ -25,6 +25,7 @@ import numbro from "numbro"
 import BigNumber from "bignumber.js"
 import { Blockie } from "modules/common/Blockie"
 import "./styles.css"
+import ReactPaginate from "react-paginate"
 
 const CustomContent = styled(DialogContent)(({ theme }) => ({
   padding: 0,
@@ -125,6 +126,9 @@ export const VotesDialog: React.FC<{
 
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const [currentPage, setCurrentPage] = useState(0)
+  const [offset, setOffset] = useState(0)
+  const pageCount = Math.ceil(groupedVotes ? groupedVotes.length / 4 : 0)
 
   React.useEffect(() => {
     if (open) {
@@ -167,14 +171,25 @@ export const VotesDialog: React.FC<{
       return array.push(obj)
     })
 
+    return array
+  }, [groupedVotes, decimals, isXTZ])
+
+  useEffect(() => {
     document.querySelectorAll<HTMLSpanElement>(".test").forEach((span: HTMLSpanElement) => {
       if (span.scrollWidth > span.clientWidth) {
         span.classList.add("ellipse")
       }
     })
+  }, [groupedVotes, open])
 
-    return array
-  }, [groupedVotes, decimals, isXTZ])
+  // Invoke when user click to request another page.
+  const handlePageClick = (event: { selected: number }) => {
+    if (groupedVotes) {
+      const newOffset = (event.selected * 4) % groupedVotes.length
+      setOffset(newOffset)
+      setCurrentPage(event.selected)
+    }
+  }
 
   return (
     <div>
@@ -190,7 +205,7 @@ export const VotesDialog: React.FC<{
           <Table aria-label="customized table">
             {!isMobileSmall ? (
               <TableHead>
-                <TableRow>
+                <TableRow key={"header"}>
                   <TableCell>Address</TableCell>
                   <TableCell align="center">Option</TableCell>
                   <TableCell align="right">Votes</TableCell>
@@ -202,48 +217,46 @@ export const VotesDialog: React.FC<{
               {listOfVotes
                 ? listOfVotes.map((row: any) => {
                     return isMobileSmall ? (
-                      <>
-                        <Container key={row.address} container direction="column" justifyContent="center">
-                          <Grid item>
-                            <Grid item direction="row" container justifyContent="center">
-                              <Header color="textPrimary"> Address</Header>
-                            </Grid>
-                            <Grid
-                              item
-                              container
-                              direction="row"
-                              alignItems="center"
-                              justifyContent="center"
-                              style={{ marginTop: 6 }}
-                            >
-                              <Blockie address={row.address} size={24} />
-                              <AddressText color="textPrimary"> {toShortAddress(row.address)}</AddressText>
-                              <CopyIcon onClick={() => copyAddress(row.address)} color="secondary" fontSize="inherit" />
-                            </Grid>
-                          </Grid>{" "}
-                          <Grid item>
-                            <Grid item direction="row" container justifyContent="center">
-                              <Header color="textPrimary"> Option</Header>
-                            </Grid>
-                            <Grid item container direction="row" alignItems="center" justifyContent="center">
-                              <VotesRow color="textPrimary" variant="body1" className="test">
-                                {" "}
-                                {row.options.toLocaleString().replace(",", ", ")}
-                              </VotesRow>
-                            </Grid>
-                          </Grid>{" "}
-                          <Grid item>
-                            <Grid item direction="row" container justifyContent="center">
-                              <Header color="textPrimary"> Votes</Header>
-                            </Grid>
-                            <Grid item container direction="row" alignItems="center" justifyContent="center">
-                              <Typography color="textPrimary" variant="body1">
-                                {numbro(row.total).format(formatConfig)} {symbol}{" "}
-                              </Typography>
-                            </Grid>
-                          </Grid>{" "}
-                        </Container>
-                      </>
+                      <Container key={row.address} container direction="column" justifyContent="center">
+                        <Grid item>
+                          <Grid item direction="row" container justifyContent="center">
+                            <Header color="textPrimary"> Address</Header>
+                          </Grid>
+                          <Grid
+                            item
+                            container
+                            direction="row"
+                            alignItems="center"
+                            justifyContent="center"
+                            style={{ marginTop: 6 }}
+                          >
+                            <Blockie address={row.address} size={24} />
+                            <AddressText color="textPrimary"> {toShortAddress(row.address)}</AddressText>
+                            <CopyIcon onClick={() => copyAddress(row.address)} color="secondary" fontSize="inherit" />
+                          </Grid>
+                        </Grid>{" "}
+                        <Grid item>
+                          <Grid item direction="row" container justifyContent="center">
+                            <Header color="textPrimary"> Option</Header>
+                          </Grid>
+                          <Grid item container direction="row" alignItems="center" justifyContent="center">
+                            <VotesRow color="textPrimary" variant="body1" className="test">
+                              {" "}
+                              {row.options.toLocaleString().replace(",", ", ")}
+                            </VotesRow>
+                          </Grid>
+                        </Grid>{" "}
+                        <Grid item>
+                          <Grid item direction="row" container justifyContent="center">
+                            <Header color="textPrimary"> Votes</Header>
+                          </Grid>
+                          <Grid item container direction="row" alignItems="center" justifyContent="center">
+                            <Typography color="textPrimary" variant="body1">
+                              {numbro(row.total).format(formatConfig)} {symbol}{" "}
+                            </Typography>
+                          </Grid>
+                        </Grid>{" "}
+                      </Container>
                     ) : (
                       <StyledTableRow key={row.address}>
                         <StyledTableCell component="th" scope="row">
@@ -269,15 +282,29 @@ export const VotesDialog: React.FC<{
                     )
                   })
                 : null}
-              {!listOfVotes && <Typography>No info</Typography>}
+              {!listOfVotes ? <Typography>No info</Typography> : null}
             </TableBody>
           </Table>
+          <Grid container direction="row" justifyContent="flex-end">
+            <ReactPaginate
+              previousLabel={"<"}
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={2}
+              pageCount={pageCount}
+              renderOnZeroPageCount={null}
+              containerClassName={"pagination"}
+              activeClassName={"active"}
+              forcePage={currentPage}
+            />
+          </Grid>
         </CustomContent>
-        <CustomDialogActions>
+        {/* <CustomDialogActions>
           <Button variant="contained" color="secondary" onClick={handleClose}>
             Close
           </Button>
-        </CustomDialogActions>
+        </CustomDialogActions> */}
       </ResponsiveDialog>
     </div>
   )
