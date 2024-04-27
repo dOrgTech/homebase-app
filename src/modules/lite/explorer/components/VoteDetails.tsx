@@ -220,8 +220,10 @@ export const VoteDetails: React.FC<{
             )}
             {getTotalVoters(choices) > 0 ? (
               <DownloadCsvFile
-                data={choices}
+                data={groupedVotes}
                 pollId={poll?._id}
+                decimals={tokenData?.decimals ? tokenData?.decimals : ""}
+                isXTZ={isXTZ}
                 symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
               />
             ) : null}

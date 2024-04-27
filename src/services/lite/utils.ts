@@ -157,7 +157,10 @@ export const getGroupedVotes = (options: Choice[]) => {
         if (addressVote.address === address) {
           const obj = {
             name: option.name,
-            balance: addressVote.balanceAtReferenceBlock
+            balance: addressVote.balanceAtReferenceBlock,
+            cidLink: addressVote.cidLink,
+            signature: addressVote.signature,
+            payloadBytes: addressVote.payloadBytes
           }
           optionsList.push(obj)
         }
