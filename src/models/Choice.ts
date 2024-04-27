@@ -9,4 +9,8 @@ export interface Choice {
 export interface WalletAddress {
   address: string
   balanceAtReferenceBlock: string
+  cidLink: string
+  choiceId: string
+  payloadBytes: string
+  signature: string
 }
