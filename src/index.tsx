@@ -11,6 +11,7 @@ import dayjs from "dayjs"
 
 dayjs.extend(localizedFormat)
 
+// eslint-disable-next-line react/no-deprecated
 ReactDOM.render(
   <React.StrictMode>
     <TezosProvider>

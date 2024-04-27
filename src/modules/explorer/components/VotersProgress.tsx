@@ -11,6 +11,7 @@ import { SmallButton } from "modules/common/SmallButton"
 import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
 import { mkConfig, generateCsv, download, asString } from "export-to-csv"
 import { writeFile } from "node:fs"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 interface VotersData {
   showButton: boolean
@@ -47,6 +48,7 @@ export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, propos
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const upVotes = proposal ? proposal.upVotes : new BigNumber(0)
   const downVotes = proposal ? proposal.downVotes : new BigNumber(0)
+  const openNotification = useNotification()
 
   const { upVotesQuorumPercentage, downVotesQuorumPercentage, upVotesSumPercentage, downVotesSumPercentage } =
     useVotesStats({
@@ -67,7 +69,11 @@ export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, propos
       const csv = generateCsv(csvConfig)(votesData)
       download(csvConfig)(csv)
     } catch (error) {
-      console.warn(`Error downloading csv file: `, error)
+      openNotification({
+        message: `Error downloading csv file`,
+        autoHideDuration: 3000,
+        variant: "error"
+      })
     }
   }
 
