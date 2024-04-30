@@ -1,7 +1,7 @@
-import { Grid, Typography, TextField, styled, CircularProgress } from "@material-ui/core"
+import { Grid, Typography, styled, CircularProgress } from "@material-ui/core"
 import React, { useCallback, useEffect } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { Controller, FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalCodeEditorInput, ProposalFormInput } from "./ProposalFormInput"
 import { ResponsiveDialog } from "./ResponsiveDialog"
@@ -17,6 +17,7 @@ import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
 import { Lambda } from "services/bakingBad/lambdas/types"
 import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
 import { parseLambdaCode } from "utils"
+import { ArbitraryContractInteractionForm } from "./ArbitraryContractInteractionForm"
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
   width: 101,
@@ -63,6 +64,11 @@ type Values = {
   lambda_contract?: string
   lambda_token_address?: string
   lambda_parameters?: Array<LambdaParameter>
+}
+
+type ACIValues = {
+  destination_contract: string
+  amount?: number
 }
 
 export enum ProposalAction {
@@ -150,12 +156,31 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const { mutate: lambdaExecute } = useLambdaExecutePropose()
 
   const lambdaForm = useForm<Values>()
+  const ACIForm = useForm<ACIValues>()
 
   const [lambda, setLambda] = React.useState<Lambda | null>(null)
   const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.write_action)
   const [lambdaParams, setLambdaParams] = React.useState<string>("")
   const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
   const [code, setCode] = React.useState<string>("")
+  const [ACIData, setACIData] = React.useState<ACIValues>()
+
+  const ARBITRARY_CONTRACT_INTERACTION = "arbitrary_contract_interaction"
+
+  const ACI: Lambda = {
+    key: ARBITRARY_CONTRACT_INTERACTION,
+    id: 4998462,
+    active: true,
+    hash: "string",
+    value: {
+      code: "[]",
+      handler_check: "[]",
+      is_active: false
+    },
+    firstLevel: 4815399,
+    lastLevel: 4815399,
+    updates: 1
+  }
 
   useEffect(() => {
     if (open) {
@@ -165,6 +190,13 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
       lambdaForm.reset()
     }
   }, [open, lambdaForm])
+
+  useEffect(() => {
+    if (daoLambdas) {
+      daoLambdas.push(ACI)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [daoLambdas])
 
   const onSubmit = useCallback(
     (_: Values) => {
@@ -303,45 +335,51 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
         <ProposalFormInput label="Function Name">
           <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
         </ProposalFormInput>
-        <ProposalCodeEditorInput
-          label="Implementation"
-          containerstyle={codeEditorcontainerstyles}
-          insertSpaces
-          ignoreTabKey={false}
-          tabSize={4}
-          padding={10}
-          style={codeEditorStyles}
-          value={code}
-          onValueChange={code => setCode(code)}
-          highlight={code => highlight(code, grammar, "javascript")}
-          placeholder={codeEditorPlaceholder.existingLambda}
-        />
-        <ProposalCodeEditorInput
-          label="Function Arguments Code"
-          containerstyle={codeEditorcontainerstyles}
-          insertSpaces
-          ignoreTabKey={false}
-          tabSize={4}
-          padding={10}
-          value={lambdaArguments}
-          onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
-          highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
-          style={codeEditorStyles}
-          placeholder={codeEditorPlaceholder.lambdaExecuteArgumentsCode}
-        />
-        <ProposalCodeEditorInput
-          label="Lambda Params"
-          containerstyle={codeEditorcontainerstyles}
-          insertSpaces
-          ignoreTabKey={false}
-          tabSize={4}
-          padding={10}
-          style={codeEditorStyles}
-          value={lambdaParams}
-          onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
-          highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
-          placeholder={codeEditorPlaceholder.lambdaExecuteParams}
-        />
+        {lambda?.key !== ARBITRARY_CONTRACT_INTERACTION ? (
+          <>
+            <ProposalCodeEditorInput
+              label="Implementation"
+              containerstyle={codeEditorcontainerstyles}
+              insertSpaces
+              ignoreTabKey={false}
+              tabSize={4}
+              padding={10}
+              style={codeEditorStyles}
+              value={code}
+              onValueChange={code => setCode(code)}
+              highlight={code => highlight(code, grammar, "javascript")}
+              placeholder={codeEditorPlaceholder.existingLambda}
+            />
+            <ProposalCodeEditorInput
+              label="Function Arguments Code"
+              containerstyle={codeEditorcontainerstyles}
+              insertSpaces
+              ignoreTabKey={false}
+              tabSize={4}
+              padding={10}
+              value={lambdaArguments}
+              onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
+              highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
+              style={codeEditorStyles}
+              placeholder={codeEditorPlaceholder.lambdaExecuteArgumentsCode}
+            />
+            <ProposalCodeEditorInput
+              label="Lambda Params"
+              containerstyle={codeEditorcontainerstyles}
+              insertSpaces
+              ignoreTabKey={false}
+              tabSize={4}
+              padding={10}
+              style={codeEditorStyles}
+              value={lambdaParams}
+              onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
+              highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
+              placeholder={codeEditorPlaceholder.lambdaExecuteParams}
+            />
+          </>
+        ) : (
+          <ArbitraryContractInteractionForm />
+        )}
       </>
     )
   }
@@ -362,11 +400,13 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
               {action === ProposalAction.execute ? renderExecuteProposal() : null}
             </Grid>
 
-            <StyledRow container direction="row" justifyContent="flex-end">
-              <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={!code}>
-                Submit
-              </StyledSendButton>
-            </StyledRow>
+            {lambda && lambda.key !== ARBITRARY_CONTRACT_INTERACTION ? (
+              <StyledRow container direction="row" justifyContent="flex-end">
+                <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={!code}>
+                  Submit
+                </StyledSendButton>
+              </StyledRow>
+            ) : null}
           </>
         ) : null}
 
