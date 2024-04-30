@@ -3,14 +3,23 @@ import { Grid, styled, Typography, Link, useTheme, useMediaQuery, Popover, withS
 import { GridContainer } from "modules/common/GridContainer"
 import { ProposalStatus, TableStatusBadge } from "./ProposalTableRowStatusBadge"
 import { CreatorBadge } from "./CreatorBadge"
-import { FileCopyOutlined, MoreHoriz, ShareOutlined } from "@material-ui/icons"
-import Share from "assets/img/share.svg"
-import { CommunityBadge } from "./CommunityBadge"
-import LinkIcon from "assets/img/link.svg"
+import { FileCopyOutlined } from "@material-ui/icons"
 import { Poll } from "models/Polls"
 import dayjs from "dayjs"
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
+
+const Title = styled(Typography)({
+  fontSize: 32,
+  fontWeight: 600
+})
+
+const Subtitle = styled(Typography)(({ theme }) => ({
+  fontSize: 18,
+  fontWeight: 300,
+  lineHeight: "160%" /* 28.8px */,
+  color: theme.palette.primary.light
+}))
 
 const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
@@ -21,8 +30,12 @@ const LogoItem = styled("img")(({ theme }) => ({
 
 const TextContainer = styled(Typography)(({ theme }) => ({
   display: "flex",
+  color: theme.palette.primary.light,
   alignItems: "center",
   gap: 10,
+  fontSize: 18,
+  fontWeight: 300,
+  lineHeight: "160%" /* 28.8px */,
   marginRight: 8,
   [theme.breakpoints.down("sm")]: {
     marginTop: 20
@@ -32,6 +45,10 @@ const TextContainer = styled(Typography)(({ theme }) => ({
 const EndTextContainer = styled(Typography)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
+  fontSize: 18,
+  fontWeight: 300,
+  lineHeight: "160%" /* 28.8px */,
+  color: theme.palette.primary.light,
   gap: 10,
   marginRight: 8,
   [theme.breakpoints.down("sm")]: {
@@ -40,12 +57,20 @@ const EndTextContainer = styled(Typography)(({ theme }) => ({
 }))
 
 const EndText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.light,
+  fontSize: 18,
+  fontWeight: 300,
+  lineHeight: "160%" /* 28.8px */,
   [theme.breakpoints.down("sm")]: {
     marginTop: 20
   }
 }))
 
 const Divider = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.light,
+  fontSize: 18,
+  fontWeight: 300,
+  lineHeight: "160%" /* 28.8px */,
   marginLeft: 8,
   marginRight: 8,
   [theme.breakpoints.down("sm")]: {
@@ -69,6 +94,12 @@ const CopyIcon = styled(FileCopyOutlined)({
   cursor: "pointer"
 })
 
+const LinearContainer = styled(GridContainer)({
+  background: "inherit !important",
+  backgroundColor: "inherit !important",
+  padding: "0px 0px 24px 0px"
+})
+
 const CustomPopover = withStyles({
   paper: {
     "marginTop": 10,
@@ -80,6 +111,19 @@ const CustomPopover = withStyles({
     }
   }
 })(Popover)
+
+const DescriptionContainer = styled(Grid)(({ theme }) => ({
+  background: theme.palette.secondary.light,
+  padding: "40px 48px 42px 48px",
+  borderRadius: 8,
+  marginTop: 20,
+  gap: 32
+}))
+
+const DescriptionText = styled(Typography)({
+  fontSize: 24,
+  fontWeight: 600
+})
 
 export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: string }> = ({ poll, daoId }) => {
   const theme = useTheme()
@@ -111,8 +155,8 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
 
   return (
     <>
-      <GridContainer container style={{ gap: 50 }}>
-        <Grid container style={{ gap: 25 }}>
+      <LinearContainer container style={{ gap: 50 }}>
+        <Grid container style={{ gap: 20 }}>
           <Grid
             item
             container
@@ -122,45 +166,27 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
             justifyContent={isMobileSmall ? "center" : "space-between"}
           >
             <Grid item>
-              <Typography variant="h1" color="textPrimary">
-                {poll?.name}
-              </Typography>
+              <Title color="textPrimary">{poll?.name}</Title>
             </Grid>
+          </Grid>
+
+          <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} alignItems={"center"}>
             <Grid item>
-              <Grid container style={{ gap: 18 }} direction="row">
+              <Grid
+                container
+                style={{ gap: 10 }}
+                alignItems="center"
+                justifyContent={isMobileSmall ? "center" : "flex-start"}
+              >
                 <Grid item>
-                  <Grid
-                    container
-                    style={{ gap: 12, cursor: "pointer" }}
-                    alignItems="center"
-                    aria-describedby={id}
-                    onClick={handleClick}
-                  >
-                    <LogoItem src={Share} />
-                    <Typography color="secondary" variant="body2">
-                      Share
-                    </Typography>
-                  </Grid>
-                  <CustomPopover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left"
-                    }}
-                  >
-                    <Grid container direction="row" onClick={handleCopy}>
-                      <CopyIcon />
-                      <Typography variant="subtitle2">Copy link</Typography>
-                    </Grid>
-                  </CustomPopover>
+                  <Subtitle>Off-Chain Proposal • Created by</Subtitle>
+                </Grid>
+                <Grid item>
+                  <CreatorBadge address={poll?.author} />
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
-
           <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} alignItems={"center"}>
             <Grid item>
               <Grid
@@ -173,29 +199,17 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
                   <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} />
                 </Grid>
                 <Grid item>
-                  <CommunityBadge id={daoId} />
-                </Grid>
-                <Grid item>
-                  <CreatorBadge address={poll?.author} />
+                  <Grid item container direction="row" spacing={2} alignItems="center">
+                    <TextContainer variant="body2">Created</TextContainer>
+                    <EndText variant="body2">{dayjs(Number(poll?.startTime)).format("LL")}</EndText>
+                    <Divider>•</Divider>
+                    <EndTextContainer variant="body2">
+                      {poll?.isActive === "closed" ? "Closed" : "End date"}{" "}
+                    </EndTextContainer>
+                    <EndText variant="body2">{dayjs(Number(poll?.endTime)).format("ll")}</EndText>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          </Grid>
-          <Grid container direction="row">
-            <Grid item container direction="row" spacing={2} alignItems="center">
-              <TextContainer color="textPrimary" variant="body2">
-                Start date:{" "}
-              </TextContainer>
-              <EndText variant="body2" color="textPrimary">
-                {dayjs(Number(poll?.startTime)).format("lll")}
-              </EndText>
-              <Divider color="textPrimary">-</Divider>
-              <EndTextContainer color="textPrimary" variant="body2">
-                End date:{" "}
-              </EndTextContainer>
-              <EndText variant="body2" color="textPrimary">
-                {dayjs(Number(poll?.endTime)).format("lll")}
-              </EndText>
             </Grid>
           </Grid>
 
@@ -205,16 +219,19 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
             </Typography>
           </Grid>
 
-          {poll?.externalLink ? (
+            <Subtitle>{ReactHtmlParser(poll?.description ? poll?.description : "")}</Subtitle>
+          </DescriptionContainer>
+
+          {/* {poll?.externalLink ? (
             <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
               <LogoItem src={LinkIcon} />
               <StyledLink color="secondary" href={poll?.externalLink} target="_">
                 {poll?.externalLink}
               </StyledLink>
             </Grid>
-          ) : null}
+          ) : null} */}
         </Grid>
-      </GridContainer>
+      </LinearContainer>
     </>
   )
 }
