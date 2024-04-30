@@ -3,18 +3,22 @@ import { Button, Divider, Grid, styled, Theme, Typography, useMediaQuery, useThe
 import { Choice } from "models/Choice"
 
 const StyledContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  borderRadius: 4,
+  borderRadius: 8,
   minHeight: 75,
-  border: "1px solid",
-  borderColor: theme.palette.primary.light,
-  cursor: "pointer"
+  border: "none",
+  cursor: "pointer",
+  backgroundColor: theme.palette.primary.main
 }))
+
+const Text = styled(Typography)({
+  fontWeight: 300
+})
 
 const StyledButton = styled(Button)({
   "width": "100%",
   "minHeight": "inherit",
   "&:hover": {
-    background: "rgba(129, 254, 183, 0.62)"
+    background: "#2d433c"
   }
 })
 
@@ -60,7 +64,7 @@ export const ChoiceItemSelected: React.FC<{
         isPartOfVotes()
           ? {
               border: "1px solid",
-              borderColor: theme.palette.secondary.main,
+              borderColor: "#2D433C",
               backgroundColor: "#334d43"
             }
           : {}
@@ -75,9 +79,7 @@ export const ChoiceItemSelected: React.FC<{
           return
         }}
       >
-        <Typography variant="body1" color="textPrimary">
-          {choice.name}
-        </Typography>
+        <Text color="textPrimary">{choice.name}</Text>
       </StyledButton>
     </StyledContainer>
   )
