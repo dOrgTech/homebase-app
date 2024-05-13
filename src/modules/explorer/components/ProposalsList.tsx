@@ -102,35 +102,35 @@ export const ProposalsList: React.FC<Props> = ({
     }
   }
 
-  const filterByOffchainStatus = useCallback(
-    (status: string) => {
-      if (status === "all") {
-        setIsLoading(false)
-        return
-      } else {
-        const filtered = filteredProposals.filter((item: ProposalObj) => item.proposal.isActive === status)
-        setFilteredProposals(filtered)
-        setIsLoading(false)
-      }
-    },
-    [filter]
-  )
+  const filterByOffchainStatus = useCallback((list: { type: string; proposal: Proposal | Poll }[], status: string) => {
+    if (status === "all") {
+      setIsLoading(false)
+      setFilteredProposals(list)
+      return
+    } else {
+      const filtered = list.slice().filter(item => item.type === "lite")
+      const filteredList = filtered.filter((item: ProposalObj) => item.proposal.isActive === status)
+      setFilteredProposals(filteredList)
+      setIsLoading(false)
+    }
+  }, [])
 
   const filterByOnChainStatus = useCallback(
-    (status: StatusOption[]) => {
+    (list: { type: string; proposal: Proposal | Poll }[], status: StatusOption[]) => {
       if (status.length > 0) {
-        const list: { type: string; proposal: Proposal | Poll }[] = []
+        const updatedList: { type: string; proposal: Proposal | Poll }[] = []
         status.map((state: StatusOption) => {
-          const filtered = filteredProposals.filter(
-            item => item.proposal.getStatus(currentLevel).status === state.label
-          )
-          list.push(...filtered)
+          const filtered = list.slice().filter(item => item.type === "lambda")
+          const filteredByStatus = filtered.filter(item => item.proposal.getStatus(currentLevel).status === state.label)
+          updatedList.push(...filteredByStatus)
         })
+        setFilteredProposals(updatedList)
+      } else {
         setFilteredProposals(list)
       }
       setIsLoading(false)
     },
-    [filterOnchain]
+    []
   )
 
   const orderedList = (state: Order) => {
@@ -175,18 +175,16 @@ export const ProposalsList: React.FC<Props> = ({
           break
         }
         case ProposalType.OFF_CHAIN: {
-          setFilteredProposals(list.filter((item: ProposalObj) => item.type === "lite"))
           setFilter(Math.random())
           setTimeout(() => {
-            filterByOffchainStatus(filters.offchainStatus)
+            filterByOffchainStatus(list, filters.offchainStatus)
           }, 500)
           break
         }
         case ProposalType.ON_CHAIN: {
-          setFilteredProposals(list.filter((item: ProposalObj) => item.type === "lambda"))
           setFilterOnchain("status")
           setTimeout(() => {
-            filterByOnChainStatus(filters.onchainStatus)
+            filterByOnChainStatus(list, filters.onchainStatus)
           }, 1000)
           break
         }
@@ -197,9 +195,7 @@ export const ProposalsList: React.FC<Props> = ({
       }
     }
     if (filters) {
-      // const list = orderedList(filters.order)
       setIsLoading(true)
-      console.log("")
       filterByType(filters.type, filters, listOfProposals)
     }
   }, [filters, filteredProposals])
