@@ -505,6 +505,8 @@ export const UserMovements: React.FC<{
                     containerClassName={"pagination"}
                     activeClassName={"active"}
                     forcePage={currentPage}
+                    nextClassName="nextButton"
+                    previousClassName="nextButton"
                   />
                 </Grid>
               </Grid>
@@ -537,6 +539,8 @@ export const UserMovements: React.FC<{
                     containerClassName={"pagination"}
                     activeClassName={"active"}
                     forcePage={currentPage}
+                    nextClassName="nextButton"
+                    previousClassName="nextButton"
                   />
                 </Grid>
               </Grid>
@@ -569,6 +573,8 @@ export const UserMovements: React.FC<{
                     containerClassName={"pagination"}
                     activeClassName={"active"}
                     forcePage={currentPage}
+                    nextClassName="nextButton"
+                    previousClassName="nextButton"
                   />
                 </Grid>
               </Grid>

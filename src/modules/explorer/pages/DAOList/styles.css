@@ -3,10 +3,17 @@
   list-style: none;
   outline: none;
   font-family: "Roboto Flex";
+
+  next {
+    color: red !important;
+  }
 }
 .pagination > .active > a {
-  background-color: rgba(129, 254, 183, 0.2);
+  background-color: #24282D;
   color: rgba(129, 254, 183, 1);
+}
+.pagination > .next > li > a {
+    color: red !important;
 }
 .pagination > li > a {
   border: none;
@@ -31,7 +38,7 @@
 .pagination > .active > span:hover,
 .pagination > .active > a:focus,
 .pagination > .active > span:focus {
-  background-color: rgba(129, 254, 183, 0.2);
+  background-color: #24282D;
   border-color: none;
   outline: none;
 }
@@ -39,6 +46,11 @@
 .pagination > li > span {
   color: #fff;
 }
+
+.pagination > .nextButton > a {
+  font-weight: 600;
+}
+
 .pagination > li:first-child > a,
 .pagination > li:first-child > span,
 .pagination > li:last-child > a,

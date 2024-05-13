@@ -124,6 +124,8 @@ export const VotesTable: React.FC<{ data: RowData[] }> = ({ data }) => {
           containerClassName={"pagination"}
           activeClassName={"active"}
           forcePage={currentPage}
+          nextClassName="nextButton"
+          previousClassName="nextButton"
         />
       </Grid>
     </>

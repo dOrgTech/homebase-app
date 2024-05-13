@@ -183,6 +183,8 @@ const BalancesList: React.FC<TableProps> = ({
           containerClassName={"pagination"}
           activeClassName={"active"}
           forcePage={currentPage}
+          nextClassName="nextButton"
+          previousClassName="nextButton"
         />
       </Grid>
     </Grid>
