@@ -43,7 +43,8 @@ export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, 
         balance: getTotal(item.options),
         signature: item.options[0].signature,
         ipfsStorage: item.options[0].cidLink,
-        timestamp: bytes2Char(item.options[0].payloadBytes).split(" ")[4]
+        timestamp:
+          item.options[0] && item.options[0].payloadBytes ? bytes2Char(item.options[0].payloadBytes).split(" ")[4] : ""
       }
       return arr.push(formattedVote)
     })
