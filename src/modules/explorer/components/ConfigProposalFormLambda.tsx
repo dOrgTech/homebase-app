@@ -1,5 +1,5 @@
 import { Grid, Typography, styled, CircularProgress } from "@material-ui/core"
-import React, { useCallback, useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
@@ -154,6 +154,8 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const { mutate: lambdaAdd } = useLambdaAddPropose()
   const { mutate: lambdaRemove } = useLambdaRemovePropose()
   const { mutate: lambdaExecute } = useLambdaExecutePropose()
+
+  const [showHeader, setShowHeader] = useState(true)
 
   const lambdaForm = useForm<Values>()
   const ACIForm = useForm<ACIValues>()
@@ -332,9 +334,12 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderExecuteProposal = () => {
     return (
       <>
-        <ProposalFormInput label="Function Name">
-          <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
-        </ProposalFormInput>
+        {showHeader ? (
+          <ProposalFormInput label="Function Name">
+            <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
+          </ProposalFormInput>
+        ) : null}
+
         {lambda?.key !== ARBITRARY_CONTRACT_INTERACTION ? (
           <>
             <ProposalCodeEditorInput
@@ -378,7 +383,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
             />
           </>
         ) : (
-          <ArbitraryContractInteractionForm />
+          <ArbitraryContractInteractionForm showHeader={setShowHeader} />
         )}
       </>
     )

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react"
 import {
+  CircularProgress,
   Grid,
   InputAdornment,
   Paper,
@@ -12,48 +13,20 @@ import {
 } from "@material-ui/core"
 import { ProposalFormInput } from "./ProposalFormInput"
 import { validateContractAddress, validateAddress } from "@taquito/utils"
-import { ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
+import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
 import { SmallButtonDialog } from "modules/common/SmallButton"
-import { SearchLambda } from "./styled/SearchLambda"
 import { ArrowBackIos } from "@material-ui/icons"
 import { SearchEndpoints } from "./SearchEndpoints"
 import { toShortAddress } from "services/contracts/utils"
-
-export interface Endpoint {
-  key: string
-  parameters: Parameter[]
-}
+import { useArbitraryContractData } from "services/aci/useArbitratyContractData"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { ArbitraryContract } from "models/Contract"
 
 interface Parameter {
   key: string
   type: string
   value?: any
 }
-
-const endpoints: Endpoint[] = [
-  {
-    key: "add_controller",
-    parameters: [
-      {
-        key: "id",
-        type: "string"
-      },
-      {
-        key: "duration",
-        type: "number"
-      }
-    ]
-  },
-  {
-    key: "approve",
-    parameters: [
-      {
-        key: "vote",
-        type: "boolean"
-      }
-    ]
-  }
-]
 
 const TypeText = styled(Typography)(({ theme }) => ({
   fontSize: 14,
@@ -147,12 +120,16 @@ const ContractInteractionForm = ({
   touched,
   setFieldTouched,
   setFieldError,
-  isValid
+  isValid,
+  showHeader
 }: any) => {
   const [state, setState] = useState<Status>(Status.NEW_INTERACTION)
-  const [endpoint, setEndpoint] = useState<Endpoint | undefined>(undefined)
+  const [endpoint, setEndpoint] = useState<ArbitraryContract | undefined>(undefined)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const { mutate: fetchContractData, data } = useArbitraryContractData()
+  const { network } = useTezos()
+  const [isLoading, setIsLoading] = useState(false)
 
   const shouldContinue = useMemo(() => {
     if (values.destination_contract !== "" && !errors.destination_contract) {
@@ -165,16 +142,24 @@ const ContractInteractionForm = ({
     if (getIn(values, "amount") === "") {
       setFieldValue("amount", 0)
     }
-    setState(Status.CONTRACT_VALIDATED)
+    setIsLoading(true)
+    fetchContractData({
+      contract: getIn(values, "destination_contract"),
+      network: network,
+      handleContinue: () => setState(Status.CONTRACT_VALIDATED),
+      finishLoad: () => setIsLoading(false),
+      showHeader: () => showHeader(false)
+    })
   }
 
-  const processParameters = (data: Endpoint) => {
+  const processParameters = (data: ArbitraryContract) => {
     setEndpoint(data)
-    setFieldValue("parameters", data.parameters)
-    setFieldValue("target_endpoint", data.key)
+    setFieldValue("parameters", data.children)
+    setFieldValue("target_endpoint", data.name)
   }
 
   const goBack = () => {
+    showHeader(true)
     setState(Status.NEW_INTERACTION)
     setEndpoint(undefined)
   }
@@ -245,7 +230,7 @@ const ContractInteractionForm = ({
             <SubContainer item>
               <Title color="textPrimary">Contract Endpoint</Title>
               <ProposalFormInput>
-                <SearchEndpoints endpoints={endpoints} handleChange={processParameters} />
+                <SearchEndpoints endpoints={data ? data.children : []} handleChange={processParameters} />
               </ProposalFormInput>
             </SubContainer>
             {endpoint && (
@@ -254,15 +239,15 @@ const ContractInteractionForm = ({
                   name="parameters"
                   render={arrayHelpers => (
                     <Container>
-                      {endpoint.parameters.length > 0 &&
-                        endpoint.parameters.map((param, index) => (
+                      {endpoint.children.length > 0 &&
+                        endpoint.children.map((param, index) => (
                           <div key={index}>
-                            <ProposalFormInput label={`Parameter ${index + 1}`} key={`${param.key}`}>
+                            <ProposalFormInput label={`Parameter ${index + 1}`} key={`${param.name}`}>
                               <Field
                                 component={CustomFormikTextField}
                                 name={`parameters.${index}`}
                                 type={param.type === "number" ? "number" : "string"}
-                                placeholder={`${param.key}`}
+                                placeholder={`${param.name}`}
                                 onChange={(newValue: any) => {
                                   setFieldValue(`parameters.${index}.value`, newValue.target.value, false)
                                   if (newValue.target.value === "") {
@@ -294,9 +279,13 @@ const ContractInteractionForm = ({
 
       {state === Status.NEW_INTERACTION ? (
         <Grid container direction="row" justifyContent="flex-end" style={{ marginTop: 30 }} spacing={2}>
-          <SmallButtonDialog variant="contained" disabled={shouldContinue} onClick={validateAddress}>
-            Continue
-          </SmallButtonDialog>
+          {isLoading ? (
+            <CircularProgress color="secondary" size={30} />
+          ) : (
+            <SmallButtonDialog variant="contained" disabled={shouldContinue} onClick={validateAddress}>
+              Continue
+            </SmallButtonDialog>
+          )}
         </Grid>
       ) : state === Status.CONTRACT_VALIDATED ? (
         <Grid
@@ -324,9 +313,10 @@ const ContractInteractionForm = ({
   )
 }
 
-export const ArbitraryContractInteractionForm: React.FC = () => {
-  const isInvalidKtOrTzAddress = (address: string) =>
-    validateContractAddress(address) !== 3 && validateAddress(address) !== 3
+export const ArbitraryContractInteractionForm: React.FC<{ showHeader: (state: boolean) => void }> = ({
+  showHeader
+}) => {
+  const isInvalidKtOrTzAddress = (address: string) => validateContractAddress(address) !== 3
 
   const initialValue: ACIValues = {
     destination_contract: "",
@@ -358,7 +348,7 @@ export const ArbitraryContractInteractionForm: React.FC = () => {
     return errors
   }
 
-  const saveInfo = () => {
+  const interact = () => {
     console.log("saveInfo")
   }
 
@@ -367,7 +357,7 @@ export const ArbitraryContractInteractionForm: React.FC = () => {
       validateOnChange={true}
       validateOnBlur={true}
       validate={validateForm}
-      onSubmit={saveInfo}
+      onSubmit={interact}
       initialValues={initialValue}
     >
       {({
@@ -393,6 +383,7 @@ export const ArbitraryContractInteractionForm: React.FC = () => {
               setFieldTouched={setFieldTouched}
               setFieldError={setFieldError}
               isValid={isValid}
+              showHeader={showHeader}
             />
           </Form>
         )

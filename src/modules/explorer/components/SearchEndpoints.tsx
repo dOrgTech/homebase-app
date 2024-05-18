@@ -2,7 +2,7 @@ import React from "react"
 import { Grid, InputAdornment, makeStyles, styled, TextField, Theme, withStyles } from "@material-ui/core"
 import { SearchOutlined } from "@material-ui/icons"
 import { Autocomplete } from "@material-ui/lab"
-import { Endpoint } from "./ArbitraryContractInteractionForm"
+import { ArbitraryContract } from "models/Contract"
 
 const StyledType = styled(Grid)({
   opacity: 0.65
@@ -75,7 +75,7 @@ const useStyles = makeStyles({
 })
 
 export const SearchEndpoints: React.FC<{
-  endpoints: Array<Endpoint> | undefined
+  endpoints: Array<ArbitraryContract> | undefined
   handleChange?: any
 }> = ({ endpoints, handleChange }) => {
   useStyles()
@@ -87,10 +87,10 @@ export const SearchEndpoints: React.FC<{
           disablePortal
           id="combo-box-demo"
           options={endpoints}
-          getOptionLabel={(option: any) => option.key}
+          getOptionLabel={(option: any) => option.name}
           renderOption={(option: any, state: any) => (
             <Grid container direction="row" justifyContent="space-between" {...state}>
-              <Grid>{option.key}</Grid>
+              <Grid>{option.name}</Grid>
               <StyledType>{option.type}</StyledType>
             </Grid>
           )}
