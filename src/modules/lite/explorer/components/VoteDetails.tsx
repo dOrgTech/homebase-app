@@ -230,7 +230,7 @@ export const VoteDetails: React.FC<{
           </Grid>
         </LegendContainer>
         <VotesDialog
-          decimals={tokenData?.decimals ? tokenData?.decimals : 6}
+          decimals={tokenData?.decimals ? tokenData?.decimals : "6"}
           symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
           choices={choices}
           groupedVotes={groupedVotes}
