@@ -122,7 +122,9 @@ export const ProposalsList: React.FC<Props> = ({
           renderOnZeroPageCount={null}
           containerClassName={"pagination"}
           activeClassName={"active"}
+          nextClassName="nextButton"
           forcePage={currentPage}
+          previousClassName="nextButton"
         />
       </Grid>
     </TableContainer>
