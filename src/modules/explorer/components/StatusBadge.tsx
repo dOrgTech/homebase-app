@@ -68,19 +68,30 @@ export const statusColors = (status: ProposalStatus | "all") => {
 }
 
 export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | "all"; theme: Theme }) => ({
-  borderRadius: 50,
-  textAlign: "center",
-  minHeight: 24,
-  minWidth: 105,
-  padding: "2px 8px",
-  background: statusColors(status).background,
-  color: statusColors(status).color,
-  whiteSpace: "nowrap",
-  fontWeight: 300
+  "borderRadius": 50,
+  "boxSizing": "border-box",
+  "minWidth": 87,
+  "textAlign": "center",
+  "padding": "4px 16px",
+  "background": statusColors(status).background,
+  "color": statusColors(status).color,
+  "& > div": {
+    height: "100%"
+  }
 }))
+
+const Text = styled(Typography)({
+  fontWeight: 500,
+  fontSize: 16,
+  textTransform: "capitalize"
+})
 
 export const StatusBadge: React.FC<{ status: ProposalStatus | "all" } & GridProps> = ({ status, ...props }) => (
   <Badge status={status} {...props}>
-    <Typography color="inherit"> {statusColors(status).text} </Typography>
+    <Grid container alignItems="center" justifyContent="center">
+      <Grid item>
+        <Text> {statusColors(status).text} </Text>
+      </Grid>
+    </Grid>
   </Badge>
 )
