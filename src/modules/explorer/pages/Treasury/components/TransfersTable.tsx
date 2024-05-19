@@ -175,6 +175,8 @@ const MobileTransfersTable: React.FC<{ data: RowData[]; network: Network }> = ({
           containerClassName={"pagination"}
           activeClassName={"active"}
           forcePage={currentPage}
+          nextClassName="nextButton"
+          previousClassName="nextButton"
         />
       </Grid>
     </Grid>
@@ -247,6 +249,8 @@ const DesktopTransfersTable: React.FC<{ data: RowData[]; network: Network }> = (
           containerClassName={"pagination"}
           activeClassName={"active"}
           forcePage={currentPage}
+          nextClassName="nextButton"
+          previousClassName="nextButton"
         />
       </Grid>
     </>
