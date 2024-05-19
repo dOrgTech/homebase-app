@@ -389,11 +389,16 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
     )
   }
 
+  const closeModal = () => {
+    setShowHeader(true)
+    handleClose()
+  }
+
   return (
     <FormProvider {...lambdaForm}>
       <ResponsiveDialog
         open={open}
-        onClose={handleClose}
+        onClose={closeModal}
         title={ProposalAction[action] + " Function Proposal"}
         template="md"
       >

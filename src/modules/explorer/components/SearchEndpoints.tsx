@@ -1,8 +1,18 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Grid, InputAdornment, makeStyles, styled, TextField, Theme, withStyles } from "@material-ui/core"
 import { SearchOutlined } from "@material-ui/icons"
 import { Autocomplete } from "@material-ui/lab"
 import { ArbitraryContract } from "models/Contract"
+
+export interface ContractEndpoint {
+  name: string
+  type: string
+  params: ContractParam[]
+}
+export interface ContractParam {
+  placeholder: string
+  type: string
+}
 
 const StyledType = styled(Grid)({
   opacity: 0.65
@@ -80,13 +90,66 @@ export const SearchEndpoints: React.FC<{
 }> = ({ endpoints, handleChange }) => {
   useStyles()
 
+  const [formattedEndpoints, setFormattedEndpoints] = useState<ContractEndpoint[] | undefined>()
+
+  useEffect(() => {
+    const handleEndpointStructure = () => {
+      const formattedData = endpoints?.map(item => {
+        const endpoint: ContractEndpoint = {
+          name: item.name,
+          type: item.type,
+          params: []
+        }
+        switch (item.type) {
+          case "unit":
+            break
+          case "address":
+            const param = {
+              type: "address",
+              placeholder: "address"
+            }
+            endpoint.params.push(param)
+            break
+          case "pair":
+            item.children.map(child => {
+              const pairParam = {
+                type: child.type,
+                placeholder: child.name
+              }
+              endpoint.params.push(pairParam)
+            })
+            break
+          case "bool":
+            const paramBool = {
+              type: "bool",
+              placeholder: "bool"
+            }
+            endpoint.params.push(paramBool)
+            break
+          default:
+            const paramDefault = {
+              type: item.type,
+              placeholder: item.type
+            }
+            endpoint.params.push(paramDefault)
+            break
+        }
+        return endpoint
+      })
+      return formattedData
+    }
+
+    const data = handleEndpointStructure()
+    setFormattedEndpoints(data)
+  }, [endpoints])
+
   return (
     <>
-      {endpoints ? (
+      {formattedEndpoints ? (
         <StyledInput
           disablePortal
           id="combo-box-demo"
-          options={endpoints}
+          options={formattedEndpoints}
           getOptionLabel={(option: any) => option.name}
           renderOption={(option: any, state: any) => (
             <Grid container direction="row" justifyContent="space-between" {...state}>

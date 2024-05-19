@@ -287,7 +287,7 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
                       onClick={() =>
                         elem.id === "off-chain"
                           ? handleLiteProposal()
-                          : true
+                          : !shouldDisable
                           ? elem.isLambda
                             ? handleOpenCustomProposalModal(elem.id)
                             : handleOpenSupportedExecuteProposalModal(elem.id)

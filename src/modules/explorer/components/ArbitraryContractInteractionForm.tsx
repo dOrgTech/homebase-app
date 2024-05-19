@@ -16,7 +16,7 @@ import { validateContractAddress, validateAddress } from "@taquito/utils"
 import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
 import { SmallButtonDialog } from "modules/common/SmallButton"
 import { ArrowBackIos } from "@material-ui/icons"
-import { SearchEndpoints } from "./SearchEndpoints"
+import { ContractEndpoint, SearchEndpoints } from "./SearchEndpoints"
 import { toShortAddress } from "services/contracts/utils"
 import { useArbitraryContractData } from "services/aci/useArbitratyContractData"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -124,7 +124,7 @@ const ContractInteractionForm = ({
   showHeader
 }: any) => {
   const [state, setState] = useState<Status>(Status.NEW_INTERACTION)
-  const [endpoint, setEndpoint] = useState<ArbitraryContract | undefined>(undefined)
+  const [endpoint, setEndpoint] = useState<ContractEndpoint | undefined>(undefined)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { mutate: fetchContractData, data } = useArbitraryContractData()
@@ -152,9 +152,9 @@ const ContractInteractionForm = ({
     })
   }
 
-  const processParameters = (data: ArbitraryContract) => {
+  const processParameters = (data: ContractEndpoint) => {
     setEndpoint(data)
-    setFieldValue("parameters", data.children)
+    setFieldValue("parameters", data.params)
     setFieldValue("target_endpoint", data.name)
   }
 
@@ -239,15 +239,15 @@ const ContractInteractionForm = ({
                   name="parameters"
                   render={arrayHelpers => (
                     <Container>
-                      {endpoint.children.length > 0 &&
-                        endpoint.children.map((param, index) => (
+                      {endpoint.params.length > 0 &&
+                        endpoint.params.map((param, index) => (
                           <div key={index}>
-                            <ProposalFormInput label={`Parameter ${index + 1}`} key={`${param.name}`}>
+                            <ProposalFormInput label={`Parameter ${index + 1}`} key={`${param.placeholder}`}>
                               <Field
                                 component={CustomFormikTextField}
                                 name={`parameters.${index}`}
-                                type={param.type === "number" ? "number" : "string"}
-                                placeholder={`${param.name}`}
+                                type={param.type === "nat" || param.type === "init" ? "number" : "string"}
+                                placeholder={`${param.placeholder}`}
                                 onChange={(newValue: any) => {
                                   setFieldValue(`parameters.${index}.value`, newValue.target.value, false)
                                   if (newValue.target.value === "") {
