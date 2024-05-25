@@ -261,6 +261,9 @@ export const theme = createTheme({
           color: "#bfc5ca !important",
           background: "inherit !important"
         }
+      },
+      containedSecondary: {
+        backgroundColor: "#4ed092"
       }
     },
     MuiInputBase: {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Button, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { CircularProgress, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalDetailCard } from "../../components/ProposalDetailCard"
 import { GridContainer } from "modules/common/GridContainer"
 import { ChoiceItemSelected } from "../../components/ChoiceItemSelected"
@@ -14,13 +14,13 @@ import { usePollChoices } from "../../hooks/usePollChoices"
 import { useCommunity } from "../../hooks/useCommunity"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
-import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
 import { ArrowBackIosOutlined } from "@material-ui/icons"
 import { useIsMember } from "../../hooks/useIsMember"
+import { SmallButton } from "modules/common/SmallButton"
 
 const DescriptionText = styled(Typography)({
   fontSize: 24,
@@ -81,6 +81,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const { network } = useTezos()
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
+  const [isLoading, setIsLoading] = useState(false)
 
   const votingPower = poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight
 
@@ -104,7 +105,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     if (!wallet) {
       return
     }
-
+    setIsLoading(true)
     try {
       const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
       const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
@@ -114,6 +115,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
           autoHideDuration: 3000,
           variant: "error"
         })
+        setIsLoading(false)
         return
       }
       const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes)
@@ -126,7 +128,9 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         })
         setRefresh(Math.random())
         setSelectedVotes([])
+        setIsLoading(false)
       } else {
+        setIsLoading(false)
         console.log("Error: ", response.message)
         openNotification({
           message: response.message,
@@ -136,6 +140,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         return
       }
     } catch (error) {
+      setIsLoading(false)
       console.log("error: ", error)
       openNotification({
         message: `Could not submit vote, Please Try Again!`,
@@ -166,7 +171,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         <Grid container item xs={12}>
           {choices && choices.length > 0 ? (
             <>
-              <LinearContainer container style={{ gap: 32 }} direction="row">
+              <LinearContainer container style={{ gap: 32 }} direction="row" justifyContent="center">
                 <Grid item xs={12}>
                   <DescriptionText color="textPrimary">Options</DescriptionText>
                 </Grid>
@@ -190,16 +195,21 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                   })}
                 </Grid>
                 {poll?.isActive === ProposalStatus.ACTIVE ? (
-                  <Button
-                    disabled={
-                      (selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))) && isMember
-                    }
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => saveVote()}
-                  >
-                    {votingPower && votingPower.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
-                  </Button>
+                  !isLoading ? (
+                    <SmallButton
+                      disabled={
+                        (selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))) && isMember
+                      }
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => saveVote()}
+                      style={{ marginTop: 20 }}
+                    >
+                      {votingPower && votingPower.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
+                    </SmallButton>
+                  ) : (
+                    <CircularProgress color="secondary" />
+                  )
                 ) : null}
               </LinearContainer>
             </>
