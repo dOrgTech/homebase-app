@@ -126,6 +126,8 @@ const MobileUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, 
             containerClassName={"pagination"}
             activeClassName={"active"}
             forcePage={currentPage}
+            nextClassName="nextButton"
+            previousClassName="nextButton"
           />
         </Grid>
       </Grid>
@@ -203,6 +205,8 @@ const DesktopUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick,
             containerClassName={"pagination"}
             activeClassName={"active"}
             forcePage={currentPage}
+            nextClassName="nextButton"
+            previousClassName="nextButton"
           />
         </Grid>
       </Grid>
