@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Button, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { CircularProgress, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalDetailCard } from "../../components/ProposalDetailCard"
 import { GridContainer } from "modules/common/GridContainer"
 import { ChoiceItemSelected } from "../../components/ChoiceItemSelected"
@@ -89,6 +89,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
+  const [isLoading, setIsLoading] = useState(false)
 
   const navigateToDao = () => {
     if (historyLength > 1) {
@@ -159,6 +160,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
           autoHideDuration: 3000,
           variant: "error"
         })
+        setIsLoading(false)
         return
       }
     } else if (etherlink.isConnected) {
@@ -225,7 +227,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         <Grid container item xs={12}>
           {choices && choices.length > 0 ? (
             <>
-              <LinearContainer container style={{ gap: 32 }} direction="row">
+              <LinearContainer container style={{ gap: 32 }} direction="row" justifyContent="center">
                 <Grid item xs={12}>
                   <DescriptionText color="textPrimary">Options</DescriptionText>
                 </Grid>
@@ -249,16 +251,21 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
                   })}
                 </Grid>
                 {poll?.isActive === ProposalStatus.ACTIVE ? (
-                  <Button
-                    disabled={
-                      (selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))) && isMember
-                    }
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => saveVote()}
-                  >
-                    {votingPower && votingPower.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
-                  </Button>
+                  !isLoading ? (
+                    <SmallButton
+                      disabled={
+                        (selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))) && isMember
+                      }
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => saveVote()}
+                      style={{ marginTop: 20 }}
+                    >
+                      {votingPower && votingPower.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
+                    </SmallButton>
+                  ) : (
+                    <CircularProgress color="secondary" />
+                  )
                 ) : null}
               </LinearContainer>
             </>
