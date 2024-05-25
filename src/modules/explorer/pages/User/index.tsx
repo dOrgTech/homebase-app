@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
@@ -11,7 +11,6 @@ import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
 import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { FreezeDialog } from "../../components/FreezeDialog"
-import { ProposalsList } from "../../components/ProposalsList"
 import { StatusBadge } from "../../components/StatusBadge"
 import { ProfileAvatar } from "../../components/styled/ProfileAvatar"
 import { UserBalances } from "../../components/UserBalances"
@@ -19,11 +18,10 @@ import { UserProfileName } from "../../components/UserProfileName"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { Delegation } from "./components/DelegationBanner"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
-import { CopyButton } from "modules/common/CopyButton"
 import { UserMovements } from "./components/UserMovements"
 import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
-import { Choice } from "models/Choice"
 import { Poll } from "models/Polls"
+import { CopyButton } from "modules/explorer/components/CopyButton"
 
 const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   padding: "37px 42px",
@@ -49,7 +47,8 @@ const MainContainer = styled(Box)({
 const UsernameText = styled(Typography)({
   fontSize: 18,
   wordBreak: "break-all",
-  marginLeft: 10
+  marginLeft: 10,
+  marginRight: 10
 })
 
 const ProposalTitle = styled(Typography)({
@@ -67,7 +66,7 @@ const TitleText = styled(Typography)({
 })
 
 export const ProposalItem: React.FC<{
-  proposal: Proposal
+  proposal: Proposal | any
   status: ProposalStatus
 }> = ({ proposal, status, children }) => {
   const { data: agoraPost } = useAgoraTopic(Number(proposal.metadata.agoraPostId))
@@ -84,7 +83,7 @@ export const ProposalItem: React.FC<{
             </ProposalTitle>
           </Grid>
           <Grid item>
-            <Grid container style={{ gap: 20 }} alignItems="center">
+            <Grid container style={{ gap: 16 }} alignItems="center">
               <Grid item>
                 <StatusBadge status={status} />
               </Grid>
@@ -115,19 +114,9 @@ export const User: React.FC = () => {
   const { data: executedProposals } = useProposals(daoId, ProposalStatus.EXECUTED)
   const { data: droppedProposals } = useProposals(daoId, ProposalStatus.DROPPED)
   const { mutate: unstakeFromAllProposals } = useUnstakeFromAllProposals()
-  const { data: polls } = usePolls(data?.liteDAOData?._id)
-  const pollsPosted: Poll[] | undefined = polls?.filter(p => p.author === account)
-
-  const { data: userVotes } = useUserVotes()
+  const [showActivity, setShowActivity] = useState(false)
 
   const { data: isTokenDelegationSupported } = useTokenDelegationSupported(data?.data.token.contract)
-
-  const votedPolls: any = []
-  pollsPosted?.map((p: Poll) => {
-    if (userVotes && userVotes.filter(v => p._id === v.pollID).length > 0) {
-      return votedPolls.push(p)
-    }
-  })
 
   useEffect(() => {
     if (!account) {
@@ -182,58 +171,76 @@ export const User: React.FC = () => {
   const getVoteDecision = (proposal: Proposal) =>
     proposal.voters.find(voter => voter.address.toLowerCase())?.support as boolean
 
+  const changeState = (value: boolean) => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+    setShowActivity(value)
+  }
+
   return (
     <MainContainer>
       <Grid container direction="column" style={{ gap: 40 }} wrap={"nowrap"}>
-        <BalancesHeader item style={{ gap: 16 }}>
-          <Grid container direction="row">
-            <TitleText color="textPrimary">My Address</TitleText>
-          </Grid>
-          <Grid container alignItems="center" justifyContent="space-between" style={{ gap: isMobileSmall ? 30 : 20 }}>
-            <Grid item md={6} xs={12}>
-              <Grid container alignItems="center" wrap="nowrap">
-                <Grid item>
-                  <ProfileAvatar size={40} address={account} />
+        {!showActivity ? (
+          <>
+            <BalancesHeader item style={{ gap: 16 }}>
+              <Grid container direction="row">
+                <TitleText color="textPrimary">My Address</TitleText>
+              </Grid>
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="space-between"
+                style={{ gap: isMobileSmall ? 30 : 20 }}
+              >
+                <Grid item md={6} xs={12}>
+                  <Grid container alignItems="center" wrap="nowrap">
+                    <Grid item>
+                      <ProfileAvatar size={40} address={account} />
+                    </Grid>
+                    <Grid item>
+                      <UsernameText color="textPrimary">
+                        <UserProfileName address={account} />
+                      </UsernameText>
+                    </Grid>
+                    <Grid item>
+                      <CopyButton text={account} />
+                    </Grid>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <UsernameText color="textPrimary">
-                    <UserProfileName address={account} />
-                  </UsernameText>
-                </Grid>
-                <Grid item>
-                  <CopyButton text={account} />
+                <Grid item md={5} xs={12}>
+                  <Grid
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent={isMobileSmall ? "center" : "flex-end"}
+                  >
+                    <Grid item>
+                      <FreezeDialog freeze={true} />
+                    </Grid>
+                    <Grid item>
+                      <FreezeDialog freeze={false} />
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid item md={5} xs={12}>
-              <Grid container spacing={2} alignItems="center" justifyContent={isMobileSmall ? "center" : "flex-end"}>
-                <Grid item>
-                  <FreezeDialog freeze={true} />
-                </Grid>
-                <Grid item>
-                  <FreezeDialog freeze={false} />
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </BalancesHeader>
+            </BalancesHeader>
 
-        <UserBalances
-          daoId={daoId}
-          canUnstakeVotes={canUnstakeVotes || false}
-          onUnstakeFromAllProposals={onUnstakeFromAllProposals}
-        ></UserBalances>
+            <UserBalances
+              daoId={daoId}
+              canUnstakeVotes={canUnstakeVotes || false}
+              onUnstakeFromAllProposals={onUnstakeFromAllProposals}
+            ></UserBalances>
 
-        {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
+            {isTokenDelegationSupported ? <Delegation daoId={daoId} /> : null}
+          </>
+        ) : null}
 
         <UserMovements
           daoId={daoId}
-          getVoteDecision={getVoteDecision}
           proposalsVoted={proposalsVoted}
           cycleInfo={cycleInfo}
           proposalsCreated={proposalsCreated}
-          pollsPosted={pollsPosted}
-          pollsVoted={votedPolls}
+          setShowActivity={changeState}
+          showActivity={showActivity}
         />
       </Grid>
     </MainContainer>

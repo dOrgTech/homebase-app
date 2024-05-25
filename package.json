@@ -43,6 +43,7 @@
     "blockies-ts": "^1.0.0",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.10.4",
+    "export-to-csv": "^1.2.4",
     "formik": "^2.2.6",
     "formik-material-ui": "^3.0.1",
     "formik-material-ui-lab": "^0.0.8",
@@ -92,15 +93,15 @@
     "@types/react-html-parser": "^2.0.2",
     "@types/react-router-dom": "^5.1.6",
     "@types/yup": "^0.29.11",
-    "@typescript-eslint/eslint-plugin": "^4.18.0",
-    "@typescript-eslint/parser": "^4.18.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.0.3",
+    "husky": "8.0.3",
+    "lint-staged": "15.2.2",
     "prettier": "^2.2.0",
     "source-map-explorer": "2.5.2",
     "typescript": "^5.0.4"
@@ -133,7 +134,7 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
-      "yarn lint:check"
+      "npm run lint:check"
     ]
   }
 }

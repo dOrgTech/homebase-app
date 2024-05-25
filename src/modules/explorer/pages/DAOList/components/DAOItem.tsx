@@ -13,11 +13,11 @@ const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "boxSizing": "border-box",
   "cursor": "pointer",
   "transition": "0.15s ease-out",
-  "padding": "34px 48px",
+  "padding": "40px 48px",
   "minWidth": "340px",
   "alignContent": "baseline",
-  "gap": 30,
-  "maxHeight": 282,
+  "gap": 24,
+  // "maxHeight": 282,
 
   ["@media (max-width:760px)"]: {
     maxWidth: "86vw",
@@ -64,7 +64,7 @@ const NameText = styled(Typography)(({ theme }) => ({
   textOverflow: "ellipsis",
   color: theme.palette.text.primary,
   overflow: "hidden",
-  fontSize: 36,
+  fontSize: 24,
   maxWidth: 245,
   fontWeight: 600,
 
@@ -90,13 +90,13 @@ const DescriptionText = styled(Typography)({
 })
 
 const ItemTextSmall = styled(Typography)({
-  fontWeight: 600,
+  fontWeight: 500,
   fontSize: 16
 })
 
 const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
   "borderRadius": "50px",
-  "padding": "8px 16px",
+  "padding": "7px 14px",
   "height": "auto",
   "boxSizing": "border-box",
   "width": "fit-content",

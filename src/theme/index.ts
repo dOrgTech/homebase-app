@@ -13,12 +13,14 @@ export const theme = createTheme({
     primary: {
       main: "#2F3438",
       dark: "#1C1F23",
-      light: "#bfc5ca"
+      light: "#bfc5ca",
+      contrastText: "#24282d"
     },
     secondary: {
       main: "#81FEB7",
       dark: "#6AE9A720",
-      contrastText: "#1C1F23"
+      contrastText: "#1C1F23",
+      light: "#24282D"
     },
     text: {
       primary: "#FDFDFD"
@@ -88,6 +90,9 @@ export const theme = createTheme({
   },
   overrides: {
     MuiSvgIcon: {
+      root: {
+        color: "#fff"
+      },
       colorSecondary: {
         color: "#81FEB7 !important"
       }

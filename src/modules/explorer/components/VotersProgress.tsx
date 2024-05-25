@@ -1,12 +1,17 @@
 import React, { useState } from "react"
-import { Button, Grid, Paper, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { formatNumber } from "../utils/FormatNumber"
-import { MultiColorBar as CustomBar } from "modules/explorer/components/ProgressBar"
+import { Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { MultiColorBar as CustomBar, ProgressBar } from "modules/explorer/components/ProgressBar"
 import { useVotesStats } from "../hooks/useVotesStats"
 import BigNumber from "bignumber.js"
 import { useProposal } from "services/services/dao/hooks/useProposal"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { VotesDetailDialog } from "./VotesDetailDialog"
+import numbro from "numbro"
+import { SmallButton } from "modules/common/SmallButton"
+import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
+import { mkConfig, generateCsv, download, asString } from "export-to-csv"
+import { writeFile } from "node:fs"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 interface VotersData {
   showButton: boolean
@@ -15,24 +20,24 @@ interface VotersData {
   wrapAll?: boolean
 }
 
-const GreenDot = styled(Paper)(({ theme }) => ({
-  width: 9,
-  height: 9,
-  marginRight: 9,
-  background: theme.palette.secondary.main
-}))
-
-const RedDot = styled(Paper)(({ theme }) => ({
-  width: 9,
-  height: 9,
-  marginRight: 9,
-  background: theme.palette.error.main
-}))
-
 const StatusTitle = styled(Typography)({
-  fontWeight: "bold",
-  marginRight: 12
+  fontWeight: 500,
+  fontSize: 18
 })
+
+const PercentageValue = styled(Typography)(({ theme }: { theme: Theme }) => ({
+  fontWeight: 300,
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 8
+  }
+}))
+
+const formatConfig = {
+  average: true,
+  mantissa: 2,
+  thousandSeparated: true,
+  trimMantissa: true
+}
 
 export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, proposalId, wrapAll }) => {
   const theme = useTheme()
@@ -43,69 +48,123 @@ export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, propos
   const quorumThreshold = proposal?.quorumThreshold || new BigNumber(0)
   const upVotes = proposal ? proposal.upVotes : new BigNumber(0)
   const downVotes = proposal ? proposal.downVotes : new BigNumber(0)
+  const openNotification = useNotification()
 
-  const { upVotesQuorumPercentage, downVotesQuorumPercentage, upVotesSumPercentage } = useVotesStats({
-    quorumThreshold,
-    upVotes,
-    downVotes
-  })
+  const { upVotesQuorumPercentage, downVotesQuorumPercentage, upVotesSumPercentage, downVotesSumPercentage } =
+    useVotesStats({
+      quorumThreshold,
+      upVotes,
+      downVotes
+    })
+
+  const downloadCvs = () => {
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: `proposal-${proposal?.startDate}`,
+      title: "Voting Details",
+      showTitle: false
+    })
+    const votesData = proposal ? proposal?.voters : []
+    try {
+      const csv = generateCsv(csvConfig)(votesData)
+      download(csvConfig)(csv)
+    } catch (error) {
+      openNotification({
+        message: `Error downloading csv file`,
+        autoHideDuration: 3000,
+        variant: "error"
+      })
+    }
+  }
 
   return (
     <>
       <Grid item xs={12} container direction="row" alignItems="center" spacing={2}>
-        <Grid item xs container direction="row" alignItems="baseline" justifyContent="flex-start">
-          <Grid
-            item
-            md={isMobileSmall || wrapAll ? 12 : true}
-            container
-            direction="row"
-            alignItems="baseline"
-            wrap="nowrap"
-          >
-            <GreenDot />
-            <StatusTitle color="textPrimary" variant="subtitle2">
-              SUPPORT:{" "}
-            </StatusTitle>
-            <Typography color="textPrimary" variant="subtitle2">
-              {proposal ? upVotes.toString() : "-"} (
-              {upVotesQuorumPercentage && upVotesQuorumPercentage.isGreaterThan(100)
-                ? 100
-                : formatNumber(upVotesQuorumPercentage)}
-              %){" "}
-            </Typography>
+        <Grid
+          item
+          xs
+          container
+          direction="column"
+          alignItems="baseline"
+          justifyContent="flex-start"
+          style={{ gap: 32 }}
+        >
+          <Grid item container>
+            <Grid item container direction="row" alignItems="baseline" wrap="nowrap">
+              <StatusTitle color="textPrimary" variant="subtitle2">
+                For
+              </StatusTitle>
+            </Grid>
+            <Grid item container direction="row" justifyContent="space-between">
+              <Grid item xs={isMobileSmall ? 12 : 10}>
+                <ProgressBar
+                  favor={true}
+                  variant="determinate"
+                  value={upVotesSumPercentage.toNumber()}
+                  color="secondary"
+                />
+              </Grid>
+              <Grid item xs={isMobileSmall ? 12 : 2}>
+                <PercentageValue color="textPrimary" align="right">
+                  {proposal ? numbro(upVotes).format(formatConfig) : "-"} (
+                  {upVotesQuorumPercentage && upVotesQuorumPercentage.isGreaterThan(100)
+                    ? 100
+                    : numbro(upVotesQuorumPercentage).format(formatConfig)}
+                  %){" "}
+                </PercentageValue>
+              </Grid>
+            </Grid>
           </Grid>
-
-          <Grid md={isMobileSmall || wrapAll ? 12 : true} container direction="row" alignItems="center" wrap="nowrap">
-            <RedDot />
-            <StatusTitle color="textPrimary" variant="subtitle2">
-              OPPOSE:{" "}
-            </StatusTitle>
-            <Typography color="textPrimary" variant="subtitle2">
-              {proposal ? downVotes.toString() : "-"} (
-              {downVotesQuorumPercentage && downVotesQuorumPercentage.isGreaterThan(100)
-                ? 100
-                : formatNumber(downVotesQuorumPercentage)}
-              %){" "}
-            </Typography>
+          <Grid item container>
+            <Grid container direction="row" alignItems="center" wrap="nowrap">
+              <StatusTitle color="textPrimary" variant="subtitle2">
+                Against
+              </StatusTitle>
+            </Grid>
+            <Grid item container direction="row">
+              <Grid item xs={isMobileSmall ? 12 : 10}>
+                <ProgressBar
+                  favor={false}
+                  variant="determinate"
+                  value={downVotesSumPercentage.toNumber()}
+                  color="secondary"
+                />
+              </Grid>
+              <Grid item xs={isMobileSmall ? 12 : 2}>
+                <PercentageValue color="textPrimary" align="right">
+                  {proposal ? numbro(downVotes).format(formatConfig) : "-"} (
+                  {downVotesQuorumPercentage && downVotesQuorumPercentage.isGreaterThan(100)
+                    ? 100
+                    : numbro(downVotesQuorumPercentage).format(formatConfig)}
+                  %){" "}
+                </PercentageValue>
+              </Grid>
+            </Grid>
           </Grid>
+          {showButton ? (
+            <Grid container direction="row" alignItems="center" justifyContent="flex-end">
+              {proposal?.voters && proposal?.voters.length > 0 && (
+                <Grid
+                  xs={isMobileSmall ? 6 : 2}
+                  item
+                  container
+                  alignItems="center"
+                  justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
+                  style={{ cursor: "pointer" }}
+                >
+                  <DownloadCSVIcon style={{ marginRight: 8 }} />
+                  <Typography color="secondary" onClick={downloadCvs}>
+                    {" "}
+                    Download CSV
+                  </Typography>
+                </Grid>
+              )}
+              <Grid item xs={isMobileSmall ? 6 : 2} container justifyContent="flex-end">
+                <SmallButton onClick={() => setOpen(true)}>View Votes</SmallButton>
+              </Grid>
+            </Grid>
+          ) : null}
         </Grid>
-
-        {showButton ? (
-          <Grid xs={2} container direction="row" alignItems="center" justifyContent="flex-end">
-            <Button
-              variant={"contained"}
-              color={"secondary"}
-              size={"small"}
-              onClick={() => setOpen(true)}
-              // favor={true}
-            >
-              View
-            </Button>
-          </Grid>
-        ) : null}
-      </Grid>
-      <Grid item xs={12}>
-        <CustomBar variant="determinate" value={upVotesSumPercentage.toNumber()} color="secondary" />
       </Grid>
       <VotesDetailDialog daoAddress={daoId} proposalAddress={proposalId} open={open} onClose={() => setOpen(false)} />
     </>

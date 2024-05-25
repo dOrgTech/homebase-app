@@ -192,3 +192,16 @@ export const getSignature = async (userAddress: string, wallet: BeaconWallet, da
 
   return { signature, payloadBytes }
 }
+
+export const getStatusDate = async (level: number, network: Network) => {
+  const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/blocks/${level}`
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch contract current block")
+  }
+
+  const result = await response.json()
+
+  return result.timestamp
+}

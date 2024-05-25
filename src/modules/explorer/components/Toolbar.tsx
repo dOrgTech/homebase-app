@@ -150,7 +150,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                             <ProfileAvatar size={22} address={account} />
                           </Grid>
                           <Grid item>
-                            <Typography variant="body2">
+                            <Typography color="textPrimary" variant="body2">
                               <UserProfileName address={account} short={true} />
                             </Typography>
                           </Grid>
