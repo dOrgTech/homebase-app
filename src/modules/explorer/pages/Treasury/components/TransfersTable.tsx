@@ -317,9 +317,6 @@ const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ 
 }
 
 export const TransfersTable: React.FC<{ transfers: TransferWithBN[] }> = ({ transfers }) => {
-  const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
-
   const rows = useMemo(() => {
     if (!transfers) {
       return []
@@ -332,7 +329,11 @@ export const TransfersTable: React.FC<{ transfers: TransferWithBN[] }> = ({ tran
 
   return (
     <TableContainer>
-      <TransfersTableItems data={rows} network={network} />
+      {rows && rows.length > 0 ? (
+        <TransfersTableItems data={rows} network={network} />
+      ) : (
+        <Typography color="textPrimary">No items</Typography>
+      )}
     </TableContainer>
   )
 }
