@@ -130,7 +130,7 @@ export const Treasury: React.FC = () => {
                   justifyContent="flex-end"
                   alignItems="center"
                   style={{ gap: 15 }}
-                  direction={isMobileSmall ? "column" : "row"}
+                  direction={isMobileSmall ? "row" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
                   {dao && (
@@ -138,7 +138,7 @@ export const Treasury: React.FC = () => {
                       item
                       xs
                       container
-                      justifyContent="flex-end"
+                      justifyContent={"flex-end"}
                       direction="row"
                       style={isMobileSmall ? {} : { marginLeft: 30 }}
                     >

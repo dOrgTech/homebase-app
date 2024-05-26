@@ -23,6 +23,7 @@ import { ReactComponent as BulletIcon } from "assets/img/bullet.svg"
 import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
 import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import numbro from "numbro"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
@@ -67,10 +68,14 @@ const ProposalsFooterMobile = styled(Grid)({
 })
 
 const ItemContainer = styled(Grid)(({ theme }) => ({
-  padding: "40px 48px 41px 48px",
+  padding: "40px 48px",
   gap: 8,
   borderRadius: 8,
-  background: theme.palette.primary.main
+  background: theme.palette.primary.main,
+  [theme.breakpoints.down("sm")]: {
+    padding: "30px 38px",
+    gap: 20
+  }
 }))
 
 const Container = styled(Grid)({
@@ -118,6 +123,13 @@ interface RowData {
 }
 
 const Titles = ["Token", "Date", "Recipient", "Amount"]
+
+const formatConfig = {
+  average: true,
+  mantissa: 1,
+  thousandSeparated: true,
+  trimMantissa: true
+}
 
 const titleDataMatcher = (title: (typeof Titles)[number], rowData: RowData) => {
   switch (title) {
@@ -231,6 +243,8 @@ const MobileTransfersTable: React.FC<{ data: RowData[]; network: Network }> = ({
 const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ data: rows, network }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
+  const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
   const openBlockExplorer = (hash: string) => {
     window.open(`https://${networkNameMap[network]}.tzkt.io/` + hash, "_blank")
@@ -252,24 +266,25 @@ const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ 
         {rows.slice(offset, offset + 5).map((row, i) => {
           return (
             <ItemContainer container key={`${row.hash}`} justifyContent="space-between" alignItems="center">
-              <Grid item xs={5} container direction="column">
+              <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 12 } : {}} container direction="column">
                 <Grid item container direction="row" alignItems="center">
                   <StyledBullet />
                   <Title>{row.token}</Title>
                 </Grid>
-                <Grid item container direction="row" style={{ gap: 10 }}>
+                <Grid item container direction={isSmall ? "column" : "row"} style={{ gap: 10 }}>
                   <Subtitle>To {toShortAddress(row.address)}</Subtitle>
-                  <Subtitle> •</Subtitle>
+                  {isSmall ? null : <Subtitle> •</Subtitle>}
                   <Subtitle>{dayjs(row.date).format("ll")}</Subtitle>
                 </Grid>
               </Grid>
-              <Grid item xs={5} container direction="column">
-                <Grid item container direction="row" justifyContent="flex-end">
+              <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 6 } : {}} container direction="column">
+                <Grid item container direction="row" justifyContent={isSmall ? "flex-start" : "flex-end"}>
                   <AmountText>
-                    {row.type ? (row.type === "Deposit" ? "-" : "+") : null} {row.amount} {row.token}{" "}
+                    {row.type ? (row.type === "Deposit" ? "-" : "+") : null}{" "}
+                    {isSmall ? numbro(row.amount).format(formatConfig) : row.amount} {row.token}{" "}
                   </AmountText>
                 </Grid>
-                <Grid item direction="row" container justifyContent="flex-end">
+                <Grid item direction="row" container justifyContent={isSmall ? "flex-start" : "flex-end"}>
                   <BlockExplorer color="secondary" onClick={() => openBlockExplorer(row.hash)}>
                     <OpenInNewIcon color="secondary" />
                     View on Block Explorer
@@ -317,11 +332,7 @@ export const TransfersTable: React.FC<{ transfers: TransferWithBN[] }> = ({ tran
 
   return (
     <TableContainer>
-      {isSmall ? (
-        <MobileTransfersTable data={rows} network={network} />
-      ) : (
-        <TransfersTableItems data={rows} network={network} />
-      )}
+      <TransfersTableItems data={rows} network={network} />
     </TableContainer>
   )
 }
