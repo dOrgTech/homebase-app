@@ -18,6 +18,7 @@ import { SmallButton } from "modules/common/SmallButton"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { CopyButton } from "modules/common/CopyButton"
 import { TreasuryDialog } from "./components/TreasuryDialog"
+import { SearchInput } from "../DAOList/components/Searchbar"
 
 const ItemGrid = styled(Grid)({
   width: "inherit"
@@ -88,6 +89,7 @@ export const Treasury: React.FC = () => {
   const { data: dao } = useDAO(daoId)
   const [openTransfer, setOpenTransfer] = useState(false)
   const [selectedTab, setSelectedTab] = React.useState(0)
+  const [searchText, setSearchText] = useState("")
 
   const { data: transfers } = useTransfers(daoId)
 
@@ -98,6 +100,25 @@ export const Treasury: React.FC = () => {
   }
   const onCloseTransfer = () => {
     setOpenTransfer(false)
+  }
+
+  const currentTransfers = useMemo(() => {
+    if (transfers) {
+      const allTransfers = transfers.slice()
+      if (searchText) {
+        return transfers.filter(
+          formattedDao => formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+      }
+
+      return allTransfers
+    }
+
+    return []
+  }, [searchText, transfers])
+
+  const filterByName = (filter: string) => {
+    setSearchText(filter.trim())
   }
 
   return (
@@ -214,6 +235,12 @@ export const Treasury: React.FC = () => {
             </TabsContainer>
           </Grid>
 
+          <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="flex-end">
+            <Grid item xs={4}>
+              <SearchInput search={filterByName} />
+            </Grid>
+          </Grid>
+
           <ItemGrid item>
             <TabPanel value={selectedTab} index={0}>
               <BalancesTable />
@@ -224,7 +251,7 @@ export const Treasury: React.FC = () => {
             </TabPanel>
 
             <TabPanel value={selectedTab} index={2}>
-              <TransfersTable transfers={transfers || []} />
+              <TransfersTable transfers={currentTransfers || []} />
             </TabPanel>
           </ItemGrid>
         </TabsBox>
