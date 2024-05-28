@@ -85,20 +85,33 @@ const Container = styled(Grid)({
 
 const Title = styled(Typography)({
   color: "#fff",
-  fontSize: 24
+  fontSize: 24,
+  cursor: "default"
 })
 
 const Subtitle = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.light,
   fontSize: 16,
-  fontWeight: 300
+  fontWeight: 300,
+  cursor: "default"
+}))
+
+const SubtitleAddress = styled(Typography)(({ theme }) => ({
+  "color": theme.palette.primary.light,
+  "fontSize": 16,
+  "fontWeight": 300,
+  "cursor": "pointer",
+  "&:hover": {
+    textDecoration: "underline"
+  }
 }))
 
 const AmountText = styled(Typography)(({ theme }) => ({
   color: "#fff",
   fontSize: 18,
   fontWeight: 300,
-  lineHeight: "160%"
+  lineHeight: "160%",
+  cursor: "default"
 }))
 
 const BlockExplorer = styled(Typography)({
@@ -272,7 +285,9 @@ const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ 
                   <Title>{row.token}</Title>
                 </Grid>
                 <Grid item container direction={isSmall ? "column" : "row"} style={{ gap: 10 }}>
-                  <Subtitle>To {toShortAddress(row.address)}</Subtitle>
+                  <SubtitleAddress onClick={() => openBlockExplorer(row.hash)}>
+                    To {toShortAddress(row.address)}
+                  </SubtitleAddress>
                   {isSmall ? null : <Subtitle> •</Subtitle>}
                   <Subtitle>{dayjs(row.date).format("ll")}</Subtitle>
                 </Grid>
