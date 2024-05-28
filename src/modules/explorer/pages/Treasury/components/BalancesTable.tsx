@@ -108,13 +108,14 @@ const BalancesList: React.FC<TableProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const value = isMobileSmall ? 6 : 2
+  const value = isMobileSmall ? 6 : 5
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (rows) {
       const newOffset = (event.selected * value) % rows.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
 

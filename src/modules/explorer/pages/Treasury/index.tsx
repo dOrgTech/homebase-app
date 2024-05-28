@@ -1,5 +1,4 @@
 import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
 
 import React, { useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -131,7 +130,7 @@ export const Treasury: React.FC = () => {
                   justifyContent="flex-end"
                   alignItems="center"
                   style={{ gap: 15 }}
-                  direction={isMobileSmall ? "column" : "row"}
+                  direction={isMobileSmall ? "row" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
                   {dao && (
@@ -139,7 +138,7 @@ export const Treasury: React.FC = () => {
                       item
                       xs
                       container
-                      justifyContent="flex-end"
+                      justifyContent={"flex-end"}
                       direction="row"
                       style={isMobileSmall ? {} : { marginLeft: 30 }}
                     >
@@ -175,7 +174,9 @@ export const Treasury: React.FC = () => {
             <TabsContainer container>
               <Grid item>
                 <StyledTab
-                  startIcon={<TollIcon />}
+                  startIcon={
+                    <TollIcon style={{ color: "inherit" }} color={selectedTab === 0 ? "secondary" : "inherit"} />
+                  }
                   variant="contained"
                   disableElevation={true}
                   onClick={() => handleChangeTab(0)}
@@ -186,7 +187,9 @@ export const Treasury: React.FC = () => {
               </Grid>
               <Grid item>
                 <StyledTab
-                  startIcon={<PaletteIcon />}
+                  startIcon={
+                    <PaletteIcon style={{ color: "inherit" }} color={selectedTab === 1 ? "secondary" : "inherit"} />
+                  }
                   disableElevation={true}
                   variant="contained"
                   onClick={() => handleChangeTab(1)}
@@ -197,13 +200,15 @@ export const Treasury: React.FC = () => {
               </Grid>
               <Grid item>
                 <StyledTab
-                  startIcon={<ReceiptIcon />}
+                  startIcon={
+                    <ReceiptIcon style={{ color: "inherit" }} color={selectedTab === 2 ? "secondary" : "inherit"} />
+                  }
                   disableElevation={true}
                   variant="contained"
                   onClick={() => handleChangeTab(2)}
                   isSelected={selectedTab === 2}
                 >
-                  History
+                  Transactions
                 </StyledTab>
               </Grid>
             </TabsContainer>
