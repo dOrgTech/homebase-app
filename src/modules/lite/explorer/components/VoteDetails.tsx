@@ -23,18 +23,33 @@ import { useCommunityToken } from "../hooks/useCommunityToken"
 import { getTurnoutValue } from "services/utils/utils"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
 import { DownloadCsvFile } from "./DownloadCsvFile"
+import { SmallButton } from "modules/common/SmallButton"
+
+const DescriptionText = styled(Typography)({
+  fontSize: 24,
+  fontWeight: 600
+})
+
+const TotalText = styled(Typography)({
+  fontSize: 18,
+  fontWeight: 600
+})
+
+const TotalValue = styled(Typography)({
+  fontSize: 18,
+  fontWeight: 300
+})
 
 const Container = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
+  background: theme.palette.secondary.light,
   borderRadius: 8
 }))
 
 const TitleContainer = styled(Grid)(({ theme }) => ({
-  paddingTop: 18,
-  paddingLeft: 46,
-  paddingRight: 46,
-  paddingBottom: 18,
-  borderBottom: `0.3px solid ${theme.palette.primary.light}`,
+  padding: "40px 48px 10px",
+  borderRadius: 8,
+  marginTop: 20,
+  gap: 32,
   [theme.breakpoints.down("sm")]: {
     padding: "18px 25px"
   }
@@ -42,12 +57,15 @@ const TitleContainer = styled(Grid)(({ theme }) => ({
 
 const LinearContainer = styled(GridContainer)({
   paddingBottom: 0,
-  minHeight: 110
+  minHeight: 70,
+  background: "inherit !important"
 })
 
 const LegendContainer = styled(GridContainer)({
   minHeight: 30,
-  paddingBottom: 0
+  paddingBottom: 0,
+  alignItems: "center",
+  background: "inherit"
 })
 
 const GraphicsContainer = styled(Grid)({
@@ -107,14 +125,12 @@ export const VoteDetails: React.FC<{
   return (
     <Container container direction="column">
       <TitleContainer item>
-        <Typography variant={"body2"} color="textPrimary">
-          Results
-        </Typography>
+        <DescriptionText color="textPrimary">Votes</DescriptionText>
       </TitleContainer>
       <GraphicsContainer container>
         {choices &&
           choices.map((choice: Choice, index) => (
-            <LinearContainer container direction="column" style={{ gap: 20 }} key={`'option-'${index}`}>
+            <LinearContainer container direction="column" style={{ gap: 10 }} key={`'option-'${index}`}>
               <Grid item container direction="row" alignItems="center">
                 <Grid item xs={12} lg={6} sm={6}>
                   <Typography color="textPrimary" variant="body2">
@@ -174,12 +190,12 @@ export const VoteDetails: React.FC<{
 
         <LegendContainer container direction="row">
           <Grid item container direction="row" xs={12} sm={6} md={6} lg={6} style={{ gap: 10 }}>
-            <Typography color="secondary" variant="body1" onClick={() => handleClickOpen()}>
-              {getTotalVoters(choices)}
-            </Typography>
-            <Typography color="textPrimary" variant="body1" onClick={() => handleClickOpen()}>
-              Votes
-            </Typography>
+            <TotalText color="textPrimary" variant="body1" onClick={() => handleClickOpen()}>
+              Total Votes:
+            </TotalText>
+            <TotalValue color="textPrimary" variant="body1">
+              {numbro(calculateProposalTotal(choices, isXTZ ? 6 : tokenData?.decimals)).format(formatConfig)}
+            </TotalValue>
             {isTokenDelegationSupported && turnout && !poll?.isXTZ ? (
               <Typography color="textPrimary" variant="body1">
                 ({turnout.toFixed(2)} % Turnout)
@@ -196,13 +212,10 @@ export const VoteDetails: React.FC<{
             sm={6}
             lg={6}
             style={{ gap: 10 }}
-            alignItems="baseline"
+            alignItems="center"
             justifyContent={isMobileSmall ? "flex-start" : "flex-end"}
           >
-            <Typography color="textPrimary" variant="body1">
-              {numbro(calculateProposalTotal(choices, isXTZ ? 6 : tokenData?.decimals)).format(formatConfig)}
-            </Typography>
-            <Typography color="textPrimary" variant="body1">
+            {/* <Typography color="textPrimary" variant="body1">
               {isXTZ ? "XTZ" : poll?.tokenSymbol}
             </Typography>
             {!poll?.isXTZ && (
@@ -217,7 +230,7 @@ export const VoteDetails: React.FC<{
                   .toString()}
                 % of Total Supply)
               </Typography>
-            )}
+            )} */}
             {getTotalVoters(choices) > 0 ? (
               <DownloadCsvFile
                 data={groupedVotes}
@@ -227,6 +240,8 @@ export const VoteDetails: React.FC<{
                 symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
               />
             ) : null}
+
+            <SmallButton onClick={() => setOpen(true)}> View Votes</SmallButton>
           </Grid>
         </LegendContainer>
         <VotesDialog
