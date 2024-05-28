@@ -118,7 +118,7 @@ export const VotesDialog: React.FC<{
   choices: Choice[]
   groupedVotes: Votes[]
   symbol: string
-  decimals: string
+  decimals: string | undefined
   isXTZ: boolean
 }> = ({ open, handleClose, choices, symbol, decimals, isXTZ, groupedVotes }) => {
   const descriptionElementRef = React.useRef<HTMLElement>(null)
@@ -156,7 +156,7 @@ export const VotesDialog: React.FC<{
           total = total.plus(new BigNumber(item.balance))
         })
       }
-      const formatted = total.div(new BigNumber(10).pow(isXTZ ? 6 : decimals))
+      const formatted = total.div(new BigNumber(10).pow(isXTZ ? 6 : decimals ? decimals : 0))
       return formatted
     }
     const array: any = []
