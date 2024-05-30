@@ -282,9 +282,10 @@ export const ProposalDetails: React.FC = () => {
 
     transfers.map((transfer: Transfer) => {
       if (
-        transfer.tokenId !== undefined &&
-        transfer.type === "FA2" &&
-        new BigNumber(transfer.tokenId).toNumber() === 0
+        (transfer.tokenId !== undefined &&
+          transfer.type === "FA2" &&
+          new BigNumber(transfer.tokenId).toNumber() === 0) ||
+        transfer.type === "XTZ"
       ) {
         NTFFound = true
       }
