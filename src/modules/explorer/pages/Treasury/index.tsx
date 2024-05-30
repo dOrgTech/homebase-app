@@ -64,6 +64,12 @@ export interface TransactionsFilters {
   status: StatusOption | undefined
 }
 
+export interface TokensFilters {
+  token: string | null
+  balanceMin: string | undefined
+  balanceMax: string | undefined
+}
+
 const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
   "fontSize": 18,
   "height": 40,
@@ -128,7 +134,7 @@ export const Treasury: React.FC = () => {
         data = allTransfers.filter(trx => trx.sender === filters.sender)
       }
       if (filters?.token && filters.token !== "") {
-        data = allTransfers.filter(trx => trx.token?.symbol === filters.token)
+        data = allTransfers.filter(trx => trx.token?.symbol.toLocaleLowerCase() === filters.token?.toLocaleLowerCase())
       }
       if (filters?.status && filters.status.label !== "") {
         data = allTransfers.filter(trx => trx.status === filters.status?.label)

@@ -12,6 +12,14 @@ import { toShortAddress } from "services/contracts/utils"
 import { CopyButton } from "modules/common/CopyButton"
 import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import { SearchInput } from "../../DAOList/components/Searchbar"
+import { TokensFilters } from ".."
+import { FilterTokenDialog } from "modules/explorer/components/FiltersTokensDialog"
+
+const FiltersContainer = styled(Grid)({
+  cursor: "pointer"
+})
 
 const TokenSymbol = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -201,6 +209,13 @@ export const BalancesTable: React.FC = () => {
   const { data: tezosBalance } = useTezosBalance(daoId)
   const [openTransfer, setOpenTransfer] = useState(false)
   const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [filters, setFilters] = useState<TokensFilters>()
+
+  const filterByName = (text: string) => {
+    setSearchText(text.trim())
+  }
 
   const onCloseTransfer = () => {
     setOpenTransfer(false)
@@ -246,17 +261,61 @@ export const BalancesTable: React.FC = () => {
     setOpenTransfer(true)
   }
 
+  const handleFilters = (filters: TokensFilters) => {
+    console.log(filters)
+    setFilters(filters)
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
+  }
+
   const rows = useMemo(() => {
+    const handleFilterData = (holdings: DAOHolding[]) => {
+      let data = holdings.slice()
+      if (filters?.token && filters.token !== "") {
+        data = holdings.filter(trx => trx.token?.symbol.toLowerCase() === filters.token?.toLocaleLowerCase())
+      }
+      return data
+    }
+
     if (!tokenHoldings) {
       return []
     }
+    let holdings = tokenHoldings.slice()
 
-    return tokenHoldings.map(createData)
-  }, [tokenHoldings])
+    if (filters) {
+      holdings = handleFilterData(holdings)
+    }
+
+    if (searchText) {
+      holdings = holdings.filter(
+        holding => holding.token && holding.token.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    }
+
+    return holdings.map(createData)
+  }, [tokenHoldings, searchText, filters])
 
   return (
     <>
       <Grid item>
+        <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="space-between">
+          <FiltersContainer
+            onClick={() => setOpenFiltersDialog(true)}
+            xs={isSmall ? 12 : 2}
+            item
+            container
+            direction="row"
+            alignItems="center"
+          >
+            <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
+            <Typography color="secondary">Filter & Sort</Typography>
+          </FiltersContainer>
+          <Grid item xs={4}>
+            <SearchInput search={filterByName} />
+          </Grid>
+        </Grid>
         <BalancesList
           rows={rows}
           tezosBalance={tezosBalance || new BigNumber(0)}
@@ -272,6 +331,12 @@ export const BalancesTable: React.FC = () => {
         handleClose={onCloseTransfer}
         defaultValues={defaultValues}
         defaultTab={0}
+      />
+      <FilterTokenDialog
+        currentFilters={filters}
+        saveFilters={handleFilters}
+        open={openFiltersDialog}
+        handleClose={handleCloseFiltersModal}
       />
     </>
   )
