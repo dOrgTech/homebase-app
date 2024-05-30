@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import dayjs from "dayjs"
 import {
   Grid,
@@ -246,6 +246,10 @@ const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ 
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
+  useEffect(() => {
+    setOffset(0)
+  }, [rows])
+
   const openBlockExplorer = (hash: string) => {
     window.open(`https://${networkNameMap[network]}.tzkt.io/` + hash, "_blank")
   }
@@ -262,56 +266,62 @@ const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ 
   const pageCount = Math.ceil(rows ? rows.length / 5 : 0)
   return (
     <>
-      <Container item>
-        {rows.slice(offset, offset + 5).map((row, i) => {
-          return (
-            <ItemContainer container key={`${row.hash}`} justifyContent="space-between" alignItems="center">
-              <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 12 } : {}} container direction="column">
-                <Grid item container direction="row" alignItems="center">
-                  <StyledBullet />
-                  <Title>{row.token}</Title>
-                </Grid>
-                <Grid item container direction={isSmall ? "column" : "row"} style={{ gap: 10 }}>
-                  <Subtitle>To {toShortAddress(row.address)}</Subtitle>
-                  {isSmall ? null : <Subtitle> •</Subtitle>}
-                  <Subtitle>{dayjs(row.date).format("ll")}</Subtitle>
-                </Grid>
-              </Grid>
-              <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 6 } : {}} container direction="column">
-                <Grid item container direction="row" justifyContent={isSmall ? "flex-start" : "flex-end"}>
-                  <AmountText>
-                    {row.type ? (row.type === "Deposit" ? "-" : "+") : null}{" "}
-                    {isSmall ? numbro(row.amount).format(formatConfig) : row.amount} {row.token}{" "}
-                  </AmountText>
-                </Grid>
-                <Grid item direction="row" container justifyContent={isSmall ? "flex-start" : "flex-end"}>
-                  <BlockExplorer color="secondary" onClick={() => openBlockExplorer(row.hash)}>
-                    <OpenInNewIcon color="secondary" />
-                    View on Block Explorer
-                  </BlockExplorer>
-                </Grid>
-              </Grid>
-            </ItemContainer>
-          )
-        })}
-      </Container>
+      {rows && rows.length > 0 ? (
+        <>
+          <Container item>
+            {rows.slice(offset, offset + 5).map((row, i) => {
+              return (
+                <ItemContainer container key={`${row.hash}-${i}`} justifyContent="space-between" alignItems="center">
+                  <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 12 } : {}} container direction="column">
+                    <Grid item container direction="row" alignItems="center">
+                      <StyledBullet />
+                      <Title>{row.token}</Title>
+                    </Grid>
+                    <Grid item container direction={isSmall ? "column" : "row"} style={{ gap: 10 }}>
+                      <Subtitle>To {toShortAddress(row.address)}</Subtitle>
+                      {isSmall ? null : <Subtitle> •</Subtitle>}
+                      <Subtitle>{dayjs(row.date).format("ll")}</Subtitle>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 6 } : {}} container direction="column">
+                    <Grid item container direction="row" justifyContent={isSmall ? "flex-start" : "flex-end"}>
+                      <AmountText>
+                        {row.type ? (row.type === "Deposit" ? "-" : "+") : null}{" "}
+                        {isSmall ? numbro(row.amount).format(formatConfig) : row.amount} {row.token}{" "}
+                      </AmountText>
+                    </Grid>
+                    <Grid item direction="row" container justifyContent={isSmall ? "flex-start" : "flex-end"}>
+                      <BlockExplorer color="secondary" onClick={() => openBlockExplorer(row.hash)}>
+                        <OpenInNewIcon color="secondary" />
+                        View on Block Explorer
+                      </BlockExplorer>
+                    </Grid>
+                  </Grid>
+                </ItemContainer>
+              )
+            })}
+          </Container>
 
-      <Grid container direction="row" justifyContent="flex-end">
-        <ReactPaginate
-          previousLabel={"<"}
-          breakLabel="..."
-          nextLabel=">"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={4}
-          pageCount={pageCount}
-          renderOnZeroPageCount={null}
-          containerClassName={"pagination"}
-          activeClassName={"active"}
-          forcePage={currentPage}
-          nextClassName="nextButton"
-          previousClassName="nextButton"
-        />
-      </Grid>
+          <Grid container direction="row" justifyContent="flex-end">
+            <ReactPaginate
+              previousLabel={"<"}
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={4}
+              pageCount={pageCount}
+              renderOnZeroPageCount={null}
+              containerClassName={"pagination"}
+              activeClassName={"active"}
+              forcePage={currentPage}
+              nextClassName="nextButton"
+              previousClassName="nextButton"
+            />
+          </Grid>
+        </>
+      ) : (
+        <Typography color="textPrimary">No items</Typography>
+      )}
     </>
   )
 }

@@ -5,7 +5,7 @@ import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../DAO/router"
 import { BalancesTable } from "./components/BalancesTable"
 import { TransfersTable } from "./components/TransfersTable"
-import { useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers"
+import { TransferWithBN, useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { styled } from "@material-ui/core"
@@ -19,6 +19,13 @@ import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { CopyButton } from "modules/common/CopyButton"
 import { TreasuryDialog } from "./components/TreasuryDialog"
 import { SearchInput } from "../DAOList/components/Searchbar"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import { FilterTransactionsDialog } from "modules/explorer/components/FiltersTransactionsDialog"
+import { StatusOption } from "modules/explorer/components/FiltersUserDialog"
+
+const FiltersContainer = styled(Grid)({
+  cursor: "pointer"
+})
 
 const ItemGrid = styled(Grid)({
   width: "inherit"
@@ -49,6 +56,13 @@ const TitleText = styled(Typography)({
     fontSize: 26
   }
 })
+
+export interface TransactionsFilters {
+  token: string | null
+  sender: string | null
+  receiver: string | null
+  status: StatusOption | undefined
+}
 
 const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
   "fontSize": 18,
@@ -90,6 +104,8 @@ export const Treasury: React.FC = () => {
   const [openTransfer, setOpenTransfer] = useState(false)
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [searchText, setSearchText] = useState("")
+  const [filters, setFilters] = useState<TransactionsFilters>()
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
 
   const { data: transfers } = useTransfers(daoId)
 
@@ -103,10 +119,31 @@ export const Treasury: React.FC = () => {
   }
 
   const currentTransfers = useMemo(() => {
+    const handleFilterData = (allTransfers: TransferWithBN[]) => {
+      let data = allTransfers.slice()
+      if (filters?.receiver && filters.receiver !== "") {
+        data = allTransfers.filter(trx => trx.recipient === filters.receiver)
+      }
+      if (filters?.sender && filters.sender !== "") {
+        data = allTransfers.filter(trx => trx.sender === filters.sender)
+      }
+      if (filters?.token && filters.token !== "") {
+        data = allTransfers.filter(trx => trx.token?.symbol === filters.token)
+      }
+      if (filters?.status && filters.status.label !== "") {
+        data = allTransfers.filter(trx => trx.status === filters.status?.label)
+      }
+      return data
+    }
+
     if (transfers) {
-      const allTransfers = transfers.slice()
+      let allTransfers = transfers.slice()
+      if (filters) {
+        allTransfers = handleFilterData(allTransfers)
+      }
+
       if (searchText) {
-        return transfers.filter(
+        return allTransfers.filter(
           formattedDao => formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())
         )
       }
@@ -115,10 +152,18 @@ export const Treasury: React.FC = () => {
     }
 
     return []
-  }, [searchText, transfers])
+  }, [searchText, transfers, filters])
 
   const filterByName = (filter: string) => {
     setSearchText(filter.trim())
+  }
+
+  const handleFilters = (filters: TransactionsFilters) => {
+    setFilters(filters)
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
   }
 
   return (
@@ -235,12 +280,6 @@ export const Treasury: React.FC = () => {
             </TabsContainer>
           </Grid>
 
-          <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="flex-end">
-            <Grid item xs={4}>
-              <SearchInput search={filterByName} />
-            </Grid>
-          </Grid>
-
           <ItemGrid item>
             <TabPanel value={selectedTab} index={0}>
               <BalancesTable />
@@ -251,6 +290,22 @@ export const Treasury: React.FC = () => {
             </TabPanel>
 
             <TabPanel value={selectedTab} index={2}>
+              <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="space-between">
+                <FiltersContainer
+                  onClick={() => setOpenFiltersDialog(true)}
+                  xs={isMobileSmall ? 12 : 2}
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
+                  <Typography color="secondary">Filter & Sort</Typography>
+                </FiltersContainer>
+                <Grid item xs={4}>
+                  <SearchInput search={filterByName} />
+                </Grid>
+              </Grid>
               <TransfersTable transfers={currentTransfers || []} />
             </TabPanel>
           </ItemGrid>
@@ -261,6 +316,12 @@ export const Treasury: React.FC = () => {
         handleChangeTab={handleChangeTab}
         open={openTransfer}
         handleClose={onCloseTransfer}
+      />
+      <FilterTransactionsDialog
+        currentFilters={filters}
+        saveFilters={handleFilters}
+        open={openFiltersDialog}
+        handleClose={handleCloseFiltersModal}
       />
     </>
   )
