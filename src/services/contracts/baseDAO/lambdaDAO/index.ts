@@ -3,7 +3,7 @@ import { TezosToolkit } from "@taquito/taquito"
 import { Schema } from "@taquito/michelson-encoder"
 import { BaseDAO, BaseDAOData, getContract } from ".."
 import { RegistryProposeArgs } from "./types"
-import { bytes2Char, char2Bytes } from "@taquito/tzip16"
+import { stringToBytes } from "@taquito/utils"
 import proposeCode from "./michelson/propose"
 import proposelambda from "./michelson/proposelambda"
 import { LambdaExtraDTO, RegistryExtraDTO } from "services/services/types"
@@ -18,6 +18,7 @@ import update_contract_delegate_type_michelson from "./michelson/supported_lambd
 import update_guardian_type_michelson from "./michelson/supported_lambda_types/update_guardian_proposal.json"
 import { Community } from "models/Community"
 import { HUMANITEZ_DAO } from "services/config"
+import { hexStringToBytes } from "services/utils/utils"
 
 const parser = new Parser()
 
@@ -47,8 +48,8 @@ const mapStorageRegistryList = (
   }) as RegistryItemDTO[]
 
   return data.map(item => ({
-    key: bytes2Char(item.args[0].string),
-    value: bytes2Char(item.args[1].string)
+    key: hexStringToBytes(item.args[0].string),
+    value: hexStringToBytes(item.args[1].string)
   }))
 }
 
@@ -63,7 +64,7 @@ const mapStorageRegistryAffectedList = (
   }) as RegistryAffectedDTO[]
 
   return data.map(item => ({
-    key: bytes2Char(item.args[0].string),
+    key: hexStringToBytes(item.args[0].string),
     proposalId: item.args[1].bytes
   }))
 }
@@ -170,7 +171,7 @@ export class LambdaDAO extends BaseDAO {
     const transfer_arg_schema = new Schema(transfer_michelson as MichelsonData)
     const transfer_proposal_args = {
       transfers: mapTransfersArgs(transfer_proposal.transfers, this.data.address),
-      registry_diff: transfer_proposal.registry_diff.map(item => [char2Bytes(item.key), char2Bytes(item.value)]),
+      registry_diff: transfer_proposal.registry_diff.map(item => [stringToBytes(item.key), stringToBytes(item.value)]),
       agora_post_id: agoraPostId
     }
 

@@ -1,4 +1,4 @@
-import { bytes2Char, char2Bytes } from "@taquito/tzip16"
+import { stringToBytes, hex2buf } from "@taquito/utils"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocale from "dayjs/plugin/updateLocale"
@@ -8,6 +8,10 @@ import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
 import { networkNameMap } from "services/bakingBad"
+
+export const hexStringToBytes = (hex: string): string => {
+  return Buffer.from(hex2buf(hex)).toString("utf8")
+}
 
 export const getCurrentBlock = async (network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/head`
@@ -178,8 +182,8 @@ export const getSignature = async (userAddress: string, wallet: BeaconWallet, da
     data
   ].join(" ")
 
-  const bytes = char2Bytes(formattedInput)
-  const payloadBytes = "05" + "0100" + char2Bytes(bytes.length.toString()) + bytes
+  const bytes = stringToBytes(formattedInput)
+  const payloadBytes = "05" + "0100" + stringToBytes(bytes.length.toString()) + bytes
 
   const payload: RequestSignPayloadInput = {
     signingType: SigningType.MICHELINE,

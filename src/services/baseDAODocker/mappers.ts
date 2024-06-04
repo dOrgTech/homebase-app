@@ -1,7 +1,7 @@
 import { BaseStorageParams } from "services/contracts/baseDAO"
 import { formatUnits, xtzToMutez } from "services/contracts/utils"
 import { GeneratorArgs } from "./types"
-import { char2Bytes } from "@taquito/tzip16"
+import { stringToBytes } from "@taquito/utils"
 import { MetadataDeploymentResult } from "services/contracts/metadataCarrier/deploy"
 import { BigNumber } from "bignumber.js"
 import { Token } from "models/Token"
@@ -38,6 +38,6 @@ export const storageParamsToBaseDAODockerArgs = (
 
 const formatMetadata = ({ deployAddress, keyName }: MetadataDeploymentResult) => {
   return `'(Big_map.literal [
-    ("", 0x${char2Bytes(`tezos-storage://${deployAddress}/${keyName}`)});
+    ("", 0x${stringToBytes(`tezos-storage://${deployAddress}/${keyName}`)});
   ])'`
 }
