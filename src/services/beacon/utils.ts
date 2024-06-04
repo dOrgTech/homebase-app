@@ -9,8 +9,8 @@ export type Network = "mainnet" | "ghostnet"
 export const ALICE_PRIV_KEY = "edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq"
 
 export const rpcNodes: Record<Network, string> = {
-  mainnet: "https://mainnet.api.tez.ie",
-  ghostnet: "https://ghostnet.tezos.marigold.dev"
+  mainnet: getEnv(EnvKey.REACT_APP_RPC_NETWORK_MAINNET) || "https://mainnet.api.tez.ie",
+  ghostnet: getEnv(EnvKey.REACT_APP_RPC_NETWORK_GHOSTNET) || "https://ghostnet.smartpy.io"
 }
 
 export const getTezosNetwork = (): Network => {
