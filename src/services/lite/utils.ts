@@ -1,8 +1,8 @@
-import { bytes2Char, char2Bytes } from "@taquito/tzip16"
+import { stringToBytes } from "@taquito/utils"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocale from "dayjs/plugin/updateLocale"
-import { Choice, WalletAddress } from "models/Choice"
+import { Choice } from "models/Choice"
 import { networkNameMap } from "services/bakingBad"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
@@ -180,8 +180,8 @@ export const getSignature = async (userAddress: string, wallet: BeaconWallet, da
     data
   ].join(" ")
 
-  const bytes = char2Bytes(formattedInput)
-  const payloadBytes = "05" + "0100" + char2Bytes(bytes.length.toString()) + bytes
+  const bytes = stringToBytes(formattedInput)
+  const payloadBytes = "05" + "0100" + stringToBytes(bytes.length.toString()) + bytes
 
   const payload: RequestSignPayloadInput = {
     signingType: SigningType.MICHELINE,

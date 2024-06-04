@@ -6,7 +6,6 @@ import { Parser, Expr, unpackDataBytes, MichelsonType, MichelsonData } from "@ta
 import { parseUnits } from "services/contracts/utils"
 import { ProposalDTO } from "services/services/types"
 import { extractTransfersData } from "."
-import { bytes2Char } from "@taquito/tzip16"
 import { BaseDAO } from "services/contracts/baseDAO"
 import { DAOTemplate } from "modules/creator/state"
 import transfer_arg_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/transfer_proposal_type.json"
@@ -16,6 +15,7 @@ import update_guardian_type_michelson from "../../../../contracts/baseDAO/lambda
 import configuration_proposal_type_michelson from "../../../../contracts/baseDAO/lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
 import { PMLambdaProposal } from "services/contracts/baseDAO/lambdaDAO/types"
 import { HUMANITEZ_DAO } from "services/config"
+import { hexStringToBytes } from "services/utils/utils"
 
 export enum IndexerStatus {
   CREATED = "created",
@@ -349,8 +349,8 @@ export class LambdaProposal extends Proposal {
 
           if (registry_diff) {
             lambdaMetadata.list = registry_diff.map((item: any) => ({
-              key: bytes2Char(item[0]),
-              value: bytes2Char(item[1])
+              key: hexStringToBytes(item[0]),
+              value: hexStringToBytes(item[1])
             }))
           }
         }

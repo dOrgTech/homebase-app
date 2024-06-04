@@ -1,7 +1,7 @@
 import { MichelsonMap, TezosToolkit } from "@taquito/taquito"
-import { bytes2Char } from "@taquito/tzip16"
 import { DAOListMetadata } from "services/contracts/metadataCarrier/types"
 import { getContract } from "../baseDAO"
+import { hexStringToBytes } from "services/utils/utils"
 
 export const getDAOListMetadata = async (contractAddress: string, tezos: TezosToolkit): Promise<DAOListMetadata> => {
   const contract = await getContract(tezos, contractAddress)
@@ -21,9 +21,9 @@ export const getDAOListMetadata = async (contractAddress: string, tezos: TezosTo
     description: metadata.metadata.description || "",
     template: (metadata.metadata as any).template,
     unfrozenToken: {
-      symbol: bytes2Char(fa2Map.get("symbol") as string),
-      name: bytes2Char(fa2Map.get("name") as string),
-      decimals: bytes2Char(fa2Map.get("decimals") as string)
+      symbol: hexStringToBytes(fa2Map.get("symbol") as string),
+      name: hexStringToBytes(fa2Map.get("name") as string),
+      decimals: hexStringToBytes(fa2Map.get("decimals") as string)
     }
   }
 }

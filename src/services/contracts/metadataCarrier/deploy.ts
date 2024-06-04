@@ -1,5 +1,5 @@
 import { ContractAbstraction, ContractProvider, MichelsonMap, TezosToolkit, Wallet } from "@taquito/taquito"
-import { char2Bytes } from "@taquito/tzip16"
+import { stringToBytes } from "@taquito/utils"
 
 import { code } from "services/contracts/metadataCarrier/code"
 import { setMetadataJSON } from "services/contracts/metadataCarrier/metadata"
@@ -9,7 +9,7 @@ const setMetadataMap = (keyName: string, metadata: MetadataParams) => {
   const map = new MichelsonMap()
   const json = setMetadataJSON(metadata)
 
-  map.set(keyName, char2Bytes(JSON.stringify(json)))
+  map.set(keyName, stringToBytes(JSON.stringify(json)))
 
   return map
 }

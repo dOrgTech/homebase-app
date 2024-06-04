@@ -25,6 +25,7 @@ import { DAOCreatorRouter } from "modules/creator/router"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
+import { hexStringToBytes } from "services/utils/utils"
 
 const queryClient = new QueryClient({
   defaultOptions: {
