@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
 import { DAOHolding } from "services/bakingBad/tokenBalances"
@@ -117,6 +117,27 @@ const BalancesList: React.FC<TableProps> = ({
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
   const value = isMobileSmall ? 6 : 5
+  const [list, setList] = useState(rows)
+
+  useEffect(() => {
+    setList(rows)
+  }, [rows])
+
+  // useEffect(() => {
+  //   if (list) {
+  //     const val = list.findIndex(row => row.symbol === "XTZ")
+  //     if (val === -1) {
+  //       const xtz: RowData = {
+  //         symbol: "XTZ",
+  //         address: "",
+  //         amount: tezosBalance.toString()
+  //       }
+  //       const updatedList = rows.slice()
+  //       updatedList.unshift(xtz)
+  //       setList(updatedList)
+  //     }
+  //   }
+  // }, [tezosBalance, list, rows])
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (rows) {
@@ -130,7 +151,7 @@ const BalancesList: React.FC<TableProps> = ({
   const pageCount = Math.ceil(rows ? rows.length / value : 0)
   return (
     <Grid container direction="row" spacing={2}>
-      <Grid item xs={isMobileSmall ? 12 : 4}>
+      {/* <Grid item xs={isMobileSmall ? 12 : 4}>
         <TokenCard>
           <CustomCardContent>
             <TokenSymbol>XTZ</TokenSymbol>
@@ -151,14 +172,20 @@ const BalancesList: React.FC<TableProps> = ({
             </Grid>
           </CustomCardContent>
         </TokenCard>
-      </Grid>
+      </Grid> */}
 
-      {rows.slice(offset, offset + value).map((row, i) => (
+      {list.slice(offset, offset + value).map((row, i) => (
         <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 4}>
           <TokenCard>
             <CustomCardContent>
               <TokenSymbol>{row.symbol}</TokenSymbol>
-              <Grid container item direction="row" alignItems="center">
+              <Grid
+                container
+                item
+                direction="row"
+                alignItems="center"
+                style={row.symbol === "XTZ" ? { visibility: "hidden" } : {}}
+              >
                 <AddressText variant="subtitle2">{toShortAddress(row.address)}</AddressText>
                 <CopyButton text={row.address} style={{ height: 15 }}></CopyButton>
               </Grid>
@@ -262,7 +289,6 @@ export const BalancesTable: React.FC = () => {
   }
 
   const handleFilters = (filters: TokensFilters) => {
-    console.log(filters)
     setFilters(filters)
   }
 
@@ -276,6 +302,12 @@ export const BalancesTable: React.FC = () => {
       if (filters?.token && filters.token !== "") {
         data = holdings.filter(trx => trx.token?.symbol.toLowerCase() === filters.token?.toLocaleLowerCase())
       }
+      if (filters?.balanceMin && filters.balanceMin !== "") {
+        data = holdings.filter(trx => trx.balance.isGreaterThanOrEqualTo(filters.balanceMin!))
+      }
+      if (filters?.balanceMax && filters.balanceMax !== "") {
+        data = holdings.filter(trx => trx.balance.isLessThanOrEqualTo(filters.balanceMax!))
+      }
       return data
     }
 
@@ -283,6 +315,21 @@ export const BalancesTable: React.FC = () => {
       return []
     }
     let holdings = tokenHoldings.slice()
+    const xtz: DAOHolding = {
+      token: {
+        symbol: "XTZ",
+        id: "XTZ",
+        contract: "",
+        token_id: 0,
+        name: "",
+        decimals: 6,
+        network: "mainnet",
+        supply: tezosBalance || new BigNumber(0),
+        standard: ""
+      },
+      balance: tezosBalance || new BigNumber(0)
+    }
+    holdings.unshift(xtz)
 
     if (filters) {
       holdings = handleFilterData(holdings)
@@ -295,7 +342,7 @@ export const BalancesTable: React.FC = () => {
     }
 
     return holdings.map(createData)
-  }, [tokenHoldings, searchText, filters])
+  }, [tokenHoldings, searchText, filters, tezosBalance])
 
   return (
     <>
