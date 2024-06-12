@@ -32,7 +32,8 @@ interface Props {
 
 const SectionTitle = styled(Typography)({
   fontSize: "18px !important",
-  fontWeight: 600
+  fontWeight: 600,
+  color: "#fff !important"
 })
 
 const Container = styled(Grid)({
@@ -43,6 +44,7 @@ const Container = styled(Grid)({
 const StatusButton = styled(Grid)(({ theme }) => ({
   "background": theme.palette.primary.main,
   "padding": "8px 16px",
+  "color": theme.palette.text.primary,
   "borderRadius": 50,
   "marginRight": 16,
   "marginBottom": 16,
@@ -155,22 +157,26 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
         </Container> */}
         <Container container direction="column">
           <Grid item>
-            <SectionTitle>Type</SectionTitle>
+            <SectionTitle color="textPrimary">Type</SectionTitle>
           </Grid>
           <Grid item container direction="row">
             <StatusButton
               item
               onClick={() => saveType(ProposalType.ON_CHAIN)}
-              style={proposalType === ProposalType.ON_CHAIN ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+              style={
+                proposalType === ProposalType.ON_CHAIN ? { backgroundColor: "#fff", color: "#1c1f23 !important" } : {}
+              }
             >
-              <Typography>On-chain</Typography>
+              <Typography color="textPrimary">On-chain</Typography>
             </StatusButton>
             <StatusButton
               item
               onClick={() => saveType(ProposalType.OFF_CHAIN)}
-              style={proposalType === ProposalType.OFF_CHAIN ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+              style={
+                proposalType === ProposalType.OFF_CHAIN ? { backgroundColor: "#fff", color: "#1c1f23 !important" } : {}
+              }
             >
-              <Typography>Off-chain</Typography>
+              <Typography color="textPrimary">Off-chain</Typography>
             </StatusButton>
           </Grid>
         </Container>
@@ -178,7 +184,7 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
         {proposalType === ProposalType.ON_CHAIN ? (
           <Container container direction="column">
             <Grid item>
-              <SectionTitle>On-Chain Proposal Status</SectionTitle>
+              <SectionTitle color="textPrimary">On-Chain Proposal Status</SectionTitle>
             </Grid>
             <Grid item container direction="row">
               {onchainStatus.length > 0 &&
@@ -200,7 +206,7 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
         {proposalType === ProposalType.OFF_CHAIN ? (
           <Container container direction="column">
             <Grid item>
-              <SectionTitle>Off-Chain Proposal Status</SectionTitle>
+              <SectionTitle color="textPrimary">Off-Chain Proposal Status</SectionTitle>
             </Grid>
             <Grid item container direction="row">
               <StatusButton
@@ -208,14 +214,14 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
                 onClick={() => saveOffchainStatus(OffchainStatus.ACTIVE)}
                 style={offchainStatus === OffchainStatus.ACTIVE ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
               >
-                <Typography>Active</Typography>
+                <Typography color="textPrimary">Active</Typography>
               </StatusButton>
               <StatusButton
                 item
                 onClick={() => saveOffchainStatus(OffchainStatus.CLOSED)}
                 style={offchainStatus === OffchainStatus.CLOSED ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
               >
-                <Typography>Closed</Typography>
+                <Typography color="textPrimary">Closed</Typography>
               </StatusButton>
             </Grid>
           </Container>

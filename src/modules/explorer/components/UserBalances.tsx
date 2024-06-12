@@ -54,11 +54,13 @@ const BalanceHeaderText = styled(Typography)({
 
 const BalanceGrid = styled(Grid)({
   ["@media (max-width:636px)"]: {
-    marginBottom: 25
+    marginBottom: 25,
+    justifyContent: "flex-start"
   },
 
   ["@media (max-width:409.99px)"]: {
-    marginBottom: 20
+    marginBottom: 20,
+    justifyContent: "flex-start"
   }
 })
 

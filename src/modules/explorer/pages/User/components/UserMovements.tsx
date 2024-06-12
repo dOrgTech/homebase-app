@@ -29,6 +29,7 @@ import {
 import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { useDAO } from "services/services/dao/hooks/useDAO"
+import { FilterUserTransactionsDialog, TrxStatus } from "modules/explorer/components/FiltersUserTransactionsDialog"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -122,6 +123,13 @@ export interface Filters {
   order: Order
 }
 
+export interface TrxFilters {
+  type: StatusOption | undefined
+  token: string
+  receiver: string
+  sender: string
+}
+
 export const UserMovements: React.FC<{
   daoId: string
   proposalsCreated: Proposal[]
@@ -136,7 +144,10 @@ export const UserMovements: React.FC<{
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [openFiltersTrxDialog, setOpenFiltersTrxDialog] = useState(false)
+
   const [filters, setFilters] = useState<Filters>()
+  const [trxFilters, setTrxFilters] = useState<TrxFilters>()
 
   const { data } = useDAO(daoId)
   const { data: polls } = usePolls(data?.liteDAOData?._id)
@@ -175,14 +186,47 @@ export const UserMovements: React.FC<{
     setSelectedTab(newValue)
   }
 
+  const currentTransfers = useMemo(() => {
+    const handleFilterData = (allTransfers: TransferWithBN[]) => {
+      let data = allTransfers.slice()
+      if (trxFilters?.receiver && trxFilters.receiver !== "") {
+        data = allTransfers.filter(trx => trx.recipient === trxFilters.receiver)
+      }
+      if (trxFilters?.sender && trxFilters.sender !== "") {
+        data = allTransfers.filter(trx => trx.sender === trxFilters.sender)
+      }
+      if (trxFilters?.token && trxFilters.token !== "") {
+        data = allTransfers.filter(
+          trx => trx.token?.symbol.toLocaleLowerCase() === trxFilters.token?.toLocaleLowerCase()
+        )
+      }
+      if (trxFilters?.type && trxFilters.type !== undefined) {
+        data = allTransfers.filter(trx =>
+          trx.type ? trx.type.toLocaleLowerCase() === trxFilters.type?.label?.toLocaleLowerCase() : null
+        )
+      }
+      return data
+    }
+
+    if (transfers) {
+      let holdings = transfers?.slice()
+      if (trxFilters) {
+        holdings = handleFilterData(holdings)
+      }
+
+      return holdings
+    }
+    return []
+  }, [transfers, trxFilters])
+
   useEffect(() => {
-    setFilteredTransactions(transfers)
-    setPageCount(Math.ceil(transfers ? transfers.length / count : 0))
-  }, [transfers])
+    setFilteredTransactions(currentTransfers)
+    setPageCount(Math.ceil(currentTransfers ? currentTransfers.length / count : 0))
+  }, [currentTransfers])
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
-    if (transfers) {
+    if (currentTransfers) {
       const newOffset = (event.selected * count) % (filteredTransactions ? filteredTransactions.length : 1)
       setOffset(newOffset)
       setCurrentPage(event.selected)
@@ -193,8 +237,16 @@ export const UserMovements: React.FC<{
     setOpenFiltersDialog(false)
   }
 
+  const handleCloseTrxFiltersModal = () => {
+    setOpenFiltersTrxDialog(false)
+  }
+
   const handleFilters = (filters: Filters) => {
     setFilters(filters)
+  }
+
+  const handleTrxFilters = (filters: TrxFilters) => {
+    setTrxFilters(filters)
   }
 
   return (
@@ -262,14 +314,18 @@ export const UserMovements: React.FC<{
               <Typography color="secondary">View All</Typography>
             </Grid>
           </ViewAll>
-        ) : selectedTab !== 2 ? (
-          <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setOpenFiltersDialog(true)}>
+        ) : (
+          <ViewAll
+            item
+            xs={isMobileSmall ? 12 : 2}
+            onClick={() => (selectedTab !== 2 ? setOpenFiltersDialog(true) : setOpenFiltersTrxDialog(true))}
+          >
             <Grid item container direction="row" alignItems="center">
               <FilterAltIcon color="secondary" />
               <Typography color="secondary">Filter & Sort</Typography>
             </Grid>
           </ViewAll>
-        ) : null}
+        )}
 
         <Grid item>
           <TabPanel value={selectedTab} index={0}>
@@ -321,10 +377,10 @@ export const UserMovements: React.FC<{
 
           {/* TAB TRANSACTIONS CONTENT */}
           <TabPanel value={selectedTab} index={2}>
-            {transfers && transfers.length > 0 ? (
+            {currentTransfers && currentTransfers.length > 0 ? (
               <Grid container item style={{ marginTop: 24, gap: 16 }}>
-                {transfers &&
-                  transfers
+                {currentTransfers &&
+                  currentTransfers
                     .slice(showActivity ? offset : 0, showActivity ? offset + count : count)
                     .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
                 {showActivity ? (
@@ -360,6 +416,12 @@ export const UserMovements: React.FC<{
         open={openFiltersDialog}
         handleClose={handleCloseFiltersModal}
         saveFilters={handleFilters}
+      />
+
+      <FilterUserTransactionsDialog
+        open={openFiltersTrxDialog}
+        handleClose={handleCloseTrxFiltersModal}
+        saveFilters={handleTrxFilters}
       />
     </Grid>
   )
