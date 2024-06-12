@@ -6,7 +6,7 @@ import { NFTDialog } from "modules/explorer/components/NFTDialog"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
 import { UserBadge } from "modules/explorer/components/UserBadge"
 
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { NFTDAOHolding } from "services/bakingBad/tokenBalances"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
@@ -17,7 +17,11 @@ import { useIsProposalButtonDisabled } from "../../../../services/contracts/base
 import { SmallButton } from "../../../common/SmallButton"
 import { parseUnits } from "services/contracts/utils"
 import ReactPaginate from "react-paginate"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
+
 import "../DAOList/styles.css"
+import { SearchInput } from "../DAOList/components/Searchbar"
+import { FilterNFTDialog } from "modules/explorer/components/FilterNFTDialog"
 
 const Card = styled(ContentContainer)(({ theme }) => ({
   boxSizing: "border-box",
@@ -46,10 +50,15 @@ const NFTTitle = styled(Typography)({
   fontWeight: 500
 })
 
-const ProposalsFooter = styled(Grid)({
-  padding: "16px 46px",
-  minHeight: 34
+const FiltersContainer = styled(Grid)({
+  cursor: "pointer"
 })
+
+export interface TokensFilters {
+  owner: string | null
+  valueMin: string | undefined
+  valueMax: string | undefined
+}
 
 export const NFTs: React.FC = () => {
   const theme = useTheme()
@@ -61,6 +70,9 @@ export const NFTs: React.FC = () => {
   const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
   const [selectedNFT, setSelectedNFT] = useState<NFTDAOHolding>()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [filters, setFilters] = useState<TokensFilters>()
 
   const onClickNFT = (nft: NFTDAOHolding) => {
     setSelectedNFT(nft)
@@ -109,14 +121,76 @@ export const NFTs: React.FC = () => {
     }
   }
 
+  const filterByName = (text: string) => {
+    setSearchText(text.trim())
+  }
+
+  const handleFilters = (filters: TokensFilters) => {
+    setFilters(filters)
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
+  }
+
+  const rows = useMemo(() => {
+    const handleFilterData = (holdings: NFTDAOHolding[]) => {
+      let data = holdings.slice()
+      if (filters?.owner && filters.owner !== "") {
+        data = holdings.filter(trx =>
+          trx.token?.firstCreator ? trx.token?.firstCreator.toLowerCase() === filters.owner?.toLocaleLowerCase() : null
+        )
+      }
+      if (filters?.valueMin && filters.valueMin !== "") {
+        data = holdings.filter(trx => trx.balance.isGreaterThanOrEqualTo(filters.valueMin!))
+      }
+      if (filters?.valueMax && filters.valueMax !== "") {
+        data = holdings.filter(trx => trx.balance.isLessThanOrEqualTo(filters.valueMax!))
+      }
+      return data
+    }
+
+    if (!nftHoldings) {
+      return []
+    }
+    let holdings = nftHoldings.slice()
+
+    if (filters) {
+      holdings = handleFilterData(holdings)
+    }
+
+    if (searchText) {
+      holdings = holdings.filter(
+        holding => holding.token && holding.token.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    }
+    return holdings
+  }, [nftHoldings, searchText, filters])
+
   const pageCount = Math.ceil(nftHoldings ? nftHoldings.length / value : 0)
 
   return (
     <>
-      <Grid container direction="column" style={{ gap: 42 }}>
+      <Grid container direction="column">
+        <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="space-between">
+          <FiltersContainer
+            onClick={() => setOpenFiltersDialog(true)}
+            xs={isMobileSmall ? 6 : 2}
+            item
+            container
+            direction="row"
+            alignItems="center"
+          >
+            <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
+            <Typography color="secondary">Filter & Sort</Typography>
+          </FiltersContainer>
+          <Grid item xs={isMobileSmall ? 6 : 4}>
+            <SearchInput search={filterByName} />
+          </Grid>
+        </Grid>
         <Grid item style={{ width: "inherit" }}>
           <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} style={{ gap: 12 }}>
-            {!nftHoldings ? (
+            {!rows ? (
               <>
                 <Grid container direction="row" justifyContent="center">
                   <CircularProgress color="secondary" />
@@ -124,7 +198,7 @@ export const NFTs: React.FC = () => {
               </>
             ) : (
               <>
-                {nftHoldings.slice(offset, offset + value).map((nft, i) => (
+                {rows.slice(offset, offset + value).map((nft, i) => (
                   <Card
                     key={`nft-${i}`}
                     item
@@ -189,14 +263,14 @@ export const NFTs: React.FC = () => {
                     </Grid>
                   </Card>
                 ))}
-                {!(nftHoldings && nftHoldings.length > 0) ? (
-                  <ProposalsFooter item container direction="column" justifyContent="center">
+                {!(rows && rows.length > 0) ? (
+                  <Grid item container direction="column">
                     <Grid item>
-                      <Typography color="textPrimary" align="center">
+                      <Typography color="textPrimary" align="left">
                         No items
                       </Typography>
                     </Grid>
-                  </ProposalsFooter>
+                  </Grid>
                 ) : null}
                 <Grid container direction="row" justifyContent="flex-end">
                   <ReactPaginate
@@ -225,6 +299,12 @@ export const NFTs: React.FC = () => {
         handleClose={onCloseTransfer}
         defaultValues={defaultValues}
         defaultTab={1}
+      />
+      <FilterNFTDialog
+        currentFilters={filters}
+        saveFilters={handleFilters}
+        open={openFiltersDialog}
+        handleClose={handleCloseFiltersModal}
       />
     </>
   )

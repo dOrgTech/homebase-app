@@ -1,6 +1,5 @@
-import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-
 import React, { useMemo, useState } from "react"
+import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../DAO/router"
 import { BalancesTable } from "./components/BalancesTable"
@@ -299,7 +298,7 @@ export const Treasury: React.FC = () => {
               <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="space-between">
                 <FiltersContainer
                   onClick={() => setOpenFiltersDialog(true)}
-                  xs={isMobileSmall ? 12 : 2}
+                  xs={isMobileSmall ? 6 : 2}
                   item
                   container
                   direction="row"
@@ -308,7 +307,7 @@ export const Treasury: React.FC = () => {
                   <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
                   <Typography color="secondary">Filter & Sort</Typography>
                 </FiltersContainer>
-                <Grid item xs={4}>
+                <Grid item xs={isMobileSmall ? 6 : 4}>
                   <SearchInput search={filterByName} />
                 </Grid>
               </Grid>

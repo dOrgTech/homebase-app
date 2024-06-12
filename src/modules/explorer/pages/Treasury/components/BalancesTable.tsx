@@ -28,17 +28,6 @@ const TokenSymbol = styled(Typography)(({ theme }) => ({
   fontSize: 24
 }))
 
-const MobileTableHeader = styled(Grid)({
-  width: "100%",
-  padding: 20,
-  borderBottom: "0.3px solid #3D3D3D"
-})
-
-const MobileTableRow = styled(Grid)({
-  padding: "30px",
-  borderBottom: "0.3px solid #3D3D3D"
-})
-
 interface RowData {
   symbol: string
   address: string
@@ -86,17 +75,6 @@ const createData = (daoHolding: DAOHolding): RowData => {
 
 const titles = ["Token Balances", "Address", "Balance"] as const
 
-const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
-  switch (title) {
-    case "Token Balances":
-      return rowData.symbol
-    case "Address":
-      return rowData.address
-    case "Balance":
-      return rowData.amount
-  }
-}
-
 interface TableProps {
   rows: RowData[]
   tezosBalance: BigNumber
@@ -108,7 +86,6 @@ interface TableProps {
 
 const BalancesList: React.FC<TableProps> = ({
   rows,
-  tezosBalance,
   openTokenTransferModal,
   openXTZTransferModal,
   shouldDisable,
@@ -123,22 +100,6 @@ const BalancesList: React.FC<TableProps> = ({
     setList(rows)
   }, [rows])
 
-  // useEffect(() => {
-  //   if (list) {
-  //     const val = list.findIndex(row => row.symbol === "XTZ")
-  //     if (val === -1) {
-  //       const xtz: RowData = {
-  //         symbol: "XTZ",
-  //         address: "",
-  //         amount: tezosBalance.toString()
-  //       }
-  //       const updatedList = rows.slice()
-  //       updatedList.unshift(xtz)
-  //       setList(updatedList)
-  //     }
-  //   }
-  // }, [tezosBalance, list, rows])
-  // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (rows) {
       const newOffset = (event.selected * value) % rows.length
@@ -151,78 +112,63 @@ const BalancesList: React.FC<TableProps> = ({
   const pageCount = Math.ceil(rows ? rows.length / value : 0)
   return (
     <Grid container direction="row" spacing={2}>
-      {/* <Grid item xs={isMobileSmall ? 12 : 4}>
-        <TokenCard>
-          <CustomCardContent>
-            <TokenSymbol>XTZ</TokenSymbol>
-
-            <BalanceTitle variant="body1" color="secondary" style={{ marginTop: 49 }}>
-              Balance
-            </BalanceTitle>
-            <BalanceText>{tezosBalance.toString()}</BalanceText>
-            <Grid container item direction="row" alignItems="center" justifyContent="center">
-              <SmallButton
-                variant="contained"
-                color="secondary"
-                onClick={() => openXTZTransferModal()}
-                disabled={shouldDisable}
-              >
-                Transfer
-              </SmallButton>
+      {list && list.length > 0 ? (
+        <>
+          {list.slice(offset, offset + value).map((row, i) => (
+            <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 4}>
+              <TokenCard>
+                <CustomCardContent>
+                  <TokenSymbol>{row.symbol}</TokenSymbol>
+                  <Grid
+                    container
+                    item
+                    direction="row"
+                    alignItems="center"
+                    style={row.symbol === "XTZ" ? { visibility: "hidden" } : {}}
+                  >
+                    <AddressText variant="subtitle2">{toShortAddress(row.address)}</AddressText>
+                    <CopyButton text={row.address} style={{ height: 15 }}></CopyButton>
+                  </Grid>
+                  <BalanceTitle color="secondary" style={{ marginTop: 16 }}>
+                    Balance
+                  </BalanceTitle>
+                  <BalanceText>{row.amount}</BalanceText>
+                  <Grid container item direction="row" alignItems="center" justifyContent="center">
+                    <SmallButton
+                      variant="contained"
+                      color="secondary"
+                      onClick={() =>
+                        row.symbol === "XTZ" ? openXTZTransferModal() : openTokenTransferModal(row.address)
+                      }
+                      disabled={shouldDisable}
+                    >
+                      Transfer
+                    </SmallButton>
+                  </Grid>
+                </CustomCardContent>
+              </TokenCard>
             </Grid>
-          </CustomCardContent>
-        </TokenCard>
-      </Grid> */}
-
-      {list.slice(offset, offset + value).map((row, i) => (
-        <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 4}>
-          <TokenCard>
-            <CustomCardContent>
-              <TokenSymbol>{row.symbol}</TokenSymbol>
-              <Grid
-                container
-                item
-                direction="row"
-                alignItems="center"
-                style={row.symbol === "XTZ" ? { visibility: "hidden" } : {}}
-              >
-                <AddressText variant="subtitle2">{toShortAddress(row.address)}</AddressText>
-                <CopyButton text={row.address} style={{ height: 15 }}></CopyButton>
-              </Grid>
-              <BalanceTitle color="secondary" style={{ marginTop: 16 }}>
-                Balance
-              </BalanceTitle>
-              <BalanceText>{row.amount}</BalanceText>
-              <Grid container item direction="row" alignItems="center" justifyContent="center">
-                <SmallButton
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => openTokenTransferModal(row.address)}
-                  disabled={shouldDisable}
-                >
-                  Transfer
-                </SmallButton>
-              </Grid>
-            </CustomCardContent>
-          </TokenCard>
-        </Grid>
-      ))}
-      <Grid container direction="row" justifyContent="flex-end">
-        <ReactPaginate
-          previousLabel={"<"}
-          breakLabel="..."
-          nextLabel=">"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={2}
-          pageCount={pageCount}
-          renderOnZeroPageCount={null}
-          containerClassName={"pagination"}
-          activeClassName={"active"}
-          forcePage={currentPage}
-          nextClassName="nextButton"
-          previousClassName="nextButton"
-        />
-      </Grid>
+          ))}
+          <Grid container direction="row" justifyContent="flex-end">
+            <ReactPaginate
+              previousLabel={"<"}
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={2}
+              pageCount={pageCount}
+              renderOnZeroPageCount={null}
+              containerClassName={"pagination"}
+              activeClassName={"active"}
+              forcePage={currentPage}
+              nextClassName="nextButton"
+              previousClassName="nextButton"
+            />
+          </Grid>
+        </>
+      ) : (
+        <Typography color="textPrimary">No items</Typography>
+      )}
     </Grid>
   )
 }
@@ -350,7 +296,7 @@ export const BalancesTable: React.FC = () => {
         <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="space-between">
           <FiltersContainer
             onClick={() => setOpenFiltersDialog(true)}
-            xs={isSmall ? 12 : 2}
+            xs={isSmall ? 6 : 2}
             item
             container
             direction="row"
@@ -359,7 +305,7 @@ export const BalancesTable: React.FC = () => {
             <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
             <Typography color="secondary">Filter & Sort</Typography>
           </FiltersContainer>
-          <Grid item xs={4}>
+          <Grid item xs={isSmall ? 6 : 4}>
             <SearchInput search={filterByName} />
           </Grid>
         </Grid>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Grid, TextField, Typography, styled, withStyles } from "@material-ui/core"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { SmallButton } from "modules/common/SmallButton"
-import { TokensFilters } from "../pages/Treasury"
+import { TokensFilters } from "../pages/NFTs"
 
 interface Props {
   currentFilters: TokensFilters | undefined
@@ -36,6 +36,11 @@ const CustomTextField = withStyles({
       borderRadius: 8,
       padding: 16
     },
+    "& p": {
+      position: "absolute",
+      right: 16,
+      fontWeight: 300
+    },
     "& .MuiInputBase-root": {
       textWeight: 300
     },
@@ -57,26 +62,26 @@ const CustomTextField = withStyles({
   }
 })(TextField)
 
-export const FilterTokenDialog: React.FC<Props> = ({ open, handleClose, saveFilters, currentFilters }) => {
-  const [token, setToken] = useState<string | null>("")
-  const [balanceMin, setBalanceMin] = useState<string | undefined>()
-  const [balanceMax, setBalanceMax] = useState<string | undefined>()
+export const FilterNFTDialog: React.FC<Props> = ({ open, handleClose, saveFilters, currentFilters }) => {
+  const [owner, setOwner] = useState<string | null>("")
+  const [valueMin, setValueMin] = useState<string | undefined>()
+  const [valueMax, setValueMax] = useState<string | undefined>()
 
   const ariaLabel = { "aria-label": "description" }
 
   useEffect(() => {
     if (currentFilters) {
-      setToken(currentFilters?.token)
-      setBalanceMin(currentFilters.balanceMin)
-      setBalanceMax(currentFilters.balanceMax)
+      setOwner(currentFilters?.owner)
+      setValueMin(currentFilters.valueMin)
+      setValueMax(currentFilters.valueMax)
     }
   }, [currentFilters])
 
   const showFilters = () => {
     const filterObject: TokensFilters = {
-      token: token,
-      balanceMin: balanceMin,
-      balanceMax: balanceMax
+      owner: owner,
+      valueMin: valueMin,
+      valueMax: valueMax
     }
     saveFilters(filterObject)
     handleClose()
@@ -87,28 +92,14 @@ export const FilterTokenDialog: React.FC<Props> = ({ open, handleClose, saveFilt
       <ResponsiveDialog open={open} onClose={handleClose} title={"Filter"} template="sm">
         <Container container direction="column">
           <Grid item>
-            <SectionTitle color="textPrimary">Token</SectionTitle>
-          </Grid>
-          <Grid item>
-            <CustomTextField
-              onChange={event => setToken(event.target.value)}
-              style={{ width: "40%" }}
-              name="test"
-              value={token}
-              placeholder="Token"
-              inputProps={ariaLabel}
-            />
-          </Grid>
-
-          <Grid item>
-            <SectionTitle color="textPrimary">Balance</SectionTitle>
+            <SectionTitle color="textPrimary">Value</SectionTitle>
           </Grid>
           <Grid item container direction="row" justifyContent="space-between" spacing={2}>
             <Grid item xs={6}>
               <CustomTextField
-                onChange={event => setBalanceMin(event.target.value)}
+                onChange={event => setValueMin(event.target.value)}
                 name="test"
-                value={balanceMin}
+                value={valueMin}
                 placeholder="Min"
                 inputProps={ariaLabel}
                 type="number"
@@ -116,14 +107,28 @@ export const FilterTokenDialog: React.FC<Props> = ({ open, handleClose, saveFilt
             </Grid>
             <Grid item xs={6}>
               <CustomTextField
-                onChange={event => setBalanceMax(event.target.value)}
+                onChange={event => setValueMax(event.target.value)}
                 name="test"
-                value={balanceMax}
+                value={valueMax}
                 placeholder="Max"
                 type="number"
                 inputProps={ariaLabel}
               />
             </Grid>
+          </Grid>
+
+          <Grid item>
+            <SectionTitle color="textPrimary">Owner Address</SectionTitle>
+          </Grid>
+          <Grid item xs={12}>
+            <CustomTextField
+              onChange={event => setOwner(event.target.value)}
+              style={{ width: "100%" }}
+              name="test"
+              value={owner}
+              placeholder="Address"
+              inputProps={ariaLabel}
+            />
           </Grid>
         </Container>
 

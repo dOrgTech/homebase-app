@@ -22,10 +22,13 @@ const SectionTitle = styled(Typography)({
   fontWeight: 600
 })
 
-const Container = styled(Grid)({
+const Container = styled(Grid)(({ theme }) => ({
   marginTop: 6,
-  gap: 24
-})
+  gap: 24,
+  [theme.breakpoints.down("sm")]: {
+    marginTop: 30
+  }
+}))
 
 const CustomTextField = withStyles({
   root: {
@@ -135,7 +138,7 @@ export const FilterTransactionsDialog: React.FC<Props> = ({ open, handleClose, s
       <ResponsiveDialog open={open} onClose={handleClose} title={"Filter"} template="sm">
         <Container container direction="column">
           <Grid item>
-            <SectionTitle>Sort by</SectionTitle>
+            <SectionTitle color="textPrimary">Sort by</SectionTitle>
           </Grid>
           <Grid item>
             <Grid item container direction="row">
@@ -154,7 +157,7 @@ export const FilterTransactionsDialog: React.FC<Props> = ({ open, handleClose, s
             </Grid>
           </Grid>
           <Grid item>
-            <SectionTitle>Token</SectionTitle>
+            <SectionTitle color="textPrimary">Token</SectionTitle>
           </Grid>
           <Grid item>
             <CustomTextField
@@ -168,7 +171,7 @@ export const FilterTransactionsDialog: React.FC<Props> = ({ open, handleClose, s
           </Grid>
 
           <Grid item>
-            <SectionTitle>Receiving Address</SectionTitle>
+            <SectionTitle color="textPrimary">Receiving Address</SectionTitle>
           </Grid>
           <Grid item>
             <CustomTextField
@@ -181,7 +184,7 @@ export const FilterTransactionsDialog: React.FC<Props> = ({ open, handleClose, s
           </Grid>
 
           <Grid item>
-            <SectionTitle>Sending Address</SectionTitle>
+            <SectionTitle color="textPrimary">Sending Address</SectionTitle>
           </Grid>
           <Grid item>
             <CustomTextField
