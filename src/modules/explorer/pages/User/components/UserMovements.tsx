@@ -124,7 +124,7 @@ export interface Filters {
 }
 
 export interface TrxFilters {
-  status: TrxStatus
+  type: StatusOption | undefined
   token: string
   receiver: string
   sender: string
@@ -186,14 +186,47 @@ export const UserMovements: React.FC<{
     setSelectedTab(newValue)
   }
 
+  const currentTransfers = useMemo(() => {
+    const handleFilterData = (allTransfers: TransferWithBN[]) => {
+      let data = allTransfers.slice()
+      if (trxFilters?.receiver && trxFilters.receiver !== "") {
+        data = allTransfers.filter(trx => trx.recipient === trxFilters.receiver)
+      }
+      if (trxFilters?.sender && trxFilters.sender !== "") {
+        data = allTransfers.filter(trx => trx.sender === trxFilters.sender)
+      }
+      if (trxFilters?.token && trxFilters.token !== "") {
+        data = allTransfers.filter(
+          trx => trx.token?.symbol.toLocaleLowerCase() === trxFilters.token?.toLocaleLowerCase()
+        )
+      }
+      if (trxFilters?.type && trxFilters.type !== undefined) {
+        data = allTransfers.filter(trx =>
+          trx.type ? trx.type.toLocaleLowerCase() === trxFilters.type?.label?.toLocaleLowerCase() : null
+        )
+      }
+      return data
+    }
+
+    if (transfers) {
+      let holdings = transfers?.slice()
+      if (trxFilters) {
+        holdings = handleFilterData(holdings)
+      }
+
+      return holdings
+    }
+    return []
+  }, [transfers, trxFilters])
+
   useEffect(() => {
-    setFilteredTransactions(transfers)
-    setPageCount(Math.ceil(transfers ? transfers.length / count : 0))
-  }, [transfers])
+    setFilteredTransactions(currentTransfers)
+    setPageCount(Math.ceil(currentTransfers ? currentTransfers.length / count : 0))
+  }, [currentTransfers])
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
-    if (transfers) {
+    if (currentTransfers) {
       const newOffset = (event.selected * count) % (filteredTransactions ? filteredTransactions.length : 1)
       setOffset(newOffset)
       setCurrentPage(event.selected)
@@ -344,10 +377,10 @@ export const UserMovements: React.FC<{
 
           {/* TAB TRANSACTIONS CONTENT */}
           <TabPanel value={selectedTab} index={2}>
-            {transfers && transfers.length > 0 ? (
+            {currentTransfers && currentTransfers.length > 0 ? (
               <Grid container item style={{ marginTop: 24, gap: 16 }}>
-                {transfers &&
-                  transfers
+                {currentTransfers &&
+                  currentTransfers
                     .slice(showActivity ? offset : 0, showActivity ? offset + count : count)
                     .map((transfer, i) => <TransactionItem key={i} item={transfer}></TransactionItem>)}
                 {showActivity ? (

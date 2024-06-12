@@ -2,15 +2,12 @@ import React, { useEffect, useState } from "react"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { Grid, TextField, styled, withStyles } from "@material-ui/core"
 import { Typography } from "@mui/material"
-import { Dropdown } from "./Dropdown"
-import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { SmallButton } from "modules/common/SmallButton"
-import { Filters, TrxFilters } from "../pages/User/components/UserMovements"
+import { TrxFilters } from "../pages/User/components/UserMovements"
 
 export enum TrxStatus {
-  COMPLETED = "completed",
-  PENDING = "pending",
-  FAILED = "failed"
+  DEPOSIT = "Deposit",
+  WITHDRAWAL = "Withdrawal"
 }
 
 interface Props {
@@ -88,15 +85,15 @@ const StatusButton = styled(Grid)(({ theme }) => ({
 const ariaLabel = { "aria-label": "description" }
 
 export interface StatusOption {
-  label: string
+  label: TrxStatus
 }
 
 export const FilterUserTransactionsDialog: React.FC<Props> = ({ open, handleClose, saveFilters }) => {
-  const [token, setToken] = useState<string | null>("")
-  const [receiver, setReceiver] = useState<string | null>("")
-  const [sender, setSender] = useState<string | null>("")
+  const [token, setToken] = useState<string>("")
+  const [receiver, setReceiver] = useState<string>("")
+  const [sender, setSender] = useState<string>("")
   const [status, setStatus] = useState<StatusOption[]>([])
-  const [filters, setFilters] = useState<StatusOption>()
+  const [filter, setFilter] = useState<StatusOption>()
 
   const findStatus = () => {
     const values = Object.values(TrxStatus)
@@ -114,26 +111,34 @@ export const FilterUserTransactionsDialog: React.FC<Props> = ({ open, handleClos
   }, [])
 
   const isSelected = (item: StatusOption) => {
-    return filters && filters.label === item.label ? true : false
+    return filter && filter.label === item.label ? true : false
   }
 
   const saveStatus = (status: StatusOption) => {
-    if (status.label === filters?.label) {
-      setFilters(undefined)
+    if (status.label === filter?.label) {
+      setFilter(undefined)
     } else {
-      setFilters(status)
+      setFilter(status)
     }
   }
 
   const showFilters = () => {
-    console.log("filters")
+    const filterObject: TrxFilters = {
+      type: filter,
+      token: token,
+      sender: sender,
+      receiver: receiver
+    }
+    saveFilters(filterObject)
+    handleClose()
   }
+
   return (
     <>
       <ResponsiveDialog open={open} onClose={handleClose} title={"Filter"} template="sm">
         <Container container direction="column">
           <Grid item>
-            <SectionTitle color="textPrimary">Transaction Status</SectionTitle>
+            <SectionTitle color="textPrimary">Transaction Type</SectionTitle>
           </Grid>
           <Grid item container direction="row">
             {status.length > 0 &&

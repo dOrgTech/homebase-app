@@ -32,6 +32,10 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
   width: "inherit",
   color: "#BFC5CA",
   wordBreak: "break-word",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  maxWidth: "100%",
+  overflow: "hidden",
   [theme.breakpoints.down("sm")]: {
     fontSize: 16
   }
