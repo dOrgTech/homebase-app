@@ -29,6 +29,7 @@ import {
 import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { useDAO } from "services/services/dao/hooks/useDAO"
+import { FilterUserTransactionsDialog, TrxStatus } from "modules/explorer/components/FiltersUserTransactionsDialog"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -122,6 +123,13 @@ export interface Filters {
   order: Order
 }
 
+export interface TrxFilters {
+  status: TrxStatus
+  token: string
+  receiver: string
+  sender: string
+}
+
 export const UserMovements: React.FC<{
   daoId: string
   proposalsCreated: Proposal[]
@@ -136,7 +144,10 @@ export const UserMovements: React.FC<{
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [openFiltersTrxDialog, setOpenFiltersTrxDialog] = useState(false)
+
   const [filters, setFilters] = useState<Filters>()
+  const [trxFilters, setTrxFilters] = useState<TrxFilters>()
 
   const { data } = useDAO(daoId)
   const { data: polls } = usePolls(data?.liteDAOData?._id)
@@ -193,8 +204,16 @@ export const UserMovements: React.FC<{
     setOpenFiltersDialog(false)
   }
 
+  const handleCloseTrxFiltersModal = () => {
+    setOpenFiltersTrxDialog(false)
+  }
+
   const handleFilters = (filters: Filters) => {
     setFilters(filters)
+  }
+
+  const handleTrxFilters = (filters: TrxFilters) => {
+    setTrxFilters(filters)
   }
 
   return (
@@ -262,14 +281,18 @@ export const UserMovements: React.FC<{
               <Typography color="secondary">View All</Typography>
             </Grid>
           </ViewAll>
-        ) : selectedTab !== 2 ? (
-          <ViewAll item xs={isMobileSmall ? 12 : 2} onClick={() => setOpenFiltersDialog(true)}>
+        ) : (
+          <ViewAll
+            item
+            xs={isMobileSmall ? 12 : 2}
+            onClick={() => (selectedTab !== 2 ? setOpenFiltersDialog(true) : setOpenFiltersTrxDialog(true))}
+          >
             <Grid item container direction="row" alignItems="center">
               <FilterAltIcon color="secondary" />
               <Typography color="secondary">Filter & Sort</Typography>
             </Grid>
           </ViewAll>
-        ) : null}
+        )}
 
         <Grid item>
           <TabPanel value={selectedTab} index={0}>
@@ -360,6 +383,12 @@ export const UserMovements: React.FC<{
         open={openFiltersDialog}
         handleClose={handleCloseFiltersModal}
         saveFilters={handleFilters}
+      />
+
+      <FilterUserTransactionsDialog
+        open={openFiltersTrxDialog}
+        handleClose={handleCloseTrxFiltersModal}
+        saveFilters={handleTrxFilters}
       />
     </Grid>
   )
