@@ -37,14 +37,9 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
   gap: 16
 }))
 
-const ProposalsFooter = styled(Grid)({
-  padding: "16px 46px",
-  minHeight: 34
-})
-
 const TransactionsFooter = styled(Grid)({
-  padding: "16px 46px",
-  minHeight: 34
+  minHeight: 34,
+  paddingTop: 24
 })
 
 const TitleText = styled(Typography)({
@@ -163,7 +158,6 @@ export const UserMovements: React.FC<{
   const currentProposalsCreated = useMemo(() => {
     if (proposalsCreated) {
       let rows = proposalsCreated.slice()
-
       if (searchText && selectedTab === 0) {
         rows = rows.filter(holding => holding.id && holding.id.toLowerCase().includes(searchText.toLowerCase()))
       }
@@ -188,12 +182,15 @@ export const UserMovements: React.FC<{
 
   const pollsPosted: Poll[] | undefined = useMemo(() => {
     let list = polls?.slice()
-    list = polls?.filter(p => p.author === account)
+    if (list) {
+      list = polls?.filter(p => p.author === account)
 
-    if (searchText && selectedTab === 0) {
-      list = list!.filter(holding => holding.name && holding.name.toLowerCase().includes(searchText.toLowerCase()))
+      if (searchText && selectedTab === 0) {
+        list = list!.filter(holding => holding.name && holding.name.toLowerCase().includes(searchText.toLowerCase()))
+      }
+      return list
     }
-    return list
+    return []
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, searchText])
 
@@ -412,16 +409,6 @@ export const UserMovements: React.FC<{
                   filters={filters}
                 />
               )}
-              {!(currentProposalsCreated && currentProposalsCreated.length > 0) &&
-              !(pollsPosted && pollsPosted.length > 0) ? (
-                <ProposalsFooter item container direction="column" justifyContent="center">
-                  <Grid item>
-                    <Typography color="textPrimary" align="center">
-                      No items
-                    </Typography>
-                  </Grid>
-                </ProposalsFooter>
-              ) : null}
             </Grid>
           </TabPanel>
 
@@ -437,16 +424,6 @@ export const UserMovements: React.FC<{
                   filters={filters}
                 />
               )}
-              {!(currentProposalsVoted && currentProposalsVoted.length > 0) &&
-              !(currentVotedPolls && currentVotedPolls.length > 0) ? (
-                <ProposalsFooter item container direction="column" justifyContent="center">
-                  <Grid item>
-                    <Typography color="textPrimary" align="center">
-                      No items
-                    </Typography>
-                  </Grid>
-                </ProposalsFooter>
-              ) : null}
             </Grid>
           </TabPanel>
 
@@ -478,7 +455,7 @@ export const UserMovements: React.FC<{
             ) : (
               <TransactionsFooter item container direction="column" justifyContent="center">
                 <Grid item>
-                  <Typography color="textPrimary" align="center">
+                  <Typography color="textPrimary" align="left">
                     No items
                   </Typography>
                 </Grid>
