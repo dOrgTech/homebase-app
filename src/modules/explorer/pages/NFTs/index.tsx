@@ -94,7 +94,7 @@ export const NFTs: React.FC = () => {
   const onCloseTransfer = () => {
     setOpenTransfer(false)
   }
-  const value = isMobileSmall ? 6 : 3
+  const value = isMobileSmall ? 6 : 4
   const shouldDisable = useIsProposalButtonDisabled(daoId)
 
   const [currentPage, setCurrentPage] = useState(0)
@@ -105,6 +105,7 @@ export const NFTs: React.FC = () => {
       const newOffset = (event.selected * value) % nftHoldings.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
 

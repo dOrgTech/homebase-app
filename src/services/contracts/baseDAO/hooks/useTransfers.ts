@@ -25,6 +25,7 @@ export interface TransferWithBN {
   hash: string
   type?: "Withdrawal" | "Deposit"
   token?: BNToken
+  status?: string
 }
 
 export const useTransfers = (contractAddress: string) => {
