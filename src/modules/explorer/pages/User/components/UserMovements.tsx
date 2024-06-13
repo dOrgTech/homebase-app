@@ -30,6 +30,7 @@ import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { FilterUserTransactionsDialog, TrxStatus } from "modules/explorer/components/FiltersUserTransactionsDialog"
+import { SearchInput } from "../../DAOList/components/Searchbar"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
@@ -89,13 +90,18 @@ const ActivityContainer = styled(Grid)(({ theme }) => ({
 }))
 
 const ViewAll = styled(Grid)(({ theme }) => ({
-  "cursor": "pointer",
-  "width": "fit-content",
+  "width": "100%",
   "marginTop": 32,
   "& svg": {
     marginRight: 10,
     color: theme.palette.secondary.main
   }
+}))
+
+const ViewAllInner = styled(Grid)(({ theme }) => ({
+  cursor: "pointer",
+  width: "fit-content",
+  display: "flex"
 }))
 
 const BackButtonText = styled(Grid)({
@@ -145,6 +151,7 @@ export const UserMovements: React.FC<{
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
   const [openFiltersTrxDialog, setOpenFiltersTrxDialog] = useState(false)
+  const [searchText, setSearchText] = useState("")
 
   const [filters, setFilters] = useState<Filters>()
   const [trxFilters, setTrxFilters] = useState<TrxFilters>()
@@ -153,17 +160,59 @@ export const UserMovements: React.FC<{
   const { data: polls } = usePolls(data?.liteDAOData?._id)
   const { data: userVotes } = useUserVotes()
 
-  const pollsPosted: Poll[] | undefined = useMemo(() => {
-    return polls?.filter(p => p.author === account)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account])
+  const currentProposalsCreated = useMemo(() => {
+    if (proposalsCreated) {
+      let rows = proposalsCreated.slice()
 
-  const votedPolls: any = []
-  pollsPosted?.map((p: Poll) => {
-    if (userVotes && userVotes.filter(v => p._id === v.pollID).length > 0) {
-      return votedPolls.push(p)
+      if (searchText && selectedTab === 0) {
+        rows = rows.filter(holding => holding.id && holding.id.toLowerCase().includes(searchText.toLowerCase()))
+      }
+      return rows
+    } else {
+      return []
     }
-  })
+  }, [proposalsCreated, searchText, selectedTab])
+
+  const currentProposalsVoted = useMemo(() => {
+    if (proposalsCreated) {
+      let rows = proposalsCreated.slice()
+
+      if (searchText && selectedTab === 1) {
+        rows = rows.filter(holding => holding.id && holding.id.toLowerCase().includes(searchText.toLowerCase()))
+      }
+      return rows
+    } else {
+      return []
+    }
+  }, [proposalsCreated, searchText, selectedTab])
+
+  const pollsPosted: Poll[] | undefined = useMemo(() => {
+    let list = polls?.slice()
+    list = polls?.filter(p => p.author === account)
+
+    if (searchText && selectedTab === 0) {
+      list = list!.filter(holding => holding.name && holding.name.toLowerCase().includes(searchText.toLowerCase()))
+    }
+    return list
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, searchText])
+
+  const currentVotedPolls = useMemo(() => {
+    const votedPolls: any = []
+    pollsPosted?.map((p: Poll) => {
+      if (userVotes && userVotes.filter(v => p._id === v.pollID).length > 0) {
+        return votedPolls.push(p)
+      }
+    })
+
+    let data = votedPolls.slice()
+    if (searchText && selectedTab === 1) {
+      data = data!.filter(
+        (holding: any) => holding.name && holding.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    }
+    return data
+  }, [searchText, selectedTab, pollsPosted, userVotes])
 
   const useUserTransfers = (): TransferWithBN[] | undefined => {
     const { data: transfers } = useTransfers(daoId)
@@ -183,6 +232,11 @@ export const UserMovements: React.FC<{
   const [pageCount, setPageCount] = React.useState(count)
 
   const handleChangeTab = (newValue: number) => {
+    const bar = document.getElementById("standard-search") as HTMLInputElement
+    if (bar) {
+      bar.value = ""
+      setSearchText("")
+    }
     setSelectedTab(newValue)
   }
 
@@ -214,10 +268,16 @@ export const UserMovements: React.FC<{
         holdings = handleFilterData(holdings)
       }
 
+      if (searchText && searchText !== "") {
+        holdings = holdings.filter(
+          holding => holding.token && holding.token.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+      }
+
       return holdings
     }
     return []
-  }, [transfers, trxFilters])
+  }, [transfers, trxFilters, searchText])
 
   useEffect(() => {
     setFilteredTransactions(currentTransfers)
@@ -247,6 +307,10 @@ export const UserMovements: React.FC<{
 
   const handleTrxFilters = (filters: TrxFilters) => {
     setTrxFilters(filters)
+  }
+
+  const filterByName = (text: string) => {
+    setSearchText(text.trim())
   }
 
   return (
@@ -315,14 +379,23 @@ export const UserMovements: React.FC<{
             </Grid>
           </ViewAll>
         ) : (
-          <ViewAll
-            item
-            xs={isMobileSmall ? 12 : 2}
-            onClick={() => (selectedTab !== 2 ? setOpenFiltersDialog(true) : setOpenFiltersTrxDialog(true))}
-          >
+          <ViewAll item xs={isMobileSmall ? 12 : 12}>
             <Grid item container direction="row" alignItems="center">
-              <FilterAltIcon color="secondary" />
-              <Typography color="secondary">Filter & Sort</Typography>
+              <ViewAllInner item container direction="row" xs={8}>
+                <FilterAltIcon
+                  color="secondary"
+                  onClick={() => (selectedTab !== 2 ? setOpenFiltersDialog(true) : setOpenFiltersTrxDialog(true))}
+                />
+                <Typography
+                  color="secondary"
+                  onClick={() => (selectedTab !== 2 ? setOpenFiltersDialog(true) : setOpenFiltersTrxDialog(true))}
+                >
+                  Filter & Sort
+                </Typography>
+              </ViewAllInner>
+              <Grid item xs>
+                <SearchInput search={filterByName} />
+              </Grid>
             </Grid>
           </ViewAll>
         )}
@@ -330,16 +403,17 @@ export const UserMovements: React.FC<{
         <Grid item>
           <TabPanel value={selectedTab} index={0}>
             <Grid item style={{ marginTop: 24 }}>
-              {proposalsCreated && cycleInfo && (
+              {currentProposalsCreated && cycleInfo && (
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
-                  proposals={showActivity ? proposalsCreated : proposalsCreated.slice(0, 2)}
+                  proposals={showActivity ? currentProposalsCreated : currentProposalsCreated.slice(0, 2)}
                   liteProposals={showActivity ? pollsPosted : pollsPosted?.slice(0, 2)}
                   showFullList={showActivity}
                   filters={filters}
                 />
               )}
-              {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
+              {!(currentProposalsCreated && currentProposalsCreated.length > 0) &&
+              !(pollsPosted && pollsPosted.length > 0) ? (
                 <ProposalsFooter item container direction="column" justifyContent="center">
                   <Grid item>
                     <Typography color="textPrimary" align="center">
@@ -354,16 +428,17 @@ export const UserMovements: React.FC<{
           {/* TAB VOTES CONTENT */}
           <TabPanel value={selectedTab} index={1}>
             <Grid item style={{ marginTop: 24 }}>
-              {votedPolls && cycleInfo && (
+              {currentVotedPolls && cycleInfo && (
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
-                  proposals={showActivity ? proposalsVoted : proposalsVoted.slice(0, 2)}
+                  proposals={showActivity ? currentProposalsVoted : currentProposalsVoted.slice(0, 2)}
                   showFullList={showActivity}
-                  liteProposals={showActivity ? votedPolls : votedPolls.slice(0, 2)}
+                  liteProposals={showActivity ? currentVotedPolls : currentVotedPolls.slice(0, 2)}
                   filters={filters}
                 />
               )}
-              {!(proposalsVoted && proposalsVoted.length > 0) && !(votedPolls && votedPolls.length > 0) ? (
+              {!(currentProposalsVoted && currentProposalsVoted.length > 0) &&
+              !(currentVotedPolls && currentVotedPolls.length > 0) ? (
                 <ProposalsFooter item container direction="column" justifyContent="center">
                   <Grid item>
                     <Typography color="textPrimary" align="center">
