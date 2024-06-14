@@ -51,7 +51,9 @@ a {
 } */
 .proposal-details a {
   color: #81feb7;
+  cursor: pointer;
 }
 .proposal-details a:hover {
-  border-bottom: 1px solid #81feb7;
+  text-decoration: underline;
+  /* border-bottom: 1px solid #81feb7; */
 }
