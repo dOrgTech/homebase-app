@@ -11,7 +11,8 @@ a {
   z-index: 1000000;
 }
 
-[data-rsbs-overlay], [data-rsbs-root]:after {
+[data-rsbs-overlay],
+[data-rsbs-root]:after {
   background: #1C1F23;
   z-index: 1000001;
   max-height: 90vh;
@@ -24,7 +25,7 @@ a {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 * {
-  scrollbar-width: none; 
+  scrollbar-width: none;
 }
 
 /* width */
@@ -48,3 +49,11 @@ a {
 /* ::-webkit-scrollbar-thumb:hover {
   background: #4a5055;
 } */
+.proposal-details a {
+  color: #81feb7;
+  cursor: pointer;
+}
+.proposal-details a:hover {
+  text-decoration: underline;
+  /* border-bottom: 1px solid #81feb7; */
+}

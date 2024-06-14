@@ -57,8 +57,8 @@ export const ProposalsList: React.FC<Props> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const [open, setopen] = useState(true)
   const [filteredProposals, setFilteredProposals] = useState<ProposalObj[]>([])
+  // TODO: next two lines can be safely removed
   const [filter, setFilter] = useState<number>(0)
   const [filterOnchain, setFilterOnchain] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
@@ -133,6 +133,7 @@ export const ProposalsList: React.FC<Props> = ({
     []
   )
 
+  // TODO: this can be probably removed as not in use
   const orderedList = (state: Order) => {
     if (state === "recent") {
       return listOfProposals
