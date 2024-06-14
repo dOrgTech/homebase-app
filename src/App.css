@@ -50,8 +50,8 @@ a {
   background: #4a5055;
 } */
 .proposal-details a {
-  color: #80bcf4;
+  color: #81feb7;
 }
 .proposal-details a:hover {
-  border-bottom: 1px solid #80bcf4;
+  border-bottom: 1px solid #81feb7;
 }
