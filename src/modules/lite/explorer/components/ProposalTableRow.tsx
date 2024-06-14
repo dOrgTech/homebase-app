@@ -37,12 +37,17 @@ const DescriptionText = styled(Typography)(({ theme }) => ({
   }
 }))
 
+const stripHtmlTags = (input: string) => {
+  const div = document.createElement("div")
+  div.innerHTML = input
+  return div.textContent || div.innerText || ""
+}
+
 export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = ({ poll, daoId }) => {
   const navigate = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-
   return (
     <RowContainer
       style={{ background: "#2F3438", borderRadius: 8 }}
@@ -55,11 +60,15 @@ export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = 
     >
       <Grid container item style={{ gap: 16 }} xs={12} md={12} justifyContent={isMobile ? "center" : "flex-start"}>
         <Title color="textPrimary" align={isMobile ? "center" : "left"}>
-          {poll.name}
+          {poll.name.length > 100 ? poll.name.slice(0, 100) + "..." : poll.name}
         </Title>
 
         <Grid container direction="row">
-          <DescriptionText>{ReactHtmlParser(poll.description)}</DescriptionText>
+          <DescriptionText>
+            {poll.description.length > 200
+              ? stripHtmlTags(poll.description).slice(0, 200) + "..."
+              : ReactHtmlParser(poll.description)}
+          </DescriptionText>
         </Grid>
 
         <Grid
