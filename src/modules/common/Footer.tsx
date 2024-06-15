@@ -94,7 +94,7 @@ export const ExplorerFooter: React.FC = () => {
   }
 
   const goToDiscord = () => {
-    window.open("https://discord.com/invite/yXaPy6s5Nr", "_blank")
+    window.open("https://discord.gg/autFpNaFYu", "_blank")
   }
 
   const goToYoutube = () => {
