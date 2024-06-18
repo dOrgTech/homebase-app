@@ -199,6 +199,13 @@ export class LambdaDAO extends BaseDAO {
     return await contractMethod.send()
   }
 
+  /**
+   * This function sets of lambda in proposal to be executed
+   * @param param0
+   * @param tezos
+   * @returns any
+   *
+   */
   public async proposeLambdaExecute(
     { handler_name, agoraPostId, handler_code, handler_params, lambda_arguments }: LambdaExecuteArgs,
     tezos: TezosToolkit

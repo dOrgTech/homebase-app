@@ -1,5 +1,5 @@
 import { Grid, Typography, styled, CircularProgress } from "@material-ui/core"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
@@ -20,8 +20,13 @@ import { parseLambdaCode } from "utils"
 import { ArbitraryContractInteractionForm } from "./ArbitraryContractInteractionForm"
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
-  width: 101,
-  color: "#1C1F23"
+  "width": 101,
+  "color": "#1C1F23",
+  "&$disabled": {
+    opacity: 0.5,
+    boxShadow: "none",
+    cursor: "not-allowed"
+  }
 }))
 
 const StyledRow = styled(Grid)({
@@ -67,21 +72,27 @@ type Values = {
 }
 
 type ACIValues = {
-  destination_contract: string
+  destination_contract_address: string
   amount?: number
 }
+
+type AciToken = {
+  counter: number
+  name?: string
+  type: string
+  children: AciToken[]
+  placeholder?: string
+  validate?: (value: string) => string | undefined
+  initValue: tokenValueType
+}
+type tokenMap = Record<"key" | "value", AciToken>
+type tokenValueType = string | boolean | number | AciToken | AciToken[] | tokenMap[]
 
 export enum ProposalAction {
   new,
   remove,
   execute,
   none
-}
-
-interface Props {
-  open: boolean
-  action: ProposalAction
-  handleClose: () => void
 }
 
 enum LambdaProposalState {
@@ -144,7 +155,11 @@ Eg:-
   `
 }
 
-export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action }) => {
+export const ProposalFormLambda: React.FC<{
+  open: boolean
+  action: ProposalAction
+  handleClose: () => void
+}> = ({ open, handleClose, action }) => {
   const grammar = Prism.languages.javascript
 
   const daoId = useDAOID()
@@ -158,14 +173,12 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const [showHeader, setShowHeader] = useState(true)
 
   const lambdaForm = useForm<Values>()
-  const ACIForm = useForm<ACIValues>()
 
   const [lambda, setLambda] = React.useState<Lambda | null>(null)
   const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.write_action)
   const [lambdaParams, setLambdaParams] = React.useState<string>("")
   const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
   const [code, setCode] = React.useState<string>("")
-  const [ACIData, setACIData] = React.useState<ACIValues>()
 
   const ARBITRARY_CONTRACT_INTERACTION = "arbitrary_contract_interaction"
 
@@ -203,7 +216,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const onSubmit = useCallback(
     (_: Values) => {
       const agoraPostId = Number(0)
-
+      // debugger
       switch (action) {
         case ProposalAction.new: {
           lambdaAdd({
@@ -274,6 +287,14 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
     },
     [dao, lambdaAdd, code, action, lambda, lambdaRemove, lambdaArguments, lambdaExecute, lambdaParams, handleClose]
   )
+
+  const isDisabled = useMemo(() => {
+    // if (lambda?.key === ARBITRARY_CONTRACT_INTERACTION) return false
+    if (!code) return true
+    if (action === ProposalAction.execute && (!lambda || lambdaArguments === "" || lambdaParams === "")) return true
+  }, [code, action, lambda, lambdaArguments, lambdaParams, ACI.key])
+
+  // console.log({ isDisabled })
 
   const handleSearchChange = (data: Lambda) => {
     if (!data?.value) {
@@ -412,7 +433,7 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
 
             {lambda && lambda.key !== ARBITRARY_CONTRACT_INTERACTION ? (
               <StyledRow container direction="row" justifyContent="flex-end">
-                <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={!code}>
+                <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={isDisabled}>
                   Submit
                 </StyledSendButton>
               </StyledRow>

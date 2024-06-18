@@ -85,7 +85,7 @@ const useStyles = makeStyles({
 })
 
 export const SearchEndpoints: React.FC<{
-  endpoints: Array<ArbitraryContract> | undefined
+  endpoints: Array<ArbitraryContract | any> | undefined
   handleChange?: any
 }> = ({ endpoints, handleChange }) => {
   useStyles()
@@ -111,7 +111,7 @@ export const SearchEndpoints: React.FC<{
             endpoint.params.push(param)
             break
           case "pair":
-            item.children.map(child => {
+            item.children.map((child: any) => {
               const pairParam = {
                 type: child.type,
                 placeholder: child.name

@@ -21,6 +21,11 @@ import { toShortAddress } from "services/contracts/utils"
 import { useArbitraryContractData } from "services/aci/useArbitratyContractData"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ArbitraryContract } from "models/Contract"
+import { evalTaquitoParam, generateExecuteContractMichelson } from "services/aci"
+import { emitMicheline, Parser } from "@taquito/michel-codec"
+import type { ContractAbstraction } from "@taquito/taquito"
+import ProposalExecuteForm from "./ProposalExecuteForm"
+import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
 
 interface Parameter {
   key: string
@@ -79,7 +84,8 @@ const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
 }))
 
 type ACIValues = {
-  destination_contract: string
+  destination_contract: any
+  destination_contract_address: string
   amount: number
   target_endpoint: string
   parameters: Parameter[]
@@ -124,15 +130,17 @@ const ContractInteractionForm = ({
   showHeader
 }: any) => {
   const [state, setState] = useState<Status>(Status.NEW_INTERACTION)
+  const [formState, setFormState] = useState<any>({ address: "", amount: 0, shape: {} })
   const [endpoint, setEndpoint] = useState<ContractEndpoint | undefined>(undefined)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { mutate: fetchContractData, data } = useArbitraryContractData()
-  const { network } = useTezos()
+  // console.log("FormData", data)
+  const { tezos, network } = useTezos()
   const [isLoading, setIsLoading] = useState(false)
 
   const shouldContinue = useMemo(() => {
-    if (values.destination_contract !== "" && !errors.destination_contract) {
+    if (values.destination_contract_address !== "" && !errors.destination_contract_address) {
       return false
     }
     return true
@@ -144,7 +152,7 @@ const ContractInteractionForm = ({
     }
     setIsLoading(true)
     fetchContractData({
-      contract: getIn(values, "destination_contract"),
+      contract: getIn(values, "destination_contract_address"),
       network: network,
       handleContinue: () => setState(Status.CONTRACT_VALIDATED),
       finishLoad: () => setIsLoading(false),
@@ -171,22 +179,32 @@ const ContractInteractionForm = ({
           <Grid item xs={isMobileSmall ? 12 : 6}>
             <ProposalFormInput label="Destination Contract Address">
               <Field
-                id="destination_contract"
+                id="destination_contract_address"
                 placeholder="Enter Address"
-                name="destination_contract"
+                name="destination_contract_address"
                 component={CustomFormikTextField}
-                onClick={() => setFieldTouched("destination_contract")}
+                onClick={() => setFieldTouched("destination_contract_address")}
                 onChange={(newValue: any) => {
-                  setFieldValue("destination_contract", newValue.target.value)
+                  const contractAddress = newValue.target.value.trim()
+                  console.log("Destination Contract Address", contractAddress)
+                  setFieldValue("destination_contract_address", contractAddress)
+
+                  if (validateContractAddress(contractAddress) === 3) {
+                    tezos.contract.at(contractAddress).then((contract: any) => {
+                      setFieldValue("destination_contract", contract)
+                    })
+                  } else {
+                    console.log("invalid address", contractAddress)
+                  }
                 }}
-                value={getIn(values, "destination_contract")}
+                value={getIn(values, "destination_contract_address")}
                 inputProps={{
                   maxLength: 36
                 }}
               />
             </ProposalFormInput>
-            {errors.destination_contract && touched.destination_contract ? (
-              <ErrorText>{errors.destination_contract}</ErrorText>
+            {errors.destination_contract_address && touched.destination_contract_address ? (
+              <ErrorText>{errors.destination_contract_address}</ErrorText>
             ) : null}
           </Grid>
           <Grid item xs={isMobileSmall ? 12 : 6}>
@@ -219,8 +237,8 @@ const ContractInteractionForm = ({
               <Title color="textPrimary">Calling Contract</Title>
               <Value>
                 {isMobileSmall
-                  ? toShortAddress(getIn(values, "destination_contract"))
-                  : getIn(values, "destination_contract")}
+                  ? toShortAddress(getIn(values, "destination_contract_address"))
+                  : getIn(values, "destination_contract_address")}
               </Value>
             </SubContainer>
             <SubContainer item>
@@ -229,10 +247,36 @@ const ContractInteractionForm = ({
             </SubContainer>
             <SubContainer item>
               <Title color="textPrimary">Contract Endpoint</Title>
-              <ProposalFormInput>
-                <SearchEndpoints endpoints={data ? data.children : []} handleChange={processParameters} />
-              </ProposalFormInput>
+              <ProposalExecuteForm
+                address={values.destination_contract_address}
+                amount={values.amount}
+                shape={formState.shape}
+                reset={() => setFormState({ address: "", amount: 0, shape: {} })}
+                setField={(lambda: string, metadata: string) => {
+                  // debugger
+                  console.log("SetField", lambda, metadata)
+                }}
+                setLoading={() => {}}
+                setState={shape => {
+                  // debugger
+                  console.log("New Shape", shape)
+                  setFormState((v: any) => ({ ...v, shape }))
+                }}
+                onReset={() => {
+                  setFormState({ address: "", amount: 0, shape: {} })
+                  // props.onReset()
+                }}
+                loading={false}
+                onShapeChange={shapeInitValue => {
+                  setFormState((v: any) => ({
+                    ...v,
+                    shape: { ...v?.shape, ...shapeInitValue }
+                  }))
+                }}
+              />
             </SubContainer>
+
+            {/* ACI: Endpoint list */}
             {endpoint && (
               <SubContainer item>
                 <FieldArray
@@ -303,8 +347,57 @@ const ContractInteractionForm = ({
             </BackButton>
           </Grid>
           <Grid item xs={6} container justifyContent="flex-end">
-            <SmallButtonDialog variant="contained" disabled={!isValid}>
-              Submit
+            <SmallButtonDialog
+              onClick={() => {
+                console.log({ formState })
+                // debugger
+                let entrypoint = formState.shape.token.initValue // accept_ownership | default etc
+                let taquitoParam
+
+                const execContract = formState.shape.contract
+                const taquitoFullParam = evalTaquitoParam(formState.shape.token, formState.shape.init)
+                if (execContract?.parameterSchema.isMultipleEntryPoint) {
+                  const p = Object.entries(taquitoFullParam)
+                  if (p.length !== 1) {
+                    throw new Error("should only one entrypoint is selected")
+                  }
+                  ;[entrypoint, taquitoParam] = p[0]
+                } else {
+                  taquitoParam = taquitoFullParam
+                }
+                const param = emitMicheline(
+                  execContract?.methodsObject[entrypoint](taquitoParam).toTransferParams()?.parameter?.value
+                )
+
+                const micheline_type = execContract?.parameterSchema.isMultipleEntryPoint
+                  ? execContract?.entrypoints.entrypoints[entrypoint]
+                  : execContract?.parameterSchema.root.val
+
+                // const micheline_type = values.destination_contract?.parameterSchema.isMultipleEntryPoint
+                //   ? values.destination_contract.entrypoints.entrypoints[entrypoint]
+                //   : values.destination_contract?.parameterSchema.root.val
+
+                const p = new Parser()
+                const type = emitMicheline(p.parseJSON(micheline_type), {
+                  indent: "",
+                  newline: ""
+                })
+
+                const lambda = generateExecuteContractMichelson("1.0.0", {
+                  address: values.destination_contract_address,
+                  entrypoint,
+                  type,
+                  amount: values.amount,
+                  param
+                })
+
+                // TODO: Deploy this to DAO
+                console.log({ lambda })
+              }}
+              variant="contained"
+              disabled={!isValid}
+            >
+              Submit Form
             </SmallButtonDialog>
           </Grid>
         </Grid>
@@ -316,22 +409,26 @@ const ContractInteractionForm = ({
 export const ArbitraryContractInteractionForm: React.FC<{ showHeader: (state: boolean) => void }> = ({
   showHeader
 }) => {
+  const { mutate: executeProposeLambda } = useLambdaExecutePropose()
   const isInvalidKtOrTzAddress = (address: string) => validateContractAddress(address) !== 3
 
   const initialValue: ACIValues = {
-    destination_contract: "",
+    destination_contract: {} as ArbitraryContract,
+    destination_contract_address: "",
     amount: 0,
     target_endpoint: "",
     parameters: []
   }
 
   const validateForm = (values: ACIValues) => {
+    console.log("validateFormValues", values)
+    return {}
     const errors: FormikErrors<ACIValues> = {}
-    if (!values.destination_contract) {
-      errors.destination_contract = "Required"
+    if (!values.destination_contract_address) {
+      errors.destination_contract_address = "Required"
     }
-    if (values.destination_contract && isInvalidKtOrTzAddress(values.destination_contract)) {
-      errors.destination_contract = "Invalid contract address"
+    if (values.destination_contract_address && isInvalidKtOrTzAddress(values.destination_contract_address)) {
+      errors.destination_contract_address = "Invalid contract address"
     }
     if (!values.target_endpoint) {
       errors.target_endpoint = "Required"

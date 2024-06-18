@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import { Grid, Typography, TextField, styled } from "@material-ui/core"
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { SendButton } from "./ProposalFormSendButton"
 import { Controller, FormProvider, useForm } from "react-hook-form"
@@ -10,6 +10,7 @@ import { useProposeConfigChange } from "../../../services/contracts/baseDAO/hook
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { code } from "services/contracts/metadataCarrier/code"
 
 const ErrorText = styled(Typography)({
   fontSize: 14,
@@ -27,13 +28,6 @@ type Values = {
 
 export type ProposalFormDefaultValues = RecursivePartial<Values>
 
-interface Props {
-  open: boolean
-  handleClose: () => void
-  defaultValues?: ProposalFormDefaultValues
-  defaultTab?: number
-}
-
 const validationSchema = yup.object({
   frozen_extra_value: yup.number().typeError("Amount must be a number"),
   returnedPercentage: yup
@@ -43,7 +37,12 @@ const validationSchema = yup.object({
     .typeError("Amount must be a number")
 })
 
-export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
+export const ConfigProposalForm: React.FC<{
+  open: boolean
+  handleClose: () => void
+  defaultValues?: ProposalFormDefaultValues
+  defaultTab?: number
+}> = ({ open, handleClose }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
 
