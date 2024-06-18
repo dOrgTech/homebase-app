@@ -72,7 +72,15 @@ export const ResponsiveDialog: React.FC<{
       </Content>
     </BottomSheet>
   ) : (
-    <CustomDialog open={open} onClose={onClose} maxWidth={template}>
+    <CustomDialog
+      open={open}
+      onClose={(event: any, reason) => {
+        // TODO: Comment this while creating PR
+        if (reason && reason === "backdropClick") return
+        onClose()
+      }}
+      maxWidth={template}
+    >
       <Content container direction="column" style={{ gap: 30 }}>
         <Grid item container direction="row" wrap="nowrap" justifyContent="space-between">
           {onGoBack !== undefined ? (
