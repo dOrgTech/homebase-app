@@ -397,8 +397,38 @@ export const ProposalDetails: React.FC = () => {
                     </Grid>
                   </Grid>
                 )}
-                <Grid item xs={isMobileSmall ? 12 : 3}>
-                  <Grid container justifyContent="flex-end" style={{ gap: 28 }}>
+                {isMobileSmall ? null : (
+                  <Grid item xs={3}>
+                    <Grid container justifyContent="flex-end" style={{ gap: 28 }}>
+                      <Grid item>
+                        <VoteButton
+                          variant="contained"
+                          favor={true}
+                          onClick={() => onClickVote(true)}
+                          disabled={!canVote}
+                        >
+                          <ThumbUpIcon style={{ marginRight: 8 }} />
+                          For
+                        </VoteButton>
+                      </Grid>
+                      <Grid item>
+                        <VoteButton
+                          variant="contained"
+                          favor={false}
+                          onClick={() => onClickVote(false)}
+                          disabled={!canVote}
+                        >
+                          <ThumbDownIcon style={{ marginRight: 8 }} />
+                          Against
+                        </VoteButton>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                )}
+              </Grid>
+              {isMobileSmall ? (
+                <Grid item xs={12} spacing={3}>
+                  <Grid container justifyContent="center" style={{ gap: 28, margin: "4px 0px" }} spacing={3}>
                     <Grid item>
                       <VoteButton
                         variant="contained"
@@ -423,7 +453,7 @@ export const ProposalDetails: React.FC = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              ) : null}
             </Grid>
           </Grid>
         </Grid>
