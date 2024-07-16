@@ -36,6 +36,14 @@ export const useTezos = (): WalletConnectReturn => {
     network: etherlinkNetwork
   } = useContext(EtherlinkContext)
 
+  const chainId = useChainId()
+  const { address: ethAddress, isConnected } = useWagmiAccount()
+  const { connect: wagmiConnect, connectors } = useWagmiConnect()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const openEthWallet = () => {
+    wagmiConnect({ connector: connectors[0], chainId })
+  }
+
   const queryClient = useQueryClient()
 
   const handleEtherlinkNetworkChange = useCallback(
