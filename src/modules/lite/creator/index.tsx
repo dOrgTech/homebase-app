@@ -33,6 +33,7 @@ import CodeOffIcon from "@mui/icons-material/CodeOff"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
+import { Network } from "services/beacon"
 
 const CodeButton = styled(CodeIcon)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -198,7 +199,12 @@ const CheckboxContainer = styled(Grid)(({ theme }) => ({
   flexBasis: "5%"
 }))
 
-const validateForm = (values: Community) => {
+const validateTokenAddress = (network: Network, tokenAddress: string) => {
+  if (!network.startsWith("etherlink")) return validateContractAddress(tokenAddress)
+  return true
+}
+
+const validateForm = (network: Network, values: Community) => {
   const errors: FormikErrors<Community> = {}
 
   if (!values.name) {
@@ -209,7 +215,7 @@ const validateForm = (values: Community) => {
     errors.tokenAddress = "Required"
   }
 
-  if (values.tokenAddress && validateContractAddress(values.tokenAddress) !== 3) {
+  if (values.tokenAddress && validateTokenAddress(network, values.tokenAddress) !== 3) {
     errors.tokenAddress = "Invalid address"
   }
 
@@ -537,7 +543,7 @@ export const CommunityCreator: React.FC = () => {
         enableReinitialize={true}
         validateOnChange={true}
         validateOnBlur={false}
-        validate={validateForm}
+        validate={(formValues: Community) => validateForm(network, formValues)}
         onSubmit={saveCommunity}
         initialValues={initialState}
       >

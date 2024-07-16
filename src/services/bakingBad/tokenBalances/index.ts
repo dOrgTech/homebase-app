@@ -10,7 +10,7 @@ const isNFTDTO = (value: DAOToken): value is NFTDTO => value.hasOwnProperty("art
 
 const isBalanceTzktNFT = (value: BalanceTZKT): boolean => Boolean(value.token.metadata?.artifactUri)
 
-const isTokenTzktNFT = (value: TokenDataTZKT): boolean => Boolean(value.metadata?.artifactUri)
+const isTokenTzktNFT = (value: TokenDataTZKT): boolean => Boolean(value?.metadata?.artifactUri)
 
 export interface DAOHolding {
   balance: BigNumber

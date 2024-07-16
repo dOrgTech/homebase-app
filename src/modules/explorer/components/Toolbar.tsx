@@ -98,12 +98,12 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
 }))
 
 export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu, children }) => {
-  const { connect, account } = useTezos()
+  const { connect, account: tzAccountAddress, etherlink, network } = useTezos()
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
-
+  const walletAddress = network.startsWith("etherlink") ? etherlink.account?.address : tzAccountAddress
   return (
     <StyledAppBar>
       <StyledToolbar>
@@ -125,7 +125,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
 
           <Grid item>
             <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
-              {account ? (
+              {walletAddress && etherlink?.isConnected ? (
                 <Grid
                   container
                   alignItems="center"
@@ -147,11 +147,11 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                           style={{ gap: 16 }}
                         >
                           <Grid item>
-                            <ProfileAvatar size={22} address={account} />
+                            <ProfileAvatar size={22} address={walletAddress} />
                           </Grid>
                           <Grid item>
                             <Typography color="textPrimary" variant="body2">
-                              <UserProfileName address={account} short={true} />
+                              <UserProfileName address={walletAddress} short={true} />
                             </Typography>
                           </Grid>
                         </AddressContainer>
@@ -169,7 +169,9 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                       color="secondary"
                       variant="contained"
                       style={{ fontSize: "14px" }}
-                      onClick={() => connect()}
+                      onClick={() => {
+                        connect()
+                      }}
                     >
                       Connect Wallet
                     </SmallButton>

@@ -1,11 +1,12 @@
 import { useQueryClient } from "react-query"
 import { useCallback, useContext } from "react"
-import { MichelCodecPacker, TezosToolkit } from "@taquito/taquito"
+import { TezosToolkit } from "@taquito/taquito"
 import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
-import { Tzip16Module } from "@taquito/tzip16"
+import { useWeb3Modal } from "@web3modal/wagmi/react"
 import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
+import { useChainId, useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -15,6 +16,12 @@ type WalletConnectReturn = {
   account: string
   network: Network
   wallet: BeaconWallet | undefined
+  etherlink: any
+}
+
+function formatEthAddress(address?: string) {
+  if (!address) return null
+  return `${address.slice(0, 6)}…${address.slice(38, 42)}`
 }
 
 export const useTezos = (): WalletConnectReturn => {
@@ -23,10 +30,22 @@ export const useTezos = (): WalletConnectReturn => {
     dispatch
   } = useContext(TezosContext)
 
+  const chainId = useChainId()
+  const { address: ethAddress, isConnected } = useWagmiAccount()
+  const { connect: wagmiConnect, connectors } = useWagmiConnect()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const openEthWallet = () => {
+    wagmiConnect({ connector: connectors[0], chainId })
+  }
+
   const queryClient = useQueryClient()
 
   const connect = useCallback(
     async (newNetwork?: Network) => {
+      if ((newNetwork || network).startsWith("etherlink")) {
+        openEthWallet()
+        return
+      }
       const { wallet } = await connectWithBeacon(network)
 
       const newTezos: TezosToolkit = createTezos(network || newNetwork)
@@ -47,12 +66,18 @@ export const useTezos = (): WalletConnectReturn => {
 
       return newTezos
     },
-    [dispatch, network]
+    [dispatch, network, openEthWallet]
   )
 
   return {
     tezos,
-    connect,
+    connect: async () => {
+      const result = await connect()
+      if (!result) {
+        throw new Error("Failed to connect")
+      }
+      return result
+    },
     reset: useCallback(async () => {
       if (!wallet) {
         throw new Error("No Wallet Connected")
@@ -98,6 +123,13 @@ export const useTezos = (): WalletConnectReturn => {
     },
     account,
     network,
-    wallet
+    wallet,
+    etherlink: {
+      isConnected,
+      account: {
+        address: ethAddress
+      },
+      network: ""
+    }
   }
 }
