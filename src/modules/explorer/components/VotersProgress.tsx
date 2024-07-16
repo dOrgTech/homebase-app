@@ -10,7 +10,6 @@ import numbro from "numbro"
 import { SmallButton } from "modules/common/SmallButton"
 import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
 import { mkConfig, generateCsv, download, asString } from "export-to-csv"
-import { writeFile } from "node:fs"
 import { useNotification } from "modules/common/hooks/useNotification"
 
 interface VotersData {
@@ -64,7 +63,12 @@ export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, propos
       title: "Voting Details",
       showTitle: false
     })
-    const votesData = proposal ? proposal?.voters : []
+    const votesData = proposal
+      ? proposal?.voters.map(voter => ({
+          ...voter,
+          value: voter.value.toString() // Convert BigNumber to string
+        }))
+      : []
     try {
       const csv = generateCsv(csvConfig)(votesData)
       download(csvConfig)(csv)

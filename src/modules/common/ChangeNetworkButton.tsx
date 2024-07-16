@@ -1,8 +1,8 @@
-import { Box, capitalize, Grid, styled, Typography, Theme } from "@material-ui/core"
-import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
 import React from "react"
+import { Box, Grid, styled, Typography, Theme } from "@material-ui/core"
+import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
 import { useLocation } from "react-router-dom"
-import { Network } from "services/beacon"
+import { getNetworkDisplayName, networkDotColorMap } from "services/beacon"
 import { useTezos } from "services/beacon/hooks/useTezos"
 
 const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
@@ -25,11 +25,6 @@ const StyledConnectedButton = styled(Box)(({ theme }: { theme: Theme }) => ({
     transition: ".15s ease-in"
   }
 }))
-
-export const networkDotColorMap: Record<Network, string> = {
-  mainnet: "#9EEE5D",
-  ghostnet: "#291F79"
-}
 
 export const ColorDot = styled(Box)({
   height: 6,
@@ -56,7 +51,7 @@ export const ChangeNetworkButton = () => {
               <ColorDot color={networkDotColorMap[network]} />
             </Grid>
             <Grid item>
-              <Typography color="textSecondary">{capitalize(network)}</Typography>
+              <Typography color="textSecondary">{getNetworkDisplayName(network)}</Typography>
             </Grid>
           </Grid>
         </StyledConnectedButton>
