@@ -7,16 +7,28 @@ import { useWeb3Modal } from "@web3modal/wagmi/react"
 import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { useChainId, useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
+import { disconnect } from "@wagmi/core"
+
+declare global {
+  interface Window {
+    disconnectEtherlink: typeof disconnect
+    web3Modal: any
+  }
+}
+
+window.disconnectEtherlink = disconnect
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
-  connect: () => Promise<TezosToolkit>
+  // TODO: @ashutoshpw Figure out the impact of adding  string here.
+  connect: () => Promise<TezosToolkit | string>
   changeNetwork: (newNetwork: Network) => void
   reset: () => void
   account: string
   network: Network
   wallet: BeaconWallet | undefined
   etherlink: any
+  isEtherlink: boolean
 }
 
 function formatEthAddress(address?: string) {
@@ -31,20 +43,23 @@ export const useTezos = (): WalletConnectReturn => {
   } = useContext(TezosContext)
 
   const chainId = useChainId()
+  const { open, close } = useWeb3Modal()
   const { address: ethAddress, isConnected } = useWagmiAccount()
   const { connect: wagmiConnect, connectors } = useWagmiConnect()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const openEthWallet = () => {
-    wagmiConnect({ connector: connectors[0], chainId })
+    open({ view: "Connect" })
+    // wagmiConnect({ connector: connectors[0], chainId })
   }
 
   const queryClient = useQueryClient()
 
   const connect = useCallback(
     async (newNetwork?: Network) => {
+      console.log({ newNetwork })
       if ((newNetwork || network).startsWith("etherlink")) {
         openEthWallet()
-        return
+        return "etherlink_login"
       }
       const { wallet } = await connectWithBeacon(network)
 
@@ -92,6 +107,10 @@ export const useTezos = (): WalletConnectReturn => {
     changeNetwork: async (newNetwork: Network) => {
       mixpanel.register({ Network: newNetwork })
       localStorage.setItem("homebase:network", newNetwork)
+
+      if ((newNetwork || network).startsWith("etherlink")) {
+        openEthWallet()
+      }
       const newTezos: TezosToolkit = createTezos(newNetwork)
       if (!account) {
         dispatch({
@@ -124,6 +143,7 @@ export const useTezos = (): WalletConnectReturn => {
     account,
     network,
     wallet,
+    isEtherlink: network?.startsWith("etherlink"),
     etherlink: {
       isConnected,
       account: {

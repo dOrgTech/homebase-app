@@ -154,7 +154,7 @@ const BackButtonText = styled(Grid)({
   alignItems: "baseline"
 })
 
-export const ConnectWalletButton = ({ connect }: { connect: () => Promise<TezosToolkit> }) => (
+export const ConnectWalletButton = ({ connect }: { connect: () => Promise<TezosToolkit | string> }) => (
   <SmallButton variant="outlined" onClick={() => connect()}>
     Connect Wallet
   </SmallButton>

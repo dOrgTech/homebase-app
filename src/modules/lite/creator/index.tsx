@@ -19,11 +19,11 @@ import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { Community } from "models/Community"
 import { useHistory } from "react-router"
-import { validateContractAddress } from "@taquito/utils"
+
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { getSignature } from "services/utils/utils"
+import { getSignature, validateTokenAddress } from "services/utils/utils"
 import { Navbar } from "modules/common/Toolbar"
 import { SmallButton } from "modules/common/SmallButton"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
@@ -199,11 +199,6 @@ const CheckboxContainer = styled(Grid)(({ theme }) => ({
   flexBasis: "5%"
 }))
 
-const validateTokenAddress = (network: Network, tokenAddress: string) => {
-  if (!network.startsWith("etherlink")) return validateContractAddress(tokenAddress)
-  return true
-}
-
 const validateForm = (network: Network, values: Community) => {
   const errors: FormikErrors<Community> = {}
 
@@ -216,6 +211,7 @@ const validateForm = (network: Network, values: Community) => {
   }
 
   if (values.tokenAddress && validateTokenAddress(network, values.tokenAddress) !== 3) {
+    console.log("Address isValid", validateTokenAddress(network, values.tokenAddress))
     errors.tokenAddress = "Invalid address"
   }
 
@@ -224,9 +220,27 @@ const validateForm = (network: Network, values: Community) => {
 
 const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, setFieldTouched, isSubmitting }: any) => {
   const theme = useTheme()
+  const { isEtherlink } = useTezos()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const { data: tokenMetadata, isLoading: loading, error } = useTokenMetadata(values?.tokenAddress)
+  const tokenStandardOptions = isEtherlink
+    ? [
+        {
+          name: "erc20",
+          label: "ERC20"
+        }
+      ]
+    : [
+        {
+          value: "fa2",
+          label: "FA2"
+        },
+        {
+          value: "nft",
+          label: "NFT"
+        }
+      ]
 
   const codeEditorStyles = {
     minHeight: 500,
@@ -394,8 +408,11 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
                       setFieldValue("tokenType", newValue.target.value)
                     }}
                   >
-                    <option value={"fa2"}>FA2</option>
-                    <option value={"nft"}>NFT</option>
+                    {tokenStandardOptions.map((opt: any, idx) => (
+                      <option key={idx} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
                   </CustomSelect>
                 )}
               </Field>

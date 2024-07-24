@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles } from "@material-ui/core"
+import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles, Tooltip } from "@material-ui/core"
 import { useHistory } from "react-router"
 
 import { ReactComponent as LiteIcon } from "assets/img/lite-dao.svg"
@@ -8,6 +8,7 @@ import { ReactComponent as FullIcon } from "assets/img/full-dao.svg"
 import { ActionTypes, CreatorContext, DAOTemplate } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { useRouteMatch } from "react-router-dom"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   "height": 273,
@@ -31,6 +32,28 @@ const LambdaCustomBox = styled(Grid)(({ theme }) => ({
     marginTop: 0
   }
 }))
+
+const LambdaCustomBoxFullDao = ({ style, update, isMobileSmall, isEtherLink, selectedTemplate }: any) => (
+  <LambdaCustomBox
+    item
+    container
+    direction="column"
+    justifyContent="flex-start"
+    alignItems="center"
+    xs={isMobileSmall ? 12 : 5}
+    onClick={() => {
+      if (isEtherLink) return
+      update("lambda")
+    }}
+    title={"Hello World"}
+    className={selectedTemplate === "lambda" ? style.selected : ""}
+    style={{ opacity: isEtherLink ? 0.4 : 1 }}
+  >
+    <FullIcon style={{ marginBottom: 16 }} />
+    <BoxTitle color="textSecondary">Full DAO</BoxTitle>
+    <BoxDescription color="textSecondary">Contract interaction. Transfer assets based on vote outcomes.</BoxDescription>
+  </LambdaCustomBox>
+)
 
 const styles = makeStyles({
   selected: {
@@ -71,11 +94,15 @@ export const Template = (): JSX.Element => {
 
   const theme = useTheme()
   const style = styles()
+  const { network } = useTezos()
+  const isEtherLink = network?.startsWith("etherlink")
 
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
   const [selectedTemplate, setTemplate] = useState<DAOTemplate>(template)
   const [error, setError] = useState<boolean>(false)
+
+  console.log({ selectedTemplate })
 
   useEffect(() => {
     dispatch({
@@ -104,6 +131,10 @@ export const Template = (): JSX.Element => {
     })
   }, [dispatch, history, match.path, match.url, selectedTemplate])
 
+  useEffect(() => {
+    if (isEtherLink && selectedTemplate === "lambda") setTemplate("lite")
+  }, [isEtherLink, selectedTemplate])
+
   const update = (templateValue: DAOTemplate) => {
     setError(false)
     setTemplate(templateValue)
@@ -113,22 +144,25 @@ export const Template = (): JSX.Element => {
     <Box>
       <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />
       <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} direction="row">
-        <LambdaCustomBox
-          item
-          container
-          direction="column"
-          justifyContent="flex-start"
-          alignItems="center"
-          xs={isMobileSmall ? 12 : 5}
-          onClick={() => update("lambda")}
-          className={selectedTemplate === "lambda" ? style.selected : ""}
-        >
-          <FullIcon style={{ marginBottom: 16 }} />
-          <BoxTitle color="textSecondary">Full DAO</BoxTitle>
-          <BoxDescription color="textSecondary">
-            Contract interaction. Transfer assets based on vote outcomes.
-          </BoxDescription>
-        </LambdaCustomBox>{" "}
+        {isEtherLink ? (
+          <Tooltip title="Full DAO is available on Tezos Networks">
+            <LambdaCustomBoxFullDao
+              style={style}
+              update={update}
+              isMobileSmall={isMobileSmall}
+              isEtherLink={isEtherLink}
+              selectedTemplate={selectedTemplate}
+            />
+          </Tooltip>
+        ) : (
+          <LambdaCustomBoxFullDao
+            style={style}
+            update={update}
+            isMobileSmall={isMobileSmall}
+            isEtherLink={isEtherLink}
+            selectedTemplate={selectedTemplate}
+          />
+        )}{" "}
         <LambdaCustomBox
           item
           container

@@ -1,4 +1,5 @@
-import { stringToBytes, hex2buf } from "@taquito/utils"
+import { stringToBytes, hex2buf, validateContractAddress } from "@taquito/utils"
+import { isAddress as isEtherAddress } from "ethers"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocale from "dayjs/plugin/updateLocale"
@@ -208,4 +209,11 @@ export const getStatusDate = async (level: number, network: Network) => {
   const result = await response.json()
 
   return result.timestamp
+}
+
+export const validateTokenAddress = (network: Network, tokenAddress: string) => {
+  // console.log({ network, tokenAddress, isValid: isEtherAddress(tokenAddress) })
+  if (!network.startsWith("etherlink")) return validateContractAddress(tokenAddress)
+  if (network.startsWith("etherlink")) return isEtherAddress(tokenAddress) ? 3 : false
+  return false
 }
