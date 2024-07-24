@@ -22,7 +22,7 @@ export interface MetadataDeploymentResult {
 
 interface Tezos {
   tezos: TezosToolkit
-  connect: () => Promise<TezosToolkit>
+  connect: () => Promise<TezosToolkit | string>
 }
 
 export const deployMetadataCarrier = async ({

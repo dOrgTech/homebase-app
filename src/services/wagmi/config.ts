@@ -24,13 +24,14 @@ const web3ModalConfig = defaultWagmiConfig({
   metadata
 })
 
-// 3. Create modal
-createWeb3Modal({
+window.web3Modal = createWeb3Modal({
   wagmiConfig: web3ModalConfig,
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true // Optional - false as default
+  enableOnramp: false // Optional - false as default
 })
+
+// 3. Create modal
 
 export const config = createConfig({
   chains: wagmiChains,

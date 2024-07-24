@@ -22,7 +22,11 @@ export const useProposeConfigChange = () => {
         let tezosToolkit = tezos
 
         if (!account) {
-          tezosToolkit = await connect()
+          const connectedToolkit = await connect()
+          if (typeof connectedToolkit === "string") {
+            throw new Error("Failed to connect to Tezos toolkit")
+          }
+          tezosToolkit = connectedToolkit
         }
 
         const data = await dao.proposeConfigChange(args, tezosToolkit)
