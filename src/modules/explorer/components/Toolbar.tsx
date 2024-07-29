@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core"
 
 import HomeButton from "assets/logos/homebase-logo.svg"
+import { toShortAddress } from "services/contracts/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
 import { UserProfileName } from "modules/explorer/components/UserProfileName"
@@ -21,6 +22,7 @@ import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { SmallButton } from "../../common/SmallButton"
 import { ConnectWalletButton } from "modules/common/ConnectWalletButton"
+import { ToolbarAccount } from "modules/common/ToolbarAccount"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -126,50 +128,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
 
           <Grid item>
             <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
-              {walletAddress && etherlink?.isConnected ? (
-                <Grid
-                  container
-                  alignItems="center"
-                  style={{ gap: 12 }}
-                  justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
-                >
-                  {children}
-                  <Grid item>
-                    <Grid container alignItems="center" style={{ gap: 16 }}>
-                      <Grid item>
-                        <ChangeNetworkButton />
-                      </Grid>
-                      <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
-                        <AddressContainer
-                          container
-                          alignItems="center"
-                          wrap="nowrap"
-                          justifyContent="flex-end"
-                          style={{ gap: 16 }}
-                        >
-                          <Grid item>
-                            <ProfileAvatar size={22} address={walletAddress} />
-                          </Grid>
-                          <Grid item>
-                            <Typography color="textPrimary" variant="body2">
-                              <UserProfileName address={walletAddress} short={true} />
-                            </Typography>
-                          </Grid>
-                        </AddressContainer>
-                      </AddressBarWrapper>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              ) : (
-                <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
-                  <Grid item>
-                    <ChangeNetworkButton />
-                  </Grid>
-                  <Grid item>
-                    <ConnectWalletButton connect={connect} variant="explorer" />
-                  </Grid>
-                </Grid>
-              )}
+              <ToolbarAccount>{children}</ToolbarAccount>
             </Grid>
           </Grid>
         </Header>

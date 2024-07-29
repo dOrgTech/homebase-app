@@ -114,7 +114,7 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
 }))
 
 export const DAOList: React.FC = () => {
-  const { network, account } = useTezos()
+  const { network, account, etherlink } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()
@@ -316,7 +316,7 @@ export const DAOList: React.FC = () => {
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                {!account ? (
+                {!(account || etherlink?.isConnected) ? (
                   <ConnectMessage />
                 ) : myDAOs.length > 0 ? (
                   myDAOs.map((dao, i) => (

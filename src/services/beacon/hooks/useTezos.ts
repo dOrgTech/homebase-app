@@ -7,16 +7,10 @@ import { useWeb3Modal } from "@web3modal/wagmi/react"
 import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { useChainId, useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
-import { disconnect } from "@wagmi/core"
 
-declare global {
-  interface Window {
-    disconnectEtherlink: typeof disconnect
-    web3Modal: any
-  }
-}
-
-window.disconnectEtherlink = disconnect
+import { disconnect as disconnectEtherlink } from "@wagmi/core"
+import { config as wagmiConfig } from "services/wagmi/config"
+import { etherlink } from "viem/chains"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -31,11 +25,6 @@ type WalletConnectReturn = {
   isEtherlink: boolean
 }
 
-function formatEthAddress(address?: string) {
-  if (!address) return null
-  return `${address.slice(0, 6)}…${address.slice(38, 42)}`
-}
-
 export const useTezos = (): WalletConnectReturn => {
   const {
     state: { tezos, network, account, wallet },
@@ -44,10 +33,13 @@ export const useTezos = (): WalletConnectReturn => {
 
   const chainId = useChainId()
   const { open, close } = useWeb3Modal()
-  const { address: ethAddress, isConnected } = useWagmiAccount()
-  const { connect: wagmiConnect, connectors } = useWagmiConnect()
+  const { address: ethAddress, isConnected: isEtherlinkConnected } = useWagmiAccount()
+  // const { connect: wagmiConnect, connectors } = useWagmiConnect()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const openEthWallet = () => {
+  const openEthWallet = async () => {
+    if (isEtherlinkConnected) {
+      await disconnectEtherlink(wagmiConfig)
+    }
     open({ view: "Connect" })
     // wagmiConnect({ connector: connectors[0], chainId })
   }
@@ -56,6 +48,8 @@ export const useTezos = (): WalletConnectReturn => {
 
   const connect = useCallback(
     async (newNetwork?: Network) => {
+      if (isEtherlinkConnected) await disconnectEtherlink(wagmiConfig)
+
       const { wallet } = await connectWithBeacon(network)
       const newTezos: TezosToolkit = createTezos(network || newNetwork)
       newTezos.setProvider({ wallet })
@@ -75,7 +69,7 @@ export const useTezos = (): WalletConnectReturn => {
 
       return newTezos
     },
-    [dispatch, network]
+    [dispatch, network, isEtherlinkConnected]
   )
 
   return {
@@ -94,21 +88,19 @@ export const useTezos = (): WalletConnectReturn => {
     },
     reset: useCallback(async () => {
       if (network.startsWith("etherlink")) {
-        // openEthWallet()
-        // return "etherlink_login"'
-        return alert("Implement Etherlink Logout")
+        await disconnectEtherlink(wagmiConfig)
       }
 
-      if (!wallet) {
+      if (!wallet && !isEtherlinkConnected) {
         throw new Error("No Wallet Connected")
       }
 
-      await wallet.disconnect()
+      if (wallet) await wallet.disconnect()
 
       dispatch({
         type: TezosActionType.RESET_TEZOS
       })
-    }, [dispatch, network, wallet]),
+    }, [dispatch, network, wallet, isEtherlinkConnected]),
     changeNetwork: async (newNetwork: Network) => {
       mixpanel.register({ Network: newNetwork })
       localStorage.setItem("homebase:network", newNetwork)
@@ -150,7 +142,7 @@ export const useTezos = (): WalletConnectReturn => {
     network,
     isEtherlink: network?.startsWith("etherlink"),
     etherlink: {
-      isConnected,
+      isConnected: isEtherlinkConnected,
       account: {
         address: ethAddress
       },

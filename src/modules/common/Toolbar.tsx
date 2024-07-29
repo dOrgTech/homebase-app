@@ -24,6 +24,7 @@ import { ChangeNetworkButton } from "./ChangeNetworkButton"
 
 import { ArrowBackIos } from "@material-ui/icons"
 import { ConnectWalletButton } from "./ConnectWalletButton"
+import { ToolbarAccount } from "./ToolbarAccount"
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
@@ -150,154 +151,12 @@ const BackButtonText = styled(Grid)({
   alignItems: "baseline"
 })
 
-const AccountButton: React.FC<any> = ({
-  children,
-  isMobileExtraSmall,
-  handleClick,
-  handleNetworkClick,
-  handleLogout,
-  handleCopy,
-  setPopperOpen,
-  popperOpen,
-  anchorEl
-}) => {
-  const { connect, account, network } = useTezos()
-  console.log("XX", { account })
-  if (account)
-    return (
-      <Grid
-        container
-        alignItems="center"
-        style={{ gap: 12 }}
-        justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
-      >
-        {children}
-        <Grid item>
-          <Grid container alignItems="center" style={{ gap: 8 }}>
-            <Grid item>
-              <ChangeNetworkButton />
-            </Grid>
-            <AddressBarWrapper item onClick={handleClick}>
-              <AddressContainer
-                container
-                alignItems="center"
-                wrap="nowrap"
-                justifyContent="flex-end"
-                style={{ gap: 8 }}
-              >
-                <Grid item>
-                  <ProfileAvatar size={22} address={account} />
-                </Grid>
-                <Grid item>
-                  <StyledUserProfileName>
-                    <UserProfileName address={account} short={true} />
-                  </StyledUserProfileName>
-                </Grid>
-              </AddressContainer>
-            </AddressBarWrapper>
-          </Grid>
-        </Grid>
-
-        <StyledPopover
-          id={"wallet-Popper"}
-          open={popperOpen}
-          anchorEl={anchorEl}
-          style={{ zIndex: 1500, borderRadius: 4 }}
-          onClose={() => {
-            setPopperOpen(false)
-          }}
-          PaperProps={{
-            style: {
-              borderRadius: 4,
-              backgroundColor: "transparent"
-            }
-          }}
-        >
-          <AddressMenu>
-            <AddressMenuItem container alignItems="center" onClick={() => handleCopy(account)}>
-              <AddressMenuIcon item>
-                <FileCopyOutlined color="inherit" fontSize="inherit" />
-              </AddressMenuIcon>
-              <Grid item>
-                <Typography variant="subtitle2" color="textSecondary">
-                  {toShortAddress(account)}
-                </Typography>
-              </Grid>
-            </AddressMenuItem>
-            <AddressMenuItem container alignItems="center" onClick={handleNetworkClick}>
-              <Grid item>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Change network ({network})
-                </Typography>
-              </Grid>
-            </AddressMenuItem>
-            <AddressMenuItem
-              style={{
-                borderTop: "2px solid rgba(255, 255, 255, 0.2)"
-              }}
-              container
-              alignItems="center"
-              onClick={handleLogout}
-            >
-              <AddressMenuIcon item>
-                <ExitToAppOutlined color="inherit" fontSize="inherit" />
-              </AddressMenuIcon>
-              <Grid item>
-                <Typography variant="subtitle2" color="textSecondary">
-                  Log out
-                </Typography>
-              </Grid>
-            </AddressMenuItem>
-          </AddressMenu>
-        </StyledPopover>
-      </Grid>
-    )
-  else {
-    return (
-      <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
-        <Grid item>
-          <ChangeNetworkButton />
-        </Grid>
-        <Grid item>
-          <ConnectWalletButton connect={connect} variant="header" />
-        </Grid>
-      </Grid>
-    )
-  }
-}
-
 export const Navbar: React.FC<{
   mode: "creator" | "explorer"
   disableMobileMenu?: boolean
 }> = ({ mode, children, disableMobileMenu }) => {
-  const { reset } = useTezos()
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
-  const [popperOpen, setPopperOpen] = useState(false)
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
-
-  const [networkAnchorEl, setNetworkAnchorEl] = React.useState<HTMLButtonElement | null>(null)
-  const [networkPopperOpen, setNetworkPopperOpen] = useState(false)
-
-  const handleNetworkClick = (event: React.MouseEvent<any>) => {
-    setNetworkAnchorEl(event.currentTarget)
-    setNetworkPopperOpen(!networkPopperOpen)
-  }
-  const handleClick = (event: React.MouseEvent<any>) => {
-    setAnchorEl(event.currentTarget)
-    setPopperOpen(!popperOpen)
-  }
-
-  const handleLogout = () => {
-    reset()
-    setPopperOpen(false)
-  }
-
-  const handleCopy = (address: string) => {
-    navigator.clipboard.writeText(address)
-    setPopperOpen(false)
-  }
-
   return (
     <StyledAppBar>
       <StyledToolbar>
@@ -319,17 +178,7 @@ export const Navbar: React.FC<{
 
           <Grid item>
             <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
-              <AccountButton
-                handleLogout={handleLogout}
-                handleCopy={handleCopy}
-                handleClick={handleClick}
-                handleNetworkClick={handleNetworkClick}
-                popperOpen={popperOpen}
-                setPopperOpen={setPopperOpen}
-                isMobileExtraSmall={isMobileExtraSmall}
-              >
-                {children}
-              </AccountButton>
+              <ToolbarAccount>{children}</ToolbarAccount>
             </Grid>
           </Grid>
           <BackButtonContainer container justifyContent="flex-start">
