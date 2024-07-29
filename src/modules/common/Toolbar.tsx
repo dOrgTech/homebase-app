@@ -11,23 +11,19 @@ import {
   useMediaQuery,
   Theme
 } from "@material-ui/core"
-import { useHistory } from "react-router-dom"
-import { TezosToolkit } from "@taquito/taquito"
 
 import HomeButton from "assets/logos/homebase-logo.svg"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { toShortAddress } from "services/contracts/utils"
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons"
-import { Network } from "services/beacon"
+
 import { UserProfileName } from "modules/explorer/components/UserProfileName"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
-import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
-import { SmallButton } from "./SmallButton"
+
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
 
 import { ArrowBackIos } from "@material-ui/icons"
-import { EnvKey, getEnv } from "services/config"
-import { networkNameMap } from "services/bakingBad"
+import { ConnectWalletButton } from "./ConnectWalletButton"
 
 const AddressMenu = styled(Box)(() => ({
   width: 264,
@@ -154,22 +150,131 @@ const BackButtonText = styled(Grid)({
   alignItems: "baseline"
 })
 
-export const ConnectWalletButton = ({ connect }: { connect: () => Promise<TezosToolkit | string> }) => (
-  <SmallButton variant="outlined" onClick={() => connect()}>
-    Connect Wallet
-  </SmallButton>
-)
+const AccountButton: React.FC<any> = ({
+  children,
+  isMobileExtraSmall,
+  handleClick,
+  handleNetworkClick,
+  handleLogout,
+  handleCopy,
+  setPopperOpen,
+  popperOpen,
+  anchorEl
+}) => {
+  const { connect, account, network } = useTezos()
+  console.log("XX", { account })
+  if (account)
+    return (
+      <Grid
+        container
+        alignItems="center"
+        style={{ gap: 12 }}
+        justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
+      >
+        {children}
+        <Grid item>
+          <Grid container alignItems="center" style={{ gap: 8 }}>
+            <Grid item>
+              <ChangeNetworkButton />
+            </Grid>
+            <AddressBarWrapper item onClick={handleClick}>
+              <AddressContainer
+                container
+                alignItems="center"
+                wrap="nowrap"
+                justifyContent="flex-end"
+                style={{ gap: 8 }}
+              >
+                <Grid item>
+                  <ProfileAvatar size={22} address={account} />
+                </Grid>
+                <Grid item>
+                  <StyledUserProfileName>
+                    <UserProfileName address={account} short={true} />
+                  </StyledUserProfileName>
+                </Grid>
+              </AddressContainer>
+            </AddressBarWrapper>
+          </Grid>
+        </Grid>
+
+        <StyledPopover
+          id={"wallet-Popper"}
+          open={popperOpen}
+          anchorEl={anchorEl}
+          style={{ zIndex: 1500, borderRadius: 4 }}
+          onClose={() => {
+            setPopperOpen(false)
+          }}
+          PaperProps={{
+            style: {
+              borderRadius: 4,
+              backgroundColor: "transparent"
+            }
+          }}
+        >
+          <AddressMenu>
+            <AddressMenuItem container alignItems="center" onClick={() => handleCopy(account)}>
+              <AddressMenuIcon item>
+                <FileCopyOutlined color="inherit" fontSize="inherit" />
+              </AddressMenuIcon>
+              <Grid item>
+                <Typography variant="subtitle2" color="textSecondary">
+                  {toShortAddress(account)}
+                </Typography>
+              </Grid>
+            </AddressMenuItem>
+            <AddressMenuItem container alignItems="center" onClick={handleNetworkClick}>
+              <Grid item>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Change network ({network})
+                </Typography>
+              </Grid>
+            </AddressMenuItem>
+            <AddressMenuItem
+              style={{
+                borderTop: "2px solid rgba(255, 255, 255, 0.2)"
+              }}
+              container
+              alignItems="center"
+              onClick={handleLogout}
+            >
+              <AddressMenuIcon item>
+                <ExitToAppOutlined color="inherit" fontSize="inherit" />
+              </AddressMenuIcon>
+              <Grid item>
+                <Typography variant="subtitle2" color="textSecondary">
+                  Log out
+                </Typography>
+              </Grid>
+            </AddressMenuItem>
+          </AddressMenu>
+        </StyledPopover>
+      </Grid>
+    )
+  else {
+    return (
+      <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
+        <Grid item>
+          <ChangeNetworkButton />
+        </Grid>
+        <Grid item>
+          <ConnectWalletButton connect={connect} variant="header" />
+        </Grid>
+      </Grid>
+    )
+  }
+}
 
 export const Navbar: React.FC<{
   mode: "creator" | "explorer"
   disableMobileMenu?: boolean
 }> = ({ mode, children, disableMobileMenu }) => {
-  const { connect, account, reset, changeNetwork, network } = useTezos()
+  const { reset } = useTezos()
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
   const [popperOpen, setPopperOpen] = useState(false)
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const [networkAnchorEl, setNetworkAnchorEl] = React.useState<HTMLButtonElement | null>(null)
   const [networkPopperOpen, setNetworkPopperOpen] = useState(false)
@@ -178,14 +283,6 @@ export const Navbar: React.FC<{
     setNetworkAnchorEl(event.currentTarget)
     setNetworkPopperOpen(!networkPopperOpen)
   }
-
-  const handleNetworkChange = (network: Network) => {
-    changeNetwork(network)
-    setPopperOpen(!popperOpen)
-    setNetworkPopperOpen(!networkPopperOpen)
-    history.push("/explorer")
-  }
-
   const handleClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget)
     setPopperOpen(!popperOpen)
@@ -200,8 +297,6 @@ export const Navbar: React.FC<{
     navigator.clipboard.writeText(address)
     setPopperOpen(false)
   }
-
-  const history = useHistory()
 
   return (
     <StyledAppBar>
@@ -224,110 +319,17 @@ export const Navbar: React.FC<{
 
           <Grid item>
             <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
-              {account ? (
-                <Grid
-                  container
-                  alignItems="center"
-                  style={{ gap: 12 }}
-                  justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
-                >
-                  {children}
-                  <Grid item>
-                    <Grid container alignItems="center" style={{ gap: 8 }}>
-                      <Grid item>
-                        <ChangeNetworkButton />
-                      </Grid>
-                      <AddressBarWrapper item onClick={handleClick}>
-                        <AddressContainer
-                          container
-                          alignItems="center"
-                          wrap="nowrap"
-                          justifyContent="flex-end"
-                          style={{ gap: 8 }}
-                        >
-                          <Grid item>
-                            <ProfileAvatar size={22} address={account} />
-                          </Grid>
-                          <Grid item>
-                            <StyledUserProfileName>
-                              <UserProfileName address={account} short={true} />
-                            </StyledUserProfileName>
-                          </Grid>
-                        </AddressContainer>
-                      </AddressBarWrapper>
-                    </Grid>
-                  </Grid>
-
-                  <StyledPopover
-                    id={"wallet-Popper"}
-                    open={popperOpen}
-                    anchorEl={anchorEl}
-                    style={{ zIndex: 1500, borderRadius: 4 }}
-                    onClose={() => {
-                      setPopperOpen(false)
-                    }}
-                    PaperProps={{
-                      style: {
-                        borderRadius: 4,
-                        backgroundColor: "transparent"
-                      }
-                    }}
-                  >
-                    <AddressMenu>
-                      <AddressMenuItem container alignItems="center" onClick={() => handleCopy(account)}>
-                        <AddressMenuIcon item>
-                          <FileCopyOutlined color="inherit" fontSize="inherit" />
-                        </AddressMenuIcon>
-                        <Grid item>
-                          <Typography variant="subtitle2" color="textSecondary">
-                            {toShortAddress(account)}
-                          </Typography>
-                        </Grid>
-                      </AddressMenuItem>
-                      <AddressMenuItem container alignItems="center" onClick={handleNetworkClick}>
-                        <Grid item>
-                          <Typography variant="subtitle2" color="textSecondary">
-                            Change network ({network})
-                          </Typography>
-                        </Grid>
-                      </AddressMenuItem>
-                      <AddressMenuItem
-                        style={{
-                          borderTop: "2px solid rgba(255, 255, 255, 0.2)"
-                        }}
-                        container
-                        alignItems="center"
-                        onClick={handleLogout}
-                      >
-                        <AddressMenuIcon item>
-                          <ExitToAppOutlined color="inherit" fontSize="inherit" />
-                        </AddressMenuIcon>
-                        <Grid item>
-                          <Typography variant="subtitle2" color="textSecondary">
-                            Log out
-                          </Typography>
-                        </Grid>
-                      </AddressMenuItem>
-                    </AddressMenu>
-                  </StyledPopover>
-                </Grid>
-              ) : (
-                <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
-                  <Grid item>
-                    <ChangeNetworkButton />
-                  </Grid>
-                  <Grid item>
-                    <SmallButton
-                      color="secondary"
-                      variant="contained"
-                      style={{ fontSize: "14px" }}
-                      onClick={() => connect()}
-                    >
-                      Connect Wallet
-                    </SmallButton>
-                  </Grid>
-                </Grid>
-              )}
+              <AccountButton
+                handleLogout={handleLogout}
+                handleCopy={handleCopy}
+                handleClick={handleClick}
+                handleNetworkClick={handleNetworkClick}
+                popperOpen={popperOpen}
+                setPopperOpen={setPopperOpen}
+                isMobileExtraSmall={isMobileExtraSmall}
+              >
+                {children}
+              </AccountButton>
             </Grid>
           </Grid>
           <BackButtonContainer container justifyContent="flex-start">

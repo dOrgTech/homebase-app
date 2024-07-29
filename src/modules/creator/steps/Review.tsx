@@ -9,7 +9,7 @@ import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/ty
 import { DeploymentLoader } from "../components/DeploymentLoader"
 import { useCreatorRouteValidation } from "modules/creator/components/ProtectedRoute"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { ConnectWalletButton } from "modules/common/Toolbar"
+import { ConnectWalletButton } from "modules/common/ConnectWalletButton"
 
 const RocketImg = styled("img")({
   marginBottom: 46,

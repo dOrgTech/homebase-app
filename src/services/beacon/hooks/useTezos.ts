@@ -56,13 +56,7 @@ export const useTezos = (): WalletConnectReturn => {
 
   const connect = useCallback(
     async (newNetwork?: Network) => {
-      console.log({ newNetwork })
-      if ((newNetwork || network).startsWith("etherlink")) {
-        openEthWallet()
-        return "etherlink_login"
-      }
       const { wallet } = await connectWithBeacon(network)
-
       const newTezos: TezosToolkit = createTezos(network || newNetwork)
       newTezos.setProvider({ wallet })
 
@@ -81,12 +75,17 @@ export const useTezos = (): WalletConnectReturn => {
 
       return newTezos
     },
-    [dispatch, network, openEthWallet]
+    [dispatch, network]
   )
 
   return {
     tezos,
     connect: async () => {
+      if (network.startsWith("etherlink")) {
+        openEthWallet()
+        return "etherlink_login"
+      }
+
       const result = await connect()
       if (!result) {
         throw new Error("Failed to connect")
@@ -94,6 +93,12 @@ export const useTezos = (): WalletConnectReturn => {
       return result
     },
     reset: useCallback(async () => {
+      if (network.startsWith("etherlink")) {
+        // openEthWallet()
+        // return "etherlink_login"'
+        return alert("Implement Etherlink Logout")
+      }
+
       if (!wallet) {
         throw new Error("No Wallet Connected")
       }
@@ -103,13 +108,13 @@ export const useTezos = (): WalletConnectReturn => {
       dispatch({
         type: TezosActionType.RESET_TEZOS
       })
-    }, [dispatch, wallet]),
+    }, [dispatch, network, wallet]),
     changeNetwork: async (newNetwork: Network) => {
       mixpanel.register({ Network: newNetwork })
       localStorage.setItem("homebase:network", newNetwork)
 
       if ((newNetwork || network).startsWith("etherlink")) {
-        openEthWallet()
+        return openEthWallet()
       }
       const newTezos: TezosToolkit = createTezos(newNetwork)
       if (!account) {
@@ -141,8 +146,8 @@ export const useTezos = (): WalletConnectReturn => {
       queryClient.resetQueries()
     },
     account,
-    network,
     wallet,
+    network,
     isEtherlink: network?.startsWith("etherlink"),
     etherlink: {
       isConnected,
