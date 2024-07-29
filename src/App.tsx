@@ -26,6 +26,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
 import { hexStringToBytes } from "services/utils/utils"
+import { HistoryLengthProvider } from "modules/explorer/context/HistoryLength"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -101,47 +102,49 @@ const App: React.FC = () => {
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <Box bgcolor="primary.dark" position="absolute" width="100%">
                 <Router>
-                  <ScrollToTop />
-                  <Switch>
-                    <Route path="/creator">
-                      <CreatorProvider>
-                        <ThemeProvider theme={legacyTheme}>
-                          <DAOCreatorRouter />
-                        </ThemeProvider>
-                      </CreatorProvider>
-                      {/* <WarningFooter
+                  <HistoryLengthProvider>
+                    <ScrollToTop />
+                    <Switch>
+                      <Route path="/creator">
+                        <CreatorProvider>
+                          <ThemeProvider theme={legacyTheme}>
+                            <DAOCreatorRouter />
+                          </ThemeProvider>
+                        </CreatorProvider>
+                        {/* <WarningFooter
                       text={
                         "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
                       }
                     /> */}
-                    </Route>
-                    <Route path="/lite">
-                      <ThemeProvider theme={legacyTheme}>
-                        <CommunityCreator />
-                      </ThemeProvider>
-                    </Route>
-                    <Route path="/explorer">
-                      <TZKTSubscriptionsProvider>
-                        <DAOExplorerRouter />
-                      </TZKTSubscriptionsProvider>
+                      </Route>
+                      <Route path="/lite">
+                        <ThemeProvider theme={legacyTheme}>
+                          <CommunityCreator />
+                        </ThemeProvider>
+                      </Route>
+                      <Route path="/explorer">
+                        <TZKTSubscriptionsProvider>
+                          <DAOExplorerRouter />
+                        </TZKTSubscriptionsProvider>
 
-                      {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
-                        <>
-                          {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
-                          <WarningFooter
-                            text={
-                              "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                            }
-                          />
-                        </>
-                      ) : null}
-                      <ExplorerFooter></ExplorerFooter>
-                    </Route>
-                    <Route path="/faq">
-                      <FAQ />
-                    </Route>
-                    <Redirect to="/explorer" />
-                  </Switch>
+                        {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
+                          <>
+                            {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
+                            <WarningFooter
+                              text={
+                                "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
+                              }
+                            />
+                          </>
+                        ) : null}
+                        <ExplorerFooter></ExplorerFooter>
+                      </Route>
+                      <Route path="/faq">
+                        <FAQ />
+                      </Route>
+                      <Redirect to="/explorer" />
+                    </Switch>
+                  </HistoryLengthProvider>
                 </Router>
               </Box>
             </LocalizationProvider>
