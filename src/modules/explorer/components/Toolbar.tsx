@@ -20,6 +20,7 @@ import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { SmallButton } from "../../common/SmallButton"
+import { ConnectWalletButton } from "modules/common/ConnectWalletButton"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -165,16 +166,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
                     <ChangeNetworkButton />
                   </Grid>
                   <Grid item>
-                    <SmallButton
-                      color="secondary"
-                      variant="contained"
-                      style={{ fontSize: "14px" }}
-                      onClick={() => {
-                        connect()
-                      }}
-                    >
-                      Connect Wallet
-                    </SmallButton>
+                    <ConnectWalletButton connect={connect} variant="explorer" />
                   </Grid>
                 </Grid>
               )}

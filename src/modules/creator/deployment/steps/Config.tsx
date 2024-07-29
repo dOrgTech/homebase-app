@@ -118,7 +118,7 @@ const validateForm = (values: TokenContractSettings) => {
   return errors
 }
 
-const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
+const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue }: any) => {
   const { dispatch } = useContext(DeploymentContext)
   const match = useRouteMatch()
   const history = useHistory()
@@ -265,7 +265,7 @@ export const ConfigContract: React.FC = () => {
       <Grid container direction="column">
         <Grid>
           <Title style={{ marginBottom: 32 }} color="textSecondary">
-            Configure Token Contract
+            Configure Token ContractX
           </Title>
         </Grid>
 
