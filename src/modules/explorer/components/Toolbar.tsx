@@ -14,6 +14,7 @@ import {
 
 import HomeButton from "assets/logos/homebase-logo.svg"
 import { toShortAddress } from "services/contracts/utils"
+import { toShortAddress } from "services/contracts/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
 import { UserProfileName } from "modules/explorer/components/UserProfileName"
