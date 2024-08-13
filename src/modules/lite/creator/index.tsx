@@ -285,18 +285,18 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
   }, [error, setFieldValue, tokenMetadata])
 
   // TODO: Remove Me
-  useEffect(() => {
-    setFieldTouched("tokenAddress")
-    setFieldTouched("description")
-    setFieldTouched("name")
+  // useEffect(() => {
+  //   setFieldTouched("tokenAddress")
+  //   setFieldTouched("description")
+  //   setFieldTouched("name")
 
-    setFieldValue("tokenType", "erc20")
-    setFieldValue("tokenAddress", "0x336bfd0356f6babec084f9120901c0296db1967e")
-    setFieldValue("tokenID", 0)
-    setFieldValue("symbol", "MTK")
-    setFieldValue("description", "Sample Description")
-    setFieldValue("name", "Test Community")
-  }, [values])
+  //   setFieldValue("tokenType", "erc20")
+  //   setFieldValue("tokenAddress", "0x336bfd0356f6babec084f9120901c0296db1967e")
+  //   setFieldValue("tokenID", 0)
+  //   setFieldValue("symbol", "MTK")
+  //   setFieldValue("description", "Sample Description")
+  //   setFieldValue("name", "Test Community")
+  // }, [values])
 
   return (
     <PageContainer container direction="row">
