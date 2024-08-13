@@ -45,6 +45,11 @@ export const getTotalSupplyAtReferenceBlock = async (network: Network, address: 
 export const getTokenHoldersCount = async (network: Network, address: string, tokenID: number) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?tokenId=${tokenID}&contract=${address}`
 
+  // Temporary fix for etherlink
+  if (network.startsWith("etherlink")) {
+    return 0
+  }
+
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -58,6 +63,10 @@ export const getTokenHoldersCount = async (network: Network, address: string, to
 
 export const hasTokenBalance = async (network: Network, account: string, contract: any) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${account}&token.contract=${contract}`
+  // Temporary fix for etherlink
+  if (network.startsWith("etherlink")) {
+    return false
+  }
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -88,10 +97,10 @@ export const getTurnoutValue = async (
   level: number,
   voters: number
 ) => {
-  const tokenHolders = await getTokenHoldersCount(network, address, tokenID)
+  const tokenHoldersCount = await getTokenHoldersCount(network, address, tokenID)
 
-  if (tokenHolders) {
-    return (voters * 100) / Number(tokenHolders)
+  if (tokenHoldersCount) {
+    return (voters * 100) / Number(tokenHoldersCount)
   }
 }
 

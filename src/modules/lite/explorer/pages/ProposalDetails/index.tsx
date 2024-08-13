@@ -14,13 +14,13 @@ import { usePollChoices } from "../../hooks/usePollChoices"
 import { useCommunity } from "../../hooks/useCommunity"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
-import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
 import { ArrowBackIosOutlined } from "@material-ui/icons"
 import { useIsMember } from "../../hooks/useIsMember"
+import { getEthSignature } from "services/utils/utils"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -54,6 +54,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   }>()
 
   const theme = useTheme()
+  const [votingPower, setVotingPower] = useState<BigNumber>(new BigNumber(0))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
   const navigate = useHistory()
@@ -68,11 +69,9 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     dao?.data.token.contract || community?.tokenAddress,
     poll?.referenceBlock
   )
-  const { network } = useTezos()
+  const { network, etherlink } = useTezos()
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
-
-  const votingPower = poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight
 
   useEffect(() => {
     // refetch()
@@ -80,6 +79,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
       return (elem.selected = false)
     })
   })
+
+  useEffect(() => {
+    // TODO: This is a temporary fix for etherlink, we need to fix this in the future
+    if (network?.startsWith("etherlink")) return setVotingPower(new BigNumber(1))
+
+    if (poll?.isXTZ) setVotingPower(voteWeight?.votingXTZWeight as BigNumber)
+    else setVotingPower(voteWeight?.votingWeight as BigNumber)
+  }, [voteWeight, poll, network])
 
   const votesData = selectedVotes.map((vote: Choice) => {
     return {
@@ -91,48 +98,86 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   })
 
   const saveVote = async () => {
-    if (!wallet) {
-      return
-    }
-
-    try {
-      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
-      if (!signature) {
+    if (wallet) {
+      try {
+        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
+        if (!signature) {
+          openNotification({
+            message: `Issue with Signature`,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+        const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes, network)
+        const response = await resp.json()
+        if (resp.ok) {
+          openNotification({
+            message: "Your vote has been submitted",
+            autoHideDuration: 3000,
+            variant: "success"
+          })
+          setRefresh(Math.random())
+          setSelectedVotes([])
+        } else {
+          console.log("Error: ", response.message)
+          openNotification({
+            message: response.message,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+      } catch (error) {
+        console.log("error: ", error)
         openNotification({
-          message: `Issue with Signature`,
+          message: `Could not submit vote, Please Try Again!`,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
       }
-      const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes)
-      const response = await resp.json()
-      if (resp.ok) {
+    } else if (etherlink.isConnected) {
+      try {
+        const publicKey = etherlink.account.address
+        const { signature, payloadBytes } = await getEthSignature(publicKey, JSON.stringify(votesData))
+        if (!signature) {
+          openNotification({
+            message: `Issue with Signature`,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+        const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes, network)
+        const response = await resp.json()
+        if (resp.ok) {
+          openNotification({
+            message: "Your vote has been submitted",
+            autoHideDuration: 3000,
+            variant: "success"
+          })
+          setRefresh(Math.random())
+          setSelectedVotes([])
+        } else {
+          console.log("Error: ", response.message)
+          openNotification({
+            message: response.message,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+      } catch (error) {
+        console.log("error: ", error)
         openNotification({
-          message: "Your vote has been submitted",
-          autoHideDuration: 3000,
-          variant: "success"
-        })
-        setRefresh(Math.random())
-        setSelectedVotes([])
-      } else {
-        console.log("Error: ", response.message)
-        openNotification({
-          message: response.message,
+          message: `Could not submit vote, Please Try Again!`,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
       }
-    } catch (error) {
-      console.log("error: ", error)
-      openNotification({
-        message: `Could not submit vote, Please Try Again!`,
-        autoHideDuration: 3000,
-        variant: "error"
-      })
-      return
     }
   }
 
