@@ -36,15 +36,21 @@ export const getDAO = async (address: string) => {
 }
 
 export const getLiteDAOs = async (network: string) => {
-  const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/`, {
-    method: "POST",
-    body: JSON.stringify({
-      network
-    }),
+  const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/?network=${network}`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json"
     }
   })
+  // const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/`, {
+  //   method: "POST",
+  //   body: JSON.stringify({
+  //     network
+  //   }),
+  //   headers: {
+  //     "Content-Type": "application/json"
+  //   }
+  // })
 
   const daos: Community[] = await resp.json()
 
@@ -116,19 +122,41 @@ export const getXTZTransfers = async (address: string) => {
   })
 }
 
-export const saveLiteCommunity = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
-  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      signature,
-      publicKey,
-      payloadBytes
+export const saveLiteCommunity = async (
+  signature: string,
+  publicKey: string | undefined,
+  payloadBytes: string,
+  network: Network
+) => {
+  if (network.startsWith("etherlink")) {
+    const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        signature,
+        publicKey,
+        payloadBytes,
+        network
+      })
     })
-  })
-  return resp
+    return resp
+  } else {
+    const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        signature,
+        publicKey,
+        payloadBytes,
+        network
+      })
+    })
+    return resp
+  }
 }
 
 export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {

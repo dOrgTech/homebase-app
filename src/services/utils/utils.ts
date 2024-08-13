@@ -9,6 +9,8 @@ import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
 import { networkNameMap } from "services/bakingBad"
+import { signMessage } from "@wagmi/core"
+import { config as wagmiConfig } from "services/wagmi/config"
 
 export const hexStringToBytes = (hex: string): string => {
   return Buffer.from(hex2buf(hex)).toString("utf8")
@@ -196,6 +198,23 @@ export const getSignature = async (userAddress: string, wallet: BeaconWallet, da
   const { signature } = signedPayload
 
   return { signature, payloadBytes }
+}
+
+export const getEthSignature = async (userAddress: any, data?: string) => {
+  const formattedInput: string = [
+    "Tezos Signed Message:",
+    process.env.REACT_APP_BASE_URL,
+    new Date().toISOString(),
+    data
+  ].join(" ")
+  const signature = await signMessage(wagmiConfig, {
+    account: userAddress,
+    message: formattedInput
+  })
+  return {
+    signature,
+    payloadBytes: formattedInput
+  }
 }
 
 export const getStatusDate = async (level: number, network: Network) => {
