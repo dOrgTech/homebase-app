@@ -14,7 +14,6 @@ import { usePollChoices } from "../../hooks/usePollChoices"
 import { useCommunity } from "../../hooks/useCommunity"
 import { useSinglePoll } from "../../hooks/usePoll"
 import { ProposalStatus } from "../../components/ProposalTableRowStatusBadge"
-import { BackButton } from "modules/lite/components/BackButton"
 import { voteOnLiteProposal } from "services/services/lite/lite-services"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
@@ -22,6 +21,7 @@ import BigNumber from "bignumber.js"
 import { ArrowBackIosOutlined } from "@material-ui/icons"
 import { useIsMember } from "../../hooks/useIsMember"
 import { useHistoryLength } from "modules/explorer/context/HistoryLength"
+import { getEthSignature } from "services/utils/utils"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -56,25 +56,29 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const theme = useTheme()
   const historyLength = useHistoryLength()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const { state, pathname } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
-  const navigate = useHistory()
-  const { data: dao } = useDAO(state?.daoId)
-  const { account, wallet } = useTezos()
-  const openNotification = useNotification()
-  const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
-  const choices = usePollChoices(poll, refresh)
+  const { state, pathname } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
+  const { data: dao } = useDAO(state?.daoId)
   const { data: voteWeight } = useTokenVoteWeight(
     dao?.data.token.contract || community?.tokenAddress,
     poll?.referenceBlock
   )
-  const { network } = useTezos()
+  const [votingPower, setVotingPower] = useState(poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight)
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+
+  const navigate = useHistory()
+
+  const { account, wallet } = useTezos()
+  const openNotification = useNotification()
+  const [refresh, setRefresh] = useState<number>()
+
+  const choices = usePollChoices(poll, refresh)
+
+  const { network, etherlink } = useTezos()
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
 
-  const votingPower = poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight
   const navigateToDao = () => {
     if (historyLength > 1) {
       navigate.goBack()
@@ -91,6 +95,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     })
   })
 
+  useEffect(() => {
+    // TODO: This is a temporary fix for etherlink, we need to fix this in the future
+    if (network?.startsWith("etherlink")) return setVotingPower(new BigNumber(1))
+
+    if (poll?.isXTZ) setVotingPower(voteWeight?.votingXTZWeight as BigNumber)
+    else setVotingPower(voteWeight?.votingWeight as BigNumber)
+  }, [voteWeight, poll, network])
+
   const votesData = selectedVotes.map((vote: Choice) => {
     return {
       address: account,
@@ -101,48 +113,86 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   })
 
   const saveVote = async () => {
-    if (!wallet) {
-      return
-    }
-
-    try {
-      const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-      const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
-      if (!signature) {
+    if (wallet) {
+      try {
+        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
+        if (!signature) {
+          openNotification({
+            message: `Issue with Signature`,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+        const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes, network)
+        const response = await resp.json()
+        if (resp.ok) {
+          openNotification({
+            message: "Your vote has been submitted",
+            autoHideDuration: 3000,
+            variant: "success"
+          })
+          setRefresh(Math.random())
+          setSelectedVotes([])
+        } else {
+          console.log("Error: ", response.message)
+          openNotification({
+            message: response.message,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+      } catch (error) {
+        console.log("error: ", error)
         openNotification({
-          message: `Issue with Signature`,
+          message: `Could not submit vote, Please Try Again!`,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
       }
-      const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes)
-      const response = await resp.json()
-      if (resp.ok) {
+    } else if (etherlink.isConnected) {
+      try {
+        const publicKey = etherlink.account.address
+        const { signature, payloadBytes } = await getEthSignature(publicKey, JSON.stringify(votesData))
+        if (!signature) {
+          openNotification({
+            message: `Issue with Signature`,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+        const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes, network)
+        const response = await resp.json()
+        if (resp.ok) {
+          openNotification({
+            message: "Your vote has been submitted",
+            autoHideDuration: 3000,
+            variant: "success"
+          })
+          setRefresh(Math.random())
+          setSelectedVotes([])
+        } else {
+          console.log("Error: ", response.message)
+          openNotification({
+            message: response.message,
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+      } catch (error) {
+        console.log("error: ", error)
         openNotification({
-          message: "Your vote has been submitted",
-          autoHideDuration: 3000,
-          variant: "success"
-        })
-        setRefresh(Math.random())
-        setSelectedVotes([])
-      } else {
-        console.log("Error: ", response.message)
-        openNotification({
-          message: response.message,
+          message: `Could not submit vote, Please Try Again!`,
           autoHideDuration: 3000,
           variant: "error"
         })
         return
       }
-    } catch (error) {
-      console.log("error: ", error)
-      openNotification({
-        message: `Could not submit vote, Please Try Again!`,
-        autoHideDuration: 3000,
-        variant: "error"
-      })
-      return
     }
   }
 

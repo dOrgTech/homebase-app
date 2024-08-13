@@ -26,7 +26,6 @@ import duration from "dayjs/plugin/duration"
 import { CommunityBadge } from "../../components/CommunityBadge"
 import { BackButton } from "modules/lite/components/BackButton"
 import { saveLiteProposal } from "services/services/lite/lite-services"
-import { useToken } from "../../hooks/useToken"
 import { isWebUri } from "valid-url"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
@@ -36,6 +35,8 @@ import CodeOffIcon from "@mui/icons-material/CodeOff"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
+import { useCommunity } from "../../hooks/useCommunity"
+import { getEthSignature } from "services/utils/utils"
 
 dayjs.extend(duration)
 
@@ -125,6 +126,8 @@ const PageContainer = styled("div")({
   padding: "28px 0",
   boxSizing: "border-box",
   paddingTop: 0,
+  paddingLeft: "10px",
+  paddingRight: "10px",
 
   ["@media (max-width: 1425px)"]: {},
 
@@ -329,9 +332,10 @@ export const ProposalForm = ({
   touched,
   isSubmitting,
   setFieldTouched,
-  id
+  id: daoId
 }: any) => {
   const theme = useTheme()
+  const community = useCommunity(daoId)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const finalDate = calculateEndTime(
     getIn(values, "endTimeDays"),
@@ -340,6 +344,7 @@ export const ProposalForm = ({
   )
 
   const { pathname } = useLocation()
+  const isEtherlinkCommuniy = community?.network?.startsWith("etherlink")
 
   const codeEditorStyles = {
     minHeight: 500,
@@ -364,6 +369,12 @@ export const ProposalForm = ({
   </html>`
 
   const hasErrors = errors.endTimeDays || errors.endTimeHours || errors.endTimeMinutes
+  const showEndDate =
+    getIn(values, "endTimeDays") !== null &&
+    getIn(values, "endTimeHours") !== null &&
+    getIn(values, "endTimeMinutes") !== null &&
+    !hasErrors
+
   return (
     <PageContainer style={shouldShowBar ? { width: "1000px" } : { width: "100%" }}>
       <Grid container>
@@ -372,7 +383,7 @@ export const ProposalForm = ({
             <BackButton />
             <Header container direction="column">
               <CommunityLabel container direction="row" justifyContent="center" alignItems="center">
-                <CommunityBadge id={id} />
+                <CommunityBadge id={daoId} />
               </CommunityLabel>
               <Typography
                 color="textPrimary"
@@ -476,10 +487,7 @@ export const ProposalForm = ({
                     />
                   </TimeBox>
                   <Grid item xs={5}>
-                    {getIn(values, "endTimeDays") !== null &&
-                    getIn(values, "endTimeHours") !== null &&
-                    getIn(values, "endTimeMinutes") !== null &&
-                    !hasErrors ? (
+                    {showEndDate ? (
                       <Grid container direction="row" style={{ marginLeft: 16 }}>
                         <Typography color="textPrimary" variant={"body1"}>
                           End date:
@@ -501,18 +509,20 @@ export const ProposalForm = ({
               </>
             ) : null}
 
-            <Grid item xs={12}>
-              <SwitchContainer item container direction="row" xs={12} alignItems="center">
-                <Field name="isXTZ" type="text" placeholder="XTZ-weighted" component={Switch} />
-                <Typography color="textPrimary"> XTZ-weighted</Typography>
-              </SwitchContainer>
-              <Grid item>
-                <LabelText color="textPrimary">
-                  {" "}
-                  If enabled, the poll will use the voter&apos;s XTZ balance instead of their governance token balance
-                </LabelText>
+            {!isEtherlinkCommuniy ? (
+              <Grid item xs={12}>
+                <SwitchContainer item container direction="row" xs={12} alignItems="center">
+                  <Field name="isXTZ" type="text" placeholder="XTZ-weighted" component={Switch} />
+                  <Typography color="textPrimary"> XTZ-weighted</Typography>
+                </SwitchContainer>
+                <Grid item>
+                  <LabelText color="textPrimary">
+                    {" "}
+                    If enabled, the poll will use the voter&apos;s XTZ balance instead of their governance token balance
+                  </LabelText>
+                </Grid>
               </Grid>
-            </Grid>
+            ) : null}
 
             <Grid item xs={12}>
               <Typography color="textPrimary">Description</Typography>
@@ -651,10 +661,7 @@ export const ProposalForm = ({
                     }}
                   />
                 </TimeBox>
-                {getIn(values, "endTimeDays") !== null &&
-                getIn(values, "endTimeHours") !== null &&
-                getIn(values, "endTimeMinutes") !== null &&
-                !hasErrors ? (
+                {showEndDate ? (
                   <Grid container direction="row">
                     <Typography color="textPrimary" variant={"body1"}>
                       End date:
@@ -675,7 +682,7 @@ export const ProposalForm = ({
             ) : null}
             <ProposalChoices>
               <Choices
-                id={id}
+                id={daoId}
                 choices={getIn(values, "choices")}
                 isLoading={isSubmitting}
                 submitForm={submitForm}
@@ -699,11 +706,12 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
 
 export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props => {
   const navigate = useHistory()
-  const { network, account, wallet } = useTezos()
+  const { network, account, wallet, etherlink } = useTezos()
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
+  console.log("DaoDAta", data)
   const id = data?.liteDAOData?._id ? data?.liteDAOData?._id : props.id
 
   const initialState: Poll = {
@@ -725,66 +733,118 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
   const saveProposal = useCallback(
     async (values: Poll) => {
       console.log(values)
-      try {
-        setIsLoading(true)
-        if (!wallet) {
-          return
-        }
+      if (wallet) {
+        try {
+          setIsLoading(true)
+          const data = values
+          data.daoID = id
+          data.startTime = String(dayjs().valueOf())
+          data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
+          data.author = account
 
-        const data = values
-        data.daoID = id
-        data.startTime = String(dayjs().valueOf())
-        data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
-        data.author = account
-
-        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-        if (!signature) {
-          openNotification({
-            message: `Issue with Signature`,
-            autoHideDuration: 3000,
-            variant: "error"
-          })
-          return
-        }
-
-        const res = await saveLiteProposal(signature, publicKey, payloadBytes)
-        const respData = await res.json()
-        if (res.ok) {
-          openNotification({
-            message: "Proposal created!",
-            autoHideDuration: 3000,
-            variant: "success"
-          })
-          setIsLoading(false)
-          if (props?.onClose) {
-            props?.onClose()
+          const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
+          const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+          if (!signature) {
+            openNotification({
+              message: `Issue with Signature`,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
           }
-          daoId
-            ? navigate.push(`/explorer/dao/${daoId}/proposals`)
-            : navigate.push(`/explorer/lite/dao/${id}/community`)
-        } else {
-          console.log("Error: ", respData.message)
+
+          const res = await saveLiteProposal(signature, publicKey, payloadBytes, network)
+          const respData = await res.json()
+          if (res.ok) {
+            openNotification({
+              message: "Proposal created!",
+              autoHideDuration: 3000,
+              variant: "success"
+            })
+            setIsLoading(false)
+            if (props?.onClose) {
+              props?.onClose()
+            }
+            daoId
+              ? navigate.push(`/explorer/dao/${daoId}/proposals`)
+              : navigate.push(`/explorer/lite/dao/${id}/community`)
+          } else {
+            console.log("Error: ", respData.message)
+            openNotification({
+              message: respData.message,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            setIsLoading(false)
+            return
+          }
+        } catch (error) {
+          console.log("error: ", error)
           openNotification({
-            message: respData.message,
+            message: "Proposal could not be created",
             autoHideDuration: 3000,
             variant: "error"
           })
           setIsLoading(false)
           return
         }
-      } catch (error) {
-        console.log("error: ", error)
-        openNotification({
-          message: "Proposal could not be created",
-          autoHideDuration: 3000,
-          variant: "error"
-        })
-        setIsLoading(false)
-        return
+      } else if (etherlink.isConnected) {
+        try {
+          const data = values
+          data.daoID = id
+          data.startTime = String(dayjs().valueOf())
+          data.endTime = calculateEndTime(values.endTimeDays!, values.endTimeHours!, values.endTimeMinutes!)
+          data.author = etherlink.account.address
+
+          console.log({ etherlink, data })
+          const { signature, payloadBytes } = await getEthSignature(etherlink.account.address, JSON.stringify(data))
+          const publicKey = etherlink.account.address
+          if (!signature) {
+            openNotification({
+              message: `Issue with Signature`,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
+          }
+          const res = await saveLiteProposal(signature, publicKey, payloadBytes, network)
+          const respData = await res.json()
+          if (res.ok) {
+            openNotification({
+              message: "Proposal created!",
+              autoHideDuration: 3000,
+              variant: "success"
+            })
+            setIsLoading(false)
+            if (props?.onClose) {
+              props?.onClose()
+            }
+            daoId
+              ? navigate.push(`/explorer/dao/${daoId}/proposals`)
+              : navigate.push(`/explorer/lite/dao/${id}/community`)
+          } else {
+            console.log("Error: ", respData.message)
+            openNotification({
+              message: respData.message,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            setIsLoading(false)
+            return
+          }
+        } catch (error) {
+          console.log("error: ", error)
+          openNotification({
+            message: "Proposal could not be created",
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          setIsLoading(false)
+          return
+        }
       }
     },
-    [navigate, id, network]
+    [navigate, id, network, wallet, etherlink]
   )
 
   return (

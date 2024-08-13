@@ -128,38 +128,27 @@ export const saveLiteCommunity = async (
   payloadBytes: string,
   network: Network
 ) => {
-  if (network.startsWith("etherlink")) {
-    const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        signature,
-        publicKey,
-        payloadBytes,
-        network
-      })
+  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      signature,
+      publicKey,
+      payloadBytes,
+      network
     })
-    return resp
-  } else {
-    const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        signature,
-        publicKey,
-        payloadBytes,
-        network
-      })
-    })
-    return resp
-  }
+  })
+  return resp
 }
 
-export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+export const saveLiteProposal = async (
+  signature: string,
+  publicKey: string | undefined,
+  payloadBytes: string,
+  network: Network
+) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
     method: "POST",
     headers: {
@@ -168,19 +157,26 @@ export const saveLiteProposal = async (signature: string, publicKey: string | un
     body: JSON.stringify({
       signature,
       publicKey,
-      payloadBytes
+      payloadBytes,
+      network
     })
   })
   return resp
 }
 
-export const voteOnLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+export const voteOnLiteProposal = async (
+  signature: string,
+  publicKey: string | undefined,
+  payloadBytes: string,
+  network: Network
+) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/update/choice`, {
     method: "POST",
     body: JSON.stringify({
       signature,
       publicKey,
-      payloadBytes
+      payloadBytes,
+      network
     }),
     headers: {
       "Content-Type": "application/json"

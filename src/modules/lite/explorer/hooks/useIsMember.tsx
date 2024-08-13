@@ -11,7 +11,7 @@ export const useIsMember = (network: Network, tokenAddress: string, memberAddres
   useEffect(() => {
     async function fetIsMember() {
       try {
-        if (tokenAddress !== "") {
+        if (tokenAddress !== "" && !network.startsWith("etherlink")) {
           const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances/?token.contract=${tokenAddress}`
           await fetch(url).then(async response => {
             if (!response.ok) {

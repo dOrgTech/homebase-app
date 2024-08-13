@@ -12,7 +12,7 @@ export const ConnectWalletButton = ({
   if (variant === "header") {
     return (
       <SmallButton color="secondary" variant="contained" style={{ fontSize: "14px" }} onClick={() => connect()}>
-        Connect Wallet B
+        Connect Wallet
       </SmallButton>
     )
   }
