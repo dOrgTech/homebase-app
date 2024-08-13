@@ -4,6 +4,7 @@ import { metaMask, injected, safe } from "wagmi/connectors"
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config"
 import { walletConnect } from "wagmi/connectors"
+import { DeployContract } from "./token"
 
 const wagmiChains = [etherlink, etherlinkTestnet] as const
 
@@ -41,3 +42,5 @@ export const config = createConfig({
     [etherlinkTestnet.id]: http()
   }
 })
+
+window.DeployContract = DeployContract

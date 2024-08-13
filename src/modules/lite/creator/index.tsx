@@ -23,7 +23,7 @@ import { useHistory } from "react-router"
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { getSignature, validateTokenAddress } from "services/utils/utils"
+import { getEthSignature, getSignature, validateTokenAddress } from "services/utils/utils"
 import { Navbar } from "modules/common/Toolbar"
 import { SmallButton } from "modules/common/SmallButton"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
@@ -34,6 +34,9 @@ import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFor
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
 import { Network } from "services/beacon"
+import { signMessage } from "@wagmi/core"
+import { config as wagmiConfig } from "services/wagmi/config"
+import { useSignMessage } from "wagmi"
 
 const CodeButton = styled(CodeIcon)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -224,23 +227,25 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const { data: tokenMetadata, isLoading: loading, error } = useTokenMetadata(values?.tokenAddress)
-  const tokenStandardOptions = isEtherlink
-    ? [
-        {
-          name: "erc20",
-          label: "ERC20"
-        }
-      ]
-    : [
-        {
-          value: "fa2",
-          label: "FA2"
-        },
-        {
-          value: "nft",
-          label: "NFT"
-        }
-      ]
+  const options = {
+    eth: [
+      {
+        name: "erc20",
+        label: "ERC20"
+      }
+    ],
+    tez: [
+      {
+        value: "fa2",
+        label: "FA2"
+      },
+      {
+        value: "nft",
+        label: "NFT"
+      }
+    ]
+  }
+  const tokenStandardOptions = isEtherlink ? options.eth : options.tez
 
   const codeEditorStyles = {
     minHeight: 500,
@@ -277,6 +282,20 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
       setFieldValue("symbol", undefined)
     }
   }, [error, setFieldValue, tokenMetadata])
+
+  // TODO: Remove Me
+  useEffect(() => {
+    setFieldTouched("tokenAddress")
+    setFieldTouched("description")
+    setFieldTouched("name")
+
+    setFieldValue("tokenType", "erc20")
+    setFieldValue("tokenAddress", "0x336bfd0356f6babec084f9120901c0296db1967e")
+    setFieldValue("tokenID", 0)
+    setFieldValue("symbol", "MTK")
+    setFieldValue("description", "Sample Description")
+    setFieldValue("name", "Test Community")
+  }, [values])
 
   return (
     <PageContainer container direction="row">
@@ -482,7 +501,8 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 
 export const CommunityCreator: React.FC = () => {
   const navigate = useHistory()
-  const { network, account, wallet } = useTezos()
+  const { network, account, wallet, etherlink } = useTezos()
+  const { data, isError, isSuccess } = useSignMessage()
   const openNotification = useNotification()
 
   const initialState: Community = {
@@ -505,53 +525,85 @@ export const CommunityCreator: React.FC = () => {
 
   const saveCommunity = useCallback(
     async (values: Community) => {
-      if (!wallet) {
-        return
-      }
+      console.log({ values })
 
-      values.members.push(account)
+      if (wallet) {
+        values.members.push(account)
 
-      try {
-        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-        if (!signature) {
+        try {
+          const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
+          const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+          if (!signature) {
+            openNotification({
+              message: `Issue with Signature`,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
+          }
+
+          const resp = await saveLiteCommunity(signature, publicKey, payloadBytes, network)
+          const data = await resp.json()
+          if (resp.ok) {
+            openNotification({
+              message: "Community created! Checkout the DAO in explorer page",
+              autoHideDuration: 3000,
+              variant: "success"
+            })
+            navigate.push("/explorer")
+          } else {
+            console.log("Error: ", data.message)
+            openNotification({
+              message: data.message,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
+          }
+        } catch (error) {
+          console.log("error: ", error)
           openNotification({
-            message: `Issue with Signature`,
+            message: "Community could not be created!",
             autoHideDuration: 3000,
             variant: "error"
           })
           return
         }
-
-        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
-        const data = await resp.json()
-        if (resp.ok) {
+      } else if (etherlink.isConnected) {
+        // Ethelink
+        try {
+          console.log({ etherlink })
+          const { signature, payloadBytes } = await getEthSignature(etherlink.account.address, JSON.stringify(values))
+          const resp = await saveLiteCommunity(signature, etherlink.account.address, payloadBytes, network)
+          const data = await resp.json()
+          if (resp.ok) {
+            openNotification({
+              message: "Community created! Checkout the DAO in explorer page",
+              autoHideDuration: 3000,
+              variant: "success"
+            })
+            navigate.push("/explorer")
+          } else {
+            console.log("Error: ", data.message)
+            openNotification({
+              message: data.message,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
+          }
+        } catch (error) {
+          console.log("error: ", error)
           openNotification({
-            message: "Community created! Checkout the DAO in explorer page",
-            autoHideDuration: 3000,
-            variant: "success"
-          })
-          navigate.push("/explorer")
-        } else {
-          console.log("Error: ", data.message)
-          openNotification({
-            message: data.message,
+            message: "Community could not be created!",
             autoHideDuration: 3000,
             variant: "error"
           })
           return
         }
-      } catch (error) {
-        console.log("error: ", error)
-        openNotification({
-          message: "Community could not be created!",
-          autoHideDuration: 3000,
-          variant: "error"
-        })
-        return
       }
     },
-    [navigate]
+    [navigate, network, openNotification, account, wallet, etherlink]
   )
 
   return (

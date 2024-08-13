@@ -104,7 +104,6 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
   }
 
   // Methods for Common - End
-
   const handleAddressbarClick = (event: React.MouseEvent<any>) => {
     if (variant === "explorer") return openUserMenuSheet()
 
@@ -112,7 +111,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
     setPopperOpen(!popperOpen)
   }
 
-  console.log("XX", { account })
+  // console.log("XX", { account, etherlink })
   if (walletAddress && etherlink?.isConnected)
     return (
       <Grid
