@@ -42,6 +42,15 @@ export const getLiteDAOs = async (network: string) => {
       "Content-Type": "application/json"
     }
   })
+  // const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/`, {
+  //   method: "POST",
+  //   body: JSON.stringify({
+  //     network
+  //   }),
+  //   headers: {
+  //     "Content-Type": "application/json"
+  //   }
+  // })
 
   const daos: Community[] = await resp.json()
 
@@ -119,19 +128,35 @@ export const saveLiteCommunity = async (
   payloadBytes: string,
   network: Network
 ) => {
-  const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      signature,
-      publicKey,
-      payloadBytes,
-      network
+  if (network.startsWith("etherlink")) {
+    const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        signature,
+        publicKey,
+        payloadBytes,
+        network
+      })
     })
-  })
-  return resp
+    return resp
+  } else {
+    const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        signature,
+        publicKey,
+        payloadBytes,
+        network
+      })
+    })
+    return resp
+  }
 }
 
 export const saveLiteProposal = async (

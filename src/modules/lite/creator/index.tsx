@@ -34,6 +34,9 @@ import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFor
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
 import { Network } from "services/beacon"
+import { signMessage } from "@wagmi/core"
+import { config as wagmiConfig } from "services/wagmi/config"
+import { useSignMessage } from "wagmi"
 
 const CodeButton = styled(CodeIcon)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -281,6 +284,20 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
     }
   }, [error, setFieldValue, tokenMetadata])
 
+  // TODO: Remove Me
+  useEffect(() => {
+    setFieldTouched("tokenAddress")
+    setFieldTouched("description")
+    setFieldTouched("name")
+
+    setFieldValue("tokenType", "erc20")
+    setFieldValue("tokenAddress", "0x336bfd0356f6babec084f9120901c0296db1967e")
+    setFieldValue("tokenID", 0)
+    setFieldValue("symbol", "MTK")
+    setFieldValue("description", "Sample Description")
+    setFieldValue("name", "Test Community")
+  }, [values])
+
   return (
     <PageContainer container direction="row">
       <Navbar mode="creator" />
@@ -489,7 +506,6 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 export const CommunityCreator: React.FC = () => {
   const navigate = useHistory()
   const { network, account, wallet, etherlink } = useTezos()
-
   const openNotification = useNotification()
 
   const initialState: Community = {
