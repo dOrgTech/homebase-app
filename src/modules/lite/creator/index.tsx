@@ -34,9 +34,6 @@ import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFor
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
 import { Network } from "services/beacon"
-import { signMessage } from "@wagmi/core"
-import { config as wagmiConfig } from "services/wagmi/config"
-import { useSignMessage } from "wagmi"
 
 const CodeButton = styled(CodeIcon)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -227,6 +224,7 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const { data: tokenMetadata, isLoading: loading, error } = useTokenMetadata(values?.tokenAddress)
+  console.log("TokenMetadata", tokenMetadata)
   const options = {
     eth: [
       {
@@ -271,31 +269,17 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
   useEffect(() => {
     if (tokenMetadata) {
       setFieldValue("tokenID", tokenMetadata.token_id)
-      setFieldValue("tokenType", tokenMetadata.standard)
+      setFieldValue("tokenType", "ERC20")
       setFieldValue("symbol", tokenMetadata.symbol)
       setFieldValue("decimals", tokenMetadata.decimals)
     }
 
     if (error) {
-      setFieldValue("tokenID", undefined)
-      setFieldValue("tokenType", undefined)
+      setFieldValue("tokenID", "0")
+      setFieldValue("tokenType", "ERC20")
       setFieldValue("symbol", undefined)
     }
   }, [error, setFieldValue, tokenMetadata])
-
-  // TODO: Remove Me
-  // useEffect(() => {
-  //   setFieldTouched("tokenAddress")
-  //   setFieldTouched("description")
-  //   setFieldTouched("name")
-
-  //   setFieldValue("tokenType", "erc20")
-  //   setFieldValue("tokenAddress", "0x336bfd0356f6babec084f9120901c0296db1967e")
-  //   setFieldValue("tokenID", 0)
-  //   setFieldValue("symbol", "MTK")
-  //   setFieldValue("description", "Sample Description")
-  //   setFieldValue("name", "Test Community")
-  // }, [values])
 
   return (
     <PageContainer container direction="row">
@@ -369,6 +353,9 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
               onClick={() => setFieldTouched("tokenAddress")}
               name="tokenAddress"
               type="text"
+              onBlur={(e: any) => {
+                setFieldValue("tokenAddress", e.target.value)
+              }}
               placeholder="Token Contract Address*"
               component={CustomFormikTextField}
             />

@@ -141,22 +141,11 @@ export const getDAONFTBalances = async (
 }
 
 export const getTokenMetadata = async (contractAddress: string, network: Network, tokenId?: string) => {
-  // TODO: To be fixed (@ashutoshpw)
-  if (network.startsWith("etherlink")) {
-    return new Token({
-      id: "",
-      contract: "",
-      token_id: 0,
-      symbol: "",
-      name: "",
-      decimals: 0,
-      standard: "",
-      network: network,
-      supply: "0"
-    })
-  }
   let url = ""
-  if (tokenId !== undefined) {
+  const isEtherlink = network.startsWith("etherlink")
+  if (isEtherlink) {
+    url = `${process.env.REACT_APP_LITE_API_URL}/token/?network=${network}&contract=${contractAddress}`
+  } else if (tokenId !== undefined) {
     url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}&tokenId=${tokenId}`
   } else {
     url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}`
@@ -167,10 +156,10 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
     throw new Error("Failed to fetch proposals from BakingBad API")
   }
 
-  const resultTokenDataTzkt: TokenDataTZKT[] = await response.json()
+  const resultTokenDataTzkt: any[] = await response.json()
   const tokenData = resultTokenDataTzkt[0]
 
-  let result: DAOToken
+  let result: any
 
   if (isTokenTzktNFT(tokenData)) {
     result = {
@@ -192,6 +181,19 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
       formats: tokenData.metadata?.formats,
       balance: "",
       standard: tokenData.standard
+    }
+  } else if (isEtherlink) {
+    result = {
+      id: "",
+      contract: "",
+      token_id: 0,
+      name: tokenData.name,
+      supply: tokenData?.totalSupply,
+      decimals: tokenData?.decimals,
+      network: network,
+      symbol: tokenData?.symbol,
+      level: 0,
+      standard: ""
     }
   } else {
     result = {
