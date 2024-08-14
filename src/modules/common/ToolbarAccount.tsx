@@ -1,16 +1,5 @@
-import React, { forwardRef, useState } from "react"
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  styled,
-  Typography,
-  Box,
-  Grid,
-  Popover,
-  useTheme,
-  useMediaQuery
-} from "@material-ui/core"
+import React, { useState } from "react"
+import { styled, Typography, Box, Grid, Popover, useTheme, useMediaQuery } from "@material-ui/core"
 import { ExitToAppOutlined, FileCopyOutlined } from "@material-ui/icons"
 
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -112,7 +101,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
   }
 
   // console.log("XX", { account, etherlink })
-  if (walletAddress && etherlink?.isConnected)
+  if (walletAddress || etherlink?.isConnected)
     return (
       <Grid
         container
@@ -208,6 +197,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
       </Grid>
     )
   else {
+    console.log("No wallet address abc")
     return (
       <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
         <Grid item>{variant === "common" ? <ChangeNetworkButton_Common /> : <ChangeNetworkButton_Explorer />}</Grid>

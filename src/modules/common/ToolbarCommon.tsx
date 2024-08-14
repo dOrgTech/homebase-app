@@ -134,8 +134,9 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = "default", mode, child
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
-  const walletAddress = network.startsWith("etherlink") ? etherlink.account?.address : tzAccountAddress
 
+  const walletAddress = network.startsWith("etherlink") ? etherlink.account?.address : tzAccountAddress
+  console.log({ walletAddress, tzAccountAddress })
   const handleClick = (event: React.MouseEvent<any>) => {
     if (variant === "default") {
       setAnchorEl(event.currentTarget)
@@ -157,6 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = "default", mode, child
 
   const renderAccountButton = () => {
     if (walletAddress) {
+      console.log({ walletAddress })
       return (
         <Grid
           container
@@ -193,6 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({ variant = "default", mode, child
         </Grid>
       )
     } else {
+      console.log("No wallet address")
       return (
         <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
           <Grid item>

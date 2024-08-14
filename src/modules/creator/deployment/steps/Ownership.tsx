@@ -2,6 +2,8 @@ import React from "react"
 import { Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { MainButton } from "modules/common/MainButton"
 import { Navbar } from "modules/common/Toolbar"
+import { useHistory } from "react-router-dom"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const PageContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main
@@ -79,6 +81,8 @@ const OptionButton = styled(Link)(({ theme }) => ({
 
 export const Ownership: React.FC = () => {
   const theme = useTheme()
+  const { account, etherlink } = useTezos()
+  const history = useHistory()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   return (
@@ -122,7 +126,17 @@ export const Ownership: React.FC = () => {
                 </OptionButton>
               </Grid>
               <Grid item xs={isMobileSmall ? 12 : 3} container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                <OptionButton underline="none" href={`/creator/deployment`}>
+                <OptionButton
+                  underline="none"
+                  onClick={() => {
+                    if (etherlink.isConnected) {
+                      window.open(`https://remix.ethereum.org/`)
+                    } else {
+                      const href = `/creator/deployment`
+                      history.push(href)
+                    }
+                  }}
+                >
                   <MainButton variant="contained" color="secondary">
                     No, I need one
                   </MainButton>

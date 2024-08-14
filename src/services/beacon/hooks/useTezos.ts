@@ -1,20 +1,18 @@
 import { useQueryClient } from "react-query"
-import { useCallback, useContext } from "react"
+import { useCallback, useContext, useEffect } from "react"
 import { TezosToolkit } from "@taquito/taquito"
 import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
 import { useWeb3Modal } from "@web3modal/wagmi/react"
 import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
-import { useChainId, useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
+import { useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
 
 import { disconnect as disconnectEtherlink } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
-import { etherlink } from "viem/chains"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
-  // TODO: @ashutoshpw Figure out the impact of adding  string here.
   connect: () => Promise<TezosToolkit | string>
   changeNetwork: (newNetwork: Network) => void
   reset: () => void
@@ -31,7 +29,6 @@ export const useTezos = (): WalletConnectReturn => {
     dispatch
   } = useContext(TezosContext)
 
-  const chainId = useChainId()
   const { open, close } = useWeb3Modal()
   const { address: ethAddress, isConnected: isEtherlinkConnected } = useWagmiAccount()
   // const { connect: wagmiConnect, connectors } = useWagmiConnect()
@@ -41,7 +38,6 @@ export const useTezos = (): WalletConnectReturn => {
       await disconnectEtherlink(wagmiConfig)
     }
     open({ view: "Connect" })
-    // wagmiConnect({ connector: connectors[0], chainId })
   }
 
   const queryClient = useQueryClient()
@@ -72,6 +68,27 @@ export const useTezos = (): WalletConnectReturn => {
     [dispatch, network, isEtherlinkConnected]
   )
 
+  useEffect(() => {
+    console.log("Network", network)
+
+    // Log out Beacon if network is etherlink
+    if (network?.startsWith("etherlink") && wallet) {
+      console.log("Log out Beacon")
+      wallet.disconnect()
+      dispatch({
+        type: TezosActionType.RESET_TEZOS
+      })
+    }
+
+    if (!network?.startsWith("etherlink") && isEtherlinkConnected) {
+      console.log("Log out Etherlink")
+      disconnectEtherlink(wagmiConfig)
+      dispatch({
+        type: TezosActionType.RESET_TEZOS
+      })
+    }
+  }, [network, wallet, isEtherlinkConnected, dispatch])
+
   return {
     tezos,
     connect: async () => {
@@ -81,6 +98,7 @@ export const useTezos = (): WalletConnectReturn => {
       }
 
       const result = await connect()
+      console.log({ result })
       if (!result) {
         throw new Error("Failed to connect")
       }
