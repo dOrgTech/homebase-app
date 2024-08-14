@@ -39,7 +39,6 @@ export const useTezos = (): WalletConnectReturn => {
     signer: ethSigner
   } = useContext(EtherlinkContext)
 
-  const chainId = useChainId()
   const { open, close } = useWeb3Modal()
   const { address: ethAddress, isConnected: isEtherlinkConnected } = useWagmiAccount()
   // const { connect: wagmiConnect, connectors } = useWagmiConnect()
@@ -49,7 +48,6 @@ export const useTezos = (): WalletConnectReturn => {
       await disconnectEtherlink(wagmiConfig)
     }
     open({ view: "Connect" })
-    // wagmiConnect({ connector: connectors[0], chainId })
   }
 
   const queryClient = useQueryClient()
