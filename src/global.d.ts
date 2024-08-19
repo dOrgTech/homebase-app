@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 declare global {
   interface Window {
     disconnectEtherlink: typeof disconnect
@@ -5,3 +6,5 @@ declare global {
     DeployContract: any
   }
 }
+
+export { }
