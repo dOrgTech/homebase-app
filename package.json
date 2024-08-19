@@ -44,6 +44,7 @@
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.1",
     "blockies-ts": "^1.0.0",
+    "caniuse-lite": "",
     "connectkit": "^1.8.2",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.11",
