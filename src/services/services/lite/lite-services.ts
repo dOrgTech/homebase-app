@@ -42,15 +42,6 @@ export const getLiteDAOs = async (network: string) => {
       "Content-Type": "application/json"
     }
   })
-  // const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/`, {
-  //   method: "POST",
-  //   body: JSON.stringify({
-  //     network
-  //   }),
-  //   headers: {
-  //     "Content-Type": "application/json"
-  //   }
-  // })
 
   const daos: Community[] = await resp.json()
 
