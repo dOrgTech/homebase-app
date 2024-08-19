@@ -1,4 +1,4 @@
-import { client, client_v2 } from "../graphql"
+import { client } from "../graphql"
 import { Community, DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
 import { GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "../dao/queries"
 import { LambdaProposal, Proposal } from "../dao/mappers/proposal/types"
@@ -42,15 +42,6 @@ export const getLiteDAOs = async (network: string) => {
       "Content-Type": "application/json"
     }
   })
-  // const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/`, {
-  //   method: "POST",
-  //   body: JSON.stringify({
-  //     network
-  //   }),
-  //   headers: {
-  //     "Content-Type": "application/json"
-  //   }
-  // })
 
   const daos: Community[] = await resp.json()
 
