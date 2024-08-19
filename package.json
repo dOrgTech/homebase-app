@@ -17,7 +17,6 @@
   "dependencies": {
     "@airgap/beacon-sdk": "^4.2.2",
     "@craco/craco": "^7.1.0",
-    "@date-io/dayjs": "1.x",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^2.8.1",
