@@ -9,15 +9,16 @@ interface ContextProps {
 export const DashboardContext = createContext({} as ContextProps)
 
 export const AppContextProvider = ({ children }: any) => {
-  const { account } = useTezos()
+  const { account, etherlink } = useTezos()
   const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
+    if (etherlink?.isConnected) return setIsConnected(true)
     if (account === undefined || !account) {
       return setIsConnected(false)
     }
     return setIsConnected(true)
-  }, [account])
+  }, [account, etherlink])
 
   const values = {
     isConnected,
