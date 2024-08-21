@@ -59,7 +59,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
   const navigate = useHistory()
   const { data: dao } = useDAO(state?.daoId)
-  const { account, wallet } = useTezos()
+  const { network, account, wallet, etherlink } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
@@ -69,7 +69,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     dao?.data.token.contract || community?.tokenAddress,
     poll?.referenceBlock
   )
-  const { network, etherlink } = useTezos()
+
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
 
@@ -90,7 +90,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const votesData = selectedVotes.map((vote: Choice) => {
     return {
-      address: account,
+      address: etherlink.isConnected ? etherlink.account.address : account,
       choice: vote?.name,
       choiceId: vote?._id,
       pollID: poll?._id
@@ -141,6 +141,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     } else if (etherlink.isConnected) {
       try {
         const publicKey = etherlink.account.address
+        console.log({ votesData })
         const { signature, payloadBytes } = await getEthSignature(publicKey, JSON.stringify(votesData))
         if (!signature) {
           openNotification({
