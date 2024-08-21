@@ -56,6 +56,12 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const theme = useTheme()
   const historyLength = useHistoryLength()
+
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const navigate = useHistory()
+  const { network, account, wallet, etherlink } = useTezos()
+  const openNotification = useNotification()
+  const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
   const poll = useSinglePoll(proposalId, id, community)
   const { state, pathname } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
@@ -64,18 +70,11 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     dao?.data.token.contract || community?.tokenAddress,
     poll?.referenceBlock
   )
+
   const [votingPower, setVotingPower] = useState(poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight)
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-
-  const navigate = useHistory()
-
-  const { account, wallet } = useTezos()
-  const openNotification = useNotification()
-  const [refresh, setRefresh] = useState<number>()
 
   const choices = usePollChoices(poll, refresh)
 
-  const { network, etherlink } = useTezos()
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
 
@@ -105,7 +104,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const votesData = selectedVotes.map((vote: Choice) => {
     return {
-      address: account,
+      address: etherlink.isConnected ? etherlink.account.address : account,
       choice: vote?.name,
       choiceId: vote?._id,
       pollID: poll?._id
@@ -156,6 +155,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     } else if (etherlink.isConnected) {
       try {
         const publicKey = etherlink.account.address
+        console.log({ votesData })
         const { signature, payloadBytes } = await getEthSignature(publicKey, JSON.stringify(votesData))
         if (!signature) {
           openNotification({
