@@ -45,7 +45,12 @@ export const useIsMember = (network: Network, tokenAddress: string, memberAddres
         return
       }
     }
-    fetIsMember()
+    // TODO: Should be fixed
+    if (network?.startsWith("etherlink")) {
+      setIsMember(true)
+    } else {
+      fetIsMember()
+    }
     return
   }, [network, tokenAddress, memberAddress])
   return isMember

@@ -47,7 +47,7 @@ export const getTokenHoldersCount = async (network: Network, address: string, to
 
   // Temporary fix for etherlink
   if (network.startsWith("etherlink")) {
-    return 0
+    return 1
   }
 
   const response = await fetch(url)
