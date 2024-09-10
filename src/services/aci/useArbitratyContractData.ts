@@ -29,7 +29,7 @@ export const useArbitraryContractData = () => {
           tezosToolkit = await connect()
         }
 
-        const resp = await fetch(`${getEnv(EnvKey.REACT_APP_API_URL)}/aci/${contract}`, {
+        const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/aci/${contract}`, {
           method: "POST",
           body: JSON.stringify({ network: network }),
           headers: { "Content-Type": "application/json" }
