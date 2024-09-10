@@ -18,6 +18,7 @@ export const useLambdaExecutePropose = () => {
     { dao: LambdaDAO; args: LambdaExecuteArgs; handleClose: () => void }
   >(
     async ({ dao, args, handleClose }) => {
+      // debugger
       const { key: proposalNotification, closeSnackbar: closeProposalNotification } = openNotification({
         message: "Proposal is being created...",
         persist: true,
@@ -30,6 +31,7 @@ export const useLambdaExecutePropose = () => {
           tezosToolkit = await connect()
         }
 
+        // debugger
         const data = await dao.proposeLambdaExecute(args, tezosToolkit)
 
         mixpanel.track("Proposal Created", {
