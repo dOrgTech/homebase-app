@@ -21,6 +21,7 @@ import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteW
 import BigNumber from "bignumber.js"
 import { ArrowBackIosOutlined } from "@material-ui/icons"
 import { useIsMember } from "../../hooks/useIsMember"
+import { useHistoryLength } from "modules/explorer/context/HistoryLength"
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -54,8 +55,9 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   }>()
 
   const theme = useTheme()
+  const historyLength = useHistoryLength()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const { state } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
+  const { state, pathname } = useLocation<{ poll: Poll; choices: Choice[]; daoId: string }>()
   const navigate = useHistory()
   const { data: dao } = useDAO(state?.daoId)
   const { account, wallet } = useTezos()
@@ -73,6 +75,14 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
 
   const votingPower = poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight
+  const navigateToDao = () => {
+    if (historyLength > 1) {
+      navigate.goBack()
+    } else {
+      const daoUrl = pathname?.replace(`proposal/${proposalId}`, "")
+      navigate.push(daoUrl)
+    }
+  }
 
   useEffect(() => {
     // refetch()
@@ -142,7 +152,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
         <Grid
           container
           style={{ gap: 15, cursor: "pointer", marginBottom: 23 }}
-          onClick={() => navigate.goBack()}
+          onClick={() => navigateToDao()}
           alignItems="center"
         >
           <ArrowBackIosOutlined color="secondary" />
