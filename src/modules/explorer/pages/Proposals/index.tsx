@@ -1,5 +1,17 @@
 import React, { useCallback, useState } from "react"
-import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  styled,
+  Theme,
+  Typography,
+  useMediaQuery,
+  useTheme
+} from "@material-ui/core"
+import Select, { SelectChangeEvent } from "@mui/material/Select"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
@@ -103,7 +115,7 @@ export const DropButton = styled(Button)({
   fontSize: "16px"
 })
 
-export const Proposals: React.FC = () => {
+const TezosProposals = () => {
   const daoId = useDAOID()
   const { data, cycleInfo } = useDAO(daoId)
   const [selectedTab, setSelectedTab] = React.useState(0)
@@ -322,4 +334,96 @@ export const Proposals: React.FC = () => {
       </Grid>
     </>
   )
+}
+
+const EtherlinkProposals = () => {
+  const daoId = useDAOID()
+  const { data, cycleInfo } = useDAO(daoId)
+  const { data: proposals } = useProposals(daoId)
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const [openDialog, setOpenDialog] = useState(false)
+
+  const handleCloseModal = () => {
+    setOpenDialog(false)
+  }
+
+  return (
+    <>
+      <Grid container direction="column" style={{ gap: 42, backgroundColor: "rgb(36, 40, 45)", padding: "10px" }}>
+        <HeroContainer item xs={12}>
+          <Grid
+            container
+            justifyContent="space-between"
+            alignItems="center"
+            style={{ backgroundColor: "rgb(36, 40, 45)" }}
+          >
+            <Grid container spacing={2} alignItems="center" style={{ marginTop: 20 }}>
+              <Grid item xs={12} sm={3}>
+                <Typography variant="body2" color="textPrimary" gutterBottom>
+                  Type
+                </Typography>
+                <Select
+                  fullWidth
+                  labelId="proposal-type-select-label"
+                  id="proposal-type-select"
+                  defaultValue="All"
+                  style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
+                >
+                  <MenuItem value="All">All</MenuItem>
+                  <MenuItem value="Transfer">Transfer</MenuItem>
+                  <MenuItem value="ContractCall">Contract Call</MenuItem>
+                  <MenuItem value="ChangeConfig">Change Config</MenuItem>
+                </Select>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Typography variant="body2" color="textPrimary" gutterBottom>
+                  Status
+                </Typography>
+                <Select
+                  fullWidth
+                  defaultValue="All"
+                  style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
+                >
+                  <MenuItem value="All">All</MenuItem>
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Approved">Approved</MenuItem>
+                  <MenuItem value="Rejected">Rejected</MenuItem>
+                  <MenuItem value="Executed">Executed</MenuItem>
+                  <MenuItem value="Expired">Expired</MenuItem>
+                </Select>
+              </Grid>
+              <Grid
+                item
+                xs={12}
+                sm={3}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  height: "100%"
+                }}
+              >
+                <Typography variant="body1" style={{ color: theme.palette.text.secondary }}>
+                  143 Proposals
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={3} style={{ textAlign: "right", justifyContent: "flex-end" }}>
+                <SmallButton variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
+                  New Proposal
+                </SmallButton>
+              </Grid>
+            </Grid>
+          </Grid>
+        </HeroContainer>
+        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
+      </Grid>
+    </>
+  )
+}
+
+export const Proposals: React.FC = () => {
+  const daoId = useDAOID()
+  const { data, cycleInfo } = useDAO(daoId)
+  return data?.data.network.startsWith("etherlink") ? <EtherlinkProposals /> : <TezosProposals />
 }

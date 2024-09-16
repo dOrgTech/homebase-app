@@ -14,6 +14,9 @@ import { useDAO } from "services/services/dao/hooks/useDAO"
 import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal/ProposalCreatorModal"
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
 import { ProposalFormContainer } from "./ProposalForm"
+import EthContractCallForm from "./EthContractCallForm"
+import EthChangeConfigProposalForm from "./EthChangeConfigProposalForm"
+import EthTransferFundsForm from "./EthTransferFundsForm"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -140,7 +143,7 @@ interface Props {
 
 const defaultOpenSupportedExecuteProposalModal = "none"
 
-export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) => {
+const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) => {
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const theme = useTheme()
@@ -359,5 +362,60 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) =>
 
       <ProposalCreatorModal open={openLiteProposal} handleClose={handleCloseSupportedExecuteProposalModal} />
     </>
+  )
+}
+
+const ProposalActionsDialogForEtherlink: React.FC<Props> = ({ open, handleClose }) => {
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const [modalOpen, setModalOpen] = useState<"transfer_funds" | "change_config" | "contract_call" | boolean>(false)
+  return (
+    <>
+      <ResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
+        <TitleContainer container direction="row">
+          <Typography color="textPrimary">Select Proposal Type</Typography>
+        </TitleContainer>
+        <Grid container spacing={2}>
+          {[
+            {
+              label: "Transfer Funds",
+              description: "Propose a transfer of funds from the DAO treasury",
+              modal: "transfer_funds"
+            },
+            {
+              label: "Change Config",
+              description: "Propose changes to the DAO configuration",
+              modal: "change_config"
+            },
+            {
+              label: "Contract Call",
+              description: "Propose a call to an external contract",
+              modal: "contract_call"
+            }
+          ].map((option, index) => (
+            <Grid item xs={isMobileSmall ? 12 : 4} key={index} onClick={() => setModalOpen(option.modal as any)}>
+              <OptionContainer>
+                <ActionText color="textPrimary">{option.label}</ActionText>
+                <ActionDescriptionText color="textPrimary">{option.description}</ActionDescriptionText>
+              </OptionContainer>
+            </Grid>
+          ))}
+        </Grid>
+      </ResponsiveDialog>
+      <EthContractCallForm open={modalOpen === "contract_call"} handleClose={() => setModalOpen(false)} />
+      <EthChangeConfigProposalForm open={modalOpen === "change_config"} handleClose={() => setModalOpen(false)} />
+      <EthTransferFundsForm open={modalOpen === "transfer_funds"} handleClose={() => setModalOpen(false)} />
+    </>
+  )
+}
+
+export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) => {
+  const daoId = useDAOID()
+  const { data } = useDAO(daoId)
+
+  return data?.data.network.startsWith("etherlink") ? (
+    <ProposalActionsDialogForEtherlink open={open} handleClose={handleClose} />
+  ) : (
+    <ProposalActionsDialogForTezos open={open} handleClose={handleClose} />
   )
 }

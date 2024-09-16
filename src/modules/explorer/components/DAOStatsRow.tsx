@@ -29,7 +29,7 @@ const ItemContent = styled(Grid)({
 
 const ItemTitle = styled(Typography)(({ theme }) => ({
   fontSize: 18,
-  fontWeight: 600,
+  fontWeight: 500,
   [theme.breakpoints.down("md")]: {
     fontSize: 15
   }
@@ -59,16 +59,14 @@ const formatConfig = {
   trimMantissa: true
 }
 
-export const DAOStatsRow: React.FC = () => {
+const DAOStatsRowTezos = () => {
   const daoId = useDAOID()
   const { data, ledger, cycleInfo } = useDAO(daoId)
   const symbol = data && data.data.token.symbol.toUpperCase()
-  const theme = useTheme()
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { data: polls } = usePolls(data?.liteDAOData?._id)
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
   const { tokenHoldings } = useDAOHoldings(daoId)
-  const { nftHoldings } = useDAONFTHoldings(daoId)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { hours, minutes, days } = useTimeLeftInCycle()
   const shouldDisable = useIsProposalButtonDisabled(daoId)
@@ -202,4 +200,48 @@ export const DAOStatsRow: React.FC = () => {
       </Grid>
     </Box>
   )
+}
+
+const DAOStatsRowEtherlink = () => {
+  const daoId = useDAOID()
+  const { data } = useDAO(daoId)
+  const daoStats = data?.data?.etherlink?.stats
+  return (
+    <Box sx={{ flexGrow: 1, width: "inherit" }}>
+      <Grid container spacing={4}>
+        {[
+          {
+            title: "Members",
+            value: daoStats?.members
+          },
+          {
+            title: "Active Proposals",
+            value: daoStats?.active_proposals
+          },
+          {
+            title: "Awaiting Executions",
+            value: daoStats?.awaiting_executions || "-"
+          }
+        ].map((item, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Item>
+              <ItemContent item container direction="row" alignItems="center">
+                <ItemTitle color="textPrimary">{item.title} </ItemTitle>
+              </ItemContent>
+              <Grid item>
+                <ItemValue color="textPrimary">{item.value}</ItemValue>
+              </Grid>
+            </Item>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  )
+}
+
+export const DAOStatsRow: React.FC = () => {
+  const daoId = useDAOID()
+  const { data } = useDAO(daoId)
+  const network = data?.data.network
+  return network?.startsWith("etherlink") ? <DAOStatsRowEtherlink /> : <DAOStatsRowTezos />
 }
