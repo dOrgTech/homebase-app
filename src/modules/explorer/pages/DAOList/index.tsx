@@ -131,19 +131,22 @@ export const DAOList: React.FC = () => {
   const currentDAOs = useMemo(() => {
     if (daos) {
       const formattedDAOs = daos
-        .map(dao => ({
-          id: dao.address,
-          name: dao.name,
-          description: dao.description,
-          symbol: dao.token.symbol,
-          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
-          votingAddressesCount:
-            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
-          dao_type: {
-            name: dao.dao_type.name
-          },
-          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
-        }))
+        .map(dao => {
+          const votingAddressesCount =
+            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0
+          return {
+            id: dao.address,
+            name: dao.name,
+            description: dao.description,
+            symbol: dao.token.symbol,
+            votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+            votingAddressesCount,
+            dao_type: {
+              name: dao.dao_type.name
+            },
+            allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
+          }
+        })
         .sort((a, b) => b.votingAddressesCount - a.votingAddressesCount)
 
       if (searchText) {

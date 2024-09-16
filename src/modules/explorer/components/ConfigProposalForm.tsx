@@ -128,7 +128,7 @@ export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
                 display={"inline"}
                 style={{ fontWeight: 300 }}
               >
-                {dao && dao?.data.extra.frozen_extra_value.toString()} {dao ? dao.data.token.symbol : ""}
+                {dao && dao?.data.extra?.frozen_extra_value?.toString()} {dao ? dao.data.token?.symbol : ""}
               </Typography>
             </Grid>
           </Grid>
