@@ -118,7 +118,7 @@ export const FilterNFTDialog: React.FC<Props> = ({ open, handleClose, saveFilter
           </Grid>
 
           <Grid item>
-            <SectionTitle color="textPrimary">Owner Address</SectionTitle>
+            <SectionTitle color="textPrimary">Creator Address</SectionTitle>
           </Grid>
           <Grid item xs={12}>
             <CustomTextField
