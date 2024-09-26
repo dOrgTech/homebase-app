@@ -213,7 +213,8 @@ export const theme = createTheme({
           borderBottom: "none"
         },
         "&:before": {
-          borderBottom: "none"
+          borderBottom: "none",
+          transition: "none"
         },
         "&:hover:not($disabled):not($focused):not($error):before": {
           borderBottom: "none"

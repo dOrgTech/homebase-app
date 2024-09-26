@@ -51,7 +51,7 @@ export const ResponsiveDialog: React.FC<{
 
   return isSmall ? (
     <BottomSheet open={open} onDismiss={onClose}>
-      <Content container direction="column" style={{ gap: 46 }}>
+      <Content container direction="column" style={template !== "sm" ? { gap: 46 } : { gap: 20 }}>
         <Grid item container direction="row" justifyContent="space-between">
           {onGoBack !== undefined ? (
             <Grid item>
