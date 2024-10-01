@@ -1,83 +1,20 @@
 import React from "react"
-import { Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, useMediaQuery, useTheme } from "@material-ui/core"
 import { MainButton } from "modules/common/MainButton"
 import { Navbar } from "modules/common/Toolbar"
 import { useHistory } from "react-router-dom"
 import { useTezos } from "services/beacon/hooks/useTezos"
-
-const PageContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main
-}))
-
-const PageContent = styled(Grid)(({ theme }) => ({
-  width: "1000px",
-  height: "100%",
-  margin: "auto",
-  padding: "28px 0",
-  flexDirection: "row",
-  paddingTop: 0,
-  ["@media (max-width:1167px)"]: {
-    width: "86vw"
-  },
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 10
-  }
-}))
-
-const Title = styled(Typography)(({ theme }) => ({
-  fontSize: 32,
-  fontWeight: 600,
-  textAlign: "center",
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 26
-  }
-}))
-
-const CardContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.dark,
-  gap: 32,
-  borderRadius: 8,
-  padding: "40px 48px",
-  [theme.breakpoints.down("sm")]: {
-    padding: "30px 38px"
-  }
-}))
-
-const DescriptionContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "4%",
-    paddingRight: "4%"
-  }
-}))
-
-const OptionsContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "4%",
-    paddingRight: "4%"
-  }
-}))
-
-const ChoicesContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    gap: 32
-  }
-}))
-
-const DescriptionText = styled(Typography)(({ theme }) => ({
-  fontWeight: 300,
-  fontSize: 18,
-  color: theme.palette.text.secondary,
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 14
-  }
-}))
-
-const OptionButton = styled(Link)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    display: "flex",
-    textAlign: "center"
-  }
-}))
+import {
+  CenterTitle,
+  PageContainer,
+  PageContent,
+  DescriptionText,
+  CardContainer,
+  DescriptionContainer,
+  OptionsContainer,
+  ChoicesContainer,
+  OptionButton
+} from "../../ui"
 
 export const Ownership: React.FC = () => {
   const theme = useTheme()
@@ -92,7 +29,7 @@ export const Ownership: React.FC = () => {
         <PageContent>
           <CardContainer container>
             <Grid container direction="row">
-              <Title color="textSecondary">Do you already have a governance token?</Title>
+              <CenterTitle color="textSecondary">Do you already have a governance token?</CenterTitle>
             </Grid>
 
             <Grid container direction="row">
@@ -129,12 +66,8 @@ export const Ownership: React.FC = () => {
                 <OptionButton
                   underline="none"
                   onClick={() => {
-                    if (etherlink.isConnected) {
-                      window.open(`https://remix.ethereum.org/`)
-                    } else {
-                      const href = `/creator/deployment`
-                      history.push(href)
-                    }
+                    const href = `/creator/deployment`
+                    history.push(href)
                   }}
                 >
                   <MainButton variant="contained" color="secondary">

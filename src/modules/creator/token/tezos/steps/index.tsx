@@ -56,6 +56,6 @@ export const useDeploymentStepNumber = (): number => {
   }, [pathname])
 }
 
-export { ConfigContract } from "modules/creator/deployment/steps/Config"
-export { ContractDistribution } from "modules/creator/deployment/steps/Distribution"
-export { ContractSummary } from "modules/creator/deployment/steps/Summary"
+export { ConfigContract } from "./Config"
+export { ContractDistribution } from "./Distribution"
+export { ContractSummary } from "./Summary"

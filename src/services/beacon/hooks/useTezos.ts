@@ -10,6 +10,7 @@ import { useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wa
 
 import { disconnect as disconnectEtherlink } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
+import { useEthersProvider, useEthersSigner } from "services/wagmi/ethers"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -161,6 +162,8 @@ export const useTezos = (): WalletConnectReturn => {
     isEtherlink: network?.startsWith("etherlink"),
     etherlink: {
       isConnected: isEtherlinkConnected,
+      signer: useEthersSigner(),
+      provider: useEthersProvider(),
       account: {
         address: ethAddress
       },
