@@ -314,7 +314,6 @@ export const ProposalDetails: React.FC = () => {
     }
   }
 
-  console.log({ proposal })
   const showStatusText =
     statusColors(status).text !== ProposalStatus.ACTIVE || statusColors(status).text !== ProposalStatus.PENDING
   return (
