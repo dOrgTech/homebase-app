@@ -1,82 +1,19 @@
 import React, { useEffect, useState } from "react"
-import { Grid, Link, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { MainButton } from "modules/common/MainButton"
 import { Navbar } from "modules/common/Toolbar"
 import { useHistory, useLocation } from "react-router-dom"
 import { Blockie } from "modules/common/Blockie"
 import { CopyAddress } from "modules/common/CopyAddress"
-
-const PageContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main
-}))
-
-const PageContent = styled(Grid)(({ theme }) => ({
-  width: "1000px",
-  height: "100%",
-  margin: "auto",
-  padding: "28px 0",
-  flexDirection: "row",
-  paddingTop: 0,
-  ["@media (max-width:1167px)"]: {
-    width: "86vw"
-  },
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 10
-  }
-}))
-
-const Title = styled(Typography)({
-  fontSize: 24,
-  textAlign: "center"
-})
-
-const CardContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.dark,
-  borderRadius: 8,
-  padding: "36px 47px"
-}))
-
-const DescriptionContainer = styled(Grid)(({ theme }) => ({
-  display: "inline-flex",
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "4%",
-    paddingRight: "4%"
-  }
-}))
-
-const OptionsContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 40,
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 40
-  }
-}))
-
-const ChoicesContainer = styled(Grid)(({ theme }) => ({
-  marginTop: 32,
-  gap: 48,
-  [theme.breakpoints.down("sm")]: {
-    gap: 16
-  }
-}))
-
-const DescriptionText = styled(Typography)(({ theme }) => ({
-  fontWeight: 200,
-  color: theme.palette.text.secondary,
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 14
-  }
-}))
-
-const OptionButton = styled(Link)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    width: "95%",
-    display: "flex",
-    textAlign: "center"
-  },
-  [theme.breakpoints.down("sm")]: {
-    justifyContent: "center"
-  }
-}))
+import { PageContainer, PageContent, TitleMediumCenter } from "../../ui"
+import {
+  CardContainer,
+  DescriptionContainer,
+  DescriptionText,
+  OptionsContainer,
+  ChoicesContainer,
+  OptionButton
+} from "../../ui/success"
 
 export const Success: React.FC = () => {
   const location = useLocation<{ address: string }>()
@@ -99,7 +36,7 @@ export const Success: React.FC = () => {
         <PageContent>
           <CardContainer>
             <Grid container direction="row">
-              <Title color="textSecondary">Governance token successfully deployed!</Title>
+              <TitleMediumCenter color="textSecondary">Governance token successfully deployed!</TitleMediumCenter>
             </Grid>
 
             <Grid container direction="column">

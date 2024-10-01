@@ -161,10 +161,6 @@ export const getTreasuryPercentage = (proposalTotal: BigNumber, totalSupply: num
   return value
 }
 
-export const numberWithCommas = (x: number) => {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-}
-
 const SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"]
 
 export const nFormatter = (num: any, digits: number) => {

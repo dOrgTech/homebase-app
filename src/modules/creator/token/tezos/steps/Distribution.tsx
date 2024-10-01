@@ -1,107 +1,26 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Grid, IconButton, styled, Typography, useMediaQuery, useTheme, withStyles } from "@material-ui/core"
+import { Grid, IconButton, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { Field, FieldArray, Form, Formik, FormikErrors } from "formik"
 import React, { useContext, useEffect } from "react"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
-import { ActionTypes, Holder, TokenContractSettings, TokenDistributionSettings } from "../state/types"
-import { TextField as FormikTextField } from "formik-material-ui"
-import { RemoveCircleOutline } from "@material-ui/icons"
+import { ActionTypes, Holder, TokenDistributionSettings } from "../state/types"
 import BigNumber from "bignumber.js"
-import { numberWithCommas } from "../state/utils"
+
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { FieldChange, handleNegativeInput } from "modules/creator/utils"
 import AddCircleIcon from "@mui/icons-material/AddCircle"
 import { validateContractAddress, validateAddress } from "@taquito/utils"
-
-const RemoveButton = styled(RemoveCircleOutline)({
-  marginTop: 0,
-  fontSize: 18
-})
-
-const AmountText = styled(Typography)({
-  fontWeight: 400
-})
-
-const CustomFormikTextField = withStyles({
-  root: {
-    "& .MuiInput-root": {
-      fontWeight: 300,
-      textAlign: "initial"
-    },
-    "& .MuiInputBase-input": {
-      textAlign: "initial"
-    },
-    "& .MuiInput-underline:before": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important"
-    }
-  }
-})(FormikTextField)
-
-const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  "height": 54,
-  "boxSizing": "border-box",
-  "marginTop": 14,
-  "background": "#2F3438",
-  "borderRadius": 8,
-  "alignItems": "center",
-  "display": "flex",
-  "padding": "13px 23px",
-  "width": "85%",
-  "fontWeight": 300,
-  "& input::placeholder": {
-    fontWeight: 300
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "100%"
-  }
-}))
-
-const CustomAmountContainer = styled(Grid)(({ theme }) => ({
-  "height": 54,
-  "boxSizing": "border-box",
-  "marginTop": 14,
-  "background": "#2F3438",
-  "borderRadius": 8,
-  "alignItems": "center",
-  "display": "flex",
-  "padding": "13px 23px",
-  "width": "45%",
-  "& input::placeholder": {
-    fontWeight: 300
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "100%"
-  }
-}))
-
-const AddButtonContainer = styled(Grid)(({ theme }) => ({
-  "height": 54,
-  "boxSizing": "border-box",
-  "marginTop": 14,
-  "alignItems": "center",
-  "display": "flex",
-  "padding": "0px 0px",
-  "width": "15%",
-  "& input::placeholder": {
-    fontWeight: 300
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "100%"
-  }
-}))
-
-const ErrorText = styled(Typography)({
-  fontSize: 14,
-  color: "red",
-  marginTop: 4
-})
+import { numberWithCommas } from "utils"
+import {
+  CustomFormikTextField,
+  AddButtonContainer,
+  CustomAmountContainer,
+  CustomInputContainer,
+  RemoveButton,
+  AmountText,
+  ErrorText
+} from "../../ui"
 
 const isInvalidKtOrTzAddress = (address: string) =>
   validateContractAddress(address) !== 3 && validateAddress(address) !== 3

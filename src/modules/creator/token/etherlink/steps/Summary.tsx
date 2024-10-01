@@ -3,91 +3,24 @@ import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
 import { DeploymentContext } from "../state/context"
-import { numberWithCommas } from "../state/utils"
 import BigNumber from "bignumber.js"
 import { Blockie } from "modules/common/Blockie"
 import { ActionTypes } from "../state/types"
 import { useTokenOriginate } from "services/contracts/token/hooks/useToken"
 import { CopyButton } from "modules/explorer/components/CopyButton"
-
-const ThirdContainer = styled(Grid)({
-  background: "#2F3438",
-  borderRadius: 8,
-  boxSizing: "border-box"
-})
-
-const ThirdContainerFirstRow = styled(Grid)(({ theme }) => ({
-  padding: "19px 48px",
-  borderBottom: "0.3px solid #575757",
-  backgroundColor: theme.palette.primary.dark,
-  borderRadius: "8px 8px 0px 0px",
-  alignItems: "center",
-  display: "flex",
-  minHeight: 70,
-  ["@media (max-width:1167px)"]: {
-    padding: "12px 15px",
-    maxHeight: "inherit"
-  }
-}))
-
-const ThirdContainerLastRow = styled(Grid)({
-  padding: "19px 48px",
-  alignItems: "center",
-  display: "flex",
-  backgroundColor: "#24282D",
-  borderRadius: "0px 0px 8px 8px",
-  minHeight: 70,
-  ["@media (max-width:1167px)"]: {
-    padding: "12px 15px",
-    maxHeight: "inherit"
-  }
-})
-
-const ThirdContainerRow = styled(Grid)({
-  "borderBottom": "0.3px solid #575757",
-  "backgroundColor": "#24282D",
-  "padding": "24px 48px",
-  "minHeight": 70,
-  ["@media (max-width:1167px)"]: {
-    padding: "12px 15px",
-    maxHeight: "inherit"
-  },
-  "&:last-child": {
-    borderBottom: "none"
-  }
-})
-
-const TitleSpacing = styled(Typography)({
-  marginTop: 8,
-  fontWeight: 400,
-  fontSize: 18
-})
-
-const ContainerEdit = styled(Typography)(({ theme }) => ({
-  cursor: "pointer",
-  color: theme.palette.secondary.light
-}))
-
-const AdminAddress = styled(Typography)({
-  wordBreak: "break-all"
-})
-
-const AdminAddressIcon = styled(Typography)({
-  wordBreak: "break-all",
-  display: "flex",
-  alignItems: "center"
-})
-
-const KeyText = styled(Typography)({
-  fontWeight: 400
-})
-
-const AddressText = styled(Typography)({
-  marginLeft: 12,
-  fontWeight: 300,
-  marginRight: 8
-})
-
+import { numberWithCommas } from "utils"
+import {
+  TitleSpacing,
+  ContainerEdit,
+  AdminAddress,
+  AdminAddressIcon,
+  KeyText,
+  AddressText,
+  ThirdContainer,
+  ThirdContainerFirstRow,
+  ThirdContainerRow,
+  ThirdContainerLastRow
+} from "../../ui"
 export const ContractSummary: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
@@ -214,7 +147,7 @@ export const ContractSummary: React.FC = () => {
             </Grid>
           </ThirdContainerRow>
 
-          <ThirdContainerRow item xs={12}>
+          <ThirdContainerLastRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={5}>
                 <KeyText variant="subtitle2" color="textSecondary">
@@ -227,9 +160,9 @@ export const ContractSummary: React.FC = () => {
                 </AdminAddress>
               </Grid>
             </Grid>
-          </ThirdContainerRow>
+          </ThirdContainerLastRow>
 
-          <ThirdContainerLastRow item xs={12}>
+          {/* <ThirdContainerLastRow item xs={12}>
             <Grid item container direction="row" alignItems="center">
               <Grid item xs={5}>
                 <KeyText variant="subtitle2" color="textSecondary">
@@ -249,7 +182,7 @@ export const ContractSummary: React.FC = () => {
                 </AdminAddressIcon>
               </Grid>
             </Grid>
-          </ThirdContainerLastRow>
+          </ThirdContainerLastRow> */}
         </ThirdContainer>
 
         <ThirdContainer container direction="row" style={{ marginTop: 22 }}>

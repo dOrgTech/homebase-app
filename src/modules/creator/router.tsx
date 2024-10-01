@@ -3,9 +3,7 @@ import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom"
 import { DAOList } from "modules/explorer/pages/DAOList"
 import { DAORouter } from "modules/explorer/pages/DAO/router"
 import { DAOCreate } from "."
-import { Deployment } from "./deployment"
-import { TokenDeploymentRouter } from "./deployment/router"
-import { DeploymentProvider } from "./deployment/state/context"
+import { TokenDeploymentRouter } from "./token/router"
 
 export const DAOCreatorRouter = (): JSX.Element => {
   const match = useRouteMatch()
@@ -16,9 +14,7 @@ export const DAOCreatorRouter = (): JSX.Element => {
         <DAOCreate />
       </Route>
       <Route path={`${match.url}`}>
-        <DeploymentProvider>
-          <TokenDeploymentRouter />
-        </DeploymentProvider>
+        <TokenDeploymentRouter />
       </Route>
       <Redirect to={`${match.url}/build`} />
     </Switch>
