@@ -14,9 +14,9 @@ const projectId = "7dd66fecc485693b67e6921c580e7040"
 // 2. Create wagmiConfig
 const metadata = {
   name: "Homebase",
-  description: "AppKit Example",
-  url: "https://web3modal.com", // origin must match your domain & subdomain
-  icons: ["https://avatars.githubusercontent.com/u/37784886"]
+  description: "DAO Creator & Explorer On Tezos",
+  url: "https://tezos-homebase.io", // origin must match your domain & subdomain
+  icons: ["https://tezos-homebase.io/favicon.ico"]
 }
 
 const web3ModalConfig = defaultWagmiConfig({

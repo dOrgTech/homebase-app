@@ -26,13 +26,13 @@ export const ConnectWalletButton = ({
           connect()
         }}
       >
-        Connect Wallet C
+        Connect Wallet
       </SmallButton>
     )
   }
   return (
     <SmallButton variant="outlined" onClick={() => connect()}>
-      Connect Wallet A
+      Connect Wallet
     </SmallButton>
   )
 }
