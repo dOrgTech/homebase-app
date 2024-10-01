@@ -1,11 +1,8 @@
 import React, { useState } from "react"
-import { Box } from "@mui/material"
 import { ResponsiveDialog } from "./ResponsiveDialog"
-import { ProposalFormInput } from "./ProposalFormInput"
-import { Controller } from "react-hook-form"
 import { Grid, TextField, Typography, MenuItem, useMediaQuery, useTheme } from "@material-ui/core"
 import { SendButton } from "./ProposalFormSendButton"
-import Select, { SelectChangeEvent } from "@mui/material/Select"
+import Select from "@mui/material/Select"
 
 interface EthContractCallFormProps {
   open: boolean
