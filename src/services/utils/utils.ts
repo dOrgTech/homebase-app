@@ -1,4 +1,5 @@
-import { stringToBytes, hex2buf } from "@taquito/utils"
+import { stringToBytes, hex2buf, validateContractAddress } from "@taquito/utils"
+import { isAddress as isEtherAddress } from "ethers"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocale from "dayjs/plugin/updateLocale"
@@ -8,6 +9,8 @@ import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
 import BigNumber from "bignumber.js"
 import { Network } from "services/beacon"
 import { networkNameMap } from "services/bakingBad"
+import { signMessage } from "@wagmi/core"
+import { config as wagmiConfig } from "services/wagmi/config"
 
 export const hexStringToBytes = (hex: string): string => {
   return Buffer.from(hex2buf(hex)).toString("utf8")
@@ -42,6 +45,11 @@ export const getTotalSupplyAtReferenceBlock = async (network: Network, address: 
 export const getTokenHoldersCount = async (network: Network, address: string, tokenID: number) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?tokenId=${tokenID}&contract=${address}`
 
+  // Temporary fix for etherlink
+  if (network.startsWith("etherlink")) {
+    return 1
+  }
+
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -55,6 +63,10 @@ export const getTokenHoldersCount = async (network: Network, address: string, to
 
 export const hasTokenBalance = async (network: Network, account: string, contract: any) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens/balances?account=${account}&token.contract=${contract}`
+  // Temporary fix for etherlink
+  if (network.startsWith("etherlink")) {
+    return false
+  }
   const response = await fetch(url)
 
   if (!response.ok) {
@@ -85,10 +97,10 @@ export const getTurnoutValue = async (
   level: number,
   voters: number
 ) => {
-  const tokenHolders = await getTokenHoldersCount(network, address, tokenID)
+  const tokenHoldersCount = await getTokenHoldersCount(network, address, tokenID)
 
-  if (tokenHolders) {
-    return (voters * 100) / Number(tokenHolders)
+  if (tokenHoldersCount) {
+    return (voters * 100) / Number(tokenHoldersCount)
   }
 }
 
@@ -197,6 +209,23 @@ export const getSignature = async (userAddress: string, wallet: BeaconWallet, da
   return { signature, payloadBytes }
 }
 
+export const getEthSignature = async (userAddress: any, data?: string) => {
+  const formattedInput: string = [
+    "Tezos Signed Message:",
+    process.env.REACT_APP_BASE_URL,
+    new Date().toISOString(),
+    data
+  ].join(" ")
+  const signature = await signMessage(wagmiConfig, {
+    account: userAddress,
+    message: formattedInput
+  })
+  return {
+    signature,
+    payloadBytes: formattedInput
+  }
+}
+
 export const getStatusDate = async (level: number, network: Network) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/blocks/${level}`
   const response = await fetch(url)
@@ -208,4 +237,11 @@ export const getStatusDate = async (level: number, network: Network) => {
   const result = await response.json()
 
   return result.timestamp
+}
+
+export const validateTokenAddress = (network: Network, tokenAddress: string) => {
+  // console.log({ network, tokenAddress, isValid: isEtherAddress(tokenAddress) })
+  if (!network.startsWith("etherlink")) return validateContractAddress(tokenAddress)
+  if (network.startsWith("etherlink")) return isEtherAddress(tokenAddress) ? 3 : false
+  return false
 }

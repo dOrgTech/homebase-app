@@ -19,11 +19,11 @@ import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import { TextField as FormikTextField } from "formik-material-ui"
 import { Community } from "models/Community"
 import { useHistory } from "react-router"
-import { validateContractAddress } from "@taquito/utils"
+
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { getSignature } from "services/utils/utils"
+import { getEthSignature, getSignature, validateTokenAddress } from "services/utils/utils"
 import { Navbar } from "modules/common/Toolbar"
 import { SmallButton } from "modules/common/SmallButton"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
@@ -33,6 +33,7 @@ import CodeOffIcon from "@mui/icons-material/CodeOff"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
+import { Network } from "services/beacon"
 
 const CodeButton = styled(CodeIcon)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -198,7 +199,7 @@ const CheckboxContainer = styled(Grid)(({ theme }) => ({
   flexBasis: "5%"
 }))
 
-const validateForm = (values: Community) => {
+const validateForm = (network: Network, values: Community) => {
   const errors: FormikErrors<Community> = {}
 
   if (!values.name) {
@@ -209,7 +210,8 @@ const validateForm = (values: Community) => {
     errors.tokenAddress = "Required"
   }
 
-  if (values.tokenAddress && validateContractAddress(values.tokenAddress) !== 3) {
+  if (values.tokenAddress && validateTokenAddress(network, values.tokenAddress) !== 3) {
+    console.log("Address isValid", validateTokenAddress(network, values.tokenAddress))
     errors.tokenAddress = "Invalid address"
   }
 
@@ -218,9 +220,30 @@ const validateForm = (values: Community) => {
 
 const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, setFieldTouched, isSubmitting }: any) => {
   const theme = useTheme()
+  const { isEtherlink } = useTezos()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   const { data: tokenMetadata, isLoading: loading, error } = useTokenMetadata(values?.tokenAddress)
+  console.log("TokenMetadata", tokenMetadata)
+  const options = {
+    eth: [
+      {
+        name: "erc20",
+        label: "ERC20"
+      }
+    ],
+    tez: [
+      {
+        value: "fa2",
+        label: "FA2"
+      },
+      {
+        value: "nft",
+        label: "NFT"
+      }
+    ]
+  }
+  const tokenStandardOptions = isEtherlink ? options.eth : options.tez
 
   const codeEditorStyles = {
     minHeight: 500,
@@ -246,14 +269,14 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
   useEffect(() => {
     if (tokenMetadata) {
       setFieldValue("tokenID", tokenMetadata.token_id)
-      setFieldValue("tokenType", tokenMetadata.standard)
+      setFieldValue("tokenType", "ERC20")
       setFieldValue("symbol", tokenMetadata.symbol)
       setFieldValue("decimals", tokenMetadata.decimals)
     }
 
     if (error) {
-      setFieldValue("tokenID", undefined)
-      setFieldValue("tokenType", undefined)
+      setFieldValue("tokenID", "0")
+      setFieldValue("tokenType", "ERC20")
       setFieldValue("symbol", undefined)
     }
   }, [error, setFieldValue, tokenMetadata])
@@ -330,6 +353,9 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
               onClick={() => setFieldTouched("tokenAddress")}
               name="tokenAddress"
               type="text"
+              onBlur={(e: any) => {
+                setFieldValue("tokenAddress", e.target.value)
+              }}
               placeholder="Token Contract Address*"
               component={CustomFormikTextField}
             />
@@ -388,8 +414,11 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
                       setFieldValue("tokenType", newValue.target.value)
                     }}
                   >
-                    <option value={"fa2"}>FA2</option>
-                    <option value={"nft"}>NFT</option>
+                    {tokenStandardOptions.map((opt: any, idx) => (
+                      <option key={idx} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
                   </CustomSelect>
                 )}
               </Field>
@@ -459,7 +488,8 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 
 export const CommunityCreator: React.FC = () => {
   const navigate = useHistory()
-  const { network, account, wallet } = useTezos()
+  const { network, account, wallet, etherlink } = useTezos()
+
   const openNotification = useNotification()
 
   const initialState: Community = {
@@ -482,53 +512,85 @@ export const CommunityCreator: React.FC = () => {
 
   const saveCommunity = useCallback(
     async (values: Community) => {
-      if (!wallet) {
-        return
-      }
+      console.log({ values })
 
-      values.members.push(account)
+      if (wallet) {
+        values.members.push(account)
 
-      try {
-        const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-        if (!signature) {
+        try {
+          const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
+          const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+          if (!signature) {
+            openNotification({
+              message: `Issue with Signature`,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
+          }
+
+          const resp = await saveLiteCommunity(signature, publicKey, payloadBytes, network)
+          const data = await resp.json()
+          if (resp.ok) {
+            openNotification({
+              message: "Community created! Checkout the DAO in explorer page",
+              autoHideDuration: 3000,
+              variant: "success"
+            })
+            navigate.push("/explorer")
+          } else {
+            console.log("Error: ", data.message)
+            openNotification({
+              message: data.message,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
+          }
+        } catch (error) {
+          console.log("error: ", error)
           openNotification({
-            message: `Issue with Signature`,
+            message: "Community could not be created!",
             autoHideDuration: 3000,
             variant: "error"
           })
           return
         }
-
-        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
-        const data = await resp.json()
-        if (resp.ok) {
+      } else if (etherlink.isConnected) {
+        // Ethelink
+        try {
+          console.log({ etherlink })
+          const { signature, payloadBytes } = await getEthSignature(etherlink.account.address, JSON.stringify(values))
+          const resp = await saveLiteCommunity(signature, etherlink.account.address, payloadBytes, network)
+          const data = await resp.json()
+          if (resp.ok) {
+            openNotification({
+              message: "Community created! Checkout the DAO in explorer page",
+              autoHideDuration: 3000,
+              variant: "success"
+            })
+            navigate.push("/explorer")
+          } else {
+            console.log("Error: ", data.message)
+            openNotification({
+              message: data.message,
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+            return
+          }
+        } catch (error) {
+          console.log("error: ", error)
           openNotification({
-            message: "Community created! Checkout the DAO in explorer page",
-            autoHideDuration: 3000,
-            variant: "success"
-          })
-          navigate.push("/explorer")
-        } else {
-          console.log("Error: ", data.message)
-          openNotification({
-            message: data.message,
+            message: "Community could not be created!",
             autoHideDuration: 3000,
             variant: "error"
           })
           return
         }
-      } catch (error) {
-        console.log("error: ", error)
-        openNotification({
-          message: "Community could not be created!",
-          autoHideDuration: 3000,
-          variant: "error"
-        })
-        return
       }
     },
-    [navigate]
+    [navigate, network, openNotification, account, wallet, etherlink]
   )
 
   return (
@@ -537,7 +599,7 @@ export const CommunityCreator: React.FC = () => {
         enableReinitialize={true}
         validateOnChange={true}
         validateOnBlur={false}
-        validate={validateForm}
+        validate={(formValues: Community) => validateForm(network, formValues)}
         onSubmit={saveCommunity}
         initialValues={initialState}
       >

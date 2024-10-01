@@ -130,7 +130,10 @@ export const Choices: React.FC<any> = ({
   const community = useCommunity(id)
 
   const { data: userTokenVoteWeight } = useTokenVoteWeight(data?.data?.token?.contract || community?.tokenAddress)
-  const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.votingWeight.gt(0) ? true : false
+  console.log({ userTokenVoteWeight })
+  // TODO: @ashutoshpw Fix this
+  // const canCreateProposal = userTokenVoteWeight && userTokenVoteWeight.votingWeight.gt(0) ? true : false
+  const canCreateProposal = true
   const classes = useStyles()
 
   return (
@@ -189,32 +192,32 @@ export const Choices: React.FC<any> = ({
           name="choices"
           render={arrayHelpers => (
             <Grid container direction="row" spacing={2}>
-              {choices && choices.length > 0
-                ? choices.map((choice: any, index: number) => (
-                    <Grid item xs={isMobileExtraSmall ? 12 : 6} key={index}>
-                      <Field
-                        type="text"
-                        name={`choices[${index}]`}
-                        placeholder={`Option ${index + 1}`}
-                        component={CustomFormikChoiceTextField}
-                        InputProps={{
-                          endAdornment:
-                            index !== 0 && index === choices.length - 1 ? (
-                              <InputAdornment position="start">
-                                <RemoveCircle
-                                  onClick={() => {
-                                    if (index !== 0) {
-                                      arrayHelpers.remove(index)
-                                    }
-                                  }}
-                                />
-                              </InputAdornment>
-                            ) : null
-                        }}
-                      />
-                    </Grid>
-                  ))
-                : null}
+              {choices &&
+                choices.length > 0 &&
+                choices.map((choice: any, index: number) => (
+                  <Grid item xs={isMobileExtraSmall ? 12 : 6} key={index}>
+                    <Field
+                      type="text"
+                      name={`choices[${index}]`}
+                      placeholder={`Option ${index + 1}`}
+                      component={CustomFormikChoiceTextField}
+                      InputProps={{
+                        endAdornment:
+                          index !== 0 && index === choices.length - 1 ? (
+                            <InputAdornment position="start">
+                              <RemoveCircle
+                                onClick={() => {
+                                  if (index !== 0) {
+                                    arrayHelpers.remove(index)
+                                  }
+                                }}
+                              />
+                            </InputAdornment>
+                          ) : null
+                      }}
+                    />
+                  </Grid>
+                ))}
 
               <Grid
                 container

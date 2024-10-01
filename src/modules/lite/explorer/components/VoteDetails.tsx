@@ -111,64 +111,67 @@ export const VoteDetails: React.FC<{
       </TitleContainer>
       <GraphicsContainer container>
         {choices &&
-          choices.map((choice: Choice, index) => (
-            <LinearContainer container direction="column" style={{ gap: 20 }} key={`'option-'${index}`}>
-              <Grid item container direction="row" alignItems="center">
-                <Grid item xs={12} lg={6} sm={6}>
-                  <Typography color="textPrimary" variant="body2">
-                    {choice.name}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} lg={6} sm={6} container justifyContent={isMobileSmall ? "flex-start" : "flex-end"}>
-                  {choice && choice.walletAddresses ? (
+          choices.map((choice: Choice, index) => {
+            const pollWeight = calculateWeight(
+              poll?.totalSupplyAtReferenceBlock,
+              calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals),
+              tokenData?.decimals
+            )
+              .dp(2, 1)
+              .toNumber()
+
+            const pollWeightXtz = calculateWeight(
+              poll?.totalSupplyAtReferenceBlock,
+              calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals),
+              isXTZ ? 6 : tokenData?.decimals
+            )
+              .dp(2, 1)
+              .toString()
+
+            const calculatedChoiceTotalCount = numbro(
+              calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals)
+            ).format(formatConfig)
+
+            const tokenSymbol = !isMobile
+              ? nFormatter(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals), 1)
+              : calculatedChoiceTotalCount
+
+            const linearProgressValue = !poll?.isXTZ ? pollWeight : calculateWeightXTZ(choice, totalXTZ)
+            return (
+              <LinearContainer container direction="column" style={{ gap: 20 }} key={`'option-'${index}`}>
+                <Grid item container direction="row" alignItems="center">
+                  <Grid item xs={12} lg={6} sm={6}>
                     <Typography color="textPrimary" variant="body2">
-                      {choice.walletAddresses.length} Voters -{" "}
-                      {!isMobile
-                        ? nFormatter(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals), 1)
-                        : numbro(calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals)).format(
-                            formatConfig
-                          )}{" "}
-                      {isXTZ ? "XTZ" : tokenData?.symbol}
+                      {choice.name}
                     </Typography>
-                  ) : null}
+                  </Grid>
+                  <Grid item xs={12} lg={6} sm={6} container justifyContent={isMobileSmall ? "flex-start" : "flex-end"}>
+                    {choice && choice.walletAddresses ? (
+                      <Typography color="textPrimary" variant="body2">
+                        {choice.walletAddresses.length} Voters - {tokenSymbol} {isXTZ ? "XTZ" : tokenData?.symbol}
+                      </Typography>
+                    ) : null}
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid item container direction="row" alignItems="center">
-                <Grid item xs={10} lg={11} sm={11}>
-                  <LinearProgress
-                    style={{ width: "100%", marginRight: "4px" }}
-                    color="secondary"
-                    value={
-                      !poll?.isXTZ
-                        ? calculateWeight(
-                            poll?.totalSupplyAtReferenceBlock,
-                            calculateChoiceTotal(choice.walletAddresses, tokenData?.decimals),
-                            tokenData?.decimals
-                          )
-                            .dp(2, 1)
-                            .toNumber()
-                        : calculateWeightXTZ(choice, totalXTZ)
-                    }
-                    variant="determinate"
-                  />
+                <Grid item container direction="row" alignItems="center">
+                  <Grid item xs={10} lg={11} sm={11}>
+                    <LinearProgress
+                      style={{ width: "100%", marginRight: "4px" }}
+                      color="secondary"
+                      value={linearProgressValue}
+                      variant="determinate"
+                    />
+                  </Grid>
+                  <Grid item xs={2} lg={1} sm={1} container justifyContent="flex-end">
+                    <Typography color="textPrimary" variant="body2">
+                      {!poll?.isXTZ ? pollWeightXtz : numbro(calculateWeightXTZ(choice, totalXTZ)).format(formatConfig)}
+                      %
+                    </Typography>
+                  </Grid>
                 </Grid>
-                <Grid item xs={2} lg={1} sm={1} container justifyContent="flex-end">
-                  <Typography color="textPrimary" variant="body2">
-                    {!poll?.isXTZ
-                      ? calculateWeight(
-                          poll?.totalSupplyAtReferenceBlock,
-                          calculateChoiceTotal(choice.walletAddresses, isXTZ ? 6 : tokenData?.decimals),
-                          isXTZ ? 6 : tokenData?.decimals
-                        )
-                          .dp(2, 1)
-                          .toString()
-                      : numbro(calculateWeightXTZ(choice, totalXTZ)).format(formatConfig)}
-                    %
-                  </Typography>
-                </Grid>
-              </Grid>
-            </LinearContainer>
-          ))}
+              </LinearContainer>
+            )
+          })}
 
         <LegendContainer container direction="row">
           <Grid item container direction="row" xs={12} sm={6} md={6} lg={6} style={{ gap: 10 }}>

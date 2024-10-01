@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core"
 
 import HomeButton from "assets/logos/homebase-logo.svg"
+import { toShortAddress } from "services/contracts/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ChangeNetworkButton } from "./ChangeNetworkButton"
 import { UserProfileName } from "modules/explorer/components/UserProfileName"
@@ -20,6 +21,8 @@ import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 import { ActionSheet, useActionSheet } from "../context/ActionSheets"
 import { SmallButton } from "../../common/SmallButton"
+import { ConnectWalletButton } from "modules/common/ConnectWalletButton"
+import { ToolbarAccount } from "modules/common/ToolbarAccount"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -98,12 +101,12 @@ const ToolbarContainer = styled(Grid)(({ theme }) => ({
 }))
 
 export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu, children }) => {
-  const { connect, account } = useTezos()
+  const { connect, account: tzAccountAddress, etherlink, network } = useTezos()
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
-
+  const walletAddress = network.startsWith("etherlink") ? etherlink.account?.address : tzAccountAddress
   return (
     <StyledAppBar>
       <StyledToolbar>
@@ -125,57 +128,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
 
           <Grid item>
             <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
-              {account ? (
-                <Grid
-                  container
-                  alignItems="center"
-                  style={{ gap: 12 }}
-                  justifyContent={isMobileExtraSmall ? "center" : "flex-end"}
-                >
-                  {children}
-                  <Grid item>
-                    <Grid container alignItems="center" style={{ gap: 16 }}>
-                      <Grid item>
-                        <ChangeNetworkButton />
-                      </Grid>
-                      <AddressBarWrapper item onClick={() => openUserMenuSheet()}>
-                        <AddressContainer
-                          container
-                          alignItems="center"
-                          wrap="nowrap"
-                          justifyContent="flex-end"
-                          style={{ gap: 16 }}
-                        >
-                          <Grid item>
-                            <ProfileAvatar size={22} address={account} />
-                          </Grid>
-                          <Grid item>
-                            <Typography color="textPrimary" variant="body2">
-                              <UserProfileName address={account} short={true} />
-                            </Typography>
-                          </Grid>
-                        </AddressContainer>
-                      </AddressBarWrapper>
-                    </Grid>
-                  </Grid>
-                </Grid>
-              ) : (
-                <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
-                  <Grid item>
-                    <ChangeNetworkButton />
-                  </Grid>
-                  <Grid item>
-                    <SmallButton
-                      color="secondary"
-                      variant="contained"
-                      style={{ fontSize: "14px" }}
-                      onClick={() => connect()}
-                    >
-                      Connect Wallet
-                    </SmallButton>
-                  </Grid>
-                </Grid>
-              )}
+              <ToolbarAccount>{children}</ToolbarAccount>
             </Grid>
           </Grid>
         </Header>

@@ -1,4 +1,4 @@
-import { client, client_v2 } from "../graphql"
+import { client } from "../graphql"
 import { Community, DAOListItem, DAOXTZTransferDTO, FetchedDAO, FetchedProposal, FetchedProposals } from "../types"
 import { GET_DAO_QUERY, GET_PROPOSALS_QUERY, GET_PROPOSAL_QUERY, GET_XTZ_TRANSFERS } from "../dao/queries"
 import { LambdaProposal, Proposal } from "../dao/mappers/proposal/types"
@@ -36,11 +36,8 @@ export const getDAO = async (address: string) => {
 }
 
 export const getLiteDAOs = async (network: string) => {
-  const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/`, {
-    method: "POST",
-    body: JSON.stringify({
-      network
-    }),
+  const resp = await fetch(`${REACT_APP_LITE_API_URL}/daos/?network=${network}`, {
+    method: "GET",
     headers: {
       "Content-Type": "application/json"
     }
@@ -116,7 +113,12 @@ export const getXTZTransfers = async (address: string) => {
   })
 }
 
-export const saveLiteCommunity = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+export const saveLiteCommunity = async (
+  signature: string,
+  publicKey: string | undefined,
+  payloadBytes: string,
+  network: Network
+) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/dao/add`, {
     method: "POST",
     headers: {
@@ -125,13 +127,19 @@ export const saveLiteCommunity = async (signature: string, publicKey: string | u
     body: JSON.stringify({
       signature,
       publicKey,
-      payloadBytes
+      payloadBytes,
+      network
     })
   })
   return resp
 }
 
-export const saveLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+export const saveLiteProposal = async (
+  signature: string,
+  publicKey: string | undefined,
+  payloadBytes: string,
+  network: Network
+) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/poll/add`, {
     method: "POST",
     headers: {
@@ -140,19 +148,26 @@ export const saveLiteProposal = async (signature: string, publicKey: string | un
     body: JSON.stringify({
       signature,
       publicKey,
-      payloadBytes
+      payloadBytes,
+      network
     })
   })
   return resp
 }
 
-export const voteOnLiteProposal = async (signature: string, publicKey: string | undefined, payloadBytes: string) => {
+export const voteOnLiteProposal = async (
+  signature: string,
+  publicKey: string | undefined,
+  payloadBytes: string,
+  network: Network
+) => {
   const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/update/choice`, {
     method: "POST",
     body: JSON.stringify({
       signature,
       publicKey,
-      payloadBytes
+      payloadBytes,
+      network
     }),
     headers: {
       "Content-Type": "application/json"
