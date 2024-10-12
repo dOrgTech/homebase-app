@@ -30,6 +30,8 @@ import { BaseDAO, getContract } from "services/contracts/baseDAO"
 import { TezosToolkit } from "@taquito/taquito"
 import { Schema } from "@taquito/michelson-encoder"
 import BigNumber from "bignumber.js"
+import { useDAO } from "services/services/dao/hooks/useDAO"
+import { useDAOID } from "../pages/DAO/router"
 
 // Base ACI Lambda
 const aciBaseLambda = {
@@ -61,12 +63,7 @@ async function packLambda(tezos: TezosToolkit, lambdaCode: string, lambdaType: s
   return packed
 }
 
-async function prepareContractData(
-  tezos: TezosToolkit,
-  lambdaCode: string,
-  lambdaType: string,
-  contractAddress: string
-): Promise<string> {
+async function prepareContractData(tezos: TezosToolkit, lambdaCode: string, lambdaType: string): Promise<string> {
   console.log({ lambdaCode })
 
   /**
@@ -85,11 +82,12 @@ async function prepareContractData(
 
   // const finalPackedData = await packLambda(tezos, executionLambda.code(packedLambda, "simple_lambda_3"), executionLambda.type)
 
-  const contract = await getContract(tezos, "KT1VG3ynsnyxFGzw9mdBwYnyZAF8HZvqnNkw")
+  // const contract = await getContract(tezos, daoAddress)
 
   // TODO: Replace with actual frozn token value
-  const frozenToken = formatUnits(new BigNumber(10000), 6)
-  const contractMethod = contract.methods.propose(await tezos.wallet.pkh(), frozenToken, finalPackedDataBytes)
+
+  // const frozenToken = formatUnits(daoDetails?.extra?.frozen_extra_value, daoDetails?.token?.decimals)
+  // const contractMethod = contract.methods.propose(await tezos.wallet.pkh(), frozenToken, finalPackedDataBytes)
 
   // const result = await contractMethod.send()
   // console.log("RESULT", result)
@@ -97,59 +95,6 @@ async function prepareContractData(
   return finalPackedDataBytes
 
   // return contractMethod.send()
-}
-
-async function packLambdaExp(tezos: TezosToolkit, lambdaCode: string): Promise<string> {
-  // const aciLambda = `Left (Left (Pair (Pair { UNPAIR; UNPAIR; SWAP; UNPACK (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (bytes %packed_argument)); ASSERT_SOME; UNPAIR; DIP{ SWAP; PAIR; PAIR}; SWAP; EXEC} {DROP; UNIT}) "simple_lambda"))' of type '(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))`
-  const parser = new Parser()
-  const michelsonData = `Left (Left (Pair (Pair { UNPAIR; UNPAIR; SWAP; UNPACK (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (bytes %packed_argument)); ASSERT_SOME; UNPAIR; DIP{ SWAP; PAIR; PAIR}; SWAP; EXEC} {DROP; UNIT}) "simple_lambda"))`
-  const dataToPack = parser.parseMichelineExpression(michelsonData)
-
-  const mData = parser.parseData(michelsonData)
-
-  const michelsonType = parser.parseData(
-    `(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))`
-  )
-  const schema = new Schema(michelsonType as unknown as Expr)
-  // const data = schema.Encode(dataToPack)
-  const { packed } = await tezos.rpc.packData({
-    data: mData as unknown as MichelsonData,
-    type: michelsonType as unknown as Expr
-  })
-  return packed
-  // ==============================
-  // const parser = new Parser()
-  // const michelsonData = `Left (Left (Pair (Pair { UNPAIR; UNPAIR; SWAP; UNPACK (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (bytes %packed_argument)); ASSERT_SOME; UNPAIR; DIP{ SWAP; PAIR; PAIR}; SWAP; EXEC} {DROP; UNIT}) "simple_lambda"))`
-  // const dataToPack = parser.parseMichelineExpression(michelsonData)
-
-  // const michelsonType = `(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))`
-  // const typeToPack = parser.parseMichelineExpression(michelsonType)
-  // console.log("typeToPack", typeToPack)
-  // console.log("dataToPack", dataToPack)
-
-  // const metadata = packDataBytes(dataToPack as unknown as MichelsonData, typeToPack as unknown as MichelsonType)
-
-  // ==============================
-  // const lambda = parser.parseMichelineExpression(aciLambda) as MichelsonData
-  // console.log("lambda", lambda)
-  // const metadata = packDataBytes(lambda, {
-  //   prim: "lambda",
-  //   args: [{ prim: "unit" }, { prim: "unit" }]
-  // } as unknown as MichelsonType)
-
-  // const metadata = await BaseDAO.encodeLambdaAddMetadata(
-  //   { prim: "lambda", args: [{ prim: "unit" }] },
-  //   aciLambda,
-  //   {} as unknown as TezosToolkit
-  // )
-  // ==============================
-
-  // const lambda = parser.parseMichelineExpression(
-  // )
-  // const typeJson = parser.parseMichelineExpression("lambda")
-  // console.log("lambda", { lambda, typeJson })
-  // const packed = packDataBytes(lambda as unknown as MichelsonData, typeJson as unknown as MichelsonType)
-  // return packed.bytes
 }
 
 interface Parameter {
@@ -254,6 +199,7 @@ const ContractInteractionForm = ({
   isValid,
   showHeader
 }: any) => {
+  const daoId = useDAOID()
   const [state, setState] = useState<Status>(Status.NEW_INTERACTION)
   const [formState, setFormState] = useState<any>({ address: "", amount: 0, shape: {} })
   const [endpoint, setEndpoint] = useState<ContractEndpoint | undefined>(undefined)
@@ -263,6 +209,9 @@ const ContractInteractionForm = ({
   // console.log("FormData", data)
   const { tezos, network } = useTezos()
   const [isLoading, setIsLoading] = useState(false)
+  const { data: daoDetails } = useDAO(daoId)
+
+  console.log({ daoDetails })
 
   const shouldContinue = useMemo(() => {
     if (values.destination_contract_address !== "" && !errors.destination_contract_address) {
@@ -379,14 +328,10 @@ const ContractInteractionForm = ({
                 reset={() => setFormState({ address: "", amount: 0, shape: {} })}
                 setField={(lambdaCode: string, metadata: string) => {
                   // debugger
-
-                  console.log("SetField", lambdaCode, metadata, values.destination_contract_address)
-
-                  prepareContractData(tezos, lambdaCode, aciLambda.type, values.destination_contract_address).then(
-                    (packedBytes: string) => {
-                      console.log("Packed LambdaX", packedBytes)
-                    }
-                  )
+                  // console.log("SetField", lambdaCode, metadata, values.destination_contract_address)
+                  // prepareContractData(tezos, lambdaCode, aciLambda.type).then((packedBytes: string) => {
+                  //   console.log("Packed LambdaX", packedBytes)
+                  // })
                 }}
                 setLoading={() => {}}
                 setState={shape => {
@@ -480,7 +425,7 @@ const ContractInteractionForm = ({
           </Grid>
           <Grid item xs={6} container justifyContent="flex-end">
             <SmallButtonDialog
-              onClick={() => {
+              onClick={async () => {
                 console.log({ formState })
                 // debugger
                 let entrypoint = formState.shape.token.initValue // accept_ownership | default etc
@@ -522,6 +467,28 @@ const ContractInteractionForm = ({
                   amount: values.amount,
                   param
                 })
+
+                console.log("Lambda Code", lambda)
+                console.log("DaoDetails", daoDetails)
+
+                const finalPackedDataBytes = await prepareContractData(tezos, lambda, aciLambda.type)
+                const contract = await getContract(tezos, daoDetails?.data?.address as string)
+
+                const frozenToken = formatUnits(
+                  new BigNumber(daoDetails?.data?.extra?.frozen_extra_value as any),
+                  daoDetails?.data?.token?.decimals as number
+                )
+
+                console.log("Frozen Token", frozenToken)
+
+                const contractMethod = contract.methods.propose(
+                  await tezos.wallet.pkh(),
+                  frozenToken,
+                  finalPackedDataBytes
+                )
+
+                const result = await contractMethod.send()
+                console.log("RESULT", result)
 
                 // TODO: Deploy this to DAO
                 console.log({ lambda })

@@ -289,7 +289,7 @@ export const ProposalFormLambda: React.FC<{
   )
 
   const isDisabled = useMemo(() => {
-    // if (lambda?.key === ARBITRARY_CONTRACT_INTERACTION) return false
+    if (lambda?.key === ARBITRARY_CONTRACT_INTERACTION) return false
     if (!code) return true
     if (action === ProposalAction.execute && (!lambda || lambdaArguments === "" || lambdaParams === "")) return true
   }, [code, action, lambda, lambdaArguments, lambdaParams, ACI.key])
@@ -297,6 +297,7 @@ export const ProposalFormLambda: React.FC<{
   // console.log({ isDisabled })
 
   const handleSearchChange = (data: Lambda) => {
+    console.log("handleSearchChange", { data })
     if (!data?.value) {
       lambdaForm.reset()
       setCode("")
@@ -415,6 +416,8 @@ export const ProposalFormLambda: React.FC<{
     handleClose()
   }
 
+  console.log("Lambda", lambda)
+
   return (
     <FormProvider {...lambdaForm}>
       <ResponsiveDialog
@@ -431,13 +434,13 @@ export const ProposalFormLambda: React.FC<{
               {action === ProposalAction.execute ? renderExecuteProposal() : null}
             </Grid>
 
-            {lambda && lambda.key !== ARBITRARY_CONTRACT_INTERACTION ? (
-              <StyledRow container direction="row" justifyContent="flex-end">
-                <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={isDisabled}>
-                  Submit
-                </StyledSendButton>
-              </StyledRow>
-            ) : null}
+            {/* {lambda && lambda.key !== ARBITRARY_CONTRACT_INTERACTION ? ( */}
+            <StyledRow container direction="row" justifyContent="flex-end">
+              <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={isDisabled}>
+                Submit
+              </StyledSendButton>
+            </StyledRow>
+            {/* ) : null} */}
           </>
         ) : null}
 
