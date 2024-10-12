@@ -275,6 +275,7 @@ export class LambdaDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
+      // frozen_extra_value is 0 for lambda remove
       formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     )

@@ -82,15 +82,20 @@ function generateExecuteContractMichelson(
   console.log("Lambda Generate", { address, entrypoint, type, amount, param })
   if (version === "1.0.0") {
     return `{
-            DROP;
             NIL operation ;
             PUSH address "${address}";
             CONTRACT ${michelsonEntrypoint} ${type};
-            IF_NONE { PUSH string "contract dosen't exist"; FAILWITH } { };
+            IF_NONE { PUSH string "UNKNOWN ADDRESS"; FAILWITH } { };
             PUSH mutez ${amount};
             PUSH ${type} ${param} ;
             TRANSFER_TOKENS ;
             CONS ;
+            SWAP;
+            CAR;
+            CAR;
+            NONE address;
+            PAIR;
+            PAIR;
         }`
   } else if (version !== "unknown version") {
     return `{
@@ -103,6 +108,29 @@ function generateExecuteContractMichelson(
             TRANSFER_TOKENS ;
         }`
   }
+  // if (version === "1.0.0") {
+  //   return `{
+  //           DROP;
+  //           NIL operation ;
+  //           PUSH address "${address}";
+  //           CONTRACT ${michelsonEntrypoint} ${type};
+  //           IF_NONE { PUSH string "contract dosen't exist"; FAILWITH } { };
+  //           PUSH mutez ${amount};
+  //           PUSH ${type} ${param} ;
+  //           TRANSFER_TOKENS ;
+  //           CONS ;
+  //       }`
+  // } else if (version !== "unknown version") {
+  //   return `{
+  //           DROP;
+  //           PUSH address "${address}";
+  //           CONTRACT ${michelsonEntrypoint} ${type};
+  //           IF_NONE { PUSH string "contract dosen't exist"; FAILWITH } { };
+  //           PUSH mutez ${amount};
+  //           PUSH ${type} ${param} ;
+  //           TRANSFER_TOKENS ;
+  //       }`
+  // }
 
   throw new Error("Can't generate for an unknow version")
 }

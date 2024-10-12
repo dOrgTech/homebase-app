@@ -12,20 +12,145 @@ import {
   withStyles
 } from "@material-ui/core"
 import { ProposalFormInput } from "./ProposalFormInput"
-import { validateContractAddress, validateAddress } from "@taquito/utils"
+import { validateContractAddress } from "@taquito/utils"
 import { Field, FieldArray, Form, Formik, FormikErrors, getIn } from "formik"
 import { SmallButtonDialog } from "modules/common/SmallButton"
 import { ArrowBackIos } from "@material-ui/icons"
 import { ContractEndpoint, SearchEndpoints } from "./SearchEndpoints"
-import { toShortAddress } from "services/contracts/utils"
+import { formatUnits, toShortAddress } from "services/contracts/utils"
 import { useArbitraryContractData } from "services/aci/useArbitratyContractData"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ArbitraryContract } from "models/Contract"
 import { evalTaquitoParam, generateExecuteContractMichelson } from "services/aci"
-import { emitMicheline, Parser } from "@taquito/michel-codec"
-import type { ContractAbstraction } from "@taquito/taquito"
+import { emitMicheline, MichelsonType, Parser } from "@taquito/michel-codec"
 import ProposalExecuteForm from "./ProposalExecuteForm"
 import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
+import { Expr, MichelsonData, packDataBytes } from "@taquito/michel-codec"
+import { BaseDAO, getContract } from "services/contracts/baseDAO"
+import { TezosToolkit } from "@taquito/taquito"
+import { Schema } from "@taquito/michelson-encoder"
+import BigNumber from "bignumber.js"
+
+// Base ACI Lambda
+const aciBaseLambda = {
+  code: `Left (Left (Pair (Pair { UNPAIR; UNPAIR; SWAP; UNPACK (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (bytes %packed_argument)); ASSERT_SOME; UNPAIR; DIP{ SWAP; PAIR; PAIR}; SWAP; EXEC} {DROP; UNIT}) "simple_lambda"))`,
+  type: `(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))`
+}
+
+const aciLambda = {
+  code: 'Pair {NIL operation; PUSH address "KT1T17GC91HrJ8ijZgnMaE9j4PZbojbVAn73"; CONTRACT %change_string string; ASSERT_SOME ;PUSH mutez 0;PUSH string "new string"; TRANSFER_TOKENS; CONS; SWAP; CAR; CAR; NONE address; PAIR; PAIR} 0x',
+  type: `pair (lambda (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) bytes`
+}
+
+const executionLambda = {
+  code: (hash: string, executionLambdaName = "simple_lambda_3") =>
+    `(Left (Right (Pair "${executionLambdaName}" 0x${hash})))`,
+  type: "(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))"
+}
+
+async function packLambda(tezos: TezosToolkit, lambdaCode: string, lambdaType: string): Promise<string> {
+  console.log("PACKLAMBDA", lambdaCode, lambdaType)
+  const parser = new Parser()
+  const michelsonData = lambdaCode
+  const mData = parser.parseData(michelsonData)
+  const michelsonType = parser.parseData(lambdaType)
+  const { packed } = await tezos.rpc.packData({
+    data: mData as unknown as MichelsonData,
+    type: michelsonType as unknown as Expr
+  })
+  return packed
+}
+
+async function prepareContractData(
+  tezos: TezosToolkit,
+  lambdaCode: string,
+  lambdaType: string,
+  contractAddress: string
+): Promise<string> {
+  console.log({ lambdaCode })
+
+  /**
+   * This needs to be deployed to the DAO
+   * e.g, https://better-call.dev/ghostnet/KT1VG3ynsnyxFGzw9mdBwYnyZAF8HZvqnNkw/storage/big_map/336003/keys
+   *
+   * If not, we need to create a proposal to just deploy it first.
+   * */
+  // const packedBaseAci = await packLambda(tezos, aciBaseLambda.code, aciBaseLambda.type)
+  // console.log("ACILambdaCode", lambdaCode, packedBaseAci)
+
+  const packedLambdaBytes = await packLambda(tezos, `Pair ${lambdaCode} 0x`, lambdaType)
+  const execLambdaCode = executionLambda.code(packedLambdaBytes, "simple_lambda_3")
+  const execLambdaType = executionLambda.type
+  const finalPackedDataBytes = await packLambda(tezos, execLambdaCode, execLambdaType)
+
+  // const finalPackedData = await packLambda(tezos, executionLambda.code(packedLambda, "simple_lambda_3"), executionLambda.type)
+
+  const contract = await getContract(tezos, "KT1VG3ynsnyxFGzw9mdBwYnyZAF8HZvqnNkw")
+
+  // TODO: Replace with actual frozn token value
+  const frozenToken = formatUnits(new BigNumber(10000), 6)
+  const contractMethod = contract.methods.propose(await tezos.wallet.pkh(), frozenToken, finalPackedDataBytes)
+
+  // const result = await contractMethod.send()
+  // console.log("RESULT", result)
+
+  return finalPackedDataBytes
+
+  // return contractMethod.send()
+}
+
+async function packLambdaExp(tezos: TezosToolkit, lambdaCode: string): Promise<string> {
+  // const aciLambda = `Left (Left (Pair (Pair { UNPAIR; UNPAIR; SWAP; UNPACK (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (bytes %packed_argument)); ASSERT_SOME; UNPAIR; DIP{ SWAP; PAIR; PAIR}; SWAP; EXEC} {DROP; UNIT}) "simple_lambda"))' of type '(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))`
+  const parser = new Parser()
+  const michelsonData = `Left (Left (Pair (Pair { UNPAIR; UNPAIR; SWAP; UNPACK (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (bytes %packed_argument)); ASSERT_SOME; UNPAIR; DIP{ SWAP; PAIR; PAIR}; SWAP; EXEC} {DROP; UNIT}) "simple_lambda"))`
+  const dataToPack = parser.parseMichelineExpression(michelsonData)
+
+  const mData = parser.parseData(michelsonData)
+
+  const michelsonType = parser.parseData(
+    `(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))`
+  )
+  const schema = new Schema(michelsonType as unknown as Expr)
+  // const data = schema.Encode(dataToPack)
+  const { packed } = await tezos.rpc.packData({
+    data: mData as unknown as MichelsonData,
+    type: michelsonType as unknown as Expr
+  })
+  return packed
+  // ==============================
+  // const parser = new Parser()
+  // const michelsonData = `Left (Left (Pair (Pair { UNPAIR; UNPAIR; SWAP; UNPACK (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (bytes %packed_argument)); ASSERT_SOME; UNPAIR; DIP{ SWAP; PAIR; PAIR}; SWAP; EXEC} {DROP; UNIT}) "simple_lambda"))`
+  // const dataToPack = parser.parseMichelineExpression(michelsonData)
+
+  // const michelsonType = `(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))`
+  // const typeToPack = parser.parseMichelineExpression(michelsonType)
+  // console.log("typeToPack", typeToPack)
+  // console.log("dataToPack", dataToPack)
+
+  // const metadata = packDataBytes(dataToPack as unknown as MichelsonData, typeToPack as unknown as MichelsonType)
+
+  // ==============================
+  // const lambda = parser.parseMichelineExpression(aciLambda) as MichelsonData
+  // console.log("lambda", lambda)
+  // const metadata = packDataBytes(lambda, {
+  //   prim: "lambda",
+  //   args: [{ prim: "unit" }, { prim: "unit" }]
+  // } as unknown as MichelsonType)
+
+  // const metadata = await BaseDAO.encodeLambdaAddMetadata(
+  //   { prim: "lambda", args: [{ prim: "unit" }] },
+  //   aciLambda,
+  //   {} as unknown as TezosToolkit
+  // )
+  // ==============================
+
+  // const lambda = parser.parseMichelineExpression(
+  // )
+  // const typeJson = parser.parseMichelineExpression("lambda")
+  // console.log("lambda", { lambda, typeJson })
+  // const packed = packDataBytes(lambda as unknown as MichelsonData, typeJson as unknown as MichelsonType)
+  // return packed.bytes
+}
 
 interface Parameter {
   key: string
@@ -252,9 +377,16 @@ const ContractInteractionForm = ({
                 amount={values.amount}
                 shape={formState.shape}
                 reset={() => setFormState({ address: "", amount: 0, shape: {} })}
-                setField={(lambda: string, metadata: string) => {
+                setField={(lambdaCode: string, metadata: string) => {
                   // debugger
-                  console.log("SetField", lambda, metadata)
+
+                  console.log("SetField", lambdaCode, metadata, values.destination_contract_address)
+
+                  prepareContractData(tezos, lambdaCode, aciLambda.type, values.destination_contract_address).then(
+                    (packedBytes: string) => {
+                      console.log("Packed LambdaX", packedBytes)
+                    }
+                  )
                 }}
                 setLoading={() => {}}
                 setState={shape => {
