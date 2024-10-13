@@ -26,7 +26,7 @@ import { ChangeNetworkButton } from "./ChangeNetworkButton"
 import { ArrowBackIos } from "@material-ui/icons"
 import { ConnectWalletButton } from "./ConnectWalletButton"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
-import { ActionSheet, useActionSheet } from "../explorer/context/ActionSheets"
+import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",
@@ -77,15 +77,23 @@ const LogoText = styled(Typography)({
   letterSpacing: "initial"
 })
 
-const AddressBarWrapper = styled(Grid)(({ theme }) => ({
-  borderRadius: 8,
-  background: theme.palette.primary.main,
-  paddingLeft: 16,
-  paddingRight: 16,
-  paddingTop: 5,
-  paddingBottom: 6,
-  boxSizing: "border-box"
-}))
+const AddressBarWrapper: React.FC<any> = ({ variant, onClick, ...props }) => {
+  const theme = useTheme()
+  const background = variant === "common" ? theme.palette.primary.dark : theme.palette.primary.main
+  const StyledGrid = styled(Grid)(({ theme }) => ({
+    borderRadius: 8,
+    background: background,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 5,
+    paddingBottom: 6,
+    boxSizing: "border-box"
+  }))
+
+  return <StyledGrid onClick={onClick} item {...props} />
+}
+
+AddressBarWrapper.displayName = "AddressBarWrapper"
 
 const LogoItem = styled("img")({
   height: "30px",

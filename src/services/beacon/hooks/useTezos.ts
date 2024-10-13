@@ -3,13 +3,9 @@ import { useCallback, useContext, useEffect } from "react"
 import { TezosToolkit } from "@taquito/taquito"
 import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
-import { useWeb3Modal } from "@web3modal/wagmi/react"
 import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
-import { useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
-
-import { disconnect as disconnectEtherlink } from "@wagmi/core"
-import { config as wagmiConfig } from "services/wagmi/config"
+import { EtherlinkContext } from "services/wagmi/context"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -29,103 +25,35 @@ export const useTezos = (): WalletConnectReturn => {
     dispatch
   } = useContext(TezosContext)
 
-  const { open, close } = useWeb3Modal()
-  const { address: ethAddress, isConnected: isEtherlinkConnected } = useWagmiAccount()
-  // const { connect: wagmiConnect, connectors } = useWagmiConnect()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const openEthWallet = async () => {
-    if (isEtherlinkConnected) {
-      await disconnectEtherlink(wagmiConfig)
-    }
-    open({ view: "Connect" })
-  }
+  const {
+    switchToNetwork,
+    account: ethAccount,
+    isConnected: isEtherlinkConnected,
+    connect: connectWithWagmi,
+    disconnect: disconnectEtherWallet,
+    network: etherlinkNetwork
+  } = useContext(EtherlinkContext)
 
   const queryClient = useQueryClient()
 
-  const connect = useCallback(
-    async (newNetwork?: Network) => {
-      if (isEtherlinkConnected) await disconnectEtherlink(wagmiConfig)
-
-      const { wallet } = await connectWithBeacon(network)
-      const newTezos: TezosToolkit = createTezos(network || newNetwork)
-      newTezos.setProvider({ wallet })
-
-      const account = await newTezos.wallet.pkh()
-
+  const handleEtherlinkNetworkChange = useCallback(
+    async (newNetwork: Network) => {
+      // Reset the Tezos state
       dispatch({
         type: TezosActionType.UPDATE_TEZOS,
         payload: {
-          network: newNetwork || network,
-          tezos: newTezos,
-          account,
-          wallet
+          network: newNetwork,
+          tezos: tezos,
+          account: "",
+          wallet: undefined
         }
       })
-      mixpanel.identify(account)
-
-      return newTezos
     },
-    [dispatch, network, isEtherlinkConnected]
+    [ethAccount?.address, dispatch, tezos, etherlinkNetwork, connectWithWagmi]
   )
 
-  useEffect(() => {
-    console.log("Network", network)
-
-    // Log out Beacon if network is etherlink
-    if (network?.startsWith("etherlink") && wallet) {
-      console.log("Log out Beacon")
-      wallet.disconnect()
-      dispatch({
-        type: TezosActionType.RESET_TEZOS
-      })
-    }
-
-    if (!network?.startsWith("etherlink") && isEtherlinkConnected) {
-      console.log("Log out Etherlink")
-      disconnectEtherlink(wagmiConfig)
-      dispatch({
-        type: TezosActionType.RESET_TEZOS
-      })
-    }
-  }, [network, wallet, isEtherlinkConnected, dispatch])
-
-  return {
-    tezos,
-    connect: async () => {
-      if (network.startsWith("etherlink")) {
-        openEthWallet()
-        return "etherlink_login"
-      }
-
-      const result = await connect()
-      console.log({ result })
-      if (!result) {
-        throw new Error("Failed to connect")
-      }
-      return result
-    },
-    reset: useCallback(async () => {
-      if (network.startsWith("etherlink")) {
-        await disconnectEtherlink(wagmiConfig)
-      }
-
-      if (!wallet && !isEtherlinkConnected) {
-        throw new Error("No Wallet Connected")
-      }
-
-      if (wallet) await wallet.disconnect()
-
-      dispatch({
-        type: TezosActionType.RESET_TEZOS
-      })
-    }, [dispatch, network, wallet, isEtherlinkConnected]),
-    changeNetwork: async (newNetwork: Network) => {
-      mixpanel.register({ Network: newNetwork })
-      localStorage.setItem("homebase:network", newNetwork)
-
-      if ((newNetwork || network).startsWith("etherlink")) {
-        return openEthWallet()
-      }
+  const handleTezosNetworkChange = useCallback(
+    async (newNetwork: Network) => {
       const newTezos: TezosToolkit = createTezos(newNetwork)
       if (!account) {
         dispatch({
@@ -152,19 +80,123 @@ export const useTezos = (): WalletConnectReturn => {
           }
         })
       }
+    },
+    [dispatch, account]
+  )
 
+  /**
+   * Change the network
+   * - If the account is not connected, we don't need to do manage wallet actions
+   * - If the account is connected we need to manage the wallet switch
+   * @param newNetwork - The new network to change to
+   * @returns void
+   */
+  const handleChangeNetwork = useCallback(
+    async (newNetwork: Network) => {
+      mixpanel.register({ Network: newNetwork })
+      localStorage.setItem("homebase:network", newNetwork)
+      if (newNetwork.startsWith("etherlink")) {
+        await handleEtherlinkNetworkChange(newNetwork)
+      } else {
+        await handleTezosNetworkChange(newNetwork)
+      }
       queryClient.resetQueries()
     },
+    [handleEtherlinkNetworkChange, handleTezosNetworkChange, queryClient]
+  )
+
+  const handleTezosConnect = useCallback(
+    async (newNetwork?: Network) => {
+      const { wallet } = await connectWithBeacon(network)
+      const newTezos: TezosToolkit = createTezos(network || newNetwork)
+      newTezos.setProvider({ wallet })
+
+      const account = await newTezos.wallet.pkh()
+
+      dispatch({
+        type: TezosActionType.UPDATE_TEZOS,
+        payload: {
+          network: newNetwork || network,
+          tezos: newTezos,
+          account,
+          wallet
+        }
+      })
+      mixpanel.identify(account)
+
+      return newTezos
+    },
+    [connectWithWagmi, network, dispatch]
+  )
+
+  useEffect(() => {
+    console.log("[Tezos] Etherlink Network", etherlinkNetwork, network, isEtherlinkConnected)
+    if (etherlinkNetwork !== network && isEtherlinkConnected) {
+      console.log(`Switching to network ${network} from ${etherlinkNetwork}`)
+      switchToNetwork(network)
+    }
+    // if (!isEtherlinkConnected && network?.startsWith("etherlink")) {
+    // connectWithWagmi()
+    // }
+
+    // Log out Beacon if network is etherlink
+    if (network?.startsWith("etherlink") && wallet) {
+      console.log("Log out Beacon")
+      wallet.disconnect()
+      dispatch({
+        type: TezosActionType.RESET_TEZOS
+      })
+    }
+
+    // Log out Etherlink if network is not etherlink
+    if (!network?.startsWith("etherlink") && isEtherlinkConnected) {
+      console.log("Log out Etherlink")
+      disconnectEtherWallet()
+      dispatch({
+        type: TezosActionType.RESET_TEZOS
+      })
+    }
+  }, [network, etherlinkNetwork, handleChangeNetwork, isEtherlinkConnected])
+
+  return {
+    tezos,
+    connect: async () => {
+      if (network.startsWith("etherlink")) {
+        connectWithWagmi()
+        return "etherlink_login"
+      }
+
+      const result = await handleTezosConnect()
+
+      if (!result) {
+        throw new Error("Failed to connect")
+      }
+      return result
+    },
+    reset: useCallback(async () => {
+      if (network.startsWith("etherlink")) {
+        await disconnectEtherWallet()
+      }
+
+      if (!wallet && !isEtherlinkConnected) {
+        throw new Error("No Wallet Connected")
+      }
+
+      if (wallet) await wallet.disconnect()
+
+      dispatch({
+        type: TezosActionType.RESET_TEZOS
+      })
+    }, [dispatch, network, wallet, isEtherlinkConnected]),
+
+    changeNetwork: handleChangeNetwork,
     account,
     wallet,
     network,
     isEtherlink: network?.startsWith("etherlink"),
     etherlink: {
       isConnected: isEtherlinkConnected,
-      account: {
-        address: ethAddress
-      },
-      network: ""
+      account: ethAccount
     }
   }
 }
