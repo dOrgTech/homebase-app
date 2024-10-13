@@ -1,6 +1,6 @@
 import React, { useState, createContext, ReactNode, useMemo, useRef, useEffect } from "react"
-import { useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
-import { disconnect as disconnectEtherlink, switchChain } from "@wagmi/core"
+import { useSwitchChain, useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
+import { disconnect as disconnectEtherlink } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
 import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { useSIWE, useModal, SIWESession } from "connectkit"
@@ -21,6 +21,7 @@ export const EtherlinkContext = createContext<any | undefined>(undefined)
 
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setOpen } = useModal()
+  const { chains, switchChain } = useSwitchChain()
   // const { data, isReady, isRejected, isLoading, isSignedIn, signOut, signIn, error } = useSIWE({
   //   onSignIn: (session?: SIWESession) => {
   //     console.log("User Signed In", session)
@@ -68,7 +69,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         disconnect: () => disconnectEtherlink(wagmiConfig),
         switchToNetwork: (network: string) => {
           const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
-          switchChain(wagmiConfig, { chainId: networkId })
+          switchChain({ chainId: networkId })
         }
       }}
     >
