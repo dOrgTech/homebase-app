@@ -3,7 +3,7 @@ import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { metaMask, injected, safe } from "wagmi/connectors"
 
 import { DeployContract } from "./token"
-import { ConnectKitProvider, getDefaultConfig } from "connectkit"
+import { getDefaultConfig } from "connectkit"
 
 const wagmiChains = [etherlink, etherlinkTestnet] as const
 

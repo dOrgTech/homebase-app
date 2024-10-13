@@ -29,13 +29,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
 
-import { ConnectKitProvider } from "connectkit"
-
-import { hexStringToBytes } from "services/utils/utils"
-import { HistoryLengthProvider } from "modules/explorer/context/HistoryLength"
-
-const tsQueryClient = new TanStackQueryClient()
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
