@@ -13,6 +13,10 @@ import { CopyButton } from "modules/common/CopyButton"
 import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import CloseIcon from "@mui/icons-material/Close"
+import NavigateNextIcon from "@mui/icons-material/NavigateNext"
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore"
+
 import { SearchInput } from "../../DAOList/components/Searchbar"
 import { TokensFilters } from ".."
 import { FilterTokenDialog } from "modules/explorer/components/FiltersTokensDialog"
@@ -116,7 +120,7 @@ const BalancesList: React.FC<TableProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const value = isMobileSmall ? 6 : 5
+  const value = 6
   const [list, setList] = useState(rows)
 
   useEffect(() => {
@@ -209,9 +213,9 @@ const BalancesList: React.FC<TableProps> = ({
       ))}
       <Grid container direction="row" justifyContent="flex-end">
         <ReactPaginate
-          previousLabel={"<"}
+          previousLabel={<NavigateBeforeIcon />}
           breakLabel="..."
-          nextLabel=">"
+          nextLabel={<NavigateNextIcon />}
           onPageChange={handlePageClick}
           pageRangeDisplayed={2}
           pageCount={pageCount}
@@ -239,10 +243,7 @@ export const BalancesTable: React.FC = () => {
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
   const [searchText, setSearchText] = useState("")
   const [filters, setFilters] = useState<TokensFilters>()
-
-  const filterByName = (text: string) => {
-    setSearchText(text.trim())
-  }
+  const filtersEnabled = Object.values(filters || {}).some(value => !!value)
 
   const onCloseTransfer = () => {
     setOpenTransfer(false)
@@ -336,9 +337,14 @@ export const BalancesTable: React.FC = () => {
     }
 
     if (searchText) {
-      holdings = holdings.filter(
-        holding => holding.token && holding.token.name.toLowerCase().includes(searchText.toLowerCase())
-      )
+      console.log({ holdings })
+      holdings = holdings.filter(holding => {
+        const query = searchText.toLowerCase()
+        if (holding.token?.name.toLowerCase().includes(query)) return true
+        if (holding.token?.id.toLowerCase().includes(query)) return true
+        if (holding.token?.symbol.toLowerCase().includes(query)) return true
+        return false
+      })
     }
 
     return holdings.map(createData)
@@ -359,8 +365,25 @@ export const BalancesTable: React.FC = () => {
             <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
             <Typography color="secondary">Filter & Sort</Typography>
           </FiltersContainer>
+          {filtersEnabled && (
+            <FiltersContainer
+              onClick={() => setFilters({ token: "", balanceMax: "", balanceMin: "" })}
+              xs={isSmall ? 12 : 2}
+              item
+              container
+              direction="row"
+              alignItems="center"
+            >
+              <CloseIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
+              <Typography color="secondary">Clear Filters</Typography>
+            </FiltersContainer>
+          )}
           <Grid item xs={4}>
-            <SearchInput search={filterByName} />
+            <SearchInput
+              search={(text: string) => {
+                setSearchText(text.trim())
+              }}
+            />
           </Grid>
         </Grid>
         <BalancesList
