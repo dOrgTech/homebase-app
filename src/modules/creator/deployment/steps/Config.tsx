@@ -118,7 +118,7 @@ const validateForm = (values: TokenContractSettings) => {
   return errors
 }
 
-const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
+const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue }: any) => {
   const { dispatch } = useContext(DeploymentContext)
   const match = useRouteMatch()
   const history = useHistory()

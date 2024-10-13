@@ -1,11 +1,10 @@
 import { styled, Grid, Typography, capitalize } from "@material-ui/core"
 import React, { useContext, useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import { Network } from "services/beacon"
+import { Network, getNetworkDisplayName, networkDotColorMap, rpcNodes } from "services/beacon"
 import { ResponsiveDialog } from "./ResponsiveDialog"
-import { ColorDot, networkDotColorMap } from "./ChangeNetworkButton"
+import { ColorDot } from "./ChangeNetworkButton"
 import { ContentContainer } from "./ContentContainer"
-import { EnvKey, getEnv } from "services/config"
 import { ActionTypes, CreatorContext } from "modules/creator/state"
 
 const SheetItem = styled(ContentContainer)({
@@ -21,7 +20,7 @@ interface Props {
   onClose: () => void
 }
 
-const SUPPORTED_NETWORKS: Network[] = ["mainnet", "ghostnet"]
+const SUPPORTED_NETWORKS = Object.keys(rpcNodes) as Network[]
 
 export const NetworkSheet: React.FC<Props> = props => {
   const { network, changeNetwork } = useTezos()
@@ -50,7 +49,7 @@ export const NetworkSheet: React.FC<Props> = props => {
               </Grid>
               <Grid item>
                 <Typography variant={"h6"} color="textPrimary">
-                  {capitalize(networkOption)}
+                  {getNetworkDisplayName(networkOption)}
                 </Typography>
               </Grid>
             </Grid>

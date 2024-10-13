@@ -29,6 +29,7 @@ const TZKTSubscriptionsProvider: React.FC = ({ children }) => {
   const { network } = useTezos()
 
   useEffect(() => {
+    if (network.startsWith("etherlink")) return
     ;(async () => {
       socketRef.current = new HubConnectionBuilder().withUrl(getUrl(network)).build()
 

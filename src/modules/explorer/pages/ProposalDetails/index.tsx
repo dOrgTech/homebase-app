@@ -314,6 +314,8 @@ export const ProposalDetails: React.FC = () => {
     }
   }
 
+  const showStatusText =
+    statusColors(status).text !== ProposalStatus.ACTIVE || statusColors(status).text !== ProposalStatus.PENDING
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>
@@ -387,8 +389,7 @@ export const ProposalDetails: React.FC = () => {
                     <Grid item>
                       <DescriptionText>
                         Created {dayjs(proposal.startDate).format("LL")}
-                        {statusColors(status).text !== ProposalStatus.ACTIVE ||
-                        statusColors(status).text !== ProposalStatus.PENDING ? (
+                        {showStatusText ? (
                           <>
                             {" "}
                             • {statusColors(status).text} {endDate}

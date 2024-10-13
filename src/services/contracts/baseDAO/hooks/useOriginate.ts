@@ -10,7 +10,6 @@ import { BaseDAO, replacer } from ".."
 import { getDAO } from "services/services/dao/services"
 import mixpanel from "mixpanel-browser"
 import { InMemorySigner } from "@taquito/signer"
-import { ALICE_PRIV_KEY } from "services/beacon"
 import { getSignature } from "services/lite/utils"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
 import { Community } from "models/Community"
@@ -261,7 +260,7 @@ export const useOriginate = (template: DAOTemplate) => {
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
         const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
 
-        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes)
+        const resp = await saveLiteCommunity(signature, publicKey, payloadBytes, network)
         const data = await resp.json()
         if (!resp.ok) {
           console.log("Error: ", data.message)

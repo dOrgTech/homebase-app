@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { Grid, styled, Typography, TextField } from "@material-ui/core"
 import React, { useCallback, useEffect, useMemo } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"

@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
