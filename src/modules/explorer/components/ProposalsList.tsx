@@ -90,6 +90,10 @@ export const ProposalsList: React.FC<Props> = ({
 
   useEffect(() => {
     setFilteredProposals(listOfProposals)
+  }, [liteProposals, proposals])
+
+  useEffect(() => {
+    setFilteredProposals(listOfProposals)
   }, [showFullList])
 
   const pageCount = Math.ceil(filteredProposals ? filteredProposals.length / 4 : 0)

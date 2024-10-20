@@ -64,7 +64,11 @@ export const VotersProgress: React.FC<VotersData> = ({ showButton, daoId, propos
       title: "Voting Details",
       showTitle: false
     })
-    const votesData = proposal ? proposal?.voters : []
+    const votesData =
+      proposal?.voters.map(voter => ({
+        ...voter,
+        value: voter.value.toString()
+      })) || []
     try {
       const csv = generateCsv(csvConfig)(votesData)
       download(csvConfig)(csv)

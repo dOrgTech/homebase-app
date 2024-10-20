@@ -28,3 +28,4 @@ yarn-error.log*
 .idea
 .env.example
 .cosine
+bun.lockb

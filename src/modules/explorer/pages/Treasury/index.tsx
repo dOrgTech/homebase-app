@@ -1,12 +1,11 @@
 import { Button, Grid, Theme, Tooltip, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { ProposalFormContainer } from "modules/explorer/components/ProposalForm"
 
 import React, { useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../DAO/router"
 import { BalancesTable } from "./components/BalancesTable"
 import { TransfersTable } from "./components/TransfersTable"
-import { useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers"
+import { TransferWithBN, useTransfers } from "../../../../services/contracts/baseDAO/hooks/useTransfers"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { styled } from "@material-ui/core"
@@ -19,6 +18,14 @@ import { SmallButton } from "modules/common/SmallButton"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { CopyButton } from "modules/common/CopyButton"
 import { TreasuryDialog } from "./components/TreasuryDialog"
+import { SearchInput } from "../DAOList/components/Searchbar"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import { FilterTransactionsDialog } from "modules/explorer/components/FiltersTransactionsDialog"
+import { StatusOption } from "modules/explorer/components/FiltersUserDialog"
+
+const FiltersContainer = styled(Grid)({
+  cursor: "pointer"
+})
 
 const ItemGrid = styled(Grid)({
   width: "inherit"
@@ -49,6 +56,19 @@ const TitleText = styled(Typography)({
     fontSize: 26
   }
 })
+
+export interface TransactionsFilters {
+  token: string | null
+  sender: string | null
+  receiver: string | null
+  status: StatusOption | undefined
+}
+
+export interface TokensFilters {
+  token: string | null
+  balanceMin: string | undefined
+  balanceMax: string | undefined
+}
 
 const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
   "fontSize": 18,
@@ -89,6 +109,9 @@ export const Treasury: React.FC = () => {
   const { data: dao } = useDAO(daoId)
   const [openTransfer, setOpenTransfer] = useState(false)
   const [selectedTab, setSelectedTab] = React.useState(0)
+  const [searchText, setSearchText] = useState("")
+  const [filters, setFilters] = useState<TransactionsFilters>()
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
 
   const { data: transfers } = useTransfers(daoId)
 
@@ -99,6 +122,54 @@ export const Treasury: React.FC = () => {
   }
   const onCloseTransfer = () => {
     setOpenTransfer(false)
+  }
+
+  const currentTransfers = useMemo(() => {
+    const handleFilterData = (allTransfers: TransferWithBN[]) => {
+      let data = allTransfers.slice()
+      if (filters?.receiver && filters.receiver !== "") {
+        data = allTransfers.filter(trx => trx.recipient === filters.receiver)
+      }
+      if (filters?.sender && filters.sender !== "") {
+        data = allTransfers.filter(trx => trx.sender === filters.sender)
+      }
+      if (filters?.token && filters.token !== "") {
+        data = allTransfers.filter(trx => trx.token?.symbol.toLocaleLowerCase() === filters.token?.toLocaleLowerCase())
+      }
+      if (filters?.status && filters.status.label !== "") {
+        data = allTransfers.filter(trx => trx.status === filters.status?.label)
+      }
+      return data
+    }
+
+    if (transfers) {
+      let allTransfers = transfers.slice()
+      if (filters) {
+        allTransfers = handleFilterData(allTransfers)
+      }
+
+      if (searchText) {
+        return allTransfers.filter(
+          formattedDao => formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+      }
+
+      return allTransfers
+    }
+
+    return []
+  }, [searchText, transfers, filters])
+
+  const filterByName = (filter: string) => {
+    setSearchText(filter.trim())
+  }
+
+  const handleFilters = (filters: TransactionsFilters) => {
+    setFilters(filters)
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
   }
 
   return (
@@ -131,7 +202,7 @@ export const Treasury: React.FC = () => {
                   justifyContent="flex-end"
                   alignItems="center"
                   style={{ gap: 15 }}
-                  direction={isMobileSmall ? "column" : "row"}
+                  direction={isMobileSmall ? "row" : "row"}
                   xs={isMobileSmall ? undefined : true}
                 >
                   {dao && (
@@ -139,7 +210,7 @@ export const Treasury: React.FC = () => {
                       item
                       xs
                       container
-                      justifyContent="flex-end"
+                      justifyContent={"flex-end"}
                       direction="row"
                       style={isMobileSmall ? {} : { marginLeft: 30 }}
                     >
@@ -175,7 +246,9 @@ export const Treasury: React.FC = () => {
             <TabsContainer container>
               <Grid item>
                 <StyledTab
-                  startIcon={<TollIcon />}
+                  startIcon={
+                    <TollIcon style={{ color: "inherit" }} color={selectedTab === 0 ? "secondary" : "inherit"} />
+                  }
                   variant="contained"
                   disableElevation={true}
                   onClick={() => handleChangeTab(0)}
@@ -186,7 +259,9 @@ export const Treasury: React.FC = () => {
               </Grid>
               <Grid item>
                 <StyledTab
-                  startIcon={<PaletteIcon />}
+                  startIcon={
+                    <PaletteIcon style={{ color: "inherit" }} color={selectedTab === 1 ? "secondary" : "inherit"} />
+                  }
                   disableElevation={true}
                   variant="contained"
                   onClick={() => handleChangeTab(1)}
@@ -197,13 +272,15 @@ export const Treasury: React.FC = () => {
               </Grid>
               <Grid item>
                 <StyledTab
-                  startIcon={<ReceiptIcon />}
+                  startIcon={
+                    <ReceiptIcon style={{ color: "inherit" }} color={selectedTab === 2 ? "secondary" : "inherit"} />
+                  }
                   disableElevation={true}
                   variant="contained"
                   onClick={() => handleChangeTab(2)}
                   isSelected={selectedTab === 2}
                 >
-                  History
+                  Transactions
                 </StyledTab>
               </Grid>
             </TabsContainer>
@@ -219,7 +296,23 @@ export const Treasury: React.FC = () => {
             </TabPanel>
 
             <TabPanel value={selectedTab} index={2}>
-              <TransfersTable transfers={transfers || []} />
+              <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="space-between">
+                <FiltersContainer
+                  onClick={() => setOpenFiltersDialog(true)}
+                  xs={isMobileSmall ? 12 : 2}
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
+                >
+                  <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
+                  <Typography color="secondary">Filter & Sort</Typography>
+                </FiltersContainer>
+                <Grid item xs={4}>
+                  <SearchInput search={filterByName} />
+                </Grid>
+              </Grid>
+              <TransfersTable transfers={currentTransfers || []} />
             </TabPanel>
           </ItemGrid>
         </TabsBox>
@@ -229,6 +322,12 @@ export const Treasury: React.FC = () => {
         handleChangeTab={handleChangeTab}
         open={openTransfer}
         handleClose={onCloseTransfer}
+      />
+      <FilterTransactionsDialog
+        currentFilters={filters}
+        saveFilters={handleFilters}
+        open={openFiltersDialog}
+        handleClose={handleCloseFiltersModal}
       />
     </>
   )

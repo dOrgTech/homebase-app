@@ -3,5 +3,8 @@
   "svg.preview.background": "black",
   "cSpell.words": [
     "offchain"
-  ]
+  ],
+  "editor.autoClosingBrackets": "always",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

@@ -261,7 +261,7 @@ export const Proposals: React.FC = () => {
             direction="row"
             alignItems="center"
           >
-            <FilterAltIcon style={{ color: theme.palette.secondary.main }} fontSize="small" />
+            <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
             <Typography color="secondary">Filter & Sort</Typography>
           </FiltersContainer>
 

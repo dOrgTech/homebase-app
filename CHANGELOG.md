@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sending XTZ directly to DAO address
 - Delegating DAO's XTZ to baker
 - Changing DAO configuration parameters
+- Added Searchbar on Treasury Page
 
 ## [1.0.6] - 2022-01-05
 ### Added
