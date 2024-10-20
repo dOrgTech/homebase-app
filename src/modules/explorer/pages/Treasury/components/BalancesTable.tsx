@@ -103,6 +103,7 @@ const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
 
 interface TableProps {
   rows: RowData[]
+  searchText?: string
   tezosBalance: BigNumber
   openXTZTransferModal: () => void
   openTokenTransferModal: (tokenAddress: string) => void
@@ -112,6 +113,7 @@ interface TableProps {
 
 const BalancesList: React.FC<TableProps> = ({
   rows,
+  searchText,
   tezosBalance,
   openTokenTransferModal,
   openXTZTransferModal,
@@ -126,6 +128,13 @@ const BalancesList: React.FC<TableProps> = ({
   useEffect(() => {
     setList(rows)
   }, [rows])
+
+  useEffect(() => {
+    if (searchText && searchText.length > 0) {
+      setOffset(0)
+      setCurrentPage(0)
+    }
+  }, [searchText])
 
   // useEffect(() => {
   //   if (list) {
@@ -388,6 +397,7 @@ export const BalancesTable: React.FC = () => {
         </Grid>
         <BalancesList
           rows={rows}
+          searchText={searchText}
           tezosBalance={tezosBalance || new BigNumber(0)}
           openTokenTransferModal={onOpenTokenTransferModal}
           openXTZTransferModal={onOpenXTZTransferModal}
