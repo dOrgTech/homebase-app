@@ -40,7 +40,7 @@ const aciBaseLambda = {
 }
 
 const aciLambda = {
-  code: 'Pair {NIL operation; PUSH address "KT1T17GC91HrJ8ijZgnMaE9j4PZbojbVAn73"; CONTRACT %change_string string; ASSERT_SOME ;PUSH mutez 0;PUSH string "new string"; TRANSFER_TOKENS; CONS; SWAP; CAR; CAR; NONE address; PAIR; PAIR} 0x',
+  // code: 'Pair {NIL operation; PUSH address "KT1T17GC91HrJ8ijZgnMaE9j4PZbojbVAn73"; CONTRACT %change_string string; ASSERT_SOME ;PUSH mutez 0;PUSH string "new string"; TRANSFER_TOKENS; CONS; SWAP; CAR; CAR; NONE address; PAIR; PAIR} 0x',
   type: `pair (lambda (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) bytes`
 }
 
@@ -64,7 +64,7 @@ async function packLambda(tezos: TezosToolkit, lambdaCode: string, lambdaType: s
 }
 
 async function prepareContractData(tezos: TezosToolkit, lambdaCode: string, lambdaType: string): Promise<string> {
-  console.log({ lambdaCode })
+  console.log("prepareContractData", { lambdaCode })
 
   /**
    * This needs to be deployed to the DAO
@@ -427,74 +427,87 @@ const ContractInteractionForm = ({
             <SmallButtonDialog
               onClick={async () => {
                 console.log({ formState })
-                // debugger
-                let entrypoint = formState.shape.token.initValue // accept_ownership | default etc
-                let taquitoParam
 
-                const execContract = formState.shape.contract
-                const taquitoFullParam = evalTaquitoParam(formState.shape.token, formState.shape.init)
-                if (execContract?.parameterSchema.isMultipleEntryPoint) {
-                  const p = Object.entries(taquitoFullParam)
-                  if (p.length !== 1) {
-                    throw new Error("should only one entrypoint is selected")
+                try {
+                  // debugger
+                  let entrypoint = formState.shape.token.initValue // accept_ownership | default etc
+                  let taquitoParam
+
+                  setIsLoading(true)
+                  // debugger
+                  const execContract = formState.shape.contract
+                  const taquitoFullParam = evalTaquitoParam(formState.shape.token, formState.shape)
+                  if (execContract?.parameterSchema.isMultipleEntryPoint) {
+                    const p = Object.entries(taquitoFullParam)
+                    if (p.length !== 1) {
+                      throw new Error("should only one entrypoint is selected")
+                    }
+                    ;[entrypoint, taquitoParam] = p[0]
+                  } else {
+                    taquitoParam = taquitoFullParam
                   }
-                  ;[entrypoint, taquitoParam] = p[0]
-                } else {
-                  taquitoParam = taquitoFullParam
+                  const param = emitMicheline(
+                    execContract?.methodsObject[entrypoint](taquitoParam).toTransferParams()?.parameter?.value
+                  )
+
+                  const micheline_type = execContract?.parameterSchema.isMultipleEntryPoint
+                    ? execContract?.entrypoints.entrypoints[entrypoint]
+                    : execContract?.parameterSchema.root.val
+
+                  // const micheline_type = values.destination_contract?.parameterSchema.isMultipleEntryPoint
+                  //   ? values.destination_contract.entrypoints.entrypoints[entrypoint]
+                  //   : values.destination_contract?.parameterSchema.root.val
+
+                  const p = new Parser()
+                  const type = emitMicheline(p.parseJSON(micheline_type), {
+                    indent: "",
+                    newline: ""
+                  })
+
+                  console.log("Lambda Param", param)
+                  const lambda = generateExecuteContractMichelson("1.0.0", {
+                    address: values.destination_contract_address,
+                    entrypoint,
+                    type,
+                    amount: values.amount,
+                    param
+                  })
+
+                  console.log("Lambda Code", lambda)
+                  console.log("DaoDetails", daoDetails)
+
+                  const finalPackedDataBytes = await prepareContractData(tezos, lambda, aciLambda.type)
+                  const contract = await getContract(tezos, daoDetails?.data?.address as string)
+
+                  console.log("DaoTokenDetails", daoDetails?.data?.token)
+                  console.log(
+                    "Frozen Token Params",
+                    daoDetails?.data?.extra?.frozen_extra_value,
+                    daoDetails?.data?.token?.decimals
+                  )
+                  const frozenToken = formatUnits(
+                    daoDetails?.data?.extra?.frozen_extra_value as any,
+                    daoDetails?.data?.token?.decimals as number
+                  )
+
+                  console.log("Frozen Token", frozenToken)
+
+                  const contractMethod = contract.methods.propose(
+                    await tezos.wallet.pkh(),
+                    frozenToken,
+                    finalPackedDataBytes
+                  )
+
+                  const result = await contractMethod.send()
+                  console.log("RESULT", result)
+                } catch (error) {
+                  console.log("ERROR", error)
+                } finally {
+                  setIsLoading(false)
                 }
-                const param = emitMicheline(
-                  execContract?.methodsObject[entrypoint](taquitoParam).toTransferParams()?.parameter?.value
-                )
-
-                const micheline_type = execContract?.parameterSchema.isMultipleEntryPoint
-                  ? execContract?.entrypoints.entrypoints[entrypoint]
-                  : execContract?.parameterSchema.root.val
-
-                // const micheline_type = values.destination_contract?.parameterSchema.isMultipleEntryPoint
-                //   ? values.destination_contract.entrypoints.entrypoints[entrypoint]
-                //   : values.destination_contract?.parameterSchema.root.val
-
-                const p = new Parser()
-                const type = emitMicheline(p.parseJSON(micheline_type), {
-                  indent: "",
-                  newline: ""
-                })
-
-                const lambda = generateExecuteContractMichelson("1.0.0", {
-                  address: values.destination_contract_address,
-                  entrypoint,
-                  type,
-                  amount: values.amount,
-                  param
-                })
-
-                console.log("Lambda Code", lambda)
-                console.log("DaoDetails", daoDetails)
-
-                const finalPackedDataBytes = await prepareContractData(tezos, lambda, aciLambda.type)
-                const contract = await getContract(tezos, daoDetails?.data?.address as string)
-
-                const frozenToken = formatUnits(
-                  new BigNumber(daoDetails?.data?.extra?.frozen_extra_value as any),
-                  daoDetails?.data?.token?.decimals as number
-                )
-
-                console.log("Frozen Token", frozenToken)
-
-                const contractMethod = contract.methods.propose(
-                  await tezos.wallet.pkh(),
-                  frozenToken,
-                  finalPackedDataBytes
-                )
-
-                const result = await contractMethod.send()
-                console.log("RESULT", result)
-
-                // TODO: Deploy this to DAO
-                console.log({ lambda })
               }}
               variant="contained"
-              disabled={!isValid}
+              disabled={!isValid || isLoading}
             >
               Submit Form
             </SmallButtonDialog>
