@@ -18,6 +18,7 @@ import { Lambda } from "services/bakingBad/lambdas/types"
 import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
 import { parseLambdaCode } from "utils"
 import { ArbitraryContractInteractionForm } from "./ArbitraryContractInteractionForm"
+import AppConfig from "config"
 
 const StyledSendButton = styled(MainButton)(({ theme }) => ({
   "width": 101,
@@ -173,6 +174,7 @@ export const ProposalFormLambda: React.FC<{
   const [showHeader, setShowHeader] = useState(true)
 
   const lambdaForm = useForm<Values>()
+  const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
 
   const [lambda, setLambda] = React.useState<Lambda | null>(null)
   const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.write_action)
@@ -180,7 +182,7 @@ export const ProposalFormLambda: React.FC<{
   const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
   const [code, setCode] = React.useState<string>("")
 
-  const ARBITRARY_CONTRACT_INTERACTION = "arbitrary_contract_interaction"
+  const ARBITRARY_CONTRACT_INTERACTION = AppConfig.CONST.ARBITRARY_CONTRACT_INTERACTION
 
   const ACI: Lambda = {
     key: ARBITRARY_CONTRACT_INTERACTION,
@@ -212,6 +214,13 @@ export const ProposalFormLambda: React.FC<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [daoLambdas])
+
+  useEffect(() => {
+    if (proposalTypeQuery === "add-function") {
+      setCode(AppConfig.ACI.EXECUTOR_LAMBDA.code)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposalTypeQuery])
 
   const onSubmit = useCallback(
     (_: Values) => {
@@ -405,7 +414,7 @@ export const ProposalFormLambda: React.FC<{
             />
           </>
         ) : (
-          <ArbitraryContractInteractionForm showHeader={setShowHeader} />
+          <ArbitraryContractInteractionForm showHeader={setShowHeader} daoLambdas={daoLambdas} />
         )}
       </>
     )

@@ -113,8 +113,67 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
   gap: 16
 }))
 
-export const DAOList: React.FC = () => {
+const UserDAOsList: React.FC<{ searchText: string }> = ({ searchText }) => {
   const { network, account } = useTezos()
+  const { data: daos, isLoading } = useAllDAOs(network)
+
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))
+  const myDAOs = useMemo(() => {
+    if (daos) {
+      const formattedDAOs = daos
+        .map(dao => ({
+          id: dao.address,
+          name: dao.name,
+          symbol: dao.token.symbol,
+          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+          votingAddressesCount:
+            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
+          dao_type: {
+            name: dao.dao_type.name
+          },
+          description: dao.description,
+          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
+        }))
+        .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
+
+      if (searchText) {
+        return formattedDAOs.filter(
+          formattedDao =>
+            (formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())) ||
+            (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
+        )
+      }
+      return formattedDAOs.filter(dao => dao.votingAddresses.includes(account))
+    }
+
+    return []
+  }, [daos, account, searchText])
+
+  if (!account) return <ConnectMessage />
+
+  if (isLoading)
+    return (
+      <Typography color="textPrimary">
+        <CircularProgress color="secondary" />
+      </Typography>
+    )
+
+  if (myDAOs.length === 0) return <Typography color="textPrimary">You have not joined any DAO</Typography>
+
+  return (
+    <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
+      {myDAOs.map((dao, i) => (
+        <DAOItemCard key={`mine-${i}`} item>
+          <DAOItem dao={dao} />
+        </DAOItemCard>
+      ))}
+    </DAOItemGrid>
+  )
+}
+
+export const DAOList: React.FC = () => {
+  const { network } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()
@@ -161,37 +220,6 @@ export const DAOList: React.FC = () => {
 
     return []
   }, [daos, searchText, offset])
-
-  const myDAOs = useMemo(() => {
-    if (daos) {
-      const formattedDAOs = daos
-        .map(dao => ({
-          id: dao.address,
-          name: dao.name,
-          symbol: dao.token.symbol,
-          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
-          votingAddressesCount:
-            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
-          dao_type: {
-            name: dao.dao_type.name
-          },
-          description: dao.description,
-          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
-        }))
-        .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
-
-      if (searchText) {
-        return formattedDAOs.filter(
-          formattedDao =>
-            (formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())) ||
-            (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
-        )
-      }
-      return formattedDAOs.filter(dao => dao.votingAddresses.includes(account))
-    }
-
-    return []
-  }, [daos, searchText, account])
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())
@@ -310,19 +338,7 @@ export const DAOList: React.FC = () => {
               </DAOItemGrid>
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
-              <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                {!account ? (
-                  <ConnectMessage />
-                ) : myDAOs.length > 0 ? (
-                  myDAOs.map((dao, i) => (
-                    <DAOItemCard key={`mine-${i}`} item>
-                      <DAOItem dao={dao} />
-                    </DAOItemCard>
-                  ))
-                ) : (
-                  <Typography color="textPrimary">You have not joined any DAO</Typography>
-                )}
-              </DAOItemGrid>
+              <UserDAOsList searchText={searchText} />
             </TabPanel>
           </Grid>
         </Grid>

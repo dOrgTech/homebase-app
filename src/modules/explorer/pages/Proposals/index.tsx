@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Button, Grid, Paper, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -102,6 +102,7 @@ export const Proposals: React.FC = () => {
   const { data: proposals } = useProposals(daoId)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
   const [openDialog, setOpenDialog] = useState(false)
 
   const { mutate } = useFlush()
@@ -139,6 +140,12 @@ export const Proposals: React.FC = () => {
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
   }
+
+  useEffect(() => {
+    if (proposalTypeQuery === "add-function") {
+      setOpenDialog(true)
+    }
+  }, [proposalTypeQuery])
 
   return (
     <>
@@ -278,7 +285,7 @@ export const Proposals: React.FC = () => {
           </TabPanel>
         </TabsBox>
 
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
+        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery} />
       </Grid>
     </>
   )

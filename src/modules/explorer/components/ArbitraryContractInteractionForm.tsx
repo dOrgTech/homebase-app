@@ -32,6 +32,8 @@ import { Schema } from "@taquito/michelson-encoder"
 import BigNumber from "bignumber.js"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
+import AppConfig from "config"
+import { Link } from "react-router-dom"
 
 // Base ACI Lambda
 const aciBaseLambda = {
@@ -197,7 +199,8 @@ const ContractInteractionForm = ({
   setFieldTouched,
   setFieldError,
   isValid,
-  showHeader
+  showHeader,
+  daoLambdas
 }: any) => {
   const daoId = useDAOID()
   const [state, setState] = useState<Status>(Status.NEW_INTERACTION)
@@ -206,6 +209,8 @@ const ContractInteractionForm = ({
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { mutate: fetchContractData, data } = useArbitraryContractData()
+  const isAciDeployerDeployed = daoLambdas?.find((lambda: any) => lambda.key === AppConfig.ACI.EXECUTOR_FUNCTION_NAME)
+
   // console.log("FormData", data)
   const { tezos, network } = useTezos()
   const [isLoading, setIsLoading] = useState(false)
@@ -244,6 +249,17 @@ const ContractInteractionForm = ({
     showHeader(true)
     setState(Status.NEW_INTERACTION)
     setEndpoint(undefined)
+  }
+
+  if (!isAciDeployerDeployed && !isLoading) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: "20px" }}>
+        <Typography>We need to deploy the ACI Deployer Contract</Typography>
+        <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`} color="secondary">
+          <Typography>Deploy ACI Deployer Contract</Typography>
+        </Link>
+      </div>
+    )
   }
 
   return (
@@ -499,6 +515,8 @@ const ContractInteractionForm = ({
                   )
 
                   const result = await contractMethod.send()
+                  debugger
+                  await result.confirmation(1)
                   console.log("RESULT", result)
                 } catch (error) {
                   console.log("ERROR", error)
@@ -518,9 +536,11 @@ const ContractInteractionForm = ({
   )
 }
 
-export const ArbitraryContractInteractionForm: React.FC<{ showHeader: (state: boolean) => void }> = ({
-  showHeader
-}) => {
+export const ArbitraryContractInteractionForm: React.FC<{
+  daoLambdas: Array<any> | undefined
+  showHeader: (state: boolean) => void
+}> = ({ daoLambdas, showHeader }) => {
+  const daoId = useDAOID()
   const { mutate: executeProposeLambda } = useLambdaExecutePropose()
   const isInvalidKtOrTzAddress = (address: string) => validateContractAddress(address) !== 3
 
@@ -561,6 +581,8 @@ export const ArbitraryContractInteractionForm: React.FC<{ showHeader: (state: bo
     console.log("saveInfo")
   }
 
+  console.log({ daoLambdas })
+
   return (
     <Formik
       validateOnChange={true}
@@ -593,6 +615,7 @@ export const ArbitraryContractInteractionForm: React.FC<{ showHeader: (state: bo
               setFieldError={setFieldError}
               isValid={isValid}
               showHeader={showHeader}
+              daoLambdas={daoLambdas}
             />
           </Form>
         )

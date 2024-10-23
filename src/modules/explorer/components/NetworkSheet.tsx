@@ -4,9 +4,9 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network } from "services/beacon"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { ColorDot, networkDotColorMap } from "./ChangeNetworkButton"
-import { ContentContainer } from "./ContentContainer"
-import { EnvKey, getEnv } from "services/config"
+
 import { ActionTypes, CreatorContext } from "modules/creator/state"
+import { ContentContainer } from "components/ui/Table"
 
 const SheetItem = styled(ContentContainer)({
   "height": 50,

@@ -8,7 +8,6 @@ import { useDAOID } from "../DAO/router"
 
 import { useDropAllExpired } from "../../../../services/contracts/baseDAO/hooks/useDropAllExpired"
 import { SmallButton } from "../../../common/SmallButton"
-import { ContentContainer } from "../../components/ContentContainer"
 import { InfoIcon } from "../../components/styled/InfoIcon"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { HeroTitle } from "modules/explorer/components/HeroTitle"
@@ -21,6 +20,7 @@ import { DaoInfoTables } from "./components/DAOInfoTable"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { ProposalCreator } from "modules/lite/explorer/pages/CreateProposal"
 import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal/ProposalCreatorModal"
+import { ContentContainer } from "components/ui/Table"
 
 interface Action {
   id: any

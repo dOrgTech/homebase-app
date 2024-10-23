@@ -1,23 +1,19 @@
 import React, { useMemo, useState } from "react"
-import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Avatar } from "@material-ui/core"
+import BigNumber from "bignumber.js"
+import { Grid, styled, Typography, useTheme, useMediaQuery, Avatar } from "@material-ui/core"
 
-import { useFlush } from "services/contracts/baseDAO/hooks/useFlush"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { useProposals } from "services/services/dao/hooks/useProposals"
 import { useDAOID } from "./router"
 
-import { ContentContainer } from "../../components/ContentContainer"
-import { ProposalsList } from "../../components/ProposalsList"
-import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
 import { UsersTable } from "../../components/UsersTable"
-import BigNumber from "bignumber.js"
+
 import { SmallButton } from "../../../common/SmallButton"
-import { usePolls } from "modules/lite/explorer/hooks/usePolls"
-import dayjs from "dayjs"
+
 import { DaoSettingModal } from "./components/Settings"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { SettingsDialog } from "./components/SettingsDialog"
+import { ContentContainer } from "components/ui/Table"
 
 export const StyledAvatar = styled(Avatar)({
   height: 50,

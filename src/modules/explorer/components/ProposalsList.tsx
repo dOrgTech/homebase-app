@@ -44,20 +44,21 @@ export const ProposalsList: React.FC<Props> = ({
   const [offset, setOffset] = useState(0)
   const [open, setopen] = useState(true)
 
+  const itemsPerPage = 24
   const pageCount = Math.ceil(
     proposals && liteProposals
-      ? proposals.length + liteProposals.length / 4
+      ? proposals.length + liteProposals.length / itemsPerPage
       : proposals && liteProposals?.length === undefined
-      ? proposals.length / 4
+      ? proposals.length / itemsPerPage
       : proposals?.length === undefined && liteProposals
-      ? liteProposals.length / 4
+      ? liteProposals.length / itemsPerPage
       : 0
   )
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (proposals) {
-      const newOffset = (event.selected * 4) % proposals.length
+      const newOffset = (event.selected * itemsPerPage) % proposals.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
@@ -78,7 +79,7 @@ export const ProposalsList: React.FC<Props> = ({
             // style={{ display: "block" }}
             direction="column"
           >
-            {proposals.slice(offset, offset + 4).map((p, i) => (
+            {proposals.slice(offset, offset + itemsPerPage).map((p, i) => (
               <CustomGrid item key={`proposal-${i}`} style={proposalStyle}>
                 <Link to={`proposal/${p.id}`}>
                   <ProposalItem proposal={p} status={p.getStatus(currentLevel).status}>
@@ -90,7 +91,7 @@ export const ProposalsList: React.FC<Props> = ({
           </Grid>
         ) : null}
         {liteProposals && liteProposals.length > 0
-          ? liteProposals.slice(offset, offset + 4).map((poll, i) => {
+          ? liteProposals.slice(offset, offset + itemsPerPage).map((poll, i) => {
               return (
                 <div style={{ width: "inherit" }} key={`poll-${i}`}>
                   <ProposalTableRow poll={poll} />
