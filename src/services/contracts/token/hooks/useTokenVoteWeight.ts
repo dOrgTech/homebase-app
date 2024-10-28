@@ -10,18 +10,19 @@ interface Result {
 }
 
 export const useTokenVoteWeight = (tokenAddress: string | undefined, level?: string) => {
-  const { network, account } = useTezos()
+  const { network, account, etherlink } = useTezos()
+  const tezosOrEthAccount = account || etherlink?.account?.address
 
   const { data, ...rest } = useQuery<Result | undefined, Error>(
     ["userTokenVoteWeight", tokenAddress, level],
     async () => {
       const blockLevel = level ? level : await getCurrentBlock(network)
       if (tokenAddress && blockLevel) {
-        return await getTokenVoteWeight(tokenAddress, account, network, blockLevel)
+        return await getTokenVoteWeight(tokenAddress, tezosOrEthAccount, network, blockLevel)
       }
     },
     {
-      enabled: !!tokenAddress && !!account
+      enabled: !!tokenAddress && !!tezosOrEthAccount
     }
   )
 

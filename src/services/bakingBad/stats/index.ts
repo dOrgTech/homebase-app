@@ -1,25 +1,18 @@
 import { Network } from "services/beacon"
 import { BlockchainStats } from "./types"
 import { networkNameMap } from ".."
+import { EnvKey, getEnv } from "services/config"
 
 export const getNetworkStats = async (network: Network): Promise<BlockchainStats> => {
   if (network.startsWith("etherlink")) {
-    const [_, etherlinkNetwork] = network.split("_")
-
-    const reqUrl = `https://${
-      etherlinkNetwork === "mainnet" ? "" : "testnet-"
-    }explorer.etherlink.com/api/v2/blocks?type=block`
-
-    const etherlinkData = await fetch(reqUrl).then(x => x.json())
-    const firstTwoBlocks = [etherlinkData.items[0], etherlinkData.items[1]]
-    const timeDifference = Math.ceil(
-      (new Date(firstTwoBlocks[0].timestamp).getTime() - new Date(firstTwoBlocks[1].timestamp).getTime()) / 1000
-    )
-
+    const url = `${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/blocks/stats?network=${network}`
+    const data = await fetch(url)
+    if (!data.ok) {
+      throw new Error("Failed to fetch contract storage from BakingBad API")
+    }
+    const result = await data.json()
     return {
-      constants: {
-        timeBetweenBlocks: timeDifference
-      }
+      constants: result
     }
   }
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/protocols/current`

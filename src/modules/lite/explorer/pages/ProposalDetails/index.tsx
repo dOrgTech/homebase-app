@@ -95,9 +95,6 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   })
 
   useEffect(() => {
-    // TODO: This is a temporary fix for etherlink, we need to fix this in the future
-    if (network?.startsWith("etherlink")) return setVotingPower(new BigNumber(1))
-
     if (poll?.isXTZ) setVotingPower(voteWeight?.votingXTZWeight as BigNumber)
     else setVotingPower(voteWeight?.votingWeight as BigNumber)
   }, [voteWeight, poll, network])

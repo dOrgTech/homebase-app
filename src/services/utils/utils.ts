@@ -11,6 +11,7 @@ import { Network } from "services/beacon"
 import { networkNameMap } from "services/bakingBad"
 import { signMessage } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
+import { EnvKey, getEnv } from "services/config"
 
 export const hexStringToBytes = (hex: string): string => {
   return Buffer.from(hex2buf(hex)).toString("utf8")
@@ -44,21 +45,25 @@ export const getTotalSupplyAtReferenceBlock = async (network: Network, address: 
 
 export const getTokenHoldersCount = async (network: Network, address: string, tokenID: number) => {
   const url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?tokenId=${tokenID}&contract=${address}`
-
-  // Temporary fix for etherlink
+  console.log("getTokenHoldersCount", { network, address, tokenID })
   if (network.startsWith("etherlink")) {
-    return 1
+    const url = `${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/token?network=${network}&contract=${address}`
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error("Failed to fetch contract current block")
+    }
+    const result = await response.json()
+    return result[0].holders
+  } else {
+    const response = await fetch(url)
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch contract current block")
+    }
+
+    const result = await response.json()
+    return result[0].holdersCount
   }
-
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch contract current block")
-  }
-
-  const result = await response.json()
-
-  return result[0].holdersCount
 }
 
 export const hasTokenBalance = async (network: Network, account: string, contract: any) => {
