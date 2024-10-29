@@ -1,8 +1,8 @@
-import { bytes2Char, char2Bytes } from "@taquito/tzip16"
+import { char2Bytes } from "@taquito/tzip16"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import updateLocale from "dayjs/plugin/updateLocale"
-import { Choice, WalletAddress } from "models/Choice"
+import { Choice } from "models/Choice"
 import { networkNameMap } from "services/bakingBad"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { RequestSignPayloadInput, SigningType } from "@airgap/beacon-sdk"
@@ -146,6 +146,35 @@ const getUsers = (options: Choice[]) => {
   return new Set(addresses)
 }
 
+export const getGroupedVotes = (options: Choice[]) => {
+  const usersList = getUsers(options)
+  const array = Array.from(usersList)
+
+  const groupedVotes = array.map((address: string) => {
+    const optionsList: any[] = []
+    options.map((option: Choice) => {
+      option.walletAddresses.map(addressVote => {
+        if (addressVote.address === address) {
+          const obj = {
+            name: option.name,
+            balance: addressVote.balanceAtReferenceBlock,
+            cidLink: addressVote.cidLink,
+            signature: addressVote.signature,
+            payloadBytes: addressVote.payloadBytes
+          }
+          optionsList.push(obj)
+        }
+      })
+    })
+    const voteObj = {
+      address: address,
+      options: optionsList
+    }
+    return voteObj
+  })
+  return groupedVotes
+}
+
 export const getTotalVoters = (choices: Choice[]) => {
   const totalVoters = getUsers(choices)
 
@@ -161,8 +190,6 @@ export const getTreasuryPercentage = (proposalTotal: BigNumber, totalSupply: num
 export const numberWithCommas = (x: number) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
-
-const SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"]
 
 export const nFormatter = (num: any, digits: number) => {
   return num.toString()
