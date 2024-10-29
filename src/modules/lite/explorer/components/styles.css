@@ -1,0 +1,42 @@
+.overflow {
+  display: inline-block;
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 43px;
+}
+
+.ellipse {
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  background: "inherit";
+  transition: color 1s ease-in-out;
+
+}
+.content li {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.ellipse:hover {
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0px 3px 12px 2px #1c1f23;
+  white-space: normal;
+  word-break: break-word;
+  z-index: 5;
+  width: 400px;
+  position: absolute;
+  background: #383e42;
+  margin-top: -12px;
+  margin-left: 40px;
+  @media only screen and (max-width: 600px) {
+    width: 200px;
+  }
+
+}

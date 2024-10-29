@@ -12,6 +12,7 @@ import {
   calculateWeight,
   calculateWeightXTZ,
   calculateXTZTotal,
+  getGroupedVotes,
   getTotalVoters,
   getTreasuryPercentage,
   nFormatter
@@ -88,6 +89,7 @@ export const VoteDetails: React.FC<{
   const tokenData = useCommunityToken(communityId)
   const { data: isTokenDelegationSupported } = useTokenDelegationSupported(tokenData?.tokenAddress)
   const totalXTZ = calculateXTZTotal(choices)
+  const groupedVotes = getGroupedVotes(choices)
 
   const handleClickOpen = () => {
     setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
@@ -234,8 +236,10 @@ export const VoteDetails: React.FC<{
             )} */}
             {getTotalVoters(choices) > 0 ? (
               <DownloadCsvFile
-                data={choices}
+                data={groupedVotes}
                 pollId={poll?._id}
+                decimals={tokenData?.decimals ? tokenData?.decimals : ""}
+                isXTZ={isXTZ}
                 symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
               />
             ) : null}
@@ -244,9 +248,10 @@ export const VoteDetails: React.FC<{
           </Grid>
         </LegendContainer>
         <VotesDialog
-          decimals={tokenData?.decimals ? tokenData?.decimals : ""}
+          decimals={tokenData?.decimals}
           symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
-          choices={votes}
+          choices={choices}
+          groupedVotes={groupedVotes}
           open={open}
           isXTZ={isXTZ}
           handleClose={handleClose}
