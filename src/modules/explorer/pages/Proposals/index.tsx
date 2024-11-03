@@ -280,7 +280,6 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposals}
                   liteProposals={undefined}
-                  filters={filters}
                 />
               )}
               {!(proposals && proposals.length > 0) ? (
@@ -303,7 +302,6 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={undefined}
                   liteProposals={polls}
-                  filters={filters}
                 />
               )}
               {!(polls && polls.length > 0) ? (
@@ -319,9 +317,8 @@ export const Proposals: React.FC = () => {
           </TabPanel>
         </TabsBox>
 
-
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery} />
-        
+
         {/* Keeping this component here as it is inhe master branch */}
         <FilterProposalsDialog
           saveFilters={handleFilters}
