@@ -258,7 +258,10 @@ export const DAOList: React.FC = () => {
                   <Grid item>
                     <Grid container justifyContent="center" alignItems="center" style={{ height: "100%" }}>
                       <Grid item>
-                        <Typography style={{ fontSize: "18px" }} color="textPrimary">
+                        <Typography
+                          style={{ fontSize: "18px", letterSpacing: "-0.18px !important" }}
+                          color="textPrimary"
+                        >
                           {daos?.length || 0} DAOs
                         </Typography>
                       </Grid>
@@ -327,6 +330,8 @@ export const DAOList: React.FC = () => {
                     containerClassName={"pagination"}
                     activeClassName={"active"}
                     forcePage={currentPage}
+                    nextClassName="nextButton"
+                    previousClassName="nextButton"
                   />
                 </Grid>
 

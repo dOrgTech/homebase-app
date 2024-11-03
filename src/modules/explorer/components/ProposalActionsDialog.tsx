@@ -36,7 +36,7 @@ const OptionContainer = styled(Grid)(({ theme }) => ({
   "padding": "35px 42px",
   "marginBottom": 16,
   "cursor": "pointer",
-  "height": 110,
+  "height": 80,
   "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,

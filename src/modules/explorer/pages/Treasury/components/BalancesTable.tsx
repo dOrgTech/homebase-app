@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Card, CardContent, Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalFormContainer, ProposalFormDefaultValues } from "modules/explorer/components/ProposalForm"
 import { DAOHolding } from "services/bakingBad/tokenBalances"
@@ -12,6 +12,14 @@ import { toShortAddress } from "services/contracts/utils"
 import { CopyButton } from "modules/common/CopyButton"
 import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import { SearchInput } from "../../DAOList/components/Searchbar"
+import { TokensFilters } from ".."
+import { FilterTokenDialog } from "modules/explorer/components/FiltersTokensDialog"
+
+const FiltersContainer = styled(Grid)({
+  cursor: "pointer"
+})
 
 const TokenSymbol = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
@@ -19,17 +27,6 @@ const TokenSymbol = styled(Typography)(({ theme }) => ({
   width: "min-content",
   fontSize: 24
 }))
-
-const MobileTableHeader = styled(Grid)({
-  width: "100%",
-  padding: 20,
-  borderBottom: "0.3px solid #3D3D3D"
-})
-
-const MobileTableRow = styled(Grid)({
-  padding: "30px",
-  borderBottom: "0.3px solid #3D3D3D"
-})
 
 interface RowData {
   symbol: string
@@ -78,17 +75,6 @@ const createData = (daoHolding: DAOHolding): RowData => {
 
 const titles = ["Token Balances", "Address", "Balance"] as const
 
-const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
-  switch (title) {
-    case "Token Balances":
-      return rowData.symbol
-    case "Address":
-      return rowData.address
-    case "Balance":
-      return rowData.amount
-  }
-}
-
 interface TableProps {
   rows: RowData[]
   tezosBalance: BigNumber
@@ -100,7 +86,6 @@ interface TableProps {
 
 const BalancesList: React.FC<TableProps> = ({
   rows,
-  tezosBalance,
   openTokenTransferModal,
   openXTZTransferModal,
   shouldDisable,
@@ -108,83 +93,82 @@ const BalancesList: React.FC<TableProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const value = isMobileSmall ? 6 : 2
-  // Invoke when user click to request another page.
+  const value = isMobileSmall ? 6 : 5
+  const [list, setList] = useState(rows)
+
+  useEffect(() => {
+    setList(rows)
+  }, [rows])
+
   const handlePageClick = (event: { selected: number }) => {
     if (rows) {
       const newOffset = (event.selected * value) % rows.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
 
   const pageCount = Math.ceil(rows ? rows.length / value : 0)
   return (
     <Grid container direction="row" spacing={2}>
-      <Grid item xs={isMobileSmall ? 12 : 4}>
-        <TokenCard>
-          <CustomCardContent>
-            <TokenSymbol>XTZ</TokenSymbol>
-
-            <BalanceTitle variant="body1" color="secondary" style={{ marginTop: 49 }}>
-              Balance
-            </BalanceTitle>
-            <BalanceText>{tezosBalance.toString()}</BalanceText>
-            <Grid container item direction="row" alignItems="center" justifyContent="center">
-              <SmallButton
-                variant="contained"
-                color="secondary"
-                onClick={() => openXTZTransferModal()}
-                disabled={shouldDisable}
-              >
-                Transfer
-              </SmallButton>
+      {list && list.length > 0 ? (
+        <>
+          {list.slice(offset, offset + value).map((row, i) => (
+            <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 4}>
+              <TokenCard>
+                <CustomCardContent>
+                  <TokenSymbol>{row.symbol}</TokenSymbol>
+                  <Grid
+                    container
+                    item
+                    direction="row"
+                    alignItems="center"
+                    style={row.symbol === "XTZ" ? { visibility: "hidden" } : {}}
+                  >
+                    <AddressText variant="subtitle2">{toShortAddress(row.address)}</AddressText>
+                    <CopyButton text={row.address} style={{ height: 15 }}></CopyButton>
+                  </Grid>
+                  <BalanceTitle color="secondary" style={{ marginTop: 16 }}>
+                    Balance
+                  </BalanceTitle>
+                  <BalanceText>{row.amount}</BalanceText>
+                  <Grid container item direction="row" alignItems="center" justifyContent="center">
+                    <SmallButton
+                      variant="contained"
+                      color="secondary"
+                      onClick={() =>
+                        row.symbol === "XTZ" ? openXTZTransferModal() : openTokenTransferModal(row.address)
+                      }
+                      disabled={shouldDisable}
+                    >
+                      Transfer
+                    </SmallButton>
+                  </Grid>
+                </CustomCardContent>
+              </TokenCard>
             </Grid>
-          </CustomCardContent>
-        </TokenCard>
-      </Grid>
-
-      {rows.slice(offset, offset + value).map((row, i) => (
-        <Grid key={`token-` + i} item xs={isMobileSmall ? 12 : 4}>
-          <TokenCard>
-            <CustomCardContent>
-              <TokenSymbol>{row.symbol}</TokenSymbol>
-              <Grid container item direction="row" alignItems="center">
-                <AddressText variant="subtitle2">{toShortAddress(row.address)}</AddressText>
-                <CopyButton text={row.address} style={{ height: 15 }}></CopyButton>
-              </Grid>
-              <BalanceTitle color="secondary" style={{ marginTop: 16 }}>
-                Balance
-              </BalanceTitle>
-              <BalanceText>{row.amount}</BalanceText>
-              <Grid container item direction="row" alignItems="center" justifyContent="center">
-                <SmallButton
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => openTokenTransferModal(row.address)}
-                  disabled={shouldDisable}
-                >
-                  Transfer
-                </SmallButton>
-              </Grid>
-            </CustomCardContent>
-          </TokenCard>
-        </Grid>
-      ))}
-      <Grid container direction="row" justifyContent="flex-end">
-        <ReactPaginate
-          previousLabel={"<"}
-          breakLabel="..."
-          nextLabel=">"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={2}
-          pageCount={pageCount}
-          renderOnZeroPageCount={null}
-          containerClassName={"pagination"}
-          activeClassName={"active"}
-          forcePage={currentPage}
-        />
-      </Grid>
+          ))}
+          <Grid container direction="row" justifyContent="flex-end">
+            <ReactPaginate
+              previousLabel={"<"}
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={2}
+              pageCount={pageCount}
+              renderOnZeroPageCount={null}
+              containerClassName={"pagination"}
+              activeClassName={"active"}
+              forcePage={currentPage}
+              nextClassName="nextButton"
+              previousClassName="nextButton"
+            />
+          </Grid>
+        </>
+      ) : (
+        <Typography color="textPrimary">No items</Typography>
+      )}
     </Grid>
   )
 }
@@ -198,6 +182,13 @@ export const BalancesTable: React.FC = () => {
   const { data: tezosBalance } = useTezosBalance(daoId)
   const [openTransfer, setOpenTransfer] = useState(false)
   const [defaultValues, setDefaultValues] = useState<ProposalFormDefaultValues>()
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [searchText, setSearchText] = useState("")
+  const [filters, setFilters] = useState<TokensFilters>()
+
+  const filterByName = (text: string) => {
+    setSearchText(text.trim())
+  }
 
   const onCloseTransfer = () => {
     setOpenTransfer(false)
@@ -243,17 +234,81 @@ export const BalancesTable: React.FC = () => {
     setOpenTransfer(true)
   }
 
+  const handleFilters = (filters: TokensFilters) => {
+    setFilters(filters)
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
+  }
+
   const rows = useMemo(() => {
+    const handleFilterData = (holdings: DAOHolding[]) => {
+      let data = holdings.slice()
+      if (filters?.token && filters.token !== "") {
+        data = holdings.filter(trx => trx.token?.symbol.toLowerCase() === filters.token?.toLocaleLowerCase())
+      }
+      if (filters?.balanceMin && filters.balanceMin !== "") {
+        data = holdings.filter(trx => trx.balance.isGreaterThanOrEqualTo(filters.balanceMin!))
+      }
+      if (filters?.balanceMax && filters.balanceMax !== "") {
+        data = holdings.filter(trx => trx.balance.isLessThanOrEqualTo(filters.balanceMax!))
+      }
+      return data
+    }
+
     if (!tokenHoldings) {
       return []
     }
+    let holdings = tokenHoldings.slice()
+    const xtz: DAOHolding = {
+      token: {
+        symbol: "XTZ",
+        id: "XTZ",
+        contract: "",
+        token_id: 0,
+        name: "",
+        decimals: 6,
+        network: "mainnet",
+        supply: tezosBalance || new BigNumber(0),
+        standard: ""
+      },
+      balance: tezosBalance || new BigNumber(0)
+    }
+    holdings.unshift(xtz)
 
-    return tokenHoldings.map(createData)
-  }, [tokenHoldings])
+    if (filters) {
+      holdings = handleFilterData(holdings)
+    }
+
+    if (searchText) {
+      holdings = holdings.filter(
+        holding => holding.token && holding.token.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    }
+
+    return holdings.map(createData)
+  }, [tokenHoldings, searchText, filters, tezosBalance])
 
   return (
     <>
       <Grid item>
+        <Grid container style={{ marginBottom: 32 }} direction="row" justifyContent="space-between">
+          <FiltersContainer
+            onClick={() => setOpenFiltersDialog(true)}
+            xs={isSmall ? 6 : 2}
+            item
+            container
+            direction="row"
+            alignItems="center"
+          >
+            <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
+            <Typography color="secondary">Filter & Sort</Typography>
+          </FiltersContainer>
+          <Grid item xs={isSmall ? 6 : 4}>
+            <SearchInput search={filterByName} />
+          </Grid>
+        </Grid>
         <BalancesList
           rows={rows}
           tezosBalance={tezosBalance || new BigNumber(0)}
@@ -269,6 +324,12 @@ export const BalancesTable: React.FC = () => {
         handleClose={onCloseTransfer}
         defaultValues={defaultValues}
         defaultTab={0}
+      />
+      <FilterTokenDialog
+        currentFilters={filters}
+        saveFilters={handleFilters}
+        open={openFiltersDialog}
+        handleClose={handleCloseFiltersModal}
       />
     </>
   )

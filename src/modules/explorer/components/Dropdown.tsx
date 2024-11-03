@@ -5,6 +5,7 @@ interface DropdownProps extends SelectProps {
   value?: string | undefined
   onSelected?: (item: string | undefined) => void
   isFirst?: boolean
+  isFilter?: boolean
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -24,17 +25,29 @@ const useStyles = makeStyles((theme: Theme) => ({
     minHeight: 24
   },
   option: {
-    "padding": 8,
+    "padding": 12,
     "fontFamily": "Roboto Flex",
     "cursor": "pointer",
     "text-transform": "capitalize",
     "&:hover": {
       background: "rgba(129, 254, 183, .4)"
     }
+  },
+  selectFilter: {
+    "backgroundColor": "#2F3438",
+    "padding": 12,
+    "borderRadius": 8,
+    "paddingRight": "36px !important",
+    "&:focus": {
+      backgroundColor: "#2F3438",
+      padding: 12,
+      borderRadius: 8,
+      paddingRight: 36
+    }
   }
 }))
 
-export const Dropdown: React.FC<DropdownProps> = ({ options, value, onSelected }) => {
+export const Dropdown: React.FC<DropdownProps> = ({ options, value, onSelected, isFilter = false }) => {
   const classes = useStyles()
   const [selected, setSelected] = useState<string | undefined>(value)
 
@@ -49,11 +62,11 @@ export const Dropdown: React.FC<DropdownProps> = ({ options, value, onSelected }
 
   return (
     <Select
-      // native
+      disableUnderline={true}
       value={selected}
       onChange={handleSelected}
       classes={{
-        select: classes.selectSelect
+        select: isFilter ? classes.selectFilter : classes.selectSelect
       }}
     >
       {options.map(({ name, value }, index) => (

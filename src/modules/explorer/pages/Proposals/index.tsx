@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react"
-import { Button, Grid, Paper, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
@@ -21,6 +21,15 @@ import { useDropAllExpired } from "services/contracts/baseDAO/hooks/useDropAllEx
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import NewReleasesIcon from "@mui/icons-material/NewReleases"
 import DeleteIcon from "@mui/icons-material/Delete"
+import FilterAltIcon from "@mui/icons-material/FilterAlt"
+import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
+import { Filters } from "../User/components/UserMovements"
+
+const FiltersContainer = styled(Grid)({
+  marginTop: 45,
+  gap: 8,
+  cursor: "pointer"
+})
 
 const TabsContainer = styled(Grid)({
   borderRadius: 8,
@@ -104,14 +113,20 @@ export const Proposals: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
   const [openDialog, setOpenDialog] = useState(false)
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
 
   const { mutate } = useFlush()
   const { mutate: dropAllExpired } = useDropAllExpired()
   const { data: expiredProposals } = useProposals(daoId, ProposalStatus.EXPIRED)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
+  const [filters, setFilters] = useState<Filters>()
 
   const handleCloseModal = () => {
     setOpenDialog(false)
+  }
+
+  const handleCloseFiltersModal = () => {
+    setOpenFiltersDialog(false)
   }
 
   const onFlush = useCallback(async () => {
@@ -139,6 +154,11 @@ export const Proposals: React.FC = () => {
 
   const handleChangeTab = (newValue: number) => {
     setSelectedTab(newValue)
+    setFilters(undefined)
+  }
+
+  const handleFilters = (filters: Filters) => {
+    setFilters(filters)
   }
 
   useEffect(() => {
@@ -240,6 +260,18 @@ export const Proposals: React.FC = () => {
             </TabsContainer>
           </Grid>
 
+          <FiltersContainer
+            onClick={() => setOpenFiltersDialog(true)}
+            xs={isMobileSmall ? 12 : 2}
+            item
+            container
+            direction="row"
+            alignItems="center"
+          >
+            <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
+            <Typography color="secondary">Filter & Sort</Typography>
+          </FiltersContainer>
+
           <TabPanel value={selectedTab} index={0}>
             <Grid item xs={12} style={{ marginTop: 38, gap: 16 }}>
               {proposals && cycleInfo && (
@@ -248,6 +280,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposals}
                   liteProposals={undefined}
+                  filters={filters}
                 />
               )}
               {!(proposals && proposals.length > 0) ? (
@@ -270,6 +303,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={undefined}
                   liteProposals={polls}
+                  filters={filters}
                 />
               )}
               {!(polls && polls.length > 0) ? (
@@ -285,7 +319,16 @@ export const Proposals: React.FC = () => {
           </TabPanel>
         </TabsBox>
 
+
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery} />
+        
+        {/* Keeping this component here as it is inhe master branch */}
+        <FilterProposalsDialog
+          saveFilters={handleFilters}
+          open={openFiltersDialog}
+          handleClose={handleCloseFiltersModal}
+          selectedTab={selectedTab}
+        />
       </Grid>
     </>
   )
