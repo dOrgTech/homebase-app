@@ -93,6 +93,7 @@ export enum ProposalAction {
   new,
   remove,
   execute,
+  aci,
   none
 }
 
@@ -161,6 +162,7 @@ export const ProposalFormLambda: React.FC<{
   action: ProposalAction
   handleClose: () => void
 }> = ({ open, handleClose, action }) => {
+  console.log("ProposalFormLambda", { open, handleClose, action })
   const grammar = Prism.languages.javascript
 
   const daoId = useDAOID()
@@ -221,6 +223,12 @@ export const ProposalFormLambda: React.FC<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalTypeQuery])
+
+  useEffect(() => {
+    if (action === ProposalAction.aci) {
+      lambdaForm.setValue("lambda_name", ACI.key)
+    }
+  }, [ACI.key, action, lambdaForm])
 
   const onSubmit = useCallback(
     (_: Values) => {
@@ -301,7 +309,7 @@ export const ProposalFormLambda: React.FC<{
     if (lambda?.key === ARBITRARY_CONTRACT_INTERACTION) return false
     if (!code) return true
     if (action === ProposalAction.execute && (!lambda || lambdaArguments === "" || lambdaParams === "")) return true
-  }, [code, action, lambda, lambdaArguments, lambdaParams, ACI.key])
+  }, [lambda, ARBITRARY_CONTRACT_INTERACTION, code, action, lambdaArguments, lambdaParams])
 
   // console.log({ isDisabled })
 
@@ -419,37 +427,45 @@ export const ProposalFormLambda: React.FC<{
       </>
     )
   }
+  const renderAciProposal = () => {
+    return (
+      <>
+        <ArbitraryContractInteractionForm showHeader={setShowHeader} daoLambdas={daoLambdas} />
+      </>
+    )
+  }
 
   const closeModal = () => {
     setShowHeader(true)
     handleClose()
   }
 
-  console.log("Lambda", lambda)
+  const getTitle = (action: ProposalAction) => {
+    if (action === ProposalAction.aci) {
+      return "Contract Call Proposal"
+    }
+    return ProposalAction[action] + " Function Proposal"
+  }
 
   return (
     <FormProvider {...lambdaForm}>
-      <ResponsiveDialog
-        open={open}
-        onClose={closeModal}
-        title={ProposalAction[action] + " Function Proposal"}
-        template="md"
-      >
+      <ResponsiveDialog open={open} onClose={closeModal} title={getTitle(action)} template="md">
         {state === LambdaProposalState.write_action ? (
           <>
             <Grid container direction="row">
               {action === ProposalAction.new ? renderNewProposal() : null}
               {action === ProposalAction.remove ? renderRemoveProposal() : null}
               {action === ProposalAction.execute ? renderExecuteProposal() : null}
+              {action === ProposalAction.aci ? renderAciProposal() : null}
             </Grid>
 
-            {/* {lambda && lambda.key !== ARBITRARY_CONTRACT_INTERACTION ? ( */}
-            <StyledRow container direction="row" justifyContent="flex-end">
-              <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={isDisabled}>
-                Submit
-              </StyledSendButton>
-            </StyledRow>
-            {/* ) : null} */}
+            {action !== ProposalAction.aci ? (
+              <StyledRow container direction="row" justifyContent="flex-end">
+                <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={isDisabled}>
+                  Submit
+                </StyledSendButton>
+              </StyledRow>
+            ) : null}
           </>
         ) : null}
 

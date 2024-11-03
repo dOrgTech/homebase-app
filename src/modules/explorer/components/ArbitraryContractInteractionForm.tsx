@@ -256,7 +256,7 @@ const ContractInteractionForm = ({
       <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: "20px" }}>
         <Typography>We need to deploy the ACI Deployer Contract</Typography>
         <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`} color="secondary">
-          <Typography>Deploy ACI Deployer Contract</Typography>
+          <Typography style={{ color: "white", textDecoration: "underline" }}>Deploy ACI Deployer Contract</Typography>
         </Link>
       </div>
     )

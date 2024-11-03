@@ -110,6 +110,12 @@ const getActions = (): Action[] => [
     isLambda: true
   },
   {
+    name: "Arbitrary Contract Interaction",
+    description: "Interact with any contract on Tezos.",
+    id: ProposalAction.aci,
+    isLambda: true
+  },
+  {
     name: "Off Chain Poll",
     description: "Create an off-chain poll for your community.",
     id: "off-chain",
@@ -201,6 +207,11 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose, quer
     handleClose()
   }
 
+  const handleAciProposal = () => {
+    handleOpenCustomProposalModal(ProposalAction.aci)
+    handleClose()
+  }
+
   const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
     defaultOpenSupportedExecuteProposalModal
   )
@@ -283,6 +294,21 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose, quer
                   </Grid>
                 )
               )}
+          </Grid>
+        </Grid>
+        <Grid container>
+          <TitleContainer container direction="row">
+            <Typography color="textPrimary">Arbitrary Contract Interaction</Typography>
+          </TitleContainer>
+          <Grid container spacing={2}>
+            <Grid item xs={isMobileSmall ? 12 : 4}>
+              <OptionContainer onClick={() => handleAciProposal()}>
+                <ActionText color={"textPrimary"}>Contract Call</ActionText>
+                <ActionDescriptionText color={"textPrimary"}>
+                  Invoke an endpoint on a deployed contract
+                </ActionDescriptionText>
+              </OptionContainer>
+            </Grid>
           </Grid>
         </Grid>
         <Grid container>
