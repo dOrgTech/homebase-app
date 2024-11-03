@@ -8,6 +8,7 @@ import { ResponsiveDialog } from "./ResponsiveDialog"
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
 import { MainButton } from "modules/common/MainButton"
+import { StyledSendButton } from "modules/common/StyledSendButton"
 import { SearchLambda } from "./styled/SearchLambda"
 import { CheckOutlined } from "@material-ui/icons"
 import { useLambdaAddPropose } from "services/contracts/baseDAO/hooks/useLambdaAddPropose"
@@ -19,32 +20,7 @@ import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLam
 import { parseLambdaCode } from "utils"
 import { ArbitraryContractInteractionForm } from "./ArbitraryContractInteractionForm"
 import AppConfig from "config"
-
-const StyledSendButton = styled(MainButton)(({ theme }) => ({
-  "width": 101,
-  "color": "#1C1F23",
-  "&$disabled": {
-    opacity: 0.5,
-    boxShadow: "none",
-    cursor: "not-allowed"
-  }
-}))
-
-const StyledRow = styled(Grid)({
-  marginTop: 30
-})
-
-const LoadingContainer = styled(Grid)({
-  minHeight: 651
-})
-
-const LoadingStateLabel = styled(Typography)({
-  marginTop: 40
-})
-
-const CheckIcon = styled(CheckOutlined)({
-  fontSize: 169
-})
+import { StyledRow, LoadingContainer, LoadingStateLabel, CheckIcon } from "components/ui/ConfigProposalForm"
 
 const codeEditorcontainerstyles = {
   marginTop: "8px"
@@ -70,11 +46,6 @@ type Values = {
   lambda_contract?: string
   lambda_token_address?: string
   lambda_parameters?: Array<LambdaParameter>
-}
-
-type ACIValues = {
-  destination_contract_address: string
-  amount?: number
 }
 
 type AciToken = {
@@ -157,12 +128,28 @@ Eg:-
   `
 }
 
+const ARBITRARY_CONTRACT_INTERACTION = AppConfig.CONST.ARBITRARY_CONTRACT_INTERACTION
+
+const ACI: Lambda = {
+  key: ARBITRARY_CONTRACT_INTERACTION,
+  id: 4998462,
+  active: true,
+  hash: "string",
+  value: {
+    code: "[]",
+    handler_check: "[]",
+    is_active: false
+  },
+  firstLevel: 4815399,
+  lastLevel: 4815399,
+  updates: 1
+}
+
 export const ProposalFormLambda: React.FC<{
   open: boolean
   action: ProposalAction
   handleClose: () => void
 }> = ({ open, handleClose, action }) => {
-  console.log("ProposalFormLambda", { open, handleClose, action })
   const grammar = Prism.languages.javascript
 
   const daoId = useDAOID()
@@ -183,23 +170,6 @@ export const ProposalFormLambda: React.FC<{
   const [lambdaParams, setLambdaParams] = React.useState<string>("")
   const [lambdaArguments, setLambdaArguments] = React.useState<string>("")
   const [code, setCode] = React.useState<string>("")
-
-  const ARBITRARY_CONTRACT_INTERACTION = AppConfig.CONST.ARBITRARY_CONTRACT_INTERACTION
-
-  const ACI: Lambda = {
-    key: ARBITRARY_CONTRACT_INTERACTION,
-    id: 4998462,
-    active: true,
-    hash: "string",
-    value: {
-      code: "[]",
-      handler_check: "[]",
-      is_active: false
-    },
-    firstLevel: 4815399,
-    lastLevel: 4815399,
-    updates: 1
-  }
 
   useEffect(() => {
     if (open) {
@@ -228,7 +198,7 @@ export const ProposalFormLambda: React.FC<{
     if (action === ProposalAction.aci) {
       lambdaForm.setValue("lambda_name", ACI.key)
     }
-  }, [ACI.key, action, lambdaForm])
+  }, [action, lambdaForm])
 
   const onSubmit = useCallback(
     (_: Values) => {
@@ -309,12 +279,9 @@ export const ProposalFormLambda: React.FC<{
     if (lambda?.key === ARBITRARY_CONTRACT_INTERACTION) return false
     if (!code) return true
     if (action === ProposalAction.execute && (!lambda || lambdaArguments === "" || lambdaParams === "")) return true
-  }, [lambda, ARBITRARY_CONTRACT_INTERACTION, code, action, lambdaArguments, lambdaParams])
-
-  // console.log({ isDisabled })
+  }, [lambda, code, action, lambdaArguments, lambdaParams])
 
   const handleSearchChange = (data: Lambda) => {
-    console.log("handleSearchChange", { data })
     if (!data?.value) {
       lambdaForm.reset()
       setCode("")
