@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import { Grid, Typography, TextField, styled } from "@material-ui/core"
-import React, { useCallback, useMemo } from "react"
+import React, { useCallback } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { SendButton } from "./ProposalFormSendButton"
 import { Controller, FormProvider, useForm } from "react-hook-form"
@@ -10,7 +10,6 @@ import { useProposeConfigChange } from "../../../services/contracts/baseDAO/hook
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { code } from "services/contracts/metadataCarrier/code"
 
 const ErrorText = styled(Typography)({
   fontSize: 14,
