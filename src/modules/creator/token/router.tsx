@@ -9,6 +9,7 @@ import { Success as TezosSuccess } from "./tezos/steps/Success"
 import { Success as EtherlinkSuccess } from "./etherlink/steps/Success"
 import { EtherlinkTokenDeployment } from "./etherlink"
 import { useTezos } from "services/beacon/hooks/useTezos"
+import { Ownership as EtherlinkOwnership } from "./etherlink/steps/Ownership"
 import { DeploymentProvider as EtherlinkDeploymentProvider } from "./etherlink/state/context"
 import { DeploymentProvider as TezosDeploymentProvider } from "./tezos/state/context"
 
@@ -24,9 +25,13 @@ export const TokenDeploymentRouter = (): JSX.Element => {
           <Route path={`${match.url}/deployment`}>
             <EtherlinkTokenDeployment />
           </Route>
+          <Route path={`${match.url}/ownership`}>
+            <EtherlinkOwnership />
+          </Route>
           <Route path={`${match.url}/success`}>
             <EtherlinkSuccess />
           </Route>
+          <Redirect to={`${match.url}/ownership`} />
         </Switch>
       </EtherlinkDeploymentProvider>
     )

@@ -35,7 +35,7 @@ export const Ownership: React.FC = () => {
             <Grid container direction="row">
               <DescriptionContainer item>
                 <DescriptionText>
-                  This would be an FA2-compatible token contract that will serve to assign voting weight based on
+                  This would be an ERC20-compatible token contract that will serve to assign voting weight based on
                   ownership.
                 </DescriptionText>
               </DescriptionContainer>
