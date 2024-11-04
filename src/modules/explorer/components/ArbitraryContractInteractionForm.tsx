@@ -34,6 +34,8 @@ import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 import AppConfig from "config"
 import { Link } from "react-router-dom"
+import { Button } from "components/ui/Button"
+import { ResponsiveDialog } from "./ResponsiveDialog"
 
 // Base ACI Lambda
 const aciBaseLambda = {
@@ -211,12 +213,9 @@ const ContractInteractionForm = ({
   const { mutate: fetchContractData, data } = useArbitraryContractData()
   const isAciDeployerDeployed = daoLambdas?.find((lambda: any) => lambda.key === AppConfig.ACI.EXECUTOR_FUNCTION_NAME)
 
-  // console.log("FormData", data)
   const { tezos, network } = useTezos()
   const [isLoading, setIsLoading] = useState(false)
   const { data: daoDetails } = useDAO(daoId)
-
-  console.log({ daoDetails })
 
   const shouldContinue = useMemo(() => {
     if (values.destination_contract_address !== "" && !errors.destination_contract_address) {
@@ -541,6 +540,7 @@ export const ArbitraryContractInteractionForm: React.FC<{
   showHeader: (state: boolean) => void
 }> = ({ daoLambdas, showHeader }) => {
   const daoId = useDAOID()
+  const [aciProposalOpen, setAciProposalOpen] = useState(false)
   const { mutate: executeProposeLambda } = useLambdaExecutePropose()
   const isInvalidKtOrTzAddress = (address: string) => validateContractAddress(address) !== 3
 
@@ -581,7 +581,7 @@ export const ArbitraryContractInteractionForm: React.FC<{
     console.log("saveInfo")
   }
 
-  console.log({ daoLambdas })
+  const isAciDeployerDeployed = daoLambdas?.find((lambda: any) => lambda.key === AppConfig.ACI.EXECUTOR_FUNCTION_NAME)
 
   return (
     <Formik
@@ -617,6 +617,21 @@ export const ArbitraryContractInteractionForm: React.FC<{
               showHeader={showHeader}
               daoLambdas={daoLambdas}
             />
+            <ResponsiveDialog
+              open={!isAciDeployerDeployed}
+              onClose={() => setAciProposalOpen(false)}
+              title={"Proposal to Enable Arbitrary Contract Interaction"}
+              template="sm"
+            >
+              <Typography>In order to use open-ended Contract Calls, the DAO contract must be amended.</Typography>
+              <Typography>
+                If you have the minimum amount of tokens for the proposal fee, click Submit to create a proposal for
+                adding the ACI capability.
+              </Typography>
+              <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`}>
+                <Button>Submit</Button>
+              </Link>
+            </ResponsiveDialog>
           </Form>
         )
       }}

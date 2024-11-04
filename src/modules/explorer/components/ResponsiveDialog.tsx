@@ -11,7 +11,7 @@ const Content = styled(Grid)({
 const TitleText = styled(Typography)(({ theme }) => ({
   color: "#ffff",
   fontWeight: 600,
-  lineHeight: ".80",
+  lineHeight: "1.2",
   textTransform: "capitalize",
   fontSize: 24,
   [theme.breakpoints.down("sm")]: {

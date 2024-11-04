@@ -1,4 +1,4 @@
-import { Grid, CircularProgress } from "@material-ui/core"
+import { Grid, CircularProgress, Typography } from "@material-ui/core"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { FormProvider, useForm } from "react-hook-form"
@@ -19,6 +19,9 @@ import { parseLambdaCode } from "utils"
 import { ArbitraryContractInteractionForm } from "./ArbitraryContractInteractionForm"
 import AppConfig from "config"
 import { StyledRow, LoadingContainer, LoadingStateLabel, CheckIcon } from "components/ui/ConfigProposalForm"
+import { Link } from "react-router-dom"
+import { ViewButton } from "./ViewButton"
+import { Button } from "components/ui/Button"
 
 const codeEditorcontainerstyles = {
   marginTop: "8px"
@@ -158,6 +161,7 @@ export const ProposalFormLambda: React.FC<{
   const { mutate: lambdaRemove } = useLambdaRemovePropose()
   const { mutate: lambdaExecute } = useLambdaExecutePropose()
 
+  const [aciProposalOpen, setAciProposalOpen] = useState(false)
   const [showHeader, setShowHeader] = useState(true)
 
   const lambdaForm = useForm<Values>()
@@ -188,6 +192,7 @@ export const ProposalFormLambda: React.FC<{
   useEffect(() => {
     if (proposalTypeQuery === "add-function") {
       setCode(AppConfig.ACI.EXECUTOR_LAMBDA.code)
+      setAciProposalOpen(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposalTypeQuery])
