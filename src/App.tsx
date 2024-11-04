@@ -16,6 +16,8 @@ import { DAOExplorerRouter } from "modules/explorer/router"
 import { CreatorProvider } from "modules/creator/state"
 import ScrollToTop from "modules/common/ScrollToTop"
 import { theme } from "theme"
+import { WagmiProvider } from "wagmi"
+import { config as wagmiConfig } from "services/wagmi/config"
 
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions"
 import { WarningFooter } from "modules/common/WarningFooter"
@@ -98,57 +100,61 @@ const App: React.FC = () => {
           variantInfo: classes.info
         }}
       >
-        <QueryClientProvider client={queryClient}>
-          <ActionSheetProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Box bgcolor="primary.dark" position="absolute" width="100%">
-                <Router>
-                  <ScrollToTop />
-                  <Switch>
-                    <Route path="/creator">
-                      <CreatorProvider>
-                        <ThemeProvider theme={legacyTheme}>
-                          <DAOCreatorRouter />
-                        </ThemeProvider>
-                      </CreatorProvider>
-                      {/* <WarningFooter
+        <WagmiProvider config={wagmiConfig}>
+          {/* <TanStackQueryClientProvider client={tsQueryClient}> */}
+          <QueryClientProvider client={queryClient}>
+            <ActionSheetProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Box bgcolor="primary.dark" position="absolute" width="100%">
+                  <Router>
+                    <ScrollToTop />
+                    <Switch>
+                      <Route path="/creator">
+                        <CreatorProvider>
+                          <ThemeProvider theme={legacyTheme}>
+                            <DAOCreatorRouter />
+                          </ThemeProvider>
+                        </CreatorProvider>
+                        {/* <WarningFooter
                       text={
                         "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
                       }
                     /> */}
-                    </Route>
-                    <Route path="/lite">
-                      <ThemeProvider theme={legacyTheme}>
-                        <CommunityCreator />
-                      </ThemeProvider>
-                    </Route>
-                    <Route path="/explorer">
-                      <TZKTSubscriptionsProvider>
-                        <DAOExplorerRouter />
-                      </TZKTSubscriptionsProvider>
+                      </Route>
+                      <Route path="/lite">
+                        <ThemeProvider theme={legacyTheme}>
+                          <CommunityCreator />
+                        </ThemeProvider>
+                      </Route>
+                      <Route path="/explorer">
+                        <TZKTSubscriptionsProvider>
+                          <DAOExplorerRouter />
+                        </TZKTSubscriptionsProvider>
 
-                      {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
-                        <>
-                          {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
-                          <WarningFooter
-                            text={
-                              "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                            }
-                          />
-                        </>
-                      ) : null}
-                      <ExplorerFooter></ExplorerFooter>
-                    </Route>
-                    <Route path="/faq">
-                      <FAQ />
-                    </Route>
-                    <Redirect to="/explorer" />
-                  </Switch>
-                </Router>
-              </Box>
-            </LocalizationProvider>
-          </ActionSheetProvider>
-        </QueryClientProvider>
+                        {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
+                          <>
+                            {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
+                            <WarningFooter
+                              text={
+                                "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
+                              }
+                            />
+                          </>
+                        ) : null}
+                        <ExplorerFooter></ExplorerFooter>
+                      </Route>
+                      <Route path="/faq">
+                        <FAQ />
+                      </Route>
+                      <Redirect to="/explorer" />
+                    </Switch>
+                  </Router>
+                </Box>
+              </LocalizationProvider>
+            </ActionSheetProvider>
+          </QueryClientProvider>
+          {/* </TanStackQueryClientProvider> */}
+        </WagmiProvider>
       </SnackbarProvider>
     </ThemeProvider>
   )

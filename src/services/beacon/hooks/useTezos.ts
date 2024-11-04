@@ -7,6 +7,7 @@ import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useNetwork } from "services/useNetwork"
+import { useChainId } from "wagmi"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -51,7 +52,7 @@ export const useTezos = (): WalletConnectReturn => {
         }
       })
     },
-    [ethAccount?.address, dispatch, tezos, etherlinkNetwork, connectWithWagmi]
+    [dispatch, tezos]
   )
 
   const handleTezosNetworkChange = useCallback(
@@ -128,7 +129,7 @@ export const useTezos = (): WalletConnectReturn => {
 
       return newTezos
     },
-    [connectWithWagmi, network, dispatch]
+    [network, dispatch]
   )
 
   useEffect(() => {
@@ -155,11 +156,20 @@ export const useTezos = (): WalletConnectReturn => {
         type: TezosActionType.RESET_TEZOS
       })
     }
-  }, [network, etherlinkNetwork, handleChangeNetwork, isEtherlinkConnected])
+  }, [
+    network,
+    etherlinkNetwork,
+    handleChangeNetwork,
+    isEtherlinkConnected,
+    wallet,
+    switchToNetwork,
+    dispatch,
+    disconnectEtherWallet
+  ])
 
   useEffect(() => {
     setNetwork(network)
-  }, [network])
+  }, [network, setNetwork])
 
   return {
     tezos,
@@ -190,7 +200,7 @@ export const useTezos = (): WalletConnectReturn => {
       dispatch({
         type: TezosActionType.RESET_TEZOS
       })
-    }, [dispatch, network, wallet, isEtherlinkConnected]),
+    }, [network, wallet, isEtherlinkConnected, dispatch, disconnectEtherWallet]),
 
     changeNetwork: handleChangeNetwork,
     account,
