@@ -159,20 +159,20 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
               }
             }}
           >
-            <AddressMenu>
+            <AddressMenu id="address-menu">
               <AddressMenuItem container alignItems="center" onClick={() => handleCopy(account)}>
                 <AddressMenuIcon item>
                   <FileCopyOutlined color="inherit" fontSize="inherit" />
                 </AddressMenuIcon>
                 <Grid item>
-                  <Typography variant="subtitle2" color="textSecondary">
+                  <Typography variant="subtitle2" style={{ color: "#ddd" }}>
                     {toShortAddress(walletAddress)}
                   </Typography>
                 </Grid>
               </AddressMenuItem>
               <AddressMenuItem container alignItems="center" onClick={handleNetworkClick}>
                 <Grid item>
-                  <Typography variant="subtitle2" color="textSecondary">
+                  <Typography variant="subtitle2" style={{ color: "#ddd" }}>
                     Change network ({network})
                   </Typography>
                 </Grid>
@@ -189,7 +189,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
                   <ExitToAppOutlined color="inherit" fontSize="inherit" />
                 </AddressMenuIcon>
                 <Grid item>
-                  <Typography variant="subtitle2" color="textSecondary">
+                  <Typography variant="subtitle2" style={{ color: "#ddd" }}>
                     Log out
                   </Typography>
                 </Grid>
