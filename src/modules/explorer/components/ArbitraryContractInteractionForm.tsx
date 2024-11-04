@@ -49,7 +49,7 @@ const aciLambda = {
 }
 
 const executionLambda = {
-  code: (hash: string, executionLambdaName = "simple_lambda_3") =>
+  code: (hash: string, executionLambdaName = "aci_executor") =>
     `(Left (Right (Pair "${executionLambdaName}" 0x${hash})))`,
   type: "(or (or (pair %add_handler (pair (lambda %code (pair (pair (map %handler_storage string bytes) (bytes %packed_argument)) (pair %proposal_info (address %from) (nat %frozen_token) (bytes %proposal_metadata))) (pair (pair (option %guardian address) (map %handler_storage string bytes)) (list %operations operation))) (lambda %handler_check (pair bytes (map string bytes)) unit)) (string %name)) (pair %execute_handler (string %handler_name) (bytes %packed_argument))) (string %remove_handler))"
 }
@@ -80,11 +80,11 @@ async function prepareContractData(tezos: TezosToolkit, lambdaCode: string, lamb
   // console.log("ACILambdaCode", lambdaCode, packedBaseAci)
 
   const packedLambdaBytes = await packLambda(tezos, `Pair ${lambdaCode} 0x`, lambdaType)
-  const execLambdaCode = executionLambda.code(packedLambdaBytes, "simple_lambda_3")
+  const execLambdaCode = executionLambda.code(packedLambdaBytes, "aci_executor")
   const execLambdaType = executionLambda.type
   const finalPackedDataBytes = await packLambda(tezos, execLambdaCode, execLambdaType)
 
-  // const finalPackedData = await packLambda(tezos, executionLambda.code(packedLambda, "simple_lambda_3"), executionLambda.type)
+  // const finalPackedData = await packLambda(tezos, executionLambda.code(packedLambda, "aci_executor"), executionLambda.type)
 
   // const contract = await getContract(tezos, daoAddress)
 
