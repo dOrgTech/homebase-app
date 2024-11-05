@@ -42,6 +42,7 @@
     "@types/valid-url": "^1.0.4",
     "@web3modal/wagmi": "^5.0.6",
     "assert": "^2.0.0",
+    "assert-never": "^1.2.1",
     "bignumber.js": "^9.0.1",
     "blockies-ts": "^1.0.0",
     "caniuse-lite": "",

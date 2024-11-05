@@ -26,13 +26,6 @@ type Values = {
 
 export type ProposalFormDefaultValues = RecursivePartial<Values>
 
-interface Props {
-  open: boolean
-  handleClose: () => void
-  defaultValues?: ProposalFormDefaultValues
-  defaultTab?: number
-}
-
 const validationSchema = yup.object({
   frozen_extra_value: yup.number().typeError("Amount must be a number"),
   returnedPercentage: yup
@@ -42,7 +35,12 @@ const validationSchema = yup.object({
     .typeError("Amount must be a number")
 })
 
-export const ConfigProposalForm: React.FC<Props> = ({ open, handleClose }) => {
+export const ConfigProposalForm: React.FC<{
+  open: boolean
+  handleClose: () => void
+  defaultValues?: ProposalFormDefaultValues
+  defaultTab?: number
+}> = ({ open, handleClose }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
 

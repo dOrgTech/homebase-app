@@ -10,7 +10,7 @@ import { formatUnits, xtzToMutez } from "../utils"
 import { BigNumber } from "bignumber.js"
 import { Token } from "models/Token"
 import { Ledger } from "services/services/types"
-import { Expr, Parser, packDataBytes, MichelsonType, MichelsonData } from "@taquito/michel-codec"
+import { Expr, Parser, packDataBytes, MichelsonType, MichelsonData, emitMicheline } from "@taquito/michel-codec"
 import { Schema } from "@taquito/michelson-encoder"
 
 import configuration_type_michelson from "./lambdaDAO/michelson/supported_lambda_types/configuration_proposal_type.json"
@@ -277,6 +277,20 @@ export abstract class BaseDAO {
     )
 
     return packed
+  }
+
+  // TODO: To be Implemented
+  public async proposeAciExecution(tezos: TezosToolkit, micheline_type: any) {
+    const contract = await getContract(tezos, this.data.address)
+    const p = new Parser()
+
+    const type = emitMicheline(p.parseJSON(micheline_type), {
+      indent: "",
+      newline: ""
+    })
+
+    // const lambda_schema = p.parseMichelineExpression(aciLambda) as MichelsonType
+    // const lambda_schema = new Schema(lambda_schema)
   }
 
   public async proposeConfigChange(configParams: ConfigProposalParams, tezos: TezosToolkit) {

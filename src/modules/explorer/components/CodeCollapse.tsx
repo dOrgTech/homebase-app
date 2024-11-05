@@ -3,20 +3,11 @@ import { ProposalItem } from "modules/explorer/pages/User"
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
-import { ContentContainer } from "./ContentContainer"
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { ProposalCodeEditorInput } from "./ProposalFormInput"
 import Prism, { highlight } from "prismjs"
-
-const TableContainer = styled(ContentContainer)({
-  width: "100%"
-})
-
-const TableHeader = styled(Grid)({
-  padding: "16px 46px",
-  minHeight: 34
-})
+import { TableContainer, TableHeader } from "components/ui/Table"
 
 const ProposalsFooter = styled(Grid)({
   padding: "16px 46px",

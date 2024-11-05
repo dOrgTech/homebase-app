@@ -306,8 +306,6 @@ export const UserMovements: React.FC<{
                   currentLevel={cycleInfo.currentLevel}
                   proposals={showActivity ? proposalsCreated : proposalsCreated.slice(0, 2)}
                   liteProposals={showActivity ? pollsPosted : pollsPosted?.slice(0, 2)}
-                  showFullList={showActivity}
-                  filters={filters}
                 />
               )}
               {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
@@ -329,9 +327,7 @@ export const UserMovements: React.FC<{
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
                   proposals={showActivity ? proposalsVoted : proposalsVoted.slice(0, 2)}
-                  showFullList={showActivity}
                   liteProposals={showActivity ? votedPolls : votedPolls.slice(0, 2)}
-                  filters={filters}
                 />
               )}
               {!(proposalsVoted && proposalsVoted.length > 0) && !(votedPolls && votedPolls.length > 0) ? (
