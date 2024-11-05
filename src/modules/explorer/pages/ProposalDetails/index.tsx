@@ -1,5 +1,5 @@
 import _ from "lodash"
-import { Button, Grid, Theme, Typography, useMediaQuery, styled, useTheme } from "@material-ui/core"
+import { Button, Grid, Theme, Typography, useMediaQuery, styled, useTheme, Tooltip } from "@material-ui/core"
 import ReactHtmlParser from "react-html-parser"
 import { BigNumber } from "bignumber.js"
 import ProgressBar from "react-customizable-progressbar"
@@ -20,6 +20,7 @@ import { useDAOID } from "../DAO/router"
 import { useVotesStats } from "modules/explorer/hooks/useVotesStats"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import { HighlightedBadge } from "modules/explorer/components/styled/HighlightedBadge"
+import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
 import { TransferBadge } from "modules/explorer/components/TransferBadge"
 import {
   FA2Transfer,
@@ -327,18 +328,29 @@ export const ProposalDetails: React.FC = () => {
                   {agoraPost ? agoraPost.title : `Proposal ${toShortAddress(proposal?.id || "")}`}
                 </TitleText>
               </Grid>
-              <Grid container direction="row">
-                <Grid item>
+              <Grid container alignItems="center" justifyContent="space-between">
+                <Grid item container direction="row" alignItems="center" xs={12} md={8}>
                   <DescriptionText variant="body1">Treasury Proposal • Created by</DescriptionText>
+                  <Grid style={{ marginLeft: 8 }}>
+                    {proposal && cycleInfo && (
+                      <UserBadge
+                        textStyle={{ fontWeight: 300, color: theme.palette.primary.light }}
+                        address={proposal.proposer}
+                        short={true}
+                      />
+                    )}
+                  </Grid>
                 </Grid>
-                <Grid style={{ marginLeft: 8 }}>
-                  {proposal && cycleInfo && (
-                    <UserBadge
-                      textStyle={{ fontWeight: 300, color: theme.palette.primary.light }}
-                      address={proposal.proposer}
-                      short={true}
-                    />
-                  )}
+                <Grid item xs={12} md={4} style={{ textAlign: isMobileSmall ? "center" : "right", paddingTop: "15px" }}>
+                  <Button variant="contained" color="secondary" disabled={!canDropProposal} onClick={onDropProposal}>
+                    Drop Proposal
+                  </Button>
+                  <Tooltip
+                    placement="bottom"
+                    title="Guardian and proposer may drop proposal at anytime. Anyone may drop proposal if proposal expired"
+                  >
+                    <InfoIcon color="secondary" />
+                  </Tooltip>
                 </Grid>
               </Grid>
               {/* <Grid>
@@ -399,8 +411,38 @@ export const ProposalDetails: React.FC = () => {
                     </Grid>
                   </Grid>
                 )}
-                <Grid item xs={isMobileSmall ? 12 : 3}>
-                  <Grid container justifyContent="flex-end" style={{ gap: 28 }}>
+                {isMobileSmall ? null : (
+                  <Grid item xs={3}>
+                    <Grid container justifyContent="flex-end" style={{ gap: 28 }}>
+                      <Grid item>
+                        <VoteButton
+                          variant="contained"
+                          favor={true}
+                          onClick={() => onClickVote(true)}
+                          disabled={!canVote}
+                        >
+                          <ThumbUpIcon style={{ marginRight: 8 }} />
+                          For
+                        </VoteButton>
+                      </Grid>
+                      <Grid item>
+                        <VoteButton
+                          variant="contained"
+                          favor={false}
+                          onClick={() => onClickVote(false)}
+                          disabled={!canVote}
+                        >
+                          <ThumbDownIcon style={{ marginRight: 8 }} />
+                          Against
+                        </VoteButton>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                )}
+              </Grid>
+              {isMobileSmall ? (
+                <Grid item xs={12} spacing={3}>
+                  <Grid container justifyContent="center" style={{ gap: 28, margin: "4px 0px" }} spacing={3}>
                     <Grid item>
                       <VoteButton
                         variant="contained"
@@ -425,7 +467,7 @@ export const ProposalDetails: React.FC = () => {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
+              ) : null}
             </Grid>
           </Grid>
         </Grid>
