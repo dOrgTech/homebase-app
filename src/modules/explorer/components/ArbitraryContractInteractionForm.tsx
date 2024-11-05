@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   CircularProgress,
   Grid,
@@ -22,20 +22,18 @@ import { useArbitraryContractData } from "services/aci/useArbitratyContractData"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ArbitraryContract } from "models/Contract"
 import { evalTaquitoParam, generateExecuteContractMichelson } from "services/aci"
-import { emitMicheline, MichelsonType, Parser } from "@taquito/michel-codec"
+import { emitMicheline, Parser } from "@taquito/michel-codec"
 import ProposalExecuteForm from "./ProposalExecuteForm"
-import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
-import { Expr, MichelsonData, packDataBytes } from "@taquito/michel-codec"
-import { BaseDAO, getContract } from "services/contracts/baseDAO"
+import { Expr, MichelsonData } from "@taquito/michel-codec"
+import { getContract } from "services/contracts/baseDAO"
 import { TezosToolkit } from "@taquito/taquito"
-import { Schema } from "@taquito/michelson-encoder"
-import BigNumber from "bignumber.js"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "../pages/DAO/router"
 import AppConfig from "config"
 import { Link } from "react-router-dom"
 import { Button } from "components/ui/Button"
 import { ResponsiveDialog } from "./ResponsiveDialog"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 // Base ACI Lambda
 const aciBaseLambda = {
@@ -205,6 +203,7 @@ const ContractInteractionForm = ({
   daoLambdas
 }: any) => {
   const daoId = useDAOID()
+  const nofity = useNotification()
   const [state, setState] = useState<Status>(Status.NEW_INTERACTION)
   const [formState, setFormState] = useState<any>({ address: "", amount: 0, shape: {} })
   const [endpoint, setEndpoint] = useState<ContractEndpoint | undefined>(undefined)
@@ -444,12 +443,11 @@ const ContractInteractionForm = ({
                 console.log({ formState })
 
                 try {
-                  // debugger
                   let entrypoint = formState.shape.token.initValue // accept_ownership | default etc
                   let taquitoParam
 
                   setIsLoading(true)
-                  // debugger
+
                   const execContract = formState.shape.contract
                   const taquitoFullParam = evalTaquitoParam(formState.shape.token, formState.shape)
                   if (execContract?.parameterSchema.isMultipleEntryPoint) {
@@ -469,10 +467,6 @@ const ContractInteractionForm = ({
                     ? execContract?.entrypoints.entrypoints[entrypoint]
                     : execContract?.parameterSchema.root.val
 
-                  // const micheline_type = values.destination_contract?.parameterSchema.isMultipleEntryPoint
-                  //   ? values.destination_contract.entrypoints.entrypoints[entrypoint]
-                  //   : values.destination_contract?.parameterSchema.root.val
-
                   const p = new Parser()
                   const type = emitMicheline(p.parseJSON(micheline_type), {
                     indent: "",
@@ -488,9 +482,6 @@ const ContractInteractionForm = ({
                     param
                   })
 
-                  console.log("Lambda Code", lambda)
-                  console.log("DaoDetails", daoDetails)
-
                   const finalPackedDataBytes = await prepareContractData(tezos, lambda, aciLambda.type)
                   const contract = await getContract(tezos, daoDetails?.data?.address as string)
 
@@ -505,8 +496,6 @@ const ContractInteractionForm = ({
                     daoDetails?.data?.token?.decimals as number
                   )
 
-                  console.log("Frozen Token", frozenToken)
-
                   const contractMethod = contract.methods.propose(
                     await tezos.wallet.pkh(),
                     frozenToken,
@@ -514,11 +503,18 @@ const ContractInteractionForm = ({
                   )
 
                   const result = await contractMethod.send()
-                  debugger
+
                   await result.confirmation(1)
+                  window.location.reload()
                   console.log("RESULT", result)
                 } catch (error) {
                   console.log("ERROR", error)
+                  const errorMessage = error instanceof Error ? error.message : "An unknown error occurred"
+                  nofity({
+                    message: `Error: ${errorMessage}`,
+                    autoHideDuration: 3000,
+                    variant: "error"
+                  })
                 } finally {
                   setIsLoading(false)
                 }
@@ -541,7 +537,6 @@ export const ArbitraryContractInteractionForm: React.FC<{
 }> = ({ daoLambdas, showHeader }) => {
   const daoId = useDAOID()
   const [aciProposalOpen, setAciProposalOpen] = useState(false)
-  const { mutate: executeProposeLambda } = useLambdaExecutePropose()
   const isInvalidKtOrTzAddress = (address: string) => validateContractAddress(address) !== 3
 
   const initialValue: ACIValues = {
@@ -581,6 +576,10 @@ export const ArbitraryContractInteractionForm: React.FC<{
     console.log("saveInfo")
   }
 
+  useEffect(() => {
+    console.log({ daoLambdas })
+  }, [daoLambdas])
+
   const isAciDeployerDeployed = daoLambdas?.find((lambda: any) => lambda.key === AppConfig.ACI.EXECUTOR_FUNCTION_NAME)
 
   return (
@@ -617,21 +616,23 @@ export const ArbitraryContractInteractionForm: React.FC<{
               showHeader={showHeader}
               daoLambdas={daoLambdas}
             />
-            <ResponsiveDialog
-              open={!isAciDeployerDeployed}
-              onClose={() => setAciProposalOpen(false)}
-              title={"Proposal to Enable Arbitrary Contract Interaction"}
-              template="sm"
-            >
-              <Typography>In order to use open-ended Contract Calls, the DAO contract must be amended.</Typography>
-              <Typography>
-                If you have the minimum amount of tokens for the proposal fee, click Submit to create a proposal for
-                adding the ACI capability.
-              </Typography>
-              <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`}>
-                <Button>Submit</Button>
-              </Link>
-            </ResponsiveDialog>
+            {daoLambdas !== undefined && (
+              <ResponsiveDialog
+                open={!isAciDeployerDeployed}
+                onClose={() => setAciProposalOpen(false)}
+                title={"Proposal to Enable Arbitrary Contract Interaction"}
+                template="sm"
+              >
+                <Typography>In order to use open-ended Contract Calls, the DAO contract must be amended.</Typography>
+                <Typography>
+                  If you have the minimum amount of tokens for the proposal fee, click Submit to create a proposal for
+                  adding the ACI capability.
+                </Typography>
+                <Link to={`/explorer/dao/${daoId}/proposals?type=add-function`}>
+                  <Button>Submit</Button>
+                </Link>
+              </ResponsiveDialog>
+            )}
           </Form>
         )
       }}

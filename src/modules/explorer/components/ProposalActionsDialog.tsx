@@ -302,9 +302,9 @@ export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose, quer
           </TitleContainer>
           <Grid container spacing={2}>
             <Grid item xs={isMobileSmall ? 12 : 4}>
-              <OptionContainer onClick={() => handleAciProposal()}>
-                <ActionText color={"textPrimary"}>Contract Call</ActionText>
-                <ActionDescriptionText color={"textPrimary"}>
+              <OptionContainer onClick={() => !shouldDisable && handleAciProposal()}>
+                <ActionText color={shouldDisable ? "textSecondary" : "textPrimary"}>Contract Call</ActionText>
+                <ActionDescriptionText color={shouldDisable ? "textSecondary" : "textPrimary"}>
                   Invoke an endpoint on a deployed contract
                 </ActionDescriptionText>
               </OptionContainer>

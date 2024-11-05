@@ -1,5 +1,5 @@
 import { Form, Formik } from "formik"
-import React, { Context, createContext, useContext, useEffect } from "react"
+import React, { useEffect } from "react"
 import { genLambda, parseContract } from "../../../services/aci"
 import { RenderItem } from "./aci/Fields"
 import type { TezosToolkit } from "@taquito/taquito"
@@ -9,8 +9,6 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { SmallButtonDialog } from "modules/common/SmallButton"
 import { useDAOID } from "../pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-// import ErrorMessage from "./ErrorMessage"
-// import renderError from "./formUtils"
 
 type contractStorage = { version: string } & {
   [key: string]: any
@@ -28,8 +26,6 @@ type tezosState = {
   currentContract: string | null // Contract Address
   currentStorage: contractStorage | null
 }
-
-// const AppStateContext: Context<tezosState | null> = createContext<tezosState | null>(null)
 
 function ProposalExecuteForm(
   props: React.PropsWithoutRef<{
@@ -49,12 +45,10 @@ function ProposalExecuteForm(
   const { data: dao } = useDAO(daoId)
 
   const address = props.address
-  const setLoading = props.setLoading
   const loading = props.loading
   const { tezos } = useTezos()
 
   useEffect(() => {
-    // debugger
     if (!Object.keys(props.shape).length && !loading) {
       ;(async () => {
         try {
@@ -67,9 +61,7 @@ function ProposalExecuteForm(
         }
       })()
     }
-  }, [address, loading, props.shape])
-
-  // return <>Proposal Execute Form</>
+  }, [address, loading, props, props.shape, tezos.contract])
 
   return (
     <div className="w-full text-white proposal-execute-form">
@@ -80,28 +72,22 @@ function ProposalExecuteForm(
         onSubmit={() => {}}
         validateOnMount={true}
         validate={values => {
-          // console.log("Validate For ProposalExecuteForm", dao?.data)
           props.onShapeChange(values)
-          // debugger;
           try {
             // ACI: This sets the lambda and metadata fields
-            // if (state?.contracts[state?.currentContract ?? ""]?.version) {
-            if (dao?.data?.address) {
-              genLambda("1.0.0", props, values)
-            }
+            if (dao?.data?.address) genLambda("1.0.0", props, values)
           } catch (e) {
             // setSubmitError((e as Error).message);
           }
         }}
       >
         {_ => {
-          // debugger;
           return (
             <Form className="align-self-center col-span-2 flex w-full grow flex-col items-center justify-center justify-self-center">
               <div className="h-fit-content md:min-h-96 mb-2 grid w-full grid-flow-row items-start gap-4 overflow-y-auto">
                 {!!props.shape.token && <RenderItem token={props.shape?.token} showTitle={false} />}
               </div>
-              <div style={{ marginTop: "10px" }}>
+              {/* <div style={{ marginTop: "10px" }}>
                 <SmallButtonDialog
                   variant="contained"
                   onClick={e => {
@@ -112,17 +98,7 @@ function ProposalExecuteForm(
                 >
                   Reset
                 </SmallButtonDialog>
-                {/* <button
-                  className="rounded bg-primary p-2 font-medium text-white hover:bg-red-500 hover:outline-none focus:bg-red-500"
-                  onClick={e => {
-                    e.preventDefault()
-                    props.reset()
-                    props.onReset?.()
-                  }}
-                >
-                  Reset
-                </button> */}
-              </div>
+              </div> */}
             </Form>
           )
         }}
