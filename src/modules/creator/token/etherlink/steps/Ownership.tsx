@@ -67,8 +67,6 @@ export const Ownership: React.FC = () => {
                   underline="none"
                   onClick={() => {
                     if (etherlink.isConnected) {
-                      window.open(`https://www.cookbook.dev/contracts/simple-token`)
-                    } else {
                       const href = `/creator/deployment`
                       history.push(href)
                     }
