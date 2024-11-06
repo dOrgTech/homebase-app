@@ -34,7 +34,9 @@ export const useTezos = (): WalletConnectReturn => {
     isConnected: isEtherlinkConnected,
     connect: connectWithWagmi,
     disconnect: disconnectEtherWallet,
-    network: etherlinkNetwork
+    network: etherlinkNetwork,
+    provider: ethProvider,
+    signer: ethSigner
   } = useContext(EtherlinkContext)
 
   const queryClient = useQueryClient()
@@ -209,7 +211,9 @@ export const useTezos = (): WalletConnectReturn => {
     isEtherlink: network?.startsWith("etherlink"),
     etherlink: {
       isConnected: isEtherlinkConnected,
-      account: ethAccount
+      account: ethAccount,
+      provider: ethProvider,
+      signer: ethSigner
     }
   }
 }
