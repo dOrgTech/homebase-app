@@ -48,6 +48,8 @@ export const ProposalTableRow: React.FC<{ poll: Poll | any; daoId?: string }> = 
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  if (poll.createdAt) poll.startTime = poll.createdAt
+  console.log({ poll })
   return (
     <RowContainer
       style={{ background: "#2F3438", borderRadius: 8 }}

@@ -1,20 +1,25 @@
 import React from "react"
+import "App.css"
 import { withLDProvider } from "launchdarkly-react-client-sdk"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
 import mixpanel from "mixpanel-browser"
 import { QueryClient, QueryClientProvider } from "react-query"
+import {
+  QueryClient as TanStackQueryClient,
+  QueryClientProvider as TanStackQueryClientProvider
+} from "@tanstack/react-query"
+
 import { Box, makeStyles, ThemeProvider } from "@material-ui/core"
 import { SnackbarProvider } from "notistack"
 
 import { DAOExplorerRouter } from "modules/explorer/router"
-import { DAOCreate } from "modules/creator"
 import { CreatorProvider } from "modules/creator/state"
 import ScrollToTop from "modules/common/ScrollToTop"
 import { theme } from "theme"
+import { WagmiProvider } from "wagmi"
+import { config as wagmiConfig } from "services/wagmi/config"
 
-import "App.css"
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions"
-import { Landing } from "modules/home/Landing"
 import { WarningFooter } from "modules/common/WarningFooter"
 import { ActionSheetProvider } from "modules/explorer/context/ActionSheets"
 import { legacyTheme } from "theme/legacy"
@@ -25,8 +30,6 @@ import { DAOCreatorRouter } from "modules/creator/router"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
-import { hexStringToBytes } from "services/utils/utils"
-import { HistoryLengthProvider } from "modules/explorer/context/HistoryLength"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -97,12 +100,13 @@ const App: React.FC = () => {
           variantInfo: classes.info
         }}
       >
-        <QueryClientProvider client={queryClient}>
-          <ActionSheetProvider>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Box bgcolor="primary.dark" position="absolute" width="100%">
-                <Router>
-                  <HistoryLengthProvider>
+        <WagmiProvider config={wagmiConfig}>
+          {/* <TanStackQueryClientProvider client={tsQueryClient}> */}
+          <QueryClientProvider client={queryClient}>
+            <ActionSheetProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Box bgcolor="primary.dark" position="absolute" width="100%">
+                  <Router>
                     <ScrollToTop />
                     <Switch>
                       <Route path="/creator">
@@ -144,12 +148,13 @@ const App: React.FC = () => {
                       </Route>
                       <Redirect to="/explorer" />
                     </Switch>
-                  </HistoryLengthProvider>
-                </Router>
-              </Box>
-            </LocalizationProvider>
-          </ActionSheetProvider>
-        </QueryClientProvider>
+                  </Router>
+                </Box>
+              </LocalizationProvider>
+            </ActionSheetProvider>
+          </QueryClientProvider>
+          {/* </TanStackQueryClientProvider> */}
+        </WagmiProvider>
       </SnackbarProvider>
     </ThemeProvider>
   )

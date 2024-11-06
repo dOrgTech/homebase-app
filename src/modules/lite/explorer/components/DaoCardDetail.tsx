@@ -5,7 +5,6 @@ import { useHistory } from "react-router"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { DashboardContext } from "../context/ActionSheets/explorer"
 import { updateCount } from "services/services/lite/lite-services"
-import { useIsMember } from "../hooks/useIsMember"
 import { useHoldersTotalCount } from "../hooks/useHolderTotalCount"
 import ReactHtmlParser from "react-html-parser"
 
@@ -64,11 +63,10 @@ interface DaoCardDetailProps {
 }
 
 export const DaoCardDetail: React.FC<DaoCardDetailProps> = ({ community, setIsUpdated }) => {
+  console.log("Community", { community })
   const navigate = useHistory()
   const { network, account } = useTezos()
-  const theme = useTheme()
   const { isConnected } = useContext(DashboardContext)
-  const isMember = useIsMember(network, community?.tokenAddress || "", account)
   const count = useHoldersTotalCount(
     network,
     community?.tokenAddress || "",

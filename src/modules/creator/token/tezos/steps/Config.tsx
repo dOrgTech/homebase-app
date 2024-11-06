@@ -1,96 +1,18 @@
-import {
-  Grid,
-  styled,
-  TextareaAutosize,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  withStyles,
-  withTheme
-} from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
 import React, { useContext, useEffect } from "react"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import { DeploymentContext } from "../state/context"
 import { ActionTypes, TokenContractSettings } from "../state/types"
-import { TextField as FormikTextField } from "formik-material-ui"
 import { FieldChange, handleChange, handleNegativeInput } from "modules/creator/utils"
-
-const Title = styled(Typography)(({ theme }) => ({
-  fontSize: 32,
-  fontWeight: 600,
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 26
-  }
-}))
-
-const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
-  "minHeight": 152,
-  "boxSizing": "border-box",
-  "width": "100%",
-  "marginTop": 14,
-  "fontWeight": 300,
-  "padding": "21px 20px",
-  "fontFamily": "Roboto Flex",
-  "border": "none",
-  "fontSize": 16,
-  "color": props.theme.palette.text.secondary,
-  "background": "#2F3438",
-  "borderRadius": 8,
-  "paddingRight": 40,
-  "wordBreak": "break-word",
-  "&:focus-visible": {
-    outline: "none"
-  },
-  "resize": "none"
-}))
-
-const CustomFormikTextField = withStyles({
-  root: {
-    "& .MuiInput-root": {
-      fontWeight: 300,
-      textAlign: "initial"
-    },
-    "& .MuiInputBase-input": {
-      textAlign: "initial"
-    },
-    "& .MuiInput-underline:before": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important"
-    }
-  }
-})(FormikTextField)
-
-const CustomInputContainer = styled(Grid)(({ theme }) => ({
-  "height": 54,
-  "boxSizing": "border-box",
-  "marginTop": 14,
-  "background": "#2F3438",
-  "borderRadius": 8,
-  "alignItems": "center",
-  "display": "flex",
-  "padding": "13px 23px",
-  "fontWeight": 300,
-  "& input::placeholder": {
-    fontWeight: 300
-  }
-}))
-
-const ErrorText = styled(Typography)({
-  fontSize: 14,
-  color: "red",
-  marginTop: 4
-})
-
-const TextareaContainer = styled(Grid)({
-  display: "flex",
-  position: "relative"
-})
+import {
+  Title,
+  CustomTextarea,
+  CustomFormikTextField,
+  CustomInputContainer,
+  ErrorText,
+  TextareaContainer
+} from "../../ui"
 
 const validateForm = (values: TokenContractSettings) => {
   const errors: FormikErrors<TokenContractSettings> = {}
@@ -118,7 +40,7 @@ const validateForm = (values: TokenContractSettings) => {
   return errors
 }
 
-const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue, setFieldTouched }: any) => {
+const TokenSettingsForm = ({ submitForm, values, errors, touched, setFieldValue }: any) => {
   const { dispatch } = useContext(DeploymentContext)
   const match = useRouteMatch()
   const history = useHistory()
@@ -265,7 +187,7 @@ export const ConfigContract: React.FC = () => {
       <Grid container direction="column">
         <Grid>
           <Title style={{ marginBottom: 32 }} color="textSecondary">
-            Configure Token Contract
+            Configure Token ContractX
           </Title>
         </Grid>
 

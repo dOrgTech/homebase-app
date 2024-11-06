@@ -7,7 +7,6 @@ import { useRouteMatch } from "react-router-dom"
 
 import { CreatorContext, ActionTypes, VotingSettings } from "modules/creator/state"
 import { InfoRounded } from "@material-ui/icons"
-import { getNetworkStats } from "services/bakingBad/stats"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EstimatedBlocks } from "modules/explorer/components/EstimatedTime"
 import dayjs from "dayjs"
@@ -15,6 +14,7 @@ import { TitleBlock } from "modules/common/TitleBlock"
 import BigNumber from "bignumber.js"
 import { mutezToXtz, parseUnits } from "services/contracts/utils"
 import { FieldChange, handleChange } from "../utils"
+import { useBlockchainInfo } from "services/contracts/baseDAO/hooks/useBlockchainInfo"
 
 const TimeBox = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -370,20 +370,19 @@ const GovernanceForm = ({ submitForm, values, setFieldValue, errors, touched, se
     blockTimeAverage
   })
 
+  const { data: blockchainInfo } = useBlockchainInfo()
+
+  useEffect(() => {
+    if (blockchainInfo) {
+      setBlockTimeAverage(blockchainInfo.constants.timeBetweenBlocks)
+    }
+  }, [blockchainInfo])
+
   useEffect(() => {
     setFieldValue("votingBlocks", periodBlocks)
     setFieldValue("proposalFlushBlocks", flushBlocks)
     setFieldValue("proposalExpiryBlocks", expiryBlocks)
   }, [values, periodBlocks, flushBlocks, expiryBlocks, setFieldValue])
-
-  useEffect(() => {
-    ;(async () => {
-      const blockchainInfo = await getNetworkStats(network)
-      if (blockchainInfo) {
-        setBlockTimeAverage(blockchainInfo.constants.timeBetweenBlocks)
-      }
-    })()
-  }, [network])
 
   const formatDate = (timeInfo: any) => {
     const values = []

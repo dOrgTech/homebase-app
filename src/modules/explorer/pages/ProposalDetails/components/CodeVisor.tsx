@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { Grid, styled, makeStyles } from "@material-ui/core"
 import React, { useState } from "react"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"

@@ -137,11 +137,14 @@ export const calculateProposalTotal = (choices: Choice[], decimals: any) => {
 }
 
 const getUsers = (options: Choice[]) => {
+  console.log("options", options)
   const addresses: string[] = []
 
-  options.map(option => {
-    return option.walletAddresses.map(wallet => addresses.push(wallet.address))
+  options.forEach(option => {
+    // TODO: ashutoshpw - Replace with wallet.address
+    option.walletAddresses.forEach(wallet => addresses.push((wallet as any)?._id))
   })
+  // debugger
 
   return new Set(addresses)
 }
@@ -156,10 +159,6 @@ export const getTreasuryPercentage = (proposalTotal: BigNumber, totalSupply: num
   const formattedTotalSupply = new BigNumber(totalSupply).div(new BigNumber(10).pow(decimals))
   const value = proposalTotal.div(new BigNumber(formattedTotalSupply)).multipliedBy(100)
   return value
-}
-
-export const numberWithCommas = (x: number) => {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
 const SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"]

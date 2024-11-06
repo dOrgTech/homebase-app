@@ -10,7 +10,7 @@ const isNFTDTO = (value: DAOToken): value is NFTDTO => value.hasOwnProperty("art
 
 const isBalanceTzktNFT = (value: BalanceTZKT): boolean => Boolean(value.token.metadata?.artifactUri)
 
-const isTokenTzktNFT = (value: TokenDataTZKT): boolean => Boolean(value.metadata?.artifactUri)
+const isTokenTzktNFT = (value: TokenDataTZKT): boolean => Boolean(value?.metadata?.artifactUri)
 
 export interface DAOHolding {
   balance: BigNumber
@@ -140,9 +140,12 @@ export const getDAONFTBalances = async (
   return getDAONFTBalances(daoId, network, offset + ELEMENTS_PER_REQUEST, balances.concat(fetchedBalances))
 }
 
-export const getTokenMetadata = async (contractAddress: string, network: Network, tokenId: string) => {
+export const getTokenMetadata = async (contractAddress: string, network: Network, tokenId?: string) => {
   let url = ""
-  if (tokenId !== undefined) {
+  const isEtherlink = network.startsWith("etherlink")
+  if (isEtherlink) {
+    url = `${process.env.REACT_APP_LITE_API_URL}/token/?network=${network}&contract=${contractAddress}`
+  } else if (tokenId !== undefined) {
     url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}&tokenId=${tokenId}`
   } else {
     url = `https://api.${networkNameMap[network]}.tzkt.io/v1/tokens?contract=${contractAddress}`
@@ -153,10 +156,10 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
     throw new Error("Failed to fetch proposals from BakingBad API")
   }
 
-  const resultTokenDataTzkt: TokenDataTZKT[] = await response.json()
+  const resultTokenDataTzkt: any[] = await response.json()
   const tokenData = resultTokenDataTzkt[0]
 
-  let result: DAOToken
+  let result: any
 
   if (isTokenTzktNFT(tokenData)) {
     result = {
@@ -178,6 +181,19 @@ export const getTokenMetadata = async (contractAddress: string, network: Network
       formats: tokenData.metadata?.formats,
       balance: "",
       standard: tokenData.standard
+    }
+  } else if (isEtherlink) {
+    result = {
+      id: "",
+      contract: "",
+      token_id: 0,
+      name: tokenData.name,
+      supply: tokenData?.totalSupply,
+      decimals: tokenData?.decimals,
+      network: network,
+      symbol: tokenData?.symbol,
+      level: 0,
+      standard: ""
     }
   } else {
     result = {
