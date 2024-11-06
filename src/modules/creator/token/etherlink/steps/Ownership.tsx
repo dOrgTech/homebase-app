@@ -66,10 +66,8 @@ export const Ownership: React.FC = () => {
                 <OptionButton
                   underline="none"
                   onClick={() => {
-                    if (etherlink.isConnected) {
-                      const href = `/creator/deployment`
-                      history.push(href)
-                    }
+                    const href = `/creator/deployment`
+                    history.push(href)
                   }}
                 >
                   <MainButton variant="contained" color="secondary">
