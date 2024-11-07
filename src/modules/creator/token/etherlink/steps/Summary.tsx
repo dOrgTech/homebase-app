@@ -21,12 +21,14 @@ import {
   ThirdContainerRow,
   ThirdContainerLastRow
 } from "../../ui"
+import { useTezos } from "services/beacon/hooks/useTezos"
 export const ContractSummary: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const history = useHistory()
   const match = useRouteMatch()
 
+  const { etherlink, connect } = useTezos()
   const { state, dispatch } = useContext(DeploymentContext)
   const { tokenDistribution, tokenSettings } = state.data
 
@@ -64,15 +66,20 @@ export const ContractSummary: React.FC = () => {
       },
       next: {
         handler: () => {
-          mutate({
-            ...state.data
-          })
-          setIsLoading(true)
+          if (etherlink.isConnected) {
+            mutate({
+              ...state.data
+            })
+            setIsLoading(true)
+          } else {
+            connect()
+          }
         },
         text: isLoading ? "Deploying..." : "Launch"
       }
     })
-  }, [dispatch, history, match.path, match.url, mutate, state.data, isLoading])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, history, match.path, match.url, mutate, state.data, isLoading, etherlink.isConnected])
 
   return (
     <>

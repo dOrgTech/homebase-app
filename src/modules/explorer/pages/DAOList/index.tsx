@@ -196,6 +196,8 @@ export const DAOList: React.FC = () => {
     return []
   }, [daos, searchText, account])
 
+  console.log({ daos, currentDAOs, myDAOs })
+
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())
   }

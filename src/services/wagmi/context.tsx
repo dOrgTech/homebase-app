@@ -4,6 +4,7 @@ import { disconnect as disconnectEtherlink } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
 import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { useSIWE, useModal, SIWESession } from "connectkit"
+import { useEthersProvider, useEthersSigner } from "./ethers"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -21,6 +22,8 @@ export const EtherlinkContext = createContext<any | undefined>(undefined)
 
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setOpen } = useModal()
+  const provider = useEthersProvider()
+  const signer = useEthersSigner()
   const { chains, switchChain } = useSwitchChain()
   // const { data, isReady, isRejected, isLoading, isSignedIn, signOut, signIn, error } = useSIWE({
   //   onSignIn: (session?: SIWESession) => {
@@ -58,6 +61,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     <EtherlinkContext.Provider
       value={{
         isConnected,
+        provider,
+        signer,
         account: {
           address: address || ""
         },
