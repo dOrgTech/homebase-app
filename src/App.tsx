@@ -30,6 +30,7 @@ import { DAOCreatorRouter } from "modules/creator/router"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
+import { EtherlinkDAOCreatorRouter } from "modules/etherlink/router"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,6 +110,11 @@ const App: React.FC = () => {
                   <Router>
                     <ScrollToTop />
                     <Switch>
+                      <Route path="/creator-evm">
+                        <ThemeProvider theme={legacyTheme}>
+                          <EtherlinkDAOCreatorRouter />
+                        </ThemeProvider>
+                      </Route>
                       <Route path="/creator">
                         <CreatorProvider>
                           <ThemeProvider theme={legacyTheme}>

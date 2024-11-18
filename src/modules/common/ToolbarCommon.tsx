@@ -26,7 +26,7 @@ import { ChangeNetworkButton } from "./ChangeNetworkButton"
 import { ArrowBackIos } from "@material-ui/icons"
 import { ConnectWalletButton } from "./ConnectWalletButton"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
-import { ActionSheet, useActionSheet } from "../explorer/context/ActionSheets"
+import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
 
 const Header = styled(Grid)(({ theme }) => ({
   width: "1000px",

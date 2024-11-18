@@ -66,7 +66,7 @@ export interface NavigationBarProps {
   }
 }
 
-export type DAOTemplate = "lambda" | "lite" | ""
+export type DAOTemplate = "lambda" | "lite" | "lambda-etherlink"
 
 export type DeploymentMethod = "managed" | "self-deployed"
 

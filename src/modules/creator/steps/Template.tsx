@@ -42,12 +42,11 @@ const LambdaCustomBoxFullDao = ({ style, update, isMobileSmall, isEtherLink, sel
     alignItems="center"
     xs={isMobileSmall ? 12 : 5}
     onClick={() => {
-      if (isEtherLink) return
+      if (isEtherLink) return update("lambda-etherlink")
       update("lambda")
     }}
     title={"Hello World"}
-    className={selectedTemplate === "lambda" ? style.selected : ""}
-    style={{ opacity: isEtherLink ? 0.4 : 1 }}
+    className={["lambda", "lambda-etherlink"].includes(selectedTemplate) ? style.selected : ""}
   >
     <FullIcon style={{ marginBottom: 16 }} />
     <BoxTitle color="textSecondary">Full DAO</BoxTitle>
@@ -116,11 +115,14 @@ export const Template = (): JSX.Element => {
             type: ActionTypes.UPDATE_TEMPLATE,
             template: selectedTemplate
           })
-
-          if (selectedTemplate === "lambda") {
-            return history.push(`dao`)
+          switch (selectedTemplate) {
+            case "lambda":
+              return history.push(`dao`)
+            case "lite":
+              return history.push("/creator/etherlink/dao")
+            default:
+              return history.push("/lite")
           }
-          return history.push("/lite")
         },
         text: "Continue"
       },
@@ -144,25 +146,13 @@ export const Template = (): JSX.Element => {
     <Box>
       <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />
       <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} direction="row">
-        {isEtherLink ? (
-          <Tooltip title="Full DAO is available on Tezos Networks">
-            <LambdaCustomBoxFullDao
-              style={style}
-              update={update}
-              isMobileSmall={isMobileSmall}
-              isEtherLink={isEtherLink}
-              selectedTemplate={selectedTemplate}
-            />
-          </Tooltip>
-        ) : (
-          <LambdaCustomBoxFullDao
-            style={style}
-            update={update}
-            isMobileSmall={isMobileSmall}
-            isEtherLink={isEtherLink}
-            selectedTemplate={selectedTemplate}
-          />
-        )}{" "}
+        <LambdaCustomBoxFullDao
+          style={style}
+          update={update}
+          isMobileSmall={isMobileSmall}
+          isEtherLink={isEtherLink}
+          selectedTemplate={selectedTemplate}
+        />
         <LambdaCustomBox
           item
           container
@@ -178,7 +168,7 @@ export const Template = (): JSX.Element => {
           <BoxDescription color="textSecondary">
             Off-chain weighted voting. Multiple voting strategies. No treasury.{" "}
           </BoxDescription>
-        </LambdaCustomBox>{" "}
+        </LambdaCustomBox>
       </Grid>
       {error ? <ErrorText>{"Must select a template in order to continue"}</ErrorText> : null}
     </Box>

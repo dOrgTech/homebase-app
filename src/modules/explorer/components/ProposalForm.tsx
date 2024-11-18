@@ -32,12 +32,6 @@ const CustomContainer = styled(Grid)({
   padding: "42px 54px 0px 54px"
 })
 
-const IconSwap = styled(SwapIcon)({
-  marginLeft: 16,
-  marginRight: 16,
-  cursor: "pointer"
-})
-
 const DialogTitle = styled(Typography)({
   fontSize: 24,
   fontWeight: 500,
@@ -89,7 +83,7 @@ const enabledForms: Record<
       component: ({ open }) => <UpdateRegistryDialog open={open} />
     }
   ],
-  "": [],
+  "lambda-etherlink": [],
   "lite": []
 }
 
@@ -98,16 +92,10 @@ const Content = styled(Grid)({
   paddingBottom: 24
 })
 
-const SwapText = styled(Typography)({
-  opacity: 0.65,
-  color: "#fff"
-})
-
 export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defaultValues, defaultTab }) => {
   const daoId = useDAOID()
   const { data: dao } = useDAO(daoId)
   const { data: daoHoldings } = useDAOHoldings(daoId)
-  const [state, setState] = useState(defaultTab)
 
   const methods = useForm<Values>({
     defaultValues: useMemo(

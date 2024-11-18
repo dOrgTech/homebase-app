@@ -101,7 +101,6 @@ export const useDAOID = () => {
 
 export const DAORouter = (): JSX.Element => {
   const match = useRouteMatch()
-  const theme = useTheme()
   const { id: daoId } = useParams<{ id: string }>()
 
   return (

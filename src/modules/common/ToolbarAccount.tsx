@@ -103,7 +103,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
     setPopperOpen(!popperOpen)
   }
 
-  console.log("XX", { account, etherlink })
+  // console.log("XX", { account, etherlink })
   if (walletAddress || etherlink?.isConnected)
     return (
       <Grid

@@ -4,25 +4,29 @@ import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
 
 import { CreatorContext, StepInfo } from "modules/creator/state"
-import { StepRouter, STEPS, urlToStepMap, useStepNumber } from "modules/creator/steps"
+import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps"
 import { NavigationBar } from "modules/creator/components/NavigationBar"
 import { Navbar } from "modules/common/Toolbar"
-import mixpanel from "mixpanel-browser"
 import {
   PageContainer,
-  PageContent,
+  StepContentContainer,
   ProgressContainer,
   IndicatorValue,
-  StyledStepper,
-  StepContentContainer,
   FAQReadMe,
-  FAQClickToAction
+  FAQClickToAction,
+  StyledStepper,
+  PageContent
 } from "components/ui/DaoCreator"
+import mixpanel from "mixpanel-browser"
 
-export const DAOCreate: React.FC = () => {
-  const creator = useContext(CreatorContext)
+import { urlToStepMap } from "./config"
 
-  const { back, next } = creator.state
+export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
+  //   const creator = useContext(CreatorContext)
+
+  //   const { back, next } = creator.state
+  const back = () => {}
+  const next = () => {}
   const step = useStepNumber()
   const history = useHistory()
   const theme = useTheme()
@@ -77,11 +81,12 @@ export const DAOCreate: React.FC = () => {
           <Grid container direction="column" alignItems="center" style={{ width: "100%", marginBottom: 20 }}>
             <Grid item style={{ width: "100%", margin: "inherit" }} xs>
               <StepContentContainer item container justifyContent="center">
-                <StepRouter />
+                {children}
+                {/* <StepRouter /> */}
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 6 && <NavigationBar back={back} next={next} />}
+          {/* {step < 6 && <NavigationBar back={back} next={next} />} */}
         </Grid>
       </PageContent>
     </PageContainer>
