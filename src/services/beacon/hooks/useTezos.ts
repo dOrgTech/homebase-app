@@ -39,17 +39,6 @@ export const useTezos = (): WalletConnectReturn => {
     signer: ethSigner
   } = useContext(EtherlinkContext)
 
-  const { open, close } = useWeb3Modal()
-  const { address: ethAddress, isConnected: isEtherlinkConnected } = useWagmiAccount()
-  // const { connect: wagmiConnect, connectors } = useWagmiConnect()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const openEthWallet = async () => {
-    if (isEtherlinkConnected) {
-      await disconnectEtherlink(wagmiConfig)
-    }
-    open({ view: "Connect" })
-  }
-
   const queryClient = useQueryClient()
 
   const handleEtherlinkNetworkChange = useCallback(
