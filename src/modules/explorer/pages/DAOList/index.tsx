@@ -190,11 +190,12 @@ export const DAOList: React.FC = () => {
             (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
         )
       }
-      return formattedDAOs.filter(dao => dao.votingAddresses.includes(account))
+      const accountAddress = account || etherlink?.account?.address
+      return formattedDAOs.filter(dao => dao.votingAddresses.includes(accountAddress))
     }
 
     return []
-  }, [daos, searchText, account])
+  }, [daos, searchText, account, etherlink?.account?.address])
 
   console.log({ daos, currentDAOs, myDAOs })
 
