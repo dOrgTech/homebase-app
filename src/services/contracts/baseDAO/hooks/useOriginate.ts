@@ -14,6 +14,10 @@ import { getSignature } from "services/lite/utils"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
 import { Community } from "models/Community"
 import { EnvKey, getEnv } from "services/config"
+import HomebaseDaoEvm from "assets/abis/hb_dao.json"
+
+const ERC20_ABI = HomebaseDaoEvm.output.abi
+const ERC20_BYTECODE = HomebaseDaoEvm.output.bytecode
 
 const INITIAL_STATES = [
   {
@@ -74,7 +78,9 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES)
 
   const [activeState, setActiveState] = useState<number>()
-  const { tezos, connect, network, account, wallet } = useTezos()
+  const { tezos, connect, network, account, wallet, etherlink } = useTezos()
+  const provider = etherlink.provider
+  const signer = etherlink.signer
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params, deploymentMethod }) => {
@@ -82,6 +88,9 @@ export const useOriginate = (template: DAOTemplate) => {
 
       let contract
 
+      if (network.startsWith("etherlink")) {
+        console.log("Deploying on Etherlink")
+      }
       if (deploymentMethod === "managed") {
         const deployParams: any = {
           params: { ...params },
