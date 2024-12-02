@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Button, Typography } from "@material-ui/core"
 import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
+import { Choice } from "models/Choice"
 import { mkConfig, generateCsv, download } from "export-to-csv"
 import { useNotification } from "modules/lite/components/hooks/useNotification"
 import BigNumber from "bignumber.js"

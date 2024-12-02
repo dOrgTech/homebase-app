@@ -137,15 +137,7 @@ export const calculateProposalTotal = (choices: Choice[], decimals: any) => {
 }
 
 const getUsers = (options: Choice[]) => {
-  console.log("options", options)
-  const addresses: string[] = []
-
-  options.forEach(option => {
-    // TODO: ashutoshpw - Replace with wallet.address
-    option.walletAddresses.forEach(wallet => addresses.push((wallet as any)?._id))
-  })
-  // debugger
-
+  const addresses: string[] = options.flatMap(option => option.walletAddresses.map(wallet => (wallet as any)?.address))
   return new Set(addresses)
 }
 

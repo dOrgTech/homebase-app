@@ -32,7 +32,9 @@ const TermsText = styled(Link)(({ theme }) => ({
 const CommunityText = styled(Typography)({
   fontWeight: 500,
   fontSize: 30,
-  lineHeight: "146.3%"
+  lineHeight: "146.3%",
+  margin: "auto",
+  textAlign: "center"
 })
 
 const CommunityDescription = styled(Typography)({
