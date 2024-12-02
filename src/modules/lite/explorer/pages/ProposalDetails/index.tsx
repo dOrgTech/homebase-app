@@ -71,8 +71,6 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
     poll?.referenceBlock
   )
 
-  console.log({ voteWeight })
-
   const [votingPower, setVotingPower] = useState(poll?.isXTZ ? voteWeight?.votingXTZWeight : voteWeight?.votingWeight)
 
   const choices = usePollChoices(poll, refresh)
