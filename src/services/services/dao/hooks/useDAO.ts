@@ -13,6 +13,7 @@ import { getDAO } from "services/services/dao/services"
 import { useBlockchainInfo } from "../../../contracts/baseDAO/hooks/useBlockchainInfo"
 import { fetchLiteData } from "services/services/lite/lite-services"
 
+// Generally this is used for onChain DAOs so can be renamed to useOnChainDAO
 export const useDAO = (address: string) => {
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>()
   const { network } = useTezos()
@@ -24,6 +25,84 @@ export const useDAO = (address: string) => {
   const { data, ...rest } = useQuery(
     ["dao", address],
     async () => {
+      console.log("daoData Address", address)
+      if (address == "onchain-etherlink") {
+        const data = new LambdaDAO({
+          name: "Etherlink",
+          dao_type: {
+            id: 3,
+            name: "lambda"
+          },
+          description: "my Etherlink Dao",
+          data: {
+            network: "etherlink_testnet"
+          },
+          start_level: 0,
+          period: "0",
+          ledger: [],
+          id: 1,
+          admin: "",
+          address: "onchain-etherlink",
+          token: {
+            id: 0,
+            name: "Unknown",
+            symbol: "Unknown",
+            decimals: 0,
+            network: network as Network,
+            supply: "0",
+            contract: "Unknown",
+            token_id: "Unknown",
+            standard: "Unknown"
+          },
+          etherlink: {
+            stats: {
+              members: "58",
+              active_proposals: "1",
+              awaiting_executions: "2"
+            }
+          },
+          meta: {
+            users: [
+              {
+                address: "tz1VJpG3LpAgE3yvvQn9FgG4YbYpP3oYXxw",
+                availableStaked: 5000,
+                totalStaked: 10000,
+                votes: 1000,
+                proposalsVoted: 100
+              }
+            ]
+          },
+          extra: {
+            frozen_token_id: "0",
+            min_quorum_threshold: "0",
+            quorum_change: "0",
+            quorum_threshold: "0",
+            frozen_extra_value: "0",
+            frozen_scale_value: "0",
+            max_proposal_size: 0,
+            max_xtz_amount: "0",
+            returnedPercentage: 0
+          },
+          liteDAO: undefined,
+          frozen_token_id: "0",
+          frozen_scale_value: "0",
+          frozen_extra_value: "0",
+          guardian: "",
+          max_quorum_change: "0",
+          max_quorum_threshold: "0",
+          min_quorum_threshold: "0",
+          quorum_change: "0",
+          quorum_threshold: "0",
+          max_proposal_size: 0,
+          max_xtz_amount: "0",
+          min_xtz_amount: "0",
+          network: "etherlink_testnet",
+          slash_division_value: "0",
+          slash_scale_value: "0"
+        } as any)
+        console.log("daoData LambdaDAO", data)
+        return data
+      }
       const response = await getDAO(address as string)
       const liteDAO = await fetchLiteData(address, network)
 
@@ -103,13 +182,17 @@ export const useDAO = (address: string) => {
     },
     {
       enabled: !!address,
-      refetchInterval: 30000
+      refetchInterval: 30000,
+      refetchOnWindowFocus: false
     }
   )
 
   useEffect(() => {
     ;(async () => {
-      if (data && blockchainInfo) {
+      if ((data as any)?.address === "onchain-etherlink") {
+        console.log("No cycle info for etherlink")
+        return
+      } else if (data && blockchainInfo) {
         const blockTimeAverage = blockchainInfo.constants.timeBetweenBlocks
         const blocksFromStart = block - data.data.start_level
         const periodsFromStart = Math.floor(blocksFromStart / Number(data.data.period))
