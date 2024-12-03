@@ -1,5 +1,3 @@
-/* eslint-disable react/no-deprecated */
-
 import React from "react"
 import ReactDOM from "react-dom"
 import App from "App"
@@ -14,7 +12,6 @@ import { NetworkProvider } from "services/useNetwork"
 
 dayjs.extend(localizedFormat)
 
-// eslint-disable-next-line react/no-deprecated
 ReactDOM.render(
   <React.StrictMode>
     <NetworkProvider>
