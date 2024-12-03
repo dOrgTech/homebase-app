@@ -4,6 +4,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import mixpanel from "mixpanel-browser"
 import { Network } from "services/beacon"
 import { EnvKey, getEnv } from "services/config"
+import { TezosToolkit } from "@taquito/taquito"
 
 export const useArbitraryContractData = () => {
   const queryClient = useQueryClient()
@@ -26,7 +27,7 @@ export const useArbitraryContractData = () => {
         let tezosToolkit = tezos
 
         if (!account) {
-          tezosToolkit = await connect()
+          tezosToolkit = (await connect()) as TezosToolkit
         }
 
         const resp = await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/aci/${contract}`, {

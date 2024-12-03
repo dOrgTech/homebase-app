@@ -6,6 +6,8 @@ import { CreatorBadge } from "./CreatorBadge"
 import { FileCopyOutlined } from "@material-ui/icons"
 import { Poll } from "models/Polls"
 import dayjs from "dayjs"
+import LinkIcon from "assets/img/link.svg"
+
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
 
@@ -219,17 +221,16 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
             </Typography>
           </Grid>
 
-            <Subtitle>{ReactHtmlParser(poll?.description ? poll?.description : "")}</Subtitle>
-          </DescriptionContainer>
+          <Subtitle>{ReactHtmlParser(poll?.description ? poll?.description : "")}</Subtitle>
 
-          {/* {poll?.externalLink ? (
+          {poll?.externalLink ? (
             <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
               <LogoItem src={LinkIcon} />
               <StyledLink color="secondary" href={poll?.externalLink} target="_">
                 {poll?.externalLink}
               </StyledLink>
             </Grid>
-          ) : null} */}
+          ) : null}
         </Grid>
       </LinearContainer>
     </>

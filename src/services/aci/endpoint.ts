@@ -157,8 +157,6 @@ function parseSchema(counter: number, token: TokenSchema, init: Record<string, a
         },
         counter
       ]
-    case "tx_rollup_l2_address":
-      throw new Error("can't happen: this type has been disable")
     case "or": {
       const schemas = Object.entries(token.schema)
       let new_counter = counter

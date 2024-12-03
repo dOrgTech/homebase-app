@@ -6,7 +6,6 @@ import { ResponsiveDialog } from "./ResponsiveDialog"
 import { ColorDot } from "./ChangeNetworkButton"
 import { ContentContainer } from "./ContentContainer"
 import { ActionTypes, CreatorContext } from "modules/creator/state"
-import { ContentContainer } from "components/ui/Table"
 
 const SheetItem = styled(ContentContainer)({
   "height": 50,

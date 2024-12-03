@@ -197,33 +197,6 @@ export const UserMovements: React.FC<{
     setFilters(filters)
   }
 
-  const handleChangeTabTransactions = (newValue: number) => {
-    if (newValue === 0) {
-      setFilteredTransactions(transfers)
-      setPageCount(Math.ceil(transfers ? transfers.length / 2 : 0))
-    }
-    if (newValue === 1) {
-      const newArray = transfers?.filter(item => item.type === "Withdrawal")
-      setFilteredTransactions(newArray)
-      setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
-    }
-    if (newValue === 2) {
-      const newArray = transfers?.filter(item => item.type === "Deposit")
-      setFilteredTransactions(newArray)
-      setPageCount(Math.ceil(newArray ? newArray.length / 2 : 1))
-    }
-    setSelectedTabTransactions(newValue)
-  }
-
-  // Invoke when user click to request another page.
-  const handlePageClick = (event: { selected: number }) => {
-    if (transfers) {
-      const newOffset = (event.selected * count) % (filteredTransactions ? filteredTransactions.length : 1)
-      setOffset(newOffset)
-      setCurrentPage(event.selected)
-    }
-  }
-
   return (
     <Grid item>
       {showActivity ? (
@@ -306,6 +279,8 @@ export const UserMovements: React.FC<{
                   currentLevel={cycleInfo.currentLevel}
                   proposals={showActivity ? proposalsCreated : proposalsCreated.slice(0, 2)}
                   liteProposals={showActivity ? pollsPosted : pollsPosted?.slice(0, 2)}
+                  showFullList={showActivity}
+                  filters={filters}
                 />
               )}
               {!(proposalsCreated && proposalsCreated.length > 0) && !(pollsPosted && pollsPosted.length > 0) ? (
@@ -328,6 +303,8 @@ export const UserMovements: React.FC<{
                   currentLevel={cycleInfo.currentLevel}
                   proposals={showActivity ? proposalsVoted : proposalsVoted.slice(0, 2)}
                   liteProposals={showActivity ? votedPolls : votedPolls.slice(0, 2)}
+                  showFullList={showActivity}
+                  filters={filters}
                 />
               )}
               {!(proposalsVoted && proposalsVoted.length > 0) && !(votedPolls && votedPolls.length > 0) ? (

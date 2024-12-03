@@ -153,7 +153,7 @@ function initTokenTable(init: Record<string, tokenValueType>, counter: number, d
 
 function parseSchema(
   counter: number,
-  token: TokenSchema,
+  token: TokenSchema | any,
   init: Record<string, tokenValueType>,
   name?: string
 ): [token, number] {
@@ -439,7 +439,7 @@ function parseSchema(
         counter
       ]
     default:
-      return assertNever(token)
+      return assertNever(token.__michelsonType as never)
   }
 }
 function evalTaquitoParam(token: token, tableValue: Record<string, tokenValueType>): any {

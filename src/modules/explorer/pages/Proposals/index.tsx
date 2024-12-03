@@ -280,6 +280,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={proposals}
                   liteProposals={undefined}
+                  filters={filters}
                 />
               )}
               {!(proposals && proposals.length > 0) ? (
@@ -302,6 +303,7 @@ export const Proposals: React.FC = () => {
                   currentLevel={cycleInfo.currentLevel}
                   proposals={undefined}
                   liteProposals={polls}
+                  filters={filters}
                 />
               )}
               {!(polls && polls.length > 0) ? (

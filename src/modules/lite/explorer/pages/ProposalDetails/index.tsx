@@ -22,6 +22,7 @@ import { ArrowBackIosOutlined } from "@material-ui/icons"
 import { useIsMember } from "../../hooks/useIsMember"
 import { useHistoryLength } from "modules/explorer/context/HistoryLength"
 import { getEthSignature } from "services/utils/utils"
+import { SmallButton } from "modules/common/SmallButton"
 
 const DescriptionText = styled(Typography)({
   fontSize: 24,
