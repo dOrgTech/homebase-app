@@ -302,8 +302,8 @@ export const UserMovements: React.FC<{
                 <ProposalsList
                   currentLevel={cycleInfo.currentLevel}
                   proposals={showActivity ? proposalsVoted : proposalsVoted.slice(0, 2)}
-                  showFullList={showActivity}
                   liteProposals={showActivity ? votedPolls : votedPolls.slice(0, 2)}
+                  showFullList={showActivity}
                   filters={filters}
                 />
               )}

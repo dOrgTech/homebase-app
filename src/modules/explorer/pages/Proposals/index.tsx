@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -111,6 +111,7 @@ export const Proposals: React.FC = () => {
   const { data: proposals } = useProposals(daoId)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
   const [openDialog, setOpenDialog] = useState(false)
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
 
@@ -159,6 +160,12 @@ export const Proposals: React.FC = () => {
   const handleFilters = (filters: Filters) => {
     setFilters(filters)
   }
+
+  useEffect(() => {
+    if (proposalTypeQuery === "add-function") {
+      setOpenDialog(true)
+    }
+  }, [proposalTypeQuery])
 
   return (
     <>
@@ -261,7 +268,7 @@ export const Proposals: React.FC = () => {
             direction="row"
             alignItems="center"
           >
-            <FilterAltIcon style={{ color: theme.palette.secondary.main }} fontSize="small" />
+            <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
             <Typography color="secondary">Filter & Sort</Typography>
           </FiltersContainer>
 
@@ -312,7 +319,9 @@ export const Proposals: React.FC = () => {
           </TabPanel>
         </TabsBox>
 
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
+        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery} />
+
+        {/* Keeping this component here as it is inhe master branch */}
         <FilterProposalsDialog
           saveFilters={handleFilters}
           open={openFiltersDialog}

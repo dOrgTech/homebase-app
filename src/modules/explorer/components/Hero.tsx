@@ -1,6 +1,6 @@
-import { Grid, GridProps, styled } from "@material-ui/core"
 import React from "react"
-import { ContentContainer } from "./ContentContainer"
+import { Grid, GridProps, styled } from "@material-ui/core"
+import { ContentContainer } from "components/ui/Table"
 
 const Container = styled(ContentContainer)({
   "padding": "0px",

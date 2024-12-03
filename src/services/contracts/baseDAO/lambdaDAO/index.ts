@@ -200,6 +200,13 @@ export class LambdaDAO extends BaseDAO {
     return await contractMethod.send()
   }
 
+  /**
+   * This function sets of lambda in proposal to be executed
+   * @param param0
+   * @param tezos
+   * @returns any
+   *
+   */
   public async proposeLambdaExecute(
     { handler_name, agoraPostId, handler_code, handler_params, lambda_arguments }: LambdaExecuteArgs,
     tezos: TezosToolkit
@@ -269,6 +276,7 @@ export class LambdaDAO extends BaseDAO {
 
     const contractMethod = contract.methods.propose(
       await tezos.wallet.pkh(),
+      // frozen_extra_value is 0 for lambda remove
       formatUnits(new BigNumber(this.data.extra.frozen_extra_value), this.data.token.decimals),
       proposalMetadata
     )

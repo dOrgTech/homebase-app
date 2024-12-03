@@ -114,7 +114,7 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
 }))
 
 export const DAOList: React.FC = () => {
-  const { network, account, etherlink } = useTezos()
+  const { network, etherlink, account } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()

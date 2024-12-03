@@ -1,5 +1,5 @@
+import React, { useEffect, useMemo, useState } from "react"
 import dayjs from "dayjs"
-import React, { useMemo, useState } from "react"
 import {
   Grid,
   Link,
@@ -20,9 +20,10 @@ import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { networkNameMap } from "services/bakingBad"
 import { toShortAddress } from "services/contracts/utils"
 import { ReactComponent as BulletIcon } from "assets/img/bullet.svg"
-import { CopyButton } from "modules/common/CopyButton"
 import ReactPaginate from "react-paginate"
 import "../../DAOList/styles.css"
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"
+import numbro from "numbro"
 
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
@@ -33,7 +34,8 @@ const createData = (transfer: TransferWithBN) => {
     date: dayjs(transfer.date).format("L"),
     address: transfer.recipient,
     amount: transfer.amount.dp(10, 1).toString(),
-    hash: transfer.hash
+    hash: transfer.hash,
+    type: transfer.type
   }
 }
 
@@ -65,15 +67,69 @@ const ProposalsFooterMobile = styled(Grid)({
   borderBottomRightRadius: 8
 })
 
+const ItemContainer = styled(Grid)(({ theme }) => ({
+  padding: "40px 48px",
+  gap: 8,
+  borderRadius: 8,
+  background: theme.palette.primary.main,
+  [theme.breakpoints.down("sm")]: {
+    padding: "30px 38px",
+    gap: 20
+  }
+}))
+
+const Container = styled(Grid)({
+  gap: 24,
+  display: "grid"
+})
+
+const Title = styled(Typography)({
+  color: "#fff",
+  fontSize: 24
+})
+
+const Subtitle = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.light,
+  fontSize: 16,
+  fontWeight: 300
+}))
+
+const AmountText = styled(Typography)(({ theme }) => ({
+  color: "#fff",
+  fontSize: 18,
+  fontWeight: 300,
+  lineHeight: "160%"
+}))
+
+const BlockExplorer = styled(Typography)({
+  "fontSize": 16,
+  "fontWeight": 400,
+  "cursor": "pointer",
+  "display": "flex",
+  "alignItems": "center",
+  "& svg": {
+    fontSize: 16,
+    marginRight: 6
+  }
+})
+
 interface RowData {
   token: string
   date: string
   amount: string
   address: string
   hash: string
+  type: string | undefined
 }
 
 const Titles = ["Token", "Date", "Recipient", "Amount"]
+
+const formatConfig = {
+  average: true,
+  mantissa: 1,
+  thousandSeparated: true,
+  trimMantissa: true
+}
 
 const titleDataMatcher = (title: (typeof Titles)[number], rowData: RowData) => {
   switch (title) {
@@ -122,6 +178,7 @@ const MobileTransfersTable: React.FC<{ data: RowData[]; network: Network }> = ({
       const newOffset = (event.selected * 5) % data.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
   const pageCount = Math.ceil(data ? data.length / 5 : 0)
@@ -183,84 +240,93 @@ const MobileTransfersTable: React.FC<{ data: RowData[]; network: Network }> = ({
   )
 }
 
-const DesktopTransfersTable: React.FC<{ data: RowData[]; network: Network }> = ({ data: rows, network }) => {
+const TransfersTableItems: React.FC<{ data: RowData[]; network: Network }> = ({ data: rows, network }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
+  const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down("xs"))
+
+  useEffect(() => {
+    setOffset(0)
+  }, [rows])
+
+  const openBlockExplorer = (hash: string) => {
+    window.open(`https://${networkNameMap[network]}.tzkt.io/` + hash, "_blank")
+  }
+
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (rows) {
       const newOffset = (event.selected * 5) % rows.length
       setOffset(newOffset)
       setCurrentPage(event.selected)
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
   const pageCount = Math.ceil(rows ? rows.length / 5 : 0)
   return (
     <>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {Titles.map((title, i) => (
-              <TableCell key={`tokentitle-${i}`}>{title}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.slice(offset, offset + 5).map((row, i) => (
-            <TableRow
-              component={Link}
-              key={`tokenrow-${i}`}
-              href={`https://${network === "mainnet" ? "" : networkNameMap[network] + "."}tzkt.io/${row.hash}`}
-              target="_blank"
-            >
-              <TableCell>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <StyledBullet /> {row.token}
-                </div>
-              </TableCell>
-              <TableCell>{row.date}</TableCell>
-              <TableCell style={{ display: "flex", alignItems: "center" }}>
-                <RecipientText variant="body2">{toShortAddress(row.address)}</RecipientText>
-                <CopyButton text={row.address} style={{ marginBottom: 2 }} />
-              </TableCell>
-              <TableCell>{row.amount}</TableCell>
-            </TableRow>
-          ))}
-          {!(rows && rows.length > 0) ? (
-            <ProposalsFooter item container direction="column" justifyContent="center">
-              <Grid item>
-                <Typography color="textPrimary" align="left">
-                  No items
-                </Typography>
-              </Grid>
-            </ProposalsFooter>
-          ) : null}
-        </TableBody>
-      </Table>
-      <Grid container direction="row" justifyContent="flex-end">
-        <ReactPaginate
-          previousLabel={"<"}
-          breakLabel="..."
-          nextLabel=">"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={4}
-          pageCount={pageCount}
-          renderOnZeroPageCount={null}
-          containerClassName={"pagination"}
-          activeClassName={"active"}
-          forcePage={currentPage}
-          nextClassName="nextButton"
-          previousClassName="nextButton"
-        />
-      </Grid>
+      {rows && rows.length > 0 ? (
+        <>
+          <Container item>
+            {rows.slice(offset, offset + 5).map((row, i) => {
+              return (
+                <ItemContainer container key={`${row.hash}-${i}`} justifyContent="space-between" alignItems="center">
+                  <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 12 } : {}} container direction="column">
+                    <Grid item container direction="row" alignItems="center">
+                      <StyledBullet />
+                      <Title>{row.token}</Title>
+                    </Grid>
+                    <Grid item container direction={isSmall ? "column" : "row"} style={{ gap: 10 }}>
+                      <Subtitle>To {toShortAddress(row.address)}</Subtitle>
+                      {isSmall ? null : <Subtitle> •</Subtitle>}
+                      <Subtitle>{dayjs(row.date).format("ll")}</Subtitle>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={isSmall ? 12 : 5} style={isSmall ? { gap: 6 } : {}} container direction="column">
+                    <Grid item container direction="row" justifyContent={isSmall ? "flex-start" : "flex-end"}>
+                      <AmountText>
+                        {row.type ? (row.type === "Deposit" ? "-" : "+") : null}{" "}
+                        {isSmall ? numbro(row.amount).format(formatConfig) : row.amount} {row.token}{" "}
+                      </AmountText>
+                    </Grid>
+                    <Grid item direction="row" container justifyContent={isSmall ? "flex-start" : "flex-end"}>
+                      <BlockExplorer color="secondary" onClick={() => openBlockExplorer(row.hash)}>
+                        <OpenInNewIcon color="secondary" />
+                        View on Block Explorer
+                      </BlockExplorer>
+                    </Grid>
+                  </Grid>
+                </ItemContainer>
+              )
+            })}
+          </Container>
+
+          <Grid container direction="row" justifyContent="flex-end">
+            <ReactPaginate
+              previousLabel={"<"}
+              breakLabel="..."
+              nextLabel=">"
+              onPageChange={handlePageClick}
+              pageRangeDisplayed={4}
+              pageCount={pageCount}
+              renderOnZeroPageCount={null}
+              containerClassName={"pagination"}
+              activeClassName={"active"}
+              forcePage={currentPage}
+              nextClassName="nextButton"
+              previousClassName="nextButton"
+            />
+          </Grid>
+        </>
+      ) : (
+        <Typography color="textPrimary">No items</Typography>
+      )}
     </>
   )
 }
 
 export const TransfersTable: React.FC<{ transfers: TransferWithBN[] }> = ({ transfers }) => {
-  const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
-
   const rows = useMemo(() => {
     if (!transfers) {
       return []
@@ -273,10 +339,10 @@ export const TransfersTable: React.FC<{ transfers: TransferWithBN[] }> = ({ tran
 
   return (
     <TableContainer>
-      {isSmall ? (
-        <MobileTransfersTable data={rows} network={network} />
+      {rows && rows.length > 0 ? (
+        <TransfersTableItems data={rows} network={network} />
       ) : (
-        <DesktopTransfersTable data={rows} network={network} />
+        <Typography color="textPrimary">No items</Typography>
       )}
     </TableContainer>
   )

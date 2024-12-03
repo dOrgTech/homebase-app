@@ -3,20 +3,8 @@ import { ProposalItem } from "modules/explorer/pages/User"
 import React, { useCallback, useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
-import { ContentContainer } from "./ContentContainer"
 import { ProposalFilter } from "./ProposalsFilter"
-
-const TableContainer = styled(ContentContainer)({
-  width: "100%"
-})
-
-const TableHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  padding: "16px 46px",
-  minHeight: 34,
-  [theme.breakpoints.down("sm")]: {
-    gap: 10
-  }
-}))
+import { TableContainer, TableHeader } from "components/ui/Table"
 
 const ProposalsFooter = styled(Grid)({
   padding: "16px 46px",

@@ -213,7 +213,8 @@ export const theme = createTheme({
           borderBottom: "none"
         },
         "&:before": {
-          borderBottom: "none"
+          borderBottom: "none",
+          transition: "none"
         },
         "&:hover:not($disabled):not($focused):not($error):before": {
           borderBottom: "none"
@@ -261,6 +262,9 @@ export const theme = createTheme({
           color: "#bfc5ca !important",
           background: "inherit !important"
         }
+      },
+      containedSecondary: {
+        backgroundColor: "#4ed092"
       }
     },
     MuiInputBase: {
