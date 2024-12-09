@@ -378,9 +378,24 @@ const ProposalActionsDialogForEtherlink: React.FC<Props> = ({ open, handleClose 
         <Grid container spacing={2}>
           {[
             {
+              label: "Off-Chain Debate",
+              description: "Post a thesis and have tokenized arguments around it",
+              modal: "off_chain_debate"
+            },
+            {
               label: "Transfer Funds",
               description: "Propose a transfer of funds from the DAO treasury",
               modal: "transfer_funds"
+            },
+            {
+              label: "Edit Registry",
+              description: "Change an entry or add a new one",
+              modal: "edit_registry"
+            },
+            {
+              label: "Contract Call",
+              description: "Propose a call to an external contract",
+              modal: "contract_call"
             },
             {
               label: "Change Config",
@@ -388,9 +403,9 @@ const ProposalActionsDialogForEtherlink: React.FC<Props> = ({ open, handleClose 
               modal: "change_config"
             },
             {
-              label: "Contract Call",
-              description: "Propose a call to an external contract",
-              modal: "contract_call"
+              label: "Token Operation",
+              description: "Propose a token operation",
+              modal: "token_operation"
             }
           ].map((option, index) => (
             <Grid item xs={isMobileSmall ? 12 : 4} key={index} onClick={() => setModalOpen(option.modal as any)}>

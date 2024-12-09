@@ -60,10 +60,13 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   console.log("Wagmi Address", address)
 
   const [isLoadingDaos, setIsLoadingDaos] = useState(true)
+  const [isLoadingDaoProposals, setIsLoadingDaoProposals] = useState(true)
+
   const selectedDaoIdRef = useRef<string | null>(null)
   const [daoData, setDaoData] = useState<any[]>([])
   const [daoSelected, setDaoSelected] = useState<any>({})
   const [daoProposals, setDaoProposals] = useState<any[]>([])
+  const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
 
@@ -80,7 +83,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
     const daoProposalKey = `daosEtherlink-Testnet/${daoSelected.id}/proposals`
     if (firestoreData?.[daoProposalKey]) {
-      setDaoProposals(firestoreData[daoProposalKey])
+      setDaoProposals(firestoreData[daoProposalKey]?.sort((a: any, b: any) => b.createdAt - a.createdAt))
     }
     const daoMembersKey = `daosEtherlink-Testnet/${daoSelected.id}/members`
     if (firestoreData?.[daoMembersKey]) {
@@ -112,8 +115,10 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         },
         daos: daoData,
         isLoadingDaos,
+        isLoadingDaoProposals: false,
         daoSelected: daoSelected,
         daoProposals: daoProposals,
+        daoProposalSelected: daoProposalSelected,
         daoMembers: daoMembers,
         selectDao: (daoId: string) => {
           const dao = daoData.find(dao => dao.id === daoId)

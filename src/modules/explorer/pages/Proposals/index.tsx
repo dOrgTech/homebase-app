@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useState, useContext } from "react"
 import {
   Button,
   FormControl,
@@ -36,6 +36,9 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
 import { Filters } from "../User/components/UserMovements"
+import { useEtherlinkDAOID } from "modules/etherlink/explorer/router"
+import { EtherlinkContext } from "services/wagmi/context"
+import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 
 const FiltersContainer = styled(Grid)({
   marginTop: 45,
@@ -337,11 +340,13 @@ const TezosProposals = () => {
 }
 
 export const EtherlinkProposals = () => {
-  const daoId = useDAOID()
-  const { data, cycleInfo } = useDAO(daoId)
-  const { data: proposals } = useProposals(daoId)
+  const daoId = useEtherlinkDAOID()
+  // TODO: Replace useContext with a useEtherlinkProvider
+  const { daoProposals } = useContext(EtherlinkContext)
+  // const { data, cycleInfo } = useDAO(daoId)
+  // const { data: proposals } = useProposals(daoId)
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  // const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const [openDialog, setOpenDialog] = useState(false)
 
   const handleCloseModal = () => {
@@ -371,6 +376,9 @@ export const EtherlinkProposals = () => {
                   style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
                 >
                   <MenuItem value="All">All</MenuItem>
+                  <MenuItem value="OffChain">Off-Chain</MenuItem>
+                  <MenuItem value="TokenOperation">Token Operation</MenuItem>
+                  <MenuItem value="Registry">Registry</MenuItem>
                   <MenuItem value="Transfer">Transfer</MenuItem>
                   <MenuItem value="ContractCall">Contract Call</MenuItem>
                   <MenuItem value="ChangeConfig">Change Config</MenuItem>
@@ -387,10 +395,13 @@ export const EtherlinkProposals = () => {
                 >
                   <MenuItem value="All">All</MenuItem>
                   <MenuItem value="Active">Active</MenuItem>
-                  <MenuItem value="Approved">Approved</MenuItem>
-                  <MenuItem value="Rejected">Rejected</MenuItem>
+                  <MenuItem value="Passed">Passed</MenuItem>
+                  <MenuItem value="Executable">Executable</MenuItem>
                   <MenuItem value="Executed">Executed</MenuItem>
                   <MenuItem value="Expired">Expired</MenuItem>
+                  <MenuItem value="NoQuorum">No Quorum</MenuItem>
+                  <MenuItem value="Pending">Pending</MenuItem>
+                  <MenuItem value="Rejected">Rejected</MenuItem>
                 </Select>
               </Grid>
               <Grid
@@ -405,7 +416,7 @@ export const EtherlinkProposals = () => {
                 }}
               >
                 <Typography variant="body1" style={{ color: theme.palette.text.secondary }}>
-                  143 Proposals
+                  {daoProposals?.length || 0} Proposals
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={3} style={{ textAlign: "right", justifyContent: "flex-end" }}>
@@ -418,6 +429,7 @@ export const EtherlinkProposals = () => {
         </HeroContainer>
         <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
       </Grid>
+      <EvmDaoProposalList proposals={daoProposals} filters={undefined} />
     </>
   )
 }
