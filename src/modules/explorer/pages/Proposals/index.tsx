@@ -336,7 +336,7 @@ const TezosProposals = () => {
   )
 }
 
-const EtherlinkProposals = () => {
+export const EtherlinkProposals = () => {
   const daoId = useDAOID()
   const { data, cycleInfo } = useDAO(daoId)
   const { data: proposals } = useProposals(daoId)

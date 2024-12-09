@@ -2,89 +2,31 @@ import React, { useMemo, useState } from "react"
 import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Avatar } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { useDAOID } from "./router"
+import { useEtherlinkDAOID } from "./router"
 
-import { ContentContainer } from "../../components/ContentContainer"
-import { DAOStatsRow } from "../../components/DAOStatsRow"
-import { UsersTable } from "../../components/UsersTable"
+// import { ContentContainer } from "../../components/ContentContainer"
+// import { DAOStatsRow } from "../../components/DAOStatsRow"
+// import { UsersTable } from "../../components/UsersTable"
 import BigNumber from "bignumber.js"
-import { SmallButton } from "../../../common/SmallButton"
-import { DaoSettingModal } from "./components/Settings"
+import { SmallButton } from "../../common/SmallButton"
+
+// import { DaoSettingModal } from "./components/Settings"
 import SettingsIcon from "@mui/icons-material/Settings"
-import { SettingsDialog } from "./components/SettingsDialog"
+// import { SettingsDialog } from "./components/SettingsDialog"
 import { IconButton } from "@mui/material"
 import { FileCopyOutlined } from "@material-ui/icons"
+import { HeroContainer } from "components/ui/HeroContainer"
+// import { TitleText } from "components/ui/TitleText"
+import { ViewSettings } from "components/ui/ViewSettings"
+import { SubtitleText } from "components/ui/SubtitleText"
+import { TitleText } from "components/ui/TitleText"
+import { DAOStatsRowEtherlink } from "modules/explorer/components/DAOStatsRow"
 
-export const StyledAvatar = styled(Avatar)({
-  height: 50,
-  width: 50
-})
-
-const HeroContainer = styled(ContentContainer)(({ theme }) => ({
-  padding: 38,
-  [theme.breakpoints.down("sm")]: {
-    width: "inherit"
-  }
-}))
-
-const TitleText = styled(Typography)(({ theme }) => ({
-  fontSize: 36,
-  fontWeight: 600,
-  lineHeight: 0.8,
-
-  ["@media (max-width:642px)"]: {
-    fontSize: 35
-  },
-
-  ["@media (max-width:583px)"]: {
-    fontSize: 30
-  },
-
-  ["@media (max-width:533px)"]: {
-    fontSize: 25
-  },
-
-  ["@media (max-width:462px)"]: {
-    fontSize: 22
-  }
-}))
-
-const ViewSettings = styled(Grid)({
-  "fontWeight": 300,
-  "gap": 8,
-  "cursor": "pointer",
-  "& h6": {
-    fontWeight: 300
-  }
-})
-
-const SubtitleText = styled(Typography)(({ theme }) => ({
-  fontSize: 18,
-  color: theme.palette.primary.light,
-  width: "875px",
-  fontWeight: 300,
-  maxHeight: "200px",
-  overflowY: "scroll",
-
-  ["@media (max-width:1166px)"]: {
-    width: "75.3vw"
-  },
-
-  ["@media (max-width:1138px)"]: {
-    width: "100%"
-  },
-
-  ["@media (max-width:599.98px)"]: {
-    width: "100%",
-    margin: "-15px auto 0 auto"
-  }
-}))
-
-export const DAOOverview: React.FC = () => {
-  const daoId = useDAOID()
+export const EtherlinkDAOOverview: React.FC = () => {
+  const daoId = useEtherlinkDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
 
-  console.log("daoData", data)
+  console.log("explorer/index.tsx", data)
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const symbol = (data && data.data.token?.symbol?.toUpperCase()) || "Unknown"
@@ -141,13 +83,13 @@ export const DAOOverview: React.FC = () => {
                     View Settings
                   </Typography>
                 </ViewSettings>
-                <DaoSettingModal open={openDialog} handleClose={handleCloseModal} />
+                {/* <DaoSettingModal open={openDialog} handleClose={handleCloseModal} /> */}
               </Grid>
               <Grid item>
                 <SmallButton onClick={() => setChangeOpenDialog(true)}>
                   <Typography color="primary">Change Settings</Typography>
                 </SmallButton>
-                <SettingsDialog open={openChangeDialog} handleClose={handleCloseChangeModal} />
+                {/* <SettingsDialog open={openChangeDialog} handleClose={handleCloseChangeModal} /> */}
               </Grid>
             </Grid>
           </Grid>
@@ -155,7 +97,7 @@ export const DAOOverview: React.FC = () => {
             {data?.data.network?.startsWith("etherlink") ? (
               <>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={6}>
                     <Typography
                       variant="h6"
                       style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}
@@ -185,7 +127,7 @@ export const DAOOverview: React.FC = () => {
                       </IconButton>
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={3}>
+                  <Grid item xs={12} sm={6}>
                     <Typography
                       variant="h6"
                       style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}
@@ -227,10 +169,10 @@ export const DAOOverview: React.FC = () => {
           </Grid>
         </Grid>
       </HeroContainer>
-      <DAOStatsRow />
+      <DAOStatsRowEtherlink />
 
       <Grid item style={{ width: "inherit" }}>
-        <UsersTable data={usersTableData} symbol={symbol || ""} />
+        {/* <UsersTable data={usersTableData} symbol={symbol || ""} /> */}
       </Grid>
     </Grid>
   )

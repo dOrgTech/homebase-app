@@ -202,7 +202,7 @@ const DAOStatsRowTezos = () => {
   )
 }
 
-const DAOStatsRowEtherlink = () => {
+export const DAOStatsRowEtherlink = () => {
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const daoStats = data?.data?.etherlink?.stats

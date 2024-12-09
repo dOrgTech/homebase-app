@@ -117,6 +117,7 @@ export const DAOList: React.FC = () => {
   const { network, account, etherlink } = useTezos()
   const { data: daos, isLoading } = useAllDAOs(network)
 
+  console.log({ daos })
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))
@@ -139,8 +140,8 @@ export const DAOList: React.FC = () => {
             name: dao.name,
             description: dao.description,
             symbol: dao.token.symbol,
-            votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
-            votingAddressesCount,
+            votingAddresses: dao.ledgers?.map((l: { holder: { address: any } }) => l.holder.address) || [],
+            votingAddressesCount: votingAddressesCount || dao.holders_count || 0,
             dao_type: {
               name: dao.dao_type.name
             },
@@ -172,7 +173,7 @@ export const DAOList: React.FC = () => {
           id: dao.address,
           name: dao.name,
           symbol: dao.token.symbol,
-          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+          votingAddresses: dao.ledgers ? dao.ledgers.map((l: { holder: { address: any } }) => l.holder.address) : [],
           votingAddressesCount:
             dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
           dao_type: {
@@ -196,8 +197,6 @@ export const DAOList: React.FC = () => {
 
     return []
   }, [daos, searchText, account, etherlink?.account?.address])
-
-  console.log({ daos, currentDAOs, myDAOs })
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())

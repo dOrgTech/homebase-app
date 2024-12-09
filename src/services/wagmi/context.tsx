@@ -5,6 +5,7 @@ import { config as wagmiConfig } from "services/wagmi/config"
 import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { useSIWE, useModal, SIWESession } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
+import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -57,6 +58,44 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   console.log("Wagmi Chain", chain, status)
   console.log("Wagmi Address", address)
+
+  const [isLoadingDaos, setIsLoadingDaos] = useState(true)
+  const selectedDaoIdRef = useRef<string | null>(null)
+  const [daoData, setDaoData] = useState<any[]>([])
+  const [daoSelected, setDaoSelected] = useState<any>({})
+  const [daoProposals, setDaoProposals] = useState<any[]>([])
+  const [daoMembers, setDaoMembers] = useState<any[]>([])
+  const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
+
+  useEffect(() => {
+    fetchCollection("daosEtherlink-Testnet").then((data: any) => {
+      setIsLoadingDaos(false)
+    })
+  }, [fetchCollection])
+
+  useEffect(() => {
+    console.log("wagmi/context.tsx", { firestoreData })
+    if (firestoreData?.["daosEtherlink-Testnet"]) {
+      setDaoData(firestoreData["daosEtherlink-Testnet"])
+    }
+    const daoProposalKey = `daosEtherlink-Testnet/${daoSelected.id}/proposals`
+    if (firestoreData?.[daoProposalKey]) {
+      setDaoProposals(firestoreData[daoProposalKey])
+    }
+    const daoMembersKey = `daosEtherlink-Testnet/${daoSelected.id}/members`
+    if (firestoreData?.[daoMembersKey]) {
+      setDaoMembers(firestoreData[daoMembersKey])
+    }
+  }, [daoSelected.id, firestoreData])
+
+  useEffect(() => {
+    console.log("daoSelected", daoSelected)
+    if (daoSelected.id) {
+      fetchCollection(`daosEtherlink-Testnet/${daoSelected.id}/proposals`)
+      fetchCollection(`daosEtherlink-Testnet/${daoSelected.id}/members`)
+    }
+  }, [daoSelected, fetchCollection])
+
   return (
     <EtherlinkContext.Provider
       value={{
@@ -70,6 +109,19 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         connect: () => {
           setOpen(true)
           // connect({ config: wagmiConfig })
+        },
+        daos: daoData,
+        isLoadingDaos,
+        daoSelected: daoSelected,
+        daoProposals: daoProposals,
+        daoMembers: daoMembers,
+        selectDao: (daoId: string) => {
+          const dao = daoData.find(dao => dao.id === daoId)
+          // alert(`dao:${daoId}`)
+          if (dao) {
+            setDaoSelected(dao)
+            selectedDaoIdRef.current = daoId
+          }
         },
         disconnect: () => disconnectEtherlink(wagmiConfig),
         switchToNetwork: (network: string) => {
