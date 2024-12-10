@@ -281,6 +281,8 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
     }
   }, [account, dao, daoId, etherlinkDaoId, etherlinkDaoSelected])
 
+  if (location.pathname === "/explorer/daos" || location.pathname === "/explorer/daos/") return null
+
   return !isMobileSmall || disableMobileMenu ? (
     <Container container>
       <InnerContainer

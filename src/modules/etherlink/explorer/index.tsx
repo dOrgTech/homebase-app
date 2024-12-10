@@ -1,9 +1,6 @@
 import React, { useContext, useState } from "react"
 import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 
-import { useDAO } from "services/services/dao/hooks/useDAO"
-import { useEtherlinkDAOID } from "./router"
-
 import { SmallButton } from "../../common/SmallButton"
 
 import SettingsIcon from "@mui/icons-material/Settings"
@@ -18,13 +15,10 @@ import { EvmDaoStatsRow } from "../components/EvmDaoStatsRow"
 import { EvmDaoSettingModal } from "../components/EvmDaoSettingsModal"
 
 export const EtherlinkDAOOverview: React.FC = () => {
-  const daoId = useEtherlinkDAOID()
-  const { data, cycleInfo, ledger } = useDAO(daoId)
   const { daoSelected } = useContext(EtherlinkContext)
 
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const symbol = (daoSelected && daoSelected?.token?.toUpperCase()) || "Unknown"
 
   const name = daoSelected && daoSelected?.name
   const description = daoSelected && daoSelected?.description
