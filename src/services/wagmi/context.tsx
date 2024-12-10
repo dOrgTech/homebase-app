@@ -8,6 +8,7 @@ import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
 import { useParams } from "react-router-dom"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -23,7 +24,7 @@ interface EtherlinkType {
 
 const useEtherlinkDao = ({ network }: { network: string }) => {
   const selectedDaoIdRef = useRef<string | null>(null)
-
+  console.log("useEtherlinkDao", { network })
   const firebaseRootCollection = useMemo(() => {
     if (network === "etherlink_mainnet") {
       return "daosEtherlink-Mainnet"
@@ -34,7 +35,9 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     return undefined
   }, [network])
 
-  const [isLoadingDaos, setIsLoadingDaos] = useState(true)
+  console.log({ firebaseRootCollection })
+
+  const [isLoadingDaos, setIsLoadingDaos] = useState(!!firebaseRootCollection)
   const [isLoadingDaoProposals, setIsLoadingDaoProposals] = useState(true)
 
   const [daoData, setDaoData] = useState<any[]>([])
@@ -46,9 +49,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
   useEffect(() => {
     if (firebaseRootCollection) {
-      fetchCollection(firebaseRootCollection).then((data: any) => {
-        setIsLoadingDaos(false)
-      })
+      // Trigger DAO Loading Request
+      fetchCollection(firebaseRootCollection)
     }
   }, [fetchCollection, firebaseRootCollection])
 
@@ -57,6 +59,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (!firebaseRootCollection) return
     if (firestoreData?.[firebaseRootCollection]) {
       setDaoData(firestoreData[firebaseRootCollection])
+      setIsLoadingDaos(false)
     }
     const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals`
     if (firestoreData?.[daoProposalKey]) {
@@ -136,6 +139,7 @@ const getStatusByHistory = (history: { active: number; executable: number; passe
 export const EtherlinkContext = createContext<any | undefined>(undefined)
 
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [network, setNetwork] = useState<string | undefined>(localStorage.getItem("homebase:network") || undefined)
   const { setOpen } = useModal()
   const provider = useEthersProvider()
   const signer = useEthersSigner()
@@ -162,8 +166,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (chain?.name === "Etherlink Testnet") {
       return "etherlink_testnet"
     }
-    return "unknown"
-  }, [chain?.name])
+    return network
+  }, [chain?.name, network])
 
   const {
     daos,
@@ -176,7 +180,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     selectDaoProposal,
     selectDao
   } = useEtherlinkDao({
-    network: etherlinkNetwork
+    network: etherlinkNetwork || ""
   })
 
   console.log("Etherlink Network", etherlinkNetwork)
@@ -209,6 +213,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         disconnect: () => disconnectEtherlink(wagmiConfig),
         switchToNetwork: (network: string) => {
           const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
+          setNetwork(network)
           switchChain({ chainId: networkId })
         }
       }}

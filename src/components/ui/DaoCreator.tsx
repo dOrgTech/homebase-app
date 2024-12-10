@@ -1,16 +1,4 @@
-import {
-  Box,
-  Grid,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  TextareaAutosize,
-  Typography,
-  styled,
-  withStyles,
-  withTheme
-} from "@material-ui/core"
+import { Grid, Paper, Stepper, TextareaAutosize, Typography, styled, withStyles, withTheme } from "@material-ui/core"
 import { InfoRounded } from "@mui/icons-material"
 import { TextField as FormikTextField } from "formik-material-ui"
 

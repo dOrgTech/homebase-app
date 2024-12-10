@@ -25,6 +25,7 @@ import { ReactComponent as MyDAOsIcon } from "assets/img/my-daos-icon.svg"
 import { ReactComponent as MyDAOsSelectedIcon } from "assets/img/my-daos-selected-icon.svg"
 import ReactPaginate from "react-paginate"
 import "./styles.css"
+import { LoadingLine } from "components/ui/LoadingLine"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -115,9 +116,9 @@ const TabsContainer = styled(Grid)(({ theme }) => ({
 
 export const DAOList: React.FC = () => {
   const { network, etherlink, account } = useTezos()
-  const { data: daos, isLoading } = useAllDAOs(network)
+  const { data: daos, isLoading, isLoadingWithFirebase } = useAllDAOs(network)
 
-  console.log({ daos })
+  console.log("isLoadingWithFirebase", isLoadingWithFirebase)
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))
@@ -285,6 +286,11 @@ export const DAOList: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
+          {isLoadingWithFirebase ? (
+            <Grid item>
+              <LoadingLine color={theme.palette.secondary.main} height={3} barWidth={40} />
+            </Grid>
+          ) : null}
           <Grid item>
             <TabPanel value={selectedTab} index={0}>
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>

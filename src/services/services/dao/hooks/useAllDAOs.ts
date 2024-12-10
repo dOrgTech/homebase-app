@@ -8,7 +8,7 @@ import { EtherlinkContext } from "services/wagmi/context"
 export const useAllDAOs = (network: Network) => {
   const { daos: etherinkDaos, isLoadingDaos } = useContext(EtherlinkContext)
 
-  return useQuery(
+  const queryData = useQuery(
     ["daos", network],
     async () => {
       const homebase_daos = await getDAOs(network)
@@ -38,4 +38,9 @@ export const useAllDAOs = (network: Network) => {
       enabled: !!(network && !isLoadingDaos)
     }
   )
+
+  return {
+    ...queryData,
+    isLoadingWithFirebase: isLoadingDaos
+  }
 }

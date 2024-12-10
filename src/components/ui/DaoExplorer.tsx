@@ -1,16 +1,4 @@
-import {
-  Box,
-  Grid,
-  Paper,
-  Step,
-  StepLabel,
-  Stepper,
-  TextareaAutosize,
-  Typography,
-  styled,
-  withStyles,
-  withTheme
-} from "@material-ui/core"
+import { styled } from "@material-ui/core"
 
 const PageLayout = styled("div")(({ theme }) => ({
   background: theme.palette.primary.dark,
