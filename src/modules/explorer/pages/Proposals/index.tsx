@@ -126,6 +126,7 @@ const TezosProposals = () => {
   const { data: proposals } = useProposals(daoId)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
   const [openDialog, setOpenDialog] = useState(false)
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
 
@@ -174,6 +175,12 @@ const TezosProposals = () => {
   const handleFilters = (filters: Filters) => {
     setFilters(filters)
   }
+
+  useEffect(() => {
+    if (proposalTypeQuery === "add-function") {
+      setOpenDialog(true)
+    }
+  }, [proposalTypeQuery])
 
   return (
     <>
@@ -276,7 +283,7 @@ const TezosProposals = () => {
             direction="row"
             alignItems="center"
           >
-            <FilterAltIcon style={{ color: theme.palette.secondary.main }} fontSize="small" />
+            <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
             <Typography color="secondary">Filter & Sort</Typography>
           </FiltersContainer>
 
@@ -327,7 +334,9 @@ const TezosProposals = () => {
           </TabPanel>
         </TabsBox>
 
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
+        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery} />
+
+        {/* Keeping this component here as it is inhe master branch */}
         <FilterProposalsDialog
           saveFilters={handleFilters}
           open={openFiltersDialog}

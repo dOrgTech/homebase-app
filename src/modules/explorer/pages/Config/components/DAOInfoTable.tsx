@@ -6,7 +6,6 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Typography,
   useMediaQuery,
@@ -28,14 +27,6 @@ const RowValue = styled(Typography)(({ theme }) => ({
   }
 }))
 
-const TableTitle = styled(Typography)(({ theme }) => ({
-  fontWeight: 500,
-  fontSize: 18,
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 16
-  }
-}))
-
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
   width: "inherit",
   [theme.breakpoints.down("sm")]: {}
@@ -46,12 +37,6 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
     paddingBottom: 0,
     paddingLeft: "16px !important",
     textAlign: "end"
-  }
-}))
-
-const CustomTableCellTitle = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingLeft: "16px !important"
   }
 }))
 

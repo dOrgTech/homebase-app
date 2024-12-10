@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react"
-import { Grid, styled, Typography, Button, useTheme, useMediaQuery, Avatar } from "@material-ui/core"
+import BigNumber from "bignumber.js"
+import { Grid, styled, Typography, useTheme, useMediaQuery, Avatar } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "./router"
@@ -7,7 +8,7 @@ import { useDAOID } from "./router"
 import { ContentContainer } from "../../components/ContentContainer"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
 import { UsersTable } from "../../components/UsersTable"
-import BigNumber from "bignumber.js"
+
 import { SmallButton } from "../../../common/SmallButton"
 import { DaoSettingModal } from "./components/Settings"
 import SettingsIcon from "@mui/icons-material/Settings"

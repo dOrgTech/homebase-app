@@ -1,15 +1,14 @@
-import { Grid, Typography, TextField, styled, CircularProgress } from "@material-ui/core"
-import React, { useCallback, useEffect } from "react"
+import { Grid, CircularProgress, Typography } from "@material-ui/core"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { Controller, FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm } from "react-hook-form"
 import { useDAOID } from "../pages/DAO/router"
 import { ProposalCodeEditorInput, ProposalFormInput } from "./ProposalFormInput"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import Prism, { highlight } from "prismjs"
 import "prism-themes/themes/prism-night-owl.css"
-import { MainButton } from "modules/common/MainButton"
+import { StyledSendButton } from "modules/common/StyledSendButton"
 import { SearchLambda } from "./styled/SearchLambda"
-import { CheckOutlined } from "@material-ui/icons"
 import { useLambdaAddPropose } from "services/contracts/baseDAO/hooks/useLambdaAddPropose"
 import { useLambdaRemovePropose } from "services/contracts/baseDAO/hooks/useLambdaRemovePropose"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
@@ -17,27 +16,12 @@ import { useDAOLambdas } from "services/contracts/baseDAO/hooks/useDAOLambdas"
 import { Lambda } from "services/bakingBad/lambdas/types"
 import { useLambdaExecutePropose } from "services/contracts/baseDAO/hooks/useLambdaExecutePropose"
 import { parseLambdaCode } from "utils"
-
-const StyledSendButton = styled(MainButton)(({ theme }) => ({
-  width: 101,
-  color: "#1C1F23"
-}))
-
-const StyledRow = styled(Grid)({
-  marginTop: 30
-})
-
-const LoadingContainer = styled(Grid)({
-  minHeight: 651
-})
-
-const LoadingStateLabel = styled(Typography)({
-  marginTop: 40
-})
-
-const CheckIcon = styled(CheckOutlined)({
-  fontSize: 169
-})
+import { ArbitraryContractInteractionForm } from "./ArbitraryContractInteractionForm"
+import AppConfig from "config"
+import { StyledRow, LoadingContainer, LoadingStateLabel, CheckIcon } from "components/ui/ConfigProposalForm"
+import { Link } from "react-router-dom"
+import { ViewButton } from "./ViewButton"
+import { Button } from "components/ui/Button"
 
 const codeEditorcontainerstyles = {
   marginTop: "8px"
@@ -65,17 +49,24 @@ type Values = {
   lambda_parameters?: Array<LambdaParameter>
 }
 
+type AciToken = {
+  counter: number
+  name?: string
+  type: string
+  children: AciToken[]
+  placeholder?: string
+  validate?: (value: string) => string | undefined
+  initValue: tokenValueType
+}
+type tokenMap = Record<"key" | "value", AciToken>
+type tokenValueType = string | boolean | number | AciToken | AciToken[] | tokenMap[]
+
 export enum ProposalAction {
   new,
   remove,
   execute,
+  aci,
   none
-}
-
-interface Props {
-  open: boolean
-  action: ProposalAction
-  handleClose: () => void
 }
 
 enum LambdaProposalState {
@@ -138,7 +129,28 @@ Eg:-
   `
 }
 
-export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action }) => {
+const ARBITRARY_CONTRACT_INTERACTION = AppConfig.CONST.ARBITRARY_CONTRACT_INTERACTION
+
+const ACI: Lambda = {
+  key: ARBITRARY_CONTRACT_INTERACTION,
+  id: 4998462,
+  active: true,
+  hash: "string",
+  value: {
+    code: "[]",
+    handler_check: "[]",
+    is_active: false
+  },
+  firstLevel: 4815399,
+  lastLevel: 4815399,
+  updates: 1
+}
+
+export const ProposalFormLambda: React.FC<{
+  open: boolean
+  action: ProposalAction
+  handleClose: () => void
+}> = ({ open, handleClose, action }) => {
   const grammar = Prism.languages.javascript
 
   const daoId = useDAOID()
@@ -149,7 +161,11 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const { mutate: lambdaRemove } = useLambdaRemovePropose()
   const { mutate: lambdaExecute } = useLambdaExecutePropose()
 
+  const [aciProposalOpen, setAciProposalOpen] = useState(false)
+  const [showHeader, setShowHeader] = useState(true)
+
   const lambdaForm = useForm<Values>()
+  const proposalTypeQuery = new URLSearchParams(window.location.search).get("type")
 
   const [lambda, setLambda] = React.useState<Lambda | null>(null)
   const [state, setState] = React.useState<LambdaProposalState>(LambdaProposalState.write_action)
@@ -166,10 +182,31 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
     }
   }, [open, lambdaForm])
 
+  useEffect(() => {
+    if (daoLambdas) {
+      daoLambdas.push(ACI)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [daoLambdas])
+
+  useEffect(() => {
+    if (proposalTypeQuery === "add-function") {
+      setCode(AppConfig.ACI.EXECUTOR_LAMBDA.code)
+      setAciProposalOpen(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposalTypeQuery])
+
+  useEffect(() => {
+    if (action === ProposalAction.aci) {
+      lambdaForm.setValue("lambda_name", ACI.key)
+    }
+  }, [action, lambdaForm])
+
   const onSubmit = useCallback(
     (_: Values) => {
       const agoraPostId = Number(0)
-
+      // debugger
       switch (action) {
         case ProposalAction.new: {
           lambdaAdd({
@@ -241,6 +278,12 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
     [dao, lambdaAdd, code, action, lambda, lambdaRemove, lambdaArguments, lambdaExecute, lambdaParams, handleClose]
   )
 
+  const isDisabled = useMemo(() => {
+    if (lambda?.key === ARBITRARY_CONTRACT_INTERACTION) return false
+    if (!code) return true
+    if (action === ProposalAction.execute && (!lambda || lambdaArguments === "" || lambdaParams === "")) return true
+  }, [lambda, code, action, lambdaArguments, lambdaParams])
+
   const handleSearchChange = (data: Lambda) => {
     if (!data?.value) {
       lambdaForm.reset()
@@ -300,73 +343,99 @@ export const ProposalFormLambda: React.FC<Props> = ({ open, handleClose, action 
   const renderExecuteProposal = () => {
     return (
       <>
-        <ProposalFormInput label="Function Name">
-          <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
-        </ProposalFormInput>
-        <ProposalCodeEditorInput
-          label="Implementation"
-          containerstyle={codeEditorcontainerstyles}
-          insertSpaces
-          ignoreTabKey={false}
-          tabSize={4}
-          padding={10}
-          style={codeEditorStyles}
-          value={code}
-          onValueChange={code => setCode(code)}
-          highlight={code => highlight(code, grammar, "javascript")}
-          placeholder={codeEditorPlaceholder.existingLambda}
-        />
-        <ProposalCodeEditorInput
-          label="Function Arguments Code"
-          containerstyle={codeEditorcontainerstyles}
-          insertSpaces
-          ignoreTabKey={false}
-          tabSize={4}
-          padding={10}
-          value={lambdaArguments}
-          onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
-          highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
-          style={codeEditorStyles}
-          placeholder={codeEditorPlaceholder.lambdaExecuteArgumentsCode}
-        />
-        <ProposalCodeEditorInput
-          label="Lambda Params"
-          containerstyle={codeEditorcontainerstyles}
-          insertSpaces
-          ignoreTabKey={false}
-          tabSize={4}
-          padding={10}
-          style={codeEditorStyles}
-          value={lambdaParams}
-          onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
-          highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
-          placeholder={codeEditorPlaceholder.lambdaExecuteParams}
-        />
+        {showHeader ? (
+          <ProposalFormInput label="Function Name">
+            <SearchLambda lambdas={daoLambdas} handleChange={handleSearchChange} />
+          </ProposalFormInput>
+        ) : null}
+
+        {lambda?.key !== ARBITRARY_CONTRACT_INTERACTION ? (
+          <>
+            <ProposalCodeEditorInput
+              label="Implementation"
+              containerstyle={codeEditorcontainerstyles}
+              insertSpaces
+              ignoreTabKey={false}
+              tabSize={4}
+              padding={10}
+              style={codeEditorStyles}
+              value={code}
+              onValueChange={code => setCode(code)}
+              highlight={code => highlight(code, grammar, "javascript")}
+              placeholder={codeEditorPlaceholder.existingLambda}
+            />
+            <ProposalCodeEditorInput
+              label="Function Arguments Code"
+              containerstyle={codeEditorcontainerstyles}
+              insertSpaces
+              ignoreTabKey={false}
+              tabSize={4}
+              padding={10}
+              value={lambdaArguments}
+              onValueChange={lambdaArguments => setLambdaArguments(lambdaArguments)}
+              highlight={lambdaArguments => highlight(lambdaArguments, grammar, "javascript")}
+              style={codeEditorStyles}
+              placeholder={codeEditorPlaceholder.lambdaExecuteArgumentsCode}
+            />
+            <ProposalCodeEditorInput
+              label="Lambda Params"
+              containerstyle={codeEditorcontainerstyles}
+              insertSpaces
+              ignoreTabKey={false}
+              tabSize={4}
+              padding={10}
+              style={codeEditorStyles}
+              value={lambdaParams}
+              onValueChange={lambdaParams => setLambdaParams(lambdaParams)}
+              highlight={lambdaParams => highlight(lambdaParams, grammar, "javascript")}
+              placeholder={codeEditorPlaceholder.lambdaExecuteParams}
+            />
+          </>
+        ) : (
+          <ArbitraryContractInteractionForm showHeader={setShowHeader} daoLambdas={daoLambdas} />
+        )}
+      </>
+    )
+  }
+  const renderAciProposal = () => {
+    return (
+      <>
+        <ArbitraryContractInteractionForm showHeader={setShowHeader} daoLambdas={daoLambdas} />
       </>
     )
   }
 
+  const closeModal = () => {
+    setShowHeader(true)
+    handleClose()
+  }
+
+  const getTitle = (action: ProposalAction) => {
+    if (action === ProposalAction.aci) {
+      return "Contract Call Proposal"
+    }
+    return ProposalAction[action] + " Function Proposal"
+  }
+
   return (
     <FormProvider {...lambdaForm}>
-      <ResponsiveDialog
-        open={open}
-        onClose={handleClose}
-        title={ProposalAction[action] + " Function Proposal"}
-        template="md"
-      >
+      <ResponsiveDialog open={open} onClose={closeModal} title={getTitle(action)} template="md">
         {state === LambdaProposalState.write_action ? (
           <>
             <Grid container direction="row">
               {action === ProposalAction.new ? renderNewProposal() : null}
               {action === ProposalAction.remove ? renderRemoveProposal() : null}
               {action === ProposalAction.execute ? renderExecuteProposal() : null}
+              {action === ProposalAction.aci ? renderAciProposal() : null}
             </Grid>
 
-            <StyledRow container direction="row" justifyContent="flex-end">
-              <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={!code}>
-                Submit
-              </StyledSendButton>
-            </StyledRow>
+            {action !== ProposalAction.aci ? (
+              <StyledRow container direction="row" justifyContent="flex-end">
+                <StyledSendButton onClick={lambdaForm.handleSubmit(onSubmit)} disabled={isDisabled}>
+                  Submit
+                </StyledSendButton>
+              </StyledRow>
+            ) : null}
           </>
         ) : null}
 

@@ -4,36 +4,55 @@ import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
 import { Choice } from "models/Choice"
 import { mkConfig, generateCsv, download } from "export-to-csv"
 import { useNotification } from "modules/lite/components/hooks/useNotification"
+import BigNumber from "bignumber.js"
+import { bytes2Char } from "@taquito/utils"
+import dayjs from "dayjs"
 
-type DownloadCsvFileProps = {
-  data: Choice[]
-  pollId: string | undefined
-  symbol: string
+interface GroupedVotes {
+  address: string
+  options: any[]
 }
 
-export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, symbol }) => {
+type DownloadCsvFileProps = {
+  data: GroupedVotes[]
+  pollId: string | undefined
+  symbol: string
+  decimals: string
+  isXTZ: boolean
+}
+
+export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, symbol, decimals, isXTZ }) => {
   const [votesDetails, setVotesDetails] = useState<any>()
   const openNotification = useNotification()
-
   useEffect(() => {
+    const getTotal = (options: any) => {
+      let total = new BigNumber(0)
+      if (options) {
+        options.map((item: any) => {
+          total = total.plus(new BigNumber(item.balance))
+        })
+      }
+      const formatted = total.div(new BigNumber(10).pow(isXTZ ? 6 : decimals))
+      return formatted
+    }
     const arr: any = []
+
     data.map(item => {
-      item.walletAddresses.map(vote => {
-        const formattedVote = {
-          address: vote.address,
-          choice: item.name,
-          balance: vote.balanceAtReferenceBlock,
-          signature: vote.signature,
-          ipfsStorage: vote.cidLink
-        }
-        return arr.push(formattedVote)
-      })
+      const formattedVote = {
+        address: item.address,
+        choices: item.options.map(item => item.name),
+        balance: getTotal(item.options),
+        signature: item.options[0].signature,
+        ipfsStorage: item.options[0].cidLink,
+        timestamp:
+          item.options[0] && item.options[0].payloadBytes ? bytes2Char(item.options[0].payloadBytes).split(" ")[4] : ""
+      }
+      return arr.push(formattedVote)
     })
     setVotesDetails(arr)
-  }, [data])
+  }, [data, decimals, isXTZ])
 
   const downloadCvs = () => {
-    console.log(votesDetails)
     const csvConfig = mkConfig({
       useKeysAsHeaders: true,
       filename: `proposal-${pollId}`,
@@ -43,11 +62,12 @@ export const DownloadCsvFile: React.FC<DownloadCsvFileProps> = ({ data, pollId, 
     const votesData = votesDetails.map((row: any) => {
       return {
         "Address": row.address,
-        "Choice": row.choice,
+        "Choice": row.choices.toLocaleString().replace(",", ", "),
         "Token": symbol,
         "Vote Weight": row.balance,
         "Signature": row.signature,
-        "IPFS Storage Link": row.ipfsStorage
+        "IPFS Storage Link": row.ipfsStorage,
+        "Timestamp": dayjs(row.timestamp).format("LLL").toString()
       }
     })
     try {

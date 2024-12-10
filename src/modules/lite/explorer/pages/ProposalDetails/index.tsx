@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Button, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { CircularProgress, Grid, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { ProposalDetailCard } from "../../components/ProposalDetailCard"
 import { GridContainer } from "modules/common/GridContainer"
 import { ChoiceItemSelected } from "../../components/ChoiceItemSelected"
@@ -22,6 +22,12 @@ import { ArrowBackIosOutlined } from "@material-ui/icons"
 import { useIsMember } from "../../hooks/useIsMember"
 import { useHistoryLength } from "modules/explorer/context/HistoryLength"
 import { getEthSignature } from "services/utils/utils"
+import { SmallButton } from "modules/common/SmallButton"
+
+const DescriptionText = styled(Typography)({
+  fontSize: 24,
+  fontWeight: 600
+})
 
 const PageContainer = styled("div")({
   marginBottom: 50,
@@ -48,6 +54,11 @@ const PageContainer = styled("div")({
     flexDirection: "column"
   }
 })
+
+const LinearContainer = styled(GridContainer)(({ theme }) => ({
+  background: theme.palette.secondary.light,
+  borderRadius: 8
+}))
 
 export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const { proposalId } = useParams<{
@@ -77,6 +88,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const [selectedVotes, setSelectedVotes] = useState<Choice[]>([])
   const isMember = useIsMember(network, community?.tokenAddress || "", account)
+  const [isLoading, setIsLoading] = useState(false)
 
   const navigateToDao = () => {
     if (historyLength > 1) {
@@ -147,6 +159,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
           autoHideDuration: 3000,
           variant: "error"
         })
+        setIsLoading(false)
         return
       }
     } else if (etherlink.isConnected) {
@@ -206,48 +219,58 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
           <Typography color="secondary">Back to community</Typography>
         </Grid>
       </Grid>
-      <Grid container style={{ gap: 30 }}>
+      <Grid container style={{ gap: 6 }}>
         <Grid item>
           <ProposalDetailCard poll={poll} daoId={id} />
         </Grid>
         <Grid container item xs={12}>
           {choices && choices.length > 0 ? (
-            <GridContainer container style={{ gap: 32 }} direction="row" justifyContent="center">
-              <Grid
-                container
-                item
-                justifyContent={isMobileSmall ? "center" : "space-between"}
-                direction="row"
-                style={{ gap: 30 }}
-              >
-                {choices.map((choice, index) => {
-                  return (
-                    <ChoiceItemSelected
-                      multiple={poll?.votingStrategy === 0 ? false : true}
-                      key={index}
-                      choice={choice}
-                      votes={selectedVotes}
-                      setSelectedVotes={setSelectedVotes}
-                    />
-                  )
-                })}
-              </Grid>
-              {poll?.isActive === ProposalStatus.ACTIVE ? (
-                <Button
-                  disabled={
-                    (selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))) && isMember
-                  }
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => saveVote()}
+            <>
+              <LinearContainer container style={{ gap: 32 }} direction="row" justifyContent="center">
+                <Grid item xs={12}>
+                  <DescriptionText color="textPrimary">Options</DescriptionText>
+                </Grid>
+                <Grid
+                  container
+                  item
+                  justifyContent={isMobileSmall ? "center" : "space-between"}
+                  direction="row"
+                  style={{ gap: 30 }}
                 >
-                  {votingPower && votingPower.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
-                </Button>
-              ) : null}
-            </GridContainer>
+                  {choices.map((choice, index) => {
+                    return (
+                      <ChoiceItemSelected
+                        multiple={poll?.votingStrategy === 0 ? false : true}
+                        key={index}
+                        choice={choice}
+                        votes={selectedVotes}
+                        setSelectedVotes={setSelectedVotes}
+                      />
+                    )
+                  })}
+                </Grid>
+                {poll?.isActive === ProposalStatus.ACTIVE ? (
+                  !isLoading ? (
+                    <SmallButton
+                      disabled={
+                        (selectedVotes.length === 0 || (votingPower && votingPower.eq(new BigNumber(0)))) && isMember
+                      }
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => saveVote()}
+                      style={{ marginTop: 20 }}
+                    >
+                      {votingPower && votingPower.gt(new BigNumber(0)) ? "Cast your vote" : "No Voting Weight"}
+                    </SmallButton>
+                  ) : (
+                    <CircularProgress color="secondary" />
+                  )
+                ) : null}
+              </LinearContainer>
+            </>
           ) : null}
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ marginTop: 24 }}>
           {poll && poll !== undefined ? (
             <VoteDetails
               isXTZ={poll.isXTZ}

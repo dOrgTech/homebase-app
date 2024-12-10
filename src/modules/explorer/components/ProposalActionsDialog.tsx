@@ -1,7 +1,7 @@
 import { Grid, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { RegistryProposalFormValues } from "modules/explorer/components/UpdateRegistryDialog"
 import { TreasuryProposalFormValues } from "modules/explorer/components/NewTreasuryProposalDialog"
-import React, { useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { NFTTransferFormValues } from "./NFTTransfer"
 import { useDAOID } from "../pages/DAO/router"
 import { ConfigProposalForm } from "./ConfigProposalForm"
@@ -37,7 +37,7 @@ const OptionContainer = styled(Grid)(({ theme }) => ({
   "padding": "35px 42px",
   "marginBottom": 16,
   "cursor": "pointer",
-  "height": 110,
+  "height": 80,
   "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,
@@ -111,6 +111,12 @@ const getActions = (): Action[] => [
     isLambda: true
   },
   {
+    name: "Arbitrary Contract Interaction",
+    description: "Interact with any contract on Tezos.",
+    id: ProposalAction.aci,
+    isLambda: true
+  },
+  {
     name: "Off Chain Poll",
     description: "Create an off-chain poll for your community.",
     id: "off-chain",
@@ -139,6 +145,7 @@ const getTreasuryActions = (): GenericAction[] => [
 interface Props {
   open: boolean
   handleClose: () => void
+  queryType: string | null
 }
 
 const defaultOpenSupportedExecuteProposalModal = "none"
@@ -148,6 +155,7 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
   const { data } = useDAO(daoId)
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const { clearParams } = useQueryParams()
 
   const [proposalAction, setProposalAction] = useState<ProposalAction>(ProposalAction.none)
   const [openProposalFormLambda, setOpenProposalFormLambda] = useState(false)
@@ -156,14 +164,19 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
 
   const liteDAOId = data?.liteDAOData?._id
   const shouldDisable = useIsProposalButtonDisabled(daoId)
+  const proposalActions = getActions()
 
-  const handleOpenCustomProposalModal = (key: ProposalAction) => {
-    setProposalAction(key)
-    setOpenProposalFormLambda(true)
-    handleClose()
-  }
+  const handleOpenCustomProposalModal = useCallback(
+    (key: ProposalAction) => {
+      setProposalAction(key)
+      setOpenProposalFormLambda(true)
+      handleClose()
+    },
+    [handleClose]
+  )
 
   const handleCloseCustomProposalModal = () => {
+    clearParams()
     setProposalAction(ProposalAction.none)
     setOpenProposalFormLambda(false)
     handleClose()
@@ -195,9 +208,20 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
     handleClose()
   }
 
+  const handleAciProposal = () => {
+    handleOpenCustomProposalModal(ProposalAction.aci)
+    handleClose()
+  }
+
   const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
     defaultOpenSupportedExecuteProposalModal
   )
+
+  useEffect(() => {
+    if (queryType === "add-function") {
+      handleOpenCustomProposalModal(ProposalAction.new)
+    }
+  }, [handleOpenCustomProposalModal, queryType])
 
   return (
     <>
@@ -207,34 +231,32 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
             <Typography color="textPrimary">Configuration Proposal</Typography>
           </TitleContainer>
           <Grid container spacing={2}>
-            {getActions()
-              .slice(0, 3)
-              .map((elem, index) =>
-                !liteDAOId && elem.id === "off-chain" ? null : (
-                  <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
-                    <OptionContainer
-                      onClick={() =>
-                        elem.id === "off-chain"
-                          ? handleLiteProposal()
-                          : !shouldDisable
-                          ? elem.isLambda
-                            ? handleOpenCustomProposalModal(elem.id)
-                            : handleOpenSupportedExecuteProposalModal(elem.id)
-                          : null
-                      }
+            {proposalActions.slice(0, 3).map((elem, index) =>
+              !liteDAOId && elem.id === "off-chain" ? null : (
+                <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
+                  <OptionContainer
+                    onClick={() =>
+                      elem.id === "off-chain"
+                        ? handleLiteProposal()
+                        : !shouldDisable
+                        ? elem.isLambda
+                          ? handleOpenCustomProposalModal(elem.id)
+                          : handleOpenSupportedExecuteProposalModal(elem.id)
+                        : null
+                    }
+                  >
+                    <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
+                      {elem.name}
+                    </ActionText>
+                    <ActionDescriptionText
+                      color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
                     >
-                      <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
-                        {elem.name}
-                      </ActionText>
-                      <ActionDescriptionText
-                        color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
-                      >
-                        {elem.description}{" "}
-                      </ActionDescriptionText>
-                    </OptionContainer>
-                  </Grid>
-                )
-              )}
+                      {elem.description}{" "}
+                    </ActionDescriptionText>
+                  </OptionContainer>
+                </Grid>
+              )
+            )}
           </Grid>
         </Grid>
         <Grid container>
@@ -261,7 +283,7 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
             <Typography color="textPrimary">Off-Chain Proposal</Typography>
           </TitleContainer>
           <Grid container spacing={2}>
-            {getActions()
+            {proposalActions
               .filter(item => item.id === "off-chain")
               .map((elem, index) =>
                 !liteDAOId && elem.id !== "off-chain" ? null : (
@@ -277,37 +299,50 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
         </Grid>
         <Grid container>
           <TitleContainer container direction="row">
+            <Typography color="textPrimary">Arbitrary Contract Interaction</Typography>
+          </TitleContainer>
+          <Grid container spacing={2}>
+            <Grid item xs={isMobileSmall ? 12 : 4}>
+              <OptionContainer onClick={() => !shouldDisable && handleAciProposal()}>
+                <ActionText color={shouldDisable ? "textSecondary" : "textPrimary"}>Contract Call</ActionText>
+                <ActionDescriptionText color={shouldDisable ? "textSecondary" : "textPrimary"}>
+                  Invoke an endpoint on a deployed contract
+                </ActionDescriptionText>
+              </OptionContainer>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid container>
+          <TitleContainer container direction="row">
             <Typography color="textPrimary">Function Proposal</Typography>
           </TitleContainer>
           <Grid container spacing={2}>
-            {getActions()
-              .slice(3, 6)
-              .map((elem, index) =>
-                !liteDAOId && elem.id === "off-chain" ? null : (
-                  <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
-                    <OptionContainer
-                      onClick={() =>
-                        elem.id === "off-chain"
-                          ? handleLiteProposal()
-                          : !shouldDisable
-                          ? elem.isLambda
-                            ? handleOpenCustomProposalModal(elem.id)
-                            : handleOpenSupportedExecuteProposalModal(elem.id)
-                          : null
-                      }
+            {proposalActions.slice(3, 6).map((elem, index) =>
+              !liteDAOId && elem.id === "off-chain" ? null : (
+                <Grid key={index} item xs={isMobileSmall ? 12 : 4}>
+                  <OptionContainer
+                    onClick={() =>
+                      elem.id === "off-chain"
+                        ? handleLiteProposal()
+                        : !shouldDisable
+                        ? elem.isLambda
+                          ? handleOpenCustomProposalModal(elem.id)
+                          : handleOpenSupportedExecuteProposalModal(elem.id)
+                        : null
+                    }
+                  >
+                    <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
+                      {elem.name}
+                    </ActionText>
+                    <ActionDescriptionText
+                      color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
                     >
-                      <ActionText color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}>
-                        {elem.name}
-                      </ActionText>
-                      <ActionDescriptionText
-                        color={shouldDisable && elem.id !== "off-chain" ? "textSecondary" : "textPrimary"}
-                      >
-                        {elem.description}{" "}
-                      </ActionDescriptionText>
-                    </OptionContainer>
-                  </Grid>
-                )
-              )}
+                      {elem.description}{" "}
+                    </ActionDescriptionText>
+                  </OptionContainer>
+                </Grid>
+              )
+            )}
           </Grid>
         </Grid>
         <Grid container>

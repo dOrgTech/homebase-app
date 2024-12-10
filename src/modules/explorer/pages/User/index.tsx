@@ -1,4 +1,4 @@
-import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Button, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import dayjs from "dayjs"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
@@ -15,12 +15,11 @@ import { StatusBadge } from "../../components/StatusBadge"
 import { ProfileAvatar } from "../../components/styled/ProfileAvatar"
 import { UserBalances } from "../../components/UserBalances"
 import { UserProfileName } from "../../components/UserProfileName"
-import { usePolls } from "modules/lite/explorer/hooks/usePolls"
+
 import { Delegation } from "./components/DelegationBanner"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
 import { UserMovements } from "./components/UserMovements"
-import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
-import { Poll } from "models/Polls"
+
 import { CopyButton } from "modules/explorer/components/CopyButton"
 
 const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
