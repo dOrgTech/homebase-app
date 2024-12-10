@@ -1,16 +1,5 @@
-import React, { useCallback, useState, useContext } from "react"
-import {
-  Button,
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  styled,
-  Theme,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from "@material-ui/core"
+import React, { useCallback, useState, useContext, useEffect } from "react"
+import { Button, Grid, MenuItem, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -334,7 +323,7 @@ const TezosProposals = () => {
           </TabPanel>
         </TabsBox>
 
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery} />
+        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery || ""} />
 
         {/* Keeping this component here as it is inhe master branch */}
         <FilterProposalsDialog
@@ -364,6 +353,9 @@ export const EtherlinkProposals = () => {
 
   return (
     <>
+      <Grid item xs={12} style={{ marginBottom: 20 }}>
+        <TitleText color="textPrimary">Proposals</TitleText>
+      </Grid>
       <Grid container direction="column" style={{ gap: 42, backgroundColor: "rgb(36, 40, 45)", padding: "10px" }}>
         <HeroContainer item xs={12}>
           <Grid

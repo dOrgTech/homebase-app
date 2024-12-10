@@ -17,6 +17,7 @@ import { ProposalFormContainer } from "./ProposalForm"
 import EthContractCallForm from "./EthContractCallForm"
 import EthChangeConfigProposalForm from "./EthChangeConfigProposalForm"
 import EthTransferFundsForm from "./EthTransferFundsForm"
+import { useQueryParams } from "../hooks/useQueryParams"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -142,15 +143,13 @@ const getTreasuryActions = (): GenericAction[] => [
   }
 ]
 
-interface Props {
-  open: boolean
-  handleClose: () => void
-  queryType: string | null
-}
-
 const defaultOpenSupportedExecuteProposalModal = "none"
 
-const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) => {
+const ProposalActionsDialogForTezos: React.FC<{
+  open: boolean
+  handleClose: () => void
+  queryType?: string
+}> = ({ open, handleClose, queryType }) => {
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const theme = useTheme()
@@ -216,7 +215,6 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
   const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
     defaultOpenSupportedExecuteProposalModal
   )
-
   useEffect(() => {
     if (queryType === "add-function") {
       handleOpenCustomProposalModal(ProposalAction.new)
@@ -400,7 +398,11 @@ const ProposalActionsDialogForTezos: React.FC<Props> = ({ open, handleClose }) =
   )
 }
 
-const ProposalActionsDialogForEtherlink: React.FC<Props> = ({ open, handleClose }) => {
+const ProposalActionsDialogForEtherlink: React.FC<{
+  open: boolean
+  handleClose: () => void
+  queryType?: string
+}> = ({ open, handleClose, queryType }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const [modalOpen, setModalOpen] = useState<"transfer_funds" | "change_config" | "contract_call" | boolean>(false)
@@ -459,13 +461,17 @@ const ProposalActionsDialogForEtherlink: React.FC<Props> = ({ open, handleClose 
   )
 }
 
-export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose }) => {
+export const ProposalActionsDialog: React.FC<{ open: boolean; handleClose: () => void; queryType?: string }> = ({
+  open,
+  handleClose,
+  queryType
+}) => {
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
 
   return data?.data.network.startsWith("etherlink") ? (
     <ProposalActionsDialogForEtherlink open={open} handleClose={handleClose} />
   ) : (
-    <ProposalActionsDialogForTezos open={open} handleClose={handleClose} />
+    <ProposalActionsDialogForTezos open={open} handleClose={handleClose} queryType={queryType} />
   )
 }

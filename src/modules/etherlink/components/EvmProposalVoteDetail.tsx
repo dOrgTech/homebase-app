@@ -51,7 +51,6 @@ export const EvmProposalVoteDetail: React.FC<{
 }> = ({ poll, choices, token, isXTZ }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const [open, setOpen] = React.useState(false)
   const { network } = useTezos()
   const [turnout, setTurnout] = useState<number | null>()
@@ -122,12 +121,12 @@ export const EvmProposalVoteDetail: React.FC<{
       </LinearContainer> */}
       <TitleContainer item>
         <Typography variant={"body2"} color="textPrimary">
-          Vorting Results
+          Voting Results
         </Typography>
       </TitleContainer>
       <GraphicsContainer container>
         {choices &&
-          choices.map((choice: Choice, index) => {
+          choices?.map((choice: Choice, index) => {
             const isFor = choice.name === "For"
             const voteCount = isFor ? daoProposalSelected?.votesFor : daoProposalSelected?.votesAgainst
 
@@ -212,23 +211,23 @@ export const EvmProposalVoteDetail: React.FC<{
                 % of Total Supply)
               </Typography>
             )} */}
-            {totalVoteCount > 0 ? (
+            {/* {totalVoteCount > 0 ? (
               <DownloadCsvFile
                 data={choices}
                 pollId={poll?._id}
                 symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
               />
-            ) : null}
+            ) : null} */}
           </Grid>
         </LegendContainer>
-        <VotesDialog
+        {/* <VotesDialog
           decimals={tokenData?.decimals ? tokenData?.decimals : ""}
           symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
           choices={votes}
           open={open}
           isXTZ={isXTZ}
           handleClose={handleClose}
-        />
+        /> */}
       </GraphicsContainer>
     </Container>
   )

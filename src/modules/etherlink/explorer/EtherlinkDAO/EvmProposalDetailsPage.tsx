@@ -10,6 +10,7 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalDetailCard"
 import { ChoiceItemSelected } from "modules/lite/explorer/components/ChoiceItemSelected"
 import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalVoteDetail"
+import { TitleText } from "components/ui/TitleText"
 export const EvmProposalDetailsPage = () => {
   const params = useParams() as { proposalId: string }
   const proposalId = params?.proposalId
@@ -40,7 +41,10 @@ export const EvmProposalDetailsPage = () => {
 
   return (
     <div>
-      <Typography color="#ffffff">Proposal Details</Typography>
+      <Grid item xs={12} style={{ marginBottom: 20 }}>
+        <TitleText color="textPrimary">Proposal Details</TitleText>
+      </Grid>
+
       <PageContainer style={{ gap: 30 }}>
         <Grid container style={{ gap: 30 }}>
           <Grid item>

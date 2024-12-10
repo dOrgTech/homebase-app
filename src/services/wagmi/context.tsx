@@ -7,7 +7,7 @@ import { useSIWE, useModal, SIWESession } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
 import { useParams } from "react-router-dom"
-import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -76,6 +76,17 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
     return "unknown"
   }, [chain?.name])
+
+  const firebaseRootCollection = useMemo(() => {
+    if (etherlinkNetwork === "etherlink_mainnet") {
+      return "daosEtherlink-Mainnet"
+    }
+    if (etherlinkNetwork === "etherlink_testnet") {
+      return "daosEtherlink-Testnet"
+    }
+    return undefined
+  }, [etherlinkNetwork])
+
   console.log("Etherlink Network", etherlinkNetwork)
 
   // useEffect(() => {
@@ -93,23 +104,26 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [daoData, setDaoData] = useState<any[]>([])
   const [daoSelected, setDaoSelected] = useState<any>({})
   const [daoProposals, setDaoProposals] = useState<any[]>([])
-  const [daoProposalSelectedId, setDaoProposalSelectedId] = useState<string | null>(null)
   const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
 
-  useEffect(() => {
-    fetchCollection("daosEtherlink-Testnet").then((data: any) => {
-      setIsLoadingDaos(false)
-    })
-  }, [fetchCollection])
+  console.log({ firestoreData })
 
   useEffect(() => {
-    console.log("wagmi/context.tsx", { firestoreData })
-    if (firestoreData?.["daosEtherlink-Testnet"]) {
-      setDaoData(firestoreData["daosEtherlink-Testnet"])
+    if (firebaseRootCollection) {
+      fetchCollection(firebaseRootCollection).then((data: any) => {
+        setIsLoadingDaos(false)
+      })
     }
-    const daoProposalKey = `daosEtherlink-Testnet/${daoSelected.id}/proposals`
+  }, [fetchCollection, firebaseRootCollection])
+
+  useEffect(() => {
+    if (!firebaseRootCollection) return
+    if (firestoreData?.[firebaseRootCollection]) {
+      setDaoData(firestoreData[firebaseRootCollection])
+    }
+    const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals`
     if (firestoreData?.[daoProposalKey]) {
       setDaoProposals(
         firestoreData[daoProposalKey]
@@ -122,19 +136,18 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
           })
       )
     }
-    const daoMembersKey = `daosEtherlink-Testnet/${daoSelected.id}/members`
+    const daoMembersKey = `${firebaseRootCollection}/${daoSelected.id}/members`
     if (firestoreData?.[daoMembersKey]) {
       setDaoMembers(firestoreData[daoMembersKey])
     }
-  }, [daoSelected.id, firestoreData])
+  }, [daoSelected.id, firebaseRootCollection, firestoreData])
 
   useEffect(() => {
-    console.log("daoSelected", daoSelected)
-    if (daoSelected.id) {
-      fetchCollection(`daosEtherlink-Testnet/${daoSelected.id}/proposals`)
-      fetchCollection(`daosEtherlink-Testnet/${daoSelected.id}/members`)
+    if (daoSelected.id && firebaseRootCollection) {
+      fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/proposals`)
+      fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/members`)
     }
-  }, [daoSelected, fetchCollection])
+  }, [daoSelected, fetchCollection, firebaseRootCollection])
 
   return (
     <EtherlinkContext.Provider

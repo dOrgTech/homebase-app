@@ -121,7 +121,7 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
     })
   }, [defaultValues, methods])
 
-  const forms = enabledForms[dao?.data.type || "lambda"]
+  const forms = enabledForms[(dao?.data.type as DAOTemplate) || "lambda"]
   const { mutate: registryMutate } = useRegistryPropose()
 
   const onSubmit = useCallback(
@@ -176,7 +176,7 @@ export const ProposalFormContainer: React.FC<Props> = ({ open, handleClose, defa
                 <CloseButton onClose={handleClose} />
               </Grid>
             </CustomContainer>
-            {forms.map((form, i) => (
+            {forms.map((form: any, i: number) => (
               <TabPanel key={`tab-${i}`} value={defaultTab} index={i}>
                 <form.component open={open} />
               </TabPanel>
