@@ -348,7 +348,7 @@ export const EtherlinkProposals = () => {
   const theme = useTheme()
   // const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const [openDialog, setOpenDialog] = useState(false)
-
+  console.log({ daoProposals })
   const handleCloseModal = () => {
     setOpenDialog(false)
   }

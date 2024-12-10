@@ -6,6 +6,8 @@ import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { useSIWE, useModal, SIWESession } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
+import { useParams } from "react-router-dom"
+import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -17,6 +19,31 @@ interface EtherlinkType {
   connectWithWagmi: () => void
   connect: () => void
   disconnect: () => void
+}
+
+// TODO: @ashutoshpw, handle more statuus and move to utils
+const getStatusByHistory = (history: { active: number; executable: number; passed: number; pending: number }) => {
+  const statuses = Object.keys(history)
+  const status = statuses.reduce((maxStatus, currentStatus) => {
+    return history[currentStatus as keyof typeof history] > history[maxStatus as keyof typeof history]
+      ? currentStatus
+      : maxStatus
+  })
+  // TODO: @ashutoshpw, handle more statuses
+  switch (status) {
+    case "active":
+      return ProposalStatus.ACTIVE
+    case "pending":
+      return ProposalStatus.PENDING
+    case "rejected":
+      return ProposalStatus.REJECTED
+    case "accepted":
+      return ProposalStatus.ACTIVE
+    case "executed":
+      return ProposalStatus.EXECUTED
+    default:
+      return ProposalStatus.NO_QUORUM
+  }
 }
 
 export const EtherlinkContext = createContext<any | undefined>(undefined)
@@ -66,6 +93,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [daoData, setDaoData] = useState<any[]>([])
   const [daoSelected, setDaoSelected] = useState<any>({})
   const [daoProposals, setDaoProposals] = useState<any[]>([])
+  const [daoProposalSelectedId, setDaoProposalSelectedId] = useState<string | null>(null)
   const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
@@ -83,7 +111,16 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
     const daoProposalKey = `daosEtherlink-Testnet/${daoSelected.id}/proposals`
     if (firestoreData?.[daoProposalKey]) {
-      setDaoProposals(firestoreData[daoProposalKey]?.sort((a: any, b: any) => b.createdAt - a.createdAt))
+      setDaoProposals(
+        firestoreData[daoProposalKey]
+          ?.sort((a: any, b: any) => b.createdAt - a.createdAt)
+          .map(firebaseProposal => {
+            return {
+              ...firebaseProposal,
+              status: getStatusByHistory(firebaseProposal.statusHistory)
+            }
+          })
+      )
     }
     const daoMembersKey = `daosEtherlink-Testnet/${daoSelected.id}/members`
     if (firestoreData?.[daoMembersKey]) {
@@ -120,6 +157,13 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         daoProposals: daoProposals,
         daoProposalSelected: daoProposalSelected,
         daoMembers: daoMembers,
+        selectDaoProposal: (proposalId: string) => {
+          const proposal = daoProposals.find((proposal: any) => proposal.id === proposalId)
+          if (proposal) {
+            setDaoProposalSelected(proposal)
+            // fetchCollection(`daosEtherlink-Testnet/${daoSelected.id}/proposals/${proposalId}`)
+          }
+        },
         selectDao: (daoId: string) => {
           const dao = daoData.find(dao => dao.id === daoId)
           // alert(`dao:${daoId}`)

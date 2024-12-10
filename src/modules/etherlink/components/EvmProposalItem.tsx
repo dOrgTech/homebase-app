@@ -1,8 +1,8 @@
-import { Box, Grid, Theme, Typography, styled, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Theme, Typography, styled } from "@material-ui/core"
 import dayjs from "dayjs"
 import React from "react"
 import { toShortAddress } from "services/contracts/utils"
-import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
 
 const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
@@ -19,30 +19,6 @@ const CreatedText = styled(Typography)({
   fontWeight: 300,
   color: "#bfc5ca"
 })
-
-const getStatusByHistory = (history: { active: number; executable: number; passed: number; pending: number }) => {
-  const statuses = Object.keys(history)
-  const status = statuses.reduce((maxStatus, currentStatus) => {
-    return history[currentStatus as keyof typeof history] > history[maxStatus as keyof typeof history]
-      ? currentStatus
-      : maxStatus
-  })
-  // TODO: @ashutoshpw, handle more statuses
-  switch (status) {
-    case "active":
-      return ProposalStatus.ACTIVE
-    case "pending":
-      return ProposalStatus.PENDING
-    case "rejected":
-      return ProposalStatus.REJECTED
-    case "accepted":
-      return ProposalStatus.ACTIVE
-    case "executed":
-      return ProposalStatus.EXECUTED
-    default:
-      return ProposalStatus.NO_QUORUM
-  }
-}
 
 export const EvmProposalItem: React.FC<{
   proposal: Proposal | any
@@ -61,7 +37,7 @@ export const EvmProposalItem: React.FC<{
           <Grid item>
             <Grid container style={{ gap: 16 }} alignItems="center">
               <Grid item>
-                <StatusBadge status={getStatusByHistory(proposal.statusHistory)} />
+                <StatusBadge status={proposal.status} />
               </Grid>
               <Grid item>
                 <CreatedText variant="body1" color="textPrimary">

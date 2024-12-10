@@ -89,7 +89,7 @@ export const EvmRegistryPage: React.FC = () => {
             <HeroTitle>Registry</HeroTitle>
             {dao && (
               <CopyAddress
-                address={dao.data.address}
+                address={daoSelected?.registryAddress}
                 justifyContent={isMobileSmall ? "center" : "flex-start"}
                 typographyProps={{
                   variant: "subtitle2"

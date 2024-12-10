@@ -3,6 +3,7 @@ import { TitleText } from "components/ui/TitleText"
 import { EvmMembersTable } from "modules/etherlink/components/EvmMembersTable"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useContext } from "react"
+import { VotingPowerWidget } from "modules/etherlink/components/VotingPowerWidget"
 
 export const EvmMembersPage = () => {
   const { daoMembers } = useContext(EtherlinkContext)
@@ -16,8 +17,12 @@ export const EvmMembersPage = () => {
   console.log("daoMemberData", daoMemberData, daoMembers)
   return (
     <Grid container>
-      <Grid item xs={12}>
+      <Grid item xs={12} style={{ marginBottom: 20 }}>
         <TitleText color="textPrimary">Members</TitleText>
+      </Grid>
+
+      <Grid item xs={12}>
+        <VotingPowerWidget tokenSymbol="MTD" />
       </Grid>
 
       <Grid item style={{ width: "inherit", marginTop: 20 }}>
