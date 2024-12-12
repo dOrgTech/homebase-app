@@ -6,6 +6,7 @@ import { RegistryProposeArgs } from "../lambdaDAO/types"
 import mixpanel from "mixpanel-browser"
 import { networkNameMap } from "../../../bakingBad"
 import { LambdaDAO } from "../lambdaDAO"
+import { sendProposalCreatedEvent } from "services/utils/utils"
 
 export const useTreasuryPropose = () => {
   const queryClient = useQueryClient()
@@ -37,6 +38,7 @@ export const useTreasuryPropose = () => {
           dao: dao.data.address,
           daoType: "Treasury"
         })
+        sendProposalCreatedEvent(network, account, dao.data.name, dao.data.address)
 
         await data.confirmation(1)
         closeProposalNotification(proposalNotification)

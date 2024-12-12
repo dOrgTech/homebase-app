@@ -250,3 +250,26 @@ export const validateTokenAddress = (network: Network, tokenAddress: string) => 
   if (network.startsWith("etherlink")) return isEtherAddress(tokenAddress) ? 3 : false
   return false
 }
+
+export const sendProposalCreatedEvent = async (
+  network: Network,
+  proposerAddress: string,
+  daoName: string,
+  daoAddress: string
+) => {
+  const url = getEnv(EnvKey.REACT_APP_PROPOSAL_WEBHOOK_URL)
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      network,
+      proposer: proposerAddress,
+      dao_name: daoName,
+      dao_address: daoAddress
+    })
+  })
+  if (!response.ok) {
+    console.error("Failed to send proposal created event", response)
+    return false
+  }
+  return true
+}
