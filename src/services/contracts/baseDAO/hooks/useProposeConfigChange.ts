@@ -5,8 +5,6 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from "../class"
 import { ConfigProposalParams } from "../types"
 import { networkNameMap } from "../../../bakingBad"
-import { sendProposalCreatedEvent } from "services/utils/utils"
-import mixpanel from "mixpanel-browser"
 
 export const useProposeConfigChange = () => {
   const queryClient = useQueryClient()
@@ -32,12 +30,6 @@ export const useProposeConfigChange = () => {
         }
 
         const data = await dao.proposeConfigChange(args, tezosToolkit)
-        mixpanel.track("Proposal Created", {
-          dao: dao.data.address,
-          daoType: "Registry"
-        })
-        sendProposalCreatedEvent(network, account, dao.data.name, dao.data.address)
-
         await data.confirmation(1)
         closeProposalNotification(proposalNotification)
 
