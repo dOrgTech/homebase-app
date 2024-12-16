@@ -4,6 +4,8 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO } from "../class"
 import { networkNameMap } from "../../../bakingBad"
+import mixpanel from "mixpanel-browser"
+import { sendProposalCreatedEvent } from "services/utils/utils"
 
 export const useProposeDelegationChange = () => {
   const queryClient = useQueryClient()
@@ -29,6 +31,12 @@ export const useProposeDelegationChange = () => {
         }
 
         const data = await dao.proposeDelegationChange(newDelegationAddress, tezosToolkit)
+        mixpanel.track("Proposal Created", {
+          dao: dao.data.address,
+          daoType: "Registry"
+        })
+        sendProposalCreatedEvent(network, account, dao.data.name, dao.data.address)
+
         await data.confirmation(1)
         closeProposalNotification(proposalNotification)
 
