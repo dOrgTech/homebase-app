@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import { Grid, styled, Typography, Link, useTheme, useMediaQuery, Popover, withStyles } from "@material-ui/core"
 import { GridContainer } from "modules/common/GridContainer"
 import { ProposalStatus, TableStatusBadge } from "modules/lite/explorer/components/ProposalTableRowStatusBadge"
@@ -11,6 +11,8 @@ import { Poll } from "models/Polls"
 import dayjs from "dayjs"
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
+import { EtherlinkContext } from "services/wagmi/context"
+import { Badge } from "components/ui/Badge"
 
 const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
@@ -84,6 +86,7 @@ const CustomPopover = withStyles({
 export const EvmProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ poll }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const { daoProposalSelected } = useContext(EtherlinkContext)
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const openNotification = useNotification()
 
@@ -123,7 +126,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ po
           >
             <Grid item>
               <Typography variant="h1" color="textPrimary">
-                {poll?.name}
+                {daoProposalSelected?.title}
               </Typography>
             </Grid>
             <Grid item>
@@ -172,42 +175,48 @@ export const EvmProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ po
                 <Grid item>
                   <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} />
                 </Grid>
-                <Grid item>{/* <CommunityBadge id={"DAOID"} /> */}</Grid>
                 <Grid item>
-                  <CreatorBadge address={poll?.author} />
+                  <Badge status={daoProposalSelected?.type} />
+                </Grid>
+                <Grid item>{/* <CommunityBadge id={"DAOID"} /> */}</Grid>
+                <Grid item direction="row" style={{ gap: 10 }}>
+                  <TextContainer color="textPrimary" variant="body2" style={{ fontSize: 14, marginBottom: 4 }}>
+                    Posted by:
+                  </TextContainer>
+                  <CreatorBadge address={daoProposalSelected?.author} />
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
           <Grid container direction="row">
-            <Grid item container direction="row" spacing={2} alignItems="center">
+            <Grid item container direction="row" alignItems="center">
               <TextContainer color="textPrimary" variant="body2">
                 Start date:{" "}
               </TextContainer>
-              <EndText variant="body2" color="textPrimary">
-                {dayjs(Number(poll?.startTime)).format("lll")}
+              <EndText variant="body2" color="textPrimary" style={{ fontWeight: 600, borderBottom: "1px solid white" }}>
+                {dayjs(Number(daoProposalSelected?.createdAt?.seconds)).format("lll")}
               </EndText>
               <Divider color="textPrimary">-</Divider>
               <EndTextContainer color="textPrimary" variant="body2">
                 End date:{" "}
               </EndTextContainer>
-              <EndText variant="body2" color="textPrimary">
-                {dayjs(Number(poll?.endTime)).format("lll")}
+              <EndText variant="body2" color="textPrimary" style={{ fontWeight: 600, borderBottom: "1px solid white" }}>
+                {daoProposalSelected?.votingExpiresAt?.format("lll")}
               </EndText>
             </Grid>
           </Grid>
 
           <Grid container>
             <Typography variant="body2" color="textPrimary" className="proposal-details">
-              {ReactHtmlParser(poll?.description ? poll?.description : "")}
+              {ReactHtmlParser(daoProposalSelected?.description ? daoProposalSelected?.description : "")}
             </Typography>
           </Grid>
 
-          {poll?.externalLink ? (
+          {daoProposalSelected?.externalResource ? (
             <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
               <LogoItem src={LinkIcon} />
-              <StyledLink color="secondary" href={poll?.externalLink} target="_">
-                {poll?.externalLink}
+              <StyledLink color="secondary" href={daoProposalSelected?.externalResource} target="_">
+                {daoProposalSelected?.externalResource}
               </StyledLink>
             </Grid>
           ) : null}

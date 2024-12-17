@@ -11,6 +11,7 @@ import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalD
 import { ChoiceItemSelected } from "modules/lite/explorer/components/ChoiceItemSelected"
 import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalVoteDetail"
 import { TitleText } from "components/ui/TitleText"
+import { EvmProposalCountdown } from "modules/etherlink/components/EvmProposalCountdown"
 export const EvmProposalDetailsPage = () => {
   const params = useParams() as { proposalId: string }
   const proposalId = params?.proposalId
@@ -37,18 +38,18 @@ export const EvmProposalDetailsPage = () => {
       selected: false
     }
   ]
+
   console.log("daoProposalSelected", daoProposalSelected)
 
   return (
     <div>
-      <Grid item xs={12} style={{ marginBottom: 20 }}>
-        <TitleText color="textPrimary">Proposal Details</TitleText>
-      </Grid>
-
       <PageContainer style={{ gap: 30 }}>
         <Grid container style={{ gap: 30 }}>
           <Grid item>
             <EvmProposalDetailCard poll={daoProposalSelected} />
+          </Grid>
+          <Grid item>
+            <EvmProposalCountdown />
           </Grid>
           <Grid container item xs={12}>
             {choices && choices.length > 0 ? (
@@ -87,13 +88,8 @@ export const EvmProposalDetailsPage = () => {
               </GridContainer>
             ) : null}
           </Grid>
+
           <Grid item xs={12}>
-            <EvmProposalVoteDetail
-              isXTZ={false}
-              poll={daoProposalSelected}
-              choices={choices}
-              token={daoSelected?.token}
-            />
             {/* {poll && poll !== undefined ? (
               <VoteDetails
                 isXTZ={poll.isXTZ}
@@ -106,6 +102,7 @@ export const EvmProposalDetailsPage = () => {
           </Grid>
         </Grid>
       </PageContainer>
+      <EvmProposalVoteDetail poll={daoProposalSelected} choices={choices} token={daoSelected?.token} />
     </div>
   )
 }

@@ -21,9 +21,10 @@ export const EvmMembersPage = () => {
         <TitleText color="textPrimary">Members</TitleText>
       </Grid>
 
-      <Grid item xs={12}>
+      {/* uncommented on andrei recommendation */}
+      {/* <Grid item xs={12}>
         <VotingPowerWidget tokenSymbol="MTD" />
-      </Grid>
+      </Grid> */}
 
       <Grid item style={{ width: "inherit", marginTop: 20 }}>
         <EvmMembersTable data={daoMemberData} symbol={""} />

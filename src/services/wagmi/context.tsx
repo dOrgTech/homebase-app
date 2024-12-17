@@ -9,6 +9,7 @@ import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestor
 import { useParams } from "react-router-dom"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useTezos } from "services/beacon/hooks/useTezos"
+import dayjs from "dayjs"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -25,17 +26,27 @@ interface EtherlinkType {
 const useEtherlinkDao = ({ network }: { network: string }) => {
   const selectedDaoIdRef = useRef<string | null>(null)
   console.log("useEtherlinkDao", { network })
+
   const firebaseRootCollection = useMemo(() => {
     if (network === "etherlink_mainnet") {
       return "daosEtherlink-Mainnet"
     }
     if (network === "etherlink_testnet") {
-      return "daosEtherlink-Testnet"
+      return "idaosEtherlink-Testnet"
     }
     return undefined
   }, [network])
 
-  console.log({ firebaseRootCollection })
+  const firebaseRootTokenCollection = useMemo(() => {
+    if (!firebaseRootCollection) return undefined
+    if (firebaseRootCollection.endsWith("daosEtherlink-Testnet")) {
+      return "tokensEtherlink-Testnet"
+    }
+    if (firebaseRootCollection.endsWith("daosEtherlink-Mainnet")) {
+      return "tokensEtherlink-Mainnet"
+    }
+    return undefined
+  }, [firebaseRootCollection])
 
   const [isLoadingDaos, setIsLoadingDaos] = useState(!!firebaseRootCollection)
   const [isLoadingDaoProposals, setIsLoadingDaoProposals] = useState(true)
@@ -52,12 +63,20 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
       // Trigger DAO Loading Request
       fetchCollection(firebaseRootCollection)
     }
-  }, [fetchCollection, firebaseRootCollection])
+    if (firebaseRootTokenCollection) {
+      // Trigger Token Loading Request
+      fetchCollection(firebaseRootTokenCollection)
+    }
+  }, [fetchCollection, firebaseRootCollection, firebaseRootTokenCollection])
 
   useEffect(() => {
     console.log("Firestore Data", firestoreData)
     if (!firebaseRootCollection) return
     if (firestoreData?.[firebaseRootCollection]) {
+      firestoreData[firebaseRootCollection]?.forEach((dao: any) => {
+        console.log("DAOTreasury", dao.id, Object.values(dao.treasury))
+      })
+
       setDaoData(firestoreData[firebaseRootCollection])
       setIsLoadingDaos(false)
     }
@@ -67,9 +86,20 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         firestoreData[daoProposalKey]
           ?.sort((a: any, b: any) => b.createdAt - a.createdAt)
           .map(firebaseProposal => {
+            const proposalCreatedAt = dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number)
+            const votingDelayInMinutes = daoSelected?.votingDuration || 1
+            const votingExpiresAt = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
             return {
               ...firebaseProposal,
-              status: getStatusByHistory(firebaseProposal.statusHistory)
+              status: getStatusByHistory(firebaseProposal.statusHistory),
+              statusHistoryMap: Object.entries(firebaseProposal.statusHistory).map(
+                ([status, timestamp]: [string, any]) => ({
+                  status,
+                  timestamp: timestamp?.seconds as unknown as number,
+                  timestamp_human: dayjs.unix(timestamp?.seconds as unknown as number).format("MMM DD, YYYY HH:mm:ss")
+                })
+              ),
+              votingExpiresAt: votingExpiresAt
             }
           })
       )
@@ -78,7 +108,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (firestoreData?.[daoMembersKey]) {
       setDaoMembers(firestoreData[daoMembersKey])
     }
-  }, [daoSelected.id, firebaseRootCollection, firestoreData])
+  }, [daoSelected.id, daoSelected?.votingDuration, firebaseRootCollection, firestoreData])
 
   useEffect(() => {
     if (daoSelected.id && firebaseRootCollection) {

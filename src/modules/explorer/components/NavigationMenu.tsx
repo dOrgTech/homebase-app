@@ -14,6 +14,7 @@ import { ReactComponent as VotingIcon } from "assets/logos/voting.svg"
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg"
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg"
 import { ReactComponent as UserIcon } from "assets/logos/user.svg"
+import { ReactComponent as MembersIcon } from "assets/logos/members.svg"
 import React, { useContext, useEffect, useState } from "react"
 import { useDAOID } from "../pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -178,7 +179,7 @@ const getPages = (daoId: string, etherlinkDaoSelected: boolean): Page[] => {
     },
     {
       pathId: "user",
-      name: "User",
+      name: etherlinkDaoSelected ? "Account" : "User",
       icon: UserIcon,
       href: etherlinkDaoSelected ? `/explorer/etherlink/dao/${daoId}/user` : `/explorer/dao/${daoId}/user`
     }
@@ -188,7 +189,7 @@ const getPages = (daoId: string, etherlinkDaoSelected: boolean): Page[] => {
     defaultPages.splice(defaultPages.length - 1, 0, {
       pathId: "members",
       name: "Members",
-      icon: UserIcon,
+      icon: MembersIcon,
       href: `/explorer/etherlink/dao/${daoId}/members`
     })
   }
@@ -252,7 +253,7 @@ const BottomNavBar: React.FC = ({ children }) => {
 
 export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu }) => {
   const [pages, setPages] = useState<Page[]>([])
-  const { account } = useTezos()
+  const { account, etherlink } = useTezos()
   const daoId = useDAOID()
   const etherlinkDaoId = useEtherlinkDAOID()
   const { data: dao } = useDAO(daoId)
@@ -269,7 +270,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
       const disabledPages: string[] = []
       const isEtherlink = !!etherlinkDaoSelected?.id
 
-      if (!account) {
+      if (!account && !etherlink.isConnected) {
         disabledPages.push("User")
       }
 
@@ -279,7 +280,7 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
 
       setPages(getPages(daoId || etherlinkDaoId, isEtherlink).filter(page => !disabledPages.includes(page.name)))
     }
-  }, [account, dao, daoId, etherlinkDaoId, etherlinkDaoSelected])
+  }, [account, dao, daoId, etherlink.isConnected, etherlinkDaoId, etherlinkDaoSelected])
 
   if (location.pathname === "/explorer/daos" || location.pathname === "/explorer/daos/") return null
 

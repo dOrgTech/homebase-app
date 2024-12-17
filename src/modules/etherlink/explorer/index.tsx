@@ -1,5 +1,15 @@
 import React, { useContext, useState } from "react"
-import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
+import {
+  Grid,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  TableCell,
+  TableBody,
+  TableContainer,
+  Table,
+  TableRow
+} from "@material-ui/core"
 
 import { SmallButton } from "../../common/SmallButton"
 
@@ -13,6 +23,8 @@ import { TitleText } from "components/ui/TitleText"
 import { EtherlinkContext } from "services/wagmi/context"
 import { EvmDaoStatsRow } from "../components/EvmDaoStatsRow"
 import { EvmDaoSettingModal } from "../components/EvmDaoSettingsModal"
+import { CopyButton } from "components/ui/CopyButton"
+import { EvmTreasuryTable } from "../components/EvmTreasuryTable"
 
 export const EtherlinkDAOOverview: React.FC = () => {
   const { daoSelected } = useContext(EtherlinkContext)
@@ -125,6 +137,7 @@ export const EtherlinkDAOOverview: React.FC = () => {
         </Grid>
       </HeroContainer>
       <EvmDaoStatsRow />
+      <EvmTreasuryTable />
     </Grid>
   )
 }
