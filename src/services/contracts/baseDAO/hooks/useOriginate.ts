@@ -14,10 +14,6 @@ import { getSignature } from "services/lite/utils"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
 import { Community } from "models/Community"
 import { EnvKey, getEnv } from "services/config"
-import HomebaseDaoEvm from "assets/abis/hb_dao.json"
-
-const ERC20_ABI = HomebaseDaoEvm.output.abi
-const ERC20_BYTECODE = HomebaseDaoEvm.output.bytecode
 
 const INITIAL_STATES = [
   {

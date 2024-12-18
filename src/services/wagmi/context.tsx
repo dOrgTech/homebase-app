@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import dayjs from "dayjs"
+import { ethers } from "ethers"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -53,8 +54,13 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
   const [daoData, setDaoData] = useState<any[]>([])
   const [daoSelected, setDaoSelected] = useState<any>({})
+  const [daoRegistryDetails, setDaoRegistryDetails] = useState<{
+    balance: string
+  }>({ balance: "0" })
+
   const [daoProposals, setDaoProposals] = useState<any[]>([])
   const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
+
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
 
@@ -114,12 +120,26 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (daoSelected.id && firebaseRootCollection) {
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/proposals`)
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/members`)
+      console.log({ daoSelected })
+      // TODO: Replace this with proper service
+      fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.registryAddress}`)
+        .then(res => res.json())
+        .then(data => {
+          const tokenDecimals = daoSelected.decimals
+          const coinBalance = data?.coin_balance
+          const ethBalance = ethers.formatEther(coinBalance)
+          setDaoRegistryDetails({
+            balance: ethBalance
+          })
+          console.log("Treasury Data", ethBalance)
+        })
     }
   }, [daoSelected, fetchCollection, firebaseRootCollection])
 
   return {
     daos: daoData,
     daoSelected,
+    daoRegistryDetails,
     daoProposals,
     daoProposalSelected,
     daoMembers,
@@ -203,6 +223,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     daos,
     isLoadingDaos,
     daoSelected,
+    daoRegistryDetails,
     daoProposals,
     isLoadingDaoProposals,
     daoProposalSelected,
@@ -235,6 +256,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         isLoadingDaos,
         isLoadingDaoProposals,
         daoSelected,
+        daoRegistryDetails,
         daoProposals,
         daoProposalSelected,
         daoMembers,

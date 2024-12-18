@@ -10,8 +10,8 @@ import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 
 export const EvmTreasuryTable = () => {
-  const { daoSelected } = useContext(EtherlinkContext)
-  console.log("daoSelected", daoSelected)
+  const { daoSelected, daoRegistryDetails } = useContext(EtherlinkContext)
+  console.log("daoSelected", daoRegistryDetails)
   return (
     <TableContainer>
       <Table>
@@ -26,12 +26,12 @@ export const EvmTreasuryTable = () => {
         </TableHead>
         <TableBody>
           <TableRow>
-            <TableCell>Tezos</TableCell>
+            <TableCell>Etherink Testnet</TableCell>
             <TableCell>XTZ</TableCell>
-            <TableCell>1000.00</TableCell>
+            <TableCell>{daoRegistryDetails?.balance}</TableCell>
             <TableCell>
               <Grid container direction="row" alignItems="center">
-                0x1234...5678
+                native token
                 <CopyButton text="0x1234567890abcdef" />
               </Grid>
             </TableCell>
