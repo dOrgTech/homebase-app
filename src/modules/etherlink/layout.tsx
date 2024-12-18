@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import React from "react"
 import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "@material-ui/core"
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"

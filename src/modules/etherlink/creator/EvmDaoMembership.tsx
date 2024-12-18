@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { TextField } from "@mui/material"
-import { IconButton, styled } from "@material-ui/core"
+import { IconButton, styled, Typography } from "@material-ui/core"
 import { Button } from "components/ui/Button"
 import { Add, RemoveCircleOutline } from "@material-ui/icons"
 import { Box } from "@material-ui/core"
@@ -74,6 +74,15 @@ export const EvmDaoMembership = () => {
           </DescriptionText>
         }
       />
+      <Box sx={{ width: "100%", margin: "20px 0px" }}>
+        <Typography variant="h6" style={{ color: "white" }}>
+          Total Tokens:{" "}
+          {members.reduce(
+            (acc, member) => parseFloat(acc.toString()) + parseFloat(member.amountOfTokens.toString()),
+            0
+          )}
+        </Typography>
+      </Box>
       <Box sx={{ width: "100%" }}>
         {members.map((member, index) => (
           <Box

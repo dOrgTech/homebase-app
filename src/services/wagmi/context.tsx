@@ -51,7 +51,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
   const [isLoadingDaos, setIsLoadingDaos] = useState(!!firebaseRootCollection)
   const [isLoadingDaoProposals, setIsLoadingDaoProposals] = useState(true)
-
+  const [contractData, setContractData] = useState<any[]>([])
   const [daoData, setDaoData] = useState<any[]>([])
   const [daoSelected, setDaoSelected] = useState<any>({})
   const [daoRegistryDetails, setDaoRegistryDetails] = useState<{
@@ -64,7 +64,10 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
 
+  console.log({ contractData })
+
   useEffect(() => {
+    fetchCollection("contracts")
     if (firebaseRootCollection) {
       // Trigger DAO Loading Request
       fetchCollection(firebaseRootCollection)
@@ -86,6 +89,14 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
       setDaoData(firestoreData[firebaseRootCollection])
       setIsLoadingDaos(false)
     }
+
+    if (firestoreData?.["contracts"]) {
+      const isTestnet = firebaseRootCollection?.toLowerCase().includes("testnet")
+      const contractDataForNetwork = firestoreData["contracts"]?.find((contract: any) =>
+        contract.id?.toLowerCase().includes(isTestnet ? "testnet" : "mainnet")
+      )
+      setContractData(contractDataForNetwork)
+    }
     const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals`
     if (firestoreData?.[daoProposalKey]) {
       setDaoProposals(
@@ -98,13 +109,13 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             return {
               ...firebaseProposal,
               status: getStatusByHistory(firebaseProposal.statusHistory),
-              statusHistoryMap: Object.entries(firebaseProposal.statusHistory).map(
-                ([status, timestamp]: [string, any]) => ({
+              statusHistoryMap: Object.entries(firebaseProposal.statusHistory)
+                .map(([status, timestamp]: [string, any]) => ({
                   status,
                   timestamp: timestamp?.seconds as unknown as number,
                   timestamp_human: dayjs.unix(timestamp?.seconds as unknown as number).format("MMM DD, YYYY HH:mm:ss")
-                })
-              ),
+                }))
+                .sort((a, b) => b.timestamp - a.timestamp),
               votingExpiresAt: votingExpiresAt
             }
           })
@@ -137,6 +148,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   }, [daoSelected, fetchCollection, firebaseRootCollection])
 
   return {
+    contractData,
     daos: daoData,
     daoSelected,
     daoRegistryDetails,
@@ -220,6 +232,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   }, [chain?.name, network])
 
   const {
+    contractData,
     daos,
     isLoadingDaos,
     daoSelected,
@@ -252,6 +265,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
           setOpen(true)
           // connect({ config: wagmiConfig })
         },
+        contractData,
         daos,
         isLoadingDaos,
         isLoadingDaoProposals,

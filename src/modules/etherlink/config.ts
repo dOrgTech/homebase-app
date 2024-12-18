@@ -1,8 +1,9 @@
-import { EvmDaoBasics } from "./components/EvmDaoBasics"
-import { EvmDaoMembership } from "./components/EvmDaoMembership"
-import { EvmDaoQuorum } from "./components/EvmDaoQuorum"
-import { EvmDaoSummary } from "./components/EvmDaoSummary"
-import { EvmDaoVoting } from "./components/EvmDaoVoting"
+import { EvmDaoRegistry } from "./creator/EvmDaoRegistry"
+import { EvmDaoBasics } from "./creator/EvmDaoBasics"
+import { EvmDaoMembership } from "./creator/EvmDaoMembership"
+import { EvmDaoQuorum } from "./creator/EvmDaoQuorum"
+import { EvmDaoSummary } from "./creator/EvmDaoSummary"
+import { EvmDaoVoting } from "./creator/EvmDaoVoting"
 
 export const STEPS = [
   { title: "DAO Template", index: 0, path: "template", component: EvmDaoBasics },
@@ -10,7 +11,8 @@ export const STEPS = [
   { title: "Proposals & Voting", index: 2, path: "voting", component: EvmDaoVoting },
   { title: "Quorum", index: 3, path: "quorum", component: EvmDaoQuorum },
   { title: "Membership", index: 4, path: "membership", component: EvmDaoMembership },
-  { title: "Review & Deploy", index: 5, path: "summary", component: EvmDaoSummary }
+  { title: "Registry", index: 5, path: "registry", component: EvmDaoRegistry },
+  { title: "Review & Deploy", index: 6, path: "summary", component: EvmDaoSummary }
 ]
 
 export const urlToStepMap: Record<string, number> = {

@@ -1,4 +1,4 @@
-import { Field, Form, FormikErrors, getIn } from "formik"
+import { Form, FormikErrors } from "formik"
 import { Formik } from "formik"
 import { Box } from "@mui/material"
 import { TitleBlock } from "modules/common/TitleBlock"
@@ -6,19 +6,43 @@ import {
   DescriptionText,
   SecondContainer,
   CustomInputContainer,
-  CustomFormikTextField,
   InfoIconInput,
   TextareaContainer,
   MetadataContainer,
   CustomTextarea
 } from "components/ui/DaoCreator"
 import React from "react"
-import { Link } from "@material-ui/core"
+import { Link, TextField, withStyles } from "@material-ui/core"
 import { Grid, Typography, useMediaQuery, useTheme, InputAdornment, Tooltip } from "@material-ui/core"
 
 import { ErrorText } from "modules/creator/token/ui"
 import { validateEvmTokenAddress } from "../utils"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
+import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
+
+const CustomFormikTextField = withStyles({
+  root: {
+    "& .MuiInput-root": {
+      fontWeight: 300,
+      textAlign: "initial"
+    },
+    "& .MuiInputBase-input": {
+      textAlign: "initial"
+    },
+    "& .MuiInputBase-root": {
+      textWeight: 300
+    },
+    "& .MuiInput-underline:before": {
+      borderBottom: "none !important"
+    },
+    "& .MuiInput-underline:hover:before": {
+      borderBottom: "none !important"
+    },
+    "& .MuiInput-underline:after": {
+      borderBottom: "none !important"
+    }
+  }
+})(TextField)
 
 interface EvmDaoBasicsProps {
   // Add props as needed
@@ -83,6 +107,9 @@ const validateForm = (values: EvmDaoSettings) => {
 export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const { data: daoData, setFieldValue, getIn } = useEvmDaoCreateStore()
+
+  console.log({ daoData })
 
   const saveStepInfo = (values: EvmDaoSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
     const newValues: EvmDaoSettings = { ...values }
@@ -125,7 +152,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
         onSubmit={saveStepInfo}
         initialValues={orgSettings}
       >
-        {({ submitForm, isSubmitting, setFieldValue, values, errors, touched, setFieldTouched }) => {
+        {({ errors, touched }) => {
           return (
             <Form style={{ width: "100%" }}>
               <>
@@ -136,13 +163,17 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                       DAO Name{" "}
                     </Typography>
                     <CustomInputContainer>
-                      <Field
+                      <CustomFormikTextField
                         name="name"
-                        inputProps={{ maxLength: 18 }}
                         type="text"
                         placeholder="DAO Name"
-                        component={CustomFormikTextField}
-                      ></Field>
+                        // value={daoData?.name}
+                        defaultValue={daoData?.name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          console.log("Setting DAO Name to", e.target.value)
+                          setFieldValue("name", e.target.value)
+                        }}
+                      />
                     </CustomInputContainer>
                     {errors.name && touched.name ? <ErrorText>{errors.name}</ErrorText> : null}
                   </Grid>
@@ -152,14 +183,15 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                       Ticker Symbol{" "}
                     </Typography>
                     <CustomInputContainer>
-                      <Field
-                        id="outlined-basic"
-                        placeholder="ETH"
+                      <CustomFormikTextField
                         name="governanceToken.symbol"
-                        component={CustomFormikTextField}
-                        onClick={() => setFieldTouched("governanceToken.symbol")}
-                        inputProps={{
-                          maxLength: 36
+                        type="text"
+                        placeholder="ETH"
+                        defaultValue={daoData?.governanceToken.symbol}
+                        inputProps={{ maxLength: 36 }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          console.log("Setting DAO Symbol to", e.target.value)
+                          setFieldValue("governanceToken.symbol", e.target.value)
                         }}
                       />
                     </CustomInputContainer>
@@ -173,11 +205,11 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                       Token Decimals{" "}
                     </Typography>
                     <CustomInputContainer>
-                      <Field
-                        id="outlined-basic"
-                        placeholder="0"
+                      <CustomFormikTextField
                         name="governanceToken.tokenDecimals"
-                        component={CustomFormikTextField}
+                        type="text"
+                        placeholder="0"
+                        defaultValue={daoData?.governanceToken.tokenDecimals}
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="start">
@@ -190,6 +222,10 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                             </InputAdornment>
                           )
                         }}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          console.log("Setting DAO Token Decimals to", e.target.value)
+                          setFieldValue("governanceToken.tokenDecimals", e.target.value)
+                        }}
                       />
                     </CustomInputContainer>
                     {errors.governanceToken?.tokenDecimals && touched.governanceToken?.tokenDecimals ? (
@@ -198,28 +234,25 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                   </Grid>
                 </SecondContainer>
                 <SecondContainer container direction="row" alignItems="center">
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1" color="textSecondary">
+                  <Grid item xs={12} container alignItems="center">
+                    <Typography variant="subtitle1" color="textSecondary" style={{ marginRight: 8 }}>
                       DAO Description
+                      <Tooltip placement="bottom" title="Description info">
+                        <InfoIcon />
+                      </Tooltip>
                     </Typography>
                   </Grid>
                   <TextareaContainer item xs={12}>
-                    <Field name="description">
-                      {() => (
-                        <CustomTextarea
-                          maxLength={1500}
-                          aria-label="empty textarea"
-                          placeholder="Type a description"
-                          value={getIn(values, "description")}
-                          onChange={(newValue: any) => {
-                            setFieldValue("description", newValue.target.value)
-                          }}
-                        />
-                      )}
-                    </Field>
-                    <Tooltip placement="bottom" title="Description info">
-                      <InfoIcon />
-                    </Tooltip>
+                    <CustomTextarea
+                      maxLength={1500}
+                      style={{ width: "100%" }}
+                      aria-label="empty textarea"
+                      placeholder="Type a description"
+                      defaultValue={getIn("description")}
+                      onChange={(newValue: any) => {
+                        setFieldValue("description", newValue.target.value)
+                      }}
+                    />
                   </TextareaContainer>
                   {errors.description && touched.description ? <ErrorText>{errors.description}</ErrorText> : null}
                 </SecondContainer>
