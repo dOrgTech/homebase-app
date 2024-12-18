@@ -1,12 +1,12 @@
-import React, { useState, createContext, ReactNode, useMemo, useRef, useEffect } from "react"
+import React, { useState, createContext, ReactNode, useMemo, useRef, useEffect, useCallback } from "react"
 import { useSwitchChain, useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
 import { disconnect as disconnectEtherlink } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
 import { etherlink, etherlinkTestnet } from "wagmi/chains"
-import { useSIWE, useModal, SIWESession } from "connectkit"
+import { useModal } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
-import { useParams } from "react-router-dom"
+import HbTokenAbi from "assets/abis/hb_evm.json"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import dayjs from "dayjs"
@@ -53,7 +53,22 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   const [isLoadingDaoProposals, setIsLoadingDaoProposals] = useState(true)
   const [contractData, setContractData] = useState<any[]>([])
   const [daoData, setDaoData] = useState<any[]>([])
-  const [daoSelected, setDaoSelected] = useState<any>({})
+  const [daoSelected, setDaoSelected] = useState<{
+    id: string
+    address: string
+    name: string
+    symbol: string
+    decimals: number
+    description: string
+    token: string
+    registryAddress: string
+    treasuryAddress: string
+    proposalThreshold: string
+    totalSupply: string
+    registry: Record<string, string>
+    votingDuration: number
+    votingDelayInMinutes: number
+  } | null>(null)
   const [daoRegistryDetails, setDaoRegistryDetails] = useState<{
     balance: string
   }>({ balance: "0" })
@@ -63,8 +78,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
-
-  console.log({ contractData })
 
   useEffect(() => {
     fetchCollection("contracts")
@@ -82,10 +95,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     console.log("Firestore Data", firestoreData)
     if (!firebaseRootCollection) return
     if (firestoreData?.[firebaseRootCollection]) {
-      // firestoreData[firebaseRootCollection]?.forEach((dao: any) => {
-      //   console.log("DAOTreasury", dao.id, Object.values(dao.treasury))
-      // })
-
       setDaoData(firestoreData[firebaseRootCollection])
       setIsLoadingDaos(false)
     }
@@ -97,7 +106,10 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
       )
       setContractData(contractDataForNetwork)
     }
+    if (!daoSelected?.id) return
     const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals`
+    const daoMembersKey = `${firebaseRootCollection}/${daoSelected?.id}/members`
+
     if (firestoreData?.[daoProposalKey]) {
       setDaoProposals(
         firestoreData[daoProposalKey]
@@ -121,14 +133,14 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
           })
       )
     }
-    const daoMembersKey = `${firebaseRootCollection}/${daoSelected.id}/members`
+
     if (firestoreData?.[daoMembersKey]) {
       setDaoMembers(firestoreData[daoMembersKey])
     }
-  }, [daoSelected.id, daoSelected?.votingDuration, firebaseRootCollection, firestoreData])
+  }, [daoSelected?.id, daoSelected?.votingDuration, firebaseRootCollection, firestoreData])
 
   useEffect(() => {
-    if (daoSelected.id && firebaseRootCollection) {
+    if (daoSelected?.id && firebaseRootCollection) {
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/proposals`)
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/members`)
       console.log({ daoSelected })

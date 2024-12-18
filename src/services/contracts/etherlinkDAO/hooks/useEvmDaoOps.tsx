@@ -1,0 +1,63 @@
+import { ethers } from "ethers"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { EtherlinkContext } from "services/wagmi/context"
+
+import HbTokenAbi from "assets/abis/hb_evm.json"
+
+export const useEvmDaoOps = () => {
+  const [tokenContract, setTokenContract] = useState<ethers.Contract | null>(null)
+  const { etherlink } = useTezos()
+  const { daoSelected } = useContext(EtherlinkContext)
+  const [userVotingWeight, setUserVotingWeight] = useState(0)
+  const [userTokenBalance, setUserTokenBalance] = useState(0)
+
+  const daoDelegate = useCallback(
+    async (targetAddress: string) => {
+      if (!daoSelected) return
+      const govContract = new ethers.Contract(daoSelected.token, HbTokenAbi.abi, etherlink.signer)
+      const tx = await govContract.delegate({
+        delegatee: targetAddress
+      })
+      console.log("Transaction sent:", tx.hash)
+      const receipt = await tx.wait()
+      console.log("Transaction confirmed:", receipt)
+      return receipt
+    },
+    [daoSelected, etherlink.signer]
+  )
+
+  useEffect(() => {
+    if (!etherlink?.signer || !tokenContract) return
+    const getUserTokenBalance = async () => {
+      const balance = await tokenContract.balanceOf(etherlink?.signer?.address)
+      const balanceActual = Number(balance) / Math.pow(10, daoSelected?.decimals)
+      console.log("User Balance", balanceActual)
+      setUserTokenBalance(balanceActual)
+    }
+    const getUserVotingWeight = async () => {
+      const weight = await tokenContract.getVotes(etherlink?.signer?.address)
+      const weightActual = Number(weight) / Math.pow(10, daoSelected?.decimals)
+      console.log("User Voting Weight", weightActual)
+      setUserVotingWeight(weightActual)
+    }
+    getUserTokenBalance()
+    getUserVotingWeight()
+  }, [daoSelected?.decimals, daoSelected?.token, etherlink.signer, tokenContract])
+
+  useEffect(() => {
+    if (!etherlink?.signer || !daoSelected?.token) return
+    setTokenContract(new ethers.Contract(daoSelected?.token, HbTokenAbi.abi, etherlink.signer))
+  }, [daoSelected?.token, etherlink.signer])
+
+  return {
+    signer: etherlink?.signer,
+    userTokenBalance,
+    userVotingWeight,
+    // TODO: Maybe remove
+    loggedInUser: {
+      address: etherlink?.signer?.address
+    },
+    daoDelegate
+  }
+}

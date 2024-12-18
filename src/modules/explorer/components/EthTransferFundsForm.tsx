@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { Box } from "@mui/material"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { ProposalFormInput } from "./ProposalFormInput"
-import { Controller } from "react-hook-form"
 import { Grid, TextField, Paper, styled, useTheme, useMediaQuery } from "@material-ui/core"
 import { Autocomplete } from "@material-ui/lab"
 import { SendButton } from "./ProposalFormSendButton"
@@ -72,6 +71,7 @@ const EthTransferFundsForm: React.FC<EthContractCallFormProps> = ({ open, handle
                 renderInput={params => (
                   <TextField
                     {...params}
+                    placeholder="Select asset"
                     InputProps={{
                       ...params.InputProps,
                       disableUnderline: true
