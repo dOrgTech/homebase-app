@@ -17,9 +17,9 @@ export const useTokenHoldersWithVotes = (contractAddress: string) => {
       let proposalsVoted = 0
       let votes = new BigNumber(0)
 
-      proposals.forEach(proposal => {
+      proposals.forEach((proposal: any) => {
         const voter = proposal.voters.find(
-          voter => voter.address.toLowerCase() === tokenHolder.holder.address.toLowerCase()
+          (voter: any) => voter.address.toLowerCase() === tokenHolder.holder.address.toLowerCase()
         )
 
         if (voter) {
