@@ -35,6 +35,7 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
       currentStep: 0,
       data: {
         name: "",
+        template: "full",
         symbol: "",
         description: "",
         administrator: "",
@@ -239,6 +240,7 @@ const useEvmDaoCreateStore = () => {
     next: {
       text: isFinalStep ? "Deploy" : "Next",
       handler: () => {
+        if (data.data.template === "lite") return history.push("/lite")
         if (isFinalStep) {
           deployDaoWithWrapper()
         } else {

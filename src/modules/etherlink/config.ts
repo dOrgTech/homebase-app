@@ -4,9 +4,10 @@ import { EvmDaoMembership } from "./creator/EvmDaoMembership"
 import { EvmDaoQuorum } from "./creator/EvmDaoQuorum"
 import { EvmDaoSummary } from "./creator/EvmDaoSummary"
 import { EvmDaoVoting } from "./creator/EvmDaoVoting"
+import { EvmDaoTemplate } from "./creator/EvmDaoTemplate"
 
 export const STEPS = [
-  { title: "DAO Template", index: 0, path: "template", component: EvmDaoBasics },
+  { title: "DAO Template", index: 0, path: "template", component: EvmDaoTemplate },
   { title: "DAO Basics", index: 1, path: "dao", component: EvmDaoBasics },
   { title: "Proposals & Voting", index: 2, path: "voting", component: EvmDaoVoting },
   { title: "Quorum", index: 3, path: "quorum", component: EvmDaoQuorum },
