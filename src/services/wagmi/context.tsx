@@ -73,9 +73,9 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     console.log("Firestore Data", firestoreData)
     if (!firebaseRootCollection) return
     if (firestoreData?.[firebaseRootCollection]) {
-      firestoreData[firebaseRootCollection]?.forEach((dao: any) => {
-        console.log("DAOTreasury", dao.id, Object.values(dao.treasury))
-      })
+      // firestoreData[firebaseRootCollection]?.forEach((dao: any) => {
+      //   console.log("DAOTreasury", dao.id, Object.values(dao.treasury))
+      // })
 
       setDaoData(firestoreData[firebaseRootCollection])
       setIsLoadingDaos(false)

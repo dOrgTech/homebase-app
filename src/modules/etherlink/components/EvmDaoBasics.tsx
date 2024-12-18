@@ -14,30 +14,32 @@ import {
 } from "components/ui/DaoCreator"
 import React from "react"
 import { Link } from "@material-ui/core"
-import {
-  Grid,
-  styled,
-  Typography,
-  withStyles,
-  TextareaAutosize,
-  withTheme,
-  useMediaQuery,
-  useTheme,
-  InputAdornment,
-  Tooltip
-} from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme, InputAdornment, Tooltip } from "@material-ui/core"
 
 import { ErrorText } from "modules/creator/token/ui"
-import { OrgSettings } from "modules/creator/state/types"
-import { isInvalidEvmAddress, validateEvmTokenAddress } from "../utils"
+import { validateEvmTokenAddress } from "../utils"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
 
 interface EvmDaoBasicsProps {
   // Add props as needed
 }
 
-const validateForm = (values: OrgSettings) => {
-  const errors: FormikErrors<OrgSettings> = {}
+type EvmDaoSettings = {
+  name: string
+  symbol: string
+  description: string
+  administrator: string
+  guardian: string
+  governanceToken: {
+    address?: string
+    symbol: string
+    tokenSymbol: string
+    tokenDecimals: number
+  }
+}
+
+const validateForm = (values: EvmDaoSettings) => {
+  const errors: FormikErrors<EvmDaoSettings> = {}
 
   if (!values.name) {
     errors.name = "Required"
@@ -51,14 +53,6 @@ const validateForm = (values: OrgSettings) => {
     errors.description = "Required"
   }
 
-  if (!values.guardian) {
-    errors.guardian = "Required"
-  }
-
-  if (values.guardian && isInvalidEvmAddress(values.guardian)) {
-    errors.guardian = "Invalid address"
-  }
-
   if (!values.governanceToken.address) {
     errors.governanceToken = {
       ...errors.governanceToken,
@@ -66,31 +60,20 @@ const validateForm = (values: OrgSettings) => {
     }
   }
 
-  if (values.governanceToken.address && validateEvmTokenAddress(values.governanceToken.address)) {
+  if (
+    values.governanceToken.symbol &&
+    (values.governanceToken.symbol.length > 4 || values.governanceToken.symbol.length < 2)
+  ) {
     errors.governanceToken = {
       ...errors.governanceToken,
-      address: "Invalid address"
+      address: "Invalid Symbol"
     }
   }
 
-  if (!values.governanceToken.tokenId) {
+  if (!values.governanceToken.tokenDecimals) {
     errors.governanceToken = {
       ...errors.governanceToken,
-      tokenId: "Required"
-    }
-  }
-
-  if (!values.governanceToken.tokenMetadata) {
-    errors.governanceToken = {
-      ...errors.governanceToken,
-      address: "Could not find token"
-    }
-  }
-
-  if (values.governanceToken.tokenMetadata?.standard === "fa1.2") {
-    errors.governanceToken = {
-      ...errors.governanceToken,
-      address: "FA1.2 Tokens Not Supported"
+      tokenDecimals: "Required"
     }
   }
 
@@ -101,8 +84,8 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
-  const saveStepInfo = (values: OrgSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
-    const newValues: OrgSettings = { ...values }
+  const saveStepInfo = (values: EvmDaoSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
+    const newValues: EvmDaoSettings = { ...values }
     // const newState = {
     //   ...state?.data,
     //   orgSettings: newValues
@@ -113,19 +96,13 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
     // history.push(`voting`)
   }
 
-  const tokenMetadata = {
-    name: "Test",
-    symbol: "TEST"
-  }
-  const loading = false
-
-  const orgSettings: OrgSettings = {
+  const orgSettings: EvmDaoSettings = {
     name: "",
     symbol: "",
     description: "",
     administrator: "",
     guardian: "",
-    governanceToken: { address: "", tokenId: "" }
+    governanceToken: { address: "", symbol: "", tokenDecimals: 0, tokenSymbol: "" }
   }
 
   return (
@@ -134,12 +111,8 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
         title="DAO Basics"
         description={
           <DescriptionText variant="subtitle1">
-            These settings will define the name, symbol, and initial distribution of your token. You will need a
-            pre-existing ERC20 token to use as governance token. To deploy your own governance token you can go{" "}
-            <Link target="_blank" href="/creator/deployment/config" color="secondary">
-              here
-            </Link>{" "}
-            and then come back.
+            These settings will define the name, symbol, and initial distribution of your DAO along with the ERC20
+            token.
           </DescriptionText>
         }
       ></TitleBlock>
@@ -176,41 +149,41 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                   <Grid item xs={isMobile ? 12 : 9}>
                     <Typography variant="subtitle1" color="textSecondary">
                       {" "}
-                      Token Address{" "}
+                      Ticker Symbol{" "}
                     </Typography>
                     <CustomInputContainer>
                       <Field
                         id="outlined-basic"
-                        placeholder="KT1...."
-                        name="governanceToken.address"
+                        placeholder="ETH"
+                        name="governanceToken.symbol"
                         component={CustomFormikTextField}
-                        onClick={() => setFieldTouched("governanceToken.address")}
+                        onClick={() => setFieldTouched("governanceToken.symbol")}
                         inputProps={{
                           maxLength: 36
                         }}
                       />
                     </CustomInputContainer>
-                    {errors.governanceToken?.address && touched.governanceToken?.address ? (
-                      <ErrorText>{errors.governanceToken?.address}</ErrorText>
+                    {errors.governanceToken?.symbol && touched.governanceToken?.symbol ? (
+                      <ErrorText>{errors.governanceToken?.symbol}</ErrorText>
                     ) : null}
                   </Grid>
                   <Grid item xs={isMobile ? 12 : 3}>
                     <Typography variant="subtitle1" color="textSecondary">
                       {" "}
-                      Token ID{" "}
+                      Token Decimals{" "}
                     </Typography>
                     <CustomInputContainer>
                       <Field
                         id="outlined-basic"
                         placeholder="0"
-                        name="governanceToken.tokenId"
+                        name="governanceToken.tokenDecimals"
                         component={CustomFormikTextField}
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="start">
                               <Tooltip
                                 placement="bottom"
-                                title="Homebase will only track your governance token at a certain ID index, which is a parameter specified upon deploying the token contract. Fungible tokens usually have the ID of 0 (zero)."
+                                title="Token Decimals for the ERC20 token deployed with this DAO"
                               >
                                 <InfoIconInput />
                               </Tooltip>
@@ -219,51 +192,9 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                         }}
                       />
                     </CustomInputContainer>
-                    {errors.governanceToken?.tokenId && touched.governanceToken?.tokenId ? (
-                      <ErrorText>{errors.governanceToken?.tokenId}</ErrorText>
+                    {errors.governanceToken?.tokenDecimals && touched.governanceToken?.tokenDecimals ? (
+                      <ErrorText>{errors.governanceToken?.tokenDecimals}</ErrorText>
                     ) : null}
-                  </Grid>
-                  {tokenMetadata && !loading && (
-                    <MetadataContainer item xs={12}>
-                      <Typography variant="subtitle2" color="secondary">
-                        {tokenMetadata.name} ({tokenMetadata.symbol})
-                      </Typography>
-                    </MetadataContainer>
-                  )}
-                </SecondContainer>
-                <SecondContainer item container direction="row" alignItems="center">
-                  <Grid item xs={12}>
-                    <Typography variant="subtitle1" color="textSecondary">
-                      {" "}
-                      Guardian Address{" "}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <CustomInputContainer>
-                      <Field
-                        name="guardian"
-                        type="text"
-                        placeholder="tz1PXn...."
-                        component={CustomFormikTextField}
-                        onClick={() => setFieldTouched("guardian")}
-                        inputProps={{
-                          maxLength: 36
-                        }}
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="start">
-                              <Tooltip
-                                placement="bottom"
-                                title="Address that can drop/cancel any proposals, Should be a contract like multisig or another DAO"
-                              >
-                                <InfoIconInput color="secondary" />
-                              </Tooltip>
-                            </InputAdornment>
-                          )
-                        }}
-                      ></Field>
-                    </CustomInputContainer>
-                    {errors.guardian && touched.guardian ? <ErrorText>{errors.guardian}</ErrorText> : null}
                   </Grid>
                 </SecondContainer>
                 <SecondContainer container direction="row" alignItems="center">

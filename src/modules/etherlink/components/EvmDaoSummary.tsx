@@ -1,3 +1,5 @@
+import { DescriptionText } from "components/ui/DaoCreator"
+import { TitleBlock } from "modules/common/TitleBlock"
 import React from "react"
 
 interface EvmDaoSummaryProps {
@@ -7,7 +9,12 @@ interface EvmDaoSummaryProps {
 export const EvmDaoSummary: React.FC<EvmDaoSummaryProps> = () => {
   return (
     <div className="evm-dao-summary">
-      <h2>DAO Summary</h2>
+      <TitleBlock
+        title="DAO Summary"
+        description={
+          <DescriptionText variant="subtitle1">These settings will define the summary for your DAO.</DescriptionText>
+        }
+      />
       <div className="summary-content"></div>
     </div>
   )

@@ -3,9 +3,8 @@ import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "@mate
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
 
-import { CreatorContext, StepInfo } from "modules/creator/state"
-import { StepRouter, STEPS, useStepNumber } from "modules/creator/steps"
-import { NavigationBar } from "modules/creator/components/NavigationBar"
+import { StepInfo } from "modules/creator/state"
+import { STEPS } from "modules/etherlink/config"
 import { Navbar } from "modules/common/Toolbar"
 import {
   PageContainer,
@@ -17,27 +16,16 @@ import {
   StyledStepper,
   PageContent
 } from "components/ui/DaoCreator"
-import mixpanel from "mixpanel-browser"
 
 import { urlToStepMap } from "./config"
+import { NavigationBar } from "modules/creator/components/NavigationBar"
+import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
 export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
-  //   const creator = useContext(CreatorContext)
-
-  //   const { back, next } = creator.state
-  const back = () => {}
-  const next = () => {}
-  const step = useStepNumber()
+  const { currentStep: step, next, prev: back } = useEvmDaoCreateStore()
   const history = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
-
-  useEffect(() => {
-    mixpanel.unregister("daoAddress")
-    mixpanel.unregister("daoType")
-
-    mixpanel.track("Visited Creator")
-  }, [])
 
   return (
     <PageContainer container direction="row">
@@ -86,7 +74,7 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
               </StepContentContainer>
             </Grid>
           </Grid>
-          {/* {step < 6 && <NavigationBar back={back} next={next} />} */}
+          {step < 6 && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>
