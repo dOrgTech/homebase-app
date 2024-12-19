@@ -8,9 +8,14 @@ import HbTokenAbi from "assets/abis/hb_evm.json"
 export const useEvmDaoOps = () => {
   const [tokenContract, setTokenContract] = useState<ethers.Contract | null>(null)
   const { etherlink } = useTezos()
-  const { daoSelected } = useContext(EtherlinkContext)
+  const loggedInUserAddress = etherlink?.signer?.address
+  const { daoSelected, daoMembers } = useContext(EtherlinkContext)
   const [userVotingWeight, setUserVotingWeight] = useState(0)
   const [userTokenBalance, setUserTokenBalance] = useState(0)
+  const selectedUser = daoMembers?.find((member: any) => member.address === loggedInUserAddress)
+
+  const proposalCreatedCount = selectedUser?.proposalsCreated?.length || 0
+  const proposalVotedCount = selectedUser?.proposalsVoted?.length || 0
 
   const daoDelegate = useCallback(
     async (targetAddress: string) => {
@@ -54,6 +59,8 @@ export const useEvmDaoOps = () => {
     signer: etherlink?.signer,
     userTokenBalance,
     userVotingWeight,
+    proposalCreatedCount,
+    proposalVotedCount,
     // TODO: Maybe remove
     loggedInUser: {
       address: etherlink?.signer?.address

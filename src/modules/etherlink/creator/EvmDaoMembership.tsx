@@ -7,40 +7,12 @@ import { Box } from "@material-ui/core"
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
+import { StyledTextField } from "components/ui/StyledTextField"
 
 interface Member {
   address: string
   amountOfTokens: number
 }
-const StyledTextField = styled(TextField)({
-  "& .MuiInput-root": {
-    color: "#fff",
-    paddingBottom: "4px"
-  },
-  "& label": {
-    color: "#fff"
-  },
-  "& label.Mui-focused": {
-    color: "#fff"
-  },
-  "& .MuiInput-underline:before": {
-    borderBottomColor: "#ccc"
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "#fff"
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "#fff"
-    },
-    "&:hover fieldset": {
-      borderColor: "#fff"
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#fff"
-    }
-  }
-})
 
 export const EvmDaoMembership = () => {
   const { data, setFieldValue } = useEvmDaoCreateStore()

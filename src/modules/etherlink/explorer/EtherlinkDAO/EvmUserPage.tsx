@@ -65,12 +65,11 @@ const DelegationDescription = styled(Typography)({
 
 export const EvmUserPage = () => {
   const { daoSelected } = useContext(EtherlinkContext)
-  const { daoDelegate, signer, userTokenBalance, userVotingWeight } = useEvmDaoOps()
+  const { daoDelegate, signer, userTokenBalance, userVotingWeight, proposalCreatedCount, proposalVotedCount } =
+    useEvmDaoOps()
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance
-  const proposalsCreated = 0
-  const votesCast = 0
 
   return (
     <Box>
@@ -87,11 +86,11 @@ export const EvmUserPage = () => {
         </StatBox>
         <StatBox>
           <StatLabel>Proposals Created</StatLabel>
-          <StatValue>{proposalsCreated}</StatValue>
+          <StatValue>{proposalCreatedCount}</StatValue>
         </StatBox>
         <StatBox>
           <StatLabel>Votes Cast</StatLabel>
-          <StatValue>{votesCast}</StatValue>
+          <StatValue>{proposalVotedCount}</StatValue>
         </StatBox>
       </StatsContainer>
 

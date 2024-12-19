@@ -4,6 +4,7 @@ import { ArrowBackIos } from "@material-ui/icons"
 
 import { NavigationBarProps } from "modules/creator/state"
 import { MainButton } from "modules/common/MainButton"
+import { NextButton } from "components/ui/NextButton"
 
 const Footer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -27,14 +28,6 @@ const BackButton = styled(Paper)({
   padding: 8,
   width: "fit-content"
 })
-
-const NextButton = styled(MainButton)(({ theme }) => ({
-  textAlign: "center",
-  float: "right",
-  cursor: "pointer",
-  background: theme.palette.secondary.light,
-  padding: "8px 16px"
-}))
 
 const BackButtonIcon = styled(ArrowBackIos)(({ theme }) => ({
   color: theme.palette.secondary.light,
