@@ -1,0 +1,11 @@
+[[redirects]]
+    from = "/explorer/dao/KT1DNHADdFxHM6mRKTgyJmchW5ELxcoW1aSh/overview"
+    to = "https://v1.tezos-homebase.io/explorer/dao/KT1DNHADdFxHM6mRKTgyJmchW5ELxcoW1aSh/overview"
+    status = 302
+    force = true
+
+[[redirects]]
+    from = "/*"
+    to = "/index.html"
+    status = 200
+    

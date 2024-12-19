@@ -1,4 +1,4 @@
-import { Grid, styled, makeStyles } from "@material-ui/core"
+import { Grid, styled, Typography } from "@material-ui/core"
 import React, { useState } from "react"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import Prism, { highlight, plugins } from "prismjs"
