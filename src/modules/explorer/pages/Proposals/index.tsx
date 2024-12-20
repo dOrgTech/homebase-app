@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useContext, useEffect } from "react"
-import { Button, Grid, MenuItem, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import Select, { SelectChangeEvent } from "@mui/material/Select"
+import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
@@ -25,9 +24,7 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
 import { Filters } from "../User/components/UserMovements"
-import { useEtherlinkDAOID } from "modules/etherlink/explorer/router"
-import { EtherlinkContext } from "services/wagmi/context"
-import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
+import { EvmProposalsPage } from "modules/etherlink/explorer/EtherlinkDAO/EvmProposalsPage"
 
 const FiltersContainer = styled(Grid)({
   marginTop: 45,
@@ -337,106 +334,10 @@ const TezosProposals = () => {
   )
 }
 
-export const EtherlinkProposals = () => {
-  const daoId = useEtherlinkDAOID()
-  // TODO: Replace useContext with a useEtherlinkProvider
-  const { daoProposals } = useContext(EtherlinkContext)
-  // const { data, cycleInfo } = useDAO(daoId)
-  // const { data: proposals } = useProposals(daoId)
-  const theme = useTheme()
-  // const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const [openDialog, setOpenDialog] = useState(false)
-  console.log({ daoProposals })
-  const handleCloseModal = () => {
-    setOpenDialog(false)
-  }
-
-  return (
-    <>
-      <Grid item xs={12} style={{ marginBottom: 20 }}>
-        <TitleText color="textPrimary">Proposals</TitleText>
-      </Grid>
-      <Grid container direction="column" style={{ gap: 42, backgroundColor: "rgb(36, 40, 45)", padding: "10px" }}>
-        <HeroContainer item xs={12}>
-          <Grid
-            container
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ backgroundColor: "rgb(36, 40, 45)" }}
-          >
-            <Grid container spacing={2} alignItems="center" style={{ marginTop: 20 }}>
-              <Grid item xs={12} sm={3}>
-                <Typography variant="body2" color="textPrimary" gutterBottom>
-                  Type
-                </Typography>
-                <Select
-                  fullWidth
-                  labelId="proposal-type-select-label"
-                  id="proposal-type-select"
-                  defaultValue="All"
-                  style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
-                >
-                  <MenuItem value="All">All</MenuItem>
-                  <MenuItem value="OffChain">Off-Chain</MenuItem>
-                  <MenuItem value="TokenOperation">Token Operation</MenuItem>
-                  <MenuItem value="Registry">Registry</MenuItem>
-                  <MenuItem value="Transfer">Transfer</MenuItem>
-                  <MenuItem value="ContractCall">Contract Call</MenuItem>
-                  <MenuItem value="ChangeConfig">Change Config</MenuItem>
-                </Select>
-              </Grid>
-              <Grid item xs={12} sm={3}>
-                <Typography variant="body2" color="textPrimary" gutterBottom>
-                  Status
-                </Typography>
-                <Select
-                  fullWidth
-                  defaultValue="All"
-                  style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
-                >
-                  <MenuItem value="All">All</MenuItem>
-                  <MenuItem value="Active">Active</MenuItem>
-                  <MenuItem value="Passed">Passed</MenuItem>
-                  <MenuItem value="Executable">Executable</MenuItem>
-                  <MenuItem value="Executed">Executed</MenuItem>
-                  <MenuItem value="Expired">Expired</MenuItem>
-                  <MenuItem value="NoQuorum">No Quorum</MenuItem>
-                  <MenuItem value="Pending">Pending</MenuItem>
-                  <MenuItem value="Rejected">Rejected</MenuItem>
-                </Select>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                sm={3}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                  height: "100%"
-                }}
-              >
-                <Typography variant="body1" style={{ color: theme.palette.text.secondary }}>
-                  {daoProposals?.length || 0} Proposals
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={3} style={{ textAlign: "right", justifyContent: "flex-end" }}>
-                <SmallButton variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
-                  New Proposal
-                </SmallButton>
-              </Grid>
-            </Grid>
-          </Grid>
-        </HeroContainer>
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
-      </Grid>
-      <EvmDaoProposalList proposals={daoProposals} filters={undefined} />
-    </>
-  )
-}
+export const EtherlinkProposals = () => {}
 
 export const Proposals: React.FC = () => {
   const daoId = useDAOID()
-  const { data, cycleInfo } = useDAO(daoId)
-  return data?.data.network.startsWith("etherlink") ? <EtherlinkProposals /> : <TezosProposals />
+  const { data } = useDAO(daoId)
+  return data?.data.network.startsWith("etherlink") ? <EvmProposalsPage /> : <TezosProposals />
 }

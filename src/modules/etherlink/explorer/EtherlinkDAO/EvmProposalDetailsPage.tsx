@@ -1,22 +1,25 @@
-import { ArrowBackIosOutlined } from "@mui/icons-material"
 import { GridContainer } from "modules/common/GridContainer"
 import { Button, Grid, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { PageContainer } from "components/ui/DaoCreator"
-import { ProposalDetailCard } from "modules/lite/explorer/components/ProposalDetailCard"
 import { useContext, useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { EtherlinkContext } from "services/wagmi/context"
-import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalDetailCard"
-import { ChoiceItemSelected } from "modules/lite/explorer/components/ChoiceItemSelected"
 import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalVoteDetail"
-import { TitleText } from "components/ui/TitleText"
 import { EvmProposalCountdown } from "modules/etherlink/components/EvmProposalCountdown"
+import { EVM_PROPOSAL_CHOICES } from "modules/etherlink/config"
+import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVoterList"
+
 export const EvmProposalDetailsPage = () => {
   const params = useParams() as { proposalId: string }
   const proposalId = params?.proposalId
 
   const { daoSelected, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
+
+  // const daoSelected = {}
+  // const daoProposalSelected = {}
+  // const selectDaoProposal = () => {}
+
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
@@ -24,22 +27,7 @@ export const EvmProposalDetailsPage = () => {
     selectDaoProposal(proposalId)
   }, [proposalId, selectDaoProposal])
 
-  const choices = [
-    {
-      name: "For",
-      pollID: "1",
-      walletAddresses: [],
-      selected: true
-    },
-    {
-      name: "Against",
-      pollID: "1",
-      walletAddresses: [],
-      selected: false
-    }
-  ]
-
-  console.log("daoProposalSelected", daoProposalSelected)
+  const choices = EVM_PROPOSAL_CHOICES
 
   return (
     <div>
@@ -103,6 +91,7 @@ export const EvmProposalDetailsPage = () => {
         </Grid>
       </PageContainer>
       <EvmProposalVoteDetail poll={daoProposalSelected} choices={choices} token={daoSelected?.token} />
+      <EvmProposalVoterList />
     </div>
   )
 }

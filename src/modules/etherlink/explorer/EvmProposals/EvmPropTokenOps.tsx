@@ -3,6 +3,8 @@ import AddCircleIcon from "@mui/icons-material/AddCircle"
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledTextField } from "components/ui/StyledTextField"
+import { useContext } from "react"
+import { EtherlinkContext } from "services/wagmi/context"
 
 const OptionContainer = styled(Grid)({
   "background": "#2F3438",
@@ -42,6 +44,8 @@ const ConfigOption = ({
 )
 
 const EvmPropTokenOps = () => {
+  const { daoSelected } = useContext(EtherlinkContext)
+  console.log("EvmPropTokenOps", daoSelected)
   const { currentStep, daoTokenOps, setDaoTokenOps } = useEvmProposalOps()
 
   if (currentStep === 3 && daoTokenOps.type === "mint") {
@@ -56,11 +60,11 @@ const EvmPropTokenOps = () => {
             fullWidth
             label="Recipient Address"
             variant="standard"
-            value={daoTokenOps.mint.to}
+            value={daoTokenOps.mint?.to}
             onChange={e =>
               setDaoTokenOps("mint", {
                 to: e.target.value,
-                amount: daoTokenOps.mint.amount
+                amount: daoTokenOps.mint?.amount
               })
             }
             style={{ marginBottom: "16px" }}
@@ -70,10 +74,10 @@ const EvmPropTokenOps = () => {
             label="Amount"
             type="number"
             variant="standard"
-            value={daoTokenOps.mint.amount}
+            value={daoTokenOps.mint?.amount}
             onChange={e =>
               setDaoTokenOps("mint", {
-                to: daoTokenOps.mint.to,
+                to: daoTokenOps.mint?.to,
                 amount: e.target.value
               })
             }
@@ -95,11 +99,11 @@ const EvmPropTokenOps = () => {
             fullWidth
             label="Recipient Address"
             variant="standard"
-            value={daoTokenOps.mint.to}
+            value={daoTokenOps.burn?.to}
             onChange={e =>
               setDaoTokenOps("burn", {
                 to: e.target.value,
-                amount: daoTokenOps.burn.amount
+                amount: daoTokenOps.burn?.amount
               })
             }
             style={{ marginBottom: "16px" }}
@@ -109,10 +113,10 @@ const EvmPropTokenOps = () => {
             label="Amount"
             type="number"
             variant="standard"
-            value={daoTokenOps.mint.amount}
+            value={daoTokenOps.burn?.amount}
             onChange={e =>
               setDaoTokenOps("burn", {
-                to: daoTokenOps.mint.to,
+                to: daoTokenOps.burn?.to,
                 amount: e.target.value
               })
             }
@@ -127,13 +131,13 @@ const EvmPropTokenOps = () => {
         icon={<AddCircleIcon fontSize="large" />}
         title="Mint"
         description="Mint tokens to a specified address"
-        onClick={() => setDaoTokenOps("mint")}
+        onClick={() => setDaoTokenOps("mint", undefined, daoSelected?.symbol, daoSelected?.token)}
       />
       <ConfigOption
         icon={<RemoveCircleIcon fontSize="large" />}
         title="Burn"
         description="Burn tokens from a specified address"
-        onClick={() => setDaoTokenOps("burn")}
+        onClick={() => setDaoTokenOps("burn", undefined, daoSelected?.symbol, daoSelected?.token)}
       />
     </Grid>
   )

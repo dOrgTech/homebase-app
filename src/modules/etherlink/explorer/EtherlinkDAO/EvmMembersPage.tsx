@@ -6,11 +6,12 @@ import { useContext } from "react"
 import { VotingPowerWidget } from "modules/etherlink/components/VotingPowerWidget"
 
 export const EvmMembersPage = () => {
-  const { daoMembers } = useContext(EtherlinkContext)
+  const { daoMembers, daoSelected } = useContext(EtherlinkContext)
+  const decimals = daoSelected?.decimals || 0
   const daoMemberData = daoMembers?.map((member: any) => ({
     address: member.address,
     votingWeight: member.votingWeight,
-    personalBalance: member.personalBalance,
+    personalBalance: member.personalBalance / 10 ** decimals,
     proposalsCreated: member.proposalsCreated,
     proposalsVoted: member.proposalsVoted
   }))

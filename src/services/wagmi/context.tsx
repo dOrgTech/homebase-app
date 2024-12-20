@@ -6,11 +6,12 @@ import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { useModal } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
-import HbTokenAbi from "assets/abis/hb_evm.json"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
-import { useTezos } from "services/beacon/hooks/useTezos"
+
 import dayjs from "dayjs"
 import { ethers } from "ethers"
+import BigNumber from "bignumber.js"
+import { Timestamp } from "firebase/firestore"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -67,7 +68,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     totalSupply: string
     registry: Record<string, string>
     votingDuration: number
-    votingDelayInMinutes: number
+    votingDelay: number
+    quorum: number
   } | null>(null)
   const [daoRegistryDetails, setDaoRegistryDetails] = useState<{
     balance: string
@@ -75,10 +77,22 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
   const [daoProposals, setDaoProposals] = useState<any[]>([])
   const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
+  const [daoProposalVoters, setDaoProposalVoters] = useState<
+    {
+      cast: Timestamp
+      option: number
+      reason?: string
+      voter: string
+      weight: string
+    }[]
+  >([])
 
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
 
+  // console.log({ firestoreData })
+
+  console.log({ daoProposals, daoSelected })
   useEffect(() => {
     fetchCollection("contracts")
     if (firebaseRootCollection) {
@@ -109,26 +123,77 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (!daoSelected?.id) return
     const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals`
     const daoMembersKey = `${firebaseRootCollection}/${daoSelected?.id}/members`
+    const daoProposalVotesKey = `${firebaseRootCollection}/${daoSelected?.id}/proposals/${daoProposalSelected?.id}/votes`
 
     if (firestoreData?.[daoProposalKey]) {
+      const timeNow = dayjs()
       setDaoProposals(
         firestoreData[daoProposalKey]
           ?.sort((a: any, b: any) => b.createdAt - a.createdAt)
           .map(firebaseProposal => {
+            const votesInFavor = new BigNumber(firebaseProposal?.inFavor)
+            const votesAgainst = new BigNumber(firebaseProposal?.against)
+
+            const totalVotes = votesInFavor.plus(votesAgainst)
+            const totalVoteCount = parseInt(firebaseProposal?.votesFor) + parseInt(firebaseProposal?.votesAgainst)
+            const totalSupply = new BigNumber(daoSelected?.totalSupply ?? "1")
+            const votesPercentage = totalVotes.div(totalSupply).times(100)
+            console.log("votesPercentage", firebaseProposal?.title, votesPercentage.toString())
+
             const proposalCreatedAt = dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number)
-            const votingDelayInMinutes = daoSelected?.votingDuration || 1
+            const votingDelayInMinutes = daoSelected?.votingDelay || 1
+            const votingDurationInMinutes = daoSelected?.votingDuration || 1
             const votingExpiresAt = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
+            const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
+            const votingEndTimestamp = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
+
+            // Flutter Refernce
+            //   if (votePercentage < org.quorum) {
+            //     newStatus = ProposalStatus.noQuorum;  // or "no quorum" in getStatus()
+            //     statusHistory.clear();
+            //     statusHistory.addAll({"pending": start});
+            //     statusHistory.addAll({"active": activeStart});
+            //     statusHistory.addAll({"no quorum": votingEnd});
+            //     status = "no quorum";
+            //     return newStatus;
+            // }
+            const statusHistoryMap = Object.entries(firebaseProposal.statusHistory)
+              .map(([status, timestamp]: [string, any]) => ({
+                status,
+                timestamp: timestamp?.seconds as unknown as number,
+                timestamp_human: dayjs.unix(timestamp?.seconds as unknown as number).format("MMM DD, YYYY HH:mm:ss")
+              }))
+              .sort((a, b) => b.timestamp - a.timestamp)
+
+            statusHistoryMap.push({
+              status: "active",
+              timestamp: activeStartTimestamp.unix(),
+              timestamp_human: activeStartTimestamp.format("MMM DD, YYYY HH:mm:ss")
+            })
+
+            console.log({
+              votesPercentage: votesPercentage.toFormat(2),
+              quorum: daoSelected?.quorum,
+              votingEndTimestamp,
+              timeNow
+            })
+            if (votesPercentage.lt(daoSelected?.quorum) && votingEndTimestamp.isBefore(timeNow)) {
+              statusHistoryMap.push({
+                status: "no quorum",
+                timestamp: votingEndTimestamp.unix(),
+                timestamp_human: votingEndTimestamp.format("MMM DD, YYYY HH:mm")
+              })
+            }
             return {
               ...firebaseProposal,
-              status: getStatusByHistory(firebaseProposal.statusHistory),
-              statusHistoryMap: Object.entries(firebaseProposal.statusHistory)
-                .map(([status, timestamp]: [string, any]) => ({
-                  status,
-                  timestamp: timestamp?.seconds as unknown as number,
-                  timestamp_human: dayjs.unix(timestamp?.seconds as unknown as number).format("MMM DD, YYYY HH:mm:ss")
-                }))
-                .sort((a, b) => b.timestamp - a.timestamp),
-              votingExpiresAt: votingExpiresAt
+              status: getStatusByHistory(firebaseProposal.statusHistory, {
+                votesPercentage,
+                daoQuorum: daoSelected?.quorum
+              }),
+              statusHistoryMap: statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp),
+              votingExpiresAt: votingExpiresAt,
+              totalVotes: totalVotes,
+              totalVoteCount
             }
           })
       )
@@ -137,7 +202,11 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (firestoreData?.[daoMembersKey]) {
       setDaoMembers(firestoreData[daoMembersKey])
     }
-  }, [daoSelected?.id, daoSelected?.votingDuration, firebaseRootCollection, firestoreData])
+
+    if (firestoreData?.[daoProposalVotesKey]) {
+      setDaoProposalVoters(firestoreData[daoProposalVotesKey])
+    }
+  }, [daoProposalSelected?.id, daoSelected, daoSelected?.votingDuration, firebaseRootCollection, firestoreData])
 
   useEffect(() => {
     if (daoSelected?.id && firebaseRootCollection) {
@@ -156,8 +225,17 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
           })
           console.log("Treasury Data", ethBalance)
         })
+
+      if (daoProposalSelected?.id) {
+        fetchCollection(`${firebaseRootCollection}/${daoSelected?.id}/proposals/${daoProposalSelected?.id}/votes`)
+      }
     }
-  }, [daoSelected, fetchCollection, firebaseRootCollection])
+  }, [daoProposalSelected?.id, daoSelected, fetchCollection, firebaseRootCollection])
+
+  // useEffect(() => {
+  //   if (!daoProposalSelected?.id) return
+  //   fetchCollection(`${firebaseRootCollection}/${daoSelected?.id}/proposals/${daoProposalSelected?.id}/voters`)
+  // }, [daoProposalSelected, daoSelected, fetchCollection, firebaseRootCollection])
 
   return {
     contractData,
@@ -167,6 +245,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daoProposals,
     daoProposalSelected,
     daoMembers,
+    daoProposalVoters,
     selectDaoProposal: (proposalId: string) => {
       const proposal = daoProposals.find((proposal: any) => proposal.id === proposalId)
       if (proposal) {
@@ -186,18 +265,37 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 }
 
 // TODO: @ashutoshpw, handle more statuus and move to utils
-const getStatusByHistory = (history: { active: number; executable: number; passed: number; pending: number }) => {
+const getStatusByHistory = (
+  history: { active: Timestamp; executable: Timestamp; passed: Timestamp; pending: Timestamp },
+  {
+    votesPercentage,
+    daoQuorum
+  }: {
+    votesPercentage: BigNumber
+    daoQuorum: number
+  }
+) => {
+  const timeNow = dayjs()
   const statuses = Object.keys(history)
-  const status = statuses.reduce((maxStatus, currentStatus) => {
-    return history[currentStatus as keyof typeof history] > history[maxStatus as keyof typeof history]
-      ? currentStatus
-      : maxStatus
-  })
+  console.log({ statuses, history })
+  const status = statuses
+    .filter(x => dayjs(history[x as keyof typeof history].seconds).isBefore(timeNow))
+    .reduce((maxStatus, currentStatus) => {
+      console.log("statuses", maxStatus, currentStatus)
+
+      if (history[currentStatus as keyof typeof history].seconds > history[maxStatus as keyof typeof history].seconds) {
+        return currentStatus
+      }
+      return maxStatus
+    })
   // TODO: @ashutoshpw, handle more statuses
   switch (status) {
     case "active":
       return ProposalStatus.ACTIVE
     case "pending":
+      if (votesPercentage.lt(daoQuorum)) {
+        return ProposalStatus.NO_QUORUM
+      }
       return ProposalStatus.PENDING
     case "rejected":
       return ProposalStatus.REJECTED
@@ -253,6 +351,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     isLoadingDaoProposals,
     daoProposalSelected,
     daoMembers,
+    daoProposalVoters,
     selectDaoProposal,
     selectDao
   } = useEtherlinkDao({
@@ -286,6 +385,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         daoProposals,
         daoProposalSelected,
         daoMembers,
+        daoProposalVoters,
         selectDaoProposal,
         selectDao,
         disconnect: () => disconnectEtherlink(wagmiConfig),

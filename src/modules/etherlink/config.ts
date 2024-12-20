@@ -16,6 +16,148 @@ export const STEPS = [
   { title: "Review & Deploy", index: 6, path: "summary", component: EvmDaoSummary }
 ]
 
+export const EvmProposalOptions = [
+  {
+    label: "Off-Chain Debate",
+    description: "Post a thesis and have tokenized arguments around it",
+    modal: "off_chain_debate",
+    is_disabled: true
+  },
+  {
+    label: "Transfer Assets",
+    description: "Propose a transfer of assets from the DAO treasury",
+    modal: "transfer_assets",
+    proposal_type: () => "transfer",
+    last_step: 2,
+    interface: {
+      transferETH: {
+        interface: ["function transferETH(address to, uint256 amount)"],
+        name: "transferETH"
+      }
+    }
+  },
+  {
+    label: "Edit Registry",
+    description: "Change an entry or add a new one",
+    modal: "edit_registry",
+    proposal_type: () => "registry",
+    last_step: 2,
+    interface: {
+      editRegistry: {
+        interface: ["function editRegistry(string key, string Value)"],
+        name: "editRegistry"
+      }
+    }
+  },
+  {
+    label: "Contract Call",
+    description: "Propose a call to an external contract",
+    modal: "contract_call",
+    last_step: 2,
+    proposal_type: () => "contract call"
+  },
+  {
+    label: "Change Config",
+    description: "Propose changes to the DAO configuration",
+    modal: "change_config",
+    proposal_type: (type: "quorum" | "voting delay" | "voting period" | "proposal threshold") => `${type}`,
+    last_step: 3,
+    interface: {
+      updateQuorumNumerator: {
+        interface: ["function updateQuorumNumerator(uint256 newQuorumNumerator)"],
+        name: "updateQuorumNumerator"
+      },
+      setVotingDelay: {
+        interface: ["function setVotingDelay(uint256 newVotingDelay)"],
+        name: "setVotingDelay"
+      },
+      setVotingPeriod: {
+        interface: ["function setVotingPeriod(uint256 newVotingPeriod)"],
+        name: "setVotingPeriod"
+      },
+      setProposalThreshold: {
+        interface: ["function setProposalThreshold(uint256 newProposalThreshold)"],
+        name: "setProposalThreshold"
+      }
+    }
+  },
+  {
+    label: "Token Operation",
+    description: "Propose a token operation",
+    modal: "token_operation",
+    proposal_type: (type: "Burn" | "Mint", tokenSymbol: string) => `${type}${tokenSymbol}`,
+    last_step: 3,
+    interface: {
+      mint: {
+        interface: ["function mint(address to, uint256 amount)"],
+        name: "mint"
+      },
+      burn: {
+        interface: ["function burn(address from, uint256 amount)"],
+        name: "burn"
+      }
+    }
+  }
+]
+
+export const proposalInterfaces = [
+  {
+    interface: ["function editRegistry(string key, string Value)"],
+    name: "editRegistry"
+  },
+  {
+    interface: ["function mint(address to, uint256 amount)"],
+    name: "mint"
+  },
+  {
+    interface: ["function burn(address from, uint256 amount)"],
+    name: "burn"
+  },
+  {
+    interface: ["function transferETH(address to, uint256 amount)"],
+    name: "transferETH"
+  },
+  {
+    interface: ["function transferERC20(address token, address to, uint256 amount)"],
+    name: "transferERC20"
+  },
+  {
+    interface: ["function transferERC721(address token, address to, uint256 tokenId)"],
+    name: "transferERC721"
+  },
+  {
+    interface: ["function updateQuorumNumerator(uint256 newQuorumNumerator)"],
+    name: "updateQuorumNumerator"
+  },
+  {
+    interface: ["function setVotingDelay(uint256 newVotingDelay)"],
+    name: "setVotingDelay"
+  },
+  {
+    interface: ["function setVotingPeriod(uint256 newVotingPeriod)"],
+    name: "setVotingPeriod"
+  },
+  {
+    interface: ["function setProposalThreshold(uint256 newProposalThreshold)"],
+    name: "setProposalThreshold"
+  }
+]
+
+export const EVM_PROPOSAL_CHOICES = [
+  {
+    name: "For",
+    pollID: "1",
+    walletAddresses: [],
+    selected: true
+  },
+  {
+    name: "Against",
+    pollID: "2",
+    walletAddresses: [],
+    selected: false
+  }
+]
+
 export const urlToStepMap: Record<string, number> = {
   template: 0,
   dao: 1,

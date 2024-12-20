@@ -13,6 +13,7 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
 import { EtherlinkContext } from "services/wagmi/context"
 import { Badge } from "components/ui/Badge"
+import { StatusBadge } from "modules/explorer/components/StatusBadge"
 
 const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
@@ -173,7 +174,8 @@ export const EvmProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ po
                 justifyContent={isMobileSmall ? "center" : "flex-start"}
               >
                 <Grid item>
-                  <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} />
+                  <StatusBadge status={daoProposalSelected?.status || ""} />
+                  {/* <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} /> */}
                 </Grid>
                 <Grid item>
                   <Badge status={daoProposalSelected?.type} />

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Grid, styled, Typography, Slider, Box } from "@material-ui/core"
 import { StyledTextField } from "components/ui/StyledTextField"
 import {
@@ -10,6 +10,7 @@ import {
 } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
+import { EtherlinkContext } from "services/wagmi/context"
 
 const OptionContainer = styled(Grid)({
   "background": "#2F3438",
@@ -24,19 +25,6 @@ const OptionContainer = styled(Grid)({
 
 const IconContainer = styled(Box)({
   marginBottom: "16px"
-})
-
-const BackButton = styled(Grid)({
-  display: "flex",
-  alignItems: "center",
-  cursor: "pointer",
-  marginBottom: "24px"
-})
-
-const TimeInputContainer = styled(Grid)({
-  "& > div": {
-    marginRight: "16px"
-  }
 })
 
 const ConfigOption = ({
@@ -61,37 +49,81 @@ const ConfigOption = ({
   </Grid>
 )
 
-const TimeInput = ({ label, onChange }: { label: string; onChange: (field: string, value: string) => void }) => (
-  <Box display="flex" flexDirection="column">
-    <Typography color="textSecondary">{label}</Typography>
-    <Box display="flex" flexDirection="row">
-      <StyledTextField
-        label="Days"
-        type="number"
-        variant="standard"
-        onChange={e => onChange("days", e.target.value)}
-        style={{ marginRight: "16px" }}
-      />
-      <StyledTextField
-        label="Hours"
-        type="number"
-        variant="standard"
-        onChange={e => onChange("hours", e.target.value)}
-        style={{ marginRight: "16px" }}
-      />
-      <StyledTextField
-        label="Minutes"
-        type="number"
-        variant="standard"
-        onChange={e => onChange("minutes", e.target.value)}
-        style={{ marginRight: "16px" }}
-      />
-    </Box>
-  </Box>
-)
+const TimeInput = ({
+  label,
+  defaultValue,
+  onChange
+}: {
+  label: string
+  defaultValue: { days: number; hours: number; minutes: number }
+  onChange: (valueInMinutes: string) => void
+}) => {
+  const [days, setDays] = useState<number>(defaultValue.days)
+  const [hours, setHours] = useState<number>(defaultValue.hours)
+  const [minutes, setMinutes] = useState<number>(defaultValue.minutes)
 
+  useEffect(() => {
+    let totalMinutes = 0
+    if (!isNaN(days)) totalMinutes += days * 1440
+    if (!isNaN(hours)) totalMinutes += hours * 60
+    if (!isNaN(minutes)) totalMinutes += minutes
+    console.log("totalMinutes", totalMinutes)
+    onChange(totalMinutes.toString())
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [days, hours, minutes])
+
+  return (
+    <Box display="flex" flexDirection="column">
+      <Typography color="textSecondary">{label}</Typography>
+      <Box display="flex" flexDirection="row">
+        <StyledTextField
+          label="Days"
+          type="number"
+          variant="standard"
+          value={days}
+          onChange={e => setDays(Number(e.target.value))}
+          style={{ marginRight: "16px" }}
+        />
+        <StyledTextField
+          label="Hours"
+          type="number"
+          variant="standard"
+          value={hours}
+          onChange={e => setHours(Number(e.target.value))}
+          style={{ marginRight: "16px" }}
+        />
+        <StyledTextField
+          label="Minutes"
+          type="number"
+          variant="standard"
+          value={minutes}
+          onChange={e => setMinutes(Number(e.target.value))}
+          style={{ marginRight: "16px" }}
+        />
+      </Box>
+    </Box>
+  )
+}
 export const EvmPropDaoConfig = () => {
+  const { daoSelected } = useContext(EtherlinkContext)
   const { currentStep, daoConfig, setDaoConfig } = useEvmProposalOps()
+
+  const defaultVotingDelay = useMemo(() => {
+    return {
+      days: Math.floor(Number(daoConfig.votingDelay) / 86400),
+      hours: Math.floor((Number(daoConfig.votingDelay) % 86400) / 3600),
+      minutes: Math.floor((Number(daoConfig.votingDelay) % 3600) / 60)
+    }
+  }, [daoConfig.votingDelay])
+
+  const defaultVotingPeriod = useMemo(() => {
+    return {
+      days: Math.floor(Number(daoConfig.votingPeriod) / 86400),
+      hours: Math.floor((Number(daoConfig.votingPeriod) % 86400) / 3600),
+      minutes: Math.floor((Number(daoConfig.votingPeriod) % 3600) / 60)
+    }
+  }, [daoConfig.votingPeriod])
 
   const renderSelectedOption = () => {
     switch (daoConfig.type) {
@@ -115,7 +147,11 @@ export const EvmPropDaoConfig = () => {
             <Typography color="textPrimary" gutterBottom>
               Change the wait time between posting a proposal and the start of voting
             </Typography>
-            <TimeInput label="Voting Delay Duration" onChange={(field, value) => setDaoConfig("votingDelay", value)} />
+            <TimeInput
+              label="Voting Delay Duration"
+              defaultValue={defaultVotingDelay}
+              onChange={value => setDaoConfig("votingDelay", value)}
+            />
           </>
         )
       case "votingPeriod":
@@ -126,7 +162,8 @@ export const EvmPropDaoConfig = () => {
             </Typography>
             <TimeInput
               label="Voting Period Duration"
-              onChange={(field, value) => setDaoConfig("votingPeriod", value)}
+              defaultValue={defaultVotingPeriod}
+              onChange={value => setDaoConfig("votingPeriod", value)}
             />
           </>
         )
@@ -159,27 +196,27 @@ export const EvmPropDaoConfig = () => {
         icon={<HowToVoteIcon fontSize="large" />}
         title="Quorum"
         description="Change the minimum required participation for a proposal to pass"
-        onClick={() => setDaoConfig("quorumNumerator")}
+        onClick={() => setDaoConfig("quorumNumerator", undefined, daoSelected?.address)}
       />
       <ConfigOption
         icon={<TimelineIcon fontSize="large" />}
         title="Voting Delay"
         description="Change the wait time between posting a proposal and the start of voting"
-        onClick={() => setDaoConfig("votingDelay")}
+        onClick={() => setDaoConfig("votingDelay", undefined, daoSelected?.address)}
       />
 
       <ConfigOption
         icon={<ScheduleIcon fontSize="large" />}
         title="Voting Period"
         description="Change how long voting lasts"
-        onClick={() => setDaoConfig("votingPeriod")}
+        onClick={() => setDaoConfig("votingPeriod", undefined, daoSelected?.address)}
       />
 
       <ConfigOption
         icon={<AccountBalanceIcon fontSize="large" />}
         title="Proposal Threshold"
         description="Change the minimum amount of Token ownership required to submit a proposal"
-        onClick={() => setDaoConfig("proposalThreshold")}
+        onClick={() => setDaoConfig("proposalThreshold", undefined, daoSelected?.address)}
       />
     </Grid>
   )

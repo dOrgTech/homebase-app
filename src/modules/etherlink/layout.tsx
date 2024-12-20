@@ -74,7 +74,7 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
               </StepContentContainer>
             </Grid>
           </Grid>
-          {step < 6 && <NavigationBar back={back} next={next} />}
+          {step < STEPS.length && <NavigationBar back={back} next={next} />}
         </Grid>
       </PageContent>
     </PageContainer>

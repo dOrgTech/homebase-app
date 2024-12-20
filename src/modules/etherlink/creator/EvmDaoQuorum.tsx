@@ -45,7 +45,15 @@ export const EvmDaoQuorum: React.FC = () => {
           </Typography>
         </Grid>
         <Grid item>
-          <InputText type="number" placeholder="0" name="quorum.proposalThreshold" />
+          <InputText
+            type="number"
+            placeholder="0"
+            name="quorum.proposalThreshold"
+            defaultValue={getIn("quorum.proposalThreshold")}
+            onChange={(e: any) => {
+              setFieldValue("quorum.proposalThreshold", Number(e.target.value))
+            }}
+          />
         </Grid>
       </Grid>
     </div>

@@ -14,14 +14,7 @@ import { EvmPropEditRegistry } from "./EvmProposals/EvmPropEditRegistry"
 import { EvmPropContractCall } from "./EvmProposals/EvmPropContractCall"
 import { EvmPropDaoConfig } from "./EvmProposals/EvmPropDaoConfig"
 import EvmPropTokenOps from "./EvmProposals/EvmPropTokenOps"
-
-const ProposalContainer = styled(Grid)(({ theme }) => ({
-  boxSizing: "border-box",
-  padding: "0px 15px",
-  [theme.breakpoints.down("md")]: {
-    marginTop: 30
-  }
-}))
+import { EvmProposalOptions } from "../config"
 
 // TODO: Move this to a shared component
 const OptionContainer = styled(Grid)(({ theme }) => ({
@@ -54,40 +47,6 @@ const TitleContainer = styled(Grid)({
   marginBottom: 24
 })
 
-const evmProposalOptions = [
-  {
-    label: "Off-Chain Debate",
-    description: "Post a thesis and have tokenized arguments around it",
-    modal: "off_chain_debate",
-    is_disabled: true
-  },
-  {
-    label: "Transfer Assets",
-    description: "Propose a transfer of assets from the DAO treasury",
-    modal: "transfer_assets"
-  },
-  {
-    label: "Edit Registry",
-    description: "Change an entry or add a new one",
-    modal: "edit_registry"
-  },
-  {
-    label: "Contract Call",
-    description: "Propose a call to an external contract",
-    modal: "contract_call"
-  },
-  {
-    label: "Change Config",
-    description: "Propose changes to the DAO configuration",
-    modal: "change_config"
-  },
-  {
-    label: "Token Operation",
-    description: "Propose a token operation",
-    modal: "token_operation"
-  }
-]
-
 const renderModal = (modal: string) => {
   switch (modal) {
     case "transfer_assets":
@@ -110,7 +69,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const { isLoading, currentStep, metadata, setMetadataFieldValue, setCurrentStep, nextStep, prevStep } =
     useEvmProposalOps()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const proposalTitle = evmProposalOptions.find(option => option.modal === metadata.type)?.label
+  const proposalTitle = EvmProposalOptions.find(option => option.modal === metadata.type)?.label
 
   return (
     <>
@@ -119,7 +78,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
         <Grid container spacing={2}>
-          {evmProposalOptions.map((option, index) => (
+          {EvmProposalOptions.map((option, index) => (
             <Grid
               item
               xs={isMobileSmall ? 12 : 4}
@@ -194,7 +153,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         template="md"
         open={currentStep >= 2}
         onClose={() => setMetadataFieldValue("type", "")}
-        title="Transfer Assets"
+        title={proposalTitle}
       >
         {renderModal(metadata.type)}
         <Grid container direction="row" justifyContent="space-between" alignItems="center">

@@ -29,7 +29,6 @@ interface Props {
   showFooter?: boolean
   rightItem?: (proposal: Proposal) => React.ReactElement
   showFullList?: boolean
-  filters: undefined
 }
 
 interface ProposalObj {
@@ -37,7 +36,7 @@ interface ProposalObj {
   proposal: Proposal | Poll
 }
 
-export const EvmDaoProposalList: React.FC<Props> = ({ proposals, showFullList = true, filters = undefined }) => {
+export const EvmDaoProposalList: React.FC<Props> = ({ proposals, showFullList = true }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
   const offsetLimit = 50

@@ -30,7 +30,7 @@ const EtherlinkDAORouteContent: React.FC = ({ children }) => {
   const [state, setState] = useState<DAOState>(DAOState.FOUND)
   const history = useHistory()
 
-  console.log("etherlink/router.tsx", { daoId, isLoading, data })
+  // console.log("etherlink/router.tsx", { daoId, isLoading, data })
 
   useEffect(() => {
     ;(async () => {

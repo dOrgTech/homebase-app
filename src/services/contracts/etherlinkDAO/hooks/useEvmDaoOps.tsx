@@ -1,21 +1,45 @@
 import { ethers } from "ethers"
+import { create } from "zustand"
 import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 
 import HbTokenAbi from "assets/abis/hb_evm.json"
+import { useNotification } from "modules/common/hooks/useNotification"
+
+interface EvmDaoOpsStore {
+  showProposalVoterList: boolean
+  setShowProposalVoterList: (value: boolean) => void
+}
+
+const useEvmDaoOpsStore = create<EvmDaoOpsStore>()((set, get) => ({
+  showProposalVoterList: false,
+  setShowProposalVoterList: (value: boolean) => set({ showProposalVoterList: value })
+}))
 
 export const useEvmDaoOps = () => {
   const [tokenContract, setTokenContract] = useState<ethers.Contract | null>(null)
   const { etherlink } = useTezos()
+  const { showProposalVoterList, setShowProposalVoterList } = useEvmDaoOpsStore()
+  const openNotification = useNotification()
+
   const loggedInUserAddress = etherlink?.signer?.address
-  const { daoSelected, daoMembers } = useContext(EtherlinkContext)
+  const { daoSelected, daoMembers, daoProposalSelected } = useContext(EtherlinkContext)
   const [userVotingWeight, setUserVotingWeight] = useState(0)
   const [userTokenBalance, setUserTokenBalance] = useState(0)
   const selectedUser = daoMembers?.find((member: any) => member.address === loggedInUserAddress)
 
   const proposalCreatedCount = selectedUser?.proposalsCreated?.length || 0
   const proposalVotedCount = selectedUser?.proposalsVoted?.length || 0
+
+  const copyAddress = (address: string) => {
+    navigator.clipboard.writeText(address)
+    openNotification({
+      message: "Address copied!",
+      autoHideDuration: 2000,
+      variant: "info"
+    })
+  }
 
   const daoDelegate = useCallback(
     async (targetAddress: string) => {
@@ -31,6 +55,8 @@ export const useEvmDaoOps = () => {
     },
     [daoSelected, etherlink.signer]
   )
+
+  console.log("YYY", { showProposalVoterList })
 
   useEffect(() => {
     if (!etherlink?.signer || !tokenContract) return
@@ -65,6 +91,9 @@ export const useEvmDaoOps = () => {
     loggedInUser: {
       address: etherlink?.signer?.address
     },
-    daoDelegate
+    daoDelegate,
+    copyAddress,
+    showProposalVoterList,
+    setShowProposalVoterList
   }
 }

@@ -15,6 +15,7 @@ import { DownloadCsvFile } from "modules/lite/explorer/components/DownloadCsvFil
 import { EtherlinkContext } from "services/wagmi/context"
 import { LinearProgress } from "components/ui/LinearProgress"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
+import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -97,10 +98,11 @@ export const EvmProposalVoteDetail: React.FC<{
 }> = ({ poll, choices, token }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const [open, setOpen] = React.useState(false)
+
   const { network } = useTezos()
   const [turnout, setTurnout] = useState<number | null>()
   const [votes, setVotes] = useState<Choice[]>([])
+  const { showProposalVoterList, setShowProposalVoterList } = useEvmDaoOps()
   const { daoSelected, daoProposalSelected } = useContext(EtherlinkContext)
   const tokenData = useMemo(
     () => ({
@@ -115,20 +117,12 @@ export const EvmProposalVoteDetail: React.FC<{
   const totalVoteCount = daoProposalSelected?.votesFor + daoProposalSelected?.votesAgainst
 
   const handleClickOpen = () => {
-    setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
-    setOpen(true)
+    setShowProposalVoterList(true)
+    console.log("Setting to true")
+    // setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
   }
 
-  const handleClose = () => {
-    setOpen(false)
-  }
-
-  const formatConfig = {
-    average: true,
-    mantissa: 1,
-    thousandSeparated: true,
-    trimMantissa: true
-  }
+  console.log({ showProposalVoterList })
 
   useMemo(async () => {
     if (token && tokenData) {
@@ -284,7 +278,7 @@ export const EvmProposalVoteDetail: React.FC<{
         /> */}
         </GraphicsContainer>
       </Container>
-      <Container container style={{ marginTop: 12, marginBottom: 12 }}>
+      <Container container style={{ marginTop: 120, marginBottom: 12 }}>
         <Grid item container direction="column" spacing={8} style={{ paddingLeft: 12, paddingRight: 12 }}>
           <Grid item container direction="row" spacing={8}>
             {/* Quorum */}

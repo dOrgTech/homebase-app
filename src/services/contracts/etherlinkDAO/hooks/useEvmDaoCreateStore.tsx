@@ -166,8 +166,8 @@ const useEvmDaoCreateStore = () => {
     try {
       // Get wrapper factory
       const samplePayload = [
-        "SundayX", // DAO Name
-        "SUNX", // DAO Symbol
+        "SundayZ", // DAO Name
+        "SUNZ", // DAO Symbol
         "Getting ready for the week.", // DAO Description
         2, // Token Decimals
         60, // Execution Delay in seconds
@@ -177,16 +177,16 @@ const useEvmDaoCreateStore = () => {
           3450000, // Member 2 Token Allocation
           2, // Voting Delay in minutes
           3, // Voting Duration in minutes
-          4000, // Proposal Threshold (1% of total supply)
-          50 // Quorum (4% of total supply)
+          4000, // Proposal Threshold (mamount of
+          50 // Quorum (In Percentage 50 for 50% of total supply)
         ],
         ["Founder", "Mission"], // Registry Keys
         ["Alice", "Promote Decentralization"] // Registry Values
       ]
       setIsDeploying(true)
       const totalTokenSupply = daoData.members.reduce((acc: number, member: any) => acc + member.amountOfTokens, 0)
-      const proposalThreshhold = (daoData.quorum.proposalThresholdPercentage / 100) * totalTokenSupply
-      const quorumThreshold = (daoData.quorum.returnedTokenPercentage / 100) * totalTokenSupply
+      const proposalThreshhold = daoData.quorum.proposalThreshold
+      const quorumThreshold = daoData.quorum.returnedTokenPercentage
 
       const executationDelayinSeconds =
         daoData.voting.proposalExpiryBlocksDay * 24 * 60 * 60 +
@@ -203,29 +203,35 @@ const useEvmDaoCreateStore = () => {
         daoData.voting.proposalFlushBlocksHours * 60 +
         daoData.voting.proposalFlushBlocksMinutes
 
-      const wrapperFactory: ethers.Contract = new ethers.Contract(wrapperAddress, HbWrapperAbi.abi, etherlink.signer)
-      const wrapper: ethers.Contract = await wrapperFactory.deployDAOwithToken({
+      const daoCreateObject = {
         name: daoData.name,
         symbol: daoData.governanceToken.symbol,
         description: daoData.description,
-        decimals: daoData.governanceToken.tokenDecimals,
+        decimals: parseInt(daoData.governanceToken.tokenDecimals),
         executionDelay: executationDelayinSeconds,
         initialMembers: daoData.members.map((member: any) => member.address),
         initialAmounts: [
-          ...daoData.members.map((member: any) => member.amountOfTokens),
-          votingDelayInMinutes,
-          votingDurationInMinutes,
-          proposalThreshhold,
-          quorumThreshold
+          ...daoData.members.map(
+            (member: any) => parseInt(member.amountOfTokens) * 10 ** Number(daoData.governanceToken.tokenDecimals)
+          ),
+          parseInt(votingDelayInMinutes),
+          parseInt(votingDurationInMinutes),
+          isNaN(proposalThreshhold) ? 0 : Number(proposalThreshhold),
+          isNaN(quorumThreshold) ? 0 : Number(quorumThreshold)
         ],
         keys: Object.keys(daoData.registry),
         values: Object.values(daoData.registry)
-      })
+      }
+      const daoCreatePayload = Object.values(daoCreateObject)
+      console.log({ daoCreatePayload, samplePayload })
+      const wrapperFactory: ethers.Contract = new ethers.Contract(wrapperAddress, HbWrapperAbi.abi, etherlink.signer)
+      const wrapper: ethers.Contract = await wrapperFactory.deployDAOwithToken(daoCreatePayload)
 
       console.log("Transaction sent:", wrapper.hash)
 
       const receipt = await wrapper.wait()
       console.log("Transaction confirmed:", receipt)
+      history.push("/explorer/daos")
     } catch (error) {
       console.error("Error deploying DAO", error)
       return null

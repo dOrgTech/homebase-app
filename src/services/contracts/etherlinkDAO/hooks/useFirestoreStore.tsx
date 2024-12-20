@@ -46,7 +46,6 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
         // collectionRef = collection(docRef, pathSegments[pathSegments.length - 1])
 
         // const docRef = doc(db, pathSegments[0], pathSegments[1])
-        console.log("collectionName", "daosEtherlink-Testnet/0x3d0bd8fe6126fb2dcedcf872eaa2631fe1c759c6/proposals")
         console.log("collectionName_Input", collectionName)
         collectionRef = collection(db, collectionName)
         // const snapshot = await getDocs(collectionRef)

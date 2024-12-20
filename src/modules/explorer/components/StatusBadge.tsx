@@ -73,8 +73,8 @@ export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | "all";
   "minWidth": 87,
   "textAlign": "center",
   "padding": "4px 16px",
-  "background": statusColors(status).background,
-  "color": statusColors(status).color,
+  "background": statusColors(status)?.background,
+  "color": statusColors(status)?.color,
   "& > div": {
     height: "100%"
   }
@@ -90,7 +90,7 @@ export const StatusBadge: React.FC<{ status: ProposalStatus | "all" } & GridProp
   <Badge status={status} {...props}>
     <Grid container alignItems="center" justifyContent="center">
       <Grid item>
-        <Text> {statusColors(status).text} </Text>
+        <Text> {statusColors(status)?.text} </Text>
       </Grid>
     </Grid>
   </Badge>
