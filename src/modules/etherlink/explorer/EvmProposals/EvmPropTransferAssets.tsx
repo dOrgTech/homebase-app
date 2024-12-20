@@ -2,6 +2,7 @@ import React from "react"
 import { Grid, styled, Typography, MenuItem, IconButton, TextField } from "@material-ui/core"
 import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
+import { StyledTextField } from "components/ui/StyledTextField"
 
 const TransactionContainer = styled(Grid)({
   marginBottom: "20px"
@@ -28,18 +29,6 @@ const InputContainer = styled(Grid)({
 const RemoveButton = styled(IconButton)({
   color: "#FF4D4D",
   padding: "4px"
-})
-
-const StyledTextField = styled(TextField)({
-  "& .MuiOutlinedInput-root": {
-    "color": "white",
-    "& fieldset": {
-      borderColor: "rgba(255, 255, 255, 0.23)"
-    }
-  },
-  "& .MuiInputLabel-root": {
-    color: "rgba(255, 255, 255, 0.7)"
-  }
 })
 
 interface Transaction {
@@ -79,7 +68,7 @@ export const EvmPropTransferAssets: React.FC = () => {
                 select
                 fullWidth
                 label="Asset Type"
-                variant="outlined"
+                variant="standard"
                 value={transaction.assetType}
                 onChange={e => onUpdateTransaction(index, "assetType", e.target.value)}
               >
@@ -90,7 +79,7 @@ export const EvmPropTransferAssets: React.FC = () => {
               <StyledTextField
                 fullWidth
                 label="Recipient Address"
-                variant="outlined"
+                variant="standard"
                 value={transaction.recipient}
                 onChange={e => onUpdateTransaction(index, "recipient", e.target.value)}
               />
@@ -100,7 +89,7 @@ export const EvmPropTransferAssets: React.FC = () => {
                 fullWidth
                 label="Amount"
                 type="number"
-                variant="outlined"
+                variant="standard"
                 value={transaction.amount}
                 onChange={e => onUpdateTransaction(index, "amount", e.target.value)}
               />

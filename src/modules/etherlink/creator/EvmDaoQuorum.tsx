@@ -7,11 +7,7 @@ import { TitleBlock } from "modules/common/TitleBlock"
 import React, { useRef } from "react"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
-interface EvmDaoQuorumProps {
-  // Add props as needed
-}
-
-export const EvmDaoQuorum: React.FC<EvmDaoQuorumProps> = () => {
+export const EvmDaoQuorum: React.FC = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const { data, getIn, setFieldValue } = useEvmDaoCreateStore()

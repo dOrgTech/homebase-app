@@ -7,10 +7,13 @@ import EthContractCallForm from "modules/explorer/components/EthContractCallForm
 import EthTransferFundsForm from "modules/explorer/components/EthTransferFundsForm"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
-import { Choices } from "modules/lite/explorer/components/Choices"
-import { useState } from "react"
+
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { EvmPropTransferAssets } from "./EvmProposals/EvmPropTransferAssets"
+import { EvmPropEditRegistry } from "./EvmProposals/EvmPropEditRegistry"
+import { EvmPropContractCall } from "./EvmProposals/EvmPropContractCall"
+import { EvmPropDaoConfig } from "./EvmProposals/EvmPropDaoConfig"
+import EvmPropTokenOps from "./EvmProposals/EvmPropTokenOps"
 
 const ProposalContainer = styled(Grid)(({ theme }) => ({
   boxSizing: "border-box",
@@ -84,6 +87,23 @@ const evmProposalOptions = [
     modal: "token_operation"
   }
 ]
+
+const renderModal = (modal: string) => {
+  switch (modal) {
+    case "transfer_assets":
+      return <EvmPropTransferAssets />
+    case "edit_registry":
+      return <EvmPropEditRegistry />
+    case "contract_call":
+      return <EvmPropContractCall />
+    case "change_config":
+      return <EvmPropDaoConfig />
+    case "token_operation":
+      return <EvmPropTokenOps />
+    default:
+      return null
+  }
+}
 
 export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean; handleClose: () => void }) => {
   const theme = useTheme()
@@ -170,23 +190,19 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         </Container>
       </ResponsiveDialog>
 
-      {/* <EthContractCallForm open={true} handleClose={() => setModalOpen(false)} /> */}
-      {/* <EthChangeConfigProposalForm open={modalOpen === "change_config"} handleClose={() => setModalOpen(false)} /> */}
-
       <ResponsiveDialog
         template="md"
-        open={metadata.type === "transfer_assets" && currentStep === 2}
+        open={currentStep >= 2}
         onClose={() => setMetadataFieldValue("type", "")}
         title="Transfer Assets"
       >
-        <EvmPropTransferAssets />
+        {renderModal(metadata.type)}
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <BackButton onClick={prevStep.handler} />
           <NextButton disabled={isLoading} onClick={nextStep.handler}>
             {nextStep.text}
           </NextButton>
         </Grid>
-        {/* <EthTransferFundsForm open={true} handleClose={() => setModalOpen(false)} /> */}
       </ResponsiveDialog>
     </>
   )
