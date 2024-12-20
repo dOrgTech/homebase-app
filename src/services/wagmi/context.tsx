@@ -186,11 +186,14 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             }
             return {
               ...firebaseProposal,
-              status: getStatusByHistory(firebaseProposal.statusHistory, {
+              status: getStatusByHistory(statusHistoryMap, {
                 votesPercentage,
+                votingExpiresAt,
+                activeStartTimestamp,
                 daoQuorum: daoSelected?.quorum
               }),
               statusHistoryMap: statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp),
+              votingStartTimestamp: activeStartTimestamp,
               votingExpiresAt: votingExpiresAt,
               totalVotes: totalVotes,
               totalVoteCount
@@ -266,34 +269,41 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
 // TODO: @ashutoshpw, handle more statuus and move to utils
 const getStatusByHistory = (
-  history: { active: Timestamp; executable: Timestamp; passed: Timestamp; pending: Timestamp },
+  history: { status: string; timestamp: number; timestamp_human: string }[],
   {
     votesPercentage,
+    votingExpiresAt,
+    activeStartTimestamp,
     daoQuorum
   }: {
     votesPercentage: BigNumber
+    votingExpiresAt: dayjs.Dayjs
+    activeStartTimestamp: dayjs.Dayjs
     daoQuorum: number
   }
 ) => {
   const timeNow = dayjs()
-  const statuses = Object.keys(history)
-  console.log({ statuses, history })
-  const status = statuses
-    .filter(x => dayjs(history[x as keyof typeof history].seconds).isBefore(timeNow))
+
+  const status = history
+    .filter(x => dayjs(x.timestamp).isBefore(timeNow))
     .reduce((maxStatus, currentStatus) => {
       console.log("statuses", maxStatus, currentStatus)
 
-      if (history[currentStatus as keyof typeof history].seconds > history[maxStatus as keyof typeof history].seconds) {
+      if (currentStatus.timestamp > maxStatus.timestamp) {
         return currentStatus
       }
       return maxStatus
     })
+
+  if (activeStartTimestamp.isAfter(timeNow) && votingExpiresAt.isBefore(timeNow)) {
+    return ProposalStatus.ACTIVE
+  }
   // TODO: @ashutoshpw, handle more statuses
-  switch (status) {
+  switch (status.status) {
     case "active":
       return ProposalStatus.ACTIVE
     case "pending":
-      if (votesPercentage.lt(daoQuorum)) {
+      if (votesPercentage.lt(daoQuorum) && votingExpiresAt.isBefore(timeNow)) {
         return ProposalStatus.NO_QUORUM
       }
       return ProposalStatus.PENDING

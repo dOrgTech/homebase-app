@@ -3,7 +3,7 @@ import { Timer } from "@mui/icons-material"
 import { Box } from "@mui/material"
 import { Typography } from "@mui/material"
 import dayjs from "dayjs"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { GridContainer } from "modules/common/GridContainer"
 
@@ -18,6 +18,20 @@ export const EvmProposalCountdown = () => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const { daoProposalSelected } = useContext(EtherlinkContext)
   const targetDate = daoProposalSelected?.votingExpiresAt
+  const votingStartTimestamp = daoProposalSelected?.votingStartTimestamp
+  const votingExpiresAt = daoProposalSelected?.votingExpiresAt
+
+  const timerLabel = useMemo(() => {
+    const timeNow = dayjs()
+    if (votingStartTimestamp?.isAfter(timeNow)) {
+      return "Voting starts in"
+    }
+    if (votingExpiresAt?.isAfter(timeNow) && votingStartTimestamp?.isBefore(timeNow)) {
+      return "Time left to vote"
+    }
+
+    return "Voting concluded"
+  }, [votingStartTimestamp, votingExpiresAt])
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -78,7 +92,7 @@ export const EvmProposalCountdown = () => {
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Timer sx={{ width: 24, height: 24, mr: 2, color: "white" }} />
         <Typography variant="h3" color="white" sx={{ fontWeight: 600, fontSize: 18 }}>
-          Time Left to Vote
+          {timerLabel}
         </Typography>
       </Box>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>

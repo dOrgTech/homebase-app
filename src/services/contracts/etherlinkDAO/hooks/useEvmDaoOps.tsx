@@ -7,6 +7,11 @@ import { EtherlinkContext } from "services/wagmi/context"
 import HbTokenAbi from "assets/abis/hb_evm.json"
 import { useNotification } from "modules/common/hooks/useNotification"
 
+/**
+ *
+ * delete - token->delete
+ */
+
 interface EvmDaoOpsStore {
   showProposalVoterList: boolean
   setShowProposalVoterList: (value: boolean) => void
@@ -44,10 +49,9 @@ export const useEvmDaoOps = () => {
   const daoDelegate = useCallback(
     async (targetAddress: string) => {
       if (!daoSelected) return
+      console.log("Delegating to ", targetAddress)
       const govContract = new ethers.Contract(daoSelected.token, HbTokenAbi.abi, etherlink.signer)
-      const tx = await govContract.delegate({
-        delegatee: targetAddress
-      })
+      const tx = await govContract.delegate(targetAddress)
       console.log("Transaction sent:", tx.hash)
       const receipt = await tx.wait()
       console.log("Transaction confirmed:", receipt)

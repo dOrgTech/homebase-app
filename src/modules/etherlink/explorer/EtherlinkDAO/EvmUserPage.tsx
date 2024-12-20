@@ -1,10 +1,13 @@
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
+import { ethers } from "ethers"
 import { Box, Grid, styled, Typography } from "@material-ui/core"
 import { Button } from "components/ui/Button"
 import { HowToVote, People } from "@material-ui/icons"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import { StyledTextField } from "components/ui/StyledTextField"
 
 const StatsContainer = styled(Grid)({
   marginBottom: "40px",
@@ -64,12 +67,31 @@ const DelegationDescription = styled(Typography)({
 })
 
 export const EvmUserPage = () => {
-  const { daoSelected } = useContext(EtherlinkContext)
+  const [isLoading, setIsLoading] = useState(false)
+  const [delegateToAddress, setDelegateToAddress] = useState("")
+  const [delegateDialogOpen, setDelegateDialogOpen] = useState(false)
+  const [isValidDelegateAddress, setIsValidDelegateAddress] = useState(false)
+
+  const { daoMembers, daoSelected } = useContext(EtherlinkContext)
+
   const { daoDelegate, signer, userTokenBalance, userVotingWeight, proposalCreatedCount, proposalVotedCount } =
     useEvmDaoOps()
+  const selfMember = daoMembers?.find((member: any) => member.address === signer?.address)
+  console.log("selfMember", selfMember)
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance
+  const userDelegate = selfMember?.delegate
+  const isSelfDelegated = userDelegate === signer?.address
+  const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
+
+  useEffect(() => {
+    if (ethers.isAddress(delegateToAddress)) {
+      setIsValidDelegateAddress(true)
+    } else {
+      setIsValidDelegateAddress(false)
+    }
+  }, [delegateToAddress, setIsValidDelegateAddress])
 
   return (
     <Box>
@@ -110,7 +132,7 @@ export const EvmUserPage = () => {
               If you can't or don't want to take part in the governance process, your voting privilege may be forwarded
               to another member of your choosing.
             </DelegationDescription>
-            <Button variant="outlined" style={{ width: "fit-content" }}>
+            <Button variant="outlined" style={{ width: "fit-content" }} onClick={() => setDelegateDialogOpen(true)}>
               Set Delegate
             </Button>
           </DelegationBox>
@@ -124,8 +146,64 @@ export const EvmUserPage = () => {
               This also allows other members to delegate their vote to you, so that you may participate in the
               governance process on their behalf.
             </DelegationDescription>
-            <Typography style={{ color: "#9E9E9E" }}>Only voting on your behalf</Typography>
+
+            {isSelfDelegated ? (
+              <Typography style={{ color: "#9E9E9E" }}>Only voting on your behalf</Typography>
+            ) : (
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  daoDelegate(userAddress).finally(() => {
+                    setIsLoading(false)
+                  })
+                }}
+                style={{ width: "fit-content" }}
+              >
+                Claim Voting Power
+              </Button>
+            )}
           </DelegationBox>
+
+          <ResponsiveDialog
+            open={delegateDialogOpen}
+            onClose={() => {
+              setDelegateDialogOpen(false)
+            }}
+            title="Delegate Voting Power"
+          >
+            <Grid container spacing={4}>
+              <Grid item xs={12}>
+                <Typography>Delegate your voting power to another member of the DAO.</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <StyledTextField
+                  fullWidth
+                  label="Delegate to"
+                  onChange={e => setDelegateToAddress(e.target.value)}
+                  value={delegateToAddress}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="outlined"
+                  style={{ width: "fit-content" }}
+                  disabled={!isValidDelegateAddress || isLoading}
+                  onClick={() => {
+                    setIsLoading(true)
+                    daoDelegate(delegateToAddress)
+                      .then(() => {
+                        setDelegateDialogOpen(false)
+                      })
+                      .finally(() => {
+                        setIsLoading(false)
+                      })
+                  }}
+                >
+                  {isLoading ? "Delegating..." : "Delegate"}
+                </Button>
+              </Grid>
+            </Grid>
+          </ResponsiveDialog>
         </Grid>
       </Grid>
     </Box>

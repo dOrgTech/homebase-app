@@ -217,39 +217,40 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         }
         const payload = { daoConfig: { ...get().daoConfig, [type]: value } } as any
         // TODO: handle this within next handler
-        // let ifaceDef, iface: any, encodedData: any
-        // if (type === "quorumNumerator") {
-        //   ifaceDef = proposalInterfaces.find(p => p.name === "updateQuorumNumerator")
-        //   if (!ifaceDef) return
-        //   iface = new ethers.Interface(ifaceDef.interface)
-        //   encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-        // }
-        // if (type === "votingDelay") {
-        //   ifaceDef = proposalInterfaces.find(p => p.name === "setVotingDelay")
-        //   if (!ifaceDef) return
-        //   iface = new ethers.Interface(ifaceDef.interface)
-        //   encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-        // }
-        // if (type === "votingPeriod") {
-        //   ifaceDef = proposalInterfaces.find(p => p.name === "setVotingPeriod")
-        //   if (!ifaceDef) return
-        //   iface = new ethers.Interface(ifaceDef.interface)
-        //   encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-        // }
-        // if (type === "proposalThreshold") {
-        //   ifaceDef = proposalInterfaces.find(p => p.name === "setProposalThreshold")
-        //   if (!ifaceDef) return
-        //   iface = new ethers.Interface(ifaceDef.interface)
-        //   encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-        // }
+        console.log("setting dao config", type, value)
+        let ifaceDef, iface: any, encodedData: any
+        if (type === "quorumNumerator") {
+          ifaceDef = proposalInterfaces.find(p => p.name === "updateQuorumNumerator")
+          if (!ifaceDef) return
+          iface = new ethers.Interface(ifaceDef.interface)
+          encodedData = iface.encodeFunctionData(ifaceDef.name, [value?.toString()])
+        }
+        if (type === "votingDelay") {
+          ifaceDef = proposalInterfaces.find(p => p.name === "setVotingDelay")
+          if (!ifaceDef) return
+          iface = new ethers.Interface(ifaceDef.interface)
+          encodedData = iface.encodeFunctionData(ifaceDef.name, [value?.toString()])
+        }
+        if (type === "votingPeriod") {
+          ifaceDef = proposalInterfaces.find(p => p.name === "setVotingPeriod")
+          if (!ifaceDef) return
+          iface = new ethers.Interface(ifaceDef.interface)
+          encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
+        }
+        if (type === "proposalThreshold") {
+          ifaceDef = proposalInterfaces.find(p => p.name === "setProposalThreshold")
+          if (!ifaceDef) return
+          iface = new ethers.Interface(ifaceDef.interface)
+          encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
+        }
 
-        // payload.createProposalPayload = {
-        //   ...get().createProposalPayload,
-        //   targets: [daoSelected?.registryAddress],
-        //   values: [0],
-        //   calldatas: [encodedData],
-        //   description: get().createProposalPayload.description
-        // }
+        payload.createProposalPayload = {
+          ...get().createProposalPayload,
+          targets: [get().daoConfig.address],
+          values: [0],
+          calldatas: [encodedData],
+          description: get().createProposalPayload.description
+        }
         set(payload)
       },
       daoTokenOps: {
@@ -370,9 +371,9 @@ export const useEvmProposalOps = () => {
 
   const castVote = useCallback(
     async (proposalId: number, support: boolean) => {
-      if (!daoContract) return
+      if (!daoContract || !proposalId) return alert("No dao contract or proposal id")
 
-      const tx = await daoContract.castVote(proposalId, support)
+      const tx = await daoContract.castVote(proposalId?.toString(), support ? 1 : 0)
       console.log("Vote transaction sent:", tx.hash)
       const receipt = await tx.wait()
       console.log("Vote transaction confirmed:", receipt)
