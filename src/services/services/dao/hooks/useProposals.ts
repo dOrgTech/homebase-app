@@ -3,9 +3,12 @@ import { BaseDAO, CycleInfo } from "services/contracts/baseDAO"
 import { getProposals } from "services/services/dao/services"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAO } from "./useDAO"
+import { useEffect, useState } from "react"
 
 export const useProposals = (contractAddress: string, status?: ProposalStatus) => {
-  const { data: daoData, isLoading, error, cycleInfo } = useDAO(contractAddress)
+  const [isLoading, setIsLoading] = useState(true)
+  const [proposalData, setProposalData] = useState<any[]>([])
+  const { data: daoData, isLoading: isLoadingDAO, error, cycleInfo } = useDAO(contractAddress)
 
   const queryResults = useQuery(
     ["proposals", contractAddress, status],
@@ -27,8 +30,14 @@ export const useProposals = (contractAddress: string, status?: ProposalStatus) =
     }
   )
 
+  useEffect(() => {
+    if (queryResults.data) {
+      setProposalData(queryResults.data)
+    }
+  }, [queryResults.data])
+
   return {
-    data: queryResults.data,
+    data: proposalData,
     isLoading: isLoading || queryResults.isLoading,
     error: error || queryResults.error
   }
