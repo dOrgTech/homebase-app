@@ -3,7 +3,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { GridContainer } from "modules/common/GridContainer"
-import { VotesDialog } from "modules/lite/explorer/components/VotesDialog"
 import { Poll } from "models/Polls"
 import { Choice } from "models/Choice"
 import ProgressBar from "react-customizable-progressbar"
@@ -11,11 +10,10 @@ import ProgressBar from "react-customizable-progressbar"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getTurnoutValue } from "services/utils/utils"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
-import { DownloadCsvFile } from "modules/lite/explorer/components/DownloadCsvFile"
 import { EtherlinkContext } from "services/wagmi/context"
 import { LinearProgress } from "components/ui/LinearProgress"
-import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { EVM_PROPOSAL_CHOICES } from "../config"
 
 const Container = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -93,12 +91,11 @@ const HistoryValue = styled(Typography)({
 
 export const EvmProposalVoteDetail: React.FC<{
   poll: Poll | undefined
-  choices: Choice[]
   token: any
-}> = ({ poll, choices, token }) => {
+}> = ({ poll, token }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
-
+  const choices = EVM_PROPOSAL_CHOICES
   const { network } = useTezos()
   const [turnout, setTurnout] = useState<number | null>()
   const [votes, setVotes] = useState<Choice[]>([])
@@ -122,8 +119,6 @@ export const EvmProposalVoteDetail: React.FC<{
     // setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
   }
 
-  console.log({ showProposalVoterList })
-
   useMemo(async () => {
     if (token && tokenData) {
       const value = await getTurnoutValue(
@@ -139,7 +134,7 @@ export const EvmProposalVoteDetail: React.FC<{
     }
   }, [poll, network, token, tokenData, totalVoteCount])
 
-  const votesQuorumPercentage = 50
+  const votesQuorumPercentage = daoProposalSelected?.votesWeightPercentage
 
   console.log({ daoProposalSelected })
 
@@ -278,7 +273,7 @@ export const EvmProposalVoteDetail: React.FC<{
         /> */}
         </GraphicsContainer>
       </Container>
-      <Container container style={{ marginTop: 120, marginBottom: 12 }}>
+      <Container container style={{ marginTop: 60, marginBottom: 12 }}>
         <Grid item container direction="column" spacing={8} style={{ paddingLeft: 12, paddingRight: 12 }}>
           <Grid item container direction="row" spacing={8}>
             {/* Quorum */}

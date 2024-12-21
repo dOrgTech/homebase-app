@@ -45,6 +45,11 @@ export const EvmDaoProposalList: React.FC<Props> = ({ proposals, showFullList = 
   const [isLoading, setIsLoading] = useState(false)
 
   console.log("EvmDaoProposalList", proposals)
+  console.log(
+    "EvmDaoProposalListX",
+    proposals?.filter((p: any) => p.proposalData?.length > 0).map((p: any) => p.type)
+  )
+
   const pageCount = Math.ceil(proposals ? proposals.length / offsetLimit : 0)
 
   // Invoke when user click to request another page.

@@ -218,6 +218,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         const payload = { daoConfig: { ...get().daoConfig, [type]: value } } as any
         // TODO: handle this within next handler
         console.log("setting dao config", type, value)
+        // TODO: Replace this with getCallDataForProposal
         let ifaceDef, iface: any, encodedData: any
         if (type === "quorumNumerator") {
           ifaceDef = proposalInterfaces.find(p => p.name === "updateQuorumNumerator")
@@ -340,7 +341,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
 export const useEvmProposalOps = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { etherlink } = useTezos()
-  const { daoSelected } = useContext(EtherlinkContext)
+  const { daoSelected, daoProposalSelected } = useContext(EtherlinkContext)
   const router = useHistory()
 
   const zustantStore = useEvmProposalCreateZustantStore()
@@ -354,7 +355,38 @@ export const useEvmProposalOps = () => {
     return new ethers.Contract(daoSelected?.address, HbDaoAbi.abi, etherlink.signer)
   }, [daoSelected?.address, etherlink.signer])
 
-  console.log("currentStep", currentStep, proposalType)
+  const getProposalExecutionMetadata = useCallback(() => {
+    if (!daoContract || !daoProposalSelected?.id || !daoSelected?.address)
+      return alert("No dao contract or proposal id")
+
+    const concatenatedDescription = [
+      daoProposalSelected.title,
+      daoProposalSelected.type,
+      daoProposalSelected.description,
+      daoProposalSelected.externalResource
+    ].join("0|||0")
+
+    const encodedInput = ethers.toUtf8Bytes(concatenatedDescription)
+    const keccakHash = ethers.keccak256(encodedInput)
+    const hashHex = keccakHash
+    console.log(`queueForExecution: Keccak-256 hash: ${hashHex}`)
+    const callData = daoProposalSelected?.callDataPlain?.[0]
+    const expectedCallData = "0x06f3f9e6000000000000000000000000000000000000000000000000000000000000000f"
+    console.log(`queueForExecution: callData: ${callData}`, expectedCallData)
+    return {
+      calldata: [callData],
+      hashHex: hashHex
+    }
+  }, [
+    daoContract,
+    daoProposalSelected?.callDataPlain,
+    daoProposalSelected.description,
+    daoProposalSelected.externalResource,
+    daoProposalSelected?.id,
+    daoProposalSelected.title,
+    daoProposalSelected.type,
+    daoSelected?.address
+  ])
 
   const createProposal = useCallback(
     async (payload: Record<string, any>) => {
@@ -382,18 +414,35 @@ export const useEvmProposalOps = () => {
     [daoContract]
   )
 
-  const executeProposal = useCallback(
-    async (proposalId: number) => {
-      if (!daoContract) return
+  const queueForExecution = useCallback(async () => {
+    if (!daoContract || !daoProposalSelected?.id || !daoSelected?.address)
+      return alert("No dao contract or proposal id")
 
-      const tx = await daoContract.execute(proposalId)
-      console.log("Execute transaction sent:", tx.hash)
-      const receipt = await tx.wait()
-      console.log("Execute transaction confirmed:", receipt)
-      return receipt
-    },
-    [daoContract]
-  )
+    const metadata = getProposalExecutionMetadata()
+    if (!metadata) return alert("Could not get proposal metadata")
+    console.log("proposalAction metadata", daoSelected?.address, metadata)
+    const tx = await daoContract.queue([daoSelected?.address], [0], metadata.calldata, metadata.hashHex)
+    console.log("Queue transaction sent:", tx.hash)
+
+    const receipt = await tx.wait()
+    console.log("Queue transaction confirmed:", receipt)
+
+    return receipt
+  }, [daoContract, daoProposalSelected?.id, daoSelected?.address, getProposalExecutionMetadata])
+
+  const executeProposal = useCallback(async () => {
+    if (!daoContract) return
+
+    const metadata = getProposalExecutionMetadata()
+    if (!metadata) return alert("Could not get proposal metadata")
+
+    const tx = await daoContract.execute([daoSelected?.address], [0], metadata.calldata, metadata.hashHex)
+    console.log("Execute transaction sent:", tx.hash)
+
+    const receipt = await tx.wait()
+    console.log("Execute transaction confirmed:", receipt)
+    return receipt
+  }, [daoContract, daoSelected?.address, getProposalExecutionMetadata])
 
   const nextStep = {
     text: isLoading ? "Please wait..." : "Next",
@@ -494,6 +543,7 @@ export const useEvmProposalOps = () => {
     setIsLoading,
     createProposal,
     castVote,
+    queueForExecution,
     executeProposal,
     signer: etherlink?.signer,
     nextStep,

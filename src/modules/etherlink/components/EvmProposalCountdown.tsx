@@ -6,6 +6,7 @@ import dayjs from "dayjs"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { GridContainer } from "modules/common/GridContainer"
+import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 interface TimeLeft {
   days: number
@@ -30,8 +31,12 @@ export const EvmProposalCountdown = () => {
       return "Time left to vote"
     }
 
+    if (daoProposalSelected?.status === ProposalStatus.PASSED) {
+      return "Execution available in"
+    }
+
     return "Voting concluded"
-  }, [votingStartTimestamp, votingExpiresAt])
+  }, [votingStartTimestamp, votingExpiresAt, daoProposalSelected?.status])
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -88,8 +93,8 @@ export const EvmProposalCountdown = () => {
   )
 
   return (
-    <GridContainer container direction="column" style={{ maxWidth: 200 }}>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+    <GridContainer container direction="column" style={{ maxWidth: "100%" }}>
+      <Box sx={{ display: "flex", alignItems: "center", margin: "auto", marginBottom: 2 }}>
         <Timer sx={{ width: 24, height: 24, mr: 2, color: "white" }} />
         <Typography variant="h3" color="white" sx={{ fontWeight: 600, fontSize: 18 }}>
           {timerLabel}

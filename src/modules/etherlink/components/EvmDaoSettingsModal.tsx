@@ -90,7 +90,7 @@ export const EvmDaoSettingModal: React.FC<{
       value: daoSelected?.votingDelay
     },
     {
-      key: "Execution Delay (minutes)",
+      key: "Execution Delay (seconds)",
       value: daoSelected?.executionDelay
     }
   ]

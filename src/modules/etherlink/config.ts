@@ -100,44 +100,63 @@ export const EvmProposalOptions = [
   }
 ]
 
+// TODO: Ensure tags are unique
 export const proposalInterfaces = [
   {
+    tags: ["registry"],
     interface: ["function editRegistry(string key, string Value)"],
     name: "editRegistry"
   },
   {
+    tags: ["token"],
     interface: ["function mint(address to, uint256 amount)"],
     name: "mint"
   },
   {
+    tags: ["token"],
     interface: ["function burn(address from, uint256 amount)"],
     name: "burn"
   },
   {
+    tags: ["transfer"],
     interface: ["function transferETH(address to, uint256 amount)"],
     name: "transferETH"
   },
   {
+    tags: ["token", "mint", "burn"],
     interface: ["function transferERC20(address token, address to, uint256 amount)"],
     name: "transferERC20"
   },
   {
+    tags: ["token"],
     interface: ["function transferERC721(address token, address to, uint256 tokenId)"],
     name: "transferERC721"
   },
   {
+    tags: ["quorum"],
+    label: "Update Quorum",
+    unit: "%",
     interface: ["function updateQuorumNumerator(uint256 newQuorumNumerator)"],
     name: "updateQuorumNumerator"
   },
   {
+    tags: ["voting delay"],
+    label: "Update Voting Delay",
+    unit: "seconds",
     interface: ["function setVotingDelay(uint256 newVotingDelay)"],
     name: "setVotingDelay"
   },
   {
+    tags: ["voting period"],
+    label: "Update Voting Period",
+    unit: "seconds",
     interface: ["function setVotingPeriod(uint256 newVotingPeriod)"],
     name: "setVotingPeriod"
   },
   {
+    tags: ["proposal threshold"],
+    label: "Update Proposal Threshold",
+    unit: "tokens",
     interface: ["function setProposalThreshold(uint256 newProposalThreshold)"],
     name: "setProposalThreshold"
   }

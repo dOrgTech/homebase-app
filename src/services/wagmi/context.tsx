@@ -12,6 +12,13 @@ import dayjs from "dayjs"
 import { ethers } from "ethers"
 import BigNumber from "bignumber.js"
 import { Timestamp } from "firebase/firestore"
+import {
+  decodeCalldataWithEthers,
+  decodeFunctionParametersLegacy,
+  getCallDataFromBytes,
+  parseTransactionHash
+} from "modules/etherlink/utils"
+import { proposalInterfaces } from "modules/etherlink/config"
 
 interface EtherlinkType {
   isConnected: boolean
@@ -67,9 +74,10 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     proposalThreshold: string
     totalSupply: string
     registry: Record<string, string>
-    votingDuration: number
-    votingDelay: number
+    votingDuration: number // in minutes
+    votingDelay: number // in minutes
     quorum: number
+    executionDelay: number // in seconds
   } | null>(null)
   const [daoRegistryDetails, setDaoRegistryDetails] = useState<{
     balance: string
@@ -86,6 +94,11 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
       weight: string
     }[]
   >([])
+
+  console.log(
+    "AllCallData",
+    daoProposals?.map((x: any) => x.callDataPlain?.[0])
+  )
 
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
@@ -133,11 +146,14 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
           .map(firebaseProposal => {
             const votesInFavor = new BigNumber(firebaseProposal?.inFavor)
             const votesAgainst = new BigNumber(firebaseProposal?.against)
+            const votesInFavorWeight = new BigNumber(firebaseProposal?.inFavor)
 
             const totalVotes = votesInFavor.plus(votesAgainst)
             const totalVoteCount = parseInt(firebaseProposal?.votesFor) + parseInt(firebaseProposal?.votesAgainst)
             const totalSupply = new BigNumber(daoSelected?.totalSupply ?? "1")
             const votesPercentage = totalVotes.div(totalSupply).times(100)
+            const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
+            const daoTotalVotingWeight = new BigNumber(daoSelected?.totalSupply ?? "0")
             console.log("votesPercentage", firebaseProposal?.title, votesPercentage.toString())
 
             const proposalCreatedAt = dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number)
@@ -161,42 +177,70 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
               .map(([status, timestamp]: [string, any]) => ({
                 status,
                 timestamp: timestamp?.seconds as unknown as number,
-                timestamp_human: dayjs.unix(timestamp?.seconds as unknown as number).format("MMM DD, YYYY HH:mm:ss")
+                timestamp_human: dayjs.unix(timestamp?.seconds as unknown as number).format("MMM DD, YYYY hh:mm A")
               }))
               .sort((a, b) => b.timestamp - a.timestamp)
 
             statusHistoryMap.push({
               status: "active",
               timestamp: activeStartTimestamp.unix(),
-              timestamp_human: activeStartTimestamp.format("MMM DD, YYYY HH:mm:ss")
+              timestamp_human: activeStartTimestamp.format("MMM DD, YYYY hh:mm A")
             })
 
-            console.log({
-              votesPercentage: votesPercentage.toFormat(2),
-              quorum: daoSelected?.quorum,
-              votingEndTimestamp,
-              timeNow
-            })
+            if (votesInFavorWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
+              statusHistoryMap.push({
+                status: "passed",
+                timestamp: votingEndTimestamp.unix(),
+                timestamp_human: votingEndTimestamp.format("MMM DD, YYYY hh:mm A")
+              })
+            }
+
+            const statusQueued = statusHistoryMap.find(x => x.status === "queued")
+            if (statusQueued) {
+              const executionDelayInSeconds = daoSelected?.executionDelay || 0
+              const proposalExecutableAt = statusQueued.timestamp + executionDelayInSeconds
+              console.log("proposalExecutableAt", proposalExecutableAt, timeNow.unix())
+              if (proposalExecutableAt < timeNow.unix()) {
+                statusHistoryMap.push({
+                  status: "executable",
+                  timestamp: proposalExecutableAt,
+                  timestamp_human: dayjs.unix(proposalExecutableAt).format("MMM DD, YYYY hh:mm A")
+                })
+              }
+            }
+
             if (votesPercentage.lt(daoSelected?.quorum) && votingEndTimestamp.isBefore(timeNow)) {
               statusHistoryMap.push({
                 status: "no quorum",
                 timestamp: votingEndTimestamp.unix(),
-                timestamp_human: votingEndTimestamp.format("MMM DD, YYYY HH:mm")
+                timestamp_human: votingEndTimestamp.format("MMM DD, YYYY hh:mm A")
               })
             }
+            console.log({ statusHistoryMap })
+
+            const callDatas = firebaseProposal?.callDatas
+            const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
+
             return {
               ...firebaseProposal,
+              callDataPlain,
               status: getStatusByHistory(statusHistoryMap, {
                 votesPercentage,
                 votingExpiresAt,
                 activeStartTimestamp,
-                daoQuorum: daoSelected?.quorum
+                daoQuorum: daoSelected?.quorum,
+                executionDelayInSeconds: daoSelected?.executionDelay
               }),
+              proposalData: [],
               statusHistoryMap: statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp),
               votingStartTimestamp: activeStartTimestamp,
               votingExpiresAt: votingExpiresAt,
               totalVotes: totalVotes,
-              totalVoteCount
+              totalVoteCount,
+              votesWeightPercentage: Number(votesPercentage.toFixed(2)),
+              txHash: firebaseProposal?.executionHash
+                ? `https://testnet.explorer.etherlink.com/tx/0x${parseTransactionHash(firebaseProposal?.executionHash)}`
+                : ""
             }
           })
       )
@@ -252,6 +296,31 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     selectDaoProposal: (proposalId: string) => {
       const proposal = daoProposals.find((proposal: any) => proposal.id === proposalId)
       if (proposal) {
+        const proposalInterface = proposalInterfaces.find((x: any) => {
+          let fbType = proposal?.type?.toLowerCase()
+          if (fbType?.startsWith("mint")) fbType = "mint"
+          if (fbType?.startsWith("burn")) fbType = "burn"
+          return x.tags?.includes(fbType)
+        })
+        const functionAbi = proposalInterface?.interface?.[0] as string
+        if (!functionAbi) return []
+
+        const proposalData = proposalInterface
+          ? proposal?.callDataPlain?.map((callData: any) => {
+              const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
+              const decodedDataPair = decodeCalldataWithEthers(functionAbi, formattedCallData)
+              const decodedDataPairLegacy = decodeFunctionParametersLegacy(functionAbi, formattedCallData)
+              const functionName = decodedDataPair?.functionName
+              const functionParams = decodedDataPair?.decodedData
+              const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
+
+              const label = proposalInterface?.label
+              console.log("decodedDataPair", decodedDataPair, functionName, functionParams)
+              console.log("decodedDataPairLegacy", decodedDataPairLegacy)
+              return { parameter: label || functionName, value: functionParams.join(", ") }
+            })
+          : []
+        proposal.proposalData = proposalData
         setDaoProposalSelected(proposal)
       }
     },
@@ -274,12 +343,14 @@ const getStatusByHistory = (
     votesPercentage,
     votingExpiresAt,
     activeStartTimestamp,
-    daoQuorum
+    daoQuorum,
+    executionDelayInSeconds
   }: {
     votesPercentage: BigNumber
     votingExpiresAt: dayjs.Dayjs
     activeStartTimestamp: dayjs.Dayjs
     daoQuorum: number
+    executionDelayInSeconds: number
   }
 ) => {
   const timeNow = dayjs()
@@ -295,11 +366,16 @@ const getStatusByHistory = (
       return maxStatus
     })
 
+  console.log("getStatusByHistory", { status, history })
   if (activeStartTimestamp.isAfter(timeNow) && votingExpiresAt.isBefore(timeNow)) {
     return ProposalStatus.ACTIVE
   }
   // TODO: @ashutoshpw, handle more statuses
   switch (status.status) {
+    case "queued":
+      return ProposalStatus.PASSED
+    case "passed":
+      return ProposalStatus.PASSED
     case "active":
       return ProposalStatus.ACTIVE
     case "pending":
@@ -311,6 +387,8 @@ const getStatusByHistory = (
       return ProposalStatus.REJECTED
     case "accepted":
       return ProposalStatus.ACTIVE
+    case "executable":
+      return ProposalStatus.EXECUTABLE
     case "executed":
       return ProposalStatus.EXECUTED
     default:
