@@ -8,6 +8,7 @@ import { ReactComponent as SelfDeployedIcon } from "assets/img/self-deployed.svg
 import { ActionTypes, CreatorContext, DeploymentMethod } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"
 import { useRouteMatch } from "react-router-dom"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   "height": 480,
@@ -62,10 +63,11 @@ export const DeploymentType = (): JSX.Element => {
 
   const theme = useTheme()
   const style = styles()
+  const notify = useNotification()
 
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
-  const [selectedTemplate, setTemplate] = useState<DeploymentMethod>("managed")
+  const [selectedTemplate, setTemplate] = useState<DeploymentMethod>("self-deployed")
   const [error, setError] = useState<boolean>(false)
 
   useEffect(() => {
@@ -85,6 +87,13 @@ export const DeploymentType = (): JSX.Element => {
   }, [dispatch, history, match.path, match.url, selectedTemplate])
 
   const update = (templateValue: DeploymentMethod) => {
+    if (templateValue === "managed") {
+      return notify({
+        message: "Managed Deployment is temporarily disabled",
+        autoHideDuration: 3000,
+        variant: "error"
+      })
+    }
     setError(false)
     setTemplate(templateValue)
   }
@@ -119,7 +128,7 @@ export const DeploymentType = (): JSX.Element => {
         >
           <ManagedIcon style={{ marginBottom: 14 }} />
           <BoxTitle color="textSecondary">Managed</BoxTitle>
-          <Grid container direction="column" style={{ gap: 16 }}>
+          <Grid container direction="column" style={{ gap: 16, opacity: 0.5 }}>
             <BoxDescription color="textSecondary">
               Homebase will deploy a contract on-chain with your parameters using a dedicated endpoint.{" "}
             </BoxDescription>
