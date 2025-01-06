@@ -15,6 +15,7 @@ import BigNumber from "bignumber.js"
 import { mutezToXtz, parseUnits } from "services/contracts/utils"
 import { FieldChange, handleChange } from "../utils"
 import { useBlockchainInfo } from "services/contracts/baseDAO/hooks/useBlockchainInfo"
+import StyledSlider from "components/ui/StyledSlider"
 
 const TimeBox = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.dark,
@@ -115,32 +116,6 @@ const ValueText = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.dark,
   fontWeight: 200
 }))
-
-const StyledSlider = withStyles({
-  root: {
-    textAlign: "center",
-    width: "100%",
-    height: 4.5
-  },
-  valueLabel: {
-    textAlign: "center"
-  },
-  thumb: {
-    height: 20,
-    width: 20,
-    top: "36.5%",
-    backgroundColor: "#fff",
-    border: "3px solid #fff"
-  },
-  track: {
-    backgroundColor: "#4BCF93",
-    borderRadius: "4px",
-    height: 4.5
-  },
-  rail: {
-    height: 4.5
-  }
-})(Slider)
 
 const CustomSliderValue = styled(withTheme(Paper))(props => ({
   boxShadow: "none",

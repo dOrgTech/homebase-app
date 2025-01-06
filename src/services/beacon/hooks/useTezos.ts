@@ -100,6 +100,7 @@ export const useTezos = (): WalletConnectReturn => {
     async (newNetwork: Network) => {
       mixpanel.register({ Network: newNetwork })
       localStorage.setItem("homebase:network", newNetwork)
+      switchToNetwork(newNetwork)
       if (newNetwork.startsWith("etherlink")) {
         await handleEtherlinkNetworkChange(newNetwork)
       } else {
@@ -107,7 +108,7 @@ export const useTezos = (): WalletConnectReturn => {
       }
       queryClient.resetQueries()
     },
-    [handleEtherlinkNetworkChange, handleTezosNetworkChange, queryClient]
+    [handleEtherlinkNetworkChange, handleTezosNetworkChange, switchToNetwork, queryClient]
   )
 
   const handleTezosConnect = useCallback(

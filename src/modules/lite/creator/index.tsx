@@ -489,7 +489,6 @@ const CommunityForm = ({ submitForm, values, setFieldValue, errors, touched, set
 export const CommunityCreator: React.FC = () => {
   const navigate = useHistory()
   const { network, account, wallet, etherlink } = useTezos()
-
   const openNotification = useNotification()
 
   const initialState: Community = {
