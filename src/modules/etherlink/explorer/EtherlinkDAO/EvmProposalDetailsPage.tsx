@@ -16,6 +16,7 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 const RenderProposalAction = () => {
   const { daoProposalSelected } = useContext(EtherlinkContext)
+  const isVotingActive = daoProposalSelected?.isVotingActive
   const [isCastingVote, setIsCastingVote] = useState(false)
   const openNotification = useNotification()
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
@@ -82,53 +83,56 @@ const RenderProposalAction = () => {
         <Grid>
           <EvmProposalCountdown />
         </Grid>
-        <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
-          <Button
-            disabled={isCastingVote}
-            onClick={() => {
-              setIsCastingVote(true)
-              castVote(daoProposalSelected?.id, true)
-                .then((receipt: any) => {
-                  console.log("Receipt", receipt)
-                  openNotification({
-                    message: "Vote cast successfully",
-                    autoHideDuration: 2000,
-                    variant: "success"
+
+        {isVotingActive && (
+          <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
+            <Button
+              disabled={isCastingVote}
+              onClick={() => {
+                setIsCastingVote(true)
+                castVote(daoProposalSelected?.id, true)
+                  .then((receipt: any) => {
+                    console.log("Receipt", receipt)
+                    openNotification({
+                      message: "Vote cast successfully",
+                      autoHideDuration: 2000,
+                      variant: "success"
+                    })
                   })
-                })
-                .finally(() => {
-                  setIsCastingVote(false)
-                })
-            }}
-            variant="contained"
-            color="secondary"
-            style={{ background: "rgb(113 214 156)" }}
-          >
-            <ThumbUpAlt sx={{ mr: 1 }} /> Support
-          </Button>
-          <Button
-            onClick={() => {
-              setIsCastingVote(true)
-              castVote(daoProposalSelected?.id, false)
-                .then((receipt: any) => {
-                  console.log("Receipt", receipt)
-                  openNotification({
-                    message: "Vote cast successfully",
-                    autoHideDuration: 2000,
-                    variant: "success"
+                  .finally(() => {
+                    setIsCastingVote(false)
                   })
-                })
-                .finally(() => {
-                  setIsCastingVote(false)
-                })
-            }}
-            variant="contained"
-            color="secondary"
-            style={{ background: "red" }}
-          >
-            <ThumbDownAlt sx={{ mr: 1 }} /> Reject
-          </Button>
-        </Grid>
+              }}
+              variant="contained"
+              color="secondary"
+              style={{ background: "rgb(113 214 156)" }}
+            >
+              <ThumbUpAlt sx={{ mr: 1 }} /> Support
+            </Button>
+            <Button
+              onClick={() => {
+                setIsCastingVote(true)
+                castVote(daoProposalSelected?.id, false)
+                  .then((receipt: any) => {
+                    console.log("Receipt", receipt)
+                    openNotification({
+                      message: "Vote cast successfully",
+                      autoHideDuration: 2000,
+                      variant: "success"
+                    })
+                  })
+                  .finally(() => {
+                    setIsCastingVote(false)
+                  })
+              }}
+              variant="contained"
+              color="secondary"
+              style={{ background: "red" }}
+            >
+              <ThumbDownAlt sx={{ mr: 1 }} /> Reject
+            </Button>
+          </Grid>
+        )}
       </>
     )
   }

@@ -8,7 +8,7 @@ import Share from "assets/img/share.svg"
 import { CommunityBadge } from "modules/lite/explorer/components/CommunityBadge"
 import LinkIcon from "assets/img/link.svg"
 import { Poll } from "models/Polls"
-import dayjs from "dayjs"
+
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
 import { EtherlinkContext } from "services/wagmi/context"
@@ -196,7 +196,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ po
                 Start date:{" "}
               </TextContainer>
               <EndText variant="body2" color="textPrimary" style={{ fontWeight: 600, borderBottom: "1px solid white" }}>
-                {dayjs(Number(daoProposalSelected?.createdAt?.seconds)).format("lll")}
+                {daoProposalSelected?.createdAt?.format("lll")}
               </EndText>
               <Divider color="textPrimary">-</Divider>
               <EndTextContainer color="textPrimary" variant="body2">

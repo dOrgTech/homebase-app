@@ -18,25 +18,8 @@ interface TimeLeft {
 export const EvmProposalCountdown = () => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const { daoProposalSelected } = useContext(EtherlinkContext)
+  const timerLabel = daoProposalSelected?.timerLabel
   const targetDate = daoProposalSelected?.votingExpiresAt
-  const votingStartTimestamp = daoProposalSelected?.votingStartTimestamp
-  const votingExpiresAt = daoProposalSelected?.votingExpiresAt
-
-  const timerLabel = useMemo(() => {
-    const timeNow = dayjs()
-    if (votingStartTimestamp?.isAfter(timeNow)) {
-      return "Voting starts in"
-    }
-    if (votingExpiresAt?.isAfter(timeNow) && votingStartTimestamp?.isBefore(timeNow)) {
-      return "Time left to vote"
-    }
-
-    if (daoProposalSelected?.status === ProposalStatus.PASSED) {
-      return "Execution available in"
-    }
-
-    return "Voting concluded"
-  }, [votingStartTimestamp, votingExpiresAt, daoProposalSelected?.status])
 
   useEffect(() => {
     const calculateTimeLeft = () => {

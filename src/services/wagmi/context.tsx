@@ -159,8 +159,10 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             const proposalCreatedAt = dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number)
             const votingDelayInMinutes = daoSelected?.votingDelay || 1
             const votingDurationInMinutes = daoSelected?.votingDuration || 1
-            const votingExpiresAt = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
+
             const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
+            const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
+
             const votingEndTimestamp = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
 
             // Flutter Refernce
@@ -220,23 +222,39 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
             const callDatas = firebaseProposal?.callDatas
             const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
+            const proposalStatus = getStatusByHistory(statusHistoryMap, {
+              votesPercentage,
+              votingExpiresAt,
+              activeStartTimestamp,
+              daoQuorum: daoSelected?.quorum,
+              executionDelayInSeconds: daoSelected?.executionDelay
+            })
+
+            // Setting up timerLabel
+            let isVotingActive = false
+            let timerLabel = "Voting concluded"
+            if (activeStartTimestamp?.isAfter(timeNow)) {
+              timerLabel = "Voting starts in"
+            } else if (votingExpiresAt?.isAfter(timeNow) && activeStartTimestamp?.isBefore(timeNow)) {
+              timerLabel = "Time left to vote"
+              isVotingActive = true
+            } else if (proposalStatus === ProposalStatus.PASSED) {
+              timerLabel = "Execution available in"
+            }
 
             return {
               ...firebaseProposal,
+              createdAt: dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number),
               callDataPlain,
-              status: getStatusByHistory(statusHistoryMap, {
-                votesPercentage,
-                votingExpiresAt,
-                activeStartTimestamp,
-                daoQuorum: daoSelected?.quorum,
-                executionDelayInSeconds: daoSelected?.executionDelay
-              }),
+              status: proposalStatus,
               proposalData: [],
               statusHistoryMap: statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp),
               votingStartTimestamp: activeStartTimestamp,
               votingExpiresAt: votingExpiresAt,
               totalVotes: totalVotes,
               totalVoteCount,
+              timerLabel,
+              isVotingActive,
               votesWeightPercentage: Number(votesPercentage.toFixed(2)),
               txHash: firebaseProposal?.executionHash
                 ? `https://testnet.explorer.etherlink.com/tx/0x${parseTransactionHash(firebaseProposal?.executionHash)}`
