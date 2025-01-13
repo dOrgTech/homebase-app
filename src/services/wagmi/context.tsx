@@ -233,13 +233,17 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             // Setting up timerLabel
             let isVotingActive = false
             let timerLabel = "Voting concluded"
+            let timerTargetDate = null
             if (activeStartTimestamp?.isAfter(timeNow)) {
               timerLabel = "Voting starts in"
+              timerTargetDate = activeStartTimestamp
             } else if (votingExpiresAt?.isAfter(timeNow) && activeStartTimestamp?.isBefore(timeNow)) {
-              timerLabel = "Time left to vote"
               isVotingActive = true
+              timerLabel = "Time left to vote"
+              timerTargetDate = votingExpiresAt
             } else if (proposalStatus === ProposalStatus.PASSED) {
               timerLabel = "Execution available in"
+              timerTargetDate = votingEndTimestamp
             }
 
             return {
@@ -254,6 +258,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
               totalVotes: totalVotes,
               totalVoteCount,
               timerLabel,
+              timerTargetDate,
               isVotingActive,
               votesWeightPercentage: Number(votesPercentage.toFixed(2)),
               txHash: firebaseProposal?.executionHash

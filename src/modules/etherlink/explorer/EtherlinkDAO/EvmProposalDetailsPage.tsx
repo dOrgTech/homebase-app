@@ -30,7 +30,14 @@ const RenderProposalAction = () => {
           style={{ background: "rgb(113 214 156)" }}
           onClick={() =>
             queueForExecution()
-              .then((receipt: any) => console.log("Queue receipt", receipt))
+              .then((receipt: any) => {
+                console.log("Queue receipt", receipt)
+                openNotification({
+                  message: "Proposal queued for execution",
+                  autoHideDuration: 2000,
+                  variant: "success"
+                })
+              })
               .catch((error: any) => {
                 console.log("Queue error", error)
                 openNotification({

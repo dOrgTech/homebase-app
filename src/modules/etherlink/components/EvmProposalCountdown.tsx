@@ -19,12 +19,12 @@ export const EvmProposalCountdown = () => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const { daoProposalSelected } = useContext(EtherlinkContext)
   const timerLabel = daoProposalSelected?.timerLabel
-  const targetDate = daoProposalSelected?.votingExpiresAt
+  const timerTargetDate = daoProposalSelected?.timerTargetDate
 
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = dayjs()
-      const target = dayjs(targetDate)
+      const target = dayjs(timerTargetDate)
       const diff = target.diff(now, "second")
 
       if (diff <= 0) {
@@ -40,13 +40,16 @@ export const EvmProposalCountdown = () => {
       setTimeLeft({ days, hours, minutes, seconds })
     }
 
+    if (!dayjs.isDayjs(timerTargetDate)) {
+      return
+    }
     calculateTimeLeft()
     const timer = setInterval(calculateTimeLeft, 1000)
 
     return () => clearInterval(timer)
-  }, [targetDate])
+  }, [timerTargetDate])
 
-  if (!targetDate) return null
+  if (!timerTargetDate) return null
 
   const TimeUnit = ({ value, unit }: { value: number; unit: string }) => (
     <Grid
