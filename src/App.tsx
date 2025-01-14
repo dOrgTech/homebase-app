@@ -1,6 +1,5 @@
 import React from "react"
 import "App.css"
-import { withLDProvider } from "launchdarkly-react-client-sdk"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
 import mixpanel from "mixpanel-browser"
 import { QueryClient, QueryClientProvider } from "react-query"
@@ -162,7 +161,4 @@ const App: React.FC = () => {
 
 const env = getEnv(EnvKey.REACT_APP_ENV)
 
-export default withLDProvider({
-  clientSideID:
-    env === "PROD" ? getEnv(EnvKey.REACT_APP_LAUNCH_DARKLY_SDK_PROD) : getEnv(EnvKey.REACT_APP_LAUNCH_DARKLY_SDK_DEV)
-})(App)
+export default App

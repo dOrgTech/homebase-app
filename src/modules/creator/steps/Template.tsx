@@ -139,11 +139,15 @@ export const Template = (): JSX.Element => {
     setError(false)
     setTemplate(templateValue)
   }
-
+  console.log({ isMobileSmall })
   return (
     <Box>
       <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />
-      <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} direction="row">
+      <Grid
+        container
+        justifyContent={isMobileSmall ? "center" : "space-between"}
+        direction={isMobileSmall ? "column" : "row"}
+      >
         {isEtherLink ? (
           <Tooltip title="Full DAO is available on Tezos Networks">
             <LambdaCustomBoxFullDao
