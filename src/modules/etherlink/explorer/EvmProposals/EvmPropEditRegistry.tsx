@@ -4,7 +4,7 @@ import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmP
 import { StyledTextField } from "components/ui/StyledTextField"
 
 const InputContainer = styled(Grid)({
-  background: "#2F3438",
+  background: "#1c2024",
   padding: "16px",
   borderRadius: "4px",
   marginBottom: "8px"

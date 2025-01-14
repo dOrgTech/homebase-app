@@ -188,8 +188,42 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         functionDefinition: "",
         callData: ""
       },
+      // TODO: @ashutoshpw Fix this
       setDaoContractCall: (type: "targetAddress" | "value" | "functionDefinition" | "callData", value: string) => {
         set({ daoContractCall: { ...get().daoContractCall, [type]: value } })
+        if (type === "callData") {
+          set({
+            createProposalPayload: {
+              ...get().createProposalPayload,
+              calldatas: [value]
+            }
+          })
+        }
+        if (type === "value") {
+          set({
+            createProposalPayload: {
+              ...get().createProposalPayload,
+              values: [Number(value)]
+            }
+          })
+        }
+        if (type === "targetAddress") {
+          set({
+            createProposalPayload: {
+              ...get().createProposalPayload,
+              targets: [value]
+            }
+          })
+        }
+        // const selectedInterface = proposalInterfaces.find(p => p.name === "contractCall")
+        // if (!selectedInterface) return
+        // const iface = new ethers.Interface(selectedInterface.interface)
+        // const encodedData = iface.encodeFunctionData(selectedInterface.name, [
+        //   get().daoContractCall.targetAddress,
+        //   get().daoContractCall.value,
+        //   get().daoContractCall.functionDefinition,
+        //   get().daoContractCall.callData
+        // ])
       },
       daoConfig: {
         type: "",
@@ -391,7 +425,7 @@ export const useEvmProposalOps = () => {
   const createProposal = useCallback(
     async (payload: Record<string, any>) => {
       if (!daoSelected || !daoContract) return
-
+      console.log("createProposal", payload)
       const tx = await daoContract.propose(...Object.values(payload))
       console.log("Proposal transaction sent:", tx.hash)
       const receipt = await tx.wait()

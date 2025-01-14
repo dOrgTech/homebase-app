@@ -15,6 +15,7 @@ import { EvmPropContractCall } from "./EvmProposals/EvmPropContractCall"
 import { EvmPropDaoConfig } from "./EvmProposals/EvmPropDaoConfig"
 import EvmPropTokenOps from "./EvmProposals/EvmPropTokenOps"
 import { EvmProposalOptions } from "../config"
+import { EvmOffchainDebate } from "./EvmProposals/EvmOffchainDebate"
 
 // TODO: Move this to a shared component
 const OptionContainer = styled(Grid)(({ theme }) => ({
@@ -48,6 +49,7 @@ const TitleContainer = styled(Grid)({
 })
 
 const renderModal = (modal: string) => {
+  console.log("renderModal", modal)
   switch (modal) {
     case "transfer_assets":
       return <EvmPropTransferAssets />
@@ -59,6 +61,8 @@ const renderModal = (modal: string) => {
       return <EvmPropDaoConfig />
     case "token_operation":
       return <EvmPropTokenOps />
+    case "off_chain_debate":
+      return <EvmOffchainDebate />
     default:
       return null
   }

@@ -318,7 +318,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daoProposalVoters,
     selectDaoProposal: (proposalId: string) => {
       const proposal = daoProposals.find((proposal: any) => proposal.id === proposalId)
-      if (proposal) {
+      console.log("selectDaoProposal", proposal)
+      if (proposal && proposal?.type !== "contract call") {
         const proposalInterface = proposalInterfaces.find((x: any) => {
           let fbType = proposal?.type?.toLowerCase()
           if (fbType?.startsWith("mint")) fbType = "mint"
@@ -326,13 +327,17 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
           return x.tags?.includes(fbType)
         })
         const functionAbi = proposalInterface?.interface?.[0] as string
+        console.log("functionAbi", functionAbi)
         if (!functionAbi) return []
 
         const proposalData = proposalInterface
           ? proposal?.callDataPlain?.map((callData: any) => {
+              console.log("callDataXYB", callData)
               const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
               const decodedDataPair = decodeCalldataWithEthers(functionAbi, formattedCallData)
               const decodedDataPairLegacy = decodeFunctionParametersLegacy(functionAbi, formattedCallData)
+              console.log("decodedDataPair", decodedDataPair)
+              console.log("decodedDataPairLegacy", decodedDataPairLegacy)
               const functionName = decodedDataPair?.functionName
               const functionParams = decodedDataPair?.decodedData
               const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
@@ -344,6 +349,14 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             })
           : []
         proposal.proposalData = proposalData
+        setDaoProposalSelected(proposal)
+      } else if (proposal?.type === "contract call") {
+        proposal.proposalData = [
+          {
+            parameter: `Contract Call from ${proposal?.targets?.[0]}`,
+            value: proposal?.callDataPlain?.[0]
+          }
+        ]
         setDaoProposalSelected(proposal)
       }
     },

@@ -11,7 +11,7 @@ import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDa
 const LambdaCustomBox = styled(Grid)(({ theme }) => ({
   "height": 273,
   "marginTop": 30,
-  "background": "#2F3438",
+  "background": "#1c2024",
   "borderRadius": 8,
   "maxWidth": 342,
   "width": "-webkit-fill-available",

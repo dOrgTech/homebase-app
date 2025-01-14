@@ -17,7 +17,7 @@ const StatsContainer = styled(Grid)({
 
 const StatBox = styled(Box)({
   padding: "20px",
-  background: "#2F3438",
+  background: "#1c2024",
   borderRadius: "8px",
   flex: 1,
   minWidth: 0
@@ -36,7 +36,7 @@ const StatValue = styled(Typography)({
 })
 
 const DelegationBox = styled(Box)(({ theme }) => ({
-  background: "#2F3438",
+  background: "#1c2024",
   borderRadius: "8px",
   padding: "32px",
   marginBottom: "20px",

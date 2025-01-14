@@ -13,7 +13,7 @@ import { StyledSliderWithValue } from "components/ui/StyledSlider"
 import { EtherlinkContext } from "services/wagmi/context"
 
 const OptionContainer = styled(Grid)({
-  "background": "#2F3438",
+  "background": "#1c2024",
   "padding": "20px",
   "borderRadius": "8px",
   "cursor": "pointer",

@@ -102,8 +102,8 @@ export const EvmDaoSettingModal: React.FC<{
           <Table aria-label="simple table">
             <TableBody>
               {daoSelected?.id &&
-                tableData.map((item: { key: string; value: string }) => (
-                  <TableRow>
+                tableData.map((item: { key: string; value: string }, index: number) => (
+                  <TableRow key={index}>
                     <CustomTableCell component="th" scope="row">
                       <Typography color="textPrimary" variant="body1">
                         {item.key}

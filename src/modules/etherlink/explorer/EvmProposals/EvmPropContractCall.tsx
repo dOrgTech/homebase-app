@@ -4,7 +4,7 @@ import { StyledTextField } from "components/ui/StyledTextField"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 
 const InputContainer = styled(Grid)({
-  background: "#2F3438",
+  background: "#1c2024",
   padding: "16px",
   borderRadius: "4px",
   marginBottom: "8px"
@@ -33,7 +33,7 @@ export const EvmPropContractCall: React.FC = () => {
           onChange={e => setDaoContractCall("value", e.target.value)}
         />
       </Grid>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <StyledTextField
           fullWidth
           defaultValue={daoContractCall.functionDefinition}
@@ -43,7 +43,7 @@ export const EvmPropContractCall: React.FC = () => {
           variant="outlined"
           onChange={e => setDaoContractCall("functionDefinition", e.target.value)}
         />
-      </Grid>
+      </Grid> */}
       <Grid item xs={12}>
         <StyledTextField
           fullWidth

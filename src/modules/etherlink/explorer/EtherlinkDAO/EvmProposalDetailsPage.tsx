@@ -1,5 +1,16 @@
 import { GridContainer } from "modules/common/GridContainer"
-import { Button, Grid, TableRow, TableBody, Table, Typography, useMediaQuery, useTheme, TableCell } from "@mui/material"
+import {
+  Button,
+  Grid,
+  TableRow,
+  TableBody,
+  Table,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  TableCell,
+  IconButton
+} from "@mui/material"
 import { PageContainer } from "components/ui/DaoCreator"
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -13,6 +24,7 @@ import { ThumbUpAlt } from "@mui/icons-material"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
+import { CopyButton } from "modules/common/CopyButton"
 
 const RenderProposalAction = () => {
   const { daoProposalSelected } = useContext(EtherlinkContext)
@@ -193,6 +205,8 @@ export const EvmProposalDetailsPage = () => {
         <Grid container>
           {daoProposalSelected?.proposalData?.map(
             ({ parameter, value }: { parameter: string; value: string }, idx: number) => {
+              console.log("callDataXYB", parameter, value)
+              const textValue = value?.length > 64 ? value.slice(0, 8) + "..." + value.slice(-4) : value
               return (
                 <Grid key={idx}>
                   <Table
@@ -213,7 +227,15 @@ export const EvmProposalDetailsPage = () => {
                           <Typography style={{ color: "white" }}>Value</Typography>
                         </TableCell>
                         <TableCell>
-                          <Typography style={{ color: "white" }}>{value}</Typography>
+                          <div style={{ display: "flex", alignItems: "center" }}>
+                            <Typography style={{ color: "white" }}>{textValue}</Typography>
+                            <IconButton
+                              onClick={() => navigator.clipboard.writeText(value)}
+                              style={{ marginLeft: 8, padding: 4 }}
+                            >
+                              <CopyButton text={value} />
+                            </IconButton>
+                          </div>
                         </TableCell>
                       </TableRow>
                     </TableBody>
