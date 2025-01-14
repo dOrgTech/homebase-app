@@ -14,12 +14,16 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { EvmDaoStatsRow } from "../components/EvmDaoStatsRow"
 import { EvmDaoSettingModal } from "../components/EvmDaoSettingsModal"
 import { EvmTreasuryTable } from "../components/EvmTreasuryTable"
+import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
+import { useHistory } from "react-router-dom"
 
 export const EtherlinkDAOOverview: React.FC = () => {
   const { daoSelected } = useContext(EtherlinkContext)
 
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const { setMetadataFieldValue, setCurrentStep } = useEvmProposalOps()
+  const history = useHistory()
 
   const name = daoSelected && daoSelected?.name
   const description = daoSelected && daoSelected?.description
@@ -29,10 +33,6 @@ export const EtherlinkDAOOverview: React.FC = () => {
 
   const handleCloseModal = () => {
     setOpenDialog(false)
-  }
-
-  const handleCloseChangeModal = () => {
-    setChangeOpenDialog(false)
   }
 
   return (
@@ -54,7 +54,13 @@ export const EtherlinkDAOOverview: React.FC = () => {
                 <EvmDaoSettingModal open={openDialog} handleClose={handleCloseModal} />
               </Grid>
               <Grid item>
-                <SmallButton onClick={() => setChangeOpenDialog(true)}>
+                <SmallButton
+                  onClick={() => {
+                    setMetadataFieldValue("type", "change_config")
+                    setCurrentStep(1)
+                    history.push(`${window.location.pathname.slice(0, -8)}proposals`)
+                  }}
+                >
                   <Typography color="primary">Change Settings</Typography>
                 </SmallButton>
                 {/* <SettingsDialog open={openChangeDialog} handleClose={handleCloseChangeModal} /> */}

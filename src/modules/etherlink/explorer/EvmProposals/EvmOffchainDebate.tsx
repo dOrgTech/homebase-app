@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Grid, styled, Typography, IconButton, FormControlLabel, Switch } from "@material-ui/core"
 import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
 import { StyledTextField } from "components/ui/StyledTextField"
+import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 
 const InputContainer = styled(Grid)({
   background: "#1c2024",
@@ -27,20 +28,14 @@ const RemoveButton = styled(IconButton)({
 })
 
 export const EvmOffchainDebate: React.FC = () => {
-  const [duration, setDuration] = useState({
-    days: "",
-    hours: "",
-    minutes: ""
-  })
-
-  const [choices, setChoices] = useState<string[]>(["", ""])
-  const [isMultiChoice, setIsMultiChoice] = useState(false)
+  const { offchainDebate, setOffchainDebate } = useEvmProposalOps()
+  const choices = offchainDebate?.options
+  const setChoices = (x: any) => setOffchainDebate("options", x)
+  const isMultiChoice = offchainDebate?.is_multiple_choice
+  const setIsMultiChoice = (x: any) => setOffchainDebate("is_multiple_choice", x)
 
   const handleDurationChange = (field: string, value: string) => {
-    setDuration(prev => ({
-      ...prev,
-      [field]: value
-    }))
+    setOffchainDebate(field, value)
   }
 
   const handleChoiceChange = (index: number, value: string) => {
@@ -72,8 +67,8 @@ export const EvmOffchainDebate: React.FC = () => {
             fullWidth
             label="Days"
             type="number"
-            value={duration.days}
-            onChange={e => handleDurationChange("days", e.target.value)}
+            value={offchainDebate.expiry_days}
+            onChange={e => handleDurationChange("expiry_days", e.target.value)}
             inputProps={{ min: 0 }}
           />
         </Grid>
@@ -82,8 +77,8 @@ export const EvmOffchainDebate: React.FC = () => {
             fullWidth
             label="Hours"
             type="number"
-            value={duration.hours}
-            onChange={e => handleDurationChange("hours", e.target.value)}
+            value={offchainDebate.expiry_hours}
+            onChange={e => handleDurationChange("expiry_hours", e.target.value)}
             inputProps={{ min: 0, max: 23 }}
           />
         </Grid>
@@ -92,8 +87,8 @@ export const EvmOffchainDebate: React.FC = () => {
             fullWidth
             label="Minutes"
             type="number"
-            value={duration.minutes}
-            onChange={e => handleDurationChange("minutes", e.target.value)}
+            value={offchainDebate.expiry_minutes}
+            onChange={e => handleDurationChange("expiry_minutes", e.target.value)}
             inputProps={{ min: 0, max: 59 }}
           />
         </Grid>

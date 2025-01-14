@@ -11,6 +11,10 @@ import HbDaoAbi from "assets/abis/hb_dao.json"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { EvmProposalOptions, proposalInterfaces } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
+import dayjs from "dayjs"
+import { getSignature } from "services/lite/utils"
+import { getEthSignature } from "services/utils/utils"
+import { saveLiteProposal } from "services/services/lite/lite-services"
 
 function getDaoConfigType(type: string) {
   if (type === "quorumNumerator") return "quorum"
@@ -87,6 +91,14 @@ interface EvmProposalCreateStore {
     }
   }
   setDaoTokenOps: (type: "mint" | "burn", value?: any, tokenSymbol?: string, tokenAddress?: string) => void
+  offchainDebate: {
+    expiry_days: string
+    expiry_hours: string
+    expiry_minutes: string
+    options: string[]
+    is_multiple_choice: boolean
+  }
+  setOffchainDebate: (key: string, value: string) => void
   getMetadata: () => EvmProposalCreateStore["metadata"]
   setMetadata: (metadata: EvmProposalCreateStore["metadata"]) => void
   getMetadataFieldValue: (field: keyof EvmProposalCreateStore["metadata"]) => string
@@ -336,6 +348,17 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         }
         set(payload)
       },
+      offchainDebate: {
+        expiry_days: "",
+        expiry_hours: "",
+        expiry_minutes: "",
+        options: ["", ""],
+        is_multiple_choice: false
+      },
+      setOffchainDebate: (key: string, value: string) => {
+        const payload = { offchainDebate: { ...get().offchainDebate, [key]: value } } as any
+        set(payload)
+      },
       getMetadata: () => {
         return get().metadata
       },
@@ -374,7 +397,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
 
 export const useEvmProposalOps = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const { etherlink } = useTezos()
+  const { etherlink, network } = useTezos()
   const { daoSelected, daoProposalSelected } = useContext(EtherlinkContext)
   const router = useHistory()
 
@@ -480,7 +503,7 @@ export const useEvmProposalOps = () => {
 
   const nextStep = {
     text: isLoading ? "Please wait..." : "Next",
-    handler: () => {
+    handler: async () => {
       //   const selectedInterface = proposalInterfaces.find(p => p.name === "transferETH")
       //   if (!selectedInterface) return
       //   console.log("selectedInterface", selectedInterface)
@@ -525,42 +548,99 @@ export const useEvmProposalOps = () => {
         // At Step 2 we call the Contract
         // setIsLoading(true)
 
-        console.log("zustantStore.createProposalPayload", zustantStore.createProposalPayload)
         const { closeSnackbar } = openNotification({
           message: "Creating Proposal...",
           variant: "success"
         })
 
-        createProposal(zustantStore.createProposalPayload)
-          .then((createdProposal: any) => {
-            console.log("createdProposal", createdProposal)
-            setIsLoading(false)
-            zustantStore.setCurrentStep(0)
-            zustantStore.setCreateProposalPayload({
-              targets: [],
-              values: [],
-              calldatas: [],
-              description: ""
+        if (proposalType === "off_chain_debate") {
+          const offchainPayload = zustantStore.offchainDebate
+          const proposalMetadata = zustantStore.metadata
+          const dataToSign = {
+            name: proposalMetadata.title,
+            description: proposalMetadata.description,
+            externalLink: proposalMetadata.discussionUrl,
+            choices: offchainPayload.options,
+            endTimeDays: offchainPayload.expiry_days,
+            endTimeHours: offchainPayload.expiry_hours,
+            endTimeMinutes: offchainPayload.expiry_minutes,
+            votingStrategy: offchainPayload.is_multiple_choice,
+            startTime: String(dayjs().valueOf()),
+            endTime: String(
+              dayjs()
+                .add(Number(offchainPayload.expiry_days), "days")
+                .add(Number(offchainPayload.expiry_hours), "hours")
+                .add(Number(offchainPayload.expiry_minutes), "minutes")
+                .valueOf()
+            ),
+            daoId: daoSelected?.address,
+            tokenAddress: daoSelected?.token,
+            author: etherlink?.signer?.address
+          }
+          const { signature, payloadBytes } = await getEthSignature(
+            etherlink?.signer?.address as string,
+            JSON.stringify(dataToSign)
+          )
+          if (!signature) {
+            openNotification({
+              message: `Issue with Signature`,
+              autoHideDuration: 3000,
+              variant: "error"
             })
-            zustantStore.setMetadata({
-              type: "",
-              title: "",
-              description: "",
-              discussionUrl: ""
+            return
+          }
+          const res = await saveLiteProposal(signature, etherlink?.signer?.address, payloadBytes, network)
+          const respData = await res.json()
+          if (res.ok) {
+            openNotification({
+              message: "Proposal created!",
+              autoHideDuration: 3000,
+              variant: "success"
             })
             router.push(`/explorer/etherlink/dao/${daoSelected?.address}/proposals`)
-          })
-          .catch(err => {
-            console.log("Error creating proposal", err)
+          } else {
+            console.log("Error: ", respData.message)
             openNotification({
-              message: `Error creating proposal: ${err.message}`,
-              variant: "error",
-              autoHideDuration: 3000
+              message: respData.message,
+              autoHideDuration: 3000,
+              variant: "error"
             })
-          })
-          .finally(() => {
-            closeSnackbar()
-          })
+            setIsLoading(false)
+            return
+          }
+          return console.log("offchainDebate", offchainPayload, proposalMetadata, signature, payloadBytes)
+        } else {
+          createProposal(zustantStore.createProposalPayload)
+            .then((createdProposal: any) => {
+              console.log("createdProposal", createdProposal)
+              setIsLoading(false)
+              zustantStore.setCurrentStep(0)
+              zustantStore.setCreateProposalPayload({
+                targets: [],
+                values: [],
+                calldatas: [],
+                description: ""
+              })
+              zustantStore.setMetadata({
+                type: "",
+                title: "",
+                description: "",
+                discussionUrl: ""
+              })
+              router.push(`/explorer/etherlink/dao/${daoSelected?.address}/proposals`)
+            })
+            .catch(err => {
+              console.log("Error creating proposal", err)
+              openNotification({
+                message: `Error creating proposal: ${err.message}`,
+                variant: "error",
+                autoHideDuration: 3000
+              })
+            })
+            .finally(() => {
+              closeSnackbar()
+            })
+        }
       }
     }
   }

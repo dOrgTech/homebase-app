@@ -82,7 +82,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
         <Grid container spacing={2}>
-          {EvmProposalOptions.map((option, index) => (
+          {EvmProposalOptions.map((option: any, index) => (
             <Grid
               item
               xs={isMobileSmall ? 12 : 4}
@@ -90,8 +90,8 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
               onClick={() => setMetadataFieldValue("type", option.modal as any)}
             >
               <OptionContainer>
-                <ActionText color={option.is_disabled ? "textSecondary" : "textPrimary"}>{option.label}</ActionText>
-                <ActionDescriptionText color={option.is_disabled ? "textSecondary" : "textPrimary"}>
+                <ActionText color={option?.is_disabled ? "textSecondary" : "textPrimary"}>{option.label}</ActionText>
+                <ActionDescriptionText color={option?.is_disabled ? "textSecondary" : "textPrimary"}>
                   {option.description}
                 </ActionDescriptionText>
               </OptionContainer>

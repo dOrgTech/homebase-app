@@ -21,7 +21,9 @@ export const EvmProposalOptions = [
     label: "Off-Chain Debate",
     description: "Post a thesis and have tokenized arguments around it",
     modal: "off_chain_debate",
-    is_disabled: true
+    proposal_type: () => "off_chain_debate",
+    last_step: 2,
+    interface: {}
   },
   {
     label: "Transfer Assets",
