@@ -1,6 +1,7 @@
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import React from "react"
+import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
 interface EvmDaoSummaryProps {
   // Add props as needed

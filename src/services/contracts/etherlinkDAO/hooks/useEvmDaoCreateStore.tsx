@@ -10,6 +10,7 @@ import HbWrapperAbi from "assets/abis/hb_wrapper.json"
 import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 interface EvmDaoCreateStore {
   currentStep: number
@@ -158,11 +159,11 @@ const useEvmDaoCreateStore = () => {
   const { contractData } = useContext(EtherlinkContext)
   const wrapperAddress = contractData?.wrapper
   const { etherlink } = useTezos()
+  const notify = useNotification()
 
   const deployDaoWithWrapper = useCallback(async () => {
     const daoData = data.data
-    // console.log({ daoData })
-    // return
+
     try {
       // Get wrapper factory
       const samplePayload = [
@@ -183,7 +184,7 @@ const useEvmDaoCreateStore = () => {
         ["Founder", "Mission"], // Registry Keys
         ["Alice", "Promote Decentralization"] // Registry Values
       ]
-      setIsDeploying(true)
+
       const totalTokenSupply = daoData.members.reduce((acc: number, member: any) => acc + member.amountOfTokens, 0)
       const proposalThreshhold = daoData.quorum.proposalThreshold
       const quorumThreshold = daoData.quorum.returnedTokenPercentage
@@ -225,17 +226,23 @@ const useEvmDaoCreateStore = () => {
       const daoCreatePayload = Object.values(daoCreateObject)
       console.log({ daoCreatePayload, samplePayload })
       const wrapperFactory: ethers.Contract = new ethers.Contract(wrapperAddress, HbWrapperAbi.abi, etherlink.signer)
+
+      setIsDeploying(true)
       const wrapper: ethers.Contract = await wrapperFactory.deployDAOwithToken(daoCreatePayload)
 
+      // 0xa42621d950bf85d88e35e26b48eb69edd1d0c35b59ee282e3672b0e164ee9aba
       console.log("Transaction sent:", wrapper.hash)
 
       const receipt = await wrapper.wait()
+      // .hash "0xa42621d950bf85d88e35e26b48eb69edd1d0c35b59ee282e3672b0e164ee9aba"
       console.log("Transaction confirmed:", receipt)
-      history.push("/explorer/daos")
+      history.push(`/explorer/daos?q=${daoData.name}`)
+      // history.push("/explorer/etherlink/dao/0x287915D27CC4FC967Ca10AA20242d80d99caCe5e/overview")
     } catch (error) {
       console.error("Error deploying DAO", error)
       return null
     }
+    setIsDeploying(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.data, etherlink.signer, wrapperAddress])
   const isFinalStep = data.currentStep === STEPS.length - 1
@@ -244,9 +251,36 @@ const useEvmDaoCreateStore = () => {
     ...data,
     isDeploying,
     next: {
-      text: isFinalStep ? "Deploy" : "Next",
+      text: isDeploying ? "Deploying..." : isFinalStep ? "Deploy" : "Next",
+      disabled: isDeploying,
       handler: () => {
         if (data.data.template === "lite") return history.push("/lite")
+
+        // Validation for 1. DAO Basics
+        if (
+          data.currentStep == 1 &&
+          (data.data.name === "" ||
+            data.data.governanceToken.symbol === "" ||
+            data.data.description === "" ||
+            data.data.governanceToken.tokenDecimals < 1)
+        ) {
+          return notify({
+            message: "Please fill in all fields",
+            variant: "error"
+          })
+        }
+
+        // Validation for 2. Proposal & Voting
+        if (
+          data.currentStep == 2 &&
+          Object.values(data.data.voting).reduce((acc: number, curr: any): number => acc + (Number(curr) || 0), 0) < 1
+        ) {
+          return notify({
+            message: "Please add valid values for Voting Delay, Voting Duration, and Execution Delay",
+            variant: "error"
+          })
+        }
+
         if (isFinalStep) {
           deployDaoWithWrapper()
         } else {

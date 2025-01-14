@@ -62,6 +62,7 @@ export interface NavigationBarProps {
   }
   next?: {
     text: string
+    disabled?: boolean
     handler: () => void
   }
 }

@@ -12,7 +12,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
 
 export const EvmProposalsPage = () => {
-  const daoId = useEtherlinkDAOID()
+  // const daoId = useEtherlinkDAOID()
   const [proposalType, setProposalType] = useQueryParam("type")
   const [proposalStatus, setProposalStatus] = useQueryParam("status")
 

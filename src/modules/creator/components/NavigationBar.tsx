@@ -58,7 +58,11 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({ back, next }) => {
         </Grid>
         <Grid item xs={6}>
           {next && (
-            <NextButton onClick={next.handler}>
+            <NextButton
+              disabled={next.disabled}
+              onClick={next.handler}
+              style={{ cursor: next.disabled ? "not-allowed" : "pointer", opacity: next.disabled ? 0.5 : 1 }}
+            >
               <Typography style={{ fontWeight: 500 }} color="primary">
                 {next.text}
               </Typography>

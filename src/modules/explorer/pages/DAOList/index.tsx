@@ -26,6 +26,7 @@ import { ReactComponent as MyDAOsSelectedIcon } from "assets/img/my-daos-selecte
 import ReactPaginate from "react-paginate"
 import "./styles.css"
 import { LoadingLine } from "components/ui/LoadingLine"
+import { useQueryParam } from "modules/home/hooks/useQueryParam"
 
 const PageContainer = styled("div")(({ theme }) => ({
   width: "1000px",
@@ -123,7 +124,7 @@ export const DAOList: React.FC = () => {
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
-  const [searchText, setSearchText] = useState("")
+  const [searchText, setSearchText] = useQueryParam("q")
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [currentPage, setCurrentPage] = useState(0)
 
@@ -169,6 +170,7 @@ export const DAOList: React.FC = () => {
 
   const myDAOs = useMemo(() => {
     if (daos) {
+      console.log("Raw DAOs", daos)
       const formattedDAOs = daos
         .map(dao => ({
           id: dao.address,
@@ -193,6 +195,7 @@ export const DAOList: React.FC = () => {
         )
       }
       const accountAddress = account || etherlink?.account?.address
+      console.log("formattedDaos", formattedDAOs)
       return formattedDAOs.filter(dao => dao.votingAddresses.includes(accountAddress))
     }
 
@@ -229,7 +232,7 @@ export const DAOList: React.FC = () => {
               style={isMobileExtraSmall ? { gap: 24 } : { gap: 42 }}
             >
               <Search>
-                <SearchInput search={filterDAOs} />
+                <SearchInput defaultValue={searchText || ""} search={filterDAOs} />
               </Search>
               <Grid item>
                 <Grid container style={{ gap: 22 }} justifyContent="center">
