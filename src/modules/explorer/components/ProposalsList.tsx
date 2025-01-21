@@ -9,7 +9,7 @@ import { Poll } from "models/Polls"
 import ReactPaginate from "react-paginate"
 import "../pages/DAOList/styles.css"
 import { Filters } from "../pages/User/components/UserMovements"
-import { Order, ProposalType, StatusOption } from "./FiltersUserDialog"
+import { Order, ProposalType, StatusOption } from "../types.d"
 
 const TableContainer = styled(Grid)({
   width: "100%"

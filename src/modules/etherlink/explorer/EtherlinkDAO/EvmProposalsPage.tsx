@@ -10,6 +10,7 @@ import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalL
 import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
 import Select, { SelectChangeEvent } from "@mui/material/Select"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
+import StatusButton from "components/ui/StatusButton"
 
 export const EvmProposalsPage = () => {
   // const daoId = useEtherlinkDAOID()
@@ -70,6 +71,7 @@ export const EvmProposalsPage = () => {
                   <MenuItem value="changeConfig">Change Config</MenuItem>
                 </Select>
               </Grid>
+
               <Grid item xs={12} sm={3}>
                 <Typography variant="body2" color="textPrimary" gutterBottom>
                   Status
