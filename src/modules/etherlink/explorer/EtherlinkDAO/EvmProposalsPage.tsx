@@ -13,16 +13,13 @@ import { useQueryParam } from "modules/home/hooks/useQueryParam"
 import StatusButton from "components/ui/StatusButton"
 
 export const EvmProposalsPage = () => {
-  // const daoId = useEtherlinkDAOID()
   const [proposalType, setProposalType] = useQueryParam("type")
   const [proposalStatus, setProposalStatus] = useQueryParam("status")
 
   // TODO: Replace useContext with a useEtherlinkProvider
   const { daoProposals } = useContext(EtherlinkContext)
-  // const { data, cycleInfo } = useDAO(daoId)
-  // const { data: proposals } = useProposals(daoId)
+
   const theme = useTheme()
-  // const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const [openDialog, setOpenDialog] = useState(false)
   console.log({ daoProposals })
   const handleCloseModal = () => {
@@ -30,8 +27,12 @@ export const EvmProposalsPage = () => {
   }
 
   const filteredProposals = useMemo(() => {
-    if (proposalType === "all" && proposalStatus === "all") return daoProposals
-    if (!proposalType && !proposalStatus) return daoProposals
+    if (
+      (proposalType === "all" && proposalStatus === "all") ||
+      (!proposalType && !proposalStatus) ||
+      (proposalType === "all" && !proposalStatus)
+    )
+      return daoProposals
 
     return daoProposals?.filter((proposal: any) => {
       if (proposalType && proposalType !== "all" && proposal.type === proposalType) return true
@@ -63,7 +64,7 @@ export const EvmProposalsPage = () => {
                   onChange={e => setProposalType(e.target.value)}
                 >
                   <MenuItem value="all">All</MenuItem>
-                  <MenuItem value="offChain">Off-Chain</MenuItem>
+                  <MenuItem value="offchain">Off-Chain</MenuItem>
                   <MenuItem value="tokenOperation">Token Operation</MenuItem>
                   <MenuItem value="registry">Registry</MenuItem>
                   <MenuItem value="transfer">Transfer</MenuItem>

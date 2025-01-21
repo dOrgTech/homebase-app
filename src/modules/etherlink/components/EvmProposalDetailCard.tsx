@@ -7,13 +7,14 @@ import { FileCopyOutlined } from "@material-ui/icons"
 import Share from "assets/img/share.svg"
 import { CommunityBadge } from "modules/lite/explorer/components/CommunityBadge"
 import LinkIcon from "assets/img/link.svg"
-import { Poll } from "models/Polls"
 
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
 import { EtherlinkContext } from "services/wagmi/context"
 import { Badge } from "components/ui/Badge"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
+import { CopyIcon } from "components/ui/icons/CopyIcon"
+import { IEvmProposal } from "../types"
 
 const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
@@ -67,11 +68,6 @@ const StyledLink = styled(Link)(({ theme }) => ({
   }
 }))
 
-const CopyIcon = styled(FileCopyOutlined)({
-  marginRight: 8,
-  cursor: "pointer"
-})
-
 const CustomPopover = withStyles({
   paper: {
     "marginTop": 10,
@@ -84,10 +80,11 @@ const CustomPopover = withStyles({
   }
 })(Popover)
 
-export const EvmProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ poll }) => {
+export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }> = ({ poll }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const { daoProposalSelected } = useContext(EtherlinkContext)
+  // const { daoProposalSelected } = useContext(EtherlinkContext)
+  const daoProposalSelected = poll
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const openNotification = useNotification()
 
@@ -165,31 +162,34 @@ export const EvmProposalDetailCard: React.FC<{ poll: Poll | undefined }> = ({ po
             </Grid>
           </Grid>
 
-          <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} alignItems={"center"}>
-            <Grid item>
-              <Grid
-                container
-                style={{ gap: 23 }}
-                alignItems="center"
-                justifyContent={isMobileSmall ? "center" : "flex-start"}
-              >
-                <Grid item>
-                  <StatusBadge status={daoProposalSelected?.status || ""} />
-                  {/* <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} /> */}
-                </Grid>
-                <Grid item>
-                  <Badge status={daoProposalSelected?.type} />
-                </Grid>
-                <Grid item>{/* <CommunityBadge id={"DAOID"} /> */}</Grid>
-                <Grid item direction="row" style={{ gap: 10 }}>
-                  <TextContainer color="textPrimary" variant="body2" style={{ fontSize: 14, marginBottom: 4 }}>
-                    Posted by:
-                  </TextContainer>
-                  <CreatorBadge address={daoProposalSelected?.author} />
+          {daoProposalSelected?.status ? (
+            <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} alignItems={"center"}>
+              <Grid item>
+                <Grid
+                  container
+                  style={{ gap: 23 }}
+                  alignItems="center"
+                  justifyContent={isMobileSmall ? "center" : "flex-start"}
+                >
+                  <Grid item>
+                    <StatusBadge status={daoProposalSelected?.status} />
+                    {/* <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} /> */}
+                  </Grid>
+                  <Grid item>
+                    <Badge status={daoProposalSelected.type} />
+                  </Grid>
+                  <Grid item>{/* <CommunityBadge id={"DAOID"} /> */}</Grid>
+                  <Grid item direction="row" style={{ gap: 10 }}>
+                    <TextContainer color="textPrimary" variant="body2" style={{ fontSize: 14, marginBottom: 4 }}>
+                      Posted by:
+                    </TextContainer>
+                    <CreatorBadge address={daoProposalSelected?.author} />
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
-          </Grid>
+          ) : null}
+
           <Grid container direction="row">
             <Grid item container direction="row" alignItems="center">
               <TextContainer color="textPrimary" variant="body2">

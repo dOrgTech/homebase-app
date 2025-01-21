@@ -16,6 +16,7 @@ import { EvmMembersPage } from "./EtherlinkDAO/EvmMembersPage"
 import { EvmRegistryPage } from "./EtherlinkDAO/EvmRegistryPage"
 import { EvmProposalDetailsPage } from "./EtherlinkDAO/EvmProposalDetailsPage"
 import { EvmUserPage } from "./EtherlinkDAO/EvmUserPage"
+import { EvmOffchainProposalDetailsPage } from "./EtherlinkDAO/EvmOffchainProposalDetailPage"
 
 enum DAOState {
   NOT_FOUND = 0,
@@ -96,6 +97,9 @@ export const EtherlinkDAORouter = (): JSX.Element => {
           </EtherlinkDAORoute>
           <EtherlinkDAORoute path={`${match.url}/proposal/:proposalId`}>
             <EvmProposalDetailsPage />
+          </EtherlinkDAORoute>
+          <EtherlinkDAORoute path={`${match.url}/offchain-proposal/:proposalId`}>
+            <EvmOffchainProposalDetailsPage />
           </EtherlinkDAORoute>
           <EtherlinkDAORoute path={`${match.url}/overview`}>
             <EtherlinkDAOOverview />

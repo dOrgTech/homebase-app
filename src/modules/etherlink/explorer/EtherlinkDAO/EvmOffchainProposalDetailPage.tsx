@@ -25,14 +25,86 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { CopyButton } from "modules/common/CopyButton"
+import { styled } from "@material-ui/core"
+import { EvmChoiceItemSelected } from "../EvmProposals/EvmChoiceItemSelected"
+import { IEvmOffchainChoice, IEvmProposal } from "modules/etherlink/types"
+import BigNumber from "bignumber.js"
+import { SmallButton } from "modules/common/SmallButton"
+import React from "react"
 
-const RenderProposalAction = () => {
-  const { daoProposalSelected } = useContext(EtherlinkContext)
+const DescriptionText = styled(Typography)({
+  fontSize: 24,
+  fontWeight: 600
+})
+
+const LinearContainer = styled(GridContainer)(({ theme }) => ({
+  background: theme.palette.secondary.light,
+  borderRadius: 8
+}))
+
+const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IEvmProposal }) => {
+  const { castOffchainVote } = useEvmProposalOps()
   const isVotingActive = daoProposalSelected?.isVotingActive
   const [isCastingVote, setIsCastingVote] = useState(false)
   const openNotification = useNotification()
+  const theme = useTheme()
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
+  const [selectedOffchainVotes, setSelectedOffchainVotes] = useState<IEvmOffchainChoice[]>([])
 
+  if (daoProposalSelected?.type === "offchain" && daoProposalSelected?.status === ProposalStatus.ACTIVE) {
+    return (
+      <>
+        <Grid>
+          <EvmProposalCountdown />
+        </Grid>
+
+        <Typography style={{ color: "white", fontSize: 20, fontWeight: 500 }}>Options</Typography>
+        {isVotingActive && (
+          <LinearContainer container style={{ gap: 32 }} direction="row" justifyContent="center">
+            <Grid
+              container
+              item
+              justifyContent={isMobileSmall ? "center" : "space-between"}
+              direction="row"
+              style={{ gap: 30 }}
+            >
+              {daoProposalSelected?.choices?.map((choice: any) => (
+                <EvmChoiceItemSelected
+                  key={choice.id}
+                  choice={choice}
+                  setSelectedVotes={setSelectedOffchainVotes}
+                  votes={selectedOffchainVotes}
+                  multiple={false}
+                />
+              ))}
+            </Grid>
+          </LinearContainer>
+        )}
+        <Grid container justifyContent="center">
+          <SmallButton
+            disabled={selectedOffchainVotes.length === 0}
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              castOffchainVote(
+                selectedOffchainVotes.map(x => {
+                  return {
+                    choice: x.name,
+                    choiceId: x._id,
+                    pollID: daoProposalSelected?.id
+                  }
+                })
+              )
+            }}
+            style={{ marginTop: 20, opacity: selectedOffchainVotes.length === 0 ? 0.5 : 1 }}
+          >
+            Cast your vote
+          </SmallButton>
+        </Grid>
+      </>
+    )
+  }
   if (daoProposalSelected?.status === ProposalStatus.PASSED) {
     return (
       <Grid container justifyContent="center">
@@ -167,18 +239,21 @@ const RenderProposalAction = () => {
   )
 }
 
-export const EvmProposalDetailsPage = () => {
+export const EvmOffchainProposalDetailsPage = () => {
   const params = useParams() as { proposalId: string }
   const proposalId = params?.proposalId
-
-  const { daoSelected, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
+  const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
+  const { daoSelected, daoProposals, selectDaoProposal } = useContext(EtherlinkContext)
 
   const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   useEffect(() => {
-    selectDaoProposal(proposalId)
-  }, [proposalId, selectDaoProposal])
+    console.log("Offchain proposal Id", proposalId, daoSelected)
+    const proposal = daoProposals?.find((x: any) => x.id === proposalId)
+    console.log("All Dao Proposals", daoProposals)
+    console.log("All Dao  proposal Selected", proposal)
+    setDaoProposalSelected(proposal)
+  }, [proposalId, daoProposals, daoSelected])
 
   return (
     <div>
@@ -190,60 +265,22 @@ export const EvmProposalDetailsPage = () => {
         </Grid>
       </PageContainer>
 
-      <PageContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
+      <PageContainer style={{ gap: 10, color: "white", marginTop: 10, background: "#25282d" }}>
         <Grid item xs={12} md={12} style={{ padding: "40px" }}>
-          <RenderProposalAction />
+          <RenderProposalAction daoProposalSelected={daoProposalSelected} />
         </Grid>
       </PageContainer>
 
-      <EvmProposalVoteDetail poll={daoProposalSelected} token={daoSelected?.token} />
+      {daoProposalSelected?.type ? (
+        <EvmProposalVoteDetail poll={daoProposalSelected} token={daoSelected?.token} />
+      ) : null}
 
       <PageContainer style={{ gap: 10, color: "white", padding: 40 }}>
         <Grid container>
           <Typography style={{ color: "white", fontSize: 20, fontWeight: 600 }}>Proposal Data</Typography>
         </Grid>
-        <Grid container>
-          {daoProposalSelected?.proposalData?.map(
-            ({ parameter, value }: { parameter: string; value: string }, idx: number) => {
-              console.log("callDataXYB", parameter, value)
-              const textValue = value?.length > 64 ? value.slice(0, 8) + "..." + value.slice(-4) : value
-              return (
-                <Grid key={idx}>
-                  <Table
-                    aria-label="simple table"
-                    style={{ background: "#222222", borderRadius: 8, border: "1px solid #555555", marginTop: "20px" }}
-                  >
-                    <TableBody>
-                      <TableRow>
-                        <TableCell>
-                          <Typography style={{ color: "white" }}>Parameter</Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography style={{ color: "white" }}>{parameter}</Typography>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>
-                          <Typography style={{ color: "white" }}>Value</Typography>
-                        </TableCell>
-                        <TableCell>
-                          <div style={{ display: "flex", alignItems: "center" }}>
-                            <Typography style={{ color: "white" }}>{textValue}</Typography>
-                            <IconButton
-                              onClick={() => navigator.clipboard.writeText(value)}
-                              style={{ marginLeft: 8, padding: 4 }}
-                            >
-                              <CopyButton text={value} />
-                            </IconButton>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </Grid>
-              )
-            }
-          )}
+        <Grid style={{ color: "white", marginTop: 20 }} container>
+          {daoProposalSelected?.description}
         </Grid>
       </PageContainer>
 

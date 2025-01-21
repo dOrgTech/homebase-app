@@ -23,7 +23,7 @@ const CreatedText = styled(Typography)({
 export const EvmProposalItem: React.FC<{
   proposal: Proposal | any
 }> = ({ proposal, children }) => {
-  const formattedDate = dayjs(proposal.startDate).format("LLL")
+  const formattedDate = proposal.createdAt.format("LLL")
 
   return (
     <ContentBlockItem container justifyContent="space-between" alignItems="center">

@@ -8,10 +8,9 @@ import { ProposalTableRow } from "modules/lite/explorer/components/ProposalTable
 import { Poll } from "models/Polls"
 import ReactPaginate from "react-paginate"
 import { EvmProposalItem } from "./EvmProposalItem"
-
-const TableContainer = styled(Grid)({
-  width: "100%"
-})
+import { IEvmProposal } from "../types"
+import { TableContainerGrid } from "components/ui/Table"
+import { LoaderContainer } from "components/ui/Containers"
 
 const CustomGrid = styled(Grid)({
   "&:not(:last-child)": {
@@ -19,36 +18,22 @@ const CustomGrid = styled(Grid)({
   }
 })
 
-const LoaderContainer = styled(Grid)({
-  paddingTop: 40,
-  paddingBottom: 40
-})
+interface ProposalObj {
+  type: string
+  proposal: IEvmProposal | Poll
+}
 
-interface Props {
-  proposals: Proposal[] | undefined
+export const EvmDaoProposalList: React.FC<{
+  proposals: IEvmProposal[] | undefined
   showFooter?: boolean
   rightItem?: (proposal: Proposal) => React.ReactElement
   showFullList?: boolean
-}
-
-interface ProposalObj {
-  type: string
-  proposal: Proposal | Poll
-}
-
-export const EvmDaoProposalList: React.FC<Props> = ({ proposals, showFullList = true }) => {
+}> = ({ proposals, showFullList = true }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
   const offsetLimit = 50
   const [filteredProposals, setFilteredProposals] = useState<ProposalObj[]>([])
-
   const [isLoading, setIsLoading] = useState(false)
-
-  console.log("EvmDaoProposalList", proposals)
-  console.log(
-    "EvmDaoProposalListX",
-    proposals?.filter((p: any) => p.proposalData?.length > 0).map((p: any) => p.type)
-  )
 
   const pageCount = Math.ceil(proposals ? proposals.length / offsetLimit : 0)
 
@@ -67,14 +52,14 @@ export const EvmDaoProposalList: React.FC<Props> = ({ proposals, showFullList = 
         id: proposal?.id,
         title: proposal?.title,
         proposer: proposal?.proposer || (proposal?.author as string),
-        type: "lambda",
+        type: proposal?.type,
         proposal: proposal
       })) ?? []
     )
   }, [proposals])
 
   return (
-    <TableContainer item>
+    <TableContainerGrid item>
       {isLoading ? (
         <LoaderContainer container direction="row" justifyContent="center">
           <CircularProgress color="secondary" />
@@ -84,13 +69,17 @@ export const EvmDaoProposalList: React.FC<Props> = ({ proposals, showFullList = 
           <Grid container direction="column" wrap={"nowrap"} style={{ gap: 16 }}>
             {filteredProposals && filteredProposals.length && filteredProposals.length > 0 ? (
               <Grid item container wrap={"nowrap"} direction="column">
-                {filteredProposals.slice(offset, offset + offsetLimit).map((p, i) => (
-                  <CustomGrid item key={`proposal-${i}`} style={{ width: "100%" }}>
-                    <Link to={`proposal/${p.proposal.id}`}>
-                      <EvmProposalItem proposal={p.proposal}></EvmProposalItem>
-                    </Link>
-                  </CustomGrid>
-                ))}
+                {filteredProposals.slice(offset, offset + offsetLimit).map((p, i) => {
+                  const proposalLink =
+                    p.type == "offchain" ? `offchain-proposal/${p.proposal.id}` : `proposal/${p.proposal.id}`
+                  return (
+                    <CustomGrid item key={`proposal-${i}`} style={{ width: "100%" }}>
+                      <Link to={proposalLink}>
+                        <EvmProposalItem proposal={p.proposal}></EvmProposalItem>
+                      </Link>
+                    </CustomGrid>
+                  )
+                })}
               </Grid>
             ) : (
               <Typography color="textPrimary">No proposals found</Typography>
@@ -114,6 +103,6 @@ export const EvmDaoProposalList: React.FC<Props> = ({ proposals, showFullList = 
           ) : null}
         </>
       )}
-    </TableContainer>
+    </TableContainerGrid>
   )
 }

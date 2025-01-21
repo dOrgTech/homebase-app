@@ -2,7 +2,7 @@ import React from "react"
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
-export const statusColors = (status: ProposalStatus | "all") => {
+export const statusColors = (status: ProposalStatus | string): { background: string; color: string; text: string } => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return {
@@ -65,9 +65,14 @@ export const statusColors = (status: ProposalStatus | "all") => {
         text: "All"
       }
   }
+  return {
+    background: "#81feb733",
+    color: "#81feb7",
+    text: "All"
+  }
 }
 
-export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | "all"; theme: Theme }) => ({
+export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | string; theme: Theme }) => ({
   "borderRadius": 50,
   "boxSizing": "border-box",
   "minWidth": 87,
@@ -86,7 +91,7 @@ const Text = styled(Typography)({
   textTransform: "capitalize"
 })
 
-export const StatusBadge: React.FC<{ status: ProposalStatus | "all" } & GridProps> = ({ status, ...props }) => (
+export const StatusBadge: React.FC<{ status: ProposalStatus | string } & GridProps> = ({ status, ...props }) => (
   <Badge status={status} {...props}>
     <Grid container alignItems="center" justifyContent="center">
       <Grid item>

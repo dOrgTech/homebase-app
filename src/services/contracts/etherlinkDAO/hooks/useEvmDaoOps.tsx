@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { create } from "zustand"
-import { useCallback, useContext, useEffect, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 
@@ -29,7 +29,7 @@ export const useEvmDaoOps = () => {
   const openNotification = useNotification()
 
   const loggedInUserAddress = etherlink?.signer?.address
-  const { daoSelected, daoMembers, daoProposalSelected } = useContext(EtherlinkContext)
+  const { daoSelected, daoMembers } = useContext(EtherlinkContext)
   const [userVotingWeight, setUserVotingWeight] = useState(0)
   const [userTokenBalance, setUserTokenBalance] = useState(0)
   const selectedUser = daoMembers?.find((member: any) => member.address === loggedInUserAddress)

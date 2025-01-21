@@ -14,7 +14,8 @@ import { useHistory } from "react-router-dom"
 import dayjs from "dayjs"
 import { getSignature } from "services/lite/utils"
 import { getEthSignature } from "services/utils/utils"
-import { saveLiteProposal } from "services/services/lite/lite-services"
+import { saveLiteProposal, voteOnLiteProposal } from "services/services/lite/lite-services"
+import { IEvmOffchainChoice, IEvmOffchainChoiceForVote } from "modules/etherlink/types"
 
 function getDaoConfigType(type: string) {
   if (type === "quorumNumerator") return "quorum"
@@ -459,7 +460,7 @@ export const useEvmProposalOps = () => {
   )
 
   const castVote = useCallback(
-    async (proposalId: number, support: boolean) => {
+    async (proposalId: string, support: boolean) => {
       if (!daoContract || !proposalId) return alert("No dao contract or proposal id")
 
       const tx = await daoContract.castVote(proposalId?.toString(), support ? 1 : 0)
@@ -652,11 +653,54 @@ export const useEvmProposalOps = () => {
     }
   }
 
+  const castOffchainVote = useCallback(
+    async (votesData: IEvmOffchainChoiceForVote[]) => {
+      const publicKey = etherlink.account.address
+      if (!publicKey) return alert("No public key")
+
+      votesData = votesData.map(x => {
+        return {
+          ...x,
+          address: publicKey
+        }
+      })
+
+      const { signature, payloadBytes } = await getEthSignature(publicKey, JSON.stringify(votesData))
+      if (!signature) {
+        openNotification({
+          message: `Issue with Signature`,
+          autoHideDuration: 3000,
+          variant: "error"
+        })
+        return
+      }
+      const resp = await voteOnLiteProposal(signature, publicKey, payloadBytes, network)
+      const response = await resp.json()
+      if (resp.ok) {
+        openNotification({
+          message: "Your vote has been submitted",
+          autoHideDuration: 3000,
+          variant: "success"
+        })
+      } else {
+        console.log("Error: ", response.message)
+        openNotification({
+          message: response.message,
+          autoHideDuration: 3000,
+          variant: "error"
+        })
+        return
+      }
+    },
+    [daoContract, daoProposalSelected?.id, daoSelected?.address, etherlink.account.address, network, openNotification]
+  )
+
   return {
     isLoading,
     setIsLoading,
     createProposal,
     castVote,
+    castOffchainVote,
     queueForExecution,
     executeProposal,
     signer: etherlink?.signer,
