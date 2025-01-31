@@ -8,31 +8,49 @@ import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 import { StyledTextField } from "components/ui/StyledTextField"
+import { isInvalidEvmAddress } from "../utils"
 
 interface Member {
   address: string
   amountOfTokens: number
+  error?: string
 }
 
 export const EvmDaoMembership = () => {
   const { data, setFieldValue } = useEvmDaoCreateStore()
   const members = data.members as Member[]
-  const setMembers = (members: Member[]) => {
-    setFieldValue("members", members)
-  }
 
   const handleMemberChange = (index: number, field: keyof Member, value: string) => {
     const newMembers = [...members]
-    newMembers[index] = { ...newMembers[index], [field]: value }
-    setMembers(newMembers)
+
+    newMembers[index] = {
+      ...newMembers[index],
+      [field]: value,
+      error: ""
+    }
+    if (field === "address") {
+      const isDuplicateAddress = members.some((member: Member) => member.address === value)
+
+      if (isDuplicateAddress) {
+        newMembers[index].error = "Address already exists"
+      } else if (isInvalidEvmAddress(value)) {
+        newMembers[index].error = "Enter a valid etherlink address"
+      } else {
+        newMembers[index].error = ""
+      }
+    }
+    setFieldValue("members", newMembers)
   }
 
   const handleAddMember = () => {
-    setMembers([...members, { address: "", amountOfTokens: 0 }])
+    setFieldValue("members", [...members, { address: "", amountOfTokens: 0, error: "" }])
   }
 
   const handleRemoveMember = (index: number) => {
-    setMembers(members.filter((_, i) => i !== index))
+    setFieldValue(
+      "members",
+      members.filter((_, i) => i !== index)
+    )
   }
 
   return (
@@ -49,10 +67,9 @@ export const EvmDaoMembership = () => {
       <Box sx={{ width: "100%", margin: "20px 0px" }}>
         <Typography variant="h6" style={{ color: "white" }}>
           Total Tokens:{" "}
-          {members.reduce(
-            (acc, member) => parseFloat(acc.toString()) + parseFloat(member.amountOfTokens.toString()),
-            0
-          )}
+          {members
+            .filter(member => member.amountOfTokens > 0)
+            .reduce((acc, member) => parseFloat(acc.toString()) + parseFloat(member.amountOfTokens.toString()), 0)}
         </Typography>
       </Box>
       <Box sx={{ width: "100%" }}>
@@ -73,6 +90,8 @@ export const EvmDaoMembership = () => {
                 value={member.address}
                 label="Member Address"
                 onChange={e => handleMemberChange(index, "address", e.target.value)}
+                error={!!member.error}
+                helperText={member.error}
               />
             </Box>
             <Box sx={{ width: "30%", marginLeft: "10px" }}>

@@ -238,8 +238,13 @@ const useEvmDaoCreateStore = () => {
       console.log("Transaction confirmed:", receipt)
       history.push(`/explorer/daos?q=${daoData.name}`)
       // history.push("/explorer/etherlink/dao/0x287915D27CC4FC967Ca10AA20242d80d99caCe5e/overview")
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deploying DAO", error)
+      notify({
+        message: `Error deploying DAO: ${error?.shortMessage ? error.shortMessage : "Unknown error"}`,
+        variant: "error"
+      })
+      setIsDeploying(false)
       return null
     }
     setIsDeploying(false)
@@ -271,14 +276,57 @@ const useEvmDaoCreateStore = () => {
         }
 
         // Validation for 2. Proposal & Voting
-        if (
-          data.currentStep == 2 &&
-          Object.values(data.data.voting).reduce((acc: number, curr: any): number => acc + (Number(curr) || 0), 0) < 1
-        ) {
-          return notify({
-            message: "Please add valid values for Voting Delay, Voting Duration, and Execution Delay",
-            variant: "error"
-          })
+        if (data.currentStep == 2) {
+          const votingData = {
+            proposalExpiry: Object.entries(data.data.voting)
+              .filter(([key]) => key.startsWith("proposalExpiry"))
+              .reduce((acc, [_, value]) => acc + (Number(value) || 0), 0),
+            proposalFlush: Object.entries(data.data.voting)
+              .filter(([key]) => key.startsWith("proposalFlush"))
+              .reduce((acc, [_, value]) => acc + (Number(value) || 0), 0),
+            votingBlock: Object.entries(data.data.voting)
+              .filter(([key]) => key.startsWith("votingBlock"))
+              .reduce((acc, [_, value]) => acc + (Number(value) || 0), 0)
+          }
+
+          if (votingData.proposalExpiry === 0 || votingData.proposalFlush === 0 || votingData.votingBlock === 0) {
+            return notify({
+              message: "Please add valid values for all time periods",
+              variant: "error"
+            })
+          }
+        }
+
+        console.log("Members", data.data.members)
+
+        // Validation for 4. Members
+        if (data.currentStep === 4) {
+          const memberErrorExists = data.data.members.some((member: any) => member.error)
+          const memberZeroAllocation = data.data.members.some((member: any) => Number(member.amountOfTokens) === 0)
+          if (memberErrorExists) {
+            return notify({
+              message: "Please fix all errors in the members section",
+              variant: "error"
+            })
+          } else if (memberZeroAllocation) {
+            return notify({
+              message: "All members must have a token allocation",
+              variant: "error"
+            })
+          }
+        }
+
+        console.log("Registry", data.data.registry)
+
+        // Validation for 5. Registry
+        if (data.currentStep === 5) {
+          const registryErrorExists = Object.entries(data.data.registry).some(([_, value]) => value === "")
+          if (registryErrorExists) {
+            return notify({
+              message: "Please fill in all registry fields",
+              variant: "error"
+            })
+          }
         }
 
         if (isFinalStep) {
