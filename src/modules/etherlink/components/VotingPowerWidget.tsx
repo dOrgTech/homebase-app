@@ -11,7 +11,7 @@ export interface Member {
   votingWeight: number
 }
 
-// TODO: @ashutoshpw Replace with actual data
+// TODO:  Replace with actual data if this widget is in use
 export const generateMembers = (): Member[] => {
   return Array.from({ length: 100 }, (_, index) => ({
     name: `Member ${index + 1}`,
