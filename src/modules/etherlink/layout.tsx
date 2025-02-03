@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "@material-ui/core"
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
@@ -26,6 +26,8 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
   const history = useHistory()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const totalSteps = Object.keys(urlToStepMap).length - 1
+  const progressPercentage = useMemo(() => Math.floor((step / totalSteps) * 100), [step, totalSteps])
 
   return (
     <PageContainer container direction="row">
@@ -35,7 +37,7 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
           <ProgressContainer item xs={3} container direction="column">
             <Grid item container direction="column" alignItems="center" xs>
               <ProgressBar
-                progress={Math.floor((step / (Object.keys(urlToStepMap).length - 1)) * 100)}
+                progress={progressPercentage}
                 radius={62}
                 strokeWidth={8}
                 strokeColor={theme.palette.secondary.main}
@@ -43,12 +45,12 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
                 trackStrokeColor={"rgba(255, 255, 255, 0.2)"}
               >
                 <Box className="indicator">
-                  <IndicatorValue>{Math.floor((step / (Object.keys(urlToStepMap).length - 1)) * 100)}%</IndicatorValue>
+                  <IndicatorValue>{progressPercentage}%</IndicatorValue>
                 </Box>
               </ProgressBar>
               <Box>
                 <FAQReadMe color="textSecondary">New to DAOs?</FAQReadMe>
-                <Link target="_blank" href="https://faq.tezos-homebase.io" color="secondary">
+                <Link target="_blank" href="https://faq.tezos-homebase.io" color="secondary" aria-label="Read our FAQ">
                   <FAQClickToAction style={{ textDecoration: "underline" }}>Read our FAQ</FAQClickToAction>
                 </Link>
               </Box>

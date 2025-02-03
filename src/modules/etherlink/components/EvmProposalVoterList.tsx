@@ -1,4 +1,4 @@
-import { Grid, DialogContent, styled, TableBody, Typography } from "@material-ui/core"
+import { Grid, TableBody, Typography } from "@material-ui/core"
 import { TableHead, useMediaQuery, useTheme } from "@material-ui/core"
 import { Table } from "@material-ui/core"
 import { TableCell } from "@material-ui/core"
@@ -11,71 +11,14 @@ import { toShortAddress } from "services/contracts/utils"
 import { EVM_PROPOSAL_CHOICES } from "../config"
 import { useContext, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
-import { FileCopyOutlined } from "@material-ui/icons"
 import ReactPaginate from "react-paginate"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
-
+import { Container, CustomContent, Header, VotesRow, StyledTableCell, StyledTableRow, CopyIcon } from "./styled"
 interface IVoter {
   voter: string
   option: number
   weight: number
 }
-
-const CopyIcon = styled(FileCopyOutlined)({
-  marginLeft: 8,
-  cursor: "pointer"
-})
-
-const Container = styled(Grid)({
-  gap: 16,
-  padding: 16
-})
-
-const Header = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.light,
-  fontWeight: 300
-}))
-
-const CustomContent = styled(DialogContent)(({ theme }) => ({
-  padding: 0,
-  display: "grid",
-  marginTop: 24,
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 0,
-    display: "inline",
-    paddingTop: "0px !important"
-  }
-}))
-
-const VotesRow = styled(Typography)(({ theme }) => ({
-  cursor: "default",
-  display: "block",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  padding: ".5rem 1rem",
-  width: 400,
-  [theme.breakpoints.down("sm")]: {
-    width: 200,
-    textAlign: "center"
-  }
-}))
-
-const StyledTableCell = styled(TableCell)({
-  "fontWeight": 300,
-  "& p": {
-    fontWeight: 300
-  }
-})
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0
-  }
-}))
 
 export const EvmProposalVoterList = () => {
   const [currentPage, setCurrentPage] = useState(0)

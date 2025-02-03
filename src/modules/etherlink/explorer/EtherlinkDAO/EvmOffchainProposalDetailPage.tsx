@@ -1,16 +1,5 @@
 import { GridContainer } from "modules/common/GridContainer"
-import {
-  Button,
-  Grid,
-  TableRow,
-  TableBody,
-  Table,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  TableCell,
-  IconButton
-} from "@mui/material"
+import { Button, Grid, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { PageContainer } from "components/ui/DaoCreator"
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -24,18 +13,11 @@ import { ThumbUpAlt } from "@mui/icons-material"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
-import { CopyButton } from "modules/common/CopyButton"
-import { styled } from "@material-ui/core"
+
 import { EvmChoiceItemSelected } from "../EvmProposals/EvmChoiceItemSelected"
 import { IEvmOffchainChoice, IEvmProposal } from "modules/etherlink/types"
-import BigNumber from "bignumber.js"
 import { SmallButton } from "modules/common/SmallButton"
-import React from "react"
-
-const LinearContainer = styled(GridContainer)(({ theme }) => ({
-  background: theme.palette.secondary.light,
-  borderRadius: 8
-}))
+import { LinearContainerOffchain as LinearContainer } from "modules/etherlink/components/styled"
 
 const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IEvmProposal | undefined }) => {
   const { castOffchainVote } = useEvmProposalOps()

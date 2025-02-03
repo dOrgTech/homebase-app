@@ -13,9 +13,7 @@ import {
   useTheme
 } from "@material-ui/core"
 import dayjs from "dayjs"
-
-import { ContentContainer } from "modules/explorer/components/ContentContainer"
-
+import { MobileTableHeader, MobileTableRow, OverflowCell, OverflowItem, TableContainer } from "./styled"
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
 
@@ -31,35 +29,6 @@ interface RowData {
 interface Props {
   data: RowData[]
 }
-
-export const OverflowCell = styled(TableCell)({
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  maxWidth: 300
-})
-
-const MobileTableHeader = styled(Grid)({
-  width: "100%",
-  padding: 20,
-  borderBottom: "0.3px solid #3D3D3D"
-})
-
-const MobileTableRow = styled(Grid)({
-  padding: "30px",
-  borderBottom: "0.3px solid #3D3D3D"
-})
-
-const OverflowItem = styled(Grid)({
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  maxWidth: 300
-})
-
-const TableContainer = styled(ContentContainer)({
-  width: "100%"
-})
 
 const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
   switch (title) {

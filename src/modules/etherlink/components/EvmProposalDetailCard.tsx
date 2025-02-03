@@ -1,84 +1,17 @@
 import React, { useContext } from "react"
-import { Grid, styled, Typography, Link, useTheme, useMediaQuery, Popover, withStyles } from "@material-ui/core"
+import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 import { GridContainer } from "modules/common/GridContainer"
-import { ProposalStatus, TableStatusBadge } from "modules/lite/explorer/components/ProposalTableRowStatusBadge"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
-import { FileCopyOutlined } from "@material-ui/icons"
 import Share from "assets/img/share.svg"
-import { CommunityBadge } from "modules/lite/explorer/components/CommunityBadge"
 import LinkIcon from "assets/img/link.svg"
 
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
-import { EtherlinkContext } from "services/wagmi/context"
 import { Badge } from "components/ui/Badge"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
 import { CopyIcon } from "components/ui/icons/CopyIcon"
 import { IEvmProposal } from "../types"
-
-const LogoItem = styled("img")(({ theme }) => ({
-  cursor: "pointer",
-  [theme.breakpoints.down("sm")]: {
-    height: 10
-  }
-}))
-
-const TextContainer = styled(Typography)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 20
-  }
-}))
-
-const EndTextContainer = styled(Typography)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 20
-  }
-}))
-
-const EndText = styled(Typography)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 20
-  }
-}))
-
-const Divider = styled(Typography)(({ theme }) => ({
-  marginLeft: 8,
-  marginRight: 8,
-  [theme.breakpoints.down("sm")]: {
-    marginTop: 20
-  }
-}))
-
-const StyledLink = styled(Link)(({ theme }) => ({
-  fontFamily: "Roboto Flex",
-  fontWeight: 300,
-  fontSize: 16,
-  marginLeft: 8,
-  [theme.breakpoints.down("sm")]: {
-    fontWeight: 100,
-    fontSize: 10
-  }
-}))
-
-const CustomPopover = withStyles({
-  paper: {
-    "marginTop": 10,
-    "padding": 8,
-    "cursor": "pointer",
-    "background": "#1c1f23 !important",
-    "&:hover": {
-      background: "#81feb76b !important"
-    }
-  }
-})(Popover)
+import { LogoItem, CustomPopover, TextContainer, EndTextContainer, EndText, Divider, StyledLink } from "./styled"
 
 export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }> = ({ poll }) => {
   const theme = useTheme()

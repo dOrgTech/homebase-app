@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { useContext, useMemo, useState } from "react"
-import { Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { GridContainer } from "modules/common/GridContainer"
+import React, { useContext, useEffect, useMemo, useState } from "react"
+import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import ProgressBar from "react-customizable-progressbar"
 
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -12,77 +11,20 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { LinearProgress } from "components/ui/LinearProgress"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { EVM_PROPOSAL_CHOICES } from "../config"
-import { IEvmOffchainChoice, IEvmProposal } from "../types"
+import { IEvmOffchainChoice, IEvmProposal, ITransactionStatus } from "../types"
+import dayjs from "dayjs"
+import {
+  ContainerVoteDetail as Container,
+  TitleContainer,
+  LinearContainer,
+  LegendContainer,
+  GraphicsContainer,
+  ProgressText,
+  HistoryItem,
+  HistoryValue,
+  HistoryKey
+} from "./styled"
 import { ContainerTitle } from "components/ui/Containers"
-
-const Container = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  borderRadius: 8
-}))
-
-const ProgressText = styled(Typography)(({ textcolor }: { textcolor: string }) => ({
-  color: textcolor,
-  display: "flex",
-  alignItems: "center",
-  position: "absolute",
-  width: "100%",
-  height: "100%",
-  fontSize: 16,
-  userSelect: "none",
-  boxShadow: "none",
-  background: "inherit",
-  fontFamily: "Roboto Flex",
-  justifyContent: "center",
-  top: 0
-}))
-
-const TitleContainer = styled(Grid)(({ theme }) => ({
-  paddingTop: 18,
-  paddingLeft: 46,
-  paddingRight: 46,
-  paddingBottom: 18,
-  borderBottom: `0.3px solid ${theme.palette.primary.light}`,
-  [theme.breakpoints.down("sm")]: {
-    padding: "18px 25px"
-  }
-}))
-
-const LinearContainer = styled(GridContainer)({
-  paddingBottom: 0,
-  minHeight: 110
-})
-
-const LegendContainer = styled(GridContainer)({
-  minHeight: 30,
-  paddingBottom: 0
-})
-
-const GraphicsContainer = styled(Grid)({
-  paddingBottom: 25
-})
-
-const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  marginTop: 8,
-  paddingBottom: 4,
-  display: "flex",
-  height: "auto",
-
-  [theme.breakpoints.down("sm")]: {
-    width: "unset"
-  }
-}))
-
-const HistoryKey = styled(Typography)({
-  fontSize: 18,
-  fontWeight: 500,
-  textTransform: "capitalize"
-})
-
-const HistoryValue = styled(Typography)({
-  fontSize: 18,
-  fontWeight: 300,
-  color: "#BFC5CA"
-})
 
 const RenderChoices = ({
   mode,
@@ -207,19 +149,22 @@ export const EvmProposalVoteDetail: React.FC<{
     // setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
   }
 
-  useMemo(async () => {
-    if (token && tokenData) {
-      const value = await getTurnoutValue(
-        network,
-        tokenData?.tokenAddress,
-        tokenData.tokenID,
-        Number(poll?.referenceBlock),
-        totalVoteCount
-      )
-      if (value) {
-        setTurnout(value)
+  useEffect(() => {
+    const fetchTurnout = async () => {
+      if (token && tokenData) {
+        const value = await getTurnoutValue(
+          network,
+          tokenData?.tokenAddress,
+          tokenData.tokenID,
+          Number(poll?.referenceBlock),
+          totalVoteCount
+        )
+        if (value) {
+          setTurnout(value)
+        }
       }
     }
+    fetchTurnout()
   }, [poll, network, token, tokenData, totalVoteCount])
 
   const votesQuorumPercentage = daoProposalSelected?.votesWeightPercentage
@@ -372,8 +317,8 @@ export const EvmProposalVoteDetail: React.FC<{
                     {daoProposalSelected?.statusHistoryMap?.map(
                       (
                         item: {
-                          status: string
-                          timestamp: number
+                          status: ITransactionStatus
+                          timestamp: dayjs.Dayjs
                           timestamp_human: string
                         },
                         index: number
@@ -402,21 +347,6 @@ export const EvmProposalVoteDetail: React.FC<{
                         )
                       }
                     )}
-
-                    {/* {isLambdaProposal ? (
-                <>
-                  <Grid container direction="column">
-                    <Grid item>
-                      <InfoTitle color="secondary">Information</InfoTitle>
-                    </Grid>
-                    <Grid item container direction="row">
-                      <InfoItem color="textPrimary">
-                        Proposal Type: {_.startCase((proposal as LambdaProposal).metadata.lambdaType)}
-                      </InfoItem>
-                    </Grid>
-                  </Grid>
-                </>
-              ) : null} */}
                   </Container>
                 </Grid>
               </Grid>

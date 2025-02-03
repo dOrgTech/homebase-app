@@ -1,3 +1,6 @@
+import dayjs from "dayjs"
+export type IEthereumAddress = string & { __brand: "EthereumAddress" }
+
 export interface IEvmOffchainChoiceForVote {
   address?: string
   choice: string
@@ -10,9 +13,11 @@ export interface IEvmOffchainChoice {
   name: string
   pollID: string
   address?: string // While Voting
-  walletAddresses: string[]
+  walletAddresses: IEthereumAddress[]
   selected?: boolean
 }
+
+export type ITransactionStatus = "pending" | "executed" | "failed"
 
 export interface IEvmProposal {
   against: string
@@ -31,8 +36,12 @@ export interface IEvmProposal {
   referenceBlock: number
   proposer?: string
   status: string
-  statusHistoryMap: any[]
-  statusHistory: Record<string, any>
+  statusHistoryMap: {
+    timestamp: dayjs.Dayjs
+    status: ITransactionStatus
+    timestamp_human: string
+  }[]
+  statusHistory: Record<ITransactionStatus, dayjs.Dayjs>
   targets: string[]
   title: string
   totalVotes: BigNumber
