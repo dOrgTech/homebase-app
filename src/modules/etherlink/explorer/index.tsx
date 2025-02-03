@@ -25,11 +25,10 @@ export const EtherlinkDAOOverview: React.FC = () => {
   const { setMetadataFieldValue, setCurrentStep } = useEvmProposalOps()
   const history = useHistory()
 
-  const name = daoSelected && daoSelected?.name
-  const description = daoSelected && daoSelected?.description
+  const name = daoSelected?.name
+  const description = daoSelected?.description
 
   const [openDialog, setOpenDialog] = useState(false)
-  const [openChangeDialog, setChangeOpenDialog] = useState(false)
 
   const handleCloseModal = () => {
     setOpenDialog(false)
@@ -63,7 +62,6 @@ export const EtherlinkDAOOverview: React.FC = () => {
                 >
                   <Typography color="primary">Change Settings</Typography>
                 </SmallButton>
-                {/* <SettingsDialog open={openChangeDialog} handleClose={handleCloseChangeModal} /> */}
               </Grid>
             </Grid>
           </Grid>

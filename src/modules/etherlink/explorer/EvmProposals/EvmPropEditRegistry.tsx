@@ -11,15 +11,7 @@ const InputContainer = styled(Grid)({
 })
 
 export const EvmPropEditRegistry: React.FC = () => {
-  const { daoRegistry, setDaoRegistry } = useEvmProposalOps()
-
-  const handleKeyChange = (value: string) => {
-    setDaoRegistry("key", value)
-  }
-
-  const handleValueChange = (value: string) => {
-    setDaoRegistry("value", value)
-  }
+  const { daoRegistry, daoRegistryError, setDaoRegistry } = useEvmProposalOps()
 
   return (
     <InputContainer container spacing={2}>
@@ -29,7 +21,7 @@ export const EvmPropEditRegistry: React.FC = () => {
           defaultValue={daoRegistry.key}
           label="Registry Key"
           variant="outlined"
-          onChange={e => handleKeyChange(e.target.value)}
+          onChange={e => setDaoRegistry("key", e.target.value)}
         />
       </Grid>
       <Grid item xs={12}>
@@ -38,7 +30,7 @@ export const EvmPropEditRegistry: React.FC = () => {
           defaultValue={daoRegistry.value}
           label="Registry Value"
           variant="outlined"
-          onChange={e => handleValueChange(e.target.value)}
+          onChange={e => setDaoRegistry("value", e.target.value)}
         />
       </Grid>
     </InputContainer>

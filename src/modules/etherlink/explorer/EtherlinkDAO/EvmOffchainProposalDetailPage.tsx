@@ -32,17 +32,12 @@ import BigNumber from "bignumber.js"
 import { SmallButton } from "modules/common/SmallButton"
 import React from "react"
 
-const DescriptionText = styled(Typography)({
-  fontSize: 24,
-  fontWeight: 600
-})
-
 const LinearContainer = styled(GridContainer)(({ theme }) => ({
   background: theme.palette.secondary.light,
   borderRadius: 8
 }))
 
-const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IEvmProposal }) => {
+const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IEvmProposal | undefined }) => {
   const { castOffchainVote } = useEvmProposalOps()
   const isVotingActive = daoProposalSelected?.isVotingActive
   const [isCastingVote, setIsCastingVote] = useState(false)
@@ -242,16 +237,13 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
 export const EvmOffchainProposalDetailsPage = () => {
   const params = useParams() as { proposalId: string }
   const proposalId = params?.proposalId
-  const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
+  const [daoProposalSelected, setDaoProposalSelected] = useState<IEvmProposal | undefined>(undefined)
   const { daoSelected, daoProposals, selectDaoProposal } = useContext(EtherlinkContext)
 
   const theme = useTheme()
 
   useEffect(() => {
-    console.log("Offchain proposal Id", proposalId, daoSelected)
-    const proposal = daoProposals?.find((x: any) => x.id === proposalId)
-    console.log("All Dao Proposals", daoProposals)
-    console.log("All Dao  proposal Selected", proposal)
+    const proposal = daoProposals?.find((x: IEvmProposal) => x.id === proposalId)
     setDaoProposalSelected(proposal)
   }, [proposalId, daoProposals, daoSelected])
 

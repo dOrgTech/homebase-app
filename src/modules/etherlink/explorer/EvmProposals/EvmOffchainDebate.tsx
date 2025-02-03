@@ -30,13 +30,9 @@ const RemoveButton = styled(IconButton)({
 export const EvmOffchainDebate: React.FC = () => {
   const { offchainDebate, setOffchainDebate } = useEvmProposalOps()
   const choices = offchainDebate?.options
-  const setChoices = (x: any) => setOffchainDebate("options", x)
+  const setChoices = (x: string[]) => setOffchainDebate("options", x)
   const isMultiChoice = offchainDebate?.is_multiple_choice
-  const setIsMultiChoice = (x: any) => setOffchainDebate("is_multiple_choice", x)
-
-  const handleDurationChange = (field: string, value: string) => {
-    setOffchainDebate(field, value)
-  }
+  const setIsMultiChoice = (x: boolean) => setOffchainDebate("is_multiple_choice", x)
 
   const handleChoiceChange = (index: number, value: string) => {
     const newChoices = [...choices]
@@ -68,7 +64,7 @@ export const EvmOffchainDebate: React.FC = () => {
             label="Days"
             type="number"
             value={offchainDebate.expiry_days}
-            onChange={e => handleDurationChange("expiry_days", e.target.value)}
+            onChange={e => setOffchainDebate("expiry_days", e.target.value)}
             inputProps={{ min: 0 }}
           />
         </Grid>
@@ -78,7 +74,7 @@ export const EvmOffchainDebate: React.FC = () => {
             label="Hours"
             type="number"
             value={offchainDebate.expiry_hours}
-            onChange={e => handleDurationChange("expiry_hours", e.target.value)}
+            onChange={e => setOffchainDebate("expiry_hours", e.target.value)}
             inputProps={{ min: 0, max: 23 }}
           />
         </Grid>
@@ -88,7 +84,7 @@ export const EvmOffchainDebate: React.FC = () => {
             label="Minutes"
             type="number"
             value={offchainDebate.expiry_minutes}
-            onChange={e => handleDurationChange("expiry_minutes", e.target.value)}
+            onChange={e => setOffchainDebate("expiry_minutes", e.target.value)}
             inputProps={{ min: 0, max: 59 }}
           />
         </Grid>

@@ -62,11 +62,6 @@ const styles = {
   }
 }
 
-interface EvmDaoVotingProps {
-  onSubmit?: (values: any) => void
-  initialValues?: any
-}
-
 const initialFormValues = {
   votingBlocksDay: 0,
   votingBlocksHours: 0,
@@ -78,10 +73,16 @@ const initialFormValues = {
   proposalExpiryBlocksHours: 0,
   proposalExpiryBlocksMinutes: 0
 }
+type IEvmVotingFormValues = typeof initialFormValues
+
+interface EvmDaoVotingProps {
+  onSubmit?: (values: IEvmVotingFormValues) => void
+  initialValues?: IEvmVotingFormValues
+}
 
 export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit, initialValues = initialFormValues }) => {
   const { data: daoData, touched, errors, setFieldValue } = useEvmDaoCreateStore()
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: IEvmVotingFormValues) => {
     if (onSubmit) {
       onSubmit(values)
     }

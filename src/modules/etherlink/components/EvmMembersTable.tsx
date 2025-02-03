@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
@@ -54,10 +54,11 @@ interface UserTable {
 }
 
 const MobileUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset }) => {
+  const slicedData = useMemo(() => data.slice(offset, offset + 8), [data, offset])
   return (
     <>
       <Grid container style={{ gap: 32 }}>
-        {data.slice(offset, offset + 8).map((item, i) => (
+        {slicedData.map((item, i) => (
           <CardContainer key={`usersrow-${i}`} container direction="row" style={{ gap: 24 }}>
             <Grid item container direction="row" alignItems="center" xs={12} style={{ gap: 8 }}>
               <Blockie address={item.address} size={24} />
@@ -126,10 +127,11 @@ const MobileUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, 
 }
 
 const DesktopUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset }) => {
+  const slicedData = useMemo(() => data.slice(offset, offset + 8), [data, offset])
   return (
     <>
       <Grid container style={{ gap: 32 }}>
-        {data.slice(offset, offset + 8).map((item, i) => (
+        {slicedData.map((item, i) => (
           <CardContainer key={`usersrow-${i}`} container direction="row" style={{ gap: 24 }}>
             <Grid item container direction="row" alignItems="center" xs={12} style={{ gap: 8 }}>
               <Blockie address={item.address} size={24} />
@@ -203,15 +205,23 @@ export const EvmMembersTable: React.FC<{ data: RowData[]; symbol: string }> = ({
   const isExtraSmall = useMediaQuery(theme.breakpoints.down(820))
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const pageCount = Math.ceil(data ? data.length / 8 : 0)
+  const pageCount = Math.ceil((data?.length ?? 0) / 8)
 
   // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
-    if (data) {
+    if (data?.length) {
       const newOffset = (event.selected * 8) % data.length
+      if (newOffset < 0 || newOffset >= data.length) {
+        console.error("Invalid page offset:", newOffset)
+        return
+      }
       setOffset(newOffset)
       setCurrentPage(event.selected)
     }
+  }
+
+  if (!data?.length) {
+    return <Typography color="textSecondary">No members found</Typography>
   }
 
   return isExtraSmall ? (

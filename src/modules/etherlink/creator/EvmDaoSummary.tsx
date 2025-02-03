@@ -18,9 +18,6 @@ import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDa
 import { CopyAddress } from "modules/common/CopyAddress"
 import { CopyButton } from "modules/common/CopyButton"
 
-interface EvmDaoSummaryProps {
-  // Add props as needed
-}
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
   width: "inherit",
   [theme.breakpoints.down("sm")]: {}
@@ -51,7 +48,7 @@ const RowValue = styled(Typography)(({ theme }) => ({
   }
 }))
 
-export const EvmDaoSummary: React.FC<EvmDaoSummaryProps> = () => {
+export const EvmDaoSummary = () => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { data } = useEvmDaoCreateStore()
@@ -87,7 +84,7 @@ export const EvmDaoSummary: React.FC<EvmDaoSummaryProps> = () => {
           <Table aria-label="simple table">
             <TableBody>
               {tableData.map((item: { key: string; value: string }) => (
-                <TableRow>
+                <TableRow key={item.key}>
                   <CustomTableCell component="th" scope="row">
                     <Typography style={{ color: "white", textAlign: "left" }}>{item.key}</Typography>
                   </CustomTableCell>

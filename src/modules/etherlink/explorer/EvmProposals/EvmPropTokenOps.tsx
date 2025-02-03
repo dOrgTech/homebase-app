@@ -5,6 +5,7 @@ import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmP
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
+import { isInvalidEvmAddress } from "modules/etherlink/utils"
 
 const OptionContainer = styled(Grid)({
   "background": "#1c2024",
@@ -43,86 +44,71 @@ const ConfigOption = ({
   </Grid>
 )
 
+interface TokenOperationFormProps {
+  type: "mint" | "burn"
+  icon: React.ReactNode
+  values: {
+    to?: string
+    amount?: string
+  }
+  onChange: (type: "mint" | "burn", values: { to: string; amount: string }) => void
+}
+
+const TokenOperationForm: React.FC<TokenOperationFormProps> = ({ type, icon, values, onChange }) => (
+  <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
+    <Grid item xs={12} style={{ marginBottom: "20px" }}>
+      <Box display="flex" alignItems="center" justifyContent="center" style={{ gap: "8px" }}>
+        {icon}
+        <Typography color="textPrimary">Enter the recipient address and amount to {type}</Typography>
+      </Box>
+      <StyledTextField
+        fullWidth
+        label="Recipient Address"
+        variant="standard"
+        value={values?.to ?? ""}
+        error={values?.to ? isInvalidEvmAddress(values?.to) : false}
+        helperText={values.to && isInvalidEvmAddress(values.to) ? "Invalid Ethereum address" : ""}
+        onChange={e => onChange(type, { to: e.target.value, amount: values?.amount ?? "" })}
+        style={{ marginBottom: "16px" }}
+      />
+      <StyledTextField
+        fullWidth
+        label="Amount"
+        type="number"
+        variant="standard"
+        inputProps={{ min: "0" }}
+        value={values.amount}
+        error={values.amount ? parseFloat(values.amount) <= 0 : false}
+        helperText={values.amount && parseFloat(values.amount) <= 0 ? "Amount must be greater than 0" : ""}
+        onChange={e => onChange(type, { to: values?.to ?? "", amount: e.target.value })}
+      />
+    </Grid>
+  </Grid>
+)
+
 const EvmPropTokenOps = () => {
   const { daoSelected } = useContext(EtherlinkContext)
-  console.log("EvmPropTokenOps", daoSelected)
   const { currentStep, daoTokenOps, setDaoTokenOps } = useEvmProposalOps()
 
-  if (currentStep === 3 && daoTokenOps.type === "mint") {
+  if (currentStep === 3 && daoTokenOps?.type === "mint") {
     return (
-      <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
-        <Grid item xs={12} style={{ marginBottom: "20px" }}>
-          <Box display="flex" alignItems="center" justifyContent="center" style={{ gap: "8px" }}>
-            <AddCircleIcon fontSize="large" />
-            <Typography color="textPrimary">Enter the recipient address and amount to mint</Typography>
-          </Box>
-          <StyledTextField
-            fullWidth
-            label="Recipient Address"
-            variant="standard"
-            value={daoTokenOps.mint?.to}
-            onChange={e =>
-              setDaoTokenOps("mint", {
-                to: e.target.value,
-                amount: daoTokenOps.mint?.amount
-              })
-            }
-            style={{ marginBottom: "16px" }}
-          />
-          <StyledTextField
-            fullWidth
-            label="Amount"
-            type="number"
-            variant="standard"
-            value={daoTokenOps.mint?.amount}
-            onChange={e =>
-              setDaoTokenOps("mint", {
-                to: daoTokenOps.mint?.to,
-                amount: e.target.value
-              })
-            }
-          />
-        </Grid>
-      </Grid>
+      <TokenOperationForm
+        type="mint"
+        icon={<AddCircleIcon fontSize="large" />}
+        values={daoTokenOps.mint}
+        onChange={setDaoTokenOps}
+      />
     )
   }
 
-  if (currentStep === 3 && daoTokenOps.type === "burn") {
+  if (currentStep === 3 && daoTokenOps?.type === "burn") {
     return (
-      <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
-        <Grid item xs={12} style={{ marginBottom: "20px" }}>
-          <Box display="flex" alignItems="center" justifyContent="center" style={{ gap: "8px" }}>
-            <RemoveCircleIcon fontSize="large" />
-            <Typography color="textPrimary">Enter the recipient address and amount to burn</Typography>
-          </Box>
-          <StyledTextField
-            fullWidth
-            label="Recipient Address"
-            variant="standard"
-            value={daoTokenOps.burn?.to}
-            onChange={e =>
-              setDaoTokenOps("burn", {
-                to: e.target.value,
-                amount: daoTokenOps.burn?.amount
-              })
-            }
-            style={{ marginBottom: "16px" }}
-          />
-          <StyledTextField
-            fullWidth
-            label="Amount"
-            type="number"
-            variant="standard"
-            value={daoTokenOps.burn?.amount}
-            onChange={e =>
-              setDaoTokenOps("burn", {
-                to: daoTokenOps.burn?.to,
-                amount: e.target.value
-              })
-            }
-          />
-        </Grid>
-      </Grid>
+      <TokenOperationForm
+        type="burn"
+        icon={<RemoveCircleIcon fontSize="large" />}
+        values={daoTokenOps.burn}
+        onChange={setDaoTokenOps}
+      />
     )
   }
   return (

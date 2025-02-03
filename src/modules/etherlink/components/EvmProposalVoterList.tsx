@@ -15,6 +15,12 @@ import { FileCopyOutlined } from "@material-ui/icons"
 import ReactPaginate from "react-paginate"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 
+interface IVoter {
+  voter: string
+  option: number
+  weight: number
+}
+
 const CopyIcon = styled(FileCopyOutlined)({
   marginLeft: 8,
   cursor: "pointer"
@@ -79,7 +85,7 @@ export const EvmProposalVoterList = () => {
   const { copyAddress, showProposalVoterList, setShowProposalVoterList } = useEvmDaoOps()
   const { daoProposalSelected, daoProposalVoters } = useContext(EtherlinkContext)
 
-  const listOfVotes = [] as any[]
+  const listOfVotes = [] as IVoter[]
 
   const handlePageClick = (event: { selected: number }) => {
     setCurrentPage(event.selected)
@@ -89,7 +95,6 @@ export const EvmProposalVoterList = () => {
   }
 
   const pageCount = Math.ceil(daoProposalSelected?.totalVoteCount / 10)
-  console.log("XXX", { showProposalVoterList, daoProposalVoters })
 
   return (
     <div>
@@ -115,7 +120,7 @@ export const EvmProposalVoterList = () => {
 
             <TableBody>
               {daoProposalVoters
-                ? daoProposalVoters.map((row: any) => {
+                ? daoProposalVoters.map((row: IVoter) => {
                     return isMobileSmall ? (
                       <Container key={row.voter} container direction="column" justifyContent="center">
                         <Grid item>
@@ -200,11 +205,6 @@ export const EvmProposalVoterList = () => {
             />
           </Grid>
         </CustomContent>
-        {/* <CustomDialogActions>
-              <Button variant="contained" color="secondary" onClick={handleClose}>
-                Close
-              </Button>
-            </CustomDialogActions> */}
       </ResponsiveDialog>
     </div>
   )

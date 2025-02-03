@@ -85,13 +85,12 @@ export const DAOOverview: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
 
-  console.log("daoData", data)
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const symbol = (data && data.data.token?.symbol?.toUpperCase()) || "Unknown"
+  const symbol = data?.data?.token?.symbol?.toUpperCase() || "Unknown"
 
-  const name = data && data.data.name
-  const description = data && data.data.description
+  const name = data?.data?.name
+  const description = data?.data?.description
 
   const [openDialog, setOpenDialog] = useState(false)
   const [openChangeDialog, setChangeOpenDialog] = useState(false)
@@ -123,8 +122,6 @@ export const DAOOverview: React.FC = () => {
         proposalsVoted: p.holder.proposals_voted.toString()
       }))
   }, [cycleInfo, data, ledger])
-
-  console.log({ usersTableData })
 
   return (
     <Grid container direction="column" style={{ gap: isExtraSmall ? 25 : 32 }}>

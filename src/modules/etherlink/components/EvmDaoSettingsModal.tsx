@@ -82,7 +82,7 @@ export const EvmDaoSettingModal: React.FC<{
       value: daoSelected?.proposalThreshold
     },
     {
-      key: "Voting Duration (minutes",
+      key: "Voting Duration (minutes)",
       value: daoSelected?.votingDuration
     },
     {

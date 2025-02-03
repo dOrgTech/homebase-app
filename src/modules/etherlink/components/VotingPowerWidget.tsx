@@ -80,9 +80,15 @@ export const VotingPowerWidget: React.FC<{ tokenSymbol: string }> = ({ tokenSymb
   const concentrationOptions = ["vote concentration", `${tokenSymbol} ownership`]
 
   useEffect(() => {
+    let isSubscribed = true
     const initialMembers = generateMembers()
     initialMembers.sort((a, b) => b.votingWeight - a.votingWeight)
-    setMembers(initialMembers)
+    if (isSubscribed) {
+      setMembers(initialMembers)
+    }
+    return () => {
+      isSubscribed = false
+    }
   }, [])
 
   const totalMembers = members.length

@@ -83,7 +83,6 @@ const CustomPopover = withStyles({
 export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }> = ({ poll }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  // const { daoProposalSelected } = useContext(EtherlinkContext)
   const daoProposalSelected = poll
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const openNotification = useNotification()
@@ -173,12 +172,11 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
                 >
                   <Grid item>
                     <StatusBadge status={daoProposalSelected?.status} />
-                    {/* <TableStatusBadge status={poll?.isActive || ProposalStatus.ACTIVE} /> */}
                   </Grid>
                   <Grid item>
                     <Badge status={daoProposalSelected.type} />
                   </Grid>
-                  <Grid item>{/* <CommunityBadge id={"DAOID"} /> */}</Grid>
+                  <Grid item>{/* TODO: @ashutoshpw FIX THIS <CommunityBadge id={"DAOID"} /> */}</Grid>
                   <Grid item direction="row" style={{ gap: 10 }}>
                     <TextContainer color="textPrimary" variant="body2" style={{ fontSize: 14, marginBottom: 4 }}>
                       Posted by:

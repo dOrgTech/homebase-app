@@ -11,7 +11,11 @@ import { EtherlinkContext } from "services/wagmi/context"
 
 export const EvmTreasuryTable = () => {
   const { daoSelected, daoRegistryDetails } = useContext(EtherlinkContext)
-  console.log("daoSelected", daoRegistryDetails)
+
+  if (!daoSelected || !daoRegistryDetails) {
+    return <Typography>Loading treasury data...</Typography>
+  }
+
   return (
     <TableContainer>
       <Table>
@@ -21,7 +25,7 @@ export const EvmTreasuryTable = () => {
             <TableCell>Symbol</TableCell>
             <TableCell>Amount</TableCell>
             <TableCell>Address</TableCell>
-            <TableCell></TableCell>
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>

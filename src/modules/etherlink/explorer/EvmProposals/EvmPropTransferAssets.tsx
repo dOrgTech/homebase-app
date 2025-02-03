@@ -31,7 +31,7 @@ const RemoveButton = styled(IconButton)({
   padding: "4px"
 })
 
-interface Transaction {
+interface ITransaction {
   assetType: string
   recipient: string
   amount: string
@@ -40,7 +40,7 @@ interface Transaction {
 export const EvmPropTransferAssets: React.FC = () => {
   const { transferAssets, setTransferAssets } = useEvmProposalOps()
 
-  const onUpdateTransaction = (index: number, field: keyof Transaction, value: string) => {
+  const onUpdateTransaction = (index: number, field: keyof ITransaction, value: string) => {
     const transactions = [...transferAssets.transactions]
     transactions[index][field] = value
     setTransferAssets(transactions)
@@ -60,7 +60,7 @@ export const EvmPropTransferAssets: React.FC = () => {
 
   return (
     <Grid container direction="column">
-      {transferAssets.transactions.map((transaction: any, index: number) => (
+      {transferAssets.transactions.map((transaction: ITransaction, index: number) => (
         <TransactionContainer key={index}>
           <InputContainer container spacing={2}>
             <Grid item xs={12} sm={3}>
@@ -90,6 +90,14 @@ export const EvmPropTransferAssets: React.FC = () => {
                 label="Amount"
                 type="number"
                 variant="standard"
+                inputProps={{
+                  inputMode: "numeric",
+                  pattern: "[0-9]*",
+                  min: "0",
+                  step: "0.000001"
+                }}
+                error={!!transaction.amount}
+                helperText={transaction.amount ? "Amount must be a number" : ""}
                 value={transaction.amount}
                 onChange={e => onUpdateTransaction(index, "amount", e.target.value)}
               />

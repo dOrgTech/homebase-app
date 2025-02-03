@@ -1,8 +1,8 @@
-import { Grid, Typography, useMediaQuery, useTheme, Tooltip, InputAdornment } from "@material-ui/core"
-import { CustomFormikTextField, CustomInputContainer, DescriptionText, InfoIconInput } from "components/ui/DaoCreator"
+import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { DescriptionText } from "components/ui/DaoCreator"
 import InputText from "components/ui/InputText"
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
-import { Field } from "formik"
+
 import { TitleBlock } from "modules/common/TitleBlock"
 import React, { useRef } from "react"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
@@ -23,7 +23,7 @@ export const EvmDaoQuorum: React.FC = () => {
       />
       <StyledSliderWithValue
         defaultValue={getIn("quorum.returnedTokenPercentage")}
-        onChange={(newValue: any) => {
+        onChange={(newValue: number) => {
           setFieldValue("quorum.returnedTokenPercentage", newValue || 0)
         }}
       />
@@ -48,9 +48,13 @@ export const EvmDaoQuorum: React.FC = () => {
           <InputText
             type="number"
             placeholder="0"
+            inputProps={{
+              min: "0",
+              step: "1"
+            }}
             name="quorum.proposalThreshold"
             defaultValue={getIn("quorum.proposalThreshold")}
-            onChange={(e: any) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setFieldValue("quorum.proposalThreshold", Number(e.target.value))
             }}
           />
@@ -58,27 +62,4 @@ export const EvmDaoQuorum: React.FC = () => {
       </Grid>
     </div>
   )
-}
-
-{
-  /* <CustomInputContainer>
-          <Field
-            id="outlined-basic"
-            placeholder="0"
-            name="quorum.returnedTokenPercentage"
-            component={CustomFormikTextField}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="start">
-                  <Tooltip
-                    placement="bottom"
-                    title="The percentage of the total token supply that must be held by the DAO members for a proposal to be considered passed."
-                  >
-                    <InfoIconInput />
-                  </Tooltip>
-                </InputAdornment>
-              )
-            }}
-          />
-        </CustomInputContainer> */
 }

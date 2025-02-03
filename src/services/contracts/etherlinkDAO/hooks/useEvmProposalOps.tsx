@@ -47,6 +47,7 @@ interface EvmProposalCreateStore {
     key: string
     value: string
   }
+  daoRegistryError: string
   setDaoRegistry: (type: "key" | "value", value: string) => void
   createProposalPayload: {
     targets: any[]
@@ -99,7 +100,7 @@ interface EvmProposalCreateStore {
     options: string[]
     is_multiple_choice: boolean
   }
-  setOffchainDebate: (key: string, value: string) => void
+  setOffchainDebate: (key: string, value: string | string[] | boolean) => void
   getMetadata: () => EvmProposalCreateStore["metadata"]
   setMetadata: (metadata: EvmProposalCreateStore["metadata"]) => void
   getMetadataFieldValue: (field: keyof EvmProposalCreateStore["metadata"]) => string
@@ -185,16 +186,28 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         const selectedPropType = EvmProposalOptions.find(p => p.modal === "edit_registry")
         const selectedInterface = selectedPropType?.interface?.editRegistry
         if (!selectedInterface) return console.log("No interface found")
+
+        if (get().daoRegistry.key.length === 0) {
+          set({ daoRegistryError: "Key is required" })
+          return
+        }
+        if (get().daoRegistry.value.length === 0) {
+          set({ daoRegistryError: "Value is required" })
+          return
+        }
+
         const iface = new ethers.Interface(selectedInterface.interface)
         const encodedData = iface.encodeFunctionData(selectedInterface.name, [
           get().daoRegistry.key,
           get().daoRegistry.value
         ])
+
         set({
           daoRegistry: { ...get().daoRegistry, [type]: value },
           createProposalPayload: { ...get().createProposalPayload, calldatas: [encodedData] }
         })
       },
+      daoRegistryError: "",
       daoContractCall: {
         targetAddress: "",
         value: "",
@@ -356,7 +369,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         options: ["", ""],
         is_multiple_choice: false
       },
-      setOffchainDebate: (key: string, value: string) => {
+      setOffchainDebate: (key: string, value: string | string[] | boolean) => {
         const payload = { offchainDebate: { ...get().offchainDebate, [key]: value } } as any
         set(payload)
       },

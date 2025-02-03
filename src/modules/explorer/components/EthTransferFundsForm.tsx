@@ -47,7 +47,7 @@ const EthTransferFundsForm: React.FC<EthContractCallFormProps> = ({ open, handle
       <Grid container direction="column">
         <ProposalFormInput label="Receipient">
           <TextField
-            onChange={(e: any) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setTitle(e.target.value)
             }}
             type="string"
@@ -86,7 +86,7 @@ const EthTransferFundsForm: React.FC<EthContractCallFormProps> = ({ open, handle
             </Grid>
             <Grid item xs={isMobileSmall ? 12 : 6}>
               <TextField
-                onChange={(e: any) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setOffChainResources(e.target.value)
                 }}
                 type="number"
@@ -99,6 +99,7 @@ const EthTransferFundsForm: React.FC<EthContractCallFormProps> = ({ open, handle
         <br />
         <br />
         <Grid container direction="row" justifyContent="center">
+          {/* TODO: @ashutoshpw to be fixed by ashutoshpw */}
           <SendButton onClick={() => {}}>Submit</SendButton>
         </Grid>
       </Grid>

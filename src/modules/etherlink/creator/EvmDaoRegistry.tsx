@@ -43,6 +43,16 @@ const StyledTextField = styled(TextField)({
   }
 })
 
+const updateRegistryStore = (entries: RegistryEntry[], setFieldValue: (field: string, value: any) => void) => {
+  const registryObject = entries.reduce((acc, entry) => {
+    if (entry.key) {
+      acc[entry.key] = entry.value
+    }
+    return acc
+  }, {} as Record<string, string>)
+  setFieldValue("registry", registryObject)
+}
+
 export const EvmDaoRegistry = () => {
   const { data, setFieldValue } = useEvmDaoCreateStore()
   const [entries, setEntries] = useState<RegistryEntry[]>(
@@ -53,18 +63,18 @@ export const EvmDaoRegistry = () => {
 
   const handleEntryChange = (index: number, field: keyof RegistryEntry, value: string) => {
     const newEntries = [...entries]
+
+    if (field === "key" && value) {
+      const isDuplicateKey = entries.some((entry, i) => i !== index && entry.key === value)
+      if (isDuplicateKey) {
+        console.error("Duplicate key found in Registry")
+        return
+      }
+    }
+
     newEntries[index] = { ...newEntries[index], [field]: value }
     setEntries(newEntries)
-
-    // Update the registry object in the store
-    const registryObject = newEntries.reduce((acc, entry) => {
-      if (entry.key) {
-        acc[entry.key] = entry.value
-      }
-      return acc
-    }, {} as Record<string, string>)
-
-    setFieldValue("registry", registryObject)
+    updateRegistryStore(newEntries, setFieldValue)
   }
 
   const handleAddEntry = () => {
@@ -74,16 +84,7 @@ export const EvmDaoRegistry = () => {
   const handleRemoveEntry = (index: number) => {
     const newEntries = entries.filter((_, i) => i !== index)
     setEntries(newEntries)
-
-    // Update the registry object in the store
-    const registryObject = newEntries.reduce((acc, entry) => {
-      if (entry.key) {
-        acc[entry.key] = entry.value
-      }
-      return acc
-    }, {} as Record<string, string>)
-
-    setFieldValue("registry", registryObject)
+    updateRegistryStore(newEntries, setFieldValue)
   }
 
   return (

@@ -1,8 +1,6 @@
 import React, { useState } from "react"
-import { Box } from "@mui/material"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { ProposalFormInput } from "./ProposalFormInput"
-import { Controller } from "react-hook-form"
 import { Grid, TextField } from "@material-ui/core"
 import { SendButton } from "./ProposalFormSendButton"
 
@@ -26,7 +24,7 @@ const EthContractCallForm: React.FC<EthContractCallFormProps> = ({ open, handleC
       <Grid container direction="column">
         <ProposalFormInput label="Title">
           <TextField
-            onChange={(e: any) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setTitle(e.target.value)
             }}
             type="string"
@@ -38,7 +36,7 @@ const EthContractCallForm: React.FC<EthContractCallFormProps> = ({ open, handleC
       <Grid container direction="column">
         <ProposalFormInput label="Off-chain resources">
           <TextField
-            onChange={(e: any) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setOffChainResources(e.target.value)
             }}
             type="string"
@@ -48,6 +46,7 @@ const EthContractCallForm: React.FC<EthContractCallFormProps> = ({ open, handleC
         </ProposalFormInput>
       </Grid>
       <Grid container direction="row" justifyContent="center">
+        {/* TODO: @ashutoshpw to be fixed by ashutoshpw */}
         <SendButton onClick={() => {}}>Submit</SendButton>
       </Grid>
     </ResponsiveDialog>

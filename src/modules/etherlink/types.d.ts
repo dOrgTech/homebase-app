@@ -29,6 +29,7 @@ export interface IEvmProposal {
   isVotingActive: boolean
   latestStage: string
   referenceBlock: number
+  proposer?: string
   status: string
   statusHistoryMap: any[]
   statusHistory: Record<string, any>

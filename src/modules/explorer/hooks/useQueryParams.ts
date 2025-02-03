@@ -1,6 +1,6 @@
 // In react-router-dom v6, useHistory is deprecated and useNavigate is recommended.
 // react-router-dom v5 is used in this project.
-import { useCallback, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useLocation, useHistory } from "react-router-dom"
 
 const useQuery = () => {
@@ -11,7 +11,6 @@ const useQuery = () => {
 export const useQueryParams = <T extends Record<string, string>>() => {
   const location = useLocation()
   const history = useHistory()
-
   const searchParams = useQuery()
 
   const getParam = useCallback(

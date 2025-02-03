@@ -2,16 +2,16 @@ import React, { useState } from "react"
 import { ResponsiveDialog } from "./ResponsiveDialog"
 import { Grid, TextField, Typography, MenuItem, useMediaQuery, useTheme } from "@material-ui/core"
 import { SendButton } from "./ProposalFormSendButton"
-import Select from "@mui/material/Select"
+import Select, { SelectChangeEvent } from "@mui/material/Select"
 
 interface EthContractCallFormProps {
   open: boolean
   handleClose: () => void
 }
 
+// TODO: @ashutoshpw to be fixed by ashutoshpw
 const EthChangeConfigProposalForm: React.FC<EthContractCallFormProps> = ({ open, handleClose }) => {
   const [configType, setConfigType] = useState("quorums")
-  const [title, setTitle] = useState("")
   const [offChainResources, setOffChainResources] = useState("")
 
   const theme = useTheme()
@@ -29,7 +29,7 @@ const EthChangeConfigProposalForm: React.FC<EthContractCallFormProps> = ({ open,
         <Select
           defaultValue="quorums"
           style={{ color: "#fff", border: "1px solid #ccc", height: "40px", minWidth: "100px" }}
-          onChange={(e: any) => {
+          onChange={(e: SelectChangeEvent<string>) => {
             setConfigType(e.target.value)
           }}
         >
@@ -55,7 +55,7 @@ const EthChangeConfigProposalForm: React.FC<EthContractCallFormProps> = ({ open,
             </Grid>
             <Grid item xs={isMobileSmall ? 12 : 4}>
               <TextField
-                onChange={(e: any) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setOffChainResources(e.target.value)
                 }}
                 type="number"
@@ -81,7 +81,7 @@ const EthChangeConfigProposalForm: React.FC<EthContractCallFormProps> = ({ open,
             </Grid>
             <Grid item xs={isMobileSmall ? 12 : 4}>
               <TextField
-                onChange={(e: any) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setOffChainResources(e.target.value)
                 }}
                 type="number"

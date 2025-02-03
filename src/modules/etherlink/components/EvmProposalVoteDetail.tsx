@@ -99,7 +99,6 @@ const RenderChoices = ({
   daoProposalSelected: IEvmProposal
   totalVoteCount: number
 }) => {
-  console.log({ mode, choices, tokenSymbol, daoProposalSelected, totalVoteCount })
   if (mode === "offchain") {
     const totalVotees = choices?.reduce((acc, curr) => acc + curr.walletAddresses.length, 0)
     return (
@@ -224,9 +223,6 @@ export const EvmProposalVoteDetail: React.FC<{
   }, [poll, network, token, tokenData, totalVoteCount])
 
   const votesQuorumPercentage = daoProposalSelected?.votesWeightPercentage
-
-  console.log({ poll, choices })
-
   return (
     <>
       <Container container direction="column" style={{ marginTop: 12, marginBottom: 12 }}>

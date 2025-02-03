@@ -69,6 +69,9 @@ const titleDataMatcher = (title: (typeof titles)[number], rowData: RowData) => {
       return rowData.value
     case "Last Updated":
       return rowData.lastUpdated || "-"
+    default:
+      console.error("Invalid title", title)
+      return "-"
   }
 }
 

@@ -23,11 +23,11 @@ const CreatedText = styled(Typography)({
 export const EvmProposalItem: React.FC<{
   proposal: Proposal | any
 }> = ({ proposal, children }) => {
-  const formattedDate = proposal.createdAt.format("LLL")
+  const formattedDate = proposal?.createdAt?.format("LLL") ?? "N/A"
 
   return (
     <ContentBlockItem container justifyContent="space-between" alignItems="center">
-      <Grid item sm={8}>
+      <Grid item sm={8} role="article" aria-label={"Proposal Details"}>
         <Grid container direction="column" style={{ gap: 20 }}>
           <Grid item>
             <ProposalTitle color="textPrimary" variant="body1">

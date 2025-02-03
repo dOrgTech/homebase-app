@@ -11,6 +11,10 @@ export const BackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
       style={{ gap: 15, cursor: "pointer", marginBottom: 23, width: "fit-content" }}
       onClick={() => (onClick ? onClick() : navigate.goBack())}
       alignItems="center"
+      role="button"
+      tabIndex={0}
+      aria-label="Back"
+      onKeyDown={e => e.key === "Enter" && (onClick ? onClick() : navigate.goBack())}
     >
       <ArrowBackIosOutlined color="secondary" />
       <Typography color="secondary">Back</Typography>

@@ -119,7 +119,6 @@ export const DAOList: React.FC = () => {
   const { network, etherlink, account } = useTezos()
   const { data: daos, isLoading, isLoadingWithFirebase } = useAllDAOs(network)
 
-  console.log("isLoadingWithFirebase", isLoadingWithFirebase)
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))

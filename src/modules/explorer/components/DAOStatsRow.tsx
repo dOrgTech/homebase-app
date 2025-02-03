@@ -213,27 +213,41 @@ const DAOStatsRowTezos = () => {
   )
 }
 
+interface IEvmDaoStats {
+  members: number
+  active_proposals: number
+  awaiting_executions?: number
+}
+
+interface IEvmStatItem {
+  title: string
+  value: number | string
+}
+
 export const DAOStatsRowEtherlink = () => {
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
-  const daoStats = data?.data?.etherlink?.stats
+  const daoStats = data?.data?.etherlink?.stats as IEvmDaoStats | undefined
+
+  const statItems: IEvmStatItem[] = [
+    {
+      title: "Members",
+      value: daoStats?.members ?? 0
+    },
+    {
+      title: "Active Proposals",
+      value: daoStats?.active_proposals ?? 0
+    },
+    {
+      title: "Awaiting Executions",
+      value: daoStats?.awaiting_executions ?? "-"
+    }
+  ]
+
   return (
     <Box sx={{ flexGrow: 1, width: "inherit" }}>
       <Grid container spacing={4}>
-        {[
-          {
-            title: "Members",
-            value: daoStats?.members
-          },
-          {
-            title: "Active Proposals",
-            value: daoStats?.active_proposals
-          },
-          {
-            title: "Awaiting Executions",
-            value: daoStats?.awaiting_executions || "-"
-          }
-        ].map((item, index) => (
+        {statItems.map((item, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Item>
               <ItemContent item container direction="row" alignItems="center">

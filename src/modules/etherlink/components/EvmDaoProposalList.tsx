@@ -48,7 +48,7 @@ export const EvmDaoProposalList: React.FC<{
   useEffect(() => {
     setIsLoading(false)
     setFilteredProposals(
-      proposals?.map((proposal: any) => ({
+      proposals?.map((proposal: IEvmProposal) => ({
         id: proposal?.id,
         title: proposal?.title,
         proposer: proposal?.proposer || (proposal?.author as string),
@@ -67,15 +67,15 @@ export const EvmDaoProposalList: React.FC<{
       ) : (
         <>
           <Grid container direction="column" wrap={"nowrap"} style={{ gap: 16 }}>
-            {filteredProposals && filteredProposals.length && filteredProposals.length > 0 ? (
+            {filteredProposals?.length > 0 ? (
               <Grid item container wrap={"nowrap"} direction="column">
                 {filteredProposals.slice(offset, offset + offsetLimit).map((p, i) => {
                   const proposalLink =
                     p.type == "offchain" ? `offchain-proposal/${p.proposal.id}` : `proposal/${p.proposal.id}`
                   return (
                     <CustomGrid item key={`proposal-${i}`} style={{ width: "100%" }}>
-                      <Link to={proposalLink}>
-                        <EvmProposalItem proposal={p.proposal}></EvmProposalItem>
+                      <Link to={proposalLink} aria-label={`View Proposal`}>
+                        <EvmProposalItem proposal={p.proposal} />
                       </Link>
                     </CustomGrid>
                   )

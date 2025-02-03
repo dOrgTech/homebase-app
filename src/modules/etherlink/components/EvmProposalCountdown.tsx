@@ -51,7 +51,7 @@ export const EvmProposalCountdown = () => {
 
   if (!timerTargetDate) return null
 
-  const TimeUnit = ({ value, unit }: { value: number; unit: string }) => (
+  const TimeUnit = React.memo(({ value, unit }: { value: number; unit: string }) => (
     <Grid
       direction="column"
       alignItems="center"
@@ -76,7 +76,7 @@ export const EvmProposalCountdown = () => {
         {unit}
       </Typography>
     </Grid>
-  )
+  ))
 
   return (
     <GridContainer container direction="column" style={{ maxWidth: "100%" }}>

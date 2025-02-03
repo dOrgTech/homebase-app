@@ -5,30 +5,38 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { useContext } from "react"
 import { VotingPowerWidget } from "modules/etherlink/components/VotingPowerWidget"
 
+interface EvmDaoMember {
+  address: string
+  votingWeight: number
+  personalBalance: number
+  proposalsCreated: number
+  proposalsVoted: number
+}
+
 export const EvmMembersPage = () => {
   const { daoMembers, daoSelected } = useContext(EtherlinkContext)
   const decimals = daoSelected?.decimals || 0
-  const daoMemberData = daoMembers?.map((member: any) => ({
+  const daoMemberData = daoMembers?.map((member: EvmDaoMember) => ({
     address: member.address,
     votingWeight: member.votingWeight,
     personalBalance: member.personalBalance / 10 ** decimals,
     proposalsCreated: member.proposalsCreated,
     proposalsVoted: member.proposalsVoted
   }))
-  console.log("daoMemberData", daoMemberData, daoMembers)
+
   return (
     <Grid container>
       <Grid item xs={12} style={{ marginBottom: 20 }}>
         <TitleText color="textPrimary">Members</TitleText>
       </Grid>
 
-      {/* uncommented on andrei recommendation */}
+      {/* commented on andrei recommendation */}
       {/* <Grid item xs={12}>
         <VotingPowerWidget tokenSymbol="MTD" />
       </Grid> */}
 
       <Grid item style={{ width: "inherit", marginTop: 20 }}>
-        <EvmMembersTable data={daoMemberData} symbol={""} />
+        <EvmMembersTable data={daoMemberData} symbol={daoSelected?.symbol ?? ""} />
       </Grid>
     </Grid>
   )

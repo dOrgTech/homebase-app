@@ -22,18 +22,23 @@ export const EvmDaoMembership = () => {
 
   const handleMemberChange = (index: number, field: keyof Member, value: string) => {
     const newMembers = [...members]
-
+    if (field === "amountOfTokens" && Number(value) < 0) {
+      newMembers[index].error = "Token amount must be non-negative"
+      setFieldValue("members", newMembers)
+      return
+    }
     newMembers[index] = {
       ...newMembers[index],
       [field]: value,
       error: ""
     }
     if (field === "address") {
-      const isDuplicateAddress = members.some((member: Member) => member.address === value)
+      const trimmedValue = value.trim()
+      const isDuplicateAddress = members.some((member: Member) => member.address === trimmedValue)
 
       if (isDuplicateAddress) {
         newMembers[index].error = "Address already exists"
-      } else if (isInvalidEvmAddress(value)) {
+      } else if (isInvalidEvmAddress(trimmedValue)) {
         newMembers[index].error = "Enter a valid etherlink address"
       } else {
         newMembers[index].error = ""

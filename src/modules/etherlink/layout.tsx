@@ -70,7 +70,6 @@ export const EvmDaoCreatorLayout: React.FC = ({ children }) => {
             <Grid item style={{ width: "100%", margin: "inherit" }} xs>
               <StepContentContainer item container justifyContent="center">
                 {children}
-                {/* <StepRouter /> */}
               </StepContentContainer>
             </Grid>
           </Grid>
