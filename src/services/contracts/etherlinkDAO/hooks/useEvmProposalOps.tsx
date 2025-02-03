@@ -56,7 +56,7 @@ interface EvmProposalCreateStore {
     description: string
   }
   setCreateProposalPayload: (payload: any) => void
-  setTransferAssets: (transactions: any[]) => void
+  setTransferAssets: (transactions: any[], daoTreasuryAddress: string) => void
   daoContractCall: {
     targetAddress: string
     value: string
@@ -145,7 +145,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           }
         ]
       },
-      setTransferAssets: (transactions: any[]) => {
+      setTransferAssets: (transactions: any[], daoTreasuryAddress: string) => {
         const selectedInterface = proposalInterfaces.find(p => p.name === "transferETH")
         if (!selectedInterface) return
         const iface = new ethers.Interface(selectedInterface.interface)
@@ -169,8 +169,9 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         const payload = {
           transferAssets: { transactions },
           createProposalPayload: {
-            targets: Object.keys(transactions).map((key: any) => "0x18CA3b7277e25b952834911B1c2e9a9AB4436cA3"), // DAO Treasury Address
+            // targets: Object.keys(transactions).map((key: any) => "0x18CA3b7277e25b952834911B1c2e9a9AB4436cA3"), // DAO Treasury Address
             // targets: Object.keys(transactions).map((key: any) => transactions[key].recipient),
+            targets: Object.keys(transactions).map((key: any) => daoTreasuryAddress),
             values: Object.keys(transactions).map((key: any) => "0"),
             calldatas: callData,
             description: get().createProposalPayload.description

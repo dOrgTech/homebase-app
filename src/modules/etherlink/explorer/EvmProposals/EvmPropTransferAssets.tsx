@@ -1,8 +1,9 @@
-import React from "react"
+import React, { useContext } from "react"
 import { Grid, styled, Typography, MenuItem, IconButton, TextField } from "@material-ui/core"
 import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledTextField } from "components/ui/StyledTextField"
+import { EtherlinkContext } from "services/wagmi/context"
 
 const TransactionContainer = styled(Grid)({
   marginBottom: "20px"
@@ -39,23 +40,24 @@ interface ITransaction {
 
 export const EvmPropTransferAssets: React.FC = () => {
   const { transferAssets, setTransferAssets } = useEvmProposalOps()
+  const { daoSelected } = useContext(EtherlinkContext)
 
   const onUpdateTransaction = (index: number, field: keyof ITransaction, value: string) => {
     const transactions = [...transferAssets.transactions]
     transactions[index][field] = value
-    setTransferAssets(transactions)
+    setTransferAssets(transactions, daoSelected?.treasuryAddress)
   }
 
   const onAddTransaction = () => {
     const transactions = [...transferAssets.transactions]
     transactions.push({ assetType: "XTZ", recipient: "", amount: "" })
-    setTransferAssets(transactions)
+    setTransferAssets(transactions, daoSelected?.treasuryAddress)
   }
 
   const onRemoveTransaction = (index: number) => {
     const transactions = [...transferAssets.transactions]
     transactions.splice(index, 1)
-    setTransferAssets(transactions)
+    setTransferAssets(transactions, daoSelected?.treasuryAddress)
   }
 
   return (
