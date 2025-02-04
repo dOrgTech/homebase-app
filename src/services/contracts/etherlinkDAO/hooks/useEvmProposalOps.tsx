@@ -438,6 +438,36 @@ export const useEvmProposalOps = () => {
     daoSelected?.address
   ])
 
+  const getProposalExecutionTargetAddress = useCallback(() => {
+    if (!daoContract || !daoProposalSelected?.id || !daoSelected?.address || !daoProposalSelected?.type)
+      return alert("No dao contract or proposal id")
+
+    const proposalType = daoProposalSelected?.type?.toLowerCase()
+    if (proposalType === "registry") {
+      return daoSelected?.registryAddress
+    }
+    if (proposalType?.startsWith("mint")) {
+      return daoSelected?.treasuryAddress
+    }
+    if (proposalType?.startsWith("burn")) {
+      return daoSelected?.treasuryAddress
+    }
+    if (proposalType == "transfer") {
+      return daoSelected?.treasuryAddress
+    }
+    if (proposalType == "quorum") {
+      return daoSelected?.address
+    }
+    return daoSelected?.address
+  }, [
+    daoContract,
+    daoProposalSelected?.id,
+    daoProposalSelected?.type,
+    daoSelected?.address,
+    daoSelected?.registryAddress,
+    daoSelected?.treasuryAddress
+  ])
+
   const createProposal = useCallback(
     async (payload: Record<string, any>) => {
       if (!daoSelected || !daoContract) return
@@ -465,21 +495,31 @@ export const useEvmProposalOps = () => {
   )
 
   const queueForExecution = useCallback(async () => {
+    console.log(daoProposalSelected?.type)
     if (!daoContract || !daoProposalSelected?.id || !daoSelected?.treasuryAddress)
       return alert("No dao contract or proposal id")
 
     const metadata = getProposalExecutionMetadata()
     if (!metadata) return alert("Could not get proposal metadata")
-    console.log("proposalAction metadata", daoSelected?.treasuryAddress, metadata)
 
-    const tx = await daoContract.queue([daoSelected?.treasuryAddress], [0], metadata.calldata, metadata.hashHex)
+    const targetAddress = getProposalExecutionTargetAddress()
+    console.log("proposalAction metadata", targetAddress, metadata)
+
+    const tx = await daoContract.queue([targetAddress], [0], metadata.calldata, metadata.hashHex)
     console.log("Queue transaction sent:", tx.hash)
 
     const receipt = await tx.wait()
     console.log("Queue transaction confirmed:", receipt)
 
     return receipt
-  }, [daoContract, daoProposalSelected?.id, daoSelected?.treasuryAddress, getProposalExecutionMetadata])
+  }, [
+    daoContract,
+    daoProposalSelected?.id,
+    daoProposalSelected?.type,
+    daoSelected?.treasuryAddress,
+    getProposalExecutionMetadata,
+    getProposalExecutionTargetAddress
+  ])
 
   const executeProposal = useCallback(async () => {
     if (!daoContract) return
@@ -487,16 +527,16 @@ export const useEvmProposalOps = () => {
     const metadata = getProposalExecutionMetadata()
     if (!metadata) return alert("Could not get proposal metadata")
 
-    const treasuryAddress = daoSelected?.treasuryAddress
-    if (!treasuryAddress) return alert("No treasury address")
+    const targetAddress = getProposalExecutionTargetAddress()
+    if (!targetAddress) return alert("No target address")
 
-    const tx = await daoContract.execute([treasuryAddress], [0], metadata.calldata, metadata.hashHex)
+    const tx = await daoContract.execute([targetAddress], [0], metadata.calldata, metadata.hashHex)
     console.log("Execute transaction sent:", tx.hash)
 
     const receipt = await tx.wait()
     console.log("Execute transaction confirmed:", receipt)
     return receipt
-  }, [daoContract, daoSelected?.treasuryAddress, getProposalExecutionMetadata])
+  }, [daoContract, getProposalExecutionMetadata, getProposalExecutionTargetAddress])
 
   const nextStep = {
     text: isLoading ? "Please wait..." : "Next",

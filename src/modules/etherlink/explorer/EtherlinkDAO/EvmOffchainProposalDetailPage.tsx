@@ -85,6 +85,10 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
   if (daoProposalSelected?.status === ProposalStatus.PASSED) {
     return (
       <Grid container justifyContent="center">
+        <Grid>
+          <EvmProposalCountdown />
+        </Grid>
+
         <Button
           variant="contained"
           color="secondary"

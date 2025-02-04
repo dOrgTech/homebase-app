@@ -226,6 +226,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
           // Setting up timerLabel
           let isVotingActive = false
+          let isTimerActive = false
           let timerLabel = "Voting concluded"
           let timerTargetDate = null
           if (activeStartTimestamp?.isAfter(timeNow)) {
@@ -233,9 +234,11 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             timerTargetDate = activeStartTimestamp
           } else if (votingExpiresAt?.isAfter(timeNow) && activeStartTimestamp?.isBefore(timeNow)) {
             isVotingActive = true
+            isTimerActive = true
             timerLabel = "Time left to vote"
             timerTargetDate = votingExpiresAt
           } else if (proposalStatus === ProposalStatus.PASSED) {
+            isTimerActive = true
             timerLabel = "Execution available in"
             timerTargetDate = votingEndTimestamp
           }
@@ -255,6 +258,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             timerLabel,
             timerTargetDate,
             isVotingActive,
+            isTimerActive,
             votesWeightPercentage: Number(votesPercentage.toFixed(2)),
             txHash: firebaseProposal?.executionHash
               ? `https://testnet.explorer.etherlink.com/tx/0x${parseTransactionHash(firebaseProposal?.executionHash)}`
@@ -272,7 +276,14 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (firestoreData?.[daoProposalVotesKey]) {
       setDaoProposalVoters(firestoreData[daoProposalVotesKey])
     }
-  }, [daoProposalSelected?.id, daoSelected, daoSelected?.votingDuration, firebaseRootCollection, firestoreData])
+  }, [
+    daoProposalSelected?.id,
+    daoProposalSelected?.type,
+    daoSelected,
+    daoSelected?.votingDuration,
+    firebaseRootCollection,
+    firestoreData
+  ])
 
   useEffect(() => {
     if (daoSelected?.id && firebaseRootCollection && daoProposalSelected?.type !== "offchain") {
@@ -296,7 +307,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         fetchCollection(`${firebaseRootCollection}/${daoSelected?.id}/proposals/${daoProposalSelected?.id}/votes`)
       }
     }
-  }, [daoProposalSelected?.id, daoSelected, fetchCollection, firebaseRootCollection])
+  }, [daoProposalSelected?.id, daoProposalSelected?.type, daoSelected, fetchCollection, firebaseRootCollection])
 
   useEffect(() => {
     if (!daoSelected?.id) return
@@ -448,6 +459,7 @@ const getStatusByHistory = (
   if (activeStartTimestamp.isAfter(timeNow) && votingExpiresAt.isBefore(timeNow)) {
     return ProposalStatus.ACTIVE
   }
+
   // TODO: @ashutoshpw, handle more statuses
   switch (status.status) {
     case "queued":
