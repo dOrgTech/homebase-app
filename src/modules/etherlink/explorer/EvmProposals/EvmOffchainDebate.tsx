@@ -1,8 +1,9 @@
-import React, { useState } from "react"
-import { Grid, styled, Typography, IconButton, FormControlLabel, Switch } from "@material-ui/core"
+import React from "react"
+import { Grid, styled, Typography, IconButton, FormControlLabel } from "@material-ui/core"
 import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
+import { Switch } from "components/ui/Switch"
 
 const InputContainer = styled(Grid)({
   background: "#1c2024",

@@ -42,7 +42,7 @@ interface EvmProposalCreateStore {
     description: string
   }
   setCreateProposalPayload: (payload: any) => void
-  setTransferAssets: (transactions: any[], daoTreasuryAddress: string) => void
+  setTransferAssets: (transactions: any[], daoRegistryAddress: string) => void
   daoContractCall: {
     targetAddress: string
     value: string
@@ -131,7 +131,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           }
         ]
       },
-      setTransferAssets: (transactions: any[], daoTreasuryAddress: string) => {
+      setTransferAssets: (transactions: any[], daoRegistryAddress: string) => {
         const selectedInterface = proposalInterfaces.find(p => p.name === "transferETH")
         if (!selectedInterface) return
         const iface = new ethers.Interface(selectedInterface.interface)
@@ -157,7 +157,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           createProposalPayload: {
             // targets: Object.keys(transactions).map((key: any) => "0x18CA3b7277e25b952834911B1c2e9a9AB4436cA3"), // DAO Treasury Address
             // targets: Object.keys(transactions).map((key: any) => transactions[key].recipient),
-            targets: Object.keys(transactions).map((key: any) => daoTreasuryAddress),
+            targets: Object.keys(transactions).map((key: any) => daoRegistryAddress),
             values: Object.keys(transactions).map((key: any) => "0"),
             calldatas: callData,
             description: get().createProposalPayload.description
@@ -453,7 +453,7 @@ export const useEvmProposalOps = () => {
       return daoSelected?.treasuryAddress
     }
     if (proposalType == "transfer") {
-      return daoSelected?.treasuryAddress
+      return daoSelected?.registryAddress
     }
     if (proposalType == "quorum") {
       return daoSelected?.address
@@ -618,22 +618,21 @@ export const useEvmProposalOps = () => {
         if (proposalType === "off_chain_debate") {
           const offchainPayload = zustantStore.offchainDebate
           const proposalMetadata = zustantStore.metadata
+          const expiryDays = Number(offchainPayload.expiry_days) || 0
+          const expiryHours = Number(offchainPayload.expiry_hours) || 0
+          const expiryMinutes = Number(offchainPayload.expiry_minutes) || 0
           const dataToSign = {
             name: proposalMetadata.title,
             description: proposalMetadata.description,
             externalLink: proposalMetadata.discussionUrl,
             choices: offchainPayload.options,
-            endTimeDays: offchainPayload.expiry_days,
-            endTimeHours: offchainPayload.expiry_hours,
-            endTimeMinutes: offchainPayload.expiry_minutes,
+            endTimeDays: expiryDays,
+            endTimeHours: expiryHours,
+            endTimeMinutes: expiryMinutes,
             votingStrategy: offchainPayload.is_multiple_choice,
             startTime: String(dayjs().valueOf()),
             endTime: String(
-              dayjs()
-                .add(Number(offchainPayload.expiry_days), "days")
-                .add(Number(offchainPayload.expiry_hours), "hours")
-                .add(Number(offchainPayload.expiry_minutes), "minutes")
-                .valueOf()
+              dayjs().add(expiryDays, "days").add(expiryHours, "hours").add(expiryMinutes, "minutes").valueOf()
             ),
             daoId: daoSelected?.address,
             tokenAddress: daoSelected?.token,
@@ -653,12 +652,15 @@ export const useEvmProposalOps = () => {
           }
           const res = await saveLiteProposal(signature, etherlink?.signer?.address, payloadBytes, network)
           const respData = await res.json()
+          setIsLoading(false)
+          setIsDeploying(false)
           if (res.ok) {
             openNotification({
               message: "Proposal created!",
               autoHideDuration: 3000,
               variant: "success"
             })
+            setIsProposalDialogOpen(false)
             router.push(`/explorer/etherlink/dao/${daoSelected?.address}/proposals`)
           } else {
             console.log("Error: ", respData.message)
@@ -667,7 +669,6 @@ export const useEvmProposalOps = () => {
               autoHideDuration: 3000,
               variant: "error"
             })
-            setIsLoading(false)
             return
           }
           return console.log("offchainDebate", offchainPayload, proposalMetadata, signature, payloadBytes)

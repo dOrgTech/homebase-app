@@ -45,19 +45,19 @@ export const EvmPropTransferAssets: React.FC = () => {
   const onUpdateTransaction = (index: number, field: keyof ITransaction, value: string) => {
     const transactions = [...transferAssets.transactions]
     transactions[index][field] = value
-    setTransferAssets(transactions, daoSelected?.treasuryAddress)
+    setTransferAssets(transactions, daoSelected?.registryAddress)
   }
 
   const onAddTransaction = () => {
     const transactions = [...transferAssets.transactions]
     transactions.push({ assetType: "XTZ", recipient: "", amount: "" })
-    setTransferAssets(transactions, daoSelected?.treasuryAddress)
+    setTransferAssets(transactions, daoSelected?.registryAddress)
   }
 
   const onRemoveTransaction = (index: number) => {
     const transactions = [...transferAssets.transactions]
     transactions.splice(index, 1)
-    setTransferAssets(transactions, daoSelected?.treasuryAddress)
+    setTransferAssets(transactions, daoSelected?.registryAddress)
   }
 
   console.log("Txns", transferAssets.transactions)

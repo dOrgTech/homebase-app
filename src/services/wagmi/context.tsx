@@ -157,6 +157,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
           const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
           const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
+          const executionAvailableAt = votingExpiresAt.add(daoSelected?.executionDelay, "seconds")
 
           const votingEndTimestamp = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
 
@@ -237,10 +238,12 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             isTimerActive = true
             timerLabel = "Time left to vote"
             timerTargetDate = votingExpiresAt
-          } else if (proposalStatus === ProposalStatus.PASSED) {
+          }
+
+          if (proposalStatus === ProposalStatus.PASSED && executionAvailableAt?.isAfter(timeNow)) {
             isTimerActive = true
             timerLabel = "Execution available in"
-            timerTargetDate = votingEndTimestamp
+            timerTargetDate = executionAvailableAt
           }
 
           const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
@@ -253,6 +256,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             statusHistoryMap: sortedStatusHistoryMap,
             votingStartTimestamp: activeStartTimestamp,
             votingExpiresAt: votingExpiresAt,
+            executionAvailableAt: executionAvailableAt,
             totalVotes: totalVotes,
             totalVoteCount,
             timerLabel,

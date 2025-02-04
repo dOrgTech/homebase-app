@@ -34,11 +34,30 @@ const RenderProposalAction = () => {
 
   const isVotingActive = daoProposalSelected?.isVotingActive
   const votingExpiresAt = daoProposalSelected?.votingExpiresAt
+  const executionAvailableAt = daoProposalSelected?.executionAvailableAt
+
   const [isCastingVote, setIsCastingVote] = useState(false)
   const openNotification = useNotification()
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
 
-  if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(votingExpiresAt).isBefore(dayjs())) {
+  if (
+    daoProposalSelected?.status === ProposalStatus.PASSED &&
+    dayjs(votingExpiresAt).isBefore(dayjs()) &&
+    dayjs(executionAvailableAt).isAfter(dayjs())
+  ) {
+    return (
+      <Grid container justifyContent="center">
+        <EvmProposalCountdown />
+      </Grid>
+    )
+  }
+
+  if (
+    daoProposalSelected?.status === ProposalStatus.PASSED &&
+    dayjs(votingExpiresAt).isBefore(dayjs()) &&
+    dayjs(executionAvailableAt).isBefore(dayjs())
+  ) {
+    //Show Execute Button
     return (
       <Grid container justifyContent="center">
         <Button
@@ -76,6 +95,15 @@ const RenderProposalAction = () => {
     )
   }
 
+  if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(executionAvailableAt).isAfter(dayjs())) {
+    return (
+      <Grid container justifyContent="center">
+        <Typography>Queued for Execution</Typography>
+        <EvmProposalCountdown />
+      </Grid>
+    )
+  }
+
   if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(votingExpiresAt).isAfter(dayjs())) {
     return (
       <Grid container justifyContent="center">
@@ -83,6 +111,8 @@ const RenderProposalAction = () => {
       </Grid>
     )
   }
+
+  // if(daoProposalSelected?.status === ProposalStatus.PASSED && dayjs)
 
   if (daoProposalSelected?.status === ProposalStatus.EXECUTABLE) {
     return (
