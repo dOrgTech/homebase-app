@@ -60,6 +60,7 @@ export const EvmPropTransferAssets: React.FC = () => {
     setTransferAssets(transactions, daoSelected?.treasuryAddress)
   }
 
+  console.log("Txns", transferAssets.transactions)
   return (
     <Grid container direction="column">
       {transferAssets.transactions.map((transaction: ITransaction, index: number) => (
@@ -98,8 +99,8 @@ export const EvmPropTransferAssets: React.FC = () => {
                   min: "0",
                   step: "0.000001"
                 }}
-                error={!!transaction.amount}
-                helperText={transaction.amount ? "Amount must be a number" : ""}
+                error={!transaction.amount}
+                helperText={!transaction.amount ? "Amount must be a number" : ""}
                 value={transaction.amount}
                 onChange={e => onUpdateTransaction(index, "amount", e.target.value)}
               />

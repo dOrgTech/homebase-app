@@ -102,7 +102,6 @@ export const EvmProposalOptions = [
   }
 ]
 
-// TODO: Ensure tags are unique
 export const proposalInterfaces = [
   {
     tags: ["registry"],
