@@ -477,6 +477,7 @@ export const EtherlinkContext = createContext<any | undefined>(undefined)
 
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [network, setNetwork] = useState<string | undefined>(localStorage.getItem("homebase:network") || undefined)
+  const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false)
   const { setOpen } = useModal()
   const provider = useEthersProvider()
   const signer = useEthersSigner()
@@ -542,6 +543,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
           // connect({ config: wagmiConfig })
         },
         contractData,
+        isProposalDialogOpen,
+        setIsProposalDialogOpen,
         daos,
         isLoadingDaos,
         isLoadingDaoProposals,

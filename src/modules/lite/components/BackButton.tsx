@@ -3,13 +3,13 @@ import { Grid, Typography } from "@material-ui/core"
 import { ArrowBackIosOutlined } from "@material-ui/icons"
 import { useHistory } from "react-router"
 
-export const BackButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
+export const BackButton: React.FC<{ onClick?: () => void; disabled?: boolean }> = ({ onClick, disabled }) => {
   const navigate = useHistory()
   return (
     <Grid
       container
-      style={{ gap: 15, cursor: "pointer", marginBottom: 23, width: "fit-content" }}
-      onClick={() => (onClick ? onClick() : navigate.goBack())}
+      style={{ gap: 15, cursor: "pointer", marginBottom: 23, width: "fit-content", opacity: disabled ? 0.5 : 1 }}
+      onClick={() => (onClick && !disabled ? onClick() : navigate.goBack())}
       alignItems="center"
       role="button"
       tabIndex={0}

@@ -8,23 +8,15 @@ import { HeroContainer } from "components/ui/HeroContainer"
 import { SmallButton } from "modules/common/SmallButton"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
-import Select, { SelectChangeEvent } from "@mui/material/Select"
+import Select from "@mui/material/Select"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
-import StatusButton from "components/ui/StatusButton"
 
 export const EvmProposalsPage = () => {
   const [proposalType, setProposalType] = useQueryParam("type")
   const [proposalStatus, setProposalStatus] = useQueryParam("status")
-
-  // TODO: Replace useContext with a useEtherlinkProvider
-  const { daoProposals } = useContext(EtherlinkContext)
+  const { daoProposals, isProposalDialogOpen, setIsProposalDialogOpen } = useContext(EtherlinkContext)
 
   const theme = useTheme()
-  const [openDialog, setOpenDialog] = useState(false)
-  console.log({ daoProposals })
-  const handleCloseModal = () => {
-    setOpenDialog(false)
-  }
 
   const filteredProposals = useMemo(() => {
     if (
@@ -111,14 +103,14 @@ export const EvmProposalsPage = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={3} style={{ textAlign: "right", justifyContent: "flex-end" }}>
-                <SmallButton variant="contained" color="secondary" onClick={() => setOpenDialog(true)}>
+                <SmallButton variant="contained" color="secondary" onClick={() => setIsProposalDialogOpen(true)}>
                   New Proposal
                 </SmallButton>
               </Grid>
             </Grid>
           </Grid>
         </HeroContainer>
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} />
+        <ProposalActionsDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
       </Grid>
       <EvmDaoProposalList proposals={filteredProposals} />
     </>

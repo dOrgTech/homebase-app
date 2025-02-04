@@ -58,3 +58,17 @@ export interface IEvmProposal {
   votingStartTimestamp: dayjs.Dayjs
   choices?: IEvmOffchainChoice[]
 }
+
+export interface IEvmProposalTxn {
+  "blockHash": string
+  "blockNumber": number
+  "from": IEthereumAddress
+  "gasPrice": BigNumber
+  "hash": string
+  "input": string
+  "to": IEthereumAddress
+  "value": string
+  "type": number
+  "#iface": any
+  "#logs": any[]
+}

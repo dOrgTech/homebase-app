@@ -1,10 +1,9 @@
-import { Box, Container, Grid, styled, TextField, useMediaQuery, useTheme } from "@material-ui/core"
+import { Box, Container, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { Typography } from "@material-ui/core"
 import { NextButton } from "components/ui/NextButton"
 import { StyledTextField } from "components/ui/StyledTextField"
-import EthChangeConfigProposalForm from "modules/explorer/components/EthChangeConfigProposalForm"
-import EthContractCallForm from "modules/explorer/components/EthContractCallForm"
-import EthTransferFundsForm from "modules/explorer/components/EthTransferFundsForm"
+import { LinearProgress, LinearProgressLoader } from "components/ui/LinearProgress"
+
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
 
@@ -49,7 +48,6 @@ const TitleContainer = styled(Grid)({
 })
 
 const renderModal = (modal: string) => {
-  console.log("renderModal", modal)
   switch (modal) {
     case "transfer_assets":
       return <EvmPropTransferAssets />
@@ -70,7 +68,7 @@ const renderModal = (modal: string) => {
 
 export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean; handleClose: () => void }) => {
   const theme = useTheme()
-  const { isLoading, currentStep, metadata, setMetadataFieldValue, setCurrentStep, nextStep, prevStep } =
+  const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, nextStep, prevStep } =
     useEvmProposalOps()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const proposalTitle = EvmProposalOptions.find(option => option.modal === metadata.type)?.label
@@ -159,10 +157,17 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        {renderModal(metadata.type)}
+        {isDeploying ? (
+          <>
+            <Typography>Deploying Proposal...</Typography>
+            <LinearProgressLoader />
+          </>
+        ) : (
+          renderModal(metadata.type)
+        )}
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <BackButton onClick={prevStep.handler} />
-          <NextButton disabled={isLoading} onClick={nextStep.handler}>
+          <BackButton disabled={isDeploying} onClick={prevStep.handler} />
+          <NextButton disabled={isLoading || isDeploying} onClick={nextStep.handler}>
             {nextStep.text}
           </NextButton>
         </Grid>

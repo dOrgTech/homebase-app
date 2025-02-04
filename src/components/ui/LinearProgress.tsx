@@ -1,5 +1,4 @@
-import { Button, Grid, Theme, LinearProgress as MuiLinearProgress } from "@material-ui/core"
-import { styled } from "@mui/material/styles"
+import { Theme, LinearProgress as MuiLinearProgress } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
 
 const StyledLinearProgress = withStyles((theme: Theme) => ({
@@ -15,6 +14,20 @@ const StyledLinearProgress = withStyles((theme: Theme) => ({
   })
 }))((props: { value: number }) => <MuiLinearProgress {...props} value={props.value} variant="determinate" />)
 
+const StyledLinearProgressLoader = withStyles((theme: Theme) => ({
+  root: {
+    "backgroundColor": theme.palette.primary.light,
+    "color": theme.palette.primary.light,
+    "& .MuiLinearProgress-bar": {
+      backgroundColor: theme.palette.secondary.main
+    }
+  }
+}))(MuiLinearProgress)
+
 export const LinearProgress = ({ value, variant }: { value: number; variant: "success" | "error" }) => {
   return <StyledLinearProgress value={value} variant={variant} />
+}
+
+export const LinearProgressLoader = () => {
+  return <StyledLinearProgressLoader />
 }

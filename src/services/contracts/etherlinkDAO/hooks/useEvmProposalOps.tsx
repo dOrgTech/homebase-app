@@ -15,7 +15,7 @@ import dayjs from "dayjs"
 import { getSignature } from "services/lite/utils"
 import { getEthSignature } from "services/utils/utils"
 import { saveLiteProposal, voteOnLiteProposal } from "services/services/lite/lite-services"
-import { IEvmOffchainChoice, IEvmOffchainChoiceForVote } from "modules/etherlink/types"
+import { IEvmOffchainChoice, IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modules/etherlink/types"
 
 function getDaoConfigType(type: string) {
   if (type === "quorumNumerator") return "quorum"
@@ -412,8 +412,9 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
 
 export const useEvmProposalOps = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const [isDeploying, setIsDeploying] = useState(false)
   const { etherlink, network } = useTezos()
-  const { daoSelected, daoProposalSelected } = useContext(EtherlinkContext)
+  const { daoSelected, daoProposalSelected, setIsProposalDialogOpen } = useContext(EtherlinkContext)
   const router = useHistory()
 
   const zustantStore = useEvmProposalCreateZustantStore()
@@ -561,7 +562,7 @@ export const useEvmProposalOps = () => {
         zustantStore.setCurrentStep(currentStep + 1)
       } else if (currentStep === selectedOption?.last_step) {
         // At Step 2 we call the Contract
-        // setIsLoading(true)
+        setIsDeploying(true)
 
         const { closeSnackbar } = openNotification({
           message: "Creating Proposal...",
@@ -626,7 +627,7 @@ export const useEvmProposalOps = () => {
           return console.log("offchainDebate", offchainPayload, proposalMetadata, signature, payloadBytes)
         } else {
           createProposal(zustantStore.createProposalPayload)
-            .then((createdProposal: any) => {
+            .then((createdProposal: IEvmProposalTxn) => {
               console.log("createdProposal", createdProposal)
               setIsLoading(false)
               zustantStore.setCurrentStep(0)
@@ -642,18 +643,22 @@ export const useEvmProposalOps = () => {
                 description: "",
                 discussionUrl: ""
               })
+              setIsProposalDialogOpen(false)
               router.push(`/explorer/etherlink/dao/${daoSelected?.address}/proposals`)
             })
             .catch(err => {
               console.log("Error creating proposal", err)
-              openNotification({
-                message: `Error creating proposal: ${err.message}`,
-                variant: "error",
-                autoHideDuration: 3000
-              })
+              setTimeout(() => {
+                openNotification({
+                  message: `Error creating proposal: ${err.shortMessage}`,
+                  variant: "error",
+                  autoHideDuration: 3000
+                })
+              }, 500)
             })
             .finally(() => {
               closeSnackbar()
+              setIsDeploying(false)
             })
         }
       }
@@ -720,6 +725,7 @@ export const useEvmProposalOps = () => {
     signer: etherlink?.signer,
     nextStep,
     prevStep,
+    isDeploying,
     ...zustantStore
   }
 }
