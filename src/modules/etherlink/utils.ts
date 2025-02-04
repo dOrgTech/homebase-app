@@ -5,6 +5,10 @@ export const isInvalidEvmAddress = (address: string) => {
   return !ethers.isAddress(address)
 }
 
+export const isValidUrl = (url: string) => {
+  return url.startsWith("http") || url.startsWith("https")
+}
+
 export const validateEvmTokenAddress = (address: string) => {
   return ethers.isAddress(address)
 }
@@ -321,4 +325,18 @@ export function decodeFunctionParametersLegacy(functionAbiString: string, hexStr
     console.log("error:decodeFunctionParametersLegacy", { functionAbiString, hexString, error })
     return []
   }
+}
+
+export function getDaoConfigType(type: string) {
+  if (type === "quorumNumerator") return "quorum"
+  if (type === "votingDelay") return "voting delay"
+  if (type === "votingPeriod") return "voting period"
+  if (type === "proposalThreshold") return "proposal threshold"
+  return ""
+}
+
+export function getDaoTokenOpsType(type: string, tokenSymbol: string) {
+  if (type === "mint") return `Mint${tokenSymbol}`
+  if (type === "burn") return `Burn${tokenSymbol}`
+  return ""
 }

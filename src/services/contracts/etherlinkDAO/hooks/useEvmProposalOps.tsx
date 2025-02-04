@@ -12,24 +12,10 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { EvmProposalOptions, proposalInterfaces } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
 import dayjs from "dayjs"
-import { getSignature } from "services/lite/utils"
 import { getEthSignature } from "services/utils/utils"
 import { saveLiteProposal, voteOnLiteProposal } from "services/services/lite/lite-services"
-import { IEvmOffchainChoice, IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modules/etherlink/types"
-
-function getDaoConfigType(type: string) {
-  if (type === "quorumNumerator") return "quorum"
-  if (type === "votingDelay") return "voting delay"
-  if (type === "votingPeriod") return "voting period"
-  if (type === "proposalThreshold") return "proposal threshold"
-  return ""
-}
-
-function getDaoTokenOpsType(type: string, tokenSymbol: string) {
-  if (type === "mint") return `Mint${tokenSymbol}`
-  if (type === "burn") return `Burn${tokenSymbol}`
-  return ""
-}
+import { IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modules/etherlink/types"
+import { isValidUrl, getDaoConfigType, getDaoTokenOpsType } from "modules/etherlink/utils"
 
 interface EvmProposalCreateStore {
   currentStep: number
@@ -536,6 +522,7 @@ export const useEvmProposalOps = () => {
       //       "0x7b1a4909000000000000000000000000a9f8f9c0bf3188ceddb9684ae28655187552bae90000000000000000000000000000000000000000000000000de0b6b3a7640000"
       //   )
       //   return
+
       const selectedOption = EvmProposalOptions.find((p: any) => p.modal === proposalType) as any
       if (currentStep == 0) {
         zustantStore.setCurrentStep(1)
@@ -543,6 +530,30 @@ export const useEvmProposalOps = () => {
       // Setting up Proposal Title, Details and Link
       else if (currentStep == 1) {
         const metadata = zustantStore.getMetadata()
+        if (metadata?.title?.length == 0) {
+          openNotification({
+            message: "Please enter a title",
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+        if (metadata?.description?.length == 0) {
+          openNotification({
+            message: "Please enter a description",
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
+        if (metadata?.discussionUrl?.length == 0 || !isValidUrl(metadata?.discussionUrl)) {
+          openNotification({
+            message: "Please enter a valid discussion url",
+            autoHideDuration: 3000,
+            variant: "error"
+          })
+          return
+        }
         // "${p.name}0|||0${p.type}0|||0${p.description}0|||0${p.externalResource}"
         if (selectedOption?.last_step === 2) {
           const proposalType = selectedOption?.proposal_type()
