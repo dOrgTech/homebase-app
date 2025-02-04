@@ -174,15 +174,6 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         const selectedInterface = selectedPropType?.interface?.editRegistry
         if (!selectedInterface) return console.log("No interface found")
 
-        if (get().daoRegistry.key.length === 0) {
-          set({ daoRegistryError: "Key is required" })
-          return
-        }
-        if (get().daoRegistry.value.length === 0) {
-          set({ daoRegistryError: "Value is required" })
-          return
-        }
-
         const iface = new ethers.Interface(selectedInterface.interface)
         const encodedData = iface.encodeFunctionData(selectedInterface.name, [
           get().daoRegistry.key,

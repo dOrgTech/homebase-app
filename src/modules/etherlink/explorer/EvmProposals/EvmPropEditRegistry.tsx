@@ -21,7 +21,9 @@ export const EvmPropEditRegistry: React.FC = () => {
           defaultValue={daoRegistry.key}
           label="Registry Key"
           variant="outlined"
-          onChange={e => setDaoRegistry("key", e.target.value)}
+          onChange={e => {
+            setDaoRegistry("key", e.target.value)
+          }}
         />
       </Grid>
       <Grid item xs={12}>
@@ -30,7 +32,9 @@ export const EvmPropEditRegistry: React.FC = () => {
           defaultValue={daoRegistry.value}
           label="Registry Value"
           variant="outlined"
-          onChange={e => setDaoRegistry("value", e.target.value)}
+          onChange={e => {
+            setDaoRegistry("value", e.target.value)
+          }}
         />
       </Grid>
     </InputContainer>
