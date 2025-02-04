@@ -524,6 +524,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   } = useEtherlinkDao({
     network: etherlinkNetwork || ""
   })
+  console.log({ daoProposals })
 
   console.log("Etherlink Network", etherlinkNetwork)
   console.log("Wagmi Chain", chain, status)

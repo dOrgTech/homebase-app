@@ -2,6 +2,7 @@ import React, { useContext, useMemo } from "react"
 import { Box, Grid, styled, useTheme, Typography, Paper } from "@material-ui/core"
 
 import { EtherlinkContext } from "services/wagmi/context"
+import { IEvmProposal } from "../types"
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#24282d",
@@ -37,7 +38,13 @@ const ItemValue = styled(Typography)(({ theme }) => ({
 }))
 
 export const EvmDaoStatsRow = () => {
-  const { daoSelected } = useContext(EtherlinkContext)
+  const { daoSelected, daoProposals } = useContext(EtherlinkContext)
+  const awaitingExecutionCount = daoProposals.filter(
+    (proposal: IEvmProposal) => proposal.status === "executable"
+  )?.length
+
+  const activeProposalsCount = daoProposals.filter((proposal: IEvmProposal) => proposal.status === "active")?.length
+
   return (
     <Box sx={{ flexGrow: 1, width: "inherit" }}>
       <Grid container spacing={4}>
@@ -48,11 +55,11 @@ export const EvmDaoStatsRow = () => {
           },
           {
             title: "Active Proposals",
-            value: daoSelected?.proposals?.length || "0"
+            value: daoSelected?.proposals?.length || activeProposalsCount || "0"
           },
           {
             title: "Awaiting Executions",
-            value: daoSelected?.awaiting_executions || "-"
+            value: daoSelected?.awaiting_executions || awaitingExecutionCount || "-"
           }
         ].map((item, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>

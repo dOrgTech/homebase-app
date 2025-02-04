@@ -35,7 +35,7 @@ export interface IEvmProposal {
   latestStage: string
   referenceBlock: number
   proposer?: string
-  status: string
+  status: string // TODO: Add all types
   statusHistoryMap: {
     timestamp: dayjs.Dayjs
     status: ITransactionStatus
