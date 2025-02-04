@@ -40,22 +40,22 @@ const RenderProposalAction = () => {
   const openNotification = useNotification()
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
 
-  if (
-    daoProposalSelected?.status === ProposalStatus.PASSED &&
-    dayjs(votingExpiresAt).isBefore(dayjs()) &&
-    dayjs(executionAvailableAt).isAfter(dayjs())
-  ) {
-    return (
-      <Grid container justifyContent="center">
-        <EvmProposalCountdown />
-      </Grid>
-    )
-  }
+  // if (
+  //   daoProposalSelected?.status === ProposalStatus.PASSED &&
+  //   dayjs(votingExpiresAt).isBefore(dayjs()) &&
+  //   dayjs(executionAvailableAt).isAfter(dayjs())
+  // ) {
+  //   return (
+  //     <Grid container justifyContent="center">
+  //       <EvmProposalCountdown />
+  //     </Grid>
+  //   )
+  // }
 
   if (
     daoProposalSelected?.status === ProposalStatus.PASSED &&
-    dayjs(votingExpiresAt).isBefore(dayjs()) &&
-    dayjs(executionAvailableAt).isBefore(dayjs())
+    dayjs(votingExpiresAt).isBefore(dayjs())
+    // && dayjs(executionAvailableAt).isBefore(dayjs())
   ) {
     //Show Execute Button
     return (
@@ -95,18 +95,19 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(executionAvailableAt).isAfter(dayjs())) {
-    return (
-      <Grid container justifyContent="center">
-        <Typography>Queued for Execution</Typography>
-        <EvmProposalCountdown />
-      </Grid>
-    )
-  }
+  // if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(executionAvailableAt).isAfter(dayjs())) {
+  //   return (
+  //     <Grid container justifyContent="center">
+  //       <Typography>Queued for Execution</Typography>
+  //       <EvmProposalCountdown />
+  //     </Grid>
+  //   )
+  // }
 
   if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(votingExpiresAt).isAfter(dayjs())) {
     return (
       <Grid container justifyContent="center">
+        <EvmProposalCountdown />
         <Typography>You have already cast your vote</Typography>
       </Grid>
     )
