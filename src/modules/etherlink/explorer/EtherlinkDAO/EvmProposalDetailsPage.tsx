@@ -25,22 +25,29 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { CopyButton } from "modules/common/CopyButton"
+import dayjs from "dayjs"
 
 const RenderProposalAction = () => {
+  const [isDeploying, setIsDeploying] = useState(false)
   const { daoProposalSelected } = useContext(EtherlinkContext)
+  console.log("daoProposalSelected", daoProposalSelected)
+
   const isVotingActive = daoProposalSelected?.isVotingActive
+  const votingExpiresAt = daoProposalSelected?.votingExpiresAt
   const [isCastingVote, setIsCastingVote] = useState(false)
   const openNotification = useNotification()
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
 
-  if (daoProposalSelected?.status === ProposalStatus.PASSED) {
+  if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(votingExpiresAt).isBefore(dayjs())) {
     return (
       <Grid container justifyContent="center">
         <Button
           variant="contained"
           color="secondary"
+          disabled={isDeploying}
           style={{ background: "rgb(113 214 156)" }}
-          onClick={() =>
+          onClick={() => {
+            setIsDeploying(true)
             queueForExecution()
               .then((receipt: any) => {
                 console.log("Queue receipt", receipt)
@@ -58,10 +65,21 @@ const RenderProposalAction = () => {
                   variant: "error"
                 })
               })
-          }
+              .finally(() => {
+                setIsDeploying(false)
+              })
+          }}
         >
-          Queue for Execution
+          {isDeploying ? "Queuing..." : "Queue for Execution"}
         </Button>
+      </Grid>
+    )
+  }
+
+  if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(votingExpiresAt).isAfter(dayjs())) {
+    return (
+      <Grid container justifyContent="center">
+        <Typography>You have already cast your vote</Typography>
       </Grid>
     )
   }
@@ -72,10 +90,33 @@ const RenderProposalAction = () => {
         <Button
           variant="contained"
           color="secondary"
+          disabled={isDeploying}
           style={{ background: "rgb(113 214 156)" }}
-          onClick={() => executeProposal()}
+          onClick={() => {
+            setIsDeploying(true)
+            executeProposal()
+              .then((receipt: any) => {
+                console.log("Execute receipt", receipt)
+                openNotification({
+                  message: "Proposal executed successfully",
+                  autoHideDuration: 2000,
+                  variant: "success"
+                })
+              })
+              .catch((error: any) => {
+                console.log("Execute error", error)
+                openNotification({
+                  message: "Error executing proposal",
+                  autoHideDuration: 2000,
+                  variant: "error"
+                })
+              })
+              .finally(() => {
+                setIsDeploying(false)
+              })
+          }}
         >
-          Execute
+          {isDeploying ? "Executing..." : "Execute"}
         </Button>
       </Grid>
     )

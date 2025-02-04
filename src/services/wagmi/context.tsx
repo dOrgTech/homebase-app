@@ -240,13 +240,14 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             timerTargetDate = votingEndTimestamp
           }
 
+          const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
           return {
             ...firebaseProposal,
             createdAt: dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number),
             callDataPlain,
             status: proposalStatus,
             proposalData: [],
-            statusHistoryMap: statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp),
+            statusHistoryMap: sortedStatusHistoryMap,
             votingStartTimestamp: activeStartTimestamp,
             votingExpiresAt: votingExpiresAt,
             totalVotes: totalVotes,

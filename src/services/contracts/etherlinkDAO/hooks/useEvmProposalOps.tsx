@@ -474,20 +474,21 @@ export const useEvmProposalOps = () => {
   )
 
   const queueForExecution = useCallback(async () => {
-    if (!daoContract || !daoProposalSelected?.id || !daoSelected?.address)
+    if (!daoContract || !daoProposalSelected?.id || !daoSelected?.treasuryAddress)
       return alert("No dao contract or proposal id")
 
     const metadata = getProposalExecutionMetadata()
     if (!metadata) return alert("Could not get proposal metadata")
-    console.log("proposalAction metadata", daoSelected?.address, metadata)
-    const tx = await daoContract.queue([daoSelected?.address], [0], metadata.calldata, metadata.hashHex)
+    console.log("proposalAction metadata", daoSelected?.treasuryAddress, metadata)
+
+    const tx = await daoContract.queue([daoSelected?.treasuryAddress], [0], metadata.calldata, metadata.hashHex)
     console.log("Queue transaction sent:", tx.hash)
 
     const receipt = await tx.wait()
     console.log("Queue transaction confirmed:", receipt)
 
     return receipt
-  }, [daoContract, daoProposalSelected?.id, daoSelected?.address, getProposalExecutionMetadata])
+  }, [daoContract, daoProposalSelected?.id, daoSelected?.treasuryAddress, getProposalExecutionMetadata])
 
   const executeProposal = useCallback(async () => {
     if (!daoContract) return
@@ -495,13 +496,16 @@ export const useEvmProposalOps = () => {
     const metadata = getProposalExecutionMetadata()
     if (!metadata) return alert("Could not get proposal metadata")
 
-    const tx = await daoContract.execute([daoSelected?.address], [0], metadata.calldata, metadata.hashHex)
+    const treasuryAddress = daoSelected?.treasuryAddress
+    if (!treasuryAddress) return alert("No treasury address")
+
+    const tx = await daoContract.execute([treasuryAddress], [0], metadata.calldata, metadata.hashHex)
     console.log("Execute transaction sent:", tx.hash)
 
     const receipt = await tx.wait()
     console.log("Execute transaction confirmed:", receipt)
     return receipt
-  }, [daoContract, daoSelected?.address, getProposalExecutionMetadata])
+  }, [daoContract, daoSelected?.treasuryAddress, getProposalExecutionMetadata])
 
   const nextStep = {
     text: isLoading ? "Please wait..." : "Next",
