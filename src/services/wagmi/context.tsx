@@ -157,6 +157,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
           const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
           const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
+
+          // This should consider the time after "Queue for Execution"
           const executionAvailableAt = votingExpiresAt.add(daoSelected?.executionDelay, "seconds")
 
           const votingEndTimestamp = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
