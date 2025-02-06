@@ -23,8 +23,6 @@
     "@taquito/beacon-wallet": "13.0.1",
     "@taquito/signer": "13.0.1",
     "@taquito/taquito": "13.0.1",
-    "@taquito/tezbridge-signer": "13.0.1",
-    "@taquito/tezbridge-wallet": "13.0.1",
     "@taquito/tzip12": "13.0.1",
     "@taquito/tzip16": "13.0.1",
     "@types/mixpanel-browser": "^2.35.7",
