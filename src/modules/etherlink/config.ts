@@ -124,9 +124,19 @@ export const proposalInterfaces = [
     name: "transferETH"
   },
   {
-    tags: ["token", "mint", "burn"],
+    tags: ["token"],
     interface: ["function transferERC20(address token, address to, uint256 amount)"],
     name: "transferERC20"
+  },
+  {
+    name: "mint",
+    interface: ["function mint(address to, uint256 amount)"],
+    tags: ["token", "mint"]
+  },
+  {
+    name: "burn",
+    interface: ["function burn(address from, uint256 amount)"],
+    tags: ["token", "burn"]
   },
   {
     tags: ["token"],

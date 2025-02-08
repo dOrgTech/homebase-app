@@ -336,7 +336,7 @@ export function getDaoConfigType(type: string) {
 }
 
 export function getDaoTokenOpsType(type: string, tokenSymbol: string) {
-  if (type === "mint") return `Mint${tokenSymbol}`
-  if (type === "burn") return `Burn${tokenSymbol}`
+  if (type === "mint") return `Mint ${tokenSymbol}`
+  if (type === "burn") return `Burn ${tokenSymbol}`
   return ""
 }

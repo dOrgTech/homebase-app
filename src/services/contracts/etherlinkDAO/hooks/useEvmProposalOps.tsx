@@ -36,6 +36,7 @@ interface EvmProposalCreateStore {
   daoRegistryError: string
   setDaoRegistry: (type: "key" | "value", value: string) => void
   createProposalPayload: {
+    type?: string
     targets: any[]
     values: any[]
     calldatas: any[]
@@ -78,7 +79,13 @@ interface EvmProposalCreateStore {
       amount: string
     }
   }
-  setDaoTokenOps: (type: "mint" | "burn", value?: any, tokenSymbol?: string, tokenAddress?: string) => void
+  setDaoTokenOps: (
+    type: "mint" | "burn",
+    value?: any,
+    tokenSymbol?: string,
+    tokenAddress?: string,
+    tokenDecimals?: number
+  ) => void
   offchainDebate: {
     expiry_days: string
     expiry_hours: string
@@ -307,8 +314,16 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           amount: ""
         }
       },
-      setDaoTokenOps: (type: "mint" | "burn", value?: any, tokenSymbol?: string, tokenAddress?: string) => {
-        console.log("setDaoTokenOps", type, value, tokenSymbol)
+      setDaoTokenOps: (
+        type: "mint" | "burn",
+        value?: any,
+        tokenSymbol?: string,
+        tokenAddress?: string,
+        tokenDecimals?: number
+      ) => {
+        console.log("setDaoTokenOps", type, value, { tokenSymbol, tokenAddress })
+
+        // triggered when user select ops type
         if (!value && tokenSymbol && tokenAddress) {
           const proposalDescription = get().createProposalPayload.description
           const proposalDescriptionSplit = proposalDescription.split("0|||0")
@@ -317,27 +332,38 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           console.log("new description", description)
           return set({
             daoTokenOps: { ...get().daoTokenOps, type, token: { symbol: tokenSymbol, address: tokenAddress } },
-            createProposalPayload: { ...get().createProposalPayload, description },
+            createProposalPayload: {
+              ...get().createProposalPayload,
+              targets: [tokenAddress],
+              values: [0],
+              description
+            },
             currentStep: 3
           })
         }
-        const selectedInterface = proposalInterfaces.find(p => p.name === "transferERC20")
-        if (!selectedInterface) return
+
+        // triggered when user enter recipient and amoun & address
+        const selectedInterface = proposalInterfaces.find(p => p.name === type)
+        if (!selectedInterface) return console.error("No interface found")
         const payload = { daoTokenOps: { ...get().daoTokenOps, [type]: value } } as any
         const iface = new ethers.Interface(selectedInterface.interface)
-        const targetAddress = get().daoTokenOps[type]?.to
-        const targetAmount = get().daoTokenOps[type]?.amount
+        const targetAddress = get().daoTokenOps[type]?.to || value?.to
+        const targetAmount = get().daoTokenOps[type]?.amount || value?.amount
+        const targetAmountWithDecimals = ethers.parseUnits(targetAmount, tokenDecimals)
+        console.log("targetAmountWithDecimals", targetAmountWithDecimals)
         if (ethers.isAddress(targetAddress) && targetAmount && !isNaN(Number(targetAmount))) {
           const encodedData = iface.encodeFunctionData(selectedInterface.name, [
-            get().daoTokenOps.token.address,
             targetAddress,
-            ethers.parseEther(targetAmount)
+            targetAmountWithDecimals
           ])
           payload.createProposalPayload = {
             ...get().createProposalPayload,
             calldatas: [encodedData]
           }
+        } else {
+          console.log("Invalid target address or amount", targetAddress, targetAmount, ethers.isAddress(targetAddress))
         }
+        console.log("payload", payload)
         set(payload)
       },
       offchainDebate: {
@@ -447,10 +473,10 @@ export const useEvmProposalOps = () => {
       return daoSelected?.registryAddress
     }
     if (proposalType?.startsWith("mint")) {
-      return daoSelected?.treasuryAddress
+      return daoSelected?.token
     }
     if (proposalType?.startsWith("burn")) {
-      return daoSelected?.treasuryAddress
+      return daoSelected?.token
     }
     if (proposalType == "transfer") {
       return daoSelected?.registryAddress
@@ -758,7 +784,7 @@ export const useEvmProposalOps = () => {
         return
       }
     },
-    [daoContract, daoProposalSelected?.id, daoSelected?.address, etherlink.account.address, network, openNotification]
+    [etherlink.account.address, network, openNotification]
   )
 
   return {

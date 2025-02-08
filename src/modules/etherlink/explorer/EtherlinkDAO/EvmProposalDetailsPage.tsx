@@ -277,7 +277,7 @@ export const EvmProposalDetailsPage = () => {
         <Grid container>
           {daoProposalSelected?.proposalData?.map(
             ({ parameter, value }: { parameter: string; value: string }, idx: number) => {
-              console.log("callDataXYB", parameter, value)
+              console.log("callDataXYB", { parameter, value })
               const textValue = value?.length > 64 ? value.slice(0, 8) + "..." + value.slice(-4) : value
               return (
                 <Grid key={idx}>

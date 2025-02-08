@@ -381,12 +381,13 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
       } else if (proposal && proposal?.type !== "contract call") {
         const proposalInterface = proposalInterfaces.find((x: any) => {
           let fbType = proposal?.type?.toLowerCase()
+          console.log("callDataXYB fbType", fbType)
           if (fbType?.startsWith("mint")) fbType = "mint"
           if (fbType?.startsWith("burn")) fbType = "burn"
           return x.tags?.includes(fbType)
         })
         const functionAbi = proposalInterface?.interface?.[0] as string
-        console.log("functionAbi", functionAbi)
+        console.log("callDataXYB functionAbi", functionAbi)
         if (!functionAbi) return []
 
         const proposalData = proposalInterface
@@ -395,15 +396,15 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
               const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
               const decodedDataPair = decodeCalldataWithEthers(functionAbi, formattedCallData)
               const decodedDataPairLegacy = decodeFunctionParametersLegacy(functionAbi, formattedCallData)
-              console.log("decodedDataPair", decodedDataPair)
-              console.log("decodedDataPairLegacy", decodedDataPairLegacy)
+              console.log("callDataXYB decodedDataPair", decodedDataPair)
+              console.log("callDataXYB decodedDataPairLegacy", decodedDataPairLegacy)
               const functionName = decodedDataPair?.functionName
               const functionParams = decodedDataPair?.decodedData
               const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
 
               const label = proposalInterface?.label
-              console.log("decodedDataPair", decodedDataPair, functionName, functionParams)
-              console.log("decodedDataPairLegacy", decodedDataPairLegacy)
+              console.log("callDataXYB decodedDataPair", decodedDataPair, functionName, functionParams)
+              console.log("callDataXYB decodedDataPairLegacy", decodedDataPairLegacy)
               return { parameter: label || functionName, value: functionParams.join(", ") }
             })
           : []

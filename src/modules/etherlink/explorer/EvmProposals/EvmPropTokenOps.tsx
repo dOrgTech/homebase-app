@@ -51,13 +51,30 @@ interface TokenOperationFormProps {
     to?: string
     amount?: string
   }
-  onChange: (type: "mint" | "burn", values: { to: string; amount: string }) => void
+  tokenSymbol: string
+  tokenAddress: string
+  tokenDecimals: number
+  onChange: (
+    type: "mint" | "burn",
+    values: { to: string; amount: string },
+    tokenSymbol: string,
+    tokenAddress: string,
+    tokenDecimals: number
+  ) => void
 }
 
-const TokenOperationForm: React.FC<TokenOperationFormProps> = ({ type, icon, values, onChange }) => (
+const TokenOperationForm: React.FC<TokenOperationFormProps> = ({
+  type,
+  icon,
+  values,
+  onChange,
+  tokenSymbol,
+  tokenAddress,
+  tokenDecimals
+}) => (
   <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
     <Grid item xs={12} style={{ marginBottom: "20px" }}>
-      <Box display="flex" alignItems="center" justifyContent="center" style={{ gap: "8px" }}>
+      <Box display="flex" alignItems="center" justifyContent="center" style={{ gap: "8px", marginBottom: "16px" }}>
         {icon}
         <Typography color="textPrimary">Enter the recipient address and amount to {type}</Typography>
       </Box>
@@ -68,7 +85,9 @@ const TokenOperationForm: React.FC<TokenOperationFormProps> = ({ type, icon, val
         value={values?.to ?? ""}
         error={values?.to ? isInvalidEvmAddress(values?.to) : false}
         helperText={values.to && isInvalidEvmAddress(values.to) ? "Invalid Ethereum address" : ""}
-        onChange={e => onChange(type, { to: e.target.value, amount: values?.amount ?? "" })}
+        onChange={e =>
+          onChange(type, { to: e.target.value, amount: values?.amount ?? "" }, tokenSymbol, tokenAddress, tokenDecimals)
+        }
         style={{ marginBottom: "16px" }}
       />
       <StyledTextField
@@ -80,7 +99,9 @@ const TokenOperationForm: React.FC<TokenOperationFormProps> = ({ type, icon, val
         value={values.amount}
         error={values.amount ? parseFloat(values.amount) <= 0 : false}
         helperText={values.amount && parseFloat(values.amount) <= 0 ? "Amount must be greater than 0" : ""}
-        onChange={e => onChange(type, { to: values?.to ?? "", amount: e.target.value })}
+        onChange={e =>
+          onChange(type, { to: values?.to ?? "", amount: e.target.value }, tokenSymbol, tokenAddress, tokenDecimals)
+        }
       />
     </Grid>
   </Grid>
@@ -94,9 +115,12 @@ const EvmPropTokenOps = () => {
     return (
       <TokenOperationForm
         type="mint"
+        tokenSymbol={daoSelected?.symbol}
+        tokenAddress={daoSelected?.token}
         icon={<AddCircleIcon fontSize="large" />}
         values={daoTokenOps.mint}
         onChange={setDaoTokenOps}
+        tokenDecimals={daoSelected?.decimals}
       />
     )
   }
@@ -105,6 +129,9 @@ const EvmPropTokenOps = () => {
     return (
       <TokenOperationForm
         type="burn"
+        tokenSymbol={daoSelected?.symbol}
+        tokenAddress={daoSelected?.token}
+        tokenDecimals={daoSelected?.decimals}
         icon={<RemoveCircleIcon fontSize="large" />}
         values={daoTokenOps.burn}
         onChange={setDaoTokenOps}
@@ -117,13 +144,17 @@ const EvmPropTokenOps = () => {
         icon={<AddCircleIcon fontSize="large" />}
         title="Mint"
         description="Mint tokens to a specified address"
-        onClick={() => setDaoTokenOps("mint", undefined, daoSelected?.symbol, daoSelected?.token)}
+        onClick={() =>
+          setDaoTokenOps("mint", undefined, daoSelected?.symbol, daoSelected?.token, daoSelected?.decimals)
+        }
       />
       <ConfigOption
         icon={<RemoveCircleIcon fontSize="large" />}
         title="Burn"
         description="Burn tokens from a specified address"
-        onClick={() => setDaoTokenOps("burn", undefined, daoSelected?.symbol, daoSelected?.token)}
+        onClick={() =>
+          setDaoTokenOps("burn", undefined, daoSelected?.symbol, daoSelected?.token, daoSelected?.decimals)
+        }
       />
     </Grid>
   )
