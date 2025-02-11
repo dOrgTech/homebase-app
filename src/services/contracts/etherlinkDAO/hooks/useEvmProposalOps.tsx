@@ -323,7 +323,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         tokenAddress?: string,
         tokenDecimals?: number
       ) => {
-        console.log("setDaoTokenOps", type, value, { tokenSymbol, tokenAddress })
+        console.log("setDaoTokenOps", type, value, { tokenSymbol, tokenAddress, tokenDecimals })
 
         // triggered when user select ops type
         if (!value && tokenSymbol && tokenAddress) {
@@ -344,13 +344,13 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           })
         }
 
-        // triggered when user enter recipient and amoun & address
+        // triggered when user enter recipient and amount & address
         const selectedInterface = proposalInterfaces.find(p => p.name === type)
         if (!selectedInterface) return console.error("No interface found")
         const payload = { daoTokenOps: { ...get().daoTokenOps, [type]: value } } as any
         const iface = new ethers.Interface(selectedInterface.interface)
-        const targetAddress = get().daoTokenOps[type]?.to || value?.to
-        const targetAmount = get().daoTokenOps[type]?.amount || value?.amount
+        const targetAddress = value?.to || get().daoTokenOps[type]?.to
+        const targetAmount = value?.amount || get().daoTokenOps[type]?.amount || 0
         const targetAmountWithDecimals = ethers.parseUnits(targetAmount, tokenDecimals)
         console.log("targetAmountWithDecimals", targetAmountWithDecimals)
         if (ethers.isAddress(targetAddress) && targetAmount && !isNaN(Number(targetAmount))) {

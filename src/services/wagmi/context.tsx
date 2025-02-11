@@ -292,6 +292,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   ])
 
   useEffect(() => {
+    console.log({ daoSelected })
     if (daoSelected?.id && firebaseRootCollection && daoProposalSelected?.type !== "offchain") {
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/proposals`)
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/members`)
