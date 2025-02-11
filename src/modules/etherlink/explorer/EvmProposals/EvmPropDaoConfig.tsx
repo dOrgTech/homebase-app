@@ -68,7 +68,7 @@ const TimeInput = ({
     if (!isNaN(hours)) totalMinutes += hours * 60
     if (!isNaN(minutes)) totalMinutes += minutes
     console.log("totalMinutes", totalMinutes)
-    onChange(totalMinutes.toString())
+    onChange((totalMinutes * 60).toString())
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [days, hours, minutes])

@@ -280,8 +280,10 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         if (type === "votingPeriod") {
           ifaceDef = proposalInterfaces.find(p => p.name === "setVotingPeriod")
           if (!ifaceDef) return
+
           iface = new ethers.Interface(ifaceDef.interface)
           encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
+          console.log("DaoConfig:votingPeriod", type, value, encodedData)
         }
         if (type === "proposalThreshold") {
           ifaceDef = proposalInterfaces.find(p => p.name === "setProposalThreshold")
@@ -289,7 +291,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           iface = new ethers.Interface(ifaceDef.interface)
           encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
         }
-
+        console.log("dao config calldata", encodedData)
         payload.createProposalPayload = {
           ...get().createProposalPayload,
           targets: [get().daoConfig.address],
@@ -529,7 +531,8 @@ export const useEvmProposalOps = () => {
     if (!metadata) return alert("Could not get proposal metadata")
 
     const targetAddress = getProposalExecutionTargetAddress()
-    console.log("proposalAction metadata", targetAddress, metadata)
+    console.log("proposalAction targetAddress", targetAddress)
+    console.log("proposalAction metadata", metadata)
 
     const tx = await daoContract.queue([targetAddress], [0], metadata.calldata, metadata.hashHex)
     console.log("Queue transaction sent:", tx.hash)

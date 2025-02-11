@@ -74,7 +74,7 @@ export const EvmProposalOptions = [
         name: "setVotingDelay"
       },
       setVotingPeriod: {
-        interface: ["function setVotingPeriod(uint256 newVotingPeriod)"],
+        interface: ["function setVotingPeriod(uint32 newVotingPeriod)"],
         name: "setVotingPeriod"
       },
       setProposalThreshold: {
@@ -161,7 +161,7 @@ export const proposalInterfaces = [
     tags: ["voting period"],
     label: "Update Voting Period",
     unit: "seconds",
-    interface: ["function setVotingPeriod(uint256 newVotingPeriod)"],
+    interface: ["function setVotingPeriod(uint32 newVotingPeriod)"],
     name: "setVotingPeriod"
   },
   {
