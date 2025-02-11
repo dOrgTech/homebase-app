@@ -70,7 +70,7 @@ export const EvmProposalOptions = [
         name: "updateQuorumNumerator"
       },
       setVotingDelay: {
-        interface: ["function setVotingDelay(uint256 newVotingDelay)"],
+        interface: ["function setVotingDelay(uint48 newVotingDelay)"],
         name: "setVotingDelay"
       },
       setVotingPeriod: {
@@ -154,7 +154,7 @@ export const proposalInterfaces = [
     tags: ["voting delay"],
     label: "Update Voting Delay",
     unit: "seconds",
-    interface: ["function setVotingDelay(uint256 newVotingDelay)"],
+    interface: ["function setVotingDelay(uint48 newVotingDelay)"],
     name: "setVotingDelay"
   },
   {
