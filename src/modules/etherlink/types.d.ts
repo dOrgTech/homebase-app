@@ -72,3 +72,12 @@ export interface IEvmProposalTxn {
   "#iface": any
   "#logs": any[]
 }
+
+export enum EProposalType {
+  transfer_assets = "transfer_assets",
+  edit_registry = "edit_registry",
+  contract_call = "contract_call",
+  change_config = "change_config",
+  token_operation = "token_operation",
+  off_chain_debate = "off_chain_debate"
+}

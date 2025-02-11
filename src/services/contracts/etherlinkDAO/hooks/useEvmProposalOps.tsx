@@ -14,14 +14,14 @@ import { useHistory } from "react-router-dom"
 import dayjs from "dayjs"
 import { getEthSignature } from "services/utils/utils"
 import { saveLiteProposal, voteOnLiteProposal } from "services/services/lite/lite-services"
-import { IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modules/etherlink/types"
+import { EProposalType, IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modules/etherlink/types"
 import { isValidUrl, getDaoConfigType, getDaoTokenOpsType } from "modules/etherlink/utils"
 
 interface EvmProposalCreateStore {
   currentStep: number
   setCurrentStep: (step: number) => void
   metadata: {
-    type: "off_chain_debate" | "transfer_assets" | "edit_registry" | "contract_call" | "change_config" | ""
+    type: EProposalType | ""
     title: string
     description: string
     discussionUrl: string
@@ -493,7 +493,7 @@ export const useEvmProposalOps = () => {
     daoProposalSelected?.type,
     daoSelected?.address,
     daoSelected?.registryAddress,
-    daoSelected?.treasuryAddress
+    daoSelected?.token
   ])
 
   const createProposal = useCallback(

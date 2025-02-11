@@ -15,6 +15,7 @@ import { EvmPropDaoConfig } from "./EvmProposals/EvmPropDaoConfig"
 import EvmPropTokenOps from "./EvmProposals/EvmPropTokenOps"
 import { EvmProposalOptions } from "../config"
 import { EvmOffchainDebate } from "./EvmProposals/EvmOffchainDebate"
+import { EProposalType } from "../types"
 
 // TODO: Move this to a shared component
 const OptionContainer = styled(Grid)(({ theme }) => ({
@@ -47,7 +48,7 @@ const TitleContainer = styled(Grid)({
   marginBottom: 24
 })
 
-const renderModal = (modal: string) => {
+const renderModal = (modal: EProposalType) => {
   switch (modal) {
     case "transfer_assets":
       return <EvmPropTransferAssets />
@@ -163,7 +164,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             <LinearProgressLoader />
           </>
         ) : (
-          renderModal(metadata.type)
+          renderModal(metadata.type as EProposalType)
         )}
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <BackButton disabled={isDeploying} onClick={prevStep.handler} />
