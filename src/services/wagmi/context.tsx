@@ -312,7 +312,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             })
             console.log("Treasury Data", ethBalance)
           }),
-        fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.address}/token-balances`)
+        fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.registryAddress}/token-balances`)
           .then(res => res.json())
           .then(data => {
             console.log("Treasury Data", data)
