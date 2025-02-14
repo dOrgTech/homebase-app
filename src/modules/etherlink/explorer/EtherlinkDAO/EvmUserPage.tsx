@@ -66,6 +66,8 @@ const DelegationDescription = styled(Typography)({
   marginBottom: "24px"
 })
 
+const ENABLE_DELEGATION = false
+
 export const EvmUserPage = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [delegateToAddress, setDelegateToAddress] = useState("")
@@ -119,24 +121,28 @@ export const EvmUserPage = () => {
       <Typography variant="h5" style={{ marginBottom: "24px", color: "#fff" }}>
         Delegation settings
       </Typography>
-      <Typography style={{ marginBottom: "16px", color: "#9E9E9E" }}>
-        You can either delegate your vote or accept delegations, but not both at the same time.
-      </Typography>
+      {ENABLE_DELEGATION && (
+        <Typography style={{ marginBottom: "16px", color: "#9E9E9E" }}>
+          You can either delegate your vote or accept delegations, but not both at the same time.
+        </Typography>
+      )}
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <DelegationBox>
-            <People style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
-            <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
-            <DelegationDescription>
-              If you can't or don't want to take part in the governance process, your voting privilege may be forwarded
-              to another member of your choosing.
-            </DelegationDescription>
-            <Button variant="outlined" style={{ width: "fit-content" }} onClick={() => setDelegateDialogOpen(true)}>
-              Set Delegate
-            </Button>
-          </DelegationBox>
-        </Grid>
+        {ENABLE_DELEGATION && (
+          <Grid item xs={12} md={6}>
+            <DelegationBox>
+              <People style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
+              <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
+              <DelegationDescription>
+                If you can't or don't want to take part in the governance process, your voting privilege may be
+                forwarded to another member of your choosing.
+              </DelegationDescription>
+              <Button variant="outlined" style={{ width: "fit-content" }} onClick={() => setDelegateDialogOpen(true)}>
+                Set Delegate
+              </Button>
+            </DelegationBox>
+          </Grid>
+        )}
 
         <Grid item xs={12} md={6}>
           <DelegationBox>

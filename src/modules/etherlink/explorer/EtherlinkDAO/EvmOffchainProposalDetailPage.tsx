@@ -1,4 +1,3 @@
-import { GridContainer } from "modules/common/GridContainer"
 import { Button, Grid, Typography, useMediaQuery, useTheme } from "@mui/material"
 import { PageContainer } from "components/ui/DaoCreator"
 import { useContext, useEffect, useState } from "react"
@@ -22,6 +21,7 @@ import { LinearContainerOffchain as LinearContainer } from "modules/etherlink/co
 const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IEvmProposal | undefined }) => {
   const { castOffchainVote } = useEvmProposalOps()
   const isVotingActive = daoProposalSelected?.isVotingActive
+  const isTimerActive = daoProposalSelected?.isTimerActive
   const [isCastingVote, setIsCastingVote] = useState(false)
   const openNotification = useNotification()
   const theme = useTheme()
@@ -64,12 +64,13 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
             variant="contained"
             color="secondary"
             onClick={() => {
+              if (!daoProposalSelected?.id) return
               castOffchainVote(
                 selectedOffchainVotes.map(x => {
                   return {
                     choice: x.name,
                     choiceId: x._id,
-                    pollID: daoProposalSelected?.id
+                    pollID: daoProposalSelected.id as string
                   }
                 })
               )
@@ -161,8 +162,9 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
             <Button
               disabled={isCastingVote}
               onClick={() => {
+                if (!daoProposalSelected?.id) return
                 setIsCastingVote(true)
-                castVote(daoProposalSelected?.id, true)
+                castVote(daoProposalSelected.id as string, true)
                   .then((receipt: any) => {
                     console.log("Receipt", receipt)
                     openNotification({
@@ -183,8 +185,9 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
             </Button>
             <Button
               onClick={() => {
+                if (!daoProposalSelected?.id) return
                 setIsCastingVote(true)
-                castVote(daoProposalSelected?.id, false)
+                castVote(daoProposalSelected.id as string, false)
                   .then((receipt: any) => {
                     console.log("Receipt", receipt)
                     openNotification({
@@ -208,7 +211,7 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
       </>
     )
   }
-
+  if (isTimerActive) return null
   return (
     <Grid>
       <Typography style={{ color: "white" }}>

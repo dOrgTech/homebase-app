@@ -9,6 +9,9 @@ import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestor
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+
 import { ethers } from "ethers"
 import BigNumber from "bignumber.js"
 import { Timestamp } from "firebase/firestore"
@@ -20,22 +23,13 @@ import {
 } from "modules/etherlink/utils"
 import { proposalInterfaces } from "modules/etherlink/config"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
+import { IEvmFirebaseProposal } from "modules/etherlink/types"
 
-interface EtherlinkType {
-  isConnected: boolean
-  account: {
-    address: string
-  }
-  network: string | undefined
-  switchToNetwork: (network: string) => void
-  connectWithWagmi: () => void
-  connect: () => void
-  disconnect: () => void
-}
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const useEtherlinkDao = ({ network }: { network: string }) => {
   const selectedDaoIdRef = useRef<string | null>(null)
-  console.log("useEtherlinkDao", { network })
 
   const firebaseRootCollection = useMemo(() => {
     if (network === "etherlink_mainnet") {
@@ -99,6 +93,15 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
   const [daoMembers, setDaoMembers] = useState<any[]>([])
   const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
+  const [refreshCount, setRefreshCount] = useState(0)
+  const timerForRecomputation = useRef<NodeJS.Timeout | null>(null)
+
+  const recomputeDataAfter = useCallback((timeInSeconds: number) => {
+    timerForRecomputation.current = setTimeout(() => {
+      timerForRecomputation.current = null
+      setRefreshCount((count: number) => count + 1)
+    }, timeInSeconds * 1000)
+  }, [])
 
   useEffect(() => {
     fetchCollection("contracts")
@@ -137,42 +140,28 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (firestoreData?.[daoProposalKey]) {
       const timeNow = dayjs()
       const onChainProposals = firestoreData[daoProposalKey]
-        ?.sort((a: any, b: any) => b.createdAt - a.createdAt)
-        .map(firebaseProposal => {
+        ?.sort((a: IEvmFirebaseProposal, b: IEvmFirebaseProposal) => b.createdAt?.seconds - a.createdAt?.seconds)
+        .map((firebaseProposal: IEvmFirebaseProposal) => {
+          const proposalCreatedAt = dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number)
           const votesInFavor = new BigNumber(firebaseProposal?.inFavor)
           const votesAgainst = new BigNumber(firebaseProposal?.against)
           const votesInFavorWeight = new BigNumber(firebaseProposal?.inFavor)
+          const votesAgainstWeight = new BigNumber(firebaseProposal?.against)
+
+          const votingDelayInMinutes = daoSelected?.votingDelay || 1
+          const votingDurationInMinutes = daoSelected?.votingDuration || 1
+          const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
+          const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
 
           const totalVotes = votesInFavor.plus(votesAgainst)
-          const totalVoteCount = parseInt(firebaseProposal?.votesFor) + parseInt(firebaseProposal?.votesAgainst)
+          const totalVoteCount = Number(firebaseProposal?.votesFor) + Number(firebaseProposal?.votesAgainst)
           const totalSupply = new BigNumber(daoSelected?.totalSupply ?? "1")
           const votesPercentage = totalVotes.div(totalSupply).times(100)
           const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
           const daoTotalVotingWeight = new BigNumber(daoSelected?.totalSupply ?? "0")
-          console.log("votesPercentage", firebaseProposal?.title, votesPercentage.toString())
-
-          const proposalCreatedAt = dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number)
-          const votingDelayInMinutes = daoSelected?.votingDelay || 1
-          const votingDurationInMinutes = daoSelected?.votingDuration || 1
-
-          const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
-          const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
-
+          let executionAvailableAt = undefined
           // This should consider the time after "Queue for Execution"
-          const executionAvailableAt = votingExpiresAt.add(daoSelected?.executionDelay, "seconds")
 
-          const votingEndTimestamp = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
-
-          // Flutter Refernce
-          //   if (votePercentage < org.quorum) {
-          //     newStatus = ProposalStatus.noQuorum;  // or "no quorum" in getStatus()
-          //     statusHistory.clear();
-          //     statusHistory.addAll({"pending": start});
-          //     statusHistory.addAll({"active": activeStart});
-          //     statusHistory.addAll({"no quorum": votingEnd});
-          //     status = "no quorum";
-          //     return newStatus;
-          // }
           const statusHistoryMap = Object.entries(firebaseProposal.statusHistory)
             .map(([status, timestamp]: [string, any]) => ({
               status,
@@ -181,94 +170,160 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             }))
             .sort((a, b) => b.timestamp - a.timestamp)
 
-          statusHistoryMap.push({
-            status: "active",
-            timestamp: activeStartTimestamp.unix(),
-            timestamp_human: activeStartTimestamp.format("MMM DD, YYYY hh:mm A")
-          })
-
-          if (votesInFavorWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
-            statusHistoryMap.push({
-              status: "passed",
-              timestamp: votingEndTimestamp.unix(),
-              timestamp_human: votingEndTimestamp.format("MMM DD, YYYY hh:mm A")
-            })
+          console.log("statusHistoryMapX", statusHistoryMap)
+          // debugger
+          const queuedStatus = statusHistoryMap.find(x => x.status === "queued")
+          if (queuedStatus) {
+            executionAvailableAt = dayjs.unix(queuedStatus.timestamp).add(daoSelected?.executionDelay, "seconds")
           }
 
-          const statusQueued = statusHistoryMap.find(x => x.status === "queued")
-          if (statusQueued) {
-            const executionDelayInSeconds = daoSelected?.executionDelay || 0
-            const proposalExecutableAt = statusQueued.timestamp + executionDelayInSeconds
-            console.log("proposalExecutableAt", proposalExecutableAt, timeNow.unix())
-            if (proposalExecutableAt < timeNow.unix()) {
-              statusHistoryMap.push({
-                status: "executable",
-                timestamp: proposalExecutableAt,
-                timestamp_human: dayjs.unix(proposalExecutableAt).format("MMM DD, YYYY hh:mm A")
+          const statusContainsPending = statusHistoryMap.findIndex(x => x.status === "pending")
+          if (activeStartTimestamp.isBefore(timeNow)) {
+            statusHistoryMap.splice(statusContainsPending + 1, 0, {
+              status: "active",
+              timestamp: activeStartTimestamp.unix(),
+              timestamp_human: activeStartTimestamp.format("MMM DD, YYYY hh:mm A")
+            })
+
+            if (votesInFavorWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
+              statusHistoryMap.splice(statusContainsPending + 2, 0, {
+                status: "passed",
+                timestamp: votingExpiresAt.unix(),
+                timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+              })
+            } else if (votesAgainstWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
+              statusHistoryMap.splice(statusContainsPending + 2, 0, {
+                status: "failed",
+                timestamp: votingExpiresAt.unix(),
+                timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
               })
             }
           }
 
-          if (votesPercentage.lt(daoSelected?.quorum) && votingEndTimestamp.isBefore(timeNow)) {
-            statusHistoryMap.push({
-              status: "no quorum",
-              timestamp: votingEndTimestamp.unix(),
-              timestamp_human: votingEndTimestamp.format("MMM DD, YYYY hh:mm A")
+          const statusContainsPassed = statusHistoryMap.findIndex(x => x.status === "passed")
+          if (votingExpiresAt.isBefore(timeNow) && statusContainsPassed !== -1) {
+            statusHistoryMap.splice(statusContainsPassed + 1, 0, {
+              status: "queue_to_execute",
+              timestamp: votingExpiresAt.unix() + 1,
+              timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
             })
+          }
+
+          const statusContainsQueued = statusHistoryMap.findIndex(x => x.status === "queued")
+          if (votingExpiresAt.isBefore(timeNow)) {
+            if (votesPercentage.lt(daoSelected?.quorum)) {
+              statusHistoryMap.push({
+                status: "no quorum",
+                timestamp: votingExpiresAt.unix(),
+                timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+              })
+            } else if (statusContainsQueued === -1) {
+              if (statusHistoryMap.find(x => x.status === "failed")) {
+                statusHistoryMap.push({
+                  status: "defeated",
+                  timestamp: votingExpiresAt.unix(),
+                  timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+                })
+              }
+            } else if (statusContainsQueued !== -1) {
+              if (statusHistoryMap.find(x => x.status === "passed")) {
+                const executionDelayInSeconds = daoSelected?.executionDelay || 0
+                const proposalExecutableAt = statusHistoryMap[statusContainsQueued].timestamp + executionDelayInSeconds
+
+                if (proposalExecutableAt < timeNow.unix()) {
+                  statusHistoryMap.splice(statusContainsQueued + 1, 0, {
+                    status: "executable",
+                    timestamp: proposalExecutableAt,
+                    timestamp_human: dayjs.unix(proposalExecutableAt).format("MMM DD, YYYY hh:mm A")
+                  })
+                }
+              }
+            }
           }
 
           const callDatas = firebaseProposal?.callDatas
           const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
-          const proposalStatus = getStatusByHistory(statusHistoryMap, {
-            votesPercentage,
-            votingExpiresAt,
-            activeStartTimestamp,
-            daoQuorum: daoSelected?.quorum,
-            executionDelayInSeconds: daoSelected?.executionDelay
-          })
+
+          const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
+          const proposalStatus = sortedStatusHistoryMap[0]?.status
+
+          const latestStage = proposalStatus
 
           // Setting up timerLabel
           let isVotingActive = false
           let isTimerActive = false
           let timerLabel = "Voting concluded"
           let timerTargetDate = null
-          if (activeStartTimestamp?.isAfter(timeNow)) {
+          console.log("activeStartTimestamp", activeStartTimestamp)
+          console.log("votingExpiresAt", votingExpiresAt)
+          if (latestStage === "pending") {
+            isTimerActive = true
             timerLabel = "Voting starts in"
             timerTargetDate = activeStartTimestamp
-          } else if (votingExpiresAt?.isAfter(timeNow) && activeStartTimestamp?.isBefore(timeNow)) {
+            recomputeDataAfter(activeStartTimestamp.diff(timeNow, "seconds"))
+          }
+
+          if (votingExpiresAt?.isAfter(timeNow) && activeStartTimestamp?.isBefore(timeNow)) {
             isVotingActive = true
             isTimerActive = true
             timerLabel = "Time left to vote"
             timerTargetDate = votingExpiresAt
+            recomputeDataAfter(votingExpiresAt.diff(timeNow, "seconds"))
           }
-
-          if (proposalStatus === ProposalStatus.PASSED && executionAvailableAt?.isAfter(timeNow)) {
+          console.log("proposalStatus", proposalStatus, executionAvailableAt?.format("MMM DD, YYYY hh:mm A"))
+          if (latestStage === "queued" && executionAvailableAt) {
             isTimerActive = true
             timerLabel = "Execution available in"
             timerTargetDate = executionAvailableAt
+            recomputeDataAfter(executionAvailableAt.diff(timeNow, "seconds"))
           }
 
-          const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
+          console.log("sortedStatusHistoryMap", sortedStatusHistoryMap)
+
+          if (firebaseProposal.id === "24689950446001011996659268473676942781798086252707224158224751569766179998537") {
+            console.log("ZZZ_latestStage", proposalStatus, isTimerActive, timerTargetDate, sortedStatusHistoryMap)
+            console.log(
+              "ZZZ_activeStartTimestamp",
+              queuedStatus?.timestamp,
+              executionAvailableAt?.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A")
+            )
+            // console.log(
+            //   "ZZZ_activeStartTimestamp",
+            //   activeStartTimestamp.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A")
+            // )
+            // console.log("ZZZ_votingExpiresAt", votingExpiresAt.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A"))
+            // console.log("ZZZ_statusMap", statusHistoryMap)
+            // console.log(
+            //   "ZZZ_activeStartTimestamp",
+            //   activeStartTimestamp.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A")
+            // )
+            // console.log("ZZZ_timerActive", isTimerActive)
+            // console.log("ZZZ_timerLabel", timerLabel)
+            // console.log("ZZZ_timerTargetDate", timerTargetDate)
+          }
           return {
             ...firebaseProposal,
             createdAt: dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number),
             callDataPlain,
-            status: proposalStatus,
-            proposalData: [],
-            statusHistoryMap: sortedStatusHistoryMap,
-            votingStartTimestamp: activeStartTimestamp,
-            votingExpiresAt: votingExpiresAt,
             executionAvailableAt: executionAvailableAt,
+
+            isVotingActive,
+            isTimerActive,
+            proposalData: [],
+            status: proposalStatus,
+            statusHistoryMap: sortedStatusHistoryMap,
+
             totalVotes: totalVotes,
             totalVoteCount,
             timerLabel,
             timerTargetDate,
-            isVotingActive,
-            isTimerActive,
-            votesWeightPercentage: Number(votesPercentage.toFixed(2)),
             txHash: firebaseProposal?.executionHash
               ? `https://testnet.explorer.etherlink.com/tx/0x${parseTransactionHash(firebaseProposal?.executionHash)}`
-              : ""
+              : "",
+
+            votingStartTimestamp: activeStartTimestamp,
+            votingExpiresAt,
+            votesWeightPercentage: Number(votesPercentage.toFixed(2))
           }
         })
 
@@ -288,7 +343,9 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daoSelected,
     daoSelected?.votingDuration,
     firebaseRootCollection,
-    firestoreData
+    firestoreData,
+    recomputeDataAfter,
+    refreshCount
   ])
 
   useEffect(() => {
@@ -433,67 +490,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   }
 }
 
-// TODO: @ashutoshpw, handle more statuus and move to utils
-const getStatusByHistory = (
-  history: { status: string; timestamp: number; timestamp_human: string }[],
-  {
-    votesPercentage,
-    votingExpiresAt,
-    activeStartTimestamp,
-    daoQuorum,
-    executionDelayInSeconds
-  }: {
-    votesPercentage: BigNumber
-    votingExpiresAt: dayjs.Dayjs
-    activeStartTimestamp: dayjs.Dayjs
-    daoQuorum: number
-    executionDelayInSeconds: number
-  }
-) => {
-  const timeNow = dayjs()
-
-  const status = history
-    .filter(x => dayjs(x.timestamp).isBefore(timeNow))
-    .reduce((maxStatus, currentStatus) => {
-      console.log("statuses", maxStatus, currentStatus)
-
-      if (currentStatus.timestamp > maxStatus.timestamp) {
-        return currentStatus
-      }
-      return maxStatus
-    })
-
-  console.log("getStatusByHistory", { status, history })
-  if (activeStartTimestamp.isAfter(timeNow) && votingExpiresAt.isBefore(timeNow)) {
-    return ProposalStatus.ACTIVE
-  }
-
-  // TODO: @ashutoshpw, handle more statuses
-  switch (status.status) {
-    case "queued":
-      return ProposalStatus.PASSED
-    case "passed":
-      return ProposalStatus.PASSED
-    case "active":
-      return ProposalStatus.ACTIVE
-    case "pending":
-      if (votesPercentage.lt(daoQuorum) && votingExpiresAt.isBefore(timeNow)) {
-        return ProposalStatus.NO_QUORUM
-      }
-      return ProposalStatus.PENDING
-    case "rejected":
-      return ProposalStatus.REJECTED
-    case "accepted":
-      return ProposalStatus.ACTIVE
-    case "executable":
-      return ProposalStatus.EXECUTABLE
-    case "executed":
-      return ProposalStatus.EXECUTED
-    default:
-      return ProposalStatus.NO_QUORUM
-  }
-}
-
 export const EtherlinkContext = createContext<any | undefined>(undefined)
 
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -503,21 +499,9 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const provider = useEthersProvider()
   const signer = useEthersSigner()
   const { chains, switchChain } = useSwitchChain()
-  // const { data, isReady, isRejected, isLoading, isSignedIn, signOut, signIn, error } = useSIWE({
-  //   onSignIn: (session?: SIWESession) => {
-  //     console.log("User Signed In", session)
-  //   },
-  //   onSignOut: () => {
-  //     console.log("User Signed Out")
-  //     // Do something when signed out
-  //   }
-  // })
 
-  const { connect } = useWagmiConnect()
-  const { address, isConnected, chain, isDisconnected, status } = useWagmiAccount()
+  const { address, isConnected, chain, status } = useWagmiAccount()
 
-  console.log("SIWE Data", status)
-  // console.log("SIWE Data", data, status, error, isSignedIn, isReady, isRejected, isLoading)
   const etherlinkNetwork = useMemo(() => {
     if (chain?.name === "Etherlink") {
       return "etherlink_mainnet"
@@ -545,10 +529,6 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     network: etherlinkNetwork || ""
   })
   console.log({ daoProposals })
-
-  console.log("Etherlink Network", etherlinkNetwork)
-  console.log("Wagmi Chain", chain, status)
-  console.log("Wagmi Address", address)
 
   return (
     <EtherlinkContext.Provider

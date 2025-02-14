@@ -127,7 +127,7 @@ export const EvmProposalVoteDetail: React.FC<{
   const choices = poll.type === "offchain" ? poll.choices : EVM_PROPOSAL_CHOICES
   const { network } = useTezos()
   const [turnout, setTurnout] = useState<number | null>()
-  const { showProposalVoterList, setShowProposalVoterList } = useEvmDaoOps()
+  const { setShowProposalVoterList } = useEvmDaoOps()
   const { daoSelected } = useContext(EtherlinkContext)
 
   const daoProposalSelected = poll
@@ -262,14 +262,6 @@ export const EvmProposalVoteDetail: React.FC<{
             ) : null} */}
             </Grid>
           </LegendContainer>
-          {/* <VotesDialog
-          decimals={tokenData?.decimals ? tokenData?.decimals : ""}
-          symbol={isXTZ ? "XTZ" : tokenData?.symbol ? tokenData?.symbol : ""}
-          choices={votes}
-          open={open}
-          isXTZ={isXTZ}
-          handleClose={handleClose}
-        /> */}
         </GraphicsContainer>
       </Container>
       <Container container style={{ marginTop: 60, marginBottom: 12 }}>

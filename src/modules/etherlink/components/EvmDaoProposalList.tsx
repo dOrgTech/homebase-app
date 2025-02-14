@@ -52,7 +52,7 @@ export const EvmDaoProposalList: React.FC<{
         id: proposal?.id,
         title: proposal?.title,
         proposer: proposal?.proposer || (proposal?.author as string),
-        type: proposal?.type,
+        type: proposal?.type || "unknown",
         proposal: proposal
       })) ?? []
     )

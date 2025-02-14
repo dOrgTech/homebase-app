@@ -17,10 +17,17 @@ export const statusColors = (status: ProposalStatus | string): { background: str
         text: "Pending"
       }
     case ProposalStatus.PASSED:
+    case "queue_to_execute":
       return {
         background: "#4aff9833",
         color: "#4aff98",
         text: "Passed"
+      }
+    case "queued":
+      return {
+        background: "#e6f3ff",
+        color: "#0066cc",
+        text: "Queued"
       }
     case ProposalStatus.EXECUTABLE:
       return {
@@ -29,6 +36,7 @@ export const statusColors = (status: ProposalStatus | string): { background: str
         text: "Executable"
       }
     case ProposalStatus.REJECTED:
+    case "failed":
       return {
         background: "#513438",
         color: "#FF8FA0",

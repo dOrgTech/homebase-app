@@ -1,16 +1,4 @@
-import { GridContainer } from "modules/common/GridContainer"
-import {
-  Button,
-  Grid,
-  TableRow,
-  TableBody,
-  Table,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  TableCell,
-  IconButton
-} from "@mui/material"
+import { Button, Grid, TableRow, TableBody, Table, Typography, TableCell, IconButton } from "@mui/material"
 import { PageContainer } from "components/ui/DaoCreator"
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -23,41 +11,23 @@ import { ThumbDownAlt } from "@mui/icons-material"
 import { ThumbUpAlt } from "@mui/icons-material"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
-import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { CopyButton } from "modules/common/CopyButton"
-import dayjs from "dayjs"
+import { useTezos } from "services/beacon/hooks/useTezos"
 
 const RenderProposalAction = () => {
   const [isDeploying, setIsDeploying] = useState(false)
-  const { daoProposalSelected } = useContext(EtherlinkContext)
-  console.log("daoProposalSelected", daoProposalSelected)
-
-  const isVotingActive = daoProposalSelected?.isVotingActive
-  const votingExpiresAt = daoProposalSelected?.votingExpiresAt
-  const executionAvailableAt = daoProposalSelected?.executionAvailableAt
+  const { daoProposalSelected, daoProposalVoters } = useContext(EtherlinkContext)
+  const { etherlink } = useTezos()
 
   const [isCastingVote, setIsCastingVote] = useState(false)
   const openNotification = useNotification()
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
+  const isTimerActive = daoProposalSelected?.isTimerActive
 
-  // if (
-  //   daoProposalSelected?.status === ProposalStatus.PASSED &&
-  //   dayjs(votingExpiresAt).isBefore(dayjs()) &&
-  //   dayjs(executionAvailableAt).isAfter(dayjs())
-  // ) {
-  //   return (
-  //     <Grid container justifyContent="center">
-  //       <EvmProposalCountdown />
-  //     </Grid>
-  //   )
-  // }
+  const hasUserCastedVote = daoProposalVoters?.find((voter: any) => voter.voter === etherlink?.signer?.address)
 
-  if (
-    daoProposalSelected?.status === ProposalStatus.PASSED &&
-    dayjs(votingExpiresAt).isBefore(dayjs())
-    // && dayjs(executionAvailableAt).isBefore(dayjs())
-  ) {
-    //Show Execute Button
+  if (daoProposalSelected?.status === "queue_to_execute") {
+    //Show Queue for Execution Button
     return (
       <Grid container justifyContent="center">
         <Button
@@ -95,27 +65,8 @@ const RenderProposalAction = () => {
     )
   }
 
-  // if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(executionAvailableAt).isAfter(dayjs())) {
-  //   return (
-  //     <Grid container justifyContent="center">
-  //       <Typography>Queued for Execution</Typography>
-  //       <EvmProposalCountdown />
-  //     </Grid>
-  //   )
-  // }
-
-  if (daoProposalSelected?.status === ProposalStatus.PASSED && dayjs(votingExpiresAt).isAfter(dayjs())) {
-    return (
-      <Grid container justifyContent="center">
-        <EvmProposalCountdown />
-        <Typography>You have already cast your vote</Typography>
-      </Grid>
-    )
-  }
-
-  // if(daoProposalSelected?.status === ProposalStatus.PASSED && dayjs)
-
-  if (daoProposalSelected?.status === ProposalStatus.EXECUTABLE) {
+  if (daoProposalSelected?.status === "executable") {
+    // Show Execute Button
     return (
       <Grid container justifyContent="center">
         <Button
@@ -153,7 +104,7 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (daoProposalSelected?.status === ProposalStatus.EXECUTED) {
+  if (daoProposalSelected?.status === "executed") {
     return (
       <Grid container justifyContent="center">
         <Button
@@ -168,65 +119,65 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (daoProposalSelected?.status === ProposalStatus.ACTIVE) {
+  if (daoProposalSelected?.status === "active" || daoProposalSelected?.status === "passed") {
     return (
       <>
-        <Grid>
-          <EvmProposalCountdown />
+        <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
+          <Button
+            disabled={isCastingVote}
+            onClick={() => {
+              setIsCastingVote(true)
+              castVote(daoProposalSelected?.id, true)
+                .then((receipt: any) => {
+                  console.log("Receipt", receipt)
+                  openNotification({
+                    message: "Vote cast successfully",
+                    autoHideDuration: 2000,
+                    variant: "success"
+                  })
+                })
+                .finally(() => {
+                  setIsCastingVote(false)
+                })
+            }}
+            variant="contained"
+            color="secondary"
+            style={{ background: "rgb(113 214 156)" }}
+          >
+            <ThumbUpAlt sx={{ mr: 1 }} /> Support
+          </Button>
+          <Button
+            onClick={() => {
+              setIsCastingVote(true)
+              castVote(daoProposalSelected?.id, false)
+                .then((receipt: any) => {
+                  console.log("Receipt", receipt)
+                  openNotification({
+                    message: "Vote cast successfully",
+                    autoHideDuration: 2000,
+                    variant: "success"
+                  })
+                })
+                .finally(() => {
+                  setIsCastingVote(false)
+                })
+            }}
+            variant="contained"
+            color="secondary"
+            style={{ background: "red" }}
+          >
+            <ThumbDownAlt sx={{ mr: 1 }} /> Reject
+          </Button>
         </Grid>
-
-        {isVotingActive && (
-          <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
-            <Button
-              disabled={isCastingVote}
-              onClick={() => {
-                setIsCastingVote(true)
-                castVote(daoProposalSelected?.id, true)
-                  .then((receipt: any) => {
-                    console.log("Receipt", receipt)
-                    openNotification({
-                      message: "Vote cast successfully",
-                      autoHideDuration: 2000,
-                      variant: "success"
-                    })
-                  })
-                  .finally(() => {
-                    setIsCastingVote(false)
-                  })
-              }}
-              variant="contained"
-              color="secondary"
-              style={{ background: "rgb(113 214 156)" }}
-            >
-              <ThumbUpAlt sx={{ mr: 1 }} /> Support
-            </Button>
-            <Button
-              onClick={() => {
-                setIsCastingVote(true)
-                castVote(daoProposalSelected?.id, false)
-                  .then((receipt: any) => {
-                    console.log("Receipt", receipt)
-                    openNotification({
-                      message: "Vote cast successfully",
-                      autoHideDuration: 2000,
-                      variant: "success"
-                    })
-                  })
-                  .finally(() => {
-                    setIsCastingVote(false)
-                  })
-              }}
-              variant="contained"
-              color="secondary"
-              style={{ background: "red" }}
-            >
-              <ThumbDownAlt sx={{ mr: 1 }} /> Reject
-            </Button>
+        {hasUserCastedVote ? (
+          <Grid container justifyContent="center">
+            <Typography style={{ color: "white" }}>You have already voted</Typography>
           </Grid>
-        )}
+        ) : null}
       </>
     )
   }
+  if (isTimerActive || daoProposalSelected?.status === "queued") return null
 
   return (
     <Grid>
@@ -244,9 +195,7 @@ export const EvmProposalDetailsPage = () => {
   const proposalId = params?.proposalId
 
   const { daoSelected, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
-
-  const theme = useTheme()
-  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const { isTimerActive } = daoProposalSelected
 
   useEffect(() => {
     selectDaoProposal(proposalId)
@@ -264,6 +213,7 @@ export const EvmProposalDetailsPage = () => {
 
       <PageContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
         <Grid item xs={12} md={12} style={{ padding: "40px" }}>
+          {isTimerActive ? <EvmProposalCountdown /> : null}
           <RenderProposalAction />
         </Grid>
       </PageContainer>
