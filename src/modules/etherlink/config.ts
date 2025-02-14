@@ -129,6 +129,11 @@ export const proposalInterfaces = [
     name: "transferERC20"
   },
   {
+    tags: ["token"],
+    interface: ["function transferERC721(address token, address to, uint256 tokenId)"],
+    name: "transferERC721"
+  },
+  {
     name: "mint",
     interface: ["function mint(address to, uint256 amount)"],
     tags: ["token", "mint"]
@@ -137,11 +142,6 @@ export const proposalInterfaces = [
     name: "burn",
     interface: ["function burn(address from, uint256 amount)"],
     tags: ["token", "burn"]
-  },
-  {
-    tags: ["token"],
-    interface: ["function transferERC721(address token, address to, uint256 tokenId)"],
-    name: "transferERC721"
   },
   {
     tags: ["quorum"],

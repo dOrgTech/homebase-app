@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { Grid, styled, Typography, MenuItem, IconButton, TextField } from "@material-ui/core"
+import { Grid, styled, Typography, MenuItem, IconButton } from "@material-ui/core"
 import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledTextField } from "components/ui/StyledTextField"
@@ -34,23 +34,28 @@ const RemoveButton = styled(IconButton)({
 
 interface ITransaction {
   assetType: string
+  assetAddress?: string
+  assetSymbol?: string
+  assetDecimals?: number
   recipient: string
   amount: string
 }
 
 export const EvmPropTransferAssets: React.FC = () => {
   const { transferAssets, setTransferAssets } = useEvmProposalOps()
-  const { daoSelected } = useContext(EtherlinkContext)
+  const { daoSelected, daoTreasuryTokens } = useContext(EtherlinkContext)
 
-  const onUpdateTransaction = (index: number, field: keyof ITransaction, value: string) => {
+  const onUpdateTransaction = (index: number, obj: { field: keyof ITransaction; value: string }[]) => {
     const transactions = [...transferAssets.transactions]
-    transactions[index][field] = value
+    obj.forEach((o: { field: keyof ITransaction; value: string }) => {
+      transactions[index][o.field] = o.value
+    })
     setTransferAssets(transactions, daoSelected?.registryAddress)
   }
 
   const onAddTransaction = () => {
     const transactions = [...transferAssets.transactions]
-    transactions.push({ assetType: "XTZ", recipient: "", amount: "" })
+    transactions.push({ assetType: "transferETH", assetSymbol: "XTZ", recipient: "", amount: "" })
     setTransferAssets(transactions, daoSelected?.registryAddress)
   }
 
@@ -72,10 +77,58 @@ export const EvmPropTransferAssets: React.FC = () => {
                 fullWidth
                 label="Asset Type"
                 variant="standard"
-                value={transaction.assetType}
-                onChange={e => onUpdateTransaction(index, "assetType", e.target.value)}
+                value={transaction?.assetType === "transferETH" ? "transferETH" : transaction.assetAddress}
+                onChange={e => {
+                  const newValue = e.target.value
+                  console.log("newValue", newValue)
+                  if (newValue === "transferETH") {
+                    onUpdateTransaction(index, [
+                      {
+                        field: "assetType",
+                        value: "transferETH"
+                      },
+                      {
+                        field: "assetSymbol",
+                        value: "XTZ"
+                      },
+                      {
+                        field: "assetAddress",
+                        value: daoSelected?.registryAddress
+                      }
+                    ])
+                  } else {
+                    const token = daoTreasuryTokens?.find((token: any) => token.address === newValue)
+                    if (token) {
+                      onUpdateTransaction(index, [
+                        {
+                          field: "assetType",
+                          value: "transferERC20"
+                        },
+                        {
+                          field: "assetSymbol",
+                          value: token?.symbol
+                        },
+                        {
+                          field: "assetDecimals",
+                          value: token?.decimals
+                        },
+                        {
+                          field: "assetAddress",
+                          value: token?.address
+                        }
+                      ])
+                    } else {
+                      alert("Invalid Selection")
+                    }
+                  }
+                }}
               >
-                <MenuItem value="XTZ">XTZ</MenuItem>
+                <MenuItem value="transferETH">XTZ</MenuItem>
+                {daoTreasuryTokens?.map((token: any) => (
+                  <MenuItem key={token.address} value={token.address}>
+                    {token.symbol}
+                  </MenuItem>
+                ))}
               </StyledTextField>
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -84,7 +137,7 @@ export const EvmPropTransferAssets: React.FC = () => {
                 label="Recipient Address"
                 variant="standard"
                 value={transaction.recipient}
-                onChange={e => onUpdateTransaction(index, "recipient", e.target.value)}
+                onChange={e => onUpdateTransaction(index, [{ field: "recipient", value: e.target.value }])}
               />
             </Grid>
             <Grid item xs={12} sm={2}>
@@ -96,13 +149,13 @@ export const EvmPropTransferAssets: React.FC = () => {
                 inputProps={{
                   inputMode: "numeric",
                   pattern: "[0-9]*",
-                  min: "0",
+                  min: "0.001",
                   step: "0.000001"
                 }}
                 error={!transaction.amount}
                 helperText={!transaction.amount ? "Amount must be a number" : ""}
                 value={transaction.amount}
-                onChange={e => onUpdateTransaction(index, "amount", e.target.value)}
+                onChange={e => onUpdateTransaction(index, [{ field: "amount", value: e.target.value }])}
               />
             </Grid>
             <Grid item xs={12} sm={1} container alignItems="center" justifyContent="center">

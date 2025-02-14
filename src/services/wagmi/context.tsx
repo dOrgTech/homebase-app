@@ -83,6 +83,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   const [daoRegistryDetails, setDaoRegistryDetails] = useState<{
     balance: string
   }>({ balance: "0" })
+  const [daoTreasuryTokens, setDaoTreasuryTokens] = useState<any[]>([])
   const [daoOffchainProposals, setDaoOffchainProposals] = useState<any[]>([])
   const [daoProposals, setDaoProposals] = useState<any[]>([])
   const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
@@ -298,17 +299,34 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/members`)
       console.log({ daoSelected })
       // TODO: Replace this with proper service
-      fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.registryAddress}`)
-        .then(res => res.json())
-        .then(data => {
-          const tokenDecimals = daoSelected.decimals
-          const coinBalance = data?.coin_balance
-          const ethBalance = ethers.formatEther(coinBalance)
-          setDaoRegistryDetails({
-            balance: ethBalance
+
+      Promise.all([
+        fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.registryAddress}`)
+          .then(res => res.json())
+          .then(data => {
+            const tokenDecimals = daoSelected.decimals
+            const coinBalance = data?.coin_balance
+            const ethBalance = ethers.formatEther(coinBalance)
+            setDaoRegistryDetails({
+              balance: ethBalance
+            })
+            console.log("Treasury Data", ethBalance)
+          }),
+        fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.address}/token-balances`)
+          .then(res => res.json())
+          .then(data => {
+            console.log("Treasury Data", data)
+            setDaoTreasuryTokens(
+              data?.map((token: any) => ({
+                address: token.token.address,
+                balance: ethers.formatUnits(token.value, Number(token.token.decimals)),
+                decimals: Number(token.token.decimals),
+                symbol: token.token?.symbol || "Unknown",
+                name: token.token?.name || "Unknown"
+              }))
+            )
           })
-          console.log("Treasury Data", ethBalance)
-        })
+      ])
 
       if (daoProposalSelected?.id && daoProposalSelected?.type !== "offchain") {
         fetchCollection(`${firebaseRootCollection}/${daoSelected?.id}/proposals/${daoProposalSelected?.id}/votes`)
@@ -368,6 +386,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daos: daoData,
     daoSelected,
     daoRegistryDetails,
+    daoTreasuryTokens,
     daoProposals: allDaoProposals,
     daoProposalSelected,
     daoProposalOffchainSelected,
@@ -534,6 +553,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     isLoadingDaos,
     daoSelected,
     daoRegistryDetails,
+    daoTreasuryTokens,
     daoProposals,
     isLoadingDaoProposals,
     daoProposalSelected,
@@ -572,6 +592,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         isLoadingDaoProposals,
         daoSelected,
         daoRegistryDetails,
+        daoTreasuryTokens,
         daoProposals,
         daoProposalSelected,
         daoMembers,
