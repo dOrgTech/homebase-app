@@ -17,7 +17,17 @@ export interface IEvmOffchainChoice {
   selected?: boolean
 }
 
-export type ITransactionStatus = "pending" | "executed" | "failed"
+export type ITransactionStatus =
+  | "pending"
+  | "active"
+  | "canceled"
+  | "defeated"
+  | "succeeded"
+  | "queued"
+  | "expired"
+  | "executed"
+
+export type IProposalStatus = ITransactionStatus | "executable"
 
 export interface IEvmProposal {
   against: string
@@ -35,7 +45,7 @@ export interface IEvmProposal {
   latestStage: string
   referenceBlock: number
   proposer?: string
-  status: string // TODO: Add all types
+  status: IProposalStatus
   statusHistoryMap: {
     timestamp: dayjs.Dayjs
     status: ITransactionStatus

@@ -82,7 +82,7 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
       </>
     )
   }
-  if (daoProposalSelected?.status === ProposalStatus.PASSED) {
+  if (daoProposalSelected?.status === "passed") {
     return (
       <Grid container justifyContent="center">
         <Grid>
