@@ -124,12 +124,12 @@ export const proposalInterfaces = [
     name: "transferETH"
   },
   {
-    tags: ["token"],
+    tags: ["transfer"],
     interface: ["function transferERC20(address token, address to, uint256 amount)"],
     name: "transferERC20"
   },
   {
-    tags: ["token"],
+    tags: ["transfer"],
     interface: ["function transferERC721(address token, address to, uint256 tokenId)"],
     name: "transferERC721"
   },

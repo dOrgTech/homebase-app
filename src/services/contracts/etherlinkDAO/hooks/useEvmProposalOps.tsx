@@ -166,7 +166,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
               ethers.parseUnits(transaction.amount, transaction.assetDecimals)
             ]
           }
-          console.log("ifaceParams", transaction.assetType, ifaceParams)
+          console.log("ifaceParams", transaction.assetType, ifaceDef.name, ifaceParams, transaction.amount)
           targets.push(daoRegistryAddress)
           callData.push(iface.encodeFunctionData(ifaceDef.name, ifaceParams))
         })

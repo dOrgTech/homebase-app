@@ -399,18 +399,19 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         console.log("Selecing Offchain Proposal", proposal)
         // setDaoProposalOffchainSelected(proposal)
       } else if (proposal && proposal?.type !== "contract call") {
-        const proposalInterface = proposalInterfaces.find((x: any) => {
+        const proposalInterfacesPossible = proposalInterfaces.filter((x: any) => {
           let fbType = proposal?.type?.toLowerCase()
           console.log("callDataXYB fbType", fbType)
           if (fbType?.startsWith("mint")) fbType = "mint"
           if (fbType?.startsWith("burn")) fbType = "burn"
           return x.tags?.includes(fbType)
         })
-        const functionAbi = proposalInterface?.interface?.[0] as string
-        console.log("callDataXYB functionAbi", functionAbi)
+        const functionAbi = proposalInterfacesPossible?.[0]?.interface?.[0] as string
+        const functionAbiAlternate = proposalInterfacesPossible?.[1]?.interface?.[0] as string
+        console.log("callDataXYB functionAbi", functionAbi, functionAbiAlternate)
         if (!functionAbi) return []
 
-        const proposalData = proposalInterface
+        const proposalData = proposalInterfacesPossible
           ? proposal?.callDataPlain?.map((callData: any) => {
               console.log("callDataXYB", callData)
               const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
@@ -424,7 +425,15 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
               const label = proposalInterface?.label
               console.log("callDataXYB decodedDataPair", decodedDataPair, functionName, functionParams)
-              console.log("callDataXYB decodedDataPairLegacy", decodedDataPairLegacy)
+              console.log("callDataXYB decodedDataPairLegacy", `-> ${decodedDataPairLegacy[0]}`)
+              if (proposal.type === "transfer" && !label) {
+                const decodeDataAlternate = decodeCalldataWithEthers(functionAbiAlternate, formattedCallData)
+                console.log("callDataXYB decodeDataAlternate", decodeDataAlternate)
+                return {
+                  parameter: "Transfer",
+                  value: `${decodeDataAlternate?.functionName}:${decodeDataAlternate?.decodedData?.join(", ")}`
+                }
+              }
               return { parameter: label || functionName, value: functionParams.join(", ") }
             })
           : []
