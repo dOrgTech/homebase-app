@@ -6,7 +6,6 @@ import dayjs from "dayjs"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { GridContainer } from "modules/common/GridContainer"
-import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 interface TimeLeft {
   days: number

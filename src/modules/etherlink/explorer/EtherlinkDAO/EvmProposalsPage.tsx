@@ -14,6 +14,7 @@ import { useQueryParam } from "modules/home/hooks/useQueryParam"
 export const EvmProposalsPage = () => {
   const [proposalType, setProposalType] = useQueryParam("type")
   const [proposalStatus, setProposalStatus] = useQueryParam("status")
+  const [proposalAuthor, setProposalAuthor] = useQueryParam("author")
   const { daoProposals, isProposalDialogOpen, setIsProposalDialogOpen } = useContext(EtherlinkContext)
 
   const theme = useTheme()
@@ -27,11 +28,19 @@ export const EvmProposalsPage = () => {
       return daoProposals
 
     return daoProposals?.filter((proposal: any) => {
+      if (proposalAuthor && proposalAuthor !== "all" && proposal.author === proposalAuthor) return true
       if (proposalType && proposalType !== "all" && proposal.type === proposalType) return true
       if (proposalStatus && proposalStatus !== "all" && proposal.status === proposalStatus) return true
+
+      if (
+        proposalType === "token" &&
+        (proposal.type?.toLowerCase().startsWith("mint") || proposal.type?.toLowerCase().startsWith("burn"))
+      )
+        return true
+
       return false
     })
-  }, [daoProposals, proposalType, proposalStatus])
+  }, [daoProposals, proposalType, proposalStatus, proposalAuthor])
 
   return (
     <>
@@ -57,11 +66,13 @@ export const EvmProposalsPage = () => {
                 >
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="offchain">Off-Chain</MenuItem>
-                  <MenuItem value="tokenOperation">Token Operation</MenuItem>
+                  <MenuItem value="token">Token Operation</MenuItem>
                   <MenuItem value="registry">Registry</MenuItem>
                   <MenuItem value="transfer">Transfer</MenuItem>
-                  <MenuItem value="contractCall">Contract Call</MenuItem>
-                  <MenuItem value="changeConfig">Change Config</MenuItem>
+                  <MenuItem value="contract call">Contract Call</MenuItem>
+                  <MenuItem value="voting delay">Voting Delay</MenuItem>
+                  <MenuItem value="voting period">Voting Period</MenuItem>
+                  <MenuItem value="proposal threshold">Proposal Threshold</MenuItem>
                 </Select>
               </Grid>
 

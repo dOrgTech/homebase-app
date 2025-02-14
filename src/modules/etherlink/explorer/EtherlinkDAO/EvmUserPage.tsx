@@ -3,11 +3,11 @@ import { ethers } from "ethers"
 import { Box, Grid, styled, Typography } from "@material-ui/core"
 import { Button } from "components/ui/Button"
 import { HowToVote, People } from "@material-ui/icons"
-import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { StyledTextField } from "components/ui/StyledTextField"
+import { useHistory } from "react-router-dom"
 
 const StatsContainer = styled(Grid)({
   marginBottom: "40px",
@@ -69,6 +69,7 @@ const DelegationDescription = styled(Typography)({
 const ENABLE_DELEGATION = false
 
 export const EvmUserPage = () => {
+  const history = useHistory()
   const [isLoading, setIsLoading] = useState(false)
   const [delegateToAddress, setDelegateToAddress] = useState("")
   const [delegateDialogOpen, setDelegateDialogOpen] = useState(false)
@@ -108,7 +109,12 @@ export const EvmUserPage = () => {
           <StatLabel>Personal {daoSelected?.symbol} Balance</StatLabel>
           <StatValue>{personalBalance}</StatValue>
         </StatBox>
-        <StatBox>
+        <StatBox
+          style={{ cursor: "pointer" }}
+          onClick={() =>
+            history.push("/explorer/etherlink/dao/" + daoSelected?.id + "/proposals?author=" + userAddress)
+          }
+        >
           <StatLabel>Proposals Created</StatLabel>
           <StatValue>{proposalCreatedCount}</StatValue>
         </StatBox>

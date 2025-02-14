@@ -52,7 +52,15 @@ export interface IEvmFirebaseProposal {
   turnourPercent: number
   // TODO: To be fixed
   id: string
-  type: "voting period" | "no quorum" | "offchain"
+  type:
+    | "contract call"
+    | "registry"
+    | "proposal threshold"
+    | "voting delay"
+    | "voting period"
+    | "transfer"
+    | "offchain"
+    | string // mintXXX, burnXXX
   values: string[]
   votesAgainst: number
   votesFor: number

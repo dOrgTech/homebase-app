@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useContext, useMemo } from "react"
 import { Box, Grid, styled, Typography, Paper } from "@material-ui/core"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
@@ -11,6 +11,7 @@ import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
 import numbro from "numbro"
+import { EtherlinkContext } from "services/wagmi/context"
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#24282d",
@@ -227,12 +228,13 @@ interface IEvmStatItem {
 export const DAOStatsRowEtherlink = () => {
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
+  const { daoSelected } = useContext(EtherlinkContext)
   const daoStats = data?.data?.etherlink?.stats as IEvmDaoStats | undefined
 
   const statItems: IEvmStatItem[] = [
     {
       title: "Members",
-      value: daoStats?.members ?? 0
+      value: daoSelected?.members.length ?? 0
     },
     {
       title: "Active Proposals",
