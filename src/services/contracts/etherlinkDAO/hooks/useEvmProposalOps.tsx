@@ -132,44 +132,57 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
       transferAssets: {
         transactions: [
           {
-            assetType: "XTZ",
+            assetType: "transferETH",
+            assetSymbol: "XTZ",
             recipient: "",
-            amount: ""
+            amount: "",
+            assetAddress: ""
           }
         ]
       },
       setTransferAssets: (transactions: any[], daoRegistryAddress: string) => {
-        const selectedInterface = proposalInterfaces.find(p => p.name === "transferETH")
-        if (!selectedInterface) return
-        const iface = new ethers.Interface(selectedInterface.interface)
+        const targets: string[] = []
         const callData: string[] = []
-        transactions
-          .filter(
-            (transaction: any) =>
-              transaction.recipient?.length > 0 &&
-              transaction.amount > 0 &&
-              transaction.recipient &&
-              ethers.isAddress(transaction.recipient)
-          )
-          .forEach((transaction: any) => {
-            callData.push(
-              iface.encodeFunctionData(selectedInterface.name, [
-                transaction.recipient,
-                ethers.parseEther(transaction.amount)
-              ])
-            )
-          })
+
+        const validTransactions = transactions.filter((transaction: any) => {
+          const isValidRecipient = transaction.recipient?.length > 0 && ethers.isAddress(transaction.recipient)
+          const isValidAmount = transaction.amount > 0
+          return isValidRecipient && isValidAmount
+        })
+
+        validTransactions.forEach((transaction: any) => {
+          const ifaceDef = proposalInterfaces.find(p => p.name === transaction.assetType)
+          if (!ifaceDef) return
+          const iface = new ethers.Interface(ifaceDef.interface)
+          if (!iface) return
+
+          let ifaceParams: any[] = []
+          if (transaction.assetType === "transferETH") {
+            ifaceParams = [transaction.recipient, ethers.parseEther(transaction.amount)]
+          } else {
+            ifaceParams = [
+              transaction.assetAddress,
+              transaction.recipient,
+              ethers.parseUnits(transaction.amount, transaction.assetDecimals)
+            ]
+          }
+          console.log("ifaceParams", transaction.assetType, ifaceDef.name, ifaceParams, transaction.amount)
+          targets.push(daoRegistryAddress)
+          callData.push(iface.encodeFunctionData(ifaceDef.name, ifaceParams))
+        })
+
         const payload = {
           transferAssets: { transactions },
           createProposalPayload: {
             // targets: Object.keys(transactions).map((key: any) => "0x18CA3b7277e25b952834911B1c2e9a9AB4436cA3"), // DAO Treasury Address
             // targets: Object.keys(transactions).map((key: any) => transactions[key].recipient),
-            targets: Object.keys(transactions).map((key: any) => daoRegistryAddress),
-            values: Object.keys(transactions).map((key: any) => "0"),
+            targets,
+            values: validTransactions.map((key: any) => "0"),
             calldatas: callData,
             description: get().createProposalPayload.description
           }
         }
+        console.log("payload", payload)
         set(payload)
       },
       daoRegistry: {
@@ -410,7 +423,8 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
     }),
     {
       name: "evm-proposal-create-store",
-      storage: createJSONStorage(() => localStorage)
+      storage: undefined
+      // storage: createJSONStorage(() => localStorage)
     }
   )
 )

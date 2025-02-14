@@ -10,12 +10,14 @@ import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { useHistory } from "react-router-dom"
+import { toShortAddress } from "services/contracts/utils"
 
 export const EvmTreasuryTable = () => {
-  const { daoSelected, daoRegistryDetails } = useContext(EtherlinkContext)
+  const { daoSelected, daoRegistryDetails, daoTreasuryTokens } = useContext(EtherlinkContext)
   const { setMetadataFieldValue, transferAssets, setTransferAssets, setCurrentStep } = useEvmProposalOps()
   const history = useHistory()
 
+  console.log("daoTreasuryTokens", daoTreasuryTokens)
   if (!daoSelected || !daoRegistryDetails) {
     return <Typography>Loading treasury data...</Typography>
   }
@@ -48,7 +50,7 @@ export const EvmTreasuryTable = () => {
                 onClick={() => {
                   setMetadataFieldValue("type", "transfer_assets")
                   const transactions = [...transferAssets.transactions]
-                  transactions.push({ assetType: "XTZ", recipient: "", amount: "" })
+                  transactions.push({ assetType: "transferETH", recipient: "", amount: "" })
 
                   const uniqueTransactions = transactions.filter(
                     (obj: any, index: any, self: any) =>
@@ -67,6 +69,48 @@ export const EvmTreasuryTable = () => {
               </SmallButton>
             </TableCell>
           </TableRow>
+          {daoTreasuryTokens?.map((token: any) => (
+            <TableRow key={token.address}>
+              <TableCell>{token.name}</TableCell>
+              <TableCell>{token.symbol}</TableCell>
+              <TableCell>{token.balance}</TableCell>
+              <TableCell>
+                <Grid container direction="row" alignItems="center">
+                  {toShortAddress(token.address)}
+                  <CopyButton text={token.address} />
+                </Grid>
+              </TableCell>
+              <TableCell>
+                <SmallButton
+                  onClick={() => {
+                    setMetadataFieldValue("type", "transfer_assets")
+                    const transactions = [...transferAssets.transactions]
+                    transactions.push({
+                      assetType: "transferERC20",
+                      assetSymbol: token.symbol,
+                      assetAddress: token.address,
+                      recipient: "",
+                      amount: token.balance
+                    })
+
+                    const uniqueTransactions = transactions.filter(
+                      (obj: any, index: any, self: any) =>
+                        index ===
+                        self.findIndex(
+                          (t: any) =>
+                            t.amount === obj.amount && t.assetType === obj.assetType && t.recipient === obj.recipient
+                        )
+                    )
+                    setTransferAssets(uniqueTransactions, daoSelected.registryAddress)
+                    setCurrentStep(1)
+                    history.push(`${window.location.pathname.slice(0, -8)}proposals`)
+                  }}
+                >
+                  <Typography color="primary">Transfer</Typography>
+                </SmallButton>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>
