@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { ethers } from "ethers"
 import { Box, Grid, styled, Typography } from "@material-ui/core"
 import { Button } from "components/ui/Button"
@@ -8,6 +8,7 @@ import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useHistory } from "react-router-dom"
+import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 
 const StatsContainer = styled(Grid)({
   marginBottom: "40px",
@@ -75,7 +76,7 @@ export const EvmUserPage = () => {
   const [delegateDialogOpen, setDelegateDialogOpen] = useState(false)
   const [isValidDelegateAddress, setIsValidDelegateAddress] = useState(false)
 
-  const { daoMembers, daoSelected } = useContext(EtherlinkContext)
+  const { daoMembers, daoSelected, daoProposals } = useContext(EtherlinkContext)
 
   const { daoDelegate, signer, userTokenBalance, userVotingWeight, proposalCreatedCount, proposalVotedCount } =
     useEvmDaoOps()
@@ -87,6 +88,10 @@ export const EvmUserPage = () => {
   const userDelegate = selfMember?.delegate
   const isSelfDelegated = userDelegate === signer?.address
   const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
+
+  const proposalByAuthor = useMemo(() => {
+    return daoProposals?.filter((proposal: any) => proposal.author === userAddress)
+  }, [daoProposals, userAddress])
 
   useEffect(() => {
     if (ethers.isAddress(delegateToAddress)) {
@@ -127,28 +132,30 @@ export const EvmUserPage = () => {
       <Typography variant="h5" style={{ marginBottom: "24px", color: "#fff" }}>
         Delegation settings
       </Typography>
-      {ENABLE_DELEGATION && (
-        <Typography style={{ marginBottom: "16px", color: "#9E9E9E" }}>
-          You can either delegate your vote or accept delegations, but not both at the same time.
-        </Typography>
-      )}
+
+      <Typography style={{ marginBottom: "16px", color: "#9E9E9E" }}>
+        You can either delegate your vote or accept delegations, but not both at the same time.
+      </Typography>
 
       <Grid container spacing={3}>
-        {ENABLE_DELEGATION && (
-          <Grid item xs={12} md={6}>
-            <DelegationBox>
-              <People style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
-              <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
-              <DelegationDescription>
-                If you can't or don't want to take part in the governance process, your voting privilege may be
-                forwarded to another member of your choosing.
-              </DelegationDescription>
-              <Button variant="outlined" style={{ width: "fit-content" }} onClick={() => setDelegateDialogOpen(true)}>
-                Set Delegate
-              </Button>
-            </DelegationBox>
-          </Grid>
-        )}
+        <Grid item xs={12} md={6}>
+          <DelegationBox>
+            <People style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
+            <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
+            <DelegationDescription>
+              If you can't or don't want to take part in the governance process, your voting privilege may be forwarded
+              to another member of your choosing.
+            </DelegationDescription>
+            <Button
+              variant="outlined"
+              style={{ width: "fit-content" }}
+              onClick={() => setDelegateDialogOpen(true)}
+              disabled={!ENABLE_DELEGATION}
+            >
+              Set Delegate
+            </Button>
+          </DelegationBox>
+        </Grid>
 
         <Grid item xs={12} md={6}>
           <DelegationBox>
@@ -216,6 +223,15 @@ export const EvmUserPage = () => {
               </Grid>
             </Grid>
           </ResponsiveDialog>
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Typography variant="h5" style={{ color: "#fff" }}>
+            Proposals Created
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <EvmDaoProposalList proposals={proposalByAuthor} />
         </Grid>
       </Grid>
     </Box>
