@@ -1,12 +1,11 @@
 import React, { useState, createContext, ReactNode, useMemo, useRef, useEffect, useCallback } from "react"
-import { useSwitchChain, useAccount as useWagmiAccount, useConnect as useWagmiConnect } from "wagmi"
+import { useSwitchChain, useAccount as useWagmiAccount } from "wagmi"
 import { disconnect as disconnectEtherlink } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
 import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { useModal } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
-import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
@@ -19,11 +18,14 @@ import {
   decodeCalldataWithEthers,
   decodeFunctionParametersLegacy,
   getCallDataFromBytes,
-  parseTransactionHash
+  getBlockExplorerUrl,
+  getEtherAddressDetails,
+  getEtherTokenBalances
 } from "modules/etherlink/utils"
 import { proposalInterfaces } from "modules/etherlink/config"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
-import { IEvmFirebaseProposal } from "modules/etherlink/types"
+import { IEvmDAO, IEvmFirebaseContract, IEvmFirebaseDAOMember, IEvmFirebaseProposal } from "modules/etherlink/types"
+import { networkConfig } from "modules/etherlink/utils"
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -32,48 +34,18 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   const selectedDaoIdRef = useRef<string | null>(null)
 
   const firebaseRootCollection = useMemo(() => {
-    if (network === "etherlink_mainnet") {
-      return "daosEtherlink-Mainnet"
-    }
-    if (network === "etherlink_testnet") {
-      return "idaosEtherlink-Testnet"
-    }
-    return undefined
+    return networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection
   }, [network])
 
   const firebaseRootTokenCollection = useMemo(() => {
-    if (!firebaseRootCollection) return undefined
-    if (firebaseRootCollection.endsWith("daosEtherlink-Testnet")) {
-      return "tokensEtherlink-Testnet"
-    }
-    if (firebaseRootCollection.endsWith("daosEtherlink-Mainnet")) {
-      return "tokensEtherlink-Mainnet"
-    }
-    return undefined
-  }, [firebaseRootCollection])
+    return networkConfig[network as keyof typeof networkConfig]?.firebaseRootTokenCollection
+  }, [network])
 
   const [isLoadingDaos, setIsLoadingDaos] = useState(!!firebaseRootCollection)
   const [isLoadingDaoProposals, setIsLoadingDaoProposals] = useState(true)
   const [contractData, setContractData] = useState<any[]>([])
-  const [daoData, setDaoData] = useState<any[]>([])
-  const [daoSelected, setDaoSelected] = useState<{
-    id: string
-    address: string
-    name: string
-    symbol: string
-    decimals: number
-    description: string
-    token: string
-    registryAddress: string
-    treasuryAddress: string
-    proposalThreshold: string
-    totalSupply: string
-    registry: Record<string, string>
-    votingDuration: number // in minutes
-    votingDelay: number // in minutes
-    quorum: number
-    executionDelay: number // in seconds
-  } | null>(null)
+  const [daoData, setDaoData] = useState<IEvmDAO[]>([])
+  const [daoSelected, setDaoSelected] = useState<IEvmDAO | null>(null)
   const [daoRegistryDetails, setDaoRegistryDetails] = useState<{
     balance: string
   }>({ balance: "0" })
@@ -92,8 +64,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     }[]
   >([])
 
-  const [daoMembers, setDaoMembers] = useState<any[]>([])
-  const { data: firestoreData, loading, fetchCollection } = useFirestoreStore()
+  const [daoMembers, setDaoMembers] = useState<IEvmFirebaseDAOMember[]>([])
+  const { data: firestoreData, fetchCollection } = useFirestoreStore()
   const [refreshCount, setRefreshCount] = useState(0)
   const timerForRecomputation = useRef<NodeJS.Timeout | null>(null)
 
@@ -117,7 +89,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   }, [fetchCollection, firebaseRootCollection, firebaseRootTokenCollection])
 
   useEffect(() => {
-    console.log("Firestore Data", firestoreData)
     if (!firebaseRootCollection) return
     if (daoProposalSelected?.type === "offchain") return
 
@@ -128,7 +99,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
     if (firestoreData?.["contracts"]) {
       const isTestnet = firebaseRootCollection?.toLowerCase().includes("testnet")
-      const contractDataForNetwork = firestoreData["contracts"]?.find((contract: any) =>
+      const contractDataForNetwork = firestoreData["contracts"]?.find((contract: IEvmFirebaseContract) =>
         contract.id?.toLowerCase().includes(isTestnet ? "testnet" : "mainnet")
       )
       setContractData(contractDataForNetwork)
@@ -161,7 +132,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
           const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
           const daoTotalVotingWeight = new BigNumber(daoSelected?.totalSupply ?? "0")
           let executionAvailableAt = undefined
-          // This should consider the time after "Queue for Execution"
 
           const statusHistoryMap = Object.entries(firebaseProposal.statusHistory)
             .map(([status, timestamp]: [string, any]) => ({
@@ -171,8 +141,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             }))
             .sort((a, b) => b.timestamp - a.timestamp)
 
-          console.log("statusHistoryMapX", statusHistoryMap)
-          // debugger
           const queuedStatus = statusHistoryMap.find(x => x.status === "queued")
           if (queuedStatus) {
             executionAvailableAt = dayjs.unix(queuedStatus.timestamp).add(daoSelected?.executionDelay, "seconds")
@@ -281,27 +249,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
           console.log("sortedStatusHistoryMap", sortedStatusHistoryMap)
 
-          if (firebaseProposal.id === "24689950446001011996659268473676942781798086252707224158224751569766179998537") {
-            console.log("ZZZ_latestStage", proposalStatus, isTimerActive, timerTargetDate, sortedStatusHistoryMap)
-            console.log(
-              "ZZZ_activeStartTimestamp",
-              queuedStatus?.timestamp,
-              executionAvailableAt?.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A")
-            )
-            // console.log(
-            //   "ZZZ_activeStartTimestamp",
-            //   activeStartTimestamp.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A")
-            // )
-            // console.log("ZZZ_votingExpiresAt", votingExpiresAt.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A"))
-            // console.log("ZZZ_statusMap", statusHistoryMap)
-            // console.log(
-            //   "ZZZ_activeStartTimestamp",
-            //   activeStartTimestamp.tz("Asia/Kolkata").format("MMM DD, YYYY hh:mm A")
-            // )
-            // console.log("ZZZ_timerActive", isTimerActive)
-            // console.log("ZZZ_timerLabel", timerLabel)
-            // console.log("ZZZ_timerTargetDate", timerTargetDate)
-          }
           return {
             ...firebaseProposal,
             createdAt: dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number),
@@ -318,9 +265,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             totalVoteCount,
             timerLabel,
             timerTargetDate,
-            txHash: firebaseProposal?.executionHash
-              ? `https://testnet.explorer.etherlink.com/tx/0x${parseTransactionHash(firebaseProposal?.executionHash)}`
-              : "",
+            txHash: getBlockExplorerUrl(network, firebaseProposal?.executionHash),
 
             votingStartTimestamp: activeStartTimestamp,
             votingExpiresAt,
@@ -345,6 +290,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daoSelected?.votingDuration,
     firebaseRootCollection,
     firestoreData,
+    network,
     recomputeDataAfter,
     refreshCount
   ])
@@ -354,52 +300,53 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (daoSelected?.id && firebaseRootCollection && daoProposalSelected?.type !== "offchain") {
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/proposals`)
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/members`)
-      console.log({ daoSelected })
+
       // TODO: Replace this with proper service
 
       Promise.all([
-        fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.registryAddress}`)
-          .then(res => res.json())
-          .then(data => {
-            const tokenDecimals = daoSelected.decimals
-            const coinBalance = data?.coin_balance
-            const ethBalance = ethers.formatEther(coinBalance)
-            setDaoRegistryDetails({
-              balance: ethBalance
-            })
-            console.log("Treasury Data", ethBalance)
-          }),
-        fetch(`https://testnet.explorer.etherlink.com/api/v2/addresses/${daoSelected.registryAddress}/token-balances`)
-          .then(res => res.json())
-          .then(data => {
-            console.log("Treasury Data", data)
-            setDaoTreasuryTokens(
-              data?.map((token: any) => ({
-                address: token.token.address,
-                balance: ethers.formatUnits(token.value, Number(token.token.decimals)),
-                decimals: Number(token.token.decimals),
-                symbol: token.token?.symbol || "Unknown",
-                name: token.token?.name || "Unknown"
-              }))
-            )
+        getEtherAddressDetails(network, daoSelected.registryAddress).then(data => {
+          const tokenDecimals = daoSelected.decimals
+          const coinBalance = data?.coin_balance
+          const ethBalance = ethers.formatEther(coinBalance)
+          setDaoRegistryDetails({
+            balance: ethBalance
           })
+          console.log("Treasury Data", ethBalance)
+        }),
+        getEtherTokenBalances(network, daoSelected.registryAddress).then(data => {
+          console.log("Treasury Data", data)
+          setDaoTreasuryTokens(
+            data?.map((token: any) => ({
+              address: token.token.address,
+              balance: ethers.formatUnits(token.value, Number(token.token.decimals)),
+              decimals: Number(token.token.decimals),
+              symbol: token.token?.symbol || "Unknown",
+              name: token.token?.name || "Unknown"
+            }))
+          )
+        })
       ])
 
       if (daoProposalSelected?.id && daoProposalSelected?.type !== "offchain") {
         fetchCollection(`${firebaseRootCollection}/${daoSelected?.id}/proposals/${daoProposalSelected?.id}/votes`)
       }
     }
-  }, [daoProposalSelected?.id, daoProposalSelected?.type, daoSelected, fetchCollection, firebaseRootCollection])
+  }, [
+    daoProposalSelected?.id,
+    daoProposalSelected?.type,
+    daoSelected,
+    fetchCollection,
+    firebaseRootCollection,
+    network
+  ])
 
   useEffect(() => {
     if (!daoSelected?.id) return
     fetchOffchainProposals(daoSelected?.id).then(offchainProposals => {
-      console.log("offchainProposals", offchainProposals)
       setDaoOffchainProposals(offchainProposals)
     })
   }, [daoSelected?.id])
 
-  console.log("Proposal List", daoProposals)
   const daoOffchainPollList = daoOffchainProposals.map(x => ({
     against: "tbd",
     author: x.author,
@@ -526,9 +473,9 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const { setOpen } = useModal()
   const provider = useEthersProvider()
   const signer = useEthersSigner()
-  const { chains, switchChain } = useSwitchChain()
+  const { switchChain } = useSwitchChain()
 
-  const { address, isConnected, chain, status } = useWagmiAccount()
+  const { address, isConnected, chain } = useWagmiAccount()
 
   const etherlinkNetwork = useMemo(() => {
     if (chain?.name === "Etherlink") {
@@ -571,7 +518,6 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         network: etherlinkNetwork,
         connect: () => {
           setOpen(true)
-          // connect({ config: wagmiConfig })
         },
         contractData,
         isProposalDialogOpen,

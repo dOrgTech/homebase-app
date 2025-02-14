@@ -1,5 +1,14 @@
 import dayjs from "dayjs"
+
 export type IEthereumAddress = string & { __brand: "EthereumAddress" }
+
+export interface IEvmFirebaseContract {
+  id: string
+  daoFactory: IEthereumAddress
+  timelockFactory: IEthereumAddress
+  registryFactory: IEthereumAddress
+  wrapper: IEthereumAddress
+}
 
 export interface IEvmOffchainChoiceForVote {
   address?: string
@@ -31,6 +40,46 @@ export type IProposalStatus =
   | "failed" // voting period on and the proposal is failed
   | "passed" // voting period on and the proposal is passed
 
+export type IProposalType =
+  | "contract call"
+  | "registry"
+  | "proposal threshold"
+  | "voting delay"
+  | "voting period"
+  | "transfer"
+  | "offchain"
+  | "mintXXX"
+  | "burnXXX"
+
+export interface IEvmDAO {
+  id: string
+  address: string
+  name: string
+  symbol: string
+  decimals: number
+  description: string
+  token: string
+  registryAddress: string
+  treasuryAddress: string
+  proposalThreshold: string
+  totalSupply: string
+  registry: Record<string, string>
+  votingDuration: number // in minutes
+  votingDelay: number // in minutes
+  quorum: number
+  executionDelay: number // in seconds
+}
+
+export interface IEvmFirebaseDAOMember {
+  address: string
+  delegate: string
+  lastSeen: import("firebase/firestore").Timestamp
+  personalBalance: string
+  votingWeight: string
+  proposalsCreated: any[]
+  proposalsVoted: any[]
+}
+
 // Commented keys are not in use but exists in firebase
 export interface IEvmFirebaseProposal {
   against: string
@@ -52,15 +101,7 @@ export interface IEvmFirebaseProposal {
   turnourPercent: number
   // TODO: To be fixed
   id: string
-  type:
-    | "contract call"
-    | "registry"
-    | "proposal threshold"
-    | "voting delay"
-    | "voting period"
-    | "transfer"
-    | "offchain"
-    | string // mintXXX, burnXXX
+  type: IProposalType | string // mintXXX, burnXXX
   values: string[]
   votesAgainst: number
   votesFor: number

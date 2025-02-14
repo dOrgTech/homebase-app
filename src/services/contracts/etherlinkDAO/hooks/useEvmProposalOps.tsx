@@ -2,11 +2,10 @@ import { ethers } from "ethers"
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 
-import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { useCallback, useContext, useMemo, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 
-import HbTokenAbi from "assets/abis/hb_evm.json"
 import HbDaoAbi from "assets/abis/hb_dao.json"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { EvmProposalOptions, proposalInterfaces } from "modules/etherlink/config"

@@ -1,5 +1,23 @@
 import { ethers, FunctionFragment } from "ethers"
 import { proposalInterfaces } from "./config"
+import { IProposalType } from "./types"
+
+export const networkConfig = {
+  etherlink_testnet: {
+    network: "testnet",
+    explorerUrl: "https://testnet.explorer.etherlink.com",
+    explorerApiUrl: "https://testnet.explorer.etherlink.com/api/v2",
+    firebaseRootCollection: "idaosEtherlink-Testnet",
+    firebaseRootTokenCollection: "tokensEtherlink-Testnet"
+  },
+  etherlink_mainnet: {
+    network: "mainnet",
+    explorerUrl: "https://explorer.etherlink.com",
+    explorerApiUrl: "https://explorer.etherlink.com/api/v2",
+    firebaseRootCollection: "daosEtherlink-Mainnet",
+    firebaseRootTokenCollection: "tokensEtherlink-Mainnet"
+  }
+}
 
 export const isInvalidEvmAddress = (address: string) => {
   return !ethers.isAddress(address)
@@ -96,24 +114,6 @@ export const getCallDataForProposal = (
 }
 
 export function decodeCalldataWithEthers(functionAbi: string, callDataHex: string, isRetry = false): any {
-  // try {
-  //   const callDataHexValue = !callDataHex?.startsWith("0x") ? `0x${callDataHex}` : callDataHex
-  //   const selector = callDataHexValue.slice(0, 10) // "0xa9059cbb"
-  //   console.log("decodeCalldataWithEthers:Function Selector:", selector)
-
-  //   const paramTypes = ["address", "uint256", "uint8"]
-  //   const argsData = "0x" + callDataHexValue.slice(10)
-  //   console.log("decodeCalldataWithEthers:Args Data:", argsData)
-
-  //   const decodedArgs = ethers.AbiCoder.defaultAbiCoder().decode(paramTypes, argsData)
-  //   console.log("decodeCalldataWithEthers:Decoded Args:", decodedArgs)
-
-  //   return { decoded: [], functionName: "", decodedData: [] }
-  // } catch (error) {
-  //   console.log("error:decodeCalldataWithEthers", functionAbi, callDataHex, error)
-  //   return { decoded: [], functionName: "", decodedData: [] }
-  // }
-
   const callDataHexValue = callDataHex.startsWith("0x") ? callDataHex : `0x${callDataHex}`
 
   try {
@@ -339,4 +339,59 @@ export function getDaoTokenOpsType(type: string, tokenSymbol: string) {
   if (type === "mint") return `Mint ${tokenSymbol}`
   if (type === "burn") return `Burn ${tokenSymbol}`
   return ""
+}
+
+export function getBlockExplorerUrl(network: string, executionHash: string) {
+  let txHash = parseTransactionHash(executionHash)
+  txHash = txHash.startsWith("0x") ? txHash : `0x${txHash}`
+  return networkConfig[network as keyof typeof networkConfig]?.explorerUrl + "/tx/" + txHash
+}
+
+export async function getEtherAddressDetails(network: string, address: string) {
+  const response = await fetch(
+    networkConfig[network as keyof typeof networkConfig]?.explorerApiUrl + "/addresses/" + address
+  )
+  const data = await response.json()
+  return data
+}
+
+export async function getEtherTokenBalances(network: string, address: string) {
+  const response = await fetch(
+    networkConfig[network as keyof typeof networkConfig]?.explorerApiUrl + "/addresses/" + address + "/token-balances"
+  )
+  const data = await response.json()
+  return data
+}
+
+function _decodedCallData(possibleInterfaces: any[], callData: string) {
+  const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
+  const response = {
+    parameter: "",
+    value: ""
+  }
+  for (const iface of possibleInterfaces) {
+    const decodedDataPair = decodeCalldataWithEthers(iface.interface?.[0], formattedCallData)
+    console.log("callDataXYB decodedDataPair", decodedDataPair)
+    const functionName = decodedDataPair?.functionName
+    const functionParams = decodedDataPair?.decodedData
+    const label = iface?.label
+    response.parameter = label || functionName
+    response.value = functionParams.join(", ")
+    if (response.value) break
+  }
+  return response
+}
+// TODO: Imeplement within wagmi/context.tsx
+export function decodeCallData(proposalType: IProposalType, callDataPlain: string[]) {
+  let proposalData: { parameter: string; value: string }[] = []
+  const possibleInterfaces = proposalInterfaces.filter((x: any) => {
+    let fbType = proposalType.toLowerCase()
+    if (fbType?.startsWith("mint")) fbType = "mint"
+    if (fbType?.startsWith("burn")) fbType = "burn"
+    return x.tags?.includes(fbType)
+  })
+  if (possibleInterfaces?.length > 0) {
+    proposalData = callDataPlain.map((callData: string) => _decodedCallData(possibleInterfaces, callData))
+  }
+  return proposalData
 }
