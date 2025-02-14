@@ -49,18 +49,11 @@ export const EvmTreasuryTable = () => {
               <SmallButton
                 onClick={() => {
                   setMetadataFieldValue("type", "transfer_assets")
-                  const transactions = [...transferAssets.transactions]
-                  transactions.push({ assetType: "transferETH", recipient: "", amount: "" })
 
-                  const uniqueTransactions = transactions.filter(
-                    (obj: any, index: any, self: any) =>
-                      index ===
-                      self.findIndex(
-                        (t: any) =>
-                          t.amount === obj.amount && t.assetType === obj.assetType && t.recipient === obj.recipient
-                      )
+                  setTransferAssets(
+                    [{ assetType: "transferETH", recipient: "", amount: "" }],
+                    daoSelected.registryAddress
                   )
-                  setTransferAssets(uniqueTransactions, daoSelected.registryAddress)
                   setCurrentStep(1)
                   history.push(`${window.location.pathname.slice(0, -8)}proposals`)
                 }}
@@ -84,24 +77,19 @@ export const EvmTreasuryTable = () => {
                 <SmallButton
                   onClick={() => {
                     setMetadataFieldValue("type", "transfer_assets")
-                    const transactions = [...transferAssets.transactions]
-                    transactions.push({
-                      assetType: "transferERC20",
-                      assetSymbol: token.symbol,
-                      assetAddress: token.address,
-                      recipient: "",
-                      amount: token.balance
-                    })
 
-                    const uniqueTransactions = transactions.filter(
-                      (obj: any, index: any, self: any) =>
-                        index ===
-                        self.findIndex(
-                          (t: any) =>
-                            t.amount === obj.amount && t.assetType === obj.assetType && t.recipient === obj.recipient
-                        )
+                    setTransferAssets(
+                      [
+                        {
+                          assetType: "transferERC20",
+                          assetSymbol: token.symbol,
+                          assetAddress: token.address,
+                          recipient: "",
+                          amount: token.balance
+                        }
+                      ],
+                      daoSelected.registryAddress
                     )
-                    setTransferAssets(uniqueTransactions, daoSelected.registryAddress)
                     setCurrentStep(1)
                     history.push(`${window.location.pathname.slice(0, -8)}proposals`)
                   }}
