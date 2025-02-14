@@ -170,7 +170,7 @@ const RenderProposalAction = () => {
           </Button>
         </Grid>
         {hasUserCastedVote ? (
-          <Grid container justifyContent="center">
+          <Grid container justifyContent="center" style={{ marginTop: 10 }}>
             <Typography style={{ color: "white" }}>You have already voted</Typography>
           </Grid>
         ) : null}

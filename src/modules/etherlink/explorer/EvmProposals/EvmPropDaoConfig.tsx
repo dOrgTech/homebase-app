@@ -82,7 +82,7 @@ const TimeInput = ({
           type="number"
           variant="standard"
           value={days}
-          onChange={e => setDays(Number(e.target.value))}
+          onChange={e => setDays(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
           style={{ marginRight: "16px" }}
         />
         <StyledTextField
@@ -90,7 +90,7 @@ const TimeInput = ({
           type="number"
           variant="standard"
           value={hours}
-          onChange={e => setHours(Number(e.target.value))}
+          onChange={e => setHours(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
           style={{ marginRight: "16px" }}
         />
         <StyledTextField
@@ -98,7 +98,7 @@ const TimeInput = ({
           type="number"
           variant="standard"
           value={minutes}
-          onChange={e => setMinutes(Number(e.target.value))}
+          onChange={e => setMinutes(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
           style={{ marginRight: "16px" }}
         />
       </Box>
