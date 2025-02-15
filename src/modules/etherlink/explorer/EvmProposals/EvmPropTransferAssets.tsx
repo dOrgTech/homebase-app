@@ -169,10 +169,11 @@ export const EvmPropTransferAssets: React.FC = () => {
         </TransactionContainer>
       ))}
 
-      <AddButton onClick={onAddTransaction}>
+      {/* Disabled Temporarily */}
+      {/* <AddButton onClick={onAddTransaction}>
         <AddIcon style={{ marginRight: "8px" }} />
         <Typography>Add Transaction</Typography>
-      </AddButton>
+      </AddButton> */}
     </Grid>
   )
 }
