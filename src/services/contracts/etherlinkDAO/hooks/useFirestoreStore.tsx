@@ -1,6 +1,6 @@
 // Get Indexes OnChain Data from Firestore
 import { create } from "zustand"
-import { collection, doc, getDocs, onSnapshot } from "firebase/firestore"
+import { collection, CollectionReference, doc, DocumentData, getDocs, onSnapshot } from "firebase/firestore"
 import { db } from "../firebase-config"
 
 interface FirestoreState {
@@ -19,6 +19,7 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
 
   // Fetch data for a specific collection
   fetchCollection: async (collectionName: string) => {
+    console.log("fetchFirebaseCollection", collectionName)
     const { data, loading } = get()
 
     if (loading[collectionName]) return // Prevent duplicate fetches
@@ -28,31 +29,15 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
     }))
 
     try {
-      let collectionRef
-
       // Check if collectionName includes "/" to identify child collections
       if (collectionName.includes("/")) {
         const pathSegments = collectionName.split("/")
         if (pathSegments.length % 2 === 0) {
           throw new Error("Invalid collection path. Ensure the path alternates between document and collection.")
         }
-
-        // let docRef = doc(db, pathSegments[0], pathSegments[1])
-        // for (let i = 2; i < pathSegments.length - 1; i += 2) {
-        //   docRef = doc(docRef, pathSegments[i], pathSegments[i + 1])
-        // }
-        // console.log("docRef", docRef)
-        // console.log("pathSegments", pathSegments[pathSegments.length - 1])
-        // collectionRef = collection(docRef, pathSegments[pathSegments.length - 1])
-
-        // const docRef = doc(db, pathSegments[0], pathSegments[1])
-        console.log("collectionName_Input", collectionName)
-        collectionRef = collection(db, collectionName)
-        // const snapshot = await getDocs(collectionRef)
-        // console.log("collectionName_SnapShopt", snapshot.docs)
-      } else {
-        collectionRef = collection(db, collectionName)
       }
+
+      const collectionRef = collection(db, collectionName)
 
       const unsubscribe = onSnapshot(
         collectionRef,

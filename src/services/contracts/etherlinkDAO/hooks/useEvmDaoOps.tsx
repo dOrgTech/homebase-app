@@ -60,8 +60,6 @@ export const useEvmDaoOps = () => {
     [daoSelected, etherlink.signer]
   )
 
-  console.log("YYY", { showProposalVoterList })
-
   useEffect(() => {
     if (!etherlink?.signer || !tokenContract) return
     const getUserTokenBalance = async () => {

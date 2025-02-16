@@ -6,6 +6,7 @@ import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { useModal } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
+import { useNetwork } from "services/useNetwork"
 
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
@@ -99,9 +100,13 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
     if (firestoreData?.["contracts"]) {
       const isTestnet = firebaseRootCollection?.toLowerCase().includes("testnet")
-      const contractDataForNetwork = firestoreData["contracts"]?.find((contract: IEvmFirebaseContract) =>
-        contract.id?.toLowerCase().includes(isTestnet ? "testnet" : "mainnet")
-      )
+      const contractDataForNetwork = firestoreData["contracts"]?.find((contract: IEvmFirebaseContract) => {
+        console.log({ contract })
+        return isTestnet
+          ? contract.id?.toLowerCase().includes("testnet")
+          : !contract.id?.toLowerCase().includes("testnet")
+      })
+      console.log("contractDataForNetwork", contractDataForNetwork)
       setContractData(contractDataForNetwork)
     }
     if (!daoSelected?.id) return
@@ -393,7 +398,6 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daoTreasuryTokens,
     daoProposals: allDaoProposals,
     daoProposalSelected,
-    daoProposalOffchainSelected,
     daoMembers,
     daoProposalVoters,
     selectDaoProposal: (proposalId: string) => {
@@ -468,12 +472,12 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 export const EtherlinkContext = createContext<any | undefined>(undefined)
 
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [network, setNetwork] = useState<string | undefined>(localStorage.getItem("homebase:network") || undefined)
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false)
   const { setOpen } = useModal()
   const provider = useEthersProvider()
   const signer = useEthersSigner()
   const { switchChain } = useSwitchChain()
+  const { network: contextNetwork } = useNetwork()
 
   const { address, isConnected, chain } = useWagmiAccount()
 
@@ -484,8 +488,16 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (chain?.name === "Etherlink Testnet") {
       return "etherlink_testnet"
     }
-    return network
-  }, [chain?.name, network])
+    return contextNetwork
+  }, [chain?.name, contextNetwork])
+
+  const switchToNetwork = useCallback(
+    (network: string) => {
+      const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
+      switchChain({ chainId: networkId })
+    },
+    [switchChain]
+  )
 
   const {
     contractData,
@@ -504,7 +516,6 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   } = useEtherlinkDao({
     network: etherlinkNetwork || ""
   })
-  console.log({ daoProposals })
 
   return (
     <EtherlinkContext.Provider
@@ -535,11 +546,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         selectDaoProposal,
         selectDao,
         disconnect: () => disconnectEtherlink(wagmiConfig),
-        switchToNetwork: (network: string) => {
-          const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
-          setNetwork(network)
-          switchChain({ chainId: networkId })
-        }
+        switchToNetwork
       }}
     >
       {children}
