@@ -38,6 +38,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     return networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection
   }, [network])
 
+  console.log("firebaseRootCollection", firebaseRootCollection)
+
   const firebaseRootTokenCollection = useMemo(() => {
     return networkConfig[network as keyof typeof networkConfig]?.firebaseRootTokenCollection
   }, [network])
@@ -490,6 +492,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
     return contextNetwork
   }, [chain?.name, contextNetwork])
+
+  console.log("etherlinkNetwork", etherlinkNetwork)
 
   const switchToNetwork = useCallback(
     (network: string) => {

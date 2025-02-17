@@ -14,8 +14,8 @@ export const networkConfig = {
     network: "mainnet",
     explorerUrl: "https://explorer.etherlink.com",
     explorerApiUrl: "https://explorer.etherlink.com/api/v2",
-    firebaseRootCollection: "daosEtherlink-Mainnet",
-    firebaseRootTokenCollection: "tokensEtherlink-Mainnet"
+    firebaseRootCollection: "idaosEtherlink",
+    firebaseRootTokenCollection: "tokensEtherlink"
   }
 }
 
