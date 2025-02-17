@@ -63,12 +63,17 @@ export const EvmDaoSettingModal: React.FC<{
     },
     {
       key: "Treasury Address",
-      value: daoSelected?.treasuryAddress
-    },
-    {
-      key: "Registry Address",
       value: daoSelected?.registryAddress
     },
+    /**
+     * Firebase contains two fields: registryAddress and treasuryAddress
+     * We need to display the registryAddress as "Treasury Address"
+     * and the treasuryAddress is UNKNOWN at the moment
+     */
+    // {
+    //   key: "Registry Address",
+    //   value: daoSelected?.registryAddress
+    // },
     {
       key: "Governance Token",
       value: daoSelected?.token

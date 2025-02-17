@@ -537,8 +537,7 @@ export const useEvmProposalOps = () => {
 
   const queueForExecution = useCallback(async () => {
     console.log(daoProposalSelected?.type)
-    if (!daoContract || !daoProposalSelected?.id || !daoSelected?.treasuryAddress)
-      return alert("No dao contract or proposal id")
+    if (!daoContract || !daoProposalSelected?.id) return alert("No dao contract or proposal id")
 
     const metadata = getProposalExecutionMetadata()
     if (!metadata) return alert("Could not get proposal metadata")
@@ -558,7 +557,6 @@ export const useEvmProposalOps = () => {
     daoContract,
     daoProposalSelected?.id,
     daoProposalSelected?.type,
-    daoSelected?.treasuryAddress,
     getProposalExecutionMetadata,
     getProposalExecutionTargetAddress
   ])

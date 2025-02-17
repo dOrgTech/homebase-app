@@ -60,7 +60,6 @@ export interface IEvmDAO {
   description: string
   token: string
   registryAddress: string
-  treasuryAddress: string
   proposalThreshold: string
   totalSupply: string
   registry: Record<string, string>
