@@ -20,7 +20,7 @@ import { PageContainer, StyledTab, Search, DAOItemGrid, DAOItemCard, TabsContain
 
 export const DAOList: React.FC = () => {
   const { network, etherlink, account } = useTezos()
-  const { data: daos, isLoading, isLoadingWithFirebase } = useAllDAOs(network)
+  const { data: daos, isLoading, isLoadingWithFirebase, signerTokenBalances } = useAllDAOs(network)
 
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
@@ -33,27 +33,35 @@ export const DAOList: React.FC = () => {
   const [offset, setOffset] = useState(0)
   const pageCount = Math.ceil(daos ? daos.length / 16 : 0)
 
-  const currentDAOs = useMemo(() => {
+  const formattedDAOs = useMemo(() => {
     if (daos) {
-      const formattedDAOs = daos
+      return daos
         .map(dao => {
           const votingAddressesCount =
             dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0
           return {
+            ...dao,
             id: dao.address,
             name: dao.name,
             description: dao.description,
             symbol: dao.token.symbol,
-            votingAddresses: dao.ledgers?.map((l: { holder: { address: any } }) => l.holder.address) || [],
-            votingAddressesCount: votingAddressesCount || dao.holders_count || 0,
+            token: dao.token?.contract || "",
             dao_type: {
               name: dao.dao_type.name
             },
+            votingAddresses: dao.ledgers?.map((l: { holder: { address: any } }) => l.holder.address) || [],
+            votingAddressesCount: votingAddressesCount || dao.holders_count || 0,
             allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
           }
         })
         .sort((a, b) => b.votingAddressesCount - a.votingAddressesCount)
+    } else {
+      return []
+    }
+  }, [daos])
 
+  const currentDAOs = useMemo(() => {
+    if (daos) {
       if (searchText) {
         return formattedDAOs.filter(
           formattedDao =>
@@ -63,32 +71,14 @@ export const DAOList: React.FC = () => {
       }
 
       const slice = formattedDAOs.slice(offset, offset + 16)
-
       return slice
     }
 
     return []
-  }, [daos, searchText, offset])
+  }, [daos, searchText, offset, formattedDAOs])
 
   const myDAOs = useMemo(() => {
     if (daos) {
-      console.log("Raw DAOs", daos)
-      const formattedDAOs = daos
-        .map(dao => ({
-          id: dao.address,
-          name: dao.name,
-          symbol: dao.token.symbol,
-          votingAddresses: dao.ledgers ? dao.ledgers.map((l: { holder: { address: any } }) => l.holder.address) : [],
-          votingAddressesCount:
-            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
-          dao_type: {
-            name: dao.dao_type.name
-          },
-          description: dao.description,
-          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
-        }))
-        .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
-
       if (searchText) {
         return formattedDAOs.filter(
           formattedDao =>
@@ -97,12 +87,15 @@ export const DAOList: React.FC = () => {
         )
       }
       const accountAddress = account || etherlink?.account?.address
-      console.log("formattedDaos", formattedDAOs)
-      return formattedDAOs.filter(dao => dao.votingAddresses.includes(accountAddress))
+
+      return formattedDAOs.filter(dao => {
+        if (dao.dao_type?.name !== "etherlink_onchain") return dao.votingAddresses.includes(accountAddress)
+        return signerTokenBalances.includes(dao.token)
+      })
     }
 
     return []
-  }, [daos, searchText, account, etherlink?.account?.address])
+  }, [daos, searchText, account, etherlink?.account?.address, formattedDAOs, signerTokenBalances])
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())

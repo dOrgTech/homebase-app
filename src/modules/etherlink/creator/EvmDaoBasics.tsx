@@ -109,18 +109,10 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const { data: daoData, setFieldValue, getIn } = useEvmDaoCreateStore()
 
-  console.log({ daoData })
-
   const saveStepInfo = (values: EvmDaoSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
     const newValues: EvmDaoSettings = { ...values }
-    // const newState = {
-    //   ...state?.data,
-    //   orgSettings: newValues
-    // }
 
     setSubmitting(true)
-    // dispatch({ type: ActionTypes.UPDATE_ORGANIZATION_SETTINGS, org: newValues })
-    // history.push(`voting`)
   }
 
   const orgSettings: EvmDaoSettings = {
@@ -167,10 +159,8 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                         name="name"
                         type="text"
                         placeholder="DAO Name"
-                        // value={daoData?.name}
                         defaultValue={daoData?.name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          console.log("Setting DAO Name to", e.target.value)
                           setFieldValue("name", e.target.value)
                         }}
                       />
@@ -190,7 +180,6 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                         defaultValue={daoData?.governanceToken.symbol}
                         inputProps={{ maxLength: 36 }}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          console.log("Setting DAO Symbol to", e.target.value)
                           setFieldValue("governanceToken.symbol", e.target.value)
                         }}
                       />
@@ -223,7 +212,6 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           )
                         }}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          console.log("Setting DAO Token Decimals to", e.target.value)
                           setFieldValue("governanceToken.tokenDecimals", e.target.value)
                         }}
                       />

@@ -18,7 +18,6 @@ export const TokenDeploymentRouter = (): JSX.Element => {
   const history = useHistory()
   const match = useRouteMatch()
 
-  console.log("Network from token router", network)
   if (network.startsWith("etherlink")) {
     if (history.location.pathname === "/creator") {
       return <Redirect to={`/creator-evm/template`} />

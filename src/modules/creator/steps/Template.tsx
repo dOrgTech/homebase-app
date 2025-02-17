@@ -101,8 +101,6 @@ export const Template = (): JSX.Element => {
   const [selectedTemplate, setTemplate] = useState<DAOTemplate>(template)
   const [error, setError] = useState<boolean>(false)
 
-  console.log({ selectedTemplate })
-
   useEffect(() => {
     dispatch({
       type: ActionTypes.UPDATE_NAVIGATION_BAR,

@@ -14,10 +14,9 @@ import { toShortAddress } from "services/contracts/utils"
 
 export const EvmTreasuryTable = () => {
   const { daoSelected, daoRegistryDetails, daoTreasuryTokens } = useContext(EtherlinkContext)
-  const { setMetadataFieldValue, transferAssets, setTransferAssets, setCurrentStep } = useEvmProposalOps()
+  const { setMetadataFieldValue, setTransferAssets, setCurrentStep } = useEvmProposalOps()
   const history = useHistory()
 
-  console.log("daoTreasuryTokens", daoTreasuryTokens)
   if (!daoSelected || !daoRegistryDetails) {
     return <Typography>Loading treasury data...</Typography>
   }

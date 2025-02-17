@@ -223,7 +223,6 @@ export function convertBigIntToString(obj: unknown): unknown {
 
 export function decodeFunctionParametersLegacy(functionAbiString: string, hexString: string): any[] {
   const functionAbi = FunctionFragment.from(functionAbiString)
-  console.log("functionAbi", functionAbi)
   // Helper function to convert a hex string to a Uint8Array
   function hexToBytes(hex: string): Uint8Array {
     if (hex.startsWith("0x")) {

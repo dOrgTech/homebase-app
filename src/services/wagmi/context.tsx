@@ -480,6 +480,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const signer = useEthersSigner()
   const { switchChain } = useSwitchChain()
   const { network: contextNetwork } = useNetwork()
+  const [signerTokenBalances, setSignerTokenBalances] = useState<any[]>([])
 
   const { address, isConnected, chain } = useWagmiAccount()
 
@@ -493,8 +494,6 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     return contextNetwork
   }, [chain?.name, contextNetwork])
 
-  console.log("etherlinkNetwork", etherlinkNetwork)
-
   const switchToNetwork = useCallback(
     (network: string) => {
       const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
@@ -502,6 +501,13 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     },
     [switchChain]
   )
+
+  useEffect(() => {
+    if (!signer?.address) return
+    getEtherTokenBalances(etherlinkNetwork, signer?.address).then(data => {
+      setSignerTokenBalances(data?.map((x: any) => x.token?.address))
+    })
+  }, [signer?.address, etherlinkNetwork])
 
   const {
     contractData,
@@ -527,6 +533,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         isConnected,
         provider,
         signer,
+        signerTokenBalances,
         account: {
           address: address || ""
         },

@@ -145,7 +145,6 @@ export const EvmProposalVoteDetail: React.FC<{
 
   const handleClickOpen = () => {
     setShowProposalVoterList(true)
-    console.log("Setting to true")
     // setVotes(choices.filter(elem => elem.walletAddresses.length > 0))
   }
 

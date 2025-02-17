@@ -65,7 +65,6 @@ export const EvmPropTransferAssets: React.FC = () => {
     setTransferAssets(transactions, daoSelected?.registryAddress)
   }
 
-  console.log("Txns", transferAssets.transactions)
   return (
     <Grid container direction="column">
       {transferAssets.transactions.map((transaction: ITransaction, index: number) => (
@@ -80,7 +79,6 @@ export const EvmPropTransferAssets: React.FC = () => {
                 value={transaction?.assetType === "transferETH" ? "transferETH" : transaction.assetAddress}
                 onChange={e => {
                   const newValue = e.target.value
-                  console.log("newValue", newValue)
                   if (newValue === "transferETH") {
                     onUpdateTransaction(index, [
                       {
