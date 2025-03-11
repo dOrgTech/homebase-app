@@ -6,6 +6,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import { LambdaDAO } from "../lambdaDAO"
 import mixpanel from "mixpanel-browser"
 import { networkNameMap } from "../../../bakingBad"
+import { sendProposalCreatedEvent } from "services/utils/utils"
 
 export const useRegistryPropose = () => {
   const queryClient = useQueryClient()
@@ -36,6 +37,7 @@ export const useRegistryPropose = () => {
           dao: dao.data.address,
           daoType: "Registry"
         })
+        sendProposalCreatedEvent(network, account, dao.data.name, dao.data.address)
 
         await data.confirmation(1)
         closeProposalNotification(proposalNotification)
