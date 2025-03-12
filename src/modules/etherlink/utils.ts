@@ -1,6 +1,6 @@
 import { ethers, FunctionFragment } from "ethers"
 import { proposalInterfaces } from "./config"
-import { IProposalType } from "./types"
+import { IContractWriteMethod, IProposalType } from "./types"
 
 export const networkConfig = {
   etherlink_testnet: {
@@ -393,4 +393,23 @@ export function decodeCallData(proposalType: IProposalType, callDataPlain: strin
     proposalData = callDataPlain.map((callData: string) => _decodedCallData(possibleInterfaces, callData))
   }
   return proposalData
+}
+
+export async function getContractDetails(contractAddress: string, network: string) {
+  const response = await fetch(
+    networkConfig[network as keyof typeof networkConfig]?.explorerApiUrl + "/smart-contracts/" + contractAddress
+  )
+  const data = await response.json()
+  return data
+}
+
+export async function getContractWriteMethods(contractAddress: string, network: string) {
+  const response = await fetch(
+    networkConfig[network as keyof typeof networkConfig]?.explorerApiUrl +
+      "/smart-contracts/" +
+      contractAddress +
+      "/write-methods?is_custom_abi=false"
+  )
+  const data = await response.json()
+  return data as IContractWriteMethod[]
 }

@@ -178,3 +178,68 @@ export enum EProposalType {
   token_operation = "token_operation",
   off_chain_debate = "off_chain_debate"
 }
+
+export type IContractWriteMethod = {
+  inputs: {
+    internalType:
+      | "address"
+      | "uint256"
+      | "string"
+      | "bool"
+      | "bytes"
+      | "bytes32"
+      | "tuple"
+      | "uint8"
+      | "uint16"
+      | "uint32"
+      | "uint48"
+      | "uint64"
+      | "uint128"
+      | "int8"
+      | "int16"
+      | "int32"
+      | "int64"
+      | "int128"
+      | "int256"
+      | "address[]"
+      | "uint256[]"
+      | "string[]"
+      | "bool[]"
+      | "bytes[]"
+      | "bytes32[]"
+      | "tuple[]"
+    name: string
+    type:
+      | "address"
+      | "uint256"
+      | "string"
+      | "bool"
+      | "bytes"
+      | "bytes32"
+      | "tuple"
+      | "uint8"
+      | "uint16"
+      | "uint32"
+      | "uint48"
+      | "uint64"
+      | "uint128"
+      | "int8"
+      | "int16"
+      | "int32"
+      | "int64"
+      | "int128"
+      | "int256"
+      | "address[]"
+      | "uint256[]"
+      | "string[]"
+      | "bool[]"
+      | "bytes[]"
+      | "bytes32[]"
+      | "tuple[]"
+  }[]
+  method_id: string
+  name: string
+  outputs: any[]
+  stateMutability: string
+  type: "function"
+}
