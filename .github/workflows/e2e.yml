@@ -18,8 +18,11 @@ jobs:
       run: npm install -g yarn && yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
+
     - name: Run Playwright tests
       run: yarn playwright test
+      env:
+        REACT_APP_TESTING_BASE: https://deploy-preview-${{ github.event.pull_request.number }}--tezos-homebase.netlify.app
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
