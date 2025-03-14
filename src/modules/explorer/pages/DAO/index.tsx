@@ -84,7 +84,7 @@ const SubtitleText = styled(Typography)(({ theme }) => ({
 export const DAOOverview: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
-
+  console.log("dataDAO", data)
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const symbol = data?.data?.token?.symbol?.toUpperCase() || "Unknown"

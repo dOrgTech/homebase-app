@@ -143,7 +143,7 @@ export const useDAO = (address: string) => {
 
   useEffect(() => {
     const dao = etherlinkDaoSelected
-    if (dao)
+    if (dao) {
       setDaoData(
         new LambdaDAO({
           id: 1,
@@ -219,7 +219,10 @@ export const useDAO = (address: string) => {
           slash_scale_value: "0"
         } as any)
       )
-  }, [address, etherlinkDaoSelected, network])
+    } else {
+      setDaoData(data)
+    }
+  }, [address, etherlinkDaoSelected, network, data])
 
   const ledgerWithBalances = useMemo(() => {
     if (data && cycleInfo) {
