@@ -22,11 +22,9 @@ import { hexStringToBytes } from "services/utils/utils"
 
 const parser = new Parser()
 
-export interface LambdaDAOData extends BaseDAOData {
+interface LambdaDAOData extends BaseDAOData {
   extra: LambdaExtraDTO
   liteDAO: Community | undefined
-  etherlink?: any // TODO: Define type
-  meta?: any
 }
 
 interface RegistryItemDTO {
@@ -72,7 +70,6 @@ const mapStorageRegistryAffectedList = (
 }
 
 export class LambdaDAO extends BaseDAO {
-  public etherlink?: any // TODO: Define type
   public liteDAOData: Community | undefined
   public decoded: {
     decodedRegistry: {
@@ -89,20 +86,13 @@ export class LambdaDAO extends BaseDAO {
     super(data)
 
     this.decoded = {
-      decodedRegistry: [],
-      decodedRegistryAffected: []
+      decodedRegistry: mapStorageRegistryList(this.data.extra.registry),
+      decodedRegistryAffected: mapStorageRegistryAffectedList(this.data.extra.registry_affected)
     }
 
-    if (this.data.extra?.registry) {
-      this.decoded.decodedRegistry = mapStorageRegistryList(this.data.extra.registry)
-      this.decoded.decodedRegistryAffected = mapStorageRegistryAffectedList(this.data.extra.registry_affected)
-    }
-
-    if (this.data.extra?.slash_scale_value) {
-      this.data.extra.returnedPercentage = new BigNumber(100)
-        .minus(new BigNumber(this.data.extra.slash_scale_value))
-        .toString()
-    }
+    this.data.extra.returnedPercentage = new BigNumber(100)
+      .minus(new BigNumber(this.data.extra.slash_scale_value))
+      .toString()
 
     this.liteDAOData = data.liteDAO
   }

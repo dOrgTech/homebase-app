@@ -74,9 +74,7 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES)
 
   const [activeState, setActiveState] = useState<number>()
-  const { tezos, connect, network, account, wallet, etherlink } = useTezos()
-  const provider = etherlink.provider
-  const signer = etherlink.signer
+  const { tezos, connect, network, account, wallet } = useTezos()
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params, deploymentMethod }) => {
@@ -84,9 +82,6 @@ export const useOriginate = (template: DAOTemplate) => {
 
       let contract
 
-      if (network.startsWith("etherlink")) {
-        console.log("Deploying on Etherlink")
-      }
       if (deploymentMethod === "managed") {
         const deployParams: any = {
           params: { ...params },

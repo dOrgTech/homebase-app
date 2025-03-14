@@ -20,14 +20,13 @@ export const useTokenOriginate = (tokenData: TokenContractParams) => {
   const { tezos, connect, network, account, etherlink } = useTezos()
   const provider = etherlink.provider
   const signer = etherlink.signer
-  console.log({ provider })
 
   const openNotification = useNotification()
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, TokenContractParams>(
     async ({ tokenDistribution, tokenSettings }) => {
       console.log({ tokenDistribution, tokenSettings, network })
-
+      console.log({ provider })
       if (network.startsWith("etherlink")) {
         try {
           console.log("Deployer", signer?.getAddress())

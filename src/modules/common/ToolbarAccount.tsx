@@ -66,11 +66,14 @@ const AddressMenuIcon = styled(Grid)({
 export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) => {
   const theme = useTheme()
   const { connect, account, etherlink, network, reset } = useTezos()
+  console.log("ToolbarAccount", { account, etherlink })
   const tzAccountAddress = account
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
   const walletAddress = network.startsWith("etherlink") ? etherlink.account?.address : tzAccountAddress
+
+  console.log("ToolbarAccount", { walletAddress, etherlink })
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
   const [popperOpen, setPopperOpen] = useState(false)
@@ -100,6 +103,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
     setPopperOpen(!popperOpen)
   }
 
+  // console.log("XX", { account, etherlink })
   if (walletAddress || etherlink?.isConnected)
     return (
       <Grid
@@ -196,6 +200,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
       </Grid>
     )
   else {
+    console.log("No wallet address abc")
     return (
       <Grid container justifyContent="flex-end" alignItems="center" wrap="nowrap" style={{ gap: 8 }}>
         <Grid item>{variant === "common" ? <ChangeNetworkButton_Common /> : <ChangeNetworkButton_Explorer />}</Grid>

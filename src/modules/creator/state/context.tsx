@@ -189,6 +189,4 @@ const CreatorProvider: React.FC = ({ children }) => {
   return <CreatorContext.Provider value={{ ...contextValue, updateCache }}>{children}</CreatorContext.Provider>
 }
 
-const EthCreatorContext = createContext<any>({})
-
-export { CreatorProvider, CreatorContext, EthCreatorContext }
+export { CreatorProvider, CreatorContext }

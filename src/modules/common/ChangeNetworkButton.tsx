@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React from "react"
 import { Box, Grid, styled, Typography, Theme } from "@material-ui/core"
 import { ActionSheet, useActionSheet } from "modules/explorer/context/ActionSheets"
 import { useLocation } from "react-router-dom"
@@ -39,9 +39,8 @@ export const ChangeNetworkButton = () => {
 
   const location = useLocation()
 
-  const canShow = useMemo(() => {
-    return location.pathname.indexOf("/explorer/dao/") === -1 && location.pathname.indexOf("/explorer/lite/dao/") === -1
-  }, [location.pathname])
+  const canShow =
+    location.pathname.indexOf("/explorer/dao/") === -1 && location.pathname.indexOf("/explorer/lite/dao/") === -1
 
   return (
     <>

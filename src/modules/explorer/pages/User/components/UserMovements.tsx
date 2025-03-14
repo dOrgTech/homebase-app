@@ -19,11 +19,16 @@ import "../../DAOList/styles.css"
 import { ReactComponent as TabsSelectedIcon } from "assets/img/tabs-icon-selected.svg"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { ArrowBackIos } from "@material-ui/icons"
-import { FilterUserProposalsDialog } from "modules/explorer/components/FiltersUserDialog"
+import {
+  FilterUserProposalsDialog,
+  OffchainStatus,
+  Order,
+  ProposalType,
+  StatusOption
+} from "modules/explorer/components/FiltersUserDialog"
 import { useUserVotes } from "modules/lite/explorer/hooks/useUserVotes"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import { useDAO } from "services/services/dao/hooks/useDAO"
-import { ProposalType, OffchainStatus, Order, StatusOption } from "../../../types"
 
 const TabsContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,

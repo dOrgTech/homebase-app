@@ -1,7 +1,7 @@
 import { styled, useTheme } from "@material-ui/core"
 import { NotFound } from "modules/explorer/components/NotFound"
 import { NotIndexed } from "modules/explorer/components/NotIndexed"
-import { DAOOverview } from "modules/explorer/pages/DAO/index"
+import { DAO } from "modules/explorer/pages/DAO/index"
 import { User } from "modules/explorer/pages/User"
 import React, { useContext, useEffect, useState } from "react"
 import { useHistory } from "react-router"
@@ -101,6 +101,7 @@ export const useDAOID = () => {
 
 export const DAORouter = (): JSX.Element => {
   const match = useRouteMatch()
+  const theme = useTheme()
   const { id: daoId } = useParams<{ id: string }>()
 
   return (
@@ -127,7 +128,7 @@ export const DAORouter = (): JSX.Element => {
             <Config />
           </DAORoute>
           <DAORoute path={`${match.url}/overview`}>
-            <DAOOverview />
+            <DAO />
           </DAORoute>
           <Redirect from={`${match.url}`} to={`${match.url}/overview`} />
         </Switch>

@@ -42,13 +42,12 @@ const StyledInput = withStyles((theme: Theme) => ({
   }
 }))(TextField)
 
-export const SearchInput: React.FC<{ search: any; defaultValue?: string }> = ({ search, defaultValue }) => {
+export const SearchInput: React.FC<{ search: any }> = ({ search }) => {
   return (
     <StyledInput
       id="standard-search"
       label="Search field"
       type="search"
-      defaultValue={defaultValue || ""}
       placeholder="Search"
       onChange={e => search(e.target.value)}
       InputProps={{

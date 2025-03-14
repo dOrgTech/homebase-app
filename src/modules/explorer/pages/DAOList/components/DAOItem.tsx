@@ -4,7 +4,6 @@ import { EnvKey, getEnv } from "services/config"
 import ReactHtmlParser from "react-html-parser"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import BigNumber from "bignumber.js"
-import { getDaoHref } from "utils"
 
 const Container = styled(Grid)(({ theme }: { theme: Theme }) => ({
   "background": theme.palette.primary.main,
@@ -123,8 +122,13 @@ export const DAOItem: React.FC<{
     description: string
   }
 }> = ({ dao }) => {
+  const theme = useTheme()
   const daoType = dao.dao_type.name
-  const daoHref = getDaoHref(dao.id, daoType)
+  const daoRouteIfLambda = daoType === "lambda" ? `dao/${dao.id}` : `lite/dao/${dao.id}`
+  const daoHref =
+    daoType !== "lambda" && daoType !== "lite"
+      ? `${getEnv(EnvKey.REACT_APP_V2_URL)}/explorer/dao/${dao.id}`
+      : daoRouteIfLambda
 
   return (
     <Link underline="none" href={daoHref}>
@@ -137,7 +141,6 @@ export const DAOItem: React.FC<{
             {daoType === "lambda" ? <Badge dao_type={daoType}>V3</Badge> : null}
             {daoType === "registry" || daoType === "treasury" ? <Badge dao_type={daoType}>V2</Badge> : null}
             {daoType === "lite" ? <Badge dao_type={daoType}>Lite</Badge> : null}
-            {daoType === "etherlink_onchain" ? <Badge dao_type={daoType}>V4</Badge> : null}
           </Grid>
         </Grid>
         <Grid container direction="row">

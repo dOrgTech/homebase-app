@@ -1,4 +1,15 @@
-import { CircularProgress, Grid, Link, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Link,
+  styled,
+  Typography,
+  useMediaQuery,
+  Theme,
+  useTheme,
+  Icon
+} from "@material-ui/core"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import React, { useMemo, useState } from "react"
@@ -14,54 +25,130 @@ import { ReactComponent as MyDAOsIcon } from "assets/img/my-daos-icon.svg"
 import { ReactComponent as MyDAOsSelectedIcon } from "assets/img/my-daos-selected-icon.svg"
 import ReactPaginate from "react-paginate"
 import "./styles.css"
-import { LoadingLine } from "components/ui/LoadingLine"
-import { useQueryParam } from "modules/home/hooks/useQueryParam"
-import { PageContainer, StyledTab, Search, DAOItemGrid, DAOItemCard, TabsContainer } from "./styled"
+
+const PageContainer = styled("div")(({ theme }) => ({
+  width: "1000px",
+  height: "100%",
+  margin: "auto",
+
+  ["@media (max-width: 1425px)"]: {},
+
+  ["@media (max-width:1335px)"]: {},
+
+  ["@media (max-width:1167px)"]: {
+    width: "86vw"
+  },
+
+  ["@media (max-width:1030px)"]: {},
+
+  ["@media (max-width:960px)"]: {}
+}))
+
+const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+  "fontSize": 18,
+  "height": 40,
+  "fontWeight": 400,
+  "paddingLeft": 20,
+  "paddingRight": 20,
+  "paddingTop": 0,
+  "paddingBottom": 0,
+  "borderRadius": 8,
+  "color": isSelected ? theme.palette.secondary.main : "#fff",
+  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
+  "&:hover": {
+    backgroundColor: isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.secondary.dark,
+    borderRadius: 8,
+    borderTopLeftRadius: "8px !important",
+    borderTopRightRadius: "8px !important",
+    borderBottomLeftRadius: "8px !important",
+    borderBottomRightRadius: "8px !important"
+  }
+}))
+
+const Search = styled(Grid)({
+  width: "49.5%",
+
+  ["@media (max-width: 645px)"]: {
+    width: "100%",
+    marginTop: "14px"
+  }
+})
+
+const DAOItemGrid = styled(Grid)({
+  gap: "30px",
+  minHeight: "50vh",
+  justifyContent: "space-between",
+  ["@media (max-width: 1155px)"]: {
+    gap: "32px"
+  },
+
+  ["@media (max-width:960px)"]: {
+    gap: "20px"
+  },
+
+  ["@media (max-width:830px)"]: {
+    width: "86vw",
+    gap: "20px"
+  }
+})
+
+const DAOItemCard = styled(Grid)({
+  flexBasis: "48.5%",
+
+  ["@media (max-width:1500px)"]: {
+    flexBasis: "48.5%"
+  },
+
+  ["@media (max-width:1200px)"]: {
+    flexBasis: "47.5%"
+  },
+
+  ["@media (max-width:760px)"]: {
+    minWidth: "100%"
+  }
+})
+
+const TabsContainer = styled(Grid)(({ theme }) => ({
+  borderRadius: 8,
+  gap: 16
+}))
 
 export const DAOList: React.FC = () => {
   const { network, etherlink, account } = useTezos()
-  const { data: daos, isLoading, isLoadingWithFirebase, signerTokenBalances } = useAllDAOs(network)
+  const { data: daos, isLoading } = useAllDAOs(network)
 
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
-  const [searchText, setSearchText] = useQueryParam("q")
+  const [searchText, setSearchText] = useState("")
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [currentPage, setCurrentPage] = useState(0)
 
   const [offset, setOffset] = useState(0)
   const pageCount = Math.ceil(daos ? daos.length / 16 : 0)
 
-  const formattedDAOs = useMemo(() => {
+  const currentDAOs = useMemo(() => {
     if (daos) {
-      return daos
+      const formattedDAOs = daos
         .map(dao => {
           const votingAddressesCount =
             dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0
           return {
-            ...dao,
             id: dao.address,
             name: dao.name,
             description: dao.description,
             symbol: dao.token.symbol,
-            token: dao.token?.contract || "",
+            votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+            votingAddressesCount,
             dao_type: {
               name: dao.dao_type.name
             },
-            votingAddresses: dao.ledgers?.map((l: { holder: { address: any } }) => l.holder.address) || [],
-            votingAddressesCount: votingAddressesCount || dao.holders_count || 0,
             allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
           }
         })
         .sort((a, b) => b.votingAddressesCount - a.votingAddressesCount)
-    } else {
-      return []
-    }
-  }, [daos])
 
-  const currentDAOs = useMemo(() => {
-    if (daos) {
       if (searchText) {
         return formattedDAOs.filter(
           formattedDao =>
@@ -71,14 +158,31 @@ export const DAOList: React.FC = () => {
       }
 
       const slice = formattedDAOs.slice(offset, offset + 16)
+
       return slice
     }
 
     return []
-  }, [daos, searchText, offset, formattedDAOs])
+  }, [daos, searchText, offset])
 
   const myDAOs = useMemo(() => {
     if (daos) {
+      const formattedDAOs = daos
+        .map(dao => ({
+          id: dao.address,
+          name: dao.name,
+          symbol: dao.token.symbol,
+          votingAddresses: dao.ledgers ? dao.ledgers.map(l => l.holder.address) : [],
+          votingAddressesCount:
+            dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0,
+          dao_type: {
+            name: dao.dao_type.name
+          },
+          description: dao.description,
+          allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
+        }))
+        .sort((a, b) => b.votingAddresses.length - a.votingAddresses.length)
+
       if (searchText) {
         return formattedDAOs.filter(
           formattedDao =>
@@ -87,15 +191,13 @@ export const DAOList: React.FC = () => {
         )
       }
       const accountAddress = account || etherlink?.account?.address
-
-      return formattedDAOs.filter(dao => {
-        if (dao.dao_type?.name !== "etherlink_onchain") return dao.votingAddresses.includes(accountAddress)
-        return signerTokenBalances.includes(dao.token)
-      })
+      return formattedDAOs.filter(dao => dao.votingAddresses.includes(accountAddress))
     }
 
     return []
-  }, [daos, searchText, account, etherlink?.account?.address, formattedDAOs, signerTokenBalances])
+  }, [daos, searchText, account, etherlink?.account?.address])
+
+  console.log({ daos, currentDAOs, myDAOs })
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())
@@ -127,7 +229,7 @@ export const DAOList: React.FC = () => {
               style={isMobileExtraSmall ? { gap: 24 } : { gap: 42 }}
             >
               <Search>
-                <SearchInput defaultValue={searchText || ""} search={filterDAOs} />
+                <SearchInput search={filterDAOs} />
               </Search>
               <Grid item>
                 <Grid container style={{ gap: 22 }} justifyContent="center">
@@ -184,11 +286,6 @@ export const DAOList: React.FC = () => {
               </Grid>
             </Grid>
           </Grid>
-          {isLoadingWithFirebase ? (
-            <Grid item>
-              <LoadingLine color={theme.palette.secondary.main} height={3} barWidth={40} />
-            </Grid>
-          ) : null}
           <Grid item>
             <TabPanel value={selectedTab} index={0}>
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>

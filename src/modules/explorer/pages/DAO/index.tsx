@@ -5,16 +5,15 @@ import { Grid, styled, Typography, useTheme, useMediaQuery, Avatar } from "@mate
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "./router"
 
-import { ContentContainer } from "../../components/ContentContainer"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
 import { UsersTable } from "../../components/UsersTable"
 
 import { SmallButton } from "../../../common/SmallButton"
+
 import { DaoSettingModal } from "./components/Settings"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { SettingsDialog } from "./components/SettingsDialog"
-import { IconButton } from "@mui/material"
-import { FileCopyOutlined } from "@material-ui/icons"
+import { ContentContainer } from "components/ui/Table"
 
 export const StyledAvatar = styled(Avatar)({
   height: 50,
@@ -81,16 +80,15 @@ const SubtitleText = styled(Typography)(({ theme }) => ({
   }
 }))
 
-export const DAOOverview: React.FC = () => {
+export const DAO: React.FC = () => {
   const daoId = useDAOID()
   const { data, cycleInfo, ledger } = useDAO(daoId)
-
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
-  const symbol = data?.data?.token?.symbol?.toUpperCase() || "Unknown"
+  const symbol = data && data.data.token.symbol.toUpperCase()
 
-  const name = data?.data?.name
-  const description = data?.data?.description
+  const name = data && data.data.name
+  const description = data && data.data.description
 
   const [openDialog, setOpenDialog] = useState(false)
   const [openChangeDialog, setChangeOpenDialog] = useState(false)
@@ -104,10 +102,6 @@ export const DAOOverview: React.FC = () => {
   }
 
   const usersTableData = useMemo(() => {
-    if (data?.data?.meta?.users) {
-      return data.data.meta.users
-    }
-
     if (!ledger || !cycleInfo || !data) {
       return []
     }
@@ -150,78 +144,7 @@ export const DAOOverview: React.FC = () => {
             </Grid>
           </Grid>
           <Grid item>
-            {data?.data.network?.startsWith("etherlink") ? (
-              <>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={3}>
-                    <Typography
-                      variant="h6"
-                      style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}
-                    >
-                      DAO Contract
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      style={{
-                        display: "flex",
-                        fontSize: 16,
-                        alignItems: "center",
-                        color: theme.palette.primary.light
-                      }}
-                    >
-                      {data?.data.address || "-"}
-                      <IconButton
-                        onClick={() => {
-                          if (data?.data.address) {
-                            navigator.clipboard.writeText(data.data.address)
-                          }
-                        }}
-                        size="small"
-                        style={{ marginLeft: "8px", color: theme.palette.primary.light }}
-                      >
-                        <FileCopyOutlined fontSize="inherit" />
-                      </IconButton>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={3}>
-                    <Typography
-                      variant="h6"
-                      style={{ color: theme.palette.primary.light, fontSize: 16, fontWeight: 300 }}
-                    >
-                      Governance Token
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      style={{
-                        display: "flex",
-                        fontSize: 16,
-                        alignItems: "center",
-                        color: theme.palette.primary.light
-                      }}
-                    >
-                      {data?.data.token.symbol || "-"}
-                      <IconButton
-                        onClick={() => {
-                          if (data?.data.token.symbol) {
-                            navigator.clipboard.writeText(data.data.token.symbol)
-                          }
-                        }}
-                        size="small"
-                        style={{ marginLeft: "8px" }}
-                      >
-                        <FileCopyOutlined fontSize="inherit" />
-                      </IconButton>
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <SubtitleText>{description}</SubtitleText>
-                  </Grid>
-                </Grid>
-                <br />
-              </>
-            ) : (
-              <SubtitleText>{description}</SubtitleText>
-            )}
+            <SubtitleText>{description}</SubtitleText>
           </Grid>
         </Grid>
       </HeroContainer>

@@ -29,8 +29,6 @@ const NotificationActions = ({ detailsLink, onClose }: { detailsLink?: string; o
 interface NotificationParams extends OptionsObject {
   message: string
   detailsLink?: string
-  autoHideDuration?: number
-  persist?: boolean
 }
 
 export const useNotification = () => {
@@ -38,8 +36,7 @@ export const useNotification = () => {
   const open = ({ message, detailsLink, ...options }: NotificationParams) => {
     const key = enqueueSnackbar(message, {
       ...options,
-      persist: options.persist ?? false,
-      autoHideDuration: options.autoHideDuration ?? 5000,
+      persist: true,
       action: <NotificationActions detailsLink={detailsLink} onClose={() => closeSnackbar(key)} />
     })
 

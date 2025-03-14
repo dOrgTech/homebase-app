@@ -1,26 +1,129 @@
-import React, { useContext, useEffect } from "react"
-import { Grid, Typography, Box, useMediaQuery, useTheme, InputAdornment, Tooltip, Link } from "@material-ui/core"
+import {
+  Grid,
+  styled,
+  Typography,
+  withStyles,
+  TextareaAutosize,
+  withTheme,
+  Box,
+  useMediaQuery,
+  useTheme,
+  InputAdornment,
+  Tooltip,
+  Link
+} from "@material-ui/core"
 import { validateContractAddress, validateAddress } from "@taquito/utils"
-
+import React, { useContext, useEffect } from "react"
 import { useHistory, withRouter } from "react-router"
 import { useRouteMatch } from "react-router-dom"
 import { Field, Form, Formik, FormikErrors, getIn } from "formik"
+import { TextField as FormikTextField } from "formik-material-ui"
 import { TitleBlock } from "modules/common/TitleBlock"
+
 import { CreatorContext, ActionTypes, OrgSettings } from "modules/creator/state"
+import { InfoRounded } from "@material-ui/icons"
 import { useTokenMetadata } from "services/contracts/baseDAO/hooks/useTokenMetadata"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import {
-  InfoIconInput,
-  DescriptionText,
-  TextareaContainer,
-  CustomInputContainer,
-  CustomFormikTextField,
-  ErrorText,
-  MetadataContainer,
-  CustomTextarea,
-  SecondContainer,
-  InfoIcon
-} from "components/ui/DaoCreator"
+
+const SecondContainer = styled(Grid)({
+  marginTop: 25
+})
+
+const CustomInputContainer = styled(Grid)(({ theme }) => ({
+  "height": 54,
+  "boxSizing": "border-box",
+  "marginTop": 14,
+  "background": "#2F3438",
+  "borderRadius": 8,
+  "alignItems": "center",
+  "display": "flex",
+  "padding": "13px 23px",
+  "fontWeight": 300,
+  "& input::placeholder": {
+    fontWeight: 300
+  }
+}))
+
+const InfoIcon = styled(InfoRounded)(({ theme }) => ({
+  position: "absolute",
+  right: 25,
+  top: "20%",
+  color: theme.palette.secondary.light,
+  height: 18,
+  width: 18
+}))
+
+const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
+  cursor: "default",
+  color: theme.palette.secondary.light,
+  height: 16,
+  width: 16
+}))
+
+const TextareaContainer = styled(Grid)({
+  display: "flex",
+  position: "relative"
+})
+
+const CustomFormikTextField = withStyles({
+  root: {
+    "& .MuiInput-root": {
+      fontWeight: 300,
+      textAlign: "initial"
+    },
+    "& .MuiInputBase-input": {
+      textAlign: "initial"
+    },
+    "& .MuiInputBase-root": {
+      textWeight: 300
+    },
+    "& .MuiInput-underline:before": {
+      borderBottom: "none !important"
+    },
+    "& .MuiInput-underline:hover:before": {
+      borderBottom: "none !important"
+    },
+    "& .MuiInput-underline:after": {
+      borderBottom: "none !important"
+    }
+  }
+})(FormikTextField)
+
+const MetadataContainer = styled(Grid)({
+  margin: "-4px 0 16px 0"
+})
+
+const CustomTextarea = styled(withTheme(TextareaAutosize))(props => ({
+  "minHeight": 152,
+  "boxSizing": "border-box",
+  "width": "100%",
+  "marginTop": 14,
+  "fontWeight": 300,
+  "padding": "21px 20px",
+  "border": "none",
+  "fontSize": 16,
+  "fontFamily": "Roboto Flex",
+  "color": props.theme.palette.text.secondary,
+  "background": "#2F3438",
+  "lineHeight": "135%",
+  "letterSpacing": -0.18,
+  "borderRadius": 8,
+  "paddingRight": 40,
+  "wordBreak": "break-word",
+  "&:focus-visible": {
+    outline: "none"
+  }
+}))
+
+const ErrorText = styled(Typography)({
+  fontSize: 14,
+  color: "red",
+  marginTop: 4
+})
+
+const DescriptionText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.dark
+}))
 
 const DaoSettingsForm = withRouter(({ submitForm, values, setFieldValue, errors, touched, setFieldTouched }: any) => {
   const theme = useTheme()
