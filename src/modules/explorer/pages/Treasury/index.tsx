@@ -20,7 +20,7 @@ import { TreasuryDialog } from "./components/TreasuryDialog"
 import { SearchInput } from "../DAOList/components/Searchbar"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { FilterTransactionsDialog } from "modules/explorer/components/FiltersTransactionsDialog"
-import { StatusOption } from "modules/explorer/components/FiltersUserDialog"
+import { StatusOption } from "../../types"
 
 const FiltersContainer = styled(Grid)({
   cursor: "pointer"

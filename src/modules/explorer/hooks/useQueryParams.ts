@@ -11,7 +11,6 @@ const useQuery = () => {
 export const useQueryParams = <T extends Record<string, string>>() => {
   const location = useLocation()
   const history = useHistory()
-
   const searchParams = useQuery()
 
   const getParam = useCallback(

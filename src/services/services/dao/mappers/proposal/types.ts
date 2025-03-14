@@ -106,6 +106,7 @@ const INDEXER_TO_PROPOSAL_STATUS_MAP: Record<IndexerStatus, ProposalStatus> = {
 
 export abstract class Proposal {
   id: string
+  title?: string
   dao: BaseDAO
   upVotes: BigNumber
   downVotes: BigNumber

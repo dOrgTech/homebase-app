@@ -22,6 +22,12 @@ import { UserMovements } from "./components/UserMovements"
 
 import { CopyButton } from "modules/explorer/components/CopyButton"
 
+interface Vote {
+  address: string
+  staked?: boolean
+  support?: boolean
+}
+
 const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   padding: "37px 42px",
   background: theme.palette.primary.main,
@@ -136,7 +142,9 @@ export const User: React.FC = () => {
       return []
     }
 
-    return proposals.filter(p => p.voters.map(voter => voter.address.toLowerCase()).includes(account.toLowerCase()))
+    return proposals.filter(p =>
+      p.voters.map((voter: Vote) => voter.address.toLowerCase()).includes(account.toLowerCase())
+    )
   }, [account, proposals])
 
   const onUnstakeFromAllProposals = useCallback(async () => {
@@ -165,7 +173,7 @@ export const User: React.FC = () => {
     droppedProposals &&
     executedProposals
       .concat(droppedProposals)
-      .some(proposal => proposal.voters.find(vote => vote.address === account)?.staked)
+      .some(proposal => proposal.voters.find((vote: Vote) => vote.address === account)?.staked)
 
   const getVoteDecision = (proposal: Proposal) =>
     proposal.voters.find(voter => voter.address.toLowerCase())?.support as boolean

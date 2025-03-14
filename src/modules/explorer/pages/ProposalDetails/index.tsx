@@ -316,7 +316,10 @@ export const ProposalDetails: React.FC = () => {
   }
 
   const showStatusText =
-    statusColors(status).text !== ProposalStatus.ACTIVE || statusColors(status).text !== ProposalStatus.PENDING
+    status &&
+    statusColors(status)?.text &&
+    (statusColors(status)?.text !== ProposalStatus.ACTIVE || statusColors(status)?.text !== ProposalStatus.PENDING)
+
   return (
     <>
       <Grid container direction="column" style={{ gap: 42 }}>

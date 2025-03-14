@@ -14,13 +14,16 @@ import { ReactComponent as VotingIcon } from "assets/logos/voting.svg"
 import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg"
 import { ReactComponent as RegistryIcon } from "assets/logos/list.svg"
 import { ReactComponent as UserIcon } from "assets/logos/user.svg"
-import React, { useEffect, useState } from "react"
+import { ReactComponent as MembersIcon } from "assets/logos/members.svg"
+import React, { useContext, useEffect, useState } from "react"
 import { useDAOID } from "../pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useLocation } from "react-router"
 import { Link } from "react-router-dom"
 import { debounce } from "../utils/debounce"
+import { EtherlinkContext } from "services/wagmi/context"
+import { useEtherlinkDAOID } from "modules/etherlink/explorer/router"
 
 const Container = styled(Grid)(({ theme }) => ({
   width: "100%",
@@ -148,38 +151,51 @@ interface Page {
   href: string
 }
 
-const getPages = (daoId: string): Page[] => [
-  {
-    pathId: "overview",
-    name: "Home",
-    icon: HouseIcon,
-    href: `/explorer/dao/${daoId}`
-  },
-  {
-    pathId: "proposals",
-    name: "Proposals",
-    icon: VotingIcon,
-    href: `/explorer/dao/${daoId}/proposals`
-  },
-  {
-    pathId: "treasury",
-    name: "Treasury",
-    icon: TreasuryIcon,
-    href: `/explorer/dao/${daoId}/treasury`
-  },
-  {
-    pathId: "registry",
-    name: "Registry",
-    icon: RegistryIcon,
-    href: `/explorer/dao/${daoId}/registry`
-  },
-  {
-    pathId: "user",
-    name: "User",
-    icon: UserIcon,
-    href: `/explorer/dao/${daoId}/user`
+const getPages = (daoId: string, etherlinkDaoSelected: boolean): Page[] => {
+  const defaultPages = [
+    {
+      pathId: "overview",
+      name: "Home",
+      icon: HouseIcon,
+      href: etherlinkDaoSelected ? `/explorer/etherlink/dao/${daoId}` : `/explorer/dao/${daoId}`
+    },
+    {
+      pathId: "proposals",
+      name: "Proposals",
+      icon: VotingIcon,
+      href: etherlinkDaoSelected ? `/explorer/etherlink/dao/${daoId}/proposals` : `/explorer/dao/${daoId}/proposals`
+    },
+    {
+      pathId: "treasury",
+      name: "Treasury",
+      icon: TreasuryIcon,
+      href: etherlinkDaoSelected ? `/explorer/etherlink/dao/${daoId}/treasury` : `/explorer/dao/${daoId}/treasury`
+    },
+    {
+      pathId: "registry",
+      name: "Registry",
+      icon: RegistryIcon,
+      href: etherlinkDaoSelected ? `/explorer/etherlink/dao/${daoId}/registry` : `/explorer/dao/${daoId}/registry`
+    },
+    {
+      pathId: "user",
+      name: etherlinkDaoSelected ? "Account" : "User",
+      icon: UserIcon,
+      href: etherlinkDaoSelected ? `/explorer/etherlink/dao/${daoId}/user` : `/explorer/dao/${daoId}/user`
+    }
+  ]
+
+  if (etherlinkDaoSelected) {
+    defaultPages.splice(defaultPages.length - 1, 0, {
+      pathId: "members",
+      name: "Members",
+      icon: MembersIcon,
+      href: `/explorer/etherlink/dao/${daoId}/members`
+    })
   }
-]
+
+  return defaultPages
+}
 
 const styles = makeStyles(theme => ({
   explorer: {
@@ -237,8 +253,9 @@ const BottomNavBar: React.FC = ({ children }) => {
 
 export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu }) => {
   const [pages, setPages] = useState<Page[]>([])
-  const { account } = useTezos()
+  const { account, etherlink } = useTezos()
   const daoId = useDAOID()
+  const etherlinkDaoId = useEtherlinkDAOID()
   const { data: dao } = useDAO(daoId)
   const path = useLocation()
   const pathId = path.pathname.split("/").slice(-1)[0]
@@ -246,18 +263,26 @@ export const NavigationMenu: React.FC<{ disableMobileMenu?: boolean }> = ({ disa
   const isMobileSmall = useMediaQuery(theme.breakpoints.down(960))
   const classes = styles()
   const location = useLocation()
+  const { daoSelected: etherlinkDaoSelected } = useContext(EtherlinkContext)
 
   useEffect(() => {
     if (dao) {
       const disabledPages: string[] = []
+      const isEtherlink = !!etherlinkDaoSelected?.id
 
-      if (!account) {
+      if (!account && !etherlink.isConnected) {
         disabledPages.push("User")
       }
 
-      setPages(getPages(daoId).filter(page => !disabledPages.includes(page.name)))
+      if (isEtherlink) {
+        disabledPages.push("Treasury")
+      }
+
+      setPages(getPages(daoId || etherlinkDaoId, isEtherlink).filter(page => !disabledPages.includes(page.name)))
     }
-  }, [account, dao, daoId])
+  }, [account, dao, daoId, etherlink.isConnected, etherlinkDaoId, etherlinkDaoSelected])
+
+  if (location.pathname === "/explorer/daos" || location.pathname === "/explorer/daos/") return null
 
   return !isMobileSmall || disableMobileMenu ? (
     <Container container>

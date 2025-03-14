@@ -16,3 +16,7 @@ export const TableHeader = styled(Grid)(({ theme }: { theme: Theme }) => ({
 export const TableContainer = styled(ContentContainer)({
   width: "100%"
 })
+
+export const TableContainerGrid = styled(Grid)({
+  width: "100%"
+})

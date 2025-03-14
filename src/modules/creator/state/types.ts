@@ -62,11 +62,12 @@ export interface NavigationBarProps {
   }
   next?: {
     text: string
+    disabled?: boolean
     handler: () => void
   }
 }
 
-export type DAOTemplate = "lambda" | "lite" | ""
+export type DAOTemplate = "lambda" | "lite" | "lambda-etherlink"
 
 export type DeploymentMethod = "managed" | "self-deployed"
 

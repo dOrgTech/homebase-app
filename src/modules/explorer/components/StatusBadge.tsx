@@ -2,7 +2,7 @@ import React from "react"
 import { styled, Grid, Theme, Typography, GridProps } from "@material-ui/core"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
-export const statusColors = (status: ProposalStatus | "all") => {
+export const statusColors = (status: ProposalStatus | string): { background: string; color: string; text: string } => {
   switch (status) {
     case ProposalStatus.ACTIVE:
       return {
@@ -17,10 +17,17 @@ export const statusColors = (status: ProposalStatus | "all") => {
         text: "Pending"
       }
     case ProposalStatus.PASSED:
+    case "queue_to_execute":
       return {
         background: "#4aff9833",
         color: "#4aff98",
         text: "Passed"
+      }
+    case "queued":
+      return {
+        background: "#e6f3ff",
+        color: "#0066cc",
+        text: "Queued"
       }
     case ProposalStatus.EXECUTABLE:
       return {
@@ -29,6 +36,7 @@ export const statusColors = (status: ProposalStatus | "all") => {
         text: "Executable"
       }
     case ProposalStatus.REJECTED:
+    case "failed":
       return {
         background: "#513438",
         color: "#FF8FA0",
@@ -65,16 +73,21 @@ export const statusColors = (status: ProposalStatus | "all") => {
         text: "All"
       }
   }
+  return {
+    background: "#81feb733",
+    color: "#81feb7",
+    text: "All"
+  }
 }
 
-export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | "all"; theme: Theme }) => ({
+export const Badge = styled(Grid)(({ status }: { status: ProposalStatus | string; theme: Theme }) => ({
   "borderRadius": 50,
   "boxSizing": "border-box",
   "minWidth": 87,
   "textAlign": "center",
   "padding": "4px 16px",
-  "background": statusColors(status).background,
-  "color": statusColors(status).color,
+  "background": statusColors(status)?.background,
+  "color": statusColors(status)?.color,
   "& > div": {
     height: "100%"
   }
@@ -86,11 +99,11 @@ const Text = styled(Typography)({
   textTransform: "capitalize"
 })
 
-export const StatusBadge: React.FC<{ status: ProposalStatus | "all" } & GridProps> = ({ status, ...props }) => (
+export const StatusBadge: React.FC<{ status: ProposalStatus | string } & GridProps> = ({ status, ...props }) => (
   <Badge status={status} {...props}>
     <Grid container alignItems="center" justifyContent="center">
       <Grid item>
-        <Text> {statusColors(status).text} </Text>
+        <Text> {statusColors(status)?.text} </Text>
       </Grid>
     </Grid>
   </Badge>
