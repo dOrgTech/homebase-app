@@ -100,17 +100,14 @@ export const useTezos = (): WalletConnectReturn => {
     async (newNetwork: Network) => {
       mixpanel.register({ Network: newNetwork })
       localStorage.setItem("homebase:network", newNetwork)
-
       if (newNetwork.startsWith("etherlink")) {
         await handleEtherlinkNetworkChange(newNetwork)
-        // Only switch chain if we're changing to Etherlink network
-        switchToNetwork(newNetwork)
       } else {
         await handleTezosNetworkChange(newNetwork)
       }
       queryClient.resetQueries()
     },
-    [handleEtherlinkNetworkChange, handleTezosNetworkChange, switchToNetwork, queryClient]
+    [handleEtherlinkNetworkChange, handleTezosNetworkChange, queryClient]
   )
 
   const handleTezosConnect = useCallback(
@@ -138,13 +135,15 @@ export const useTezos = (): WalletConnectReturn => {
   )
 
   useEffect(() => {
-    if (etherlinkNetwork !== network && isEtherlinkConnected && network?.startsWith("etherlink")) {
-      // Don't switch network here, let handleChangeNetwork handle it
-      return
+    console.log("[Tezos] Etherlink Network", etherlinkNetwork, network, isEtherlinkConnected)
+    if (etherlinkNetwork !== network && isEtherlinkConnected) {
+      console.log(`Switching to network ${network} from ${etherlinkNetwork}`)
+      switchToNetwork(network)
     }
 
     // Log out Beacon if network is etherlink
     if (network?.startsWith("etherlink") && wallet) {
+      console.log("Log out Beacon")
       wallet.disconnect()
       dispatch({
         type: TezosActionType.RESET_TEZOS
@@ -153,12 +152,26 @@ export const useTezos = (): WalletConnectReturn => {
 
     // Log out Etherlink if network is not etherlink
     if (!network?.startsWith("etherlink") && isEtherlinkConnected) {
+      console.log("Log out Etherlink")
       disconnectEtherWallet()
       dispatch({
         type: TezosActionType.RESET_TEZOS
       })
     }
-  }, [network, etherlinkNetwork, isEtherlinkConnected, wallet, dispatch, disconnectEtherWallet])
+  }, [
+    network,
+    etherlinkNetwork,
+    handleChangeNetwork,
+    isEtherlinkConnected,
+    wallet,
+    switchToNetwork,
+    dispatch,
+    disconnectEtherWallet
+  ])
+
+  useEffect(() => {
+    setNetwork(network)
+  }, [network, setNetwork])
 
   return {
     tezos,

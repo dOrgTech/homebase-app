@@ -4,6 +4,7 @@ import {
   DialogContent,
   styled,
   Typography,
+  Button,
   Grid,
   useTheme,
   useMediaQuery,
@@ -11,7 +12,8 @@ import {
   TableBody,
   TableRow,
   TableHead,
-  TableCell
+  TableCell,
+  makeStyles
 } from "@material-ui/core"
 import { toShortAddress } from "services/contracts/utils"
 import { FileCopyOutlined } from "@material-ui/icons"

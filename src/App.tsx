@@ -3,8 +3,12 @@ import "App.css"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
 import mixpanel from "mixpanel-browser"
 import { QueryClient, QueryClientProvider } from "react-query"
+import {
+  QueryClient as TanStackQueryClient,
+  QueryClientProvider as TanStackQueryClientProvider
+} from "@tanstack/react-query"
 
-import { Box, ThemeProvider, styled } from "@material-ui/core"
+import { Box, makeStyles, ThemeProvider } from "@material-ui/core"
 import { SnackbarProvider } from "notistack"
 
 import { DAOExplorerRouter } from "modules/explorer/router"
@@ -25,7 +29,6 @@ import { DAOCreatorRouter } from "modules/creator/router"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
-import { EtherlinkDAOCreatorRouter } from "modules/etherlink/router"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,31 +44,31 @@ const queryClient = new QueryClient({
   }
 })
 
-const SuccessSnackbar = styled("div")({
-  backgroundColor: "#4BCF93 !important",
-  padding: "6px 28px",
-  height: 54,
-  fontSize: 13,
-  lineHeight: "0px",
-  opacity: 1
-})
-
-const ErrorSnackbar = styled("div")({
-  backgroundColor: "#ED254E !important",
-  padding: "6px 28px",
-  height: 54,
-  fontSize: 13,
-  lineHeight: "0px",
-  opacity: 1
-})
-
-const InfoSnackbar = styled("div")({
-  backgroundColor: "#3866F9 !important",
-  padding: "6px 28px",
-  height: 54,
-  fontSize: 13,
-  lineHeight: "0px",
-  opacity: 1
+const styles = makeStyles({
+  success: {
+    backgroundColor: "#4BCF93 !important",
+    padding: "6px 28px",
+    height: 54,
+    fontSize: 13,
+    lineHeight: "0px",
+    opacity: 1
+  },
+  error: {
+    backgroundColor: "#ED254E !important",
+    padding: "6px 28px",
+    height: 54,
+    fontSize: 13,
+    lineHeight: "0px",
+    opacity: 1
+  },
+  info: {
+    backgroundColor: "#3866F9 !important",
+    padding: "6px 28px",
+    height: 54,
+    fontSize: 13,
+    lineHeight: "0px",
+    opacity: 1
+  }
 })
 
 const MIXPANEL_TOKEN = getEnv(EnvKey.REACT_APP_MIXPANEL_TOKEN)
@@ -85,13 +88,15 @@ mixpanel.init(MIXPANEL_TOKEN, {
 mixpanel.track("Visit")
 
 const App: React.FC = () => {
+  const classes = styles()
+
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider
         classes={{
-          variantSuccess: SuccessSnackbar.toString(),
-          variantError: ErrorSnackbar.toString(),
-          variantInfo: InfoSnackbar.toString()
+          variantSuccess: classes.success,
+          variantError: classes.error,
+          variantInfo: classes.info
         }}
       >
         <WagmiProvider config={wagmiConfig}>
@@ -103,11 +108,6 @@ const App: React.FC = () => {
                   <Router>
                     <ScrollToTop />
                     <Switch>
-                      <Route path="/creator-evm">
-                        <ThemeProvider theme={legacyTheme}>
-                          <EtherlinkDAOCreatorRouter />
-                        </ThemeProvider>
-                      </Route>
                       <Route path="/creator">
                         <CreatorProvider>
                           <ThemeProvider theme={legacyTheme}>

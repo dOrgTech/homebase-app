@@ -102,8 +102,5 @@ export function getNetworkDisplayName(networkSlug: string) {
       .map(x => capitalize(x))
       .join(" ")
   }
-  if (!networkSlug.startsWith("etherlink")) {
-    return capitalize(`Tezos ${networkSlug}`)
-  }
   return capitalize(networkSlug)
 }

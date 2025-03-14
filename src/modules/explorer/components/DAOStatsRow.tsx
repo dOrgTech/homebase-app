@@ -1,5 +1,5 @@
-import React, { useContext, useMemo } from "react"
-import { Box, Grid, styled, Typography, Paper } from "@material-ui/core"
+import React, { useMemo } from "react"
+import { Box, Grid, styled, useTheme, Typography, Paper } from "@material-ui/core"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useProposals } from "services/services/dao/hooks/useProposals"
 import BigNumber from "bignumber.js"
@@ -7,11 +7,10 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { useDAOID } from "../pages/DAO/router"
 import { usePolls } from "modules/lite/explorer/hooks/usePolls"
 import dayjs from "dayjs"
-import { useDAOHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
+import { useDAOHoldings, useDAONFTHoldings } from "services/contracts/baseDAO/hooks/useDAOHoldings"
 import { useTimeLeftInCycle } from "../hooks/useTimeLeftInCycle"
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
 import numbro from "numbro"
-import { EtherlinkContext } from "services/wagmi/context"
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#24282d",
@@ -30,7 +29,7 @@ const ItemContent = styled(Grid)({
 
 const ItemTitle = styled(Typography)(({ theme }) => ({
   fontSize: 18,
-  fontWeight: 500,
+  fontWeight: 600,
   [theme.breakpoints.down("md")]: {
     fontSize: 15
   }
@@ -60,14 +59,16 @@ const formatConfig = {
   trimMantissa: true
 }
 
-const DAOStatsRowTezos = () => {
+export const DAOStatsRow: React.FC = () => {
   const daoId = useDAOID()
   const { data, ledger, cycleInfo } = useDAO(daoId)
   const symbol = data && data.data.token.symbol.toUpperCase()
+  const theme = useTheme()
   const { data: activeProposals } = useProposals(daoId, ProposalStatus.ACTIVE)
   const { data: polls } = usePolls(data?.liteDAOData?._id)
   const activeLiteProposals = polls?.filter(p => Number(p.endTime) > dayjs().valueOf())
   const { tokenHoldings } = useDAOHoldings(daoId)
+  const { nftHoldings } = useDAONFTHoldings(daoId)
   const { data: executableProposals } = useProposals(daoId, ProposalStatus.EXECUTABLE)
   const { hours, minutes, days } = useTimeLeftInCycle()
   const shouldDisable = useIsProposalButtonDisabled(daoId)
@@ -200,63 +201,4 @@ const DAOStatsRowTezos = () => {
       </Grid>
     </Box>
   )
-}
-
-interface IEvmDaoStats {
-  members: number
-  active_proposals: number
-  awaiting_executions?: number
-}
-
-interface IEvmStatItem {
-  title: string
-  value: number | string
-}
-
-export const DAOStatsRowEtherlink = () => {
-  const daoId = useDAOID()
-  const { data } = useDAO(daoId)
-  const { daoSelected } = useContext(EtherlinkContext)
-  const daoStats = data?.data?.etherlink?.stats as IEvmDaoStats | undefined
-
-  const statItems: IEvmStatItem[] = [
-    {
-      title: "Members",
-      value: daoSelected?.members.length ?? 0
-    },
-    {
-      title: "Active Proposals",
-      value: daoStats?.active_proposals ?? 0
-    },
-    {
-      title: "Awaiting Executions",
-      value: daoStats?.awaiting_executions ?? "-"
-    }
-  ]
-
-  return (
-    <Box sx={{ flexGrow: 1, width: "inherit" }}>
-      <Grid container spacing={4}>
-        {statItems.map((item, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Item>
-              <ItemContent item container direction="row" alignItems="center">
-                <ItemTitle color="textPrimary">{item.title} </ItemTitle>
-              </ItemContent>
-              <Grid item>
-                <ItemValue color="textPrimary">{item.value}</ItemValue>
-              </Grid>
-            </Item>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
-  )
-}
-
-export const DAOStatsRow: React.FC = () => {
-  const daoId = useDAOID()
-  const { data } = useDAO(daoId)
-  const network = data?.data.network
-  return network?.startsWith("etherlink") ? <DAOStatsRowEtherlink /> : <DAOStatsRowTezos />
 }

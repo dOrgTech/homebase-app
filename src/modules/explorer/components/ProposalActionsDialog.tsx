@@ -15,7 +15,6 @@ import { ProposalCreatorModal } from "modules/lite/explorer/pages/CreateProposal
 import { useIsProposalButtonDisabled } from "services/contracts/baseDAO/hooks/useCycleInfo"
 import { ProposalFormContainer } from "./ProposalForm"
 import { useQueryParams } from "../hooks/useQueryParams"
-import { EvmProposalsActionDialog } from "modules/etherlink/explorer/EvmProposalsActionDialog"
 
 type RecursivePartial<T> = {
   [P in keyof T]?: RecursivePartial<T[P]>
@@ -29,7 +28,6 @@ type Values = {
 
 export type ProposalFormDefaultValues = RecursivePartial<Values>
 
-// TODO: Move this to a shared component
 const OptionContainer = styled(Grid)(({ theme }) => ({
   "minHeight": 80,
   "background": theme.palette.primary.main,
@@ -37,7 +35,7 @@ const OptionContainer = styled(Grid)(({ theme }) => ({
   "padding": "35px 42px",
   "marginBottom": 16,
   "cursor": "pointer",
-  "height": 110,
+  "height": 80,
   "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,
@@ -142,13 +140,15 @@ const getTreasuryActions = (): GenericAction[] => [
   }
 ]
 
-const defaultOpenSupportedExecuteProposalModal = "none"
-
-const ProposalActionsDialogForTezos: React.FC<{
+interface Props {
   open: boolean
   handleClose: () => void
-  queryType?: string
-}> = ({ open, handleClose, queryType }) => {
+  queryType: string | null
+}
+
+const defaultOpenSupportedExecuteProposalModal = "none"
+
+export const ProposalActionsDialog: React.FC<Props> = ({ open, handleClose, queryType }) => {
   const daoId = useDAOID()
   const { data } = useDAO(daoId)
   const theme = useTheme()
@@ -214,6 +214,7 @@ const ProposalActionsDialogForTezos: React.FC<{
   const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
     defaultOpenSupportedExecuteProposalModal
   )
+
   useEffect(() => {
     if (queryType === "add-function") {
       handleOpenCustomProposalModal(ProposalAction.new)
@@ -394,20 +395,5 @@ const ProposalActionsDialogForTezos: React.FC<{
 
       <ProposalCreatorModal open={openLiteProposal} handleClose={handleCloseSupportedExecuteProposalModal} />
     </>
-  )
-}
-
-export const ProposalActionsDialog: React.FC<{ open: boolean; handleClose: () => void; queryType?: string }> = ({
-  open,
-  handleClose,
-  queryType
-}) => {
-  const daoId = useDAOID()
-  const { data } = useDAO(daoId)
-
-  return data?.data.network.startsWith("etherlink") ? (
-    <EvmProposalsActionDialog open={open} handleClose={handleClose} />
-  ) : (
-    <ProposalActionsDialogForTezos open={open} handleClose={handleClose} queryType={queryType} />
   )
 }

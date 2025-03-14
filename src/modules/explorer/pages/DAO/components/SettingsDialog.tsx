@@ -22,7 +22,6 @@ type Values = {
 
 export type ProposalFormDefaultValues = RecursivePartial<Values>
 
-// TODO: Move this to a shared component
 const OptionContainer = styled(Grid)(({ theme }) => ({
   "minHeight": 80,
   "background": theme.palette.primary.main,

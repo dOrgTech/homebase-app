@@ -7,8 +7,5 @@
   "editor.defaultFormatterOld": "dbaeumer.vscode-eslint",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

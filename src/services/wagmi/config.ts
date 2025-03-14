@@ -1,11 +1,11 @@
 import { createConfig, http } from "wagmi"
-import { etherlink, etherlinkTestnet, hardhat } from "wagmi/chains"
+import { etherlink, etherlinkTestnet } from "wagmi/chains"
 import { metaMask, injected, safe } from "wagmi/connectors"
 
 import { DeployContract } from "./token"
 import { getDefaultConfig } from "connectkit"
 
-const wagmiChains = [etherlink, etherlinkTestnet, hardhat] as const
+const wagmiChains = [etherlink, etherlinkTestnet] as const
 
 // 1. Your WalletConnect Cloud project ID
 const projectId = "7dd66fecc485693b67e6921c580e7040"

@@ -4,7 +4,6 @@ import { DAOList } from "modules/explorer/pages/DAOList"
 import { DAORouter } from "modules/explorer/pages/DAO/router"
 import { DAOCreate } from "."
 import { TokenDeploymentRouter } from "./token/router"
-import { EtherlinkDAOCreatorRouter } from "modules/etherlink/router"
 
 export const DAOCreatorRouter = (): JSX.Element => {
   const match = useRouteMatch()
