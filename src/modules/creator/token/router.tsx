@@ -1,5 +1,5 @@
 import React from "react"
-import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom"
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from "react-router-dom"
 import { TezosTokenDeployment } from "./tezos"
 import { ConfigContract as TezosConfigContract } from "./tezos/steps/Config"
 import { ContractDistribution as TezosContractDistribution } from "./tezos/steps/Distribution"
@@ -15,10 +15,13 @@ import { DeploymentProvider as TezosDeploymentProvider } from "./tezos/state/con
 
 export const TokenDeploymentRouter = (): JSX.Element => {
   const { network } = useTezos()
+  const history = useHistory()
   const match = useRouteMatch()
 
-  console.log("Network from token router", network)
   if (network.startsWith("etherlink")) {
+    if (history.location.pathname === "/creator") {
+      return <Redirect to={`/creator-evm/template`} />
+    }
     return (
       <EtherlinkDeploymentProvider>
         <Switch>

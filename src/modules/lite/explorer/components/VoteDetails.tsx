@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import React, { useEffect, useMemo, useState } from "react"
-import { Button, Grid, LinearProgress, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import React, { useMemo, useState } from "react"
+import { Grid, LinearProgress, styled, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { GridContainer } from "modules/common/GridContainer"
 import { VotesDialog } from "./VotesDialog"
 import { Poll } from "models/Polls"

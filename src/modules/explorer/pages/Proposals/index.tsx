@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useState, useContext, useEffect } from "react"
 import { Button, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 
 import { useDAO } from "services/services/dao/hooks/useDAO"
@@ -24,6 +24,7 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import FilterAltIcon from "@mui/icons-material/FilterAlt"
 import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
 import { Filters } from "../User/components/UserMovements"
+import { EvmProposalsPage } from "modules/etherlink/explorer/EtherlinkDAO/EvmProposalsPage"
 
 const FiltersContainer = styled(Grid)({
   marginTop: 45,
@@ -103,7 +104,7 @@ export const DropButton = styled(Button)({
   fontSize: "16px"
 })
 
-export const Proposals: React.FC = () => {
+const TezosProposals = () => {
   const daoId = useDAOID()
   const { data, cycleInfo } = useDAO(daoId)
   const [selectedTab, setSelectedTab] = React.useState(0)
@@ -319,7 +320,7 @@ export const Proposals: React.FC = () => {
           </TabPanel>
         </TabsBox>
 
-        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery} />
+        <ProposalActionsDialog open={openDialog} handleClose={handleCloseModal} queryType={proposalTypeQuery || ""} />
 
         {/* Keeping this component here as it is inhe master branch */}
         <FilterProposalsDialog
@@ -331,4 +332,12 @@ export const Proposals: React.FC = () => {
       </Grid>
     </>
   )
+}
+
+export const EtherlinkProposals = () => {}
+
+export const Proposals: React.FC = () => {
+  const daoId = useDAOID()
+  const { data } = useDAO(daoId)
+  return data?.data.network.startsWith("etherlink") ? <EvmProposalsPage /> : <TezosProposals />
 }

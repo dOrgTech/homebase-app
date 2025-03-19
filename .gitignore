@@ -33,6 +33,11 @@ yarn-error.log*
 bun.lockb
 package-lock.json
 
-# Ignore for playwright-report
-playwright-report/
-test-results/
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+

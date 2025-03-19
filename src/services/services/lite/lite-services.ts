@@ -202,3 +202,14 @@ export const updateCount = async (id: string) => {
   })
   return resp
 }
+
+export const fetchOffchainProposals = async (daoId: string) => {
+  return await fetch(`${getEnv(EnvKey.REACT_APP_LITE_API_URL)}/daos/${daoId}?include=polls`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(res => res.json())
+    .then(data => data?.polls || [])
+}
