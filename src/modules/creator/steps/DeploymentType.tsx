@@ -87,13 +87,6 @@ export const DeploymentType = (): JSX.Element => {
   }, [dispatch, history, match.path, match.url, selectedTemplate])
 
   const update = (templateValue: DeploymentMethod) => {
-    if (templateValue === "managed") {
-      return notify({
-        message: "Managed Deployment is temporarily disabled",
-        autoHideDuration: 3000,
-        variant: "error"
-      })
-    }
     setError(false)
     setTemplate(templateValue)
   }
