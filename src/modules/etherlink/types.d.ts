@@ -7,7 +7,8 @@ export interface IEvmFirebaseContract {
   daoFactory: IEthereumAddress
   timelockFactory: IEthereumAddress
   registryFactory: IEthereumAddress
-  wrapper: IEthereumAddress
+  // wrapper: IEthereumAddress // Not in use and deprecated
+  wrapper_t: IEthereumAddress
 }
 
 export interface IEvmOffchainChoiceForVote {

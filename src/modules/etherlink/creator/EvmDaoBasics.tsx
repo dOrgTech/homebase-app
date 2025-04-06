@@ -8,15 +8,13 @@ import {
   CustomInputContainer,
   InfoIconInput,
   TextareaContainer,
-  MetadataContainer,
   CustomTextarea
 } from "components/ui/DaoCreator"
 import React from "react"
-import { Link, TextField, withStyles } from "@material-ui/core"
-import { Grid, Typography, useMediaQuery, useTheme, InputAdornment, Tooltip } from "@material-ui/core"
+import { TextField, withStyles } from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme, InputAdornment, Tooltip, Checkbox } from "@material-ui/core"
 
 import { ErrorText } from "modules/creator/token/ui"
-import { validateEvmTokenAddress } from "../utils"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
@@ -54,6 +52,7 @@ type EvmDaoSettings = {
   description: string
   administrator: string
   guardian: string
+  nonTransferable: boolean
   governanceToken: {
     address?: string
     symbol: string
@@ -121,6 +120,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
     description: "",
     administrator: "",
     guardian: "",
+    nonTransferable: true,
     governanceToken: { address: "", symbol: "", tokenDecimals: 0, tokenSymbol: "" }
   }
 
@@ -219,6 +219,37 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                     {errors.governanceToken?.tokenDecimals && touched.governanceToken?.tokenDecimals ? (
                       <ErrorText>{errors.governanceToken?.tokenDecimals}</ErrorText>
                     ) : null}
+                  </Grid>
+                </SecondContainer>
+                <SecondContainer container item direction="row" wrap="wrap">
+                  <Grid container direction="row" alignItems="center" xs={8}>
+                    <Grid item xs={1}>
+                      <Checkbox
+                        disableRipple
+                        checked={daoData?.nonTransferable === undefined ? true : daoData?.nonTransferable}
+                        inputProps={{
+                          "aria-label": "Non-transferable"
+                        }}
+                        onChange={() => {
+                          setFieldValue("nonTransferable", !daoData?.nonTransferable)
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs>
+                      <Typography color="textSecondary" style={{ display: "flex", alignItems: "center" }}>
+                        Non-transferable
+                        <Tooltip
+                          placement="bottom"
+                          title={`
+                              Using a transferable governance token is not compatible with the
+                              reputation-based logical architecture of the On-Chain Jurisdiction. This action is
+                              non-reversible.
+                          `}
+                        >
+                          <InfoIcon style={{ marginLeft: 8 }} />
+                        </Tooltip>
+                      </Typography>
+                    </Grid>
                   </Grid>
                 </SecondContainer>
                 <SecondContainer container direction="row" alignItems="center">
