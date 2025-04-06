@@ -157,7 +157,7 @@ const useEvmDaoCreateStore = () => {
   const data = useEvmDaoCreateZustantStore()
   const history = useHistory()
   const { contractData } = useContext(EtherlinkContext)
-  const wrapperAddress = contractData?.wrapper
+  const wrapperAddress = contractData?.wrapper_t
   const { etherlink } = useTezos()
   const notify = useNotification()
 
@@ -221,7 +221,8 @@ const useEvmDaoCreateStore = () => {
           isNaN(quorumThreshold) ? 0 : Number(quorumThreshold)
         ],
         keys: Object.keys(daoData.registry),
-        values: Object.values(daoData.registry)
+        values: Object.values(daoData.registry),
+        transferable: !daoData.nonTransferable
       }
       const daoCreatePayload = Object.values(daoCreateObject)
       console.log({ daoCreatePayload, samplePayload })
