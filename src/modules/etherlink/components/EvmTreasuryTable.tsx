@@ -68,7 +68,7 @@ const useStyles = makeStyles({
 })
 
 export const EvmTreasuryTable = () => {
-  const { daoSelected, daoRegistryDetails, daoTreasuryTokens } = useContext(EtherlinkContext)
+  const { daoSelected, daoRegistryDetails, daoTreasuryTokens, daoNfts } = useContext(EtherlinkContext)
   const { setMetadataFieldValue, setTransferAssets, setCurrentStep } = useEvmProposalOps()
   const history = useHistory()
   const [view, setView] = useState("tokens")
@@ -78,21 +78,33 @@ export const EvmTreasuryTable = () => {
     return <Typography>Loading treasury data...</Typography>
   }
 
+  console.log({ daoNfts })
+
   const renderNFTView = () => (
     <div className={classes.nftGrid}>
-      {[1, 2, 3].map(nft => (
-        <Card key={nft} className={classes.nftCard}>
+      {[
+        ...daoNfts,
+        {
+          id: 2
+        },
+        {
+          id: 3
+        }
+      ].map(nft => (
+        <Card key={nft?.id} className={classes.nftCard}>
           <CardMedia
             className={classes.nftImage}
-            image={`https://picsum.photos/400/400?random=${nft}`}
-            title={`NFT #${nft}`}
+            image={nft.image_url || `https://picsum.photos/400/400?random=${nft.id}`}
+            title={nft.metadata?.name || `NFT #${nft.id}`}
+            component="div"
+            style={{ backgroundSize: "cover" }}
           />
           <CardContent className={classes.nftContent}>
-            <Typography className={classes.nftTitle}>Bored Ape #{nft}</Typography>
-            <Typography className={classes.nftCollection}>Bored Ape Yacht Club</Typography>
+            <Typography className={classes.nftTitle}>{nft.metadata?.name || `NFT #${nft.id}`}</Typography>
+            <Typography className={classes.nftCollection}>{nft.metadata?.description || "Etherlink DAO"}</Typography>
             <div className={classes.nftDetails}>
-              <Typography className={classes.nftPrice}>Floor: 30 XTZ</Typography>
-              <Typography color="textSecondary">#1234</Typography>
+              <Typography className={classes.nftPrice}>{nft.token?.symbol}</Typography>
+              <Typography color="textSecondary">#{nft.id}</Typography>
             </div>
             <SmallButton
               onClick={() => {

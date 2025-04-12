@@ -37,13 +37,16 @@ interface ITransaction {
   assetAddress?: string
   assetSymbol?: string
   assetDecimals?: number
+  tokenId?: string
   recipient: string
-  amount: string
+  amount?: string
 }
 
 export const EvmPropTransferAssets: React.FC = () => {
   const { transferAssets, setTransferAssets } = useEvmProposalOps()
-  const { daoSelected, daoTreasuryTokens } = useContext(EtherlinkContext)
+  const { daoSelected, daoTreasuryTokens, daoNfts } = useContext(EtherlinkContext)
+
+  console.log({ transferAssets })
 
   const onUpdateTransaction = (index: number, obj: { field: keyof ITransaction; value: string }[]) => {
     const transactions = [...transferAssets.transactions]
@@ -96,6 +99,7 @@ export const EvmPropTransferAssets: React.FC = () => {
                     ])
                   } else {
                     const token = daoTreasuryTokens?.find((token: any) => token.address === newValue)
+                    const nft = daoNfts?.find((nft: any) => `nft::${nft.token?.address}:${nft.id}` === newValue)
                     if (token) {
                       onUpdateTransaction(index, [
                         {
@@ -115,6 +119,25 @@ export const EvmPropTransferAssets: React.FC = () => {
                           value: token?.address
                         }
                       ])
+                    } else if (nft) {
+                      onUpdateTransaction(index, [
+                        {
+                          field: "assetType",
+                          value: "transferERC721"
+                        },
+                        {
+                          field: "assetSymbol",
+                          value: nft?.token?.symbol
+                        },
+                        {
+                          field: "assetAddress",
+                          value: nft?.token?.address
+                        },
+                        {
+                          field: "tokenId",
+                          value: nft?.id
+                        }
+                      ])
                     } else {
                       alert("Invalid Selection")
                     }
@@ -125,6 +148,11 @@ export const EvmPropTransferAssets: React.FC = () => {
                 {daoTreasuryTokens?.map((token: any) => (
                   <MenuItem key={token.address} value={token.address}>
                     {token.symbol}
+                  </MenuItem>
+                ))}
+                {daoNfts?.map((nft: any) => (
+                  <MenuItem key={`nft::${nft.token?.address}:${nft.id}`} value={`nft::${nft.token?.address}:${nft.id}`}>
+                    {nft.token?.symbol} - #{nft.id}
                   </MenuItem>
                 ))}
               </StyledTextField>
@@ -138,24 +166,26 @@ export const EvmPropTransferAssets: React.FC = () => {
                 onChange={e => onUpdateTransaction(index, [{ field: "recipient", value: e.target.value }])}
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
-              <StyledTextField
-                fullWidth
-                label="Amount"
-                type="number"
-                variant="standard"
-                inputProps={{
-                  inputMode: "numeric",
-                  pattern: "[0-9]*",
-                  min: "0.001",
-                  step: "0.000001"
-                }}
-                error={!transaction.amount}
-                helperText={!transaction.amount ? "Amount must be a number" : ""}
-                value={transaction.amount}
-                onChange={e => onUpdateTransaction(index, [{ field: "amount", value: e.target.value }])}
-              />
-            </Grid>
+            {transaction.assetType !== "transferERC721" && (
+              <Grid item xs={12} sm={2}>
+                <StyledTextField
+                  fullWidth
+                  label="Amount"
+                  type="number"
+                  variant="standard"
+                  inputProps={{
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                    min: "0.001",
+                    step: "0.000001"
+                  }}
+                  error={!transaction.amount}
+                  helperText={!transaction.amount ? "Amount must be a number" : ""}
+                  value={transaction.amount}
+                  onChange={e => onUpdateTransaction(index, [{ field: "amount", value: e.target.value }])}
+                />
+              </Grid>
+            )}
             <Grid item xs={12} sm={1} container alignItems="center" justifyContent="center">
               {index > 0 && (
                 <RemoveButton onClick={() => onRemoveTransaction(index)}>

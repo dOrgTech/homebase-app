@@ -21,7 +21,8 @@ import {
   getCallDataFromBytes,
   getBlockExplorerUrl,
   getEtherAddressDetails,
-  getEtherTokenBalances
+  getEtherTokenBalances,
+  getEtherlinkDAONfts
 } from "modules/etherlink/utils"
 import { proposalInterfaces } from "modules/etherlink/config"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
@@ -54,6 +55,27 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   }>({ balance: "0" })
   const [daoTreasuryTokens, setDaoTreasuryTokens] = useState<any[]>([])
   const [daoOffchainProposals, setDaoOffchainProposals] = useState<any[]>([])
+  const [daoNfts, setDaoNfts] = useState<
+    {
+      id: string
+      image_url: string
+      metadata: {
+        name: string
+        description?: string
+        attributes: {
+          trait_type: string
+          value: string
+        }[]
+      }
+      token: {
+        address: string
+        name: string
+        symbol: string
+        decimals: number
+        type: "ERC-721" | "ERC-1155"
+      }
+    }[]
+  >([])
   const [daoProposals, setDaoProposals] = useState<any[]>([])
   const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
   const [daoProposalOffchainSelected, setDaoProposalOffchainSelected] = useState<any>({})
@@ -331,6 +353,10 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
               name: token.token?.name || "Unknown"
             }))
           )
+        }),
+        getEtherlinkDAONfts(network, daoSelected.registryAddress).then(data => {
+          console.log("NFTs", data)
+          setDaoNfts(data?.items)
         })
       ])
 
@@ -398,6 +424,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daoSelected,
     daoRegistryDetails,
     daoTreasuryTokens,
+    daoNfts,
     daoProposals: allDaoProposals,
     daoProposalSelected,
     daoMembers,
@@ -514,6 +541,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     daos,
     isLoadingDaos,
     daoSelected,
+    daoNfts,
     daoRegistryDetails,
     daoTreasuryTokens,
     daoProposals,
@@ -548,6 +576,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         isLoadingDaos,
         isLoadingDaoProposals,
         daoSelected,
+        daoNfts,
         daoRegistryDetails,
         daoTreasuryTokens,
         daoProposals,
