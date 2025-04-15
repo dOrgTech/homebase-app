@@ -145,8 +145,8 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
 
         const validTransactions = transactions.filter((transaction: any) => {
           const isValidRecipient = transaction.recipient?.length > 0 && ethers.isAddress(transaction.recipient)
-          const isValidAmount = transaction.amount > 0
-          return isValidRecipient && isValidAmount
+          const isValidAmountOrTokenId = transaction.amount > 0 || transaction.tokenId > 0
+          return isValidRecipient && isValidAmountOrTokenId
         })
 
         validTransactions.forEach((transaction: any) => {
@@ -158,14 +158,21 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           let ifaceParams: any[] = []
           if (transaction.assetType === "transferETH") {
             ifaceParams = [transaction.recipient, ethers.parseEther(transaction.amount)]
-          } else {
+          } else if (transaction.assetType === "transferERC20") {
             ifaceParams = [
               transaction.assetAddress,
               transaction.recipient,
               ethers.parseUnits(transaction.amount, transaction.assetDecimals)
             ]
+          } else if (transaction.assetType === "transferERC721") {
+            ifaceParams = [transaction.assetAddress, transaction.recipient, transaction.tokenId]
+          } else {
+            console.log("Invalid transaction type", transaction.assetType)
           }
-          console.log("ifaceParams", transaction.assetType, ifaceDef.name, ifaceParams, transaction.amount)
+          console.log("ifaceParams", transaction.assetType, ifaceDef.name, ifaceParams, {
+            amount: transaction.amount,
+            tokenId: transaction.tokenId
+          })
           targets.push(daoRegistryAddress)
           callData.push(iface.encodeFunctionData(ifaceDef.name, ifaceParams))
         })

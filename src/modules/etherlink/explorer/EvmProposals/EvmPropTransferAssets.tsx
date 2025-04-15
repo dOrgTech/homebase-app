@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useCallback, useContext } from "react"
 import { Grid, styled, Typography, MenuItem, IconButton } from "@material-ui/core"
 import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
@@ -48,13 +48,16 @@ export const EvmPropTransferAssets: React.FC = () => {
 
   console.log({ transferAssets })
 
-  const onUpdateTransaction = (index: number, obj: { field: keyof ITransaction; value: string }[]) => {
-    const transactions = [...transferAssets.transactions]
-    obj.forEach((o: { field: keyof ITransaction; value: string }) => {
-      transactions[index][o.field] = o.value
-    })
-    setTransferAssets(transactions, daoSelected?.registryAddress)
-  }
+  const onUpdateTransaction = useCallback(
+    (index: number, obj: { field: keyof ITransaction; value: string }[]) => {
+      const transactions = [...transferAssets.transactions]
+      obj.forEach((o: { field: keyof ITransaction; value: string }) => {
+        transactions[index][o.field] = o.value
+      })
+      setTransferAssets(transactions, daoSelected?.registryAddress)
+    },
+    [transferAssets.transactions, daoSelected?.registryAddress, setTransferAssets]
+  )
 
   const onAddTransaction = () => {
     const transactions = [...transferAssets.transactions]
@@ -68,6 +71,83 @@ export const EvmPropTransferAssets: React.FC = () => {
     setTransferAssets(transactions, daoSelected?.registryAddress)
   }
 
+  const getAssetType = useCallback((transaction: ITransaction) => {
+    if (transaction.assetType === "transferETH") {
+      return "transferETH"
+    } else if (transaction.assetType === "transferERC20") {
+      return transaction.assetAddress
+    } else if (transaction.assetType === "transferERC721") {
+      return `nft::${transaction.assetAddress}:${transaction.tokenId}`
+    }
+  }, [])
+
+  const handleAssetTypeChange = useCallback(
+    (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = e.target.value
+      if (newValue === "transferETH") {
+        onUpdateTransaction(index, [
+          {
+            field: "assetType",
+            value: "transferETH"
+          },
+          {
+            field: "assetSymbol",
+            value: "XTZ"
+          },
+          {
+            field: "assetAddress",
+            value: daoSelected?.registryAddress
+          }
+        ])
+      } else {
+        const token = daoTreasuryTokens?.find((token: any) => token.address === newValue)
+        const nft = daoNfts?.find((nft: any) => `nft::${nft.token?.address}:${nft.id}` === newValue)
+        if (token) {
+          onUpdateTransaction(index, [
+            {
+              field: "assetType",
+              value: "transferERC20"
+            },
+            {
+              field: "assetSymbol",
+              value: token?.symbol
+            },
+            {
+              field: "assetDecimals",
+              value: token?.decimals
+            },
+            {
+              field: "assetAddress",
+              value: token?.address
+            }
+          ])
+        } else if (nft) {
+          onUpdateTransaction(index, [
+            {
+              field: "assetType",
+              value: "transferERC721"
+            },
+            {
+              field: "assetSymbol",
+              value: nft?.token?.symbol
+            },
+            {
+              field: "assetAddress",
+              value: nft?.token?.address
+            },
+            {
+              field: "tokenId",
+              value: nft?.id
+            }
+          ])
+        } else {
+          alert("Invalid Selection")
+        }
+      }
+    },
+    [onUpdateTransaction, daoSelected?.registryAddress, daoTreasuryTokens, daoNfts]
+  )
+
   return (
     <Grid container direction="column">
       {transferAssets.transactions.map((transaction: ITransaction, index: number) => (
@@ -79,70 +159,8 @@ export const EvmPropTransferAssets: React.FC = () => {
                 fullWidth
                 label="Asset Type"
                 variant="standard"
-                value={transaction?.assetType === "transferETH" ? "transferETH" : transaction.assetAddress}
-                onChange={e => {
-                  const newValue = e.target.value
-                  if (newValue === "transferETH") {
-                    onUpdateTransaction(index, [
-                      {
-                        field: "assetType",
-                        value: "transferETH"
-                      },
-                      {
-                        field: "assetSymbol",
-                        value: "XTZ"
-                      },
-                      {
-                        field: "assetAddress",
-                        value: daoSelected?.registryAddress
-                      }
-                    ])
-                  } else {
-                    const token = daoTreasuryTokens?.find((token: any) => token.address === newValue)
-                    const nft = daoNfts?.find((nft: any) => `nft::${nft.token?.address}:${nft.id}` === newValue)
-                    if (token) {
-                      onUpdateTransaction(index, [
-                        {
-                          field: "assetType",
-                          value: "transferERC20"
-                        },
-                        {
-                          field: "assetSymbol",
-                          value: token?.symbol
-                        },
-                        {
-                          field: "assetDecimals",
-                          value: token?.decimals
-                        },
-                        {
-                          field: "assetAddress",
-                          value: token?.address
-                        }
-                      ])
-                    } else if (nft) {
-                      onUpdateTransaction(index, [
-                        {
-                          field: "assetType",
-                          value: "transferERC721"
-                        },
-                        {
-                          field: "assetSymbol",
-                          value: nft?.token?.symbol
-                        },
-                        {
-                          field: "assetAddress",
-                          value: nft?.token?.address
-                        },
-                        {
-                          field: "tokenId",
-                          value: nft?.id
-                        }
-                      ])
-                    } else {
-                      alert("Invalid Selection")
-                    }
-                  }
-                }}
+                value={getAssetType(transaction)}
+                onChange={e => handleAssetTypeChange(index, e as React.ChangeEvent<HTMLInputElement>)}
               >
                 <MenuItem value="transferETH">XTZ</MenuItem>
                 {daoTreasuryTokens?.map((token: any) => (
