@@ -362,6 +362,14 @@ export async function getEtherTokenBalances(network: string, address: string) {
   return data
 }
 
+export async function getEtherlinkDAONfts(network: string, address: string) {
+  const response = await fetch(
+    networkConfig[network as keyof typeof networkConfig]?.explorerApiUrl + "/addresses/" + address + "/nft"
+  )
+  const data = await response.json()
+  return data
+}
+
 function _decodedCallData(possibleInterfaces: any[], callData: string) {
   const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
   const response = {

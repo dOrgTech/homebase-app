@@ -21,7 +21,8 @@ import {
   getCallDataFromBytes,
   getBlockExplorerUrl,
   getEtherAddressDetails,
-  getEtherTokenBalances
+  getEtherTokenBalances,
+  getEtherlinkDAONfts
 } from "modules/etherlink/utils"
 import { proposalInterfaces } from "modules/etherlink/config"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
@@ -54,6 +55,27 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   }>({ balance: "0" })
   const [daoTreasuryTokens, setDaoTreasuryTokens] = useState<any[]>([])
   const [daoOffchainProposals, setDaoOffchainProposals] = useState<any[]>([])
+  const [daoNfts, setDaoNfts] = useState<
+    {
+      id: string
+      image_url: string
+      metadata: {
+        name: string
+        description?: string
+        attributes: {
+          trait_type: string
+          value: string
+        }[]
+      }
+      token: {
+        address: string
+        name: string
+        symbol: string
+        decimals: number
+        type: "ERC-721" | "ERC-1155"
+      }
+    }[]
+  >([])
   const [daoProposals, setDaoProposals] = useState<any[]>([])
   const [daoProposalSelected, setDaoProposalSelected] = useState<any>({})
   const [daoProposalOffchainSelected, setDaoProposalOffchainSelected] = useState<any>({})
@@ -96,7 +118,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (daoProposalSelected?.type === "offchain") return
 
     if (firestoreData?.[firebaseRootCollection]) {
-      setDaoData(firestoreData[firebaseRootCollection])
+      const allDaoList = firestoreData[firebaseRootCollection]
+      setDaoData(allDaoList)
       setIsLoadingDaos(false)
     }
 
@@ -331,6 +354,10 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
               name: token.token?.name || "Unknown"
             }))
           )
+        }),
+        getEtherlinkDAONfts(network, daoSelected.registryAddress).then(data => {
+          console.log("NFTs", data)
+          setDaoNfts(data?.items)
         })
       ])
 
@@ -392,12 +419,29 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     (a, b) => b.createdAt.unix() - a.createdAt.unix()
   )
 
+  const getFunctionAbi = useCallback<any>((callData: string) => {
+    const transferEthSelector = ethers.id("transferETH(address,uint256)").substring(0, 10)
+    const transferErc20Selector = ethers.id("transferERC20(address,address,uint256)").substring(0, 10)
+    const transferErc721Selector = ethers.id("transferERC721(address,address,uint256)").substring(0, 10)
+    const callDataSelector = callData.substring(0, 10)
+
+    if (callDataSelector === transferEthSelector) {
+      return proposalInterfaces.find((x: any) => x.name === "transferETH")
+    } else if (callDataSelector === transferErc20Selector) {
+      return proposalInterfaces.find((x: any) => x.name === "transferERC20")
+    } else if (callDataSelector === transferErc721Selector) {
+      return proposalInterfaces.find((x: any) => x.name === "transferERC721")
+    }
+    return {}
+  }, [])
+
   return {
     contractData,
     daos: daoData,
     daoSelected,
     daoRegistryDetails,
     daoTreasuryTokens,
+    daoNfts,
     daoProposals: allDaoProposals,
     daoProposalSelected,
     daoMembers,
@@ -409,6 +453,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         console.log("Selecing Offchain Proposal", proposal)
         // setDaoProposalOffchainSelected(proposal)
       } else if (proposal && proposal?.type !== "contract call") {
+        const fAbi = getFunctionAbi(proposal?.callDataPlain?.[0])
+        console.log("fAbi", fAbi)
         const proposalInterfacesPossible = proposalInterfaces.filter((x: any) => {
           let fbType = proposal?.type?.toLowerCase()
           console.log("callDataXYB fbType", fbType)
@@ -416,8 +462,9 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
           if (fbType?.startsWith("burn")) fbType = "burn"
           return x.tags?.includes(fbType)
         })
+
         const functionAbi = proposalInterfacesPossible?.[0]?.interface?.[0] as string
-        const functionAbiAlternate = proposalInterfacesPossible?.[1]?.interface?.[0] as string
+        const functionAbiAlternate = fAbi?.interface?.[0] || (proposalInterfacesPossible?.[1]?.interface?.[0] as string)
         console.log("callDataXYB functionAbi", functionAbi, functionAbiAlternate)
         if (!functionAbi) return []
 
@@ -514,6 +561,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     daos,
     isLoadingDaos,
     daoSelected,
+    daoNfts,
     daoRegistryDetails,
     daoTreasuryTokens,
     daoProposals,
@@ -548,6 +596,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         isLoadingDaos,
         isLoadingDaoProposals,
         daoSelected,
+        daoNfts,
         daoRegistryDetails,
         daoTreasuryTokens,
         daoProposals,
