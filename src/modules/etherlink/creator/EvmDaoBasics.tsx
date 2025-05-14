@@ -198,7 +198,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                         name="governanceToken.tokenDecimals"
                         type="text"
                         placeholder="0"
-                        defaultValue={daoData?.governanceToken.tokenDecimals}
+                        defaultValue={daoData?.governanceToken.tokenDecimals || 4}
                         InputProps={{
                           endAdornment: (
                             <InputAdornment position="start">
