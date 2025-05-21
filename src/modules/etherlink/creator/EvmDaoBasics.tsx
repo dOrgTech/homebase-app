@@ -241,9 +241,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                         <Tooltip
                           placement="bottom"
                           title={`
-                              Using a transferable governance token is not compatible with the
-                              reputation-based logical architecture of the On-Chain Jurisdiction. This action is
-                              non-reversible.
+                              This action is not reversible.
                           `}
                         >
                           <InfoIcon style={{ marginLeft: 8 }} />
