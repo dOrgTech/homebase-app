@@ -1,6 +1,6 @@
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
   Grid,
   styled,
@@ -52,7 +52,7 @@ export const EvmDaoSummary = () => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const { data } = useEvmDaoCreateStore()
-  const tableData = [
+  const [tableData, setTableData] = useState<{ key: string; value: string }[]>([
     { key: "Name", value: data?.name },
     { key: "Symbol", value: data?.governanceToken?.symbol },
     {
@@ -70,7 +70,24 @@ export const EvmDaoSummary = () => {
       key: "Quorum",
       value: `${data?.quorum?.returnedTokenPercentage}%`
     }
-  ]
+  ])
+
+  useEffect(() => {
+    const rEntries = Object.entries(data.registry)
+    if (rEntries.length > 0) {
+      setTableData(prev => {
+        rEntries.forEach(([key, value]) => {
+          prev.push({
+            key: key as string,
+            value: value as string
+          })
+        })
+        console.log("[TableData]", prev)
+        return prev
+      })
+    }
+  }, [data, tableData])
+
   return (
     <div className="evm-dao-summary">
       <TitleBlock

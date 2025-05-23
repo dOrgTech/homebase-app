@@ -91,7 +91,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit, initialVal
   return (
     <div className="evm-dao-voting">
       <TitleBlock
-        title="Proposals & Voting"
+        title="Durations"
         description={
           <DescriptionText variant="subtitle1">
             These settings will define the voting configuration for your DAO.
