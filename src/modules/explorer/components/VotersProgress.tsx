@@ -8,7 +8,7 @@ import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { VotesDetailDialog } from "./VotesDetailDialog"
 import numbro from "numbro"
 import { SmallButton } from "modules/common/SmallButton"
-import { ReactComponent as DownloadCSVIcon } from "assets/img/download_csv.svg"
+import DownloadCSVIcon from "assets/img/download_csv.svg?react"
 import { mkConfig, generateCsv, download, asString } from "export-to-csv"
 import { useNotification } from "modules/common/hooks/useNotification"
 

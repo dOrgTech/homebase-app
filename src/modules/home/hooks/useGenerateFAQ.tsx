@@ -11,7 +11,7 @@ export const useGenerateFAQ = () => {
   const [faqList, setFaqList] = useState<{ question: string; answer: string }[]>([])
 
   useEffect(() => {
-    import(`../utils/${FILE_NAME}`)
+    import(`../utils/faq.md`)
       .then(res => {
         fetch(res.default)
           .then(res => res.text())

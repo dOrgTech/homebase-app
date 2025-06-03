@@ -1,5 +1,5 @@
 import { AppBar, Box, Button, Grid, Link, styled, Theme, Toolbar, Typography } from "@material-ui/core"
-import HomeButton from "assets/logos/homebase_logo.svg"
+import HomeButton from "assets/logos/homebase_logo.svg?react"
 import hexToRgba from "hex-to-rgba"
 import React from "react"
 import { MainButton } from "../common/MainButton"

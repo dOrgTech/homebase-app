@@ -9,11 +9,11 @@ import {
   withStyles,
   makeStyles
 } from "@material-ui/core"
-import { ReactComponent as HouseIcon } from "assets/logos/home.svg"
-import { ReactComponent as VotingIcon } from "assets/logos/voting.svg"
-import { ReactComponent as TreasuryIcon } from "assets/logos/treasury.svg"
-import { ReactComponent as RegistryIcon } from "assets/logos/list.svg"
-import { ReactComponent as UserIcon } from "assets/logos/user.svg"
+import HouseIcon from "assets/logos/home.svg?react"
+import VotingIcon from "assets/logos/voting.svg?react"
+import TreasuryIcon from "assets/logos/treasury.svg?react"
+import RegistryIcon from "assets/logos/list.svg?react"
+import UserIcon from "assets/logos/user.svg?react"
 import React, { useEffect, useState } from "react"
 import { useDAOID } from "../pages/DAO/router"
 import { useDAO } from "services/services/dao/hooks/useDAO"

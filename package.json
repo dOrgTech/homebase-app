@@ -4,11 +4,10 @@
   "license": "MIT",
   "scripts": {
     "start": "serve -s build",
-    "dev": "craco start",
-    "build": "craco build && echo '/* /index.html 200' | cat >build/_redirects ",
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "test": "craco test",
-    "eject": "craco eject",
+    "dev": "vite",
+    "build": "vite build && echo '/* /index.html 200' | cat >build/_redirects ",
+    "preview": "vite preview",
+    "analyze": "source-map-explorer 'build/assets/*.js'",
     "lint:ci": "eslint --color 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:check": "eslint --quiet 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
@@ -17,7 +16,6 @@
   "dependencies": {
     "@airgap/beacon-sdk": "^4.2.2",
     "@airgap/beacon-types": "^4.2.2",
-    "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^2.8.1",
@@ -76,7 +74,6 @@
     "react-query": "^3.13.0",
     "react-router-dom": "^5.2.0",
     "react-router-hash-link": "^2.4.3",
-    "react-scripts": "^5.0.1",
     "react-simple-code-editor": "^0.11.2",
     "react-spring-bottom-sheet": "^3.4.0",
     "rehype-raw": "^6.1.1",
@@ -103,6 +100,8 @@
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.5.1",
+    "buffer": "^6.0.3",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -116,7 +115,10 @@
     "prettier": "^2.2.0",
     "source-map-explorer": "2.5.2",
     "ts-jest": "^29.1.4",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vite": "^6.3.5",
+    "vite-plugin-node-polyfills": "^0.23.0",
+    "vite-plugin-svgr": "^4.3.0"
   },
   "resolutions": {
     "@types/react": "~17.0.3",

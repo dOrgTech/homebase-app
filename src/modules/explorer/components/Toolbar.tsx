@@ -12,7 +12,7 @@ import {
   Theme
 } from "@material-ui/core"
 
-import HomeButton from "assets/logos/homebase-logo.svg"
+import HomeButton from "assets/logos/homebase-logo.svg?react"
 import { toShortAddress } from "services/contracts/utils"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ChangeNetworkButton } from "./ChangeNetworkButton"

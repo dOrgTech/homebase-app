@@ -1,5 +1,5 @@
 import React from "react"
-import "App.css"
+import "./App.css"
 import { withLDProvider } from "launchdarkly-react-client-sdk"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
 import mixpanel from "mixpanel-browser"

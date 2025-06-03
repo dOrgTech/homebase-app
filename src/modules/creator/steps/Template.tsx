@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from "react"
 import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles, Tooltip } from "@material-ui/core"
 import { useHistory } from "react-router"
 
-import { ReactComponent as LiteIcon } from "assets/img/lite-dao.svg"
-import { ReactComponent as FullIcon } from "assets/img/full-dao.svg"
+import LiteIcon from "assets/img/lite-dao.svg?react"
+import FullIcon from "assets/img/full-dao.svg?react"
 
 import { ActionTypes, CreatorContext, DAOTemplate } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"

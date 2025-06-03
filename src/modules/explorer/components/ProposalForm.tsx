@@ -26,7 +26,7 @@ import { ProposalFormInput } from "./ProposalFormInput"
 import { ProposalFormResponsiveDialog } from "./ResponsiveDialog"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import CloseButton from "modules/common/CloseButton"
-import { ReactComponent as SwapIcon } from "assets/img/swap.svg"
+import SwapIcon from "assets/img/swap.svg?react"
 
 const CustomContainer = styled(Grid)({
   padding: "42px 54px 0px 54px"

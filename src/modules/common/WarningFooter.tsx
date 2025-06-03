@@ -1,6 +1,6 @@
 import { Box, Grid, IconButton, Typography, styled } from "@material-ui/core"
 import React, { useEffect, useState } from "react"
-import { ReactComponent as WarningIcon } from "assets/logos/warning.svg"
+import WarningIcon from "assets/logos/warning.svg?react"
 import CloseIcon from "@material-ui/icons/Close"
 import hexToRgba from "hex-to-rgba"
 

@@ -6,7 +6,7 @@ import { CreatorBadge } from "./CreatorBadge"
 import { FileCopyOutlined } from "@material-ui/icons"
 import { Poll } from "models/Polls"
 import dayjs from "dayjs"
-import LinkIcon from "assets/img/link.svg"
+import LinkIcon from "assets/img/link.svg?react"
 
 import { useNotification } from "modules/common/hooks/useNotification"
 import ReactHtmlParser from "react-html-parser"
