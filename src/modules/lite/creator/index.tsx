@@ -518,7 +518,18 @@ export const CommunityCreator: React.FC = () => {
 
         try {
           const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
-          const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+          let publicKey: string | undefined
+          try {
+            const activeAccount = await wallet?.client.getActiveAccount()
+            publicKey = activeAccount?.publicKey
+          } catch (error) {
+            console.warn("Could not get active account, proceeding without public key:", error)
+            return openNotification({
+              message: "Could not get active account, please try again later",
+              autoHideDuration: 3000,
+              variant: "error"
+            })
+          }
           if (!signature) {
             openNotification({
               message: `Issue with Signature`,

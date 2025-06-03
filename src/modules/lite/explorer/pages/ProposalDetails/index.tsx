@@ -70,7 +70,7 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
 
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const navigate = useHistory()
-  const { network, account, wallet, etherlink } = useTezos()
+  const { network, account, wallet, etherlink, getPublicKey } = useTezos()
   const openNotification = useNotification()
   const [refresh, setRefresh] = useState<number>()
   const community = useCommunity(id)
@@ -123,11 +123,11 @@ export const ProposalDetails: React.FC<{ id: string }> = ({ id }) => {
   const saveVote = async () => {
     if (wallet) {
       try {
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const publicKey = await getPublicKey()
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(votesData))
-        if (!signature) {
+        if (!signature || !publicKey) {
           openNotification({
-            message: `Issue with Signature`,
+            message: `Issue with Signature or Public Key`,
             autoHideDuration: 3000,
             variant: "error"
           })

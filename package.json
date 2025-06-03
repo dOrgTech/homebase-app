@@ -5,7 +5,7 @@
   "scripts": {
     "start": "serve -s build",
     "dev": "craco start",
-    "build": "craco build && echo '/* /index.html 200' | cat >build/_redirects ",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' craco build && echo '/* /index.html 200' | cat >build/_redirects ",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "test": "playwright test --project=chromium",
     "test:ui": "playwright test --ui",
@@ -32,12 +32,12 @@
     "@mui/material": "^5.14.14",
     "@mui/x-date-pickers": "^5.0.2",
     "@tanstack/react-query": "^5.59.13",
-    "@taquito/beacon-wallet": "^20.0.0",
-    "@taquito/signer": "^20.0.0",
-    "@taquito/taquito": "^20.0.0",
-    "@taquito/tzip12": "^20.0.0",
-    "@taquito/tzip16": "^20.0.0",
-    "@taquito/utils": "^20.0.0",
+    "@taquito/beacon-wallet": "^22.0.0",
+    "@taquito/signer": "^22.0.0",
+    "@taquito/taquito": "^22.0.0",
+    "@taquito/tzip12": "^22.0.0",
+    "@taquito/tzip16": "^22.0.0",
+    "@taquito/utils": "^22.0.0",
     "@types/mixpanel-browser": "^2.35.7",
     "@types/prismjs": "^1.26.0",
     "@types/react-paginate": "^7.1.2",
@@ -125,14 +125,14 @@
   "resolutions": {
     "@types/react": "~17.0.3",
     "react-error-overlay": "6.0.9",
-    "@walletconnect/core": "2.14.0",
-    "@walletconnect/types": "2.14.0",
-    "@walletconnect/utils": "2.14.0"
+    "@walletconnect/core": "2.18.0",
+    "@walletconnect/types": "2.18.0",
+    "@walletconnect/utils": "2.18.0"
   },
   "overrides": {
-    "@walletconnect/core": "2.14.0",
-    "@walletconnect/types": "2.14.0",
-    "@walletconnect/utils": "2.14.0"
+    "@walletconnect/core": "2.18.0",
+    "@walletconnect/types": "2.18.0",
+    "@walletconnect/utils": "2.18.0"
   },
   "eslintConfig": {
     "extends": [
