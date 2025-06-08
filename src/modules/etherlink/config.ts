@@ -9,7 +9,7 @@ import { EvmDaoTemplate } from "./creator/EvmDaoTemplate"
 export const STEPS = [
   { title: "DAO Template", index: 0, path: "template", component: EvmDaoTemplate },
   { title: "DAO Basics", index: 1, path: "dao", component: EvmDaoBasics },
-  { title: "Proposals & Voting", index: 2, path: "voting", component: EvmDaoVoting },
+  { title: "Durations", index: 2, path: "voting", component: EvmDaoVoting },
   { title: "Quorum", index: 3, path: "quorum", component: EvmDaoQuorum },
   { title: "Membership", index: 4, path: "membership", component: EvmDaoMembership },
   { title: "Registry", index: 5, path: "registry", component: EvmDaoRegistry },

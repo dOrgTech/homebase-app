@@ -30,6 +30,7 @@ interface EvmDaoCreateStore {
   }
 }
 
+const homebaseNetwork = localStorage.getItem("homebase:network")
 const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
   persist(
     (set, get) => ({
@@ -43,23 +44,23 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
         governanceToken: {
           address: "",
           symbol: "",
-          tokenDecimals: 0
+          tokenDecimals: 4
         },
         quorum: {
-          returnedTokenPercentage: 0,
-          proposalThresholdPercentage: 0
+          returnedTokenPercentage: 12,
+          proposalThresholdPercentage: 1
         },
         members: [{ address: "", amountOfTokens: 0 }],
         voting: {
           votingBlocksDay: 0,
-          votingBlocksHours: 0,
-          votingBlocksMinutes: 0,
-          proposalFlushBlocksDay: 0,
+          votingBlocksHours: homebaseNetwork?.includes("mainnet") ? 12 : 0,
+          votingBlocksMinutes: homebaseNetwork?.includes("testnet") ? 3 : 0,
+          proposalFlushBlocksDay: homebaseNetwork?.includes("mainnet") ? 4 : 0,
           proposalFlushBlocksHours: 0,
-          proposalFlushBlocksMinutes: 0,
+          proposalFlushBlocksMinutes: homebaseNetwork?.includes("testnet") ? 10 : 0,
           proposalExpiryBlocksDay: 0,
-          proposalExpiryBlocksHours: 0,
-          proposalExpiryBlocksMinutes: 0
+          proposalExpiryBlocksHours: homebaseNetwork?.includes("mainnet") ? 6 : 0,
+          proposalExpiryBlocksMinutes: homebaseNetwork?.includes("testnet") ? 1 : 0
         },
         registry: {}
       },
