@@ -338,7 +338,6 @@ const useEvmDaoCreateStore = () => {
           proposalThresholdType: typeof proposalThreshold,
           proposalThresholdAsBigInt: BigInt(proposalThreshold || 0).toString()
         })
-
         const wrappedDaoPayload = isUsingFallbackAddress
           ? {
               // Legacy structure without wrappedTokenName
@@ -349,7 +348,7 @@ const useEvmDaoCreateStore = () => {
               underlyingTokenAddress: daoData.underlyingTokenAddress,
               minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
               minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
-              proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
+              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
               quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
               keys: Object.keys(daoData.registry || {}),
               values: Object.values(daoData.registry || {}).map(v => String(v))
@@ -364,7 +363,7 @@ const useEvmDaoCreateStore = () => {
               underlyingTokenAddress: daoData.underlyingTokenAddress,
               minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
               minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
-              proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
+              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
               quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
               keys: Object.keys(daoData.registry || {}),
               values: Object.values(daoData.registry || {}).map(v => String(v))
