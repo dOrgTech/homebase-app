@@ -6,15 +6,11 @@
       "args": [
         {
           "prim": "nat",
-          "annots": [
-            "%agora_post_id"
-          ]
+          "annots": ["%agora_post_id"]
         },
         {
           "prim": "list",
-          "annots": [
-            "%registry_diff"
-          ],
+          "annots": ["%registry_diff"],
           "args": [
             {
               "prim": "pair",
@@ -38,30 +34,22 @@
     },
     {
       "prim": "list",
-      "annots": [
-        "%transfers"
-      ],
+      "annots": ["%transfers"],
       "args": [
         {
           "prim": "or",
           "args": [
             {
               "prim": "pair",
-              "annots": [
-                "%xtz_transfer_type"
-              ],
+              "annots": ["%xtz_transfer_type"],
               "args": [
                 {
                   "prim": "mutez",
-                  "annots": [
-                    "%amount"
-                  ]
+                  "annots": ["%amount"]
                 },
                 {
                   "prim": "address",
-                  "annots": [
-                    "%recipient"
-                  ]
+                  "annots": ["%recipient"]
                 }
               ]
             },
@@ -70,57 +58,41 @@
               "args": [
                 {
                   "prim": "pair",
-                  "annots": [
-                    "%token_transfer_type"
-                  ],
+                  "annots": ["%token_transfer_type"],
                   "args": [
                     {
                       "prim": "address",
-                      "annots": [
-                        "%contract_address"
-                      ]
+                      "annots": ["%contract_address"]
                     },
                     {
                       "prim": "list",
-                      "annots": [
-                        "%transfer_list"
-                      ],
+                      "annots": ["%transfer_list"],
                       "args": [
                         {
                           "prim": "pair",
                           "args": [
                             {
                               "prim": "address",
-                              "annots": [
-                                "%from_"
-                              ]
+                              "annots": ["%from_"]
                             },
                             {
                               "prim": "list",
-                              "annots": [
-                                "%txs"
-                              ],
+                              "annots": ["%txs"],
                               "args": [
                                 {
                                   "prim": "pair",
                                   "args": [
                                     {
                                       "prim": "address",
-                                      "annots": [
-                                        "%to_"
-                                      ]
+                                      "annots": ["%to_"]
                                     },
                                     {
                                       "prim": "nat",
-                                      "annots": [
-                                        "%token_id"
-                                      ]
+                                      "annots": ["%token_id"]
                                     },
                                     {
                                       "prim": "nat",
-                                      "annots": [
-                                        "%amount"
-                                      ]
+                                      "annots": ["%amount"]
                                     }
                                   ]
                                 }
@@ -134,45 +106,31 @@
                 },
                 {
                   "prim": "pair",
-                  "annots": [
-                    "%legacy_token_transfer_type"
-                  ],
+                  "annots": ["%legacy_token_transfer_type"],
                   "args": [
                     {
                       "prim": "address",
-                      "annots": [
-                        "%contract_address"
-                      ]
+                      "annots": ["%contract_address"]
                     },
                     {
                       "prim": "pair",
-                      "annots": [
-                        "%transfer"
-                      ],
+                      "annots": ["%transfer"],
                       "args": [
                         {
                           "prim": "address",
-                          "annots": [
-                            "%from"
-                          ]
+                          "annots": ["%from"]
                         },
                         {
                           "prim": "pair",
-                          "annots": [
-                            "%target"
-                          ],
+                          "annots": ["%target"],
                           "args": [
                             {
                               "prim": "address",
-                              "annots": [
-                                "%to"
-                              ]
+                              "annots": ["%to"]
                             },
                             {
                               "prim": "nat",
-                              "annots": [
-                                "%value"
-                              ]
+                              "annots": ["%value"]
                             }
                           ]
                         }

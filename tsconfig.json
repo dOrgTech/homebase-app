@@ -2,12 +2,8 @@
   "compilerOptions": {
     "target": "es2019",
     "baseUrl": "./src",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-      ],
-    "types" : ["node", "lodash", "react"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["node", "lodash", "react"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -22,11 +18,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "react": [ "./node_modules/@types/react" ]
+      "react": ["./node_modules/@types/react"]
     }
   },
-  "include": [
-    "src/global.d.ts",
-    "src",
-  ]
+  "include": ["src/global.d.ts", "src"]
 }

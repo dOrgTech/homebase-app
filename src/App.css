@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: #1C1F23;
+  background: #1c1f23;
 }
 
 a {
@@ -13,7 +13,7 @@ a {
 
 [data-rsbs-overlay],
 [data-rsbs-root]:after {
-  background: #1C1F23;
+  background: #1c1f23;
   z-index: 1000001;
   max-height: 90vh;
 }

@@ -2,7 +2,6 @@
 
 Thank you for your interest in contributing to tezos homebase, a web app that allows anyone to create and manage DAOs on Tezos. We welcome and appreciate any contributions, whether it is code, documentation, design, feedback, or ideas.
 
-
 ## How to contribute
 
 There are many ways you can contribute to our project:

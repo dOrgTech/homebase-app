@@ -19,6 +19,52 @@ interface Member {
 export const EvmDaoMembership = () => {
   const { data, setFieldValue } = useEvmDaoCreateStore()
   const members = data.members as Member[]
+  const isWrappedToken = data.tokenDeploymentMechanism === "wrapped"
+
+  // If wrapped token is selected, show a message instead
+  if (isWrappedToken) {
+    return (
+      <Box>
+        <TitleBlock
+          title="Initial Members"
+          description={
+            <DescriptionText variant="subtitle1">
+              When using wrapped tokens, initial members cannot be specified during DAO creation.
+            </DescriptionText>
+          }
+        />
+        <Box
+          style={{
+            width: "100%",
+            margin: "40px 0px",
+            padding: "24px",
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
+            borderRadius: "8px",
+            border: "1px solid rgba(255, 255, 255, 0.1)"
+          }}
+        >
+          <Typography variant="h6" style={{ color: "white", marginBottom: "16px" }}>
+            Wrapped Token Distribution
+          </Typography>
+          <Typography variant="body1" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "12px" }}>
+            Since you're wrapping an existing ERC20 token:
+          </Typography>
+          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "8px" }}>
+            • The wrapped token will start with 0 initial supply
+          </Typography>
+          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "8px" }}>
+            • Token holders must wrap their existing tokens after DAO deployment
+          </Typography>
+          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)", marginBottom: "8px" }}>
+            • Voting power will be delegated automatically when tokens are wrapped
+          </Typography>
+          <Typography variant="body2" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
+            • Users can unwrap tokens at any time to retrieve their original tokens
+          </Typography>
+        </Box>
+      </Box>
+    )
+  }
 
   const handleMemberChange = (index: number, field: keyof Member, value: string) => {
     const newMembers = [...members]
