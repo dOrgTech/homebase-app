@@ -6,6 +6,8 @@ import { persist, createJSONStorage } from "zustand/middleware"
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
 import HbWrapperAbi from "assets/abis/hb_wrapper.json"
+import HbWrapperWAbi from "assets/abis/hb_wrapper_w.json"
+import HbWrapperWLegacyAbi from "assets/abis/hb_wrapper_w_legacy.json"
 
 import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -43,6 +45,7 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
         tokenDeploymentMechanism: "new",
         wrappedTokenSymbol: "",
         wrappedTokenName: "",
+        underlyingTokenAddress: "",
         governanceToken: {
           address: "",
           symbol: "",
@@ -243,18 +246,27 @@ const useEvmDaoCreateStore = () => {
         throw new Error("Wallet not connected. Please connect your wallet.")
       }
 
+      // Use legacy ABI if using the fallback address
+      const isUsingFallbackAddress = selectedWrapperAddress === "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2"
+      const selectedAbi =
+        daoData.tokenDeploymentMechanism === "wrapped"
+          ? isUsingFallbackAddress
+            ? HbWrapperWLegacyAbi.abi
+            : HbWrapperWAbi.abi
+          : HbWrapperAbi.abi
+
       console.log("Creating wrapper factory with:", {
         address: selectedWrapperAddress,
-        hasAbi: !!HbWrapperAbi.abi,
-        abiLength: HbWrapperAbi.abi?.length,
-        hasSigner: !!etherlink.signer
+        tokenDeploymentMechanism: daoData.tokenDeploymentMechanism,
+        hasAbi: !!selectedAbi,
+        abiLength: selectedAbi?.length,
+        hasSigner: !!etherlink.signer,
+        usingWrappedAbi: daoData.tokenDeploymentMechanism === "wrapped",
+        isUsingFallbackAddress,
+        usingLegacyAbi: isUsingFallbackAddress && daoData.tokenDeploymentMechanism === "wrapped"
       })
 
-      const wrapperFactory: ethers.Contract = new ethers.Contract(
-        selectedWrapperAddress,
-        HbWrapperAbi.abi,
-        etherlink.signer
-      )
+      const wrapperFactory: ethers.Contract = new ethers.Contract(selectedWrapperAddress, selectedAbi, etherlink.signer)
 
       console.log("Wrapper factory created:", {
         address: wrapperFactory.address || wrapperFactory.target,
@@ -280,21 +292,45 @@ const useEvmDaoCreateStore = () => {
           valueTypes: registryValues.map(v => typeof v)
         })
 
-        const wrappedDaoPayload = {
-          daoName: daoData.name || "",
-          wrappedTokenName: `Wrapped ${daoData.wrappedTokenSymbol || "Token"}`,
-          wrappedTokenSymbol: daoData.wrappedTokenSymbol || "",
-          description: daoData.description || "",
-          executionDelay: Math.floor(executationDelayinSeconds),
-          underlyingTokenAddress: daoData.underlyingTokenAddress,
-          minsVotingDelay: BigInt(Math.min(Math.max(parseInt(votingDelayInMinutes), 0), 2 ** 48 - 1)), // uint48
-          minsVotingPeriod: BigInt(Math.min(Math.max(parseInt(votingDurationInMinutes), 0), 2 ** 32 - 1)), // uint32
-          proposalThreshold: BigInt(isNaN(proposalThreshold) ? 0 : Math.max(Number(proposalThreshold), 0)), // uint256
-          quorumFraction: BigInt(isNaN(quorumThreshold) ? 0 : Math.min(Math.max(Number(quorumThreshold), 0), 100)), // uint256
-          keys: Object.keys(daoData.registry),
-          values: Object.values(daoData.registry)
-        }
+        const wrappedDaoPayload = isUsingFallbackAddress
+          ? {
+              // Legacy structure without wrappedTokenName
+              daoName: daoData.name || "",
+              wrappedTokenSymbol: daoData.wrappedTokenSymbol || "",
+              description: daoData.description || "",
+              executionDelay: Math.floor(executationDelayinSeconds),
+              underlyingTokenAddress: daoData.underlyingTokenAddress,
+              minsVotingDelay: Math.min(Math.max(parseInt(votingDelayInMinutes), 0), 2 ** 48 - 1), // uint48
+              minsVotingPeriod: Math.min(Math.max(parseInt(votingDurationInMinutes), 0), 2 ** 32 - 1), // uint32
+              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
+              quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
+              keys: Object.keys(daoData.registry || {}),
+              values: Object.values(daoData.registry || {}).map(v => String(v))
+            }
+          : {
+              // New structure with wrappedTokenName
+              daoName: daoData.name || "",
+              wrappedTokenName: `Wrapped ${daoData.wrappedTokenSymbol || "Token"}`,
+              wrappedTokenSymbol: daoData.wrappedTokenSymbol || "",
+              description: daoData.description || "",
+              executionDelay: Math.floor(executationDelayinSeconds),
+              underlyingTokenAddress: daoData.underlyingTokenAddress,
+              minsVotingDelay: Math.min(Math.max(parseInt(votingDelayInMinutes), 0), 2 ** 48 - 1), // uint48
+              minsVotingPeriod: Math.min(Math.max(parseInt(votingDurationInMinutes), 0), 2 ** 32 - 1), // uint32
+              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
+              quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
+              keys: Object.keys(daoData.registry || {}),
+              values: Object.values(daoData.registry || {}).map(v => String(v))
+            }
         console.log("Deploying wrapped token DAO with payload:", wrappedDaoPayload)
+        console.log("Payload details:", {
+          hasUnderlyingAddress: !!wrappedDaoPayload.underlyingTokenAddress,
+          underlyingAddress: wrappedDaoPayload.underlyingTokenAddress,
+          wrappedSymbol: wrappedDaoPayload.wrappedTokenSymbol,
+          wrappedName: wrappedDaoPayload.wrappedTokenName,
+          registryKeysLength: wrappedDaoPayload.keys.length,
+          registryValuesLength: wrappedDaoPayload.values.length
+        })
 
         try {
           wrapper = await wrapperFactory.deployDAOwithWrappedToken(wrappedDaoPayload)
