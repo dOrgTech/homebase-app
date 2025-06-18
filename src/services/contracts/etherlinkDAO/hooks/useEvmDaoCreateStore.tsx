@@ -53,7 +53,8 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
         },
         quorum: {
           returnedTokenPercentage: 0,
-          proposalThresholdPercentage: 0
+          proposalThresholdPercentage: 0,
+          proposalThreshold: 0
         },
         members: [{ address: "", amountOfTokens: 0 }],
         voting: {
@@ -174,48 +175,72 @@ const useEvmDaoCreateStore = () => {
     console.log("Full DAO Data:", daoData)
 
     try {
-      const proposalThreshold = daoData.quorum.proposalThresholdPercentage
+      const proposalThreshold = daoData.quorum.proposalThreshold || daoData.quorum.proposalThresholdPercentage || 0
       const quorumThreshold = daoData.quorum.returnedTokenPercentage
 
       console.log("Quorum settings:", {
         proposalThreshold,
         quorumThreshold,
-        rawQuorum: daoData.quorum
+        rawQuorum: daoData.quorum,
+        proposalThresholdField: daoData.quorum.proposalThreshold,
+        proposalThresholdPercentageField: daoData.quorum.proposalThresholdPercentage
       })
+
+      // Convert execution delay values to numbers
+      const executionDelayDays = Number(daoData.voting.proposalExpiryBlocksDay) || 0
+      const executionDelayHours = Number(daoData.voting.proposalExpiryBlocksHours) || 0
+      const executionDelayMinutes = Number(daoData.voting.proposalExpiryBlocksMinutes) || 0
 
       const executationDelayinSeconds =
-        daoData.voting.proposalExpiryBlocksDay * 24 * 60 * 60 +
-        daoData.voting.proposalExpiryBlocksHours * 60 * 60 +
-        daoData.voting.proposalExpiryBlocksMinutes * 60
+        executionDelayDays * 24 * 60 * 60 + executionDelayHours * 60 * 60 + executionDelayMinutes * 60
 
       console.log("Execution delay calculation:", {
-        days: daoData.voting.proposalExpiryBlocksDay,
-        hours: daoData.voting.proposalExpiryBlocksHours,
-        minutes: daoData.voting.proposalExpiryBlocksMinutes,
-        totalSeconds: executationDelayinSeconds
+        days: executionDelayDays,
+        hours: executionDelayHours,
+        minutes: executionDelayMinutes,
+        totalSeconds: executationDelayinSeconds,
+        originalValues: {
+          days: daoData.voting.proposalExpiryBlocksDay,
+          hours: daoData.voting.proposalExpiryBlocksHours,
+          minutes: daoData.voting.proposalExpiryBlocksMinutes
+        }
       })
 
-      const votingDelayInMinutes =
-        daoData.voting.votingBlocksDay * 24 * 60 +
-        daoData.voting.votingBlocksHours * 60 +
-        daoData.voting.votingBlocksMinutes
+      // Convert all values to numbers to avoid string concatenation
+      const votingDelayDays = Number(daoData.voting.votingBlocksDay) || 0
+      const votingDelayHours = Number(daoData.voting.votingBlocksHours) || 0
+      const votingDelayMinutes = Number(daoData.voting.votingBlocksMinutes) || 0
+
+      const votingDelayInMinutes = votingDelayDays * 24 * 60 + votingDelayHours * 60 + votingDelayMinutes
 
       console.log("Voting delay calculation:", {
-        days: daoData.voting.votingBlocksDay,
-        hours: daoData.voting.votingBlocksHours,
-        minutes: daoData.voting.votingBlocksMinutes,
-        totalMinutes: votingDelayInMinutes
+        days: votingDelayDays,
+        hours: votingDelayHours,
+        minutes: votingDelayMinutes,
+        totalMinutes: votingDelayInMinutes,
+        originalValues: {
+          days: daoData.voting.votingBlocksDay,
+          hours: daoData.voting.votingBlocksHours,
+          minutes: daoData.voting.votingBlocksMinutes,
+          types: {
+            days: typeof daoData.voting.votingBlocksDay,
+            hours: typeof daoData.voting.votingBlocksHours,
+            minutes: typeof daoData.voting.votingBlocksMinutes
+          }
+        }
       })
 
-      const votingDurationInMinutes =
-        daoData.voting.proposalFlushBlocksDay * 24 * 60 +
-        daoData.voting.proposalFlushBlocksHours * 60 +
-        daoData.voting.proposalFlushBlocksMinutes
+      // Convert voting duration values
+      const votingDurationDays = Number(daoData.voting.proposalFlushBlocksDay) || 0
+      const votingDurationHours = Number(daoData.voting.proposalFlushBlocksHours) || 0
+      const votingDurationMinutes = Number(daoData.voting.proposalFlushBlocksMinutes) || 0
+
+      const votingDurationInMinutes = votingDurationDays * 24 * 60 + votingDurationHours * 60 + votingDurationMinutes
 
       console.log("Voting duration calculation:", {
-        days: daoData.voting.proposalFlushBlocksDay,
-        hours: daoData.voting.proposalFlushBlocksHours,
-        minutes: daoData.voting.proposalFlushBlocksMinutes,
+        days: votingDurationDays,
+        hours: votingDurationHours,
+        minutes: votingDurationMinutes,
         totalMinutes: votingDurationInMinutes
       })
 
@@ -274,6 +299,22 @@ const useEvmDaoCreateStore = () => {
         hasDeployDAOwithWrappedToken: typeof wrapperFactory.deployDAOwithWrappedToken === "function"
       })
 
+      // Validate timing values before deployment
+      if (isNaN(votingDelayInMinutes) || votingDelayInMinutes < 0) {
+        console.error("Invalid voting delay:", votingDelayInMinutes)
+        throw new Error("Invalid voting delay value. Please check your input.")
+      }
+
+      if (isNaN(votingDurationInMinutes) || votingDurationInMinutes < 0) {
+        console.error("Invalid voting duration:", votingDurationInMinutes)
+        throw new Error("Invalid voting duration value. Please check your input.")
+      }
+
+      if (isNaN(executationDelayinSeconds) || executationDelayinSeconds < 0) {
+        console.error("Invalid execution delay:", executationDelayinSeconds)
+        throw new Error("Invalid execution delay value. Please check your input.")
+      }
+
       setIsDeploying(true)
 
       let wrapper: any // This will be a TransactionResponse
@@ -292,6 +333,12 @@ const useEvmDaoCreateStore = () => {
           valueTypes: registryValues.map(v => typeof v)
         })
 
+        console.log("Preparing proposal threshold:", {
+          proposalThreshold,
+          proposalThresholdType: typeof proposalThreshold,
+          proposalThresholdAsBigInt: BigInt(proposalThreshold || 0).toString()
+        })
+
         const wrappedDaoPayload = isUsingFallbackAddress
           ? {
               // Legacy structure without wrappedTokenName
@@ -300,9 +347,9 @@ const useEvmDaoCreateStore = () => {
               description: daoData.description || "",
               executionDelay: Math.floor(executationDelayinSeconds),
               underlyingTokenAddress: daoData.underlyingTokenAddress,
-              minsVotingDelay: Math.min(Math.max(parseInt(votingDelayInMinutes), 0), 2 ** 48 - 1), // uint48
-              minsVotingPeriod: Math.min(Math.max(parseInt(votingDurationInMinutes), 0), 2 ** 32 - 1), // uint32
-              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
+              minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
+              minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
+              proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
               quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
               keys: Object.keys(daoData.registry || {}),
               values: Object.values(daoData.registry || {}).map(v => String(v))
@@ -315,9 +362,9 @@ const useEvmDaoCreateStore = () => {
               description: daoData.description || "",
               executionDelay: Math.floor(executationDelayinSeconds),
               underlyingTokenAddress: daoData.underlyingTokenAddress,
-              minsVotingDelay: Math.min(Math.max(parseInt(votingDelayInMinutes), 0), 2 ** 48 - 1), // uint48
-              minsVotingPeriod: Math.min(Math.max(parseInt(votingDurationInMinutes), 0), 2 ** 32 - 1), // uint32
-              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
+              minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
+              minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
+              proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
               quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
               keys: Object.keys(daoData.registry || {}),
               values: Object.values(daoData.registry || {}).map(v => String(v))
@@ -329,7 +376,10 @@ const useEvmDaoCreateStore = () => {
           wrappedSymbol: wrappedDaoPayload.wrappedTokenSymbol,
           wrappedName: wrappedDaoPayload.wrappedTokenName,
           registryKeysLength: wrappedDaoPayload.keys.length,
-          registryValuesLength: wrappedDaoPayload.values.length
+          registryValuesLength: wrappedDaoPayload.values.length,
+          proposalThresholdRaw: proposalThreshold,
+          proposalThresholdInPayload: wrappedDaoPayload.proposalThreshold,
+          proposalThresholdString: wrappedDaoPayload.proposalThreshold?.toString()
         })
 
         try {
