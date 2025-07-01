@@ -83,6 +83,7 @@ export const EvmUserPage = () => {
     useEvmDaoOps()
   const selfMember = daoMembers?.find((member: any) => member.address === signer?.address)
   console.log("selfMember", selfMember)
+  console.log("daoSelected[EvmUserPage]", daoSelected)
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance

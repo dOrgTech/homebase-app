@@ -1,7 +1,54 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
+import { ethers } from "ethers"
+import { EtherlinkContext } from "services/wagmi/context"
+
+import HbWrapperWAbi from "assets/abis/hb_wrapper_w.json"
 import { Box, styled, Typography, Tabs, Tab } from "@material-ui/core"
 import { Button } from "components/ui/Button"
 import { StyledTextField } from "components/ui/StyledTextField"
+import { useTezos } from "services/beacon/hooks/useTezos"
+
+const ERC20_ABI = [
+  {
+    constant: false,
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" }
+    ],
+    name: "approve",
+    outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  }
+]
+
+const wrapperContractAbiJson = [
+  {
+    constant: false,
+    inputs: [
+      { name: "account", type: "address" },
+      { name: "value", type: "uint256" }
+    ],
+    name: "depositFor",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: "account", type: "address" },
+      { name: "value", type: "uint256" }
+    ],
+    name: "withdrawTo",
+    outputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "function"
+  }
+]
 
 const WrapContainer = styled(Box)({
   background: "#1c2024",
@@ -23,14 +70,43 @@ const StyledTabs = styled(Tabs)({
   }
 })
 
-interface TokenBridgeProps {
-  baseTokenAddress: string
-  wrappedTokenAddress: string
-}
-
-export const TokenBridge = ({ baseTokenAddress, wrappedTokenAddress }: TokenBridgeProps) => {
+export const TokenBridge = () => {
   const [wrapTabValue, setWrapTabValue] = useState(0)
   const [wrapAmount, setWrapAmount] = useState("")
+  const [transactionState, setTransactionState] = useState("")
+  const [approvalTxHash, setApprovalTxHash] = useState<string | null>(null)
+  const [executionTxHash, setExecutionTxHash] = useState<string | null>(null)
+  const { etherlink } = useTezos()
+  const { daoSelected } = useContext(EtherlinkContext)
+
+  const wrapTokens = async () => {
+    setTransactionState("waitingApproval")
+    // Approval logic
+    const erc20Contract = new ethers.Contract(daoSelected.token, ERC20_ABI, etherlink.signer)
+    const tx1 = await erc20Contract.approve(daoSelected.token, wrapAmount)
+    setApprovalTxHash(tx1.hash)
+    setTransactionState("approving")
+    await tx1.wait()
+
+    // Wrap logic
+    setTransactionState("waitingExecution")
+    const wrapperContract = new ethers.Contract(daoSelected.token, wrapperContractAbiJson, etherlink.signer)
+    const tx2 = await wrapperContract.depositFor(etherlink.signer.address, wrapAmount)
+    setExecutionTxHash(tx2.hash)
+    setTransactionState("executing")
+    await tx2.wait()
+    setTransactionState("success")
+  }
+
+  const unwrapTokens = async () => {
+    setTransactionState("waitingExecution")
+    const wrapperContract = new ethers.Contract(daoSelected.token, wrapperContractAbiJson, etherlink.signer)
+    const tx = await wrapperContract.withdrawTo(etherlink.signer.address, wrapAmount)
+    setExecutionTxHash(tx.hash)
+    setTransactionState("executing")
+    await tx.wait()
+    setTransactionState("success")
+  }
 
   return (
     <Box>
@@ -42,7 +118,13 @@ export const TokenBridge = ({ baseTokenAddress, wrappedTokenAddress }: TokenBrid
       </Typography>
 
       <WrapContainer>
-        <StyledTabs value={wrapTabValue} onChange={(e, newValue) => setWrapTabValue(newValue)}>
+        <StyledTabs
+          value={wrapTabValue}
+          onChange={(e, newValue) => {
+            setWrapTabValue(newValue)
+            setTransactionState("")
+          }}
+        >
           <Tab label="Wrap" />
           <Tab label="Unwrap" />
         </StyledTabs>
@@ -60,12 +142,28 @@ export const TokenBridge = ({ baseTokenAddress, wrappedTokenAddress }: TokenBrid
 
           <Button
             variant="contained"
-            disabled={!wrapAmount || parseFloat(wrapAmount) <= 0}
+            disabled={
+              !wrapAmount ||
+              parseFloat(wrapAmount) <= 0 ||
+              transactionState === "waitingApproval" ||
+              transactionState === "approving" ||
+              transactionState === "waitingExecution" ||
+              transactionState === "executing"
+            }
             onClick={() => {
-              console.log(`${wrapTabValue === 0 ? "Wrap" : "Unwrap"} ${wrapAmount} tokens`)
+              if (wrapTabValue === 0) {
+                wrapTokens()
+              } else {
+                unwrapTokens()
+              }
             }}
           >
-            {wrapTabValue === 0 ? "Wrap Tokens" : "Unwrap Tokens"}
+            {transactionState === "waitingApproval" && "Waiting for Approval..."}
+            {transactionState === "approving" && "Approving..."}
+            {transactionState === "waitingExecution" && "Waiting for Execution..."}
+            {transactionState === "executing" && "Executing..."}
+            {transactionState === "success" && "Success!"}
+            {!transactionState && (wrapTabValue === 0 ? "Wrap Tokens" : "Unwrap Tokens")}
           </Button>
         </Box>
       </WrapContainer>
