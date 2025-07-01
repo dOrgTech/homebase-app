@@ -26,6 +26,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
 import { EtherlinkDAOCreatorRouter } from "modules/etherlink/router"
+import { TokenBridgeWidget } from "components/ui/TokenBridgeWidget"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -144,6 +145,9 @@ const App: React.FC = () => {
                       </Route>
                       <Route path="/faq">
                         <FAQ />
+                      </Route>
+                      <Route path="/bridge">
+                        <TokenBridgeWidget />
                       </Route>
                       <Redirect to="/explorer" />
                     </Switch>
