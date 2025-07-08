@@ -1140,11 +1140,11 @@ export const TokenBridge = () => {
   return (
     <Box>
       <WrapContainer>
-        <Typography variant="h5" style={{ marginBottom: "8px", color: "#fff" }}>
-          Token Bridge
+        <Typography variant="h5" style={{ marginBottom: "8px", color: "#fff", fontSize: "24px", fontWeight: 700 }}>
+          Convert {daoSelected?.symbol} &lt;&gt; underlying
         </Typography>
         <Typography style={{ marginBottom: "24px", color: "#9E9E9E" }}>
-          Use this bridge to wrap your underlying tokens into governance tokens, or unwrap them back.
+          Use this to wrap your underlying tokens into governance tokens, or unwrap them back.
         </Typography>
         <StyledTabs
           value={wrapTabValue}
@@ -1164,7 +1164,9 @@ export const TokenBridge = () => {
           <StyledTextField
             type="number"
             label="Amount"
-            placeholder={wrapTabValue === 0 ? "Amount to Wrap" : "Amount to Unwrap"}
+            placeholder={
+              wrapTabValue === 0 ? "Amount to Wrap (including decimals)" : "Amount to Unwrap (including decimals)"
+            }
             value={wrapAmount}
             onChange={e => setWrapAmount(e.target.value)}
             style={{ width: "100%", marginBottom: "16px" }}
