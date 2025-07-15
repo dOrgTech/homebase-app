@@ -1,10 +1,9 @@
 ---
 name: Issue
 about: This is our standard issue template for all contributors
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 **Name**

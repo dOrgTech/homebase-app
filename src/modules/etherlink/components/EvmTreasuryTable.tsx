@@ -82,15 +82,7 @@ export const EvmTreasuryTable = () => {
 
   const renderNFTView = () => (
     <div className={classes.nftGrid}>
-      {[
-        ...daoNfts,
-        {
-          id: 2
-        },
-        {
-          id: 3
-        }
-      ].map(nft => (
+      {[...daoNfts].map(nft => (
         <Card key={nft?.id} className={classes.nftCard}>
           <CardMedia
             className={classes.nftImage}

@@ -1,258 +1,399 @@
 {
-    "_format": "hh-sol-artifact-1",
-    "contractName": "WrapperContract",
-    "sourceName": "contracts/Factories.sol",
-    "abi": [
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "_tokenFactory",
-					"type": "address"
-				},
-				{
-					"internalType": "address",
-					"name": "_timelockFactory",
-					"type": "address"
-				},
-				{
-					"internalType": "address",
-					"name": "_daoFactory",
-					"type": "address"
-				}
-			],
-			"stateMutability": "nonpayable",
-			"type": "constructor"
-		},
-		{
-			"anonymous": false,
-			"inputs": [
-				{
-					"indexed": true,
-					"internalType": "address",
-					"name": "dao",
-					"type": "address"
-				},
-				{
-					"indexed": false,
-					"internalType": "address",
-					"name": "token",
-					"type": "address"
-				},
-				{
-					"indexed": false,
-					"internalType": "address[]",
-					"name": "initialMembers",
-					"type": "address[]"
-				},
-				{
-					"indexed": false,
-					"internalType": "uint256[]",
-					"name": "initialAmounts",
-					"type": "uint256[]"
-				},
-				{
-					"indexed": false,
-					"internalType": "string",
-					"name": "name",
-					"type": "string"
-				},
-				{
-					"indexed": false,
-					"internalType": "string",
-					"name": "symbol",
-					"type": "string"
-				},
-				{
-					"indexed": false,
-					"internalType": "string",
-					"name": "description",
-					"type": "string"
-				},
-				{
-					"indexed": false,
-					"internalType": "uint256",
-					"name": "executionDelay",
-					"type": "uint256"
-				},
-				{
-					"indexed": false,
-					"internalType": "address",
-					"name": "registry",
-					"type": "address"
-				},
-				{
-					"indexed": false,
-					"internalType": "string[]",
-					"name": "keys",
-					"type": "string[]"
-				},
-				{
-					"indexed": false,
-					"internalType": "string[]",
-					"name": "values",
-					"type": "string[]"
-				}
-			],
-			"name": "NewDaoCreated",
-			"type": "event"
-		},
-		{
-			"inputs": [
-				{
-					"components": [
-						{
-							"internalType": "string",
-							"name": "name",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "symbol",
-							"type": "string"
-						},
-						{
-							"internalType": "string",
-							"name": "description",
-							"type": "string"
-						},
-						{
-							"internalType": "uint8",
-							"name": "decimals",
-							"type": "uint8"
-						},
-						{
-							"internalType": "uint256",
-							"name": "executionDelay",
-							"type": "uint256"
-						},
-						{
-							"internalType": "address[]",
-							"name": "initialMembers",
-							"type": "address[]"
-						},
-						{
-							"internalType": "uint256[]",
-							"name": "initialAmounts",
-							"type": "uint256[]"
-						},
-						{
-							"internalType": "string[]",
-							"name": "keys",
-							"type": "string[]"
-						},
-						{
-							"internalType": "string[]",
-							"name": "values",
-							"type": "string[]"
-						},
-						{
-							"internalType": "bool",
-							"name": "transferrable",
-							"type": "bool"
-						}
-					],
-					"internalType": "struct WrapperContract.DaoParams",
-					"name": "params",
-					"type": "tuple"
-				}
-			],
-			"name": "deployDAOwithToken",
-			"outputs": [],
-			"stateMutability": "payable",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"name": "deployedDAOs",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"name": "deployedRegistries",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"name": "deployedTimelocks",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"name": "deployedTokens",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "",
-					"type": "address"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		{
-			"inputs": [],
-			"name": "getNumberOfDAOs",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
-		}
-	],
-    "linkReferences": {},
-    "deployedLinkReferences": {}
-  }
-  
+  "_format": "hh-sol-artifact-1",
+  "contractName": "WrapperContract",
+  "sourceName": "contracts/Factories.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokenFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_wrappedTokenFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_timelockFactory",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_daoFactory",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "dao",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "initialMembers",
+          "type": "address[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256[]",
+          "name": "initialAmounts",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "executionDelay",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "registry",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string[]",
+          "name": "keys",
+          "type": "string[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "string[]",
+          "name": "values",
+          "type": "string[]"
+        }
+      ],
+      "name": "NewDaoCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "dao",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "wrappedToken",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "underlyingToken",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "daoName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "wrappedTokenSymbol",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "executionDelay",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "registry",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string[]",
+          "name": "keys",
+          "type": "string[]"
+        },
+        {
+          "indexed": false,
+          "internalType": "string[]",
+          "name": "values",
+          "type": "string[]"
+        }
+      ],
+      "name": "NewWrappedDaoCreated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint8",
+              "name": "decimals",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "executionDelay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address[]",
+              "name": "initialMembers",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "initialAmounts",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "string[]",
+              "name": "keys",
+              "type": "string[]"
+            },
+            {
+              "internalType": "string[]",
+              "name": "values",
+              "type": "string[]"
+            },
+            {
+              "internalType": "bool",
+              "name": "transferrable",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct WrapperContract.DaoParams",
+          "name": "params",
+          "type": "tuple"
+        }
+      ],
+      "name": "deployDAOwithToken",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "daoName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "wrappedTokenSymbol",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "executionDelay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "underlyingTokenAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minsVotingDelay",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minsVotingPeriod",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "proposalThreshold",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "quorumFraction",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string[]",
+              "name": "keys",
+              "type": "string[]"
+            },
+            {
+              "internalType": "string[]",
+              "name": "values",
+              "type": "string[]"
+            }
+          ],
+          "internalType": "struct WrapperContract.WrappedDaoParams",
+          "name": "params",
+          "type": "tuple"
+        }
+      ],
+      "name": "deployDAOwithWrappedToken",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "deployedDAOs",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "deployedRegistries",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "deployedTimelocks",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "deployedTokens",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getNumberOfDAOs",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -9,6 +9,7 @@ import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useHistory } from "react-router-dom"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
+import { TokenBridge } from "modules/etherlink/bridge/TokenBridge"
 
 const StatsContainer = styled(Grid)({
   marginBottom: "40px",
@@ -82,6 +83,7 @@ export const EvmUserPage = () => {
     useEvmDaoOps()
   const selfMember = daoMembers?.find((member: any) => member.address === signer?.address)
   console.log("selfMember", selfMember)
+  console.log("daoSelected[EvmUserPage]", daoSelected)
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance
@@ -223,6 +225,10 @@ export const EvmUserPage = () => {
               </Grid>
             </Grid>
           </ResponsiveDialog>
+        </Grid>
+
+        <Grid item xs={12}>
+          <TokenBridge />
         </Grid>
 
         <Grid item xs={12} md={12}>
