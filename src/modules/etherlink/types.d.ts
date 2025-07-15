@@ -9,6 +9,7 @@ export interface IEvmFirebaseContract {
   registryFactory: IEthereumAddress
   // wrapper: IEthereumAddress // Not in use and deprecated
   wrapper_t: IEthereumAddress
+  wrapper_w: IEthereumAddress
 }
 
 export interface IEvmOffchainChoiceForVote {

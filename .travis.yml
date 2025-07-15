@@ -1,12 +1,12 @@
 language: node_js
 node_js:
-- 12
+  - 12
 cache: yarn
 before_script:
-- yarn
+  - yarn
 script:
-- yarn lint:check
-- yarn build
+  - yarn lint:check
+  - yarn build
 deploy:
   provider: heroku
   repo: dOrgTech/homebase-app
@@ -15,4 +15,4 @@ deploy:
   app:
     develop: homebase-dapp-staging
     master: homebase-dapp-production
-  skip_cleanup: 'true'
+  skip_cleanup: "true"
