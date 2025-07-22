@@ -2,7 +2,7 @@ import { useQuery } from "react-query"
 import { Network } from "services/beacon"
 import { getDAOs } from "services/services/dao/services"
 import { getLiteDAOs } from "../../lite/lite-services"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 
 export const useAllDAOs = (network: Network) => {
@@ -32,7 +32,11 @@ export const useAllDAOs = (network: Network) => {
           network: "Etherlink"
         })) || []
 
-      return [...homebase_daos, ...lite_daos, ...evm_daos]
+      if (network.includes("etherlink")) {
+        return [...homebase_daos, ...lite_daos, ...evm_daos]
+      }
+
+      return [...homebase_daos, ...lite_daos]
     },
     {
       enabled: !!(network && !isLoadingDaos)
