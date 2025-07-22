@@ -13,6 +13,7 @@ import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useNotification } from "modules/common/hooks/useNotification"
+import { ETHERLINK_CONSTANTS } from "modules/etherlink/constants"
 
 interface EvmDaoCreateStore {
   currentStep: number
@@ -165,7 +166,7 @@ const useEvmDaoCreateStore = () => {
   const history = useHistory()
   const { contractData } = useContext(EtherlinkContext)
   const wrapperAddress = contractData?.wrapper_t
-  const wrapperAddressForWrapped = contractData?.wrapper_w || "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2" // Fallback to known address
+  const wrapperAddressForWrapped = contractData?.wrapper_w || ETHERLINK_CONSTANTS.WRAPPER_W_FALLBACK_ADDRESS // Fallback to known address
   const { etherlink } = useTezos()
   const notify = useNotification()
 
@@ -272,7 +273,7 @@ const useEvmDaoCreateStore = () => {
       }
 
       // Use legacy ABI if using the fallback address
-      const isUsingFallbackAddress = selectedWrapperAddress === "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2"
+      const isUsingFallbackAddress = selectedWrapperAddress === ETHERLINK_CONSTANTS.WRAPPER_W_FALLBACK_ADDRESS
       const selectedAbi =
         daoData.tokenDeploymentMechanism === "wrapped"
           ? isUsingFallbackAddress
