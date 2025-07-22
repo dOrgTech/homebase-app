@@ -29,7 +29,6 @@ import { saveLiteProposal } from "services/services/lite/lite-services"
 import { isWebUri } from "valid-url"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "modules/explorer/pages/DAO/router"
-import { useUserTokenBalance } from "services/contracts/token/hooks/useUserTokenBalance"
 import CodeIcon from "@mui/icons-material/Code"
 import CodeOffIcon from "@mui/icons-material/CodeOff"
 import { ProposalCodeEditorInput } from "modules/explorer/components/ProposalFormInput"
@@ -706,7 +705,7 @@ const calculateEndTime = (days: number, hours: number, minutes: number) => {
 
 export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props => {
   const navigate = useHistory()
-  const { network, account, wallet, etherlink } = useTezos()
+  const { network, account, wallet, etherlink, getPublicKey } = useTezos()
   const openNotification = useNotification()
   const [isLoading, setIsLoading] = useState(false)
   const daoId = useDAOID()
@@ -743,10 +742,10 @@ export const ProposalCreator: React.FC<{ id?: string; onClose?: any }> = props =
           data.author = account
 
           const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(data))
-          const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
-          if (!signature) {
+          const publicKey = await getPublicKey()
+          if (!signature || !publicKey) {
             openNotification({
-              message: `Issue with Signature`,
+              message: `Issue with Signature or Public Key`,
               autoHideDuration: 3000,
               variant: "error"
             })

@@ -8,6 +8,7 @@ import { BeaconWallet } from "@taquito/beacon-wallet"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useNetwork } from "services/useNetwork"
 import { useChainId } from "wagmi"
+import { useNotification } from "modules/common/hooks/useNotification"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -17,6 +18,7 @@ type WalletConnectReturn = {
   account: string
   network: Network
   wallet: BeaconWallet | undefined
+  getPublicKey: () => Promise<string | null>
   etherlink: any
   isEtherlink: boolean
 }
@@ -27,6 +29,7 @@ export const useTezos = (): WalletConnectReturn => {
     dispatch
   } = useContext(TezosContext)
   const { setNetwork } = useNetwork()
+  const openNotification = useNotification()
 
   const {
     switchToNetwork,
@@ -194,6 +197,23 @@ export const useTezos = (): WalletConnectReturn => {
     changeNetwork: handleChangeNetwork,
     account,
     wallet,
+    getPublicKey: async () => {
+      let publicKey: string | undefined
+      try {
+        const activeAccount = await wallet?.client.getActiveAccount()
+        publicKey = activeAccount?.publicKey
+      } catch (error) {
+        console.warn("Could not get active account, proceeding without public key:", error)
+        publicKey = undefined
+        openNotification({
+          variant: "error",
+          message: "Could not get active account, proceeding without public key",
+          autoHideDuration: 3000
+        })
+        return null
+      }
+      return publicKey || null
+    },
     network,
     isEtherlink: network?.startsWith("etherlink"),
     etherlink: {
