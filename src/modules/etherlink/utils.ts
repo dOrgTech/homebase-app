@@ -32,11 +32,24 @@ export const validateEvmTokenAddress = (address: string) => {
 }
 
 export const getCallDataFromBytes = (bytes: any) => {
-  const cdBytes = bytes.toUint8Array()
-  const hexString = Array.from(cdBytes)
-    .map((byte: unknown) => (byte as number).toString(16).padStart(2, "0"))
-    .join("")
-  return `0x${hexString}`
+  // Handle case where bytes is already a hex string
+  if (typeof bytes === "string") {
+    // Ensure the string starts with '0x'
+    return bytes.startsWith("0x") ? bytes : `0x${bytes}`
+  }
+
+  // Handle case where bytes is an object with toUint8Array method
+  if (bytes && typeof bytes.toUint8Array === "function") {
+    const cdBytes = bytes.toUint8Array()
+    const hexString = Array.from(cdBytes)
+      .map((byte: unknown) => (byte as number).toString(16).padStart(2, "0"))
+      .join("")
+    return `0x${hexString}`
+  }
+
+  // If bytes is neither string nor has toUint8Array method, return a default value
+  console.warn("getCallDataFromBytes: Invalid input type", bytes)
+  return "0x"
 }
 
 export function parseTransactionHash(input: string): string {

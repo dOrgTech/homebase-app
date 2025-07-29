@@ -1,5 +1,7 @@
 # Tezos Homebase
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/88e8f42e-1d23-4459-abe3-7587738ff48f/deploy-status)](https://app.netlify.com/projects/tezos-homebase/deploys)
+
 [![](https://img.shields.io/badge/license-MIT-brightgreen)](LICENSE)
 
 Homebase is a platform designed to let users create and manage DAOs on the Tezos blockchain.
