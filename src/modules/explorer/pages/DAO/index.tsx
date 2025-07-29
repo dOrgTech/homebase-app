@@ -5,7 +5,6 @@ import { Grid, styled, Typography, useTheme, useMediaQuery, Avatar } from "@mate
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { useDAOID } from "./router"
 
-import { ContentContainer } from "../../components/ContentContainer"
 import { DAOStatsRow } from "../../components/DAOStatsRow"
 import { UsersTable } from "../../components/UsersTable"
 
@@ -13,6 +12,7 @@ import { SmallButton } from "../../../common/SmallButton"
 import { DaoSettingModal } from "./components/Settings"
 import SettingsIcon from "@mui/icons-material/Settings"
 import { SettingsDialog } from "./components/SettingsDialog"
+import { ContentContainer } from "components/ui/Table"
 import { IconButton } from "@mui/material"
 import { FileCopyOutlined } from "@material-ui/icons"
 

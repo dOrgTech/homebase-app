@@ -37,7 +37,7 @@ const OptionContainer = styled(Grid)(({ theme }) => ({
   "padding": "35px 42px",
   "marginBottom": 16,
   "cursor": "pointer",
-  "height": 110,
+  "height": 80,
   "&:hover:enabled": {
     background: theme.palette.secondary.dark,
     scale: 1.01,
@@ -214,6 +214,12 @@ const ProposalActionsDialogForTezos: React.FC<{
   const [openSupportedExecuteProposalModalKey, setOpenSupportedExecuteProposalModal] = useState<string>(
     defaultOpenSupportedExecuteProposalModal
   )
+  useEffect(() => {
+    if (queryType === "add-function") {
+      handleOpenCustomProposalModal(ProposalAction.new)
+    }
+  }, [handleOpenCustomProposalModal, queryType])
+
   useEffect(() => {
     if (queryType === "add-function") {
       handleOpenCustomProposalModal(ProposalAction.new)

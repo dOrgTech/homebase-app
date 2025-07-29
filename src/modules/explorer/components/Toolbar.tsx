@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, Grid, useTheme, useMediaQuery } from "@material-ui/core"
 
-import HomeButton from "assets/logos/homebase-logo.svg"
+import HomeButton from "assets/logos/homebase-logo.svg?react"
 import { NavigationMenu } from "modules/explorer/components/NavigationMenu"
 
 import { ToolbarAccount } from "modules/common/ToolbarAccount"

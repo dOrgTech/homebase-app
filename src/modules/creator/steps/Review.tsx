@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo } from "react"
 import { Button, Grid, Box, styled, Typography } from "@material-ui/core"
 import { useHistory } from "react-router-dom"
 
-import Rocket from "assets/img/rocket.svg"
+import Rocket from "assets/img/rocket.svg?react"
 import { useOriginate } from "services/contracts/baseDAO/hooks/useOriginate"
 import { getTokensInfo, CreatorContext, ActionTypes, MigrationParams, DeploymentMethod } from "modules/creator/state"
 import { MetadataCarrierParameters } from "services/contracts/metadataCarrier/types"

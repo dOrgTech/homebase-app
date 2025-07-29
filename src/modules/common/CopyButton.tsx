@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Box, Grid, styled, Tooltip, Typography } from "@material-ui/core"
-import DownloadIcon from "assets/img/download.svg"
+import DownloadIcon from "assets/img/download.svg?react"
 
 const CopyIcon = styled("img")({
   cursor: "pointer"

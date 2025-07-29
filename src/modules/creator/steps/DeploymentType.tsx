@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from "react"
 import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles, Link } from "@material-ui/core"
 import { useHistory } from "react-router"
 
-import { ReactComponent as ManagedIcon } from "assets/img/managed.svg"
-import { ReactComponent as SelfDeployedIcon } from "assets/img/self-deployed.svg"
+import ManagedIcon from "assets/img/managed.svg?react"
+import SelfDeployedIcon from "assets/img/self-deployed.svg?react"
 
 import { ActionTypes, CreatorContext, DeploymentMethod } from "modules/creator/state"
 import { TitleBlock } from "modules/common/TitleBlock"

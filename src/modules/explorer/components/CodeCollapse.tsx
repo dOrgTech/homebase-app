@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { Collapse, Grid, IconButton, Typography } from "@material-ui/core"
-
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { ProposalCodeEditorInput } from "./ProposalFormInput"
