@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "react-query"
 import { LambdaExecuteArgs } from "../lambdaDAO/types"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 import { networkNameMap } from "../../../bakingBad"
 import { LambdaDAO } from "../lambdaDAO"
 import { sendProposalCreatedEvent } from "services/utils/utils"
@@ -39,7 +39,7 @@ export const useLambdaExecutePropose = () => {
         // debugger
         const data = await dao.proposeLambdaExecute(args, tezosToolkit)
 
-        mixpanel.track("Proposal Created", {
+        AnalyticsService.track("Proposal Created", {
           dao: dao.data.address,
           daoType: "Registry"
         })

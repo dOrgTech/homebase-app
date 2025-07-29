@@ -3,11 +3,11 @@ import { useCallback, useContext, useEffect } from "react"
 import { TezosToolkit } from "@taquito/taquito"
 import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
-import mixpanel from "mixpanel-browser"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useNetwork } from "services/useNetwork"
 import { useChainId } from "wagmi"
+import { usePostHog } from "posthog-js/react"
 
 type WalletConnectReturn = {
   tezos: TezosToolkit
@@ -40,6 +40,7 @@ export const useTezos = (): WalletConnectReturn => {
   } = useContext(EtherlinkContext)
 
   const queryClient = useQueryClient()
+  const posthog = usePostHog()
 
   const handleEtherlinkNetworkChange = useCallback(
     async (newNetwork: Network) => {
@@ -98,8 +99,20 @@ export const useTezos = (): WalletConnectReturn => {
    */
   const handleChangeNetwork = useCallback(
     async (newNetwork: Network) => {
-      mixpanel.register({ Network: newNetwork })
+      // Network registration is now handled by PostHog identify
       localStorage.setItem("homebase:network", newNetwork)
+
+      // PostHog identify with updated network
+      if (posthog) {
+        const currentWalletAddress = newNetwork.startsWith("etherlink") ? ethAccount?.address : account
+        if (currentWalletAddress) {
+          posthog.identify(currentWalletAddress, {
+            wallet_address: currentWalletAddress,
+            network: newNetwork,
+            wallet_type: newNetwork.startsWith("etherlink") ? "evm" : "tezos"
+          })
+        }
+      }
 
       if (newNetwork.startsWith("etherlink")) {
         await handleEtherlinkNetworkChange(newNetwork)
@@ -110,7 +123,15 @@ export const useTezos = (): WalletConnectReturn => {
       }
       queryClient.resetQueries()
     },
-    [handleEtherlinkNetworkChange, handleTezosNetworkChange, switchToNetwork, queryClient]
+    [
+      handleEtherlinkNetworkChange,
+      handleTezosNetworkChange,
+      switchToNetwork,
+      queryClient,
+      posthog,
+      ethAccount?.address,
+      account
+    ]
   )
 
   const handleTezosConnect = useCallback(
@@ -130,11 +151,20 @@ export const useTezos = (): WalletConnectReturn => {
           wallet
         }
       })
-      mixpanel.identify(account)
+      // User identification is now handled by PostHog identify
+
+      // PostHog identify with wallet and network info
+      if (posthog) {
+        posthog.identify(account, {
+          wallet_address: account,
+          network: newNetwork || network,
+          wallet_type: "tezos"
+        })
+      }
 
       return newTezos
     },
-    [network, dispatch]
+    [network, dispatch, posthog]
   )
 
   useEffect(() => {

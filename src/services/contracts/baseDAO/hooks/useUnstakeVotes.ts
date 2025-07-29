@@ -1,4 +1,4 @@
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useMutation, useQueryClient } from "react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -35,7 +35,7 @@ export const useUnstakeVotes = () => {
 
         const data = await (params.dao as BaseDAO).unstakeVotes(params.proposalId, tezosToolkit)
 
-        mixpanel.track(`Votes Unstaked`, {
+        AnalyticsService.track(`Votes Unstaked`, {
           dao: params.dao.data.address,
           proposalId: params.proposalId
         })
