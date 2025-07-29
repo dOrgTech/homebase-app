@@ -39,6 +39,10 @@ export default defineConfig({
       assets: path.resolve(__dirname, 'src/assets'),
       models: path.resolve(__dirname, 'src/models'),
       config: path.resolve(__dirname, 'src/config'),
+      // Polyfills for node modules
+      '@airgap/beacon-sdk': path.resolve(__dirname, 'node_modules/@airgap/beacon-sdk/dist/esm/index.js'),
+      'stream': 'stream-browserify',
+      'events': 'events',
     },
   },
   assetsInclude: ['**/*.md'], // Treat .md files as assets
@@ -51,11 +55,31 @@ export default defineConfig({
     sourcemap: true,
     // Increase chunk size warning limit if needed
     chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      onwarn(warning, defaultHandler) {
+        // Ignore certain warnings
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return
+        }
+        defaultHandler(warning)
+      }
+    }
   },
   optimizeDeps: {
     include: [
       'buffer',
+      '@walletconnect/core',
+      '@walletconnect/sign-client',
+      '@airgap/beacon-sdk',
+      'events',
+      'stream-browserify',
     ],
+    esbuildOptions: {
+      // Node.js global to browser globalThis
+      define: {
+        global: 'globalThis',
+      },
+    },
   },
   envPrefix: ['VITE_', 'REACT_APP_'], // Allow both VITE_ and REACT_APP_ prefixes
 })
