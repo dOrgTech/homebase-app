@@ -1,8 +1,12 @@
-import mixpanel from "mixpanel-browser"
+import { usePostHog } from "posthog-js/react"
 
 const AnalyticsService = {
   track: (event: string, properties: Record<string, any>) => {
-    mixpanel.track(event, properties)
+    // PostHog tracking will be handled via usePostHog hook in components
+    // This service is maintained for backward compatibility
+    if (typeof window !== "undefined" && (window as any).posthog) {
+      ;(window as any).posthog.capture(event, properties)
+    }
   }
 }
 

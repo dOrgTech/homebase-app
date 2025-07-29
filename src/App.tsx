@@ -1,7 +1,6 @@
 import React from "react"
 import "App.css"
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
-import mixpanel from "mixpanel-browser"
 import { QueryClient, QueryClientProvider } from "react-query"
 
 import { Box, ThemeProvider, styled } from "@material-ui/core"
@@ -68,21 +67,8 @@ const InfoSnackbar = styled("div")({
   opacity: 1
 })
 
-const MIXPANEL_TOKEN = getEnv(EnvKey.REACT_APP_MIXPANEL_TOKEN)
-const MIXPANEL_DEBUG_ENABLED = getEnv(EnvKey.REACT_APP_MIXPANEL_DEBUG_ENABLED)
-
-if (!MIXPANEL_TOKEN) {
-  throw new Error(`${EnvKey.REACT_APP_MIXPANEL_TOKEN} env variable is missing`)
-}
-
-if (!MIXPANEL_DEBUG_ENABLED) {
-  throw new Error(`${EnvKey.REACT_APP_MIXPANEL_DEBUG_ENABLED} env variable is missing`)
-}
-
-mixpanel.init(MIXPANEL_TOKEN, {
-  debug: MIXPANEL_DEBUG_ENABLED === "true"
-})
-mixpanel.track("Visit")
+// PostHog tracking is now handled globally via PostHogProvider in index.tsx
+// Visit tracking can be done via PostHog's auto-capture or custom events
 
 const App: React.FC = () => {
   return (

@@ -8,7 +8,7 @@ import { deployMetadataCarrier } from "services/contracts/metadataCarrier/deploy
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { BaseDAO, replacer } from ".."
 import { getDAO } from "services/services/dao/services"
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 import { InMemorySigner } from "@taquito/signer"
 import { getSignature } from "services/lite/utils"
 import { saveLiteCommunity } from "services/services/lite/lite-services"
@@ -113,7 +113,7 @@ export const useOriginate = (template: DAOTemplate) => {
 
         contract = await tezos.wallet.at(address)
 
-        mixpanel.track("Started DAO origination", {
+        AnalyticsService.track("Started DAO origination", {
           contract: "BaseDAO",
           daoName: params.orgSettings.name
         })
@@ -146,7 +146,7 @@ export const useOriginate = (template: DAOTemplate) => {
         setActiveState(0)
         setStates(updatedStates)
 
-        mixpanel.track("Started DAO origination", {
+        AnalyticsService.track("Started DAO origination", {
           contract: "MetadataCarrier",
           daoName: params.orgSettings.name,
           daoType: params.template
@@ -175,7 +175,7 @@ export const useOriginate = (template: DAOTemplate) => {
         setActiveState(1)
         setStates(updatedStates)
 
-        mixpanel.track("Started DAO origination", {
+        AnalyticsService.track("Started DAO origination", {
           contract: "BaseDAO",
           daoName: params.orgSettings.name
         })
@@ -223,7 +223,7 @@ export const useOriginate = (template: DAOTemplate) => {
         setActiveState(3)
         setStates(updatedStates)
 
-        mixpanel.track("Completed DAO creation", {
+        AnalyticsService.track("Completed DAO creation", {
           daoName: params.orgSettings.name,
           daoType: params.template
         })
@@ -231,7 +231,7 @@ export const useOriginate = (template: DAOTemplate) => {
 
       console.log("This is the contract deployed", contract)
 
-      mixpanel.track("Waiting for DAO indexation", {
+      AnalyticsService.track("Waiting for DAO indexation", {
         daoName: params.orgSettings.name,
         daoType: params.template
       })
@@ -291,7 +291,7 @@ export const useOriginate = (template: DAOTemplate) => {
         setStates(updatedStates)
       }
 
-      mixpanel.track("Completed DAO indexation", {
+      AnalyticsService.track("Completed DAO indexation", {
         daoName: params.orgSettings.name,
         daoType: params.template
       })

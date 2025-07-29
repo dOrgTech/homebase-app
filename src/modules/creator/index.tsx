@@ -7,7 +7,7 @@ import { CreatorContext, StepInfo } from "modules/creator/state"
 import { StepRouter, STEPS, urlToStepMap, useStepNumber } from "modules/creator/steps"
 import { NavigationBar } from "modules/creator/components/NavigationBar"
 import { Navbar } from "modules/common/Toolbar"
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 import {
   PageContainer,
   PageContent,
@@ -29,10 +29,8 @@ export const DAOCreate: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   useEffect(() => {
-    mixpanel.unregister("daoAddress")
-    mixpanel.unregister("daoType")
-
-    mixpanel.track("Visited Creator")
+    // DAO address and type registration is now handled by PostHog identify
+    AnalyticsService.track("Visited Creator", {})
   }, [])
 
   return (
