@@ -20,20 +20,25 @@ const getSavedState = async (): Promise<TezosState> => {
     const network = getTezosNetwork()
     const tezos = createTezos(network)
     const wallet = createWallet(network)
-    const activeAccount = await wallet.client.getActiveAccount()
 
-    if (!activeAccount?.address) {
-      throw new Error("No wallet address found")
+    // Try to get existing active account first (for backward compatibility)
+    try {
+      const activeAccount = await wallet.client.getActiveAccount()
+      if (activeAccount?.address) {
+        tezos.setProvider({ wallet })
+        return {
+          network,
+          tezos,
+          wallet,
+          account: activeAccount.address
+        }
+      }
+    } catch (error) {
+      // If getActiveAccount fails, fall back to INITIAL_STATE
+      console.warn("getActiveAccount failed, falling back to initial state:", error)
     }
 
-    tezos.setProvider({ wallet })
-
-    return {
-      network,
-      tezos,
-      wallet,
-      account: activeAccount.address
-    }
+    return INITIAL_STATE
   } catch (error) {
     return INITIAL_STATE
   }

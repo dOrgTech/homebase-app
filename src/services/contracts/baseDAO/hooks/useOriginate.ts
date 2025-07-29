@@ -74,9 +74,7 @@ export const useOriginate = (template: DAOTemplate) => {
   const [states, setStates] = useState(INITIAL_STATES)
 
   const [activeState, setActiveState] = useState<number>()
-  const { tezos, connect, network, account, wallet, etherlink } = useTezos()
-  const provider = etherlink.provider
-  const signer = etherlink.signer
+  const { tezos, connect, network, account, wallet, getPublicKey } = useTezos()
 
   const result = useMutation<ContractAbstraction<ContractProvider | Wallet>, Error, OriginateParams>(
     async ({ metadataParams, params, deploymentMethod }) => {
@@ -263,7 +261,11 @@ export const useOriginate = (template: DAOTemplate) => {
           tokenID: params.orgSettings.governanceToken.tokenId
         }
         const { signature, payloadBytes } = await getSignature(account, wallet, JSON.stringify(values))
-        const publicKey = (await wallet?.client.getActiveAccount())?.publicKey
+        const publicKey = await getPublicKey()
+
+        if (!signature || !publicKey) {
+          throw new Error("Could not get signature or public key")
+        }
 
         const resp = await saveLiteCommunity(signature, publicKey, payloadBytes, network)
         const data = await resp.json()
