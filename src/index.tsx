@@ -1,5 +1,5 @@
-import React from "react"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
+
 import App from "App"
 import { TezosProvider } from "services/beacon/context"
 import { EtherlinkProvider } from "services/wagmi/context"
@@ -8,21 +8,17 @@ import dayjs from "dayjs"
 import { Web3Provider } from "services/wagmi/web3provider"
 import { NetworkProvider } from "services/useNetwork"
 
-// BigNumber.config({ DECIMAL_PLACES:  })
-
 dayjs.extend(localizedFormat)
 
-ReactDOM.render(
-  <React.StrictMode>
-    <NetworkProvider>
-      <Web3Provider>
-        <EtherlinkProvider>
-          <TezosProvider>
-            <App />
-          </TezosProvider>
-        </EtherlinkProvider>
-      </Web3Provider>
-    </NetworkProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
+// New React 18 way to render
+createRoot(document.getElementById("root") as HTMLElement).render(
+  <NetworkProvider>
+    <Web3Provider>
+      <EtherlinkProvider>
+        <TezosProvider>
+          <App />
+        </TezosProvider>
+      </EtherlinkProvider>
+    </Web3Provider>
+  </NetworkProvider>
 )

@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  background: #1C1F23;
+  background: #1c1f23;
 }
 
 a {
@@ -13,7 +13,7 @@ a {
 
 [data-rsbs-overlay],
 [data-rsbs-root]:after {
-  background: #1C1F23;
+  background: #1c1f23;
   z-index: 1000001;
   max-height: 90vh;
 }
@@ -56,4 +56,14 @@ a {
 .proposal-details a:hover {
   text-decoration: underline;
   /* border-bottom: 1px solid #81feb7; */
+}
+
+:root {
+  --rsbs-backdrop-bg: rgba(0, 0, 0, 0.6);
+  --rsbs-bg: #1c2024;
+  --rsbs-handle-bg: hsla(0, 0%, 0%, 0.14);
+  --rsbs-max-w: auto;
+  --rsbs-ml: env(safe-area-inset-left);
+  --rsbs-mr: env(safe-area-inset-right);
+  --rsbs-overlay-rounded: 16px;
 }

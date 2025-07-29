@@ -6,25 +6,10 @@ import { Dropdown } from "./Dropdown"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { SmallButton } from "modules/common/SmallButton"
 import { Filters } from "../pages/User/components/UserMovements"
+import StatusButton from "components/ui/StatusButton"
+import { ProposalType, OffchainStatus, Order, StatusOption } from "../types.d"
 
-export enum ProposalType {
-  ON_CHAIN = "on-chain",
-  OFF_CHAIN = "off-chain",
-  ALL = "all"
-}
-
-export enum OffchainStatus {
-  ACTIVE = "active",
-  CLOSED = "closed",
-  ALL = "all"
-}
-
-export enum Order {
-  RECENT = "recent",
-  POPULAR = "popular"
-}
-
-interface Props {
+export interface Props {
   open: boolean
   handleClose: () => void
   saveFilters: (filters: Filters) => void
@@ -39,23 +24,6 @@ const Container = styled(Grid)({
   marginTop: 6,
   gap: 24
 })
-
-const StatusButton = styled(Grid)(({ theme }) => ({
-  "background": theme.palette.primary.main,
-  "padding": "8px 16px",
-  "borderRadius": 50,
-  "marginRight": 16,
-  "marginBottom": 16,
-  "cursor": "pointer",
-  "textTransform": "capitalize",
-  "&:hover": {
-    background: "rgba(129, 254, 183, .4)"
-  }
-}))
-
-export interface StatusOption {
-  label: string
-}
 
 export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, saveFilters }) => {
   const [filters, setFilters] = useState<StatusOption[]>([])

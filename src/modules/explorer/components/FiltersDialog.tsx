@@ -4,7 +4,7 @@ import { Grid, styled } from "@material-ui/core"
 import { Typography } from "@mui/material"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { SmallButton } from "modules/common/SmallButton"
-import { Order, ProposalType } from "./FiltersUserDialog"
+import { Order, ProposalType } from "../types.d"
 import { Filters } from "../pages/User/components/UserMovements"
 
 interface Props {

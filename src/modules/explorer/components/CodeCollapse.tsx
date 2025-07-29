@@ -1,19 +1,10 @@
-import { Collapse, Grid, IconButton, styled, Typography } from "@material-ui/core"
-import { ProposalItem } from "modules/explorer/pages/User"
 import React, { useState } from "react"
-import { Link } from "react-router-dom"
-import { Proposal } from "services/services/dao/mappers/proposal/types"
+import { Collapse, Grid, IconButton, Typography } from "@material-ui/core"
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown"
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp"
 import { ProposalCodeEditorInput } from "./ProposalFormInput"
 import Prism, { highlight } from "prismjs"
 import { TableContainer, TableHeader } from "components/ui/Table"
-
-const ProposalsFooter = styled(Grid)({
-  padding: "16px 46px",
-  borderTop: ".6px solid rgba(125,140,139, 0.2)",
-  minHeight: 34
-})
 
 interface Props {
   code: string

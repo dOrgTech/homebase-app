@@ -9,7 +9,7 @@ import { Poll } from "models/Polls"
 import ReactPaginate from "react-paginate"
 import "../pages/DAOList/styles.css"
 import { Filters } from "../pages/User/components/UserMovements"
-import { Order, ProposalType, StatusOption } from "./FiltersUserDialog"
+import { ProposalType, StatusOption } from "../types.d"
 
 const TableContainer = styled(Grid)({
   width: "100%"
@@ -58,43 +58,38 @@ export const ProposalsList: React.FC<Props> = ({
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
   const [filteredProposals, setFilteredProposals] = useState<ProposalObj[]>([])
-  // TODO: next two lines can be safely removed
   const [filter, setFilter] = useState<number>(0)
   const [filterOnchain, setFilterOnchain] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
 
   const listOfProposals = useMemo(() => {
     const proposalList: { type: string; proposal: Proposal | Poll }[] = []
-    proposals?.map(proposal => {
+    proposals?.forEach(proposal => {
       const item = {
         type: "lambda",
         proposal: proposal
       }
       proposalList.push(item)
-      return
     })
-    liteProposals?.map(proposal => {
+    liteProposals?.forEach(proposal => {
       const item = {
         type: "lite",
         proposal: proposal
       }
       proposalList.push(item)
-      return
     })
     return proposalList
   }, [liteProposals, proposals])
 
   useEffect(() => {
     setFilteredProposals(listOfProposals)
-  }, [])
-
-  useEffect(() => {
-    setFilteredProposals(listOfProposals)
-  }, [showFullList])
+    if (!filters) {
+      setIsLoading(false)
+    }
+  }, [listOfProposals, filters])
 
   const pageCount = Math.ceil(filteredProposals ? filteredProposals.length / 4 : 0)
 
-  // Invoke when user click to request another page.
   const handlePageClick = (event: { selected: number }) => {
     if (filteredProposals) {
       setOffset((event.selected * 4) % filteredProposals.length)
@@ -133,40 +128,10 @@ export const ProposalsList: React.FC<Props> = ({
     []
   )
 
-  // TODO: this can be probably removed as not in use
-  const orderedList = (state: Order) => {
-    if (state === "recent") {
-      return listOfProposals
-    } else {
-      const proposalList: { type: string; proposal: Proposal | Poll }[] = []
-
-      const orderedProposals = proposals!.slice().sort((a, b) => b.voters.length - a.voters.length)
-      const orderedPolls = liteProposals?.slice().sort((a, b) => b.votes! - a.votes!)
-
-      orderedProposals?.map(proposal => {
-        const item = {
-          type: "lambda",
-          proposal: proposal
-        }
-        proposalList.push(item)
-        return
-      })
-      orderedPolls?.map(proposal => {
-        const item = {
-          type: "lite",
-          proposal: proposal
-        }
-        proposalList.push(item)
-        return
-      })
-      return proposalList
-    }
-  }
-
   const applyFilters = useCallback(() => {
     const filterByType = (
       type: ProposalType,
-      filters: Filters,
+      currentFilters: Filters,
       list: { type: string; proposal: Proposal | Poll }[]
     ) => {
       switch (type) {
@@ -178,14 +143,14 @@ export const ProposalsList: React.FC<Props> = ({
         case ProposalType.OFF_CHAIN: {
           setFilter(Math.random())
           setTimeout(() => {
-            filterByOffchainStatus(list, filters.offchainStatus)
+            filterByOffchainStatus(list, currentFilters.offchainStatus)
           }, 500)
           break
         }
         case ProposalType.ON_CHAIN: {
           setFilterOnchain("status")
           setTimeout(() => {
-            filterByOnChainStatus(list, filters.onchainStatus)
+            filterByOnChainStatus(list, currentFilters.onchainStatus)
           }, 1000)
           break
         }
@@ -199,12 +164,14 @@ export const ProposalsList: React.FC<Props> = ({
       setIsLoading(true)
       filterByType(filters.type, filters, listOfProposals)
     }
-  }, [filters, filteredProposals])
+  }, [filters, listOfProposals, filterByOffchainStatus, filterByOnChainStatus, setIsLoading])
 
   useEffect(() => {
-    applyFilters()
+    if (filters) {
+      applyFilters()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters])
+  }, [filters, applyFilters])
 
   return (
     <TableContainer item>

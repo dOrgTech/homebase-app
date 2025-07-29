@@ -6,6 +6,7 @@ import { useTezos } from "services/beacon/hooks/useTezos"
 import mixpanel from "mixpanel-browser"
 import { networkNameMap } from "../../../bakingBad"
 import { LambdaDAO } from "../lambdaDAO"
+import { sendProposalCreatedEvent } from "services/utils/utils"
 
 export const useLambdaRemovePropose = () => {
   const queryClient = useQueryClient()
@@ -40,6 +41,7 @@ export const useLambdaRemovePropose = () => {
           dao: dao.data.address,
           daoType: "Registry"
         })
+        sendProposalCreatedEvent(network, account, dao.data.name, dao.data.address)
 
         await data.confirmation(1)
         closeProposalNotification(proposalNotification)

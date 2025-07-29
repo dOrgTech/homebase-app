@@ -32,3 +32,12 @@ yarn-error.log*
 # Ignore for yarn.lock
 bun.lockb
 package-lock.json
+
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+

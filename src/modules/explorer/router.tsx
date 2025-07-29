@@ -2,6 +2,7 @@ import React from "react"
 import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom"
 import { DAOList } from "modules/explorer/pages/DAOList"
 import { DAORouter } from "modules/explorer/pages/DAO/router"
+import { EtherlinkDAORouter } from "modules/etherlink/explorer/router"
 import { LiteExplorerRouter } from "modules/lite/explorer/router"
 
 export const DAOExplorerRouter = (): JSX.Element => {
@@ -14,6 +15,9 @@ export const DAOExplorerRouter = (): JSX.Element => {
       </Route>
       <Route path={`${match.url}/dao/:id`}>
         <DAORouter />
+      </Route>
+      <Route path={`${match.url}/etherlink/dao/:id`}>
+        <EtherlinkDAORouter />
       </Route>
       <Route path={`${match.url}/lite/dao/:id`}>
         <LiteExplorerRouter />

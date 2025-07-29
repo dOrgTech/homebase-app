@@ -16,7 +16,6 @@
   padding: 0;
   background: "inherit";
   transition: color 1s ease-in-out;
-
 }
 .content li {
   margin: 0;
@@ -38,5 +37,4 @@
   @media only screen and (max-width: 600px) {
     width: 200px;
   }
-
 }
