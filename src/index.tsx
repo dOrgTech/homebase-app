@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client"
 
-import { PostHogProvider } from "posthog-js/react"
+import { PostHogProvider, PostHogErrorBoundary } from "posthog-js/react"
 import App from "App"
 import { TezosProvider } from "services/beacon/context"
 import { EtherlinkProvider } from "services/wagmi/context"
@@ -10,6 +10,10 @@ import { Web3Provider } from "services/wagmi/web3provider"
 import { NetworkProvider } from "services/useNetwork"
 
 dayjs.extend(localizedFormat)
+
+const ErrorNotice = () => {
+  return <div>Something went wrong. Please try again later.</div>
+}
 
 // New React 18 way to render
 createRoot(document.getElementById("root") as HTMLElement).render(
@@ -22,14 +26,16 @@ createRoot(document.getElementById("root") as HTMLElement).render(
       debug: process.env.NODE_ENV === "development"
     }}
   >
-    <NetworkProvider>
-      <Web3Provider>
-        <EtherlinkProvider>
-          <TezosProvider>
-            <App />
-          </TezosProvider>
-        </EtherlinkProvider>
-      </Web3Provider>
-    </NetworkProvider>
+    <PostHogErrorBoundary fallback={<ErrorNotice />}>
+      <NetworkProvider>
+        <Web3Provider>
+          <EtherlinkProvider>
+            <TezosProvider>
+              <App />
+            </TezosProvider>
+          </EtherlinkProvider>
+        </Web3Provider>
+      </NetworkProvider>
+    </PostHogErrorBoundary>
   </PostHogProvider>
 )
