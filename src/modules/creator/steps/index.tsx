@@ -7,7 +7,7 @@ import { Summary, DaoSettings, Governance, Review } from "modules/creator/steps"
 
 import { ProtectedRoute } from "modules/creator/components/ProtectedRoute"
 import { Quorum } from "./Quorum"
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 import { Template } from "./Template"
 import { DeploymentType } from "./DeploymentType"
 
@@ -32,7 +32,7 @@ export const urlToStepMap: Record<string, number> = {
 
 const AnalyticsWrappedStep: React.FC<{ name: string; index: number }> = ({ name, index, children }) => {
   useEffect(() => {
-    mixpanel.track("Visited Creator Step", {
+    AnalyticsService.track("Visited Creator Step", {
       stepName: name,
       stepIndex: index
     })

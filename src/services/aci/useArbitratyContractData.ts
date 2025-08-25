@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "react-query"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import mixpanel from "mixpanel-browser"
 import { Network } from "services/beacon"
 import { EnvKey, getEnv } from "services/config"
 import { TezosToolkit } from "@taquito/taquito"

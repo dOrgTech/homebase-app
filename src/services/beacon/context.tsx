@@ -1,5 +1,4 @@
 import React, { createContext, useEffect, useReducer } from "react"
-import mixpanel from "mixpanel-browser"
 import { createTezos, createWallet, getTezosNetwork } from "./utils"
 import { INITIAL_STATE, reducer, TezosState } from "./reducer"
 import { TezosAction, TezosActionType } from "./actions"
@@ -42,9 +41,7 @@ const getSavedState = async (): Promise<TezosState> => {
 export const TezosProvider: React.FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
 
-  useEffect(() => {
-    mixpanel.register({ Network: state.network })
-  }, [state.network])
+  // Network registration is now handled by PostHog identify in useTezos hook
 
   useEffect(() => {
     getSavedState().then(tezosState => {

@@ -4,7 +4,7 @@ import { RegistryProposeArgs } from "../lambdaDAO/types"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { LambdaDAO } from "../lambdaDAO"
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 import { networkNameMap } from "../../../bakingBad"
 import { sendProposalCreatedEvent } from "services/utils/utils"
 
@@ -33,7 +33,7 @@ export const useRegistryPropose = () => {
 
         const data = await dao.propose(args, tezosToolkit)
 
-        mixpanel.track("Proposal Created", {
+        AnalyticsService.track("Proposal Created", {
           dao: dao.data.address,
           daoType: "Registry"
         })

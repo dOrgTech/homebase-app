@@ -6,7 +6,7 @@ import { BaseDAO } from "../class"
 import { ConfigProposalParams } from "../types"
 import { networkNameMap } from "../../../bakingBad"
 import { sendProposalCreatedEvent } from "services/utils/utils"
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 
 export const useProposeConfigChange = () => {
   const queryClient = useQueryClient()
@@ -32,7 +32,7 @@ export const useProposeConfigChange = () => {
         }
 
         const data = await dao.proposeConfigChange(args, tezosToolkit)
-        mixpanel.track("Proposal Created", {
+        AnalyticsService.track("Proposal Created", {
           dao: dao.data.address,
           daoType: "Registry"
         })

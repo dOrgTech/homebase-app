@@ -1,6 +1,6 @@
 import { TransactionWalletOperation } from "@taquito/taquito"
 import { BigNumber } from "bignumber.js"
-import mixpanel from "mixpanel-browser"
+import AnalyticsService from "services/services/analytics"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useMutation, useQueryClient } from "react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
@@ -44,7 +44,7 @@ export const useVote = () => {
           tezos: tezosToolkit
         })
 
-        mixpanel.track("Vote Created", {
+        AnalyticsService.track("Vote Created", {
           dao: (params.dao as BaseDAO).data.address,
           proposal: params.proposalKey,
           amount: params.amount,

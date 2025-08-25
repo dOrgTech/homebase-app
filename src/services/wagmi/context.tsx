@@ -7,6 +7,7 @@ import { useModal } from "connectkit"
 import { useEthersProvider, useEthersSigner } from "./ethers"
 import useFirestoreStore from "services/contracts/etherlinkDAO/hooks/useFirestoreStore"
 import { useNetwork } from "services/useNetwork"
+import { usePostHog } from "posthog-js/react"
 
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
@@ -528,6 +529,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const { switchChain } = useSwitchChain()
   const { network: contextNetwork } = useNetwork()
   const [signerTokenBalances, setSignerTokenBalances] = useState<any[]>([])
+  const posthog = usePostHog()
 
   const { address, isConnected, chain } = useWagmiAccount()
 
@@ -545,8 +547,17 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     (network: string) => {
       const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
       switchChain({ chainId: networkId })
+
+      // PostHog identify with updated network for EVM
+      if (posthog && address) {
+        posthog.identify(address, {
+          wallet_address: address,
+          network: network,
+          wallet_type: "evm"
+        })
+      }
     },
-    [switchChain]
+    [switchChain, posthog, address]
   )
 
   useEffect(() => {
@@ -555,6 +566,17 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
       setSignerTokenBalances(data?.map((x: any) => x.token?.address))
     })
   }, [signer?.address, etherlinkNetwork])
+
+  // PostHog identify for EVM wallet connection
+  useEffect(() => {
+    if (isConnected && address && posthog) {
+      posthog.identify(address, {
+        wallet_address: address,
+        network: etherlinkNetwork,
+        wallet_type: "evm"
+      })
+    }
+  }, [isConnected, address, etherlinkNetwork, posthog])
 
   const {
     contractData,
