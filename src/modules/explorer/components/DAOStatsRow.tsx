@@ -145,7 +145,7 @@ const DAOStatsRowTezos = () => {
               <ItemTitle color="textPrimary">Current Cycle</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{cycleInfo?.currentCycle}</ItemValue>
+              <ItemValue color="textPrimary">{cycleInfo?.currentCycle ?? "-"}</ItemValue>
             </Grid>
           </Item>
         </Grid>
