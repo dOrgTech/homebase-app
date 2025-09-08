@@ -10,7 +10,7 @@ import { unpackExtraNumValue, CycleInfo } from "services/contracts/baseDAO"
 import { LambdaDAO } from "services/contracts/baseDAO/lambdaDAO"
 import { parseUnits } from "services/contracts/utils"
 import { getDAO } from "services/services/dao/services"
-import { useBlockchainInfo } from "../../../contracts/baseDAO/hooks/useBlockchainInfo"
+import { getNetworkStats, getNetworkHead } from "../../../bakingBad/stats"
 import { fetchLiteData } from "services/services/lite/lite-services"
 import { EtherlinkContext } from "services/wagmi/context"
 
@@ -20,7 +20,6 @@ export const useDAO = (address: string) => {
   const [daoData, setDaoData] = useState<any | null>(null)
   const [cycleInfo, setCycleInfo] = useState<CycleInfo>()
   const { network } = useTezos()
-  const { data: blockchainInfo } = useBlockchainInfo()
   const {
     daos: etherlinkOnchainDAOs,
     selectDao: selectEtherlinkDao,
@@ -120,26 +119,44 @@ export const useDAO = (address: string) => {
 
   useEffect(() => {
     ;(async () => {
-      if ((data as any)?.address === "onchain-etherlink") {
-        console.log("No cycle info for etherlink")
-        return
-      } else if (data && blockchainInfo) {
-        const blockTimeAverage = blockchainInfo.constants.timeBetweenBlocks
-        const blocksFromStart = block - data.data.start_level
-        const periodsFromStart = Math.floor(blocksFromStart / Number(data.data.period))
-        const type = periodsFromStart % 2 == 0 ? "voting" : "proposing"
-        const blocksLeft = Number(data.data.period) - (blocksFromStart % Number(data.data.period))
+      if (!data) return
+      const daoNetwork = data.data.network as Network
+      if ((data as any)?.address === "onchain-etherlink" || daoNetwork?.startsWith("etherlink")) return
 
-        setCycleInfo({
-          blocksLeft,
-          type,
-          timeEstimateForNextBlock: blockTimeAverage,
-          currentCycle: periodsFromStart,
-          currentLevel: block
-        })
+      let effectiveBlock = 0
+      if (network === daoNetwork && block > 0) {
+        effectiveBlock = block
+      } else {
+        try {
+          effectiveBlock = await getNetworkHead(daoNetwork)
+        } catch (e) {
+          return
+        }
       }
+      if (effectiveBlock <= 0) return
+
+      let blockTimeAverage = 30
+      try {
+        const stats = await getNetworkStats(daoNetwork)
+        blockTimeAverage = stats.constants.timeBetweenBlocks
+      } catch {}
+
+      const period = Number(data.data.period)
+      const blocksFromStart = effectiveBlock - data.data.start_level
+      if (blocksFromStart < 0) return
+      const periodsFromStart = Math.floor(blocksFromStart / period)
+      const type = periodsFromStart % 2 === 0 ? "voting" : "proposing"
+      const blocksLeft = period - (blocksFromStart % period)
+
+      setCycleInfo({
+        blocksLeft,
+        type,
+        timeEstimateForNextBlock: blockTimeAverage,
+        currentCycle: periodsFromStart,
+        currentLevel: effectiveBlock
+      })
     })()
-  }, [data, blockchainInfo, block, network])
+  }, [data, block, network])
 
   useEffect(() => {
     const dao = etherlinkDaoSelected
