@@ -21,7 +21,7 @@ interface BlockMessage {
   state: number
 }
 
-const getUrl = (network: Network) => `https://api.${networkNameMap[network]}.tzkt.io/v1/events`
+const getUrl = (network: Network) => `https://api.${networkNameMap[network]}.tzkt.io/v1/ws`
 
 const TZKTSubscriptionsProvider: React.FC = ({ children }) => {
   const [block, setBlock] = useState<number>(0)
