@@ -142,17 +142,34 @@ export const useDAO = (address: string) => {
       } catch {}
 
       const period = Number(data.data.period)
+      // Include flush delay in the total cycle length
+      const proposalFlushLevel = Number(data.data.proposal_flush_level)
+      const proposalExpiredLevel = Number(data.data.proposal_expired_level)
+      const flushDelayBlocks = Math.max(proposalFlushLevel - 2 * period, 0)
+      const proposalBlocksToExpire = Math.max(proposalExpiredLevel - proposalFlushLevel, 0)
+      const totalCycleBlocks = period + flushDelayBlocks + proposalBlocksToExpire
+      // Debug logs for cycle calculation inputs
+      console.log("useDAO.ts cycle inputs", {
+        CurrentBlock: effectiveBlock,
+        BlockAtWhichDaoMinted: data.data.start_level,
+        TotalDaoLifeCycleBlocks: totalCycleBlocks
+      })
       const blocksFromStart = effectiveBlock - data.data.start_level
       if (blocksFromStart < 0) return
-      const periodsFromStart = Math.floor(blocksFromStart / period)
-      const type = periodsFromStart % 2 === 0 ? "voting" : "proposing"
+      if (totalCycleBlocks <= 0) return
+      // Use full cycle (voting period + flush delay) for cycle count
+      const cyclesFromStart = Math.floor(blocksFromStart / totalCycleBlocks)
+      // Keep UI period type based on the current voting/proposing period only
+      const periodsFromStartForType = Math.floor(blocksFromStart / period)
+      const type = periodsFromStartForType % 2 === 0 ? "voting" : "proposing"
+      // Blocks left in the current voting/proposal period
       const blocksLeft = period - (blocksFromStart % period)
 
       setCycleInfo({
         blocksLeft,
         type,
         timeEstimateForNextBlock: blockTimeAverage,
-        currentCycle: periodsFromStart,
+        currentCycle: cyclesFromStart,
         currentLevel: effectiveBlock
       })
     })()
