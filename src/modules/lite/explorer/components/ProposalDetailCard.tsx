@@ -216,12 +216,15 @@ export const ProposalDetailCard: React.FC<{ poll: Poll | undefined; daoId: strin
           </Grid>
 
           <Grid container>
-            <Typography variant="body2" color="textPrimary" className="proposal-details">
+            <Typography
+              variant="body2"
+              color="textPrimary"
+              className="proposal-details"
+              style={{ whiteSpace: "pre-line" }}
+            >
               {ReactHtmlParser(poll?.description ? poll?.description : "")}
             </Typography>
           </Grid>
-
-          <Subtitle>{ReactHtmlParser(poll?.description ? poll?.description : "")}</Subtitle>
 
           {poll?.externalLink ? (
             <Grid style={{ display: isMobileSmall ? "block" : "flex" }} container alignItems="center">
