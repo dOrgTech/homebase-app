@@ -13,6 +13,7 @@ import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useNotification } from "modules/common/hooks/useNotification"
+import { ETHERLINK_CONSTANTS } from "modules/etherlink/constants"
 
 interface EvmDaoCreateStore {
   currentStep: number
@@ -165,7 +166,7 @@ const useEvmDaoCreateStore = () => {
   const history = useHistory()
   const { contractData } = useContext(EtherlinkContext)
   const wrapperAddress = contractData?.wrapper_t
-  const wrapperAddressForWrapped = contractData?.wrapper_w || "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2" // Fallback to known address
+  const wrapperAddressForWrapped = contractData?.wrapper_w || ETHERLINK_CONSTANTS.WRAPPER_W_FALLBACK_ADDRESS // Fallback to known address
   const { etherlink } = useTezos()
   const notify = useNotification()
 
@@ -272,7 +273,7 @@ const useEvmDaoCreateStore = () => {
       }
 
       // Use legacy ABI if using the fallback address
-      const isUsingFallbackAddress = selectedWrapperAddress === "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2"
+      const isUsingFallbackAddress = selectedWrapperAddress === ETHERLINK_CONSTANTS.WRAPPER_W_FALLBACK_ADDRESS
       const selectedAbi =
         daoData.tokenDeploymentMechanism === "wrapped"
           ? isUsingFallbackAddress
@@ -338,7 +339,6 @@ const useEvmDaoCreateStore = () => {
           proposalThresholdType: typeof proposalThreshold,
           proposalThresholdAsBigInt: BigInt(proposalThreshold || 0).toString()
         })
-
         const wrappedDaoPayload = isUsingFallbackAddress
           ? {
               // Legacy structure without wrappedTokenName
@@ -349,7 +349,7 @@ const useEvmDaoCreateStore = () => {
               underlyingTokenAddress: daoData.underlyingTokenAddress,
               minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
               minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
-              proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
+              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
               quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
               keys: Object.keys(daoData.registry || {}),
               values: Object.values(daoData.registry || {}).map(v => String(v))
@@ -364,7 +364,7 @@ const useEvmDaoCreateStore = () => {
               underlyingTokenAddress: daoData.underlyingTokenAddress,
               minsVotingDelay: Math.min(Math.max(votingDelayInMinutes, 0), 2 ** 48 - 1), // uint48
               minsVotingPeriod: Math.min(Math.max(votingDurationInMinutes, 0), 2 ** 32 - 1), // uint32
-              proposalThreshold: BigInt(proposalThreshold || 0), // uint256 - raw token amount
+              proposalThreshold: parseUnits(isNaN(proposalThreshold) ? "0" : proposalThreshold.toString(), 18), // uint256 in wei
               quorumFraction: Math.min(Math.max(Number(quorumThreshold), 0), 100), // uint8
               keys: Object.keys(daoData.registry || {}),
               values: Object.values(daoData.registry || {}).map(v => String(v))
