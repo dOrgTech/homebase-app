@@ -45,11 +45,12 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
   )}/network/${network}/token/${tokenAddress}/token-id/0/voting-power?userAddress=${account}&level=${level}`
   const response = await fetch(url)
 
-  const stakedBalance = new BigNumber(0)
-  const stakedBalanceQuery = await fetch(`https://api.tzkt.io/v1/accounts/${account}`)
+  let stakedBalance = new BigNumber(0)
+  const stakedBalanceQuery = await fetch(`https://api.${networkNameMap[network]}.tzkt.io/v1/accounts/${account}`)
+
   if (stakedBalanceQuery.ok) {
     const stakedBalanceQueryResponse = await stakedBalanceQuery.json()
-    stakedBalance.plus(stakedBalanceQueryResponse.stakedBalance)
+    stakedBalance = stakedBalance.plus(stakedBalanceQueryResponse.stakedBalance ?? 0)
   }
 
   if (!response.ok) {
