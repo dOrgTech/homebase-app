@@ -44,6 +44,15 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
     EnvKey.REACT_APP_LITE_API_URL
   )}/network/${network}/token/${tokenAddress}/token-id/0/voting-power?userAddress=${account}&level=${level}`
   const response = await fetch(url)
+
+  let stakedBalance = new BigNumber(0)
+  const stakedBalanceQuery = await fetch(`https://api.${networkNameMap[network]}.tzkt.io/v1/accounts/${account}`)
+
+  if (stakedBalanceQuery.ok) {
+    const stakedBalanceQueryResponse = await stakedBalanceQuery.json()
+    stakedBalance = stakedBalance.plus(stakedBalanceQueryResponse.stakedBalance ?? 0)
+  }
+
   if (!response.ok) {
     const data = await response.json()
     throw new Error(data.message)
@@ -53,7 +62,7 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
   if (result) {
     return {
       votingWeight: new BigNumber(result.votingWeight),
-      votingXTZWeight: new BigNumber(result.votingXTZWeight)
+      votingXTZWeight: new BigNumber(result.votingXTZWeight + stakedBalance)
     }
   }
 
