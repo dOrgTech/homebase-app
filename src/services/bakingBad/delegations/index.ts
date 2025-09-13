@@ -47,8 +47,8 @@ export const getTokenVoteWeight = async (tokenAddress: string, account: string, 
 
   const stakedBalance = new BigNumber(0)
   const stakedBalanceQuery = await fetch(`https://api.tzkt.io/v1/accounts/${account}`)
-  const stakedBalanceQueryResponse = await stakedBalanceQuery.json()
-  if (stakedBalanceQueryResponse.ok) {
+  if (stakedBalanceQuery.ok) {
+    const stakedBalanceQueryResponse = await stakedBalanceQuery.json()
     stakedBalance.plus(stakedBalanceQueryResponse.stakedBalance)
   }
 
