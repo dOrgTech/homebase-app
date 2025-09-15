@@ -31,16 +31,24 @@ const TZKTSubscriptionsProvider: React.FC = ({ children }) => {
   useEffect(() => {
     if (network.startsWith("etherlink")) return
     ;(async () => {
-      socketRef.current = new HubConnectionBuilder().withUrl(getUrl(network)).build()
+      socketRef.current = new HubConnectionBuilder().withUrl(getUrl(network)).withAutomaticReconnect().build()
 
-      await socketRef.current.start()
+      try {
+        await socketRef.current.start()
+      } catch (e) {
+        console.warn("TZKT SignalR start failed", e)
+        return
+      }
 
-      // listen for incoming message
       socketRef.current.on("blocks", (blockMessage: BlockMessage) => {
         setBlock(blockMessage.state)
       })
 
-      await socketRef.current.invoke("SubscribeToBlocks")
+      try {
+        await socketRef.current.invoke("SubscribeToBlocks")
+      } catch (e) {
+        console.warn("TZKT SignalR subscribe failed", e)
+      }
     })()
 
     return () => {
