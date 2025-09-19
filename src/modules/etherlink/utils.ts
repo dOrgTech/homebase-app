@@ -47,6 +47,15 @@ export const getCallDataFromBytes = (bytes: any) => {
     return `0x${hexString}`
   }
 
+  // Handle Firebase Uint8Array bytes (common return type for Firestore 'bytes' fields)
+  if (bytes && typeof bytes === "object" && bytes.constructor && bytes.constructor.name === "Uint8Array") {
+    const arr = bytes as Uint8Array
+    const hexString = Array.from(arr)
+      .map((b: number) => b.toString(16).padStart(2, "0"))
+      .join("")
+    return `0x${hexString}`
+  }
+
   // If bytes is neither string nor has toUint8Array method, return a default value
   console.warn("getCallDataFromBytes: Invalid input type", bytes)
   return "0x"

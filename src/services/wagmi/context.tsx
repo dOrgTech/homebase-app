@@ -363,6 +363,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             const functionAbi = proposalInterfacesPossible?.[0]?.interface?.[0] as string
             const functionAbiAlternate =
               fAbi?.interface?.[0] || (proposalInterfacesPossible?.[1]?.interface?.[0] as string)
+            const useAbi = functionAbi || functionAbiAlternate
             if (proposal?.type === "contract call") {
               proposal.proposalData = [
                 {
@@ -370,11 +371,11 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
                   value: proposal?.callDataPlain?.[0]
                 }
               ]
-            } else if (functionAbi) {
+            } else if (useAbi) {
               proposal.proposalData = proposal?.callDataPlain?.map((callData: any) => {
                 const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
-                const decodedDataPair = decodeCalldataWithEthers(functionAbi, formattedCallData)
-                const decodedDataPairLegacy = decodeFunctionParametersLegacy(functionAbi, formattedCallData)
+                const decodedDataPair = decodeCalldataWithEthers(useAbi, formattedCallData)
+                const decodedDataPairLegacy = decodeFunctionParametersLegacy(useAbi, formattedCallData)
                 const functionName = decodedDataPair?.functionName
                 const functionParams = decodedDataPair?.decodedData
                 const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
@@ -389,7 +390,13 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
                 return { parameter: label || functionName, value: functionParams.join(", ") }
               })
             } else {
-              proposal.proposalData = []
+              const raw = (proposal?.callDataPlain?.[0] || "0x").toString()
+              proposal.proposalData = [
+                {
+                  parameter: `Call Data (${proposal?.targets?.[0] || "unknown target"})`,
+                  value: raw.startsWith("0x") ? raw : `0x${raw}`
+                }
+              ]
             }
             setDaoProposalSelected(proposal)
           }
@@ -568,15 +575,27 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
         const functionAbi = proposalInterfacesPossible?.[0]?.interface?.[0] as string
         const functionAbiAlternate = fAbi?.interface?.[0] || (proposalInterfacesPossible?.[1]?.interface?.[0] as string)
+        const useAbi = functionAbi || functionAbiAlternate
         console.log("callDataXYB functionAbi", functionAbi, functionAbiAlternate)
-        if (!functionAbi) return []
+        if (!useAbi) {
+          // Fallback: show raw calldata when we cannot map to a known interface
+          const raw = (proposal?.callDataPlain?.[0] || "0x").toString()
+          proposal.proposalData = [
+            {
+              parameter: `Call Data (${proposal?.targets?.[0] || "unknown target"})`,
+              value: raw.startsWith("0x") ? raw : `0x${raw}`
+            }
+          ]
+          setDaoProposalSelected(proposal)
+          return []
+        }
 
         const proposalData = proposalInterfacesPossible
           ? proposal?.callDataPlain?.map((callData: any) => {
               console.log("callDataXYB", callData)
               const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
-              const decodedDataPair = decodeCalldataWithEthers(functionAbi, formattedCallData)
-              const decodedDataPairLegacy = decodeFunctionParametersLegacy(functionAbi, formattedCallData)
+              const decodedDataPair = decodeCalldataWithEthers(useAbi, formattedCallData)
+              const decodedDataPairLegacy = decodeFunctionParametersLegacy(useAbi, formattedCallData)
               console.log("callDataXYB decodedDataPair", decodedDataPair)
               console.log("callDataXYB decodedDataPairLegacy", decodedDataPairLegacy)
               const functionName = decodedDataPair?.functionName
