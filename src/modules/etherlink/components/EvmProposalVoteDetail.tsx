@@ -9,7 +9,7 @@ import { getTurnoutValue } from "services/utils/utils"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
 import { EtherlinkContext } from "services/wagmi/context"
 import { LinearProgress } from "components/ui/LinearProgress"
-import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { EVM_PROPOSAL_CHOICES } from "../config"
 import { IEvmOffchainChoice, IEvmProposal, ITransactionStatus } from "../types"
 import dayjs from "dayjs"
@@ -127,7 +127,7 @@ export const EvmProposalVoteDetail: React.FC<{
   const choices = poll.type === "offchain" ? poll.choices : EVM_PROPOSAL_CHOICES
   const { network } = useTezos()
   const [turnout, setTurnout] = useState<number | null>()
-  const { setShowProposalVoterList } = useEvmDaoOps()
+  const { setShowProposalVoterList } = useEvmDaoUiOps()
   const { daoSelected } = useContext(EtherlinkContext)
 
   const daoProposalSelected = poll

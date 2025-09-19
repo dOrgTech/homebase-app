@@ -18,6 +18,7 @@ import { EvmProposalDetailsPage } from "./EtherlinkDAO/EvmProposalDetailsPage"
 import { EvmUserPage } from "./EtherlinkDAO/EvmUserPage"
 import { EtherlinkContext } from "services/wagmi/context"
 import { EvmOffchainProposalDetailsPage } from "./EtherlinkDAO/EvmOffchainProposalDetailPage"
+import { dbg } from "utils/debug"
 
 enum DAOState {
   NOT_FOUND = 0,
@@ -37,8 +38,13 @@ const EtherlinkDAORouteContent: React.FC = ({ children }) => {
       if (!data && !!error && !isLoading) {
         try {
           await tezos.contract.at(daoId)
+          dbg("[ROUTER:existenceCheck]", {
+            daoId,
+            note: "Tezos contract.at used on Etherlink route → NOT_INDEXED if resolves"
+          })
           setState(DAOState.NOT_INDEXED)
         } catch (e) {
+          dbg("[ROUTER:existenceCheck]", { daoId, note: "Tezos contract.at failed → NOT_FOUND", error: String(e) })
           setState(DAOState.NOT_FOUND)
         }
       }

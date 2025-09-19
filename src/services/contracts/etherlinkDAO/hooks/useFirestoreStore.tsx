@@ -2,6 +2,7 @@
 import { create } from "zustand"
 import { collection, CollectionReference, doc, DocumentData, getDocs, onSnapshot } from "firebase/firestore"
 import { db } from "../firebase-config"
+import { dbg } from "utils/debug"
 
 interface FirestoreState {
   data: Record<string, any[]>
@@ -42,7 +43,17 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
       const unsubscribe = onSnapshot(
         collectionRef,
         snapshot => {
-          console.log("collectionData", snapshot.docs)
+          dbg("[FS] collection:", collectionName, "count:", snapshot.size)
+          try {
+            if (snapshot.size > 0) {
+              const first = snapshot.docs[0]?.data() as Record<string, unknown>
+              if (first) {
+                dbg("[FS] sample doc keys:", Object.keys(first))
+              }
+            }
+          } catch (_) {
+            // noop
+          }
 
           const collectionData = snapshot.docs.map(doc => ({
             id: doc?.id,
@@ -55,7 +66,7 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
           }))
         },
         error => {
-          console.log("FirebaseError", error)
+          dbg("[FS:error]", collectionName, error)
           set(state => ({
             error: { ...state.error, [collectionName]: (error as Error).message ?? "Unknown error" },
             loading: { ...state.loading, [collectionName]: false }

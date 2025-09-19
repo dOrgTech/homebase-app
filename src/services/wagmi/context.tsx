@@ -29,12 +29,14 @@ import { proposalInterfaces } from "modules/etherlink/config"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
 import { IEvmDAO, IEvmFirebaseContract, IEvmFirebaseDAOMember, IEvmFirebaseProposal } from "modules/etherlink/types"
 import { networkConfig } from "modules/etherlink/utils"
+import { dbg } from "utils/debug"
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
 const useEtherlinkDao = ({ network }: { network: string }) => {
   const selectedDaoIdRef = useRef<string | null>(null)
+  const selectedProposalIdRef = useRef<string | null>(null)
 
   const firebaseRootCollection = useMemo(() => {
     return networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection
@@ -120,6 +122,20 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
     if (firestoreData?.[firebaseRootCollection]) {
       const allDaoList = firestoreData[firebaseRootCollection]
+      dbg("[DAO:list]", {
+        collection: firebaseRootCollection,
+        count: allDaoList?.length,
+        sample: allDaoList?.length
+          ? {
+              id: allDaoList[0]?.id,
+              address: allDaoList[0]?.address,
+              token: allDaoList[0]?.token,
+              registryAddress: allDaoList[0]?.registryAddress,
+              decimals: allDaoList[0]?.decimals,
+              symbol: allDaoList[0]?.symbol
+            }
+          : null
+      })
       setDaoData(allDaoList)
       setIsLoadingDaos(false)
     }
@@ -127,12 +143,17 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     if (firestoreData?.["contracts"]) {
       const isTestnet = firebaseRootCollection?.toLowerCase().includes("testnet")
       const contractDataForNetwork = firestoreData["contracts"]?.find((contract: IEvmFirebaseContract) => {
-        console.log({ contract })
+        dbg("[CONTRACTS:scan:item]", `id=${contract?.id}`)
         return isTestnet
           ? contract.id?.toLowerCase().includes("testnet")
           : !contract.id?.toLowerCase().includes("testnet")
       })
-      console.log("contractDataForNetwork", contractDataForNetwork)
+      dbg("[CONTRACTS:data]", {
+        network: isTestnet ? "testnet" : "mainnet",
+        id: contractDataForNetwork?.id,
+        wrapper_w: contractDataForNetwork?.wrapper_w,
+        wrapper_t: contractDataForNetwork?.wrapper_t
+      })
       setContractData(contractDataForNetwork)
     }
     if (!daoSelected?.id) return
@@ -141,6 +162,11 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     const daoProposalVotesKey = `${firebaseRootCollection}/${daoSelected?.id}/proposals/${daoProposalSelected?.id}/votes`
 
     if (firestoreData?.[daoProposalKey]) {
+      dbg("[PROPOSALS:raw]", {
+        dao: daoSelected?.id,
+        count: firestoreData[daoProposalKey]?.length,
+        sample: firestoreData[daoProposalKey]?.length ? firestoreData[daoProposalKey][0] : null
+      })
       const timeNow = dayjs()
       const onChainProposals = firestoreData[daoProposalKey]
         ?.sort((a: IEvmFirebaseProposal, b: IEvmFirebaseProposal) => b.createdAt?.seconds - a.createdAt?.seconds)
@@ -243,6 +269,9 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
           const callDatas = firebaseProposal?.callDatas
           const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
+          if (Array.isArray(callDataPlain) && callDataPlain.some((x: string) => x === "0x")) {
+            dbg("[CALLDATA:empty]", { id: firebaseProposal?.id, callDatas })
+          }
 
           const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
           const proposalStatus = sortedStatusHistoryMap[0]?.status
@@ -280,7 +309,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
 
           console.log("sortedStatusHistoryMap", sortedStatusHistoryMap)
 
-          return {
+          const mapped = {
             ...firebaseProposal,
             createdAt: dayjs.unix(firebaseProposal.createdAt?.seconds as unknown as number),
             callDataPlain,
@@ -302,9 +331,72 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
             votingExpiresAt,
             votesWeightPercentage: Number(votesPercentage.toFixed(2))
           }
+          dbg("[PROPOSALS:mapped]", {
+            id: mapped?.id,
+            type: mapped?.type,
+            targets: mapped?.targets,
+            callDatasLen: mapped?.callDatas?.length,
+            status: mapped?.status
+          })
+          return mapped
         })
 
       setDaoProposals(onChainProposals)
+      // If a proposal selection was requested earlier, attempt to select it now
+      try {
+        if (selectedProposalIdRef.current) {
+          const proposal = onChainProposals.find((p: any) => p.id === selectedProposalIdRef.current)
+          if (proposal) {
+            dbg("[UI:proposalAutoSelect]", {
+              id: selectedProposalIdRef.current,
+              type: proposal?.type,
+              status: proposal?.status
+            })
+            // compute proposalData and set selection mirroring selectDaoProposal
+            const fAbi = getFunctionAbi(proposal?.callDataPlain?.[0])
+            const proposalInterfacesPossible = proposalInterfaces.filter((x: any) => {
+              let fbType = proposal?.type?.toLowerCase()
+              if (fbType?.startsWith("mint")) fbType = "mint"
+              if (fbType?.startsWith("burn")) fbType = "burn"
+              return x.tags?.includes(fbType)
+            })
+            const functionAbi = proposalInterfacesPossible?.[0]?.interface?.[0] as string
+            const functionAbiAlternate =
+              fAbi?.interface?.[0] || (proposalInterfacesPossible?.[1]?.interface?.[0] as string)
+            if (proposal?.type === "contract call") {
+              proposal.proposalData = [
+                {
+                  parameter: `Contract Call from ${proposal?.targets?.[0]}`,
+                  value: proposal?.callDataPlain?.[0]
+                }
+              ]
+            } else if (functionAbi) {
+              proposal.proposalData = proposal?.callDataPlain?.map((callData: any) => {
+                const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
+                const decodedDataPair = decodeCalldataWithEthers(functionAbi, formattedCallData)
+                const decodedDataPairLegacy = decodeFunctionParametersLegacy(functionAbi, formattedCallData)
+                const functionName = decodedDataPair?.functionName
+                const functionParams = decodedDataPair?.decodedData
+                const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
+                const label = proposalInterface?.label
+                if (proposal.type === "transfer" && !label) {
+                  const decodeDataAlternate = decodeCalldataWithEthers(functionAbiAlternate, formattedCallData)
+                  return {
+                    parameter: "Transfer",
+                    value: `${decodeDataAlternate?.functionName}:${decodeDataAlternate?.decodedData?.join(", ")}`
+                  }
+                }
+                return { parameter: label || functionName, value: functionParams.join(", ") }
+              })
+            } else {
+              proposal.proposalData = []
+            }
+            setDaoProposalSelected(proposal)
+          }
+        }
+      } catch (err) {
+        dbg("[PROPOSALS:auto-select:error]", String(err))
+      }
     }
 
     if (firestoreData?.[daoMembersKey]) {
@@ -327,7 +419,13 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   ])
 
   useEffect(() => {
-    console.log({ daoSelected })
+    dbg("[DAO:selected]", {
+      id: daoSelected?.id,
+      address: daoSelected?.address,
+      token: daoSelected?.token,
+      registryAddress: daoSelected?.registryAddress,
+      decimals: daoSelected?.decimals
+    })
     if (daoSelected?.id && firebaseRootCollection && daoProposalSelected?.type !== "offchain") {
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/proposals`)
       fetchCollection(`${firebaseRootCollection}/${daoSelected.id}/members`)
@@ -448,12 +546,16 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     daoMembers,
     daoProposalVoters,
     selectDaoProposal: (proposalId: string) => {
+      selectedProposalIdRef.current = proposalId
+      dbg("[UI:proposalSelect:request]", { id: proposalId, proposalsLoaded: allDaoProposals?.length })
       const proposal = allDaoProposals.find((proposal: any) => proposal.id === proposalId)
       console.log("selectDaoProposal", proposal)
       if (proposal && proposal?.type === "offchain") {
+        dbg("[UI:proposalSelect:found]", { id: proposalId, type: "offchain" })
         console.log("Selecing Offchain Proposal", proposal)
         // setDaoProposalOffchainSelected(proposal)
       } else if (proposal && proposal?.type !== "contract call") {
+        dbg("[UI:proposalSelect:found]", { id: proposalId, type: proposal?.type })
         const fAbi = getFunctionAbi(proposal?.callDataPlain?.[0])
         console.log("fAbi", fAbi)
         const proposalInterfacesPossible = proposalInterfaces.filter((x: any) => {
@@ -498,6 +600,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         proposal.proposalData = proposalData
         setDaoProposalSelected(proposal)
       } else if (proposal?.type === "contract call") {
+        dbg("[UI:proposalSelect:found]", { id: proposalId, type: "contract call" })
         proposal.proposalData = [
           {
             parameter: `Contract Call from ${proposal?.targets?.[0]}`,
@@ -505,11 +608,17 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
           }
         ]
         setDaoProposalSelected(proposal)
+      } else {
+        dbg("[UI:proposalSelect:pending]", {
+          id: proposalId,
+          note: "Not found yet; will auto-select once proposals load"
+        })
       }
     },
     selectDao: (daoId: string) => {
       const dao = daoData.find(dao => (dao?.id || "").toLowerCase() === (daoId || "").toLowerCase())
       if (dao) {
+        dbg("[DAO:select]", daoId, "=>", { address: dao?.address, token: dao?.token })
         setDaoSelected(dao)
         selectedDaoIdRef.current = daoId
       }
@@ -524,8 +633,6 @@ export const EtherlinkContext = createContext<any | undefined>(undefined)
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false)
   const { setOpen } = useModal()
-  const provider = useEthersProvider()
-  const signer = useEthersSigner()
   const { switchChain } = useSwitchChain()
   const { network: contextNetwork } = useNetwork()
   const [signerTokenBalances, setSignerTokenBalances] = useState<any[]>([])
@@ -547,6 +654,14 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
     return contextNetwork
   }, [chain?.name, contextNetwork])
+
+  const selectedChainId = useMemo(() => {
+    // Default to Etherlink mainnet if ambiguous
+    return etherlinkNetwork === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
+  }, [etherlinkNetwork])
+
+  const provider = useEthersProvider({ chainId: selectedChainId })
+  const signer = useEthersSigner({ chainId: selectedChainId })
 
   const switchToNetwork = useCallback(
     (network: string) => {

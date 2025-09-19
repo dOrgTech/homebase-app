@@ -13,6 +13,7 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { CopyButton } from "modules/common/CopyButton"
 import { useTezos } from "services/beacon/hooks/useTezos"
+import { dbg } from "utils/debug"
 
 const RenderProposalAction = () => {
   const [isDeploying, setIsDeploying] = useState(false)
@@ -194,12 +195,19 @@ export const EvmProposalDetailsPage = () => {
   const params = useParams() as { proposalId: string }
   const proposalId = params?.proposalId
 
-  const { daoSelected, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
+  const { daoSelected, daoProposals, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
   const { isTimerActive } = daoProposalSelected
 
   useEffect(() => {
+    if (!proposalId) return
     selectDaoProposal(proposalId)
-  }, [proposalId, selectDaoProposal])
+    dbg("[UI:proposalDetails]", {
+      proposalId,
+      daoToken: daoSelected?.token,
+      daoDecimals: daoSelected?.decimals,
+      proposalsLoaded: daoProposals?.length
+    })
+  }, [proposalId, selectDaoProposal, daoSelected?.id, daoProposals?.length])
 
   return (
     <div>

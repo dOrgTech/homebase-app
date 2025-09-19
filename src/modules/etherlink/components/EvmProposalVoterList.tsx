@@ -12,7 +12,7 @@ import { EVM_PROPOSAL_CHOICES } from "../config"
 import { useContext, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import ReactPaginate from "react-paginate"
-import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { Container, CustomContent, Header, VotesRow, StyledTableCell, StyledTableRow, CopyIcon } from "./styled"
 interface IVoter {
   voter: string
@@ -25,7 +25,7 @@ export const EvmProposalVoterList = () => {
 
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const { copyAddress, showProposalVoterList, setShowProposalVoterList } = useEvmDaoOps()
+  const { copyAddress, showProposalVoterList, setShowProposalVoterList } = useEvmDaoUiOps()
   const { daoProposalSelected, daoProposalVoters } = useContext(EtherlinkContext)
 
   const listOfVotes = [] as IVoter[]
