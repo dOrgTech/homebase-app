@@ -7,6 +7,9 @@ import { getDefaultConfig } from "connectkit"
 
 const wagmiChains = [etherlink, etherlinkTestnet, hardhat] as const
 
+// Allow overriding Etherlink Testnet RPC via env
+const etherlinkTestnetRpc = process.env.REACT_APP_RPC_ETHERLINK_TESTNET?.trim()
+
 // 1. Your WalletConnect Cloud project ID
 const projectId = "7dd66fecc485693b67e6921c580e7040"
 
@@ -16,7 +19,7 @@ export const config = createConfig(
     // connectors: [metaMask(), walletConnect({ projectId })],
     transports: {
       [etherlink.id]: http(),
-      [etherlinkTestnet.id]: http()
+      [etherlinkTestnet.id]: etherlinkTestnetRpc ? http(etherlinkTestnetRpc) : http()
     },
     walletConnectProjectId: projectId,
     appName: "Homebase",

@@ -5,8 +5,8 @@ import { persist, createJSONStorage } from "zustand/middleware"
 
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
-import HbWrapperAbi from "assets/abis/hb_wrapper.json"
-import HbWrapperWAbi from "assets/abis/hb_wrapper_w.json"
+// Import the compiled ABI from local npm-linked package to avoid duplication
+import WrapperContractArtifact from "homebase-evm-contracts/artifacts/contracts/Factories.sol/WrapperContract.json"
 import HbWrapperWLegacyAbi from "assets/abis/hb_wrapper_w_legacy.json"
 
 import { useCallback, useContext, useState } from "react"
@@ -277,8 +277,8 @@ const useEvmDaoCreateStore = () => {
         daoData.tokenDeploymentMechanism === "wrapped"
           ? isUsingFallbackAddress
             ? HbWrapperWLegacyAbi.abi
-            : HbWrapperWAbi.abi
-          : HbWrapperAbi.abi
+            : (WrapperContractArtifact as any).abi
+          : (WrapperContractArtifact as any).abi
 
       console.log("Creating wrapper factory with:", {
         address: selectedWrapperAddress,
@@ -418,6 +418,15 @@ const useEvmDaoCreateStore = () => {
           quorumThreshold.toString() // DAO setting 4: quorum threshold
         ]
 
+        // Ensure description is also persisted on-chain via registry for indexers
+        const registryForDeploy = (() => {
+          const base: Record<string, string> = { ...(daoData.registry || {}) } as any
+          if (daoData.description && !base["description"]) {
+            base["description"] = String(daoData.description)
+          }
+          return base
+        })()
+
         const daoCreateObject = {
           name: daoData.name || "",
           symbol: daoData.governanceToken.symbol || "",
@@ -426,8 +435,8 @@ const useEvmDaoCreateStore = () => {
           executionDelay: Math.floor(executationDelayinSeconds),
           initialMembers: daoData.members.map((member: any) => member.address),
           initialAmounts: initialAmountsWithSettings,
-          keys: Object.keys(daoData.registry || {}),
-          values: Object.values(daoData.registry || {}).map(v => String(v)),
+          keys: Object.keys(registryForDeploy),
+          values: Object.values(registryForDeploy).map(v => String(v)),
           transferrable: !daoData.nonTransferable // Note: fixed spelling to match ABI
         }
         console.log("Deploying new token DAO with object:", daoCreateObject)

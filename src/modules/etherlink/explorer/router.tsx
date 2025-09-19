@@ -16,6 +16,7 @@ import { EvmMembersPage } from "./EtherlinkDAO/EvmMembersPage"
 import { EvmRegistryPage } from "./EtherlinkDAO/EvmRegistryPage"
 import { EvmProposalDetailsPage } from "./EtherlinkDAO/EvmProposalDetailsPage"
 import { EvmUserPage } from "./EtherlinkDAO/EvmUserPage"
+import { EtherlinkContext } from "services/wagmi/context"
 import { EvmOffchainProposalDetailsPage } from "./EtherlinkDAO/EvmOffchainProposalDetailPage"
 
 enum DAOState {
@@ -74,6 +75,16 @@ const EtherlinkDAORoute: React.FC<RouteProps> = ({ children, ...props }) => {
 const EtherlinkDAOContext = React.createContext("")
 
 const EtherlinkDAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) => {
+  // Auto-select the DAO in Etherlink context when route changes
+  const etherlinkCtx = useContext(EtherlinkContext)
+  useEffect(() => {
+    if (!etherlinkCtx) return
+    const { selectDao, daos } = etherlinkCtx
+    if (daoId && Array.isArray(daos) && daos.length) {
+      selectDao(daoId)
+    }
+  }, [daoId, etherlinkCtx?.daos])
+
   return <EtherlinkDAOContext.Provider value={daoId}>{children}</EtherlinkDAOContext.Provider>
 }
 

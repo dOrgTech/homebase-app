@@ -508,7 +508,7 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
       }
     },
     selectDao: (daoId: string) => {
-      const dao = daoData.find(dao => dao.id === daoId)
+      const dao = daoData.find(dao => (dao?.id || "").toLowerCase() === (daoId || "").toLowerCase())
       if (dao) {
         setDaoSelected(dao)
         selectedDaoIdRef.current = daoId
@@ -539,6 +539,11 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
     if (chain?.name === "Etherlink Testnet") {
       return "etherlink_testnet"
+    }
+    // If the global network isn't set to an Etherlink value,
+    // default to Etherlink mainnet for Etherlink pages.
+    if (!contextNetwork?.startsWith("etherlink")) {
+      return "etherlink_mainnet"
     }
     return contextNetwork
   }, [chain?.name, contextNetwork])

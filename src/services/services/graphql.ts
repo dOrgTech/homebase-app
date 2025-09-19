@@ -15,9 +15,14 @@ export const client = new GraphQLClient(BASE_URL, {
   }
 })
 
+const headersV2: Record<string, string> = {
+  "content-type": "application/json"
+}
+
+if (HASURA_ADMIN_SECRET_V2) {
+  headersV2["x-hasura-admin-secret"] = HASURA_ADMIN_SECRET_V2
+}
+
 export const client_v2 = new GraphQLClient(BASE_URL_V2, {
-  headers: {
-    "content-type": "application/json",
-    "x-hasura-admin-secret": HASURA_ADMIN_SECRET_V2
-  }
+  headers: headersV2
 })
