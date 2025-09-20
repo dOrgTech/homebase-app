@@ -5,8 +5,8 @@ import { persist, createJSONStorage } from "zustand/middleware"
 
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
-// Import the compiled ABI from local npm-linked package to avoid duplication
-import WrapperContractArtifact from "@w3mirror/homebase-evm-contracts/artifacts/contracts/Factories.sol/WrapperContract.json"
+
+import WrapperContractAbi from "@W3Mirror/homebase-evm-contracts/python/homebase_evm_contracts/abis/wrapper_v2.abi.json"
 import HbWrapperWLegacyAbi from "assets/abis/hb_wrapper_w_legacy.json"
 
 import { useCallback, useContext, useState } from "react"
@@ -273,12 +273,15 @@ const useEvmDaoCreateStore = () => {
 
       // Use legacy ABI if using the fallback address
       const isUsingFallbackAddress = selectedWrapperAddress === "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2"
+      const wrapperAbi = Array.isArray(WrapperContractAbi)
+        ? (WrapperContractAbi as any)
+        : (WrapperContractAbi as any)?.abi
       const selectedAbi =
         daoData.tokenDeploymentMechanism === "wrapped"
           ? isUsingFallbackAddress
             ? HbWrapperWLegacyAbi.abi
-            : (WrapperContractArtifact as any).abi
-          : (WrapperContractArtifact as any).abi
+            : wrapperAbi
+          : wrapperAbi
 
       console.log("Creating wrapper factory with:", {
         address: selectedWrapperAddress,
