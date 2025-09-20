@@ -6,7 +6,7 @@ import { persist, createJSONStorage } from "zustand/middleware"
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
 // Import the compiled ABI from local npm-linked package to avoid duplication
-import WrapperContractArtifact from "homebase-evm-contracts/artifacts/contracts/Factories.sol/WrapperContract.json"
+import WrapperContractArtifact from "@w3mirror/homebase-evm-contracts/artifacts/contracts/Factories.sol/WrapperContract.json"
 import HbWrapperWLegacyAbi from "assets/abis/hb_wrapper_w_legacy.json"
 
 import { useCallback, useContext, useState } from "react"

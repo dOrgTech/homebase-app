@@ -23,7 +23,9 @@ import {
   getBlockExplorerUrl,
   getEtherAddressDetails,
   getEtherTokenBalances,
-  getEtherlinkDAONfts
+  getEtherlinkDAONfts,
+  decodeCallData,
+  getContractWriteMethods
 } from "modules/etherlink/utils"
 import { proposalInterfaces } from "modules/etherlink/config"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
@@ -352,53 +354,18 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
               type: proposal?.type,
               status: proposal?.status
             })
-            // compute proposalData and set selection mirroring selectDaoProposal
-            const fAbi = getFunctionAbi(proposal?.callDataPlain?.[0])
-            const proposalInterfacesPossible = proposalInterfaces.filter((x: any) => {
-              let fbType = proposal?.type?.toLowerCase()
-              if (fbType?.startsWith("mint")) fbType = "mint"
-              if (fbType?.startsWith("burn")) fbType = "burn"
-              return x.tags?.includes(fbType)
-            })
-            const functionAbi = proposalInterfacesPossible?.[0]?.interface?.[0] as string
-            const functionAbiAlternate =
-              fAbi?.interface?.[0] || (proposalInterfacesPossible?.[1]?.interface?.[0] as string)
-            const useAbi = functionAbi || functionAbiAlternate
-            if (proposal?.type === "contract call") {
-              proposal.proposalData = [
-                {
-                  parameter: `Contract Call from ${proposal?.targets?.[0]}`,
-                  value: proposal?.callDataPlain?.[0]
-                }
-              ]
-            } else if (useAbi) {
-              proposal.proposalData = proposal?.callDataPlain?.map((callData: any) => {
-                const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
-                const decodedDataPair = decodeCalldataWithEthers(useAbi, formattedCallData)
-                const decodedDataPairLegacy = decodeFunctionParametersLegacy(useAbi, formattedCallData)
-                const functionName = decodedDataPair?.functionName
-                const functionParams = decodedDataPair?.decodedData
-                const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
-                const label = proposalInterface?.label
-                if (proposal.type === "transfer" && !label) {
-                  const decodeDataAlternate = decodeCalldataWithEthers(functionAbiAlternate, formattedCallData)
-                  return {
-                    parameter: "Transfer",
-                    value: `${decodeDataAlternate?.functionName}:${decodeDataAlternate?.decodedData?.join(", ")}`
-                  }
-                }
-                return { parameter: label || functionName, value: functionParams.join(", ") }
-              })
-            } else {
-              const raw = (proposal?.callDataPlain?.[0] || "0x").toString()
-              proposal.proposalData = [
-                {
-                  parameter: `Call Data (${proposal?.targets?.[0] || "unknown target"})`,
-                  value: raw.startsWith("0x") ? raw : `0x${raw}`
-                }
-              ]
-            }
+            // Build proposalData using central decoder (tags → ABIs, selector fallback),
+            // or fall back to raw calldata
+            proposal.proposalData = buildProposalData(proposal)
             setDaoProposalSelected(proposal)
+            // Opportunistically upgrade decoding with explorer ABI if needed
+            if (isRawFallback(proposal.proposalData)) {
+              buildProposalDataAsync(proposal).then(upgraded => {
+                if (Array.isArray(upgraded) && upgraded.length > 0 && !isRawFallback(upgraded)) {
+                  setDaoProposalSelected({ ...proposal, proposalData: upgraded })
+                }
+              })
+            }
           }
         }
       } catch (err) {
@@ -526,11 +493,12 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
   )
 
   const getFunctionAbi = useCallback<any>((callData: string) => {
+    const callDataSelector = (callData || "").substring(0, 10)
+
+    // Transfers
     const transferEthSelector = ethers.id("transferETH(address,uint256)").substring(0, 10)
     const transferErc20Selector = ethers.id("transferERC20(address,address,uint256)").substring(0, 10)
     const transferErc721Selector = ethers.id("transferERC721(address,address,uint256)").substring(0, 10)
-    const callDataSelector = callData.substring(0, 10)
-
     if (callDataSelector === transferEthSelector) {
       return proposalInterfaces.find((x: any) => x.name === "transferETH")
     } else if (callDataSelector === transferErc20Selector) {
@@ -538,8 +506,204 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     } else if (callDataSelector === transferErc721Selector) {
       return proposalInterfaces.find((x: any) => x.name === "transferERC721")
     }
+
+    // DAO Config
+    const updateQuorumSelector = ethers.id("updateQuorumNumerator(uint256)").substring(0, 10)
+    const setVotingDelaySelector = ethers.id("setVotingDelay(uint48)").substring(0, 10)
+    const setVotingPeriodSelector = ethers.id("setVotingPeriod(uint32)").substring(0, 10)
+    const setProposalThresholdSelector = ethers.id("setProposalThreshold(uint256)").substring(0, 10)
+    if (callDataSelector === updateQuorumSelector) {
+      return proposalInterfaces.find((x: any) => x.name === "updateQuorumNumerator")
+    } else if (callDataSelector === setVotingDelaySelector) {
+      return proposalInterfaces.find((x: any) => x.name === "setVotingDelay")
+    } else if (callDataSelector === setVotingPeriodSelector) {
+      return proposalInterfaces.find((x: any) => x.name === "setVotingPeriod")
+    } else if (callDataSelector === setProposalThresholdSelector) {
+      return proposalInterfaces.find((x: any) => x.name === "setProposalThreshold")
+    }
+
+    // Registry
+    const editRegistrySelector = ethers.id("editRegistry(string,string)").substring(0, 10)
+    if (callDataSelector === editRegistrySelector) {
+      return proposalInterfaces.find((x: any) => x.name === "editRegistry")
+    }
+
+    // Token ops: mint/burn variants
+    const mintSelector = ethers.id("mint(address,uint256)").substring(0, 10)
+    const burnSelector = ethers.id("burn(address,uint256)").substring(0, 10)
+    const burnFromSelector = ethers.id("burnFrom(address,uint256)").substring(0, 10)
+    const burnSimpleSelector = ethers.id("burn(uint256)").substring(0, 10)
+    if (callDataSelector === mintSelector) {
+      return proposalInterfaces.find((x: any) => x.name === "mint")
+    } else if (callDataSelector === burnSelector) {
+      // choose the burn(address,uint256) entry
+      return proposalInterfaces.find((x: any) => x.name === "burn" && x.interface?.[0]?.includes("burn(address"))
+    } else if (callDataSelector === burnFromSelector) {
+      return proposalInterfaces.find((x: any) => x.name === "burnFrom")
+    } else if (callDataSelector === burnSimpleSelector) {
+      // choose the burn(uint256) entry
+      return proposalInterfaces.find((x: any) => x.name === "burn" && x.interface?.[0]?.includes("burn(uint256"))
+    }
+
     return {}
   }, [])
+
+  // Centralized Proposal Data decoder for on-chain proposals
+  const buildProposalData = useCallback(
+    (proposal: any) => {
+      try {
+        // 1) Try tagged decoding based on proposal.type
+        const decodedByType = decodeCallData((proposal?.type || "") as any, proposal?.callDataPlain || [])
+        if (decodedByType && decodedByType.length > 0) {
+          return decodedByType
+        }
+
+        // 2) Try selector-based fallback using first calldata
+        const first = (proposal?.callDataPlain?.[0] || "0x").toString()
+        const fAbi = getFunctionAbi(first)
+        const possible = proposalInterfaces.filter((x: any) => {
+          let fbType = (proposal?.type || "").toLowerCase()
+          if (fbType?.startsWith("mint")) fbType = "mint"
+          if (fbType?.startsWith("burn")) fbType = "burn"
+          return x.tags?.includes(fbType)
+        })
+        const functionAbi = (possible?.[0]?.interface?.[0] as string) || (fAbi?.interface?.[0] as string)
+        if (functionAbi) {
+          return proposal?.callDataPlain?.map((callData: string) => {
+            const formattedCallData = callData?.startsWith("0x") ? callData : `0x${callData}`
+            const decoded = decodeCalldataWithEthers(functionAbi, formattedCallData)
+            const functionName = decoded?.functionName
+            const params = decoded?.decodedData
+            const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
+            const label = proposalInterface?.label || functionName
+            return { parameter: label, value: Array.isArray(params) ? params.join(", ") : String(params) }
+          })
+        }
+
+        // 3) Last resort: raw calldata
+        const raw = (first || "0x").toString()
+        return [
+          {
+            parameter: `Call Data (${proposal?.targets?.[0] || "unknown target"})`,
+            value: raw.startsWith("0x") ? raw : `0x${raw}`
+          }
+        ]
+      } catch (e) {
+        const first = (proposal?.callDataPlain?.[0] || "0x").toString()
+        return [
+          {
+            parameter: `Call Data (${proposal?.targets?.[0] || "unknown target"})`,
+            value: first.startsWith("0x") ? first : `0x${first}`
+          }
+        ]
+      }
+    },
+    [getFunctionAbi]
+  )
+
+  // Cache explorer write methods per target address to reduce network calls
+  const abiCacheRef = useRef<Map<string, any[]>>(new Map())
+
+  const getMethodsForAddress = useCallback(
+    async (address: string) => {
+      const key = (address || "").toLowerCase()
+      if (!key) return []
+      const cached = abiCacheRef.current.get(key)
+      if (cached) return cached
+      try {
+        const methods = await getContractWriteMethods(address, network)
+        abiCacheRef.current.set(key, methods || [])
+        return methods || []
+      } catch (e) {
+        return []
+      }
+    },
+    [network]
+  )
+
+  // Build an ethers function fragment string from explorer method entry
+  const buildFunctionAbiFromMethod = (m: any) => {
+    try {
+      const name = m?.name || ""
+      const inputs = Array.isArray(m?.inputs) ? m.inputs : []
+      const types = inputs.map((i: any) => i?.type || i?.internalType || "bytes").join(",")
+      const fragment = `function ${name}(${types})`
+      return fragment
+    } catch {
+      return ""
+    }
+  }
+
+  const calcSelector = (functionAbi: string) => {
+    try {
+      return ethers.id(functionAbi).substring(0, 10)
+    } catch {
+      return ""
+    }
+  }
+
+  const decodeWithExplorerAbi = useCallback(
+    async (target: string, callDataHex: string) => {
+      try {
+        const methods = await getMethodsForAddress(target)
+        const selector = (callDataHex || "").substring(0, 10)
+        for (const m of methods) {
+          const functionAbi = buildFunctionAbiFromMethod(m)
+          if (!functionAbi) continue
+          const sel = calcSelector(functionAbi)
+          if (sel && sel === selector) {
+            const decoded = decodeCalldataWithEthers(functionAbi, callDataHex)
+            const functionName = decoded?.functionName || m?.name || "call"
+            const params = decoded?.decodedData
+            // Try to map to a known interface for a better label
+            const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
+            const label = proposalInterface?.label || functionName
+            return { parameter: label, value: Array.isArray(params) ? params.join(", ") : String(params) }
+          }
+        }
+      } catch (_) {
+        // ignore
+      }
+      return null
+    },
+    [getMethodsForAddress]
+  )
+
+  const isRawFallback = (entries: any[]) => {
+    if (!Array.isArray(entries) || entries.length === 0) return true
+    return entries.every(e => typeof e?.parameter === "string" && e.parameter.startsWith("Call Data ("))
+  }
+
+  // Attempt to upgrade proposalData with explorer ABI for unknown calls
+  const buildProposalDataAsync = useCallback(
+    async (proposal: any) => {
+      try {
+        const first = (proposal?.callDataPlain?.[0] || "0x").toString()
+        const entries: { parameter: string; value: string }[] = []
+        const callDataList: string[] = proposal?.callDataPlain || []
+        const targets: string[] = proposal?.targets || []
+        for (let i = 0; i < callDataList.length; i++) {
+          const cd = callDataList[i]
+          const tgt = targets[i] || targets[0] || ""
+          const formatted = cd?.startsWith("0x") ? cd : `0x${cd}`
+          const decoded = await decodeWithExplorerAbi(tgt, formatted)
+          if (decoded) {
+            entries.push(decoded)
+          } else {
+            const raw = (formatted || "0x").toString()
+            entries.push({
+              parameter: `Call Data (${tgt || "unknown target"})`,
+              value: raw
+            })
+          }
+        }
+        return entries
+      } catch {
+        return []
+      }
+    },
+    [decodeWithExplorerAbi]
+  )
 
   return {
     contractData,
@@ -563,70 +727,26 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         // setDaoProposalOffchainSelected(proposal)
       } else if (proposal && proposal?.type !== "contract call") {
         dbg("[UI:proposalSelect:found]", { id: proposalId, type: proposal?.type })
-        const fAbi = getFunctionAbi(proposal?.callDataPlain?.[0])
-        console.log("fAbi", fAbi)
-        const proposalInterfacesPossible = proposalInterfaces.filter((x: any) => {
-          let fbType = proposal?.type?.toLowerCase()
-          console.log("callDataXYB fbType", fbType)
-          if (fbType?.startsWith("mint")) fbType = "mint"
-          if (fbType?.startsWith("burn")) fbType = "burn"
-          return x.tags?.includes(fbType)
-        })
-
-        const functionAbi = proposalInterfacesPossible?.[0]?.interface?.[0] as string
-        const functionAbiAlternate = fAbi?.interface?.[0] || (proposalInterfacesPossible?.[1]?.interface?.[0] as string)
-        const useAbi = functionAbi || functionAbiAlternate
-        console.log("callDataXYB functionAbi", functionAbi, functionAbiAlternate)
-        if (!useAbi) {
-          // Fallback: show raw calldata when we cannot map to a known interface
-          const raw = (proposal?.callDataPlain?.[0] || "0x").toString()
-          proposal.proposalData = [
-            {
-              parameter: `Call Data (${proposal?.targets?.[0] || "unknown target"})`,
-              value: raw.startsWith("0x") ? raw : `0x${raw}`
-            }
-          ]
-          setDaoProposalSelected(proposal)
-          return []
-        }
-
-        const proposalData = proposalInterfacesPossible
-          ? proposal?.callDataPlain?.map((callData: any) => {
-              console.log("callDataXYB", callData)
-              const formattedCallData = callData.startsWith("0x") ? callData : `0x${callData}`
-              const decodedDataPair = decodeCalldataWithEthers(useAbi, formattedCallData)
-              const decodedDataPairLegacy = decodeFunctionParametersLegacy(useAbi, formattedCallData)
-              console.log("callDataXYB decodedDataPair", decodedDataPair)
-              console.log("callDataXYB decodedDataPairLegacy", decodedDataPairLegacy)
-              const functionName = decodedDataPair?.functionName
-              const functionParams = decodedDataPair?.decodedData
-              const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
-
-              const label = proposalInterface?.label
-              console.log("callDataXYB decodedDataPair", decodedDataPair, functionName, functionParams)
-              console.log("callDataXYB decodedDataPairLegacy", `-> ${decodedDataPairLegacy[0]}`)
-              if (proposal.type === "transfer" && !label) {
-                const decodeDataAlternate = decodeCalldataWithEthers(functionAbiAlternate, formattedCallData)
-                console.log("callDataXYB decodeDataAlternate", decodeDataAlternate)
-                return {
-                  parameter: "Transfer",
-                  value: `${decodeDataAlternate?.functionName}:${decodeDataAlternate?.decodedData?.join(", ")}`
-                }
-              }
-              return { parameter: label || functionName, value: functionParams.join(", ") }
-            })
-          : []
-        proposal.proposalData = proposalData
+        proposal.proposalData = buildProposalData(proposal)
         setDaoProposalSelected(proposal)
+        if (isRawFallback(proposal.proposalData)) {
+          buildProposalDataAsync(proposal).then(upgraded => {
+            if (Array.isArray(upgraded) && upgraded.length > 0 && !isRawFallback(upgraded)) {
+              setDaoProposalSelected({ ...proposal, proposalData: upgraded })
+            }
+          })
+        }
       } else if (proposal?.type === "contract call") {
         dbg("[UI:proposalSelect:found]", { id: proposalId, type: "contract call" })
-        proposal.proposalData = [
-          {
-            parameter: `Contract Call from ${proposal?.targets?.[0]}`,
-            value: proposal?.callDataPlain?.[0]
-          }
-        ]
+        proposal.proposalData = buildProposalData(proposal)
         setDaoProposalSelected(proposal)
+        if (isRawFallback(proposal.proposalData)) {
+          buildProposalDataAsync(proposal).then(upgraded => {
+            if (Array.isArray(upgraded) && upgraded.length > 0 && !isRawFallback(upgraded)) {
+              setDaoProposalSelected({ ...proposal, proposalData: upgraded })
+            }
+          })
+        }
       } else {
         dbg("[UI:proposalSelect:pending]", {
           id: proposalId,

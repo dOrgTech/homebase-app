@@ -118,6 +118,17 @@ export const proposalInterfaces = [
     interface: ["function burn(address from, uint256 amount)"],
     name: "burn"
   },
+  // Support common burn variants used by ERC20Burnable and others
+  {
+    tags: ["token", "burn"],
+    interface: ["function burnFrom(address from, uint256 amount)"],
+    name: "burnFrom"
+  },
+  {
+    tags: ["token", "burn"],
+    interface: ["function burn(uint256 amount)"],
+    name: "burn"
+  },
   {
     tags: ["transfer"],
     interface: ["function transferETH(address to, uint256 amount)"],
