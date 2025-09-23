@@ -8,14 +8,16 @@ export const networkConfig = {
     explorerUrl: "https://testnet.explorer.etherlink.com",
     explorerApiUrl: "https://testnet.explorer.etherlink.com/api/v2",
     firebaseRootCollection: "idaosEtherlink-Testnet",
-    firebaseRootTokenCollection: "tokensEtherlink-Testnet"
+    firebaseRootTokenCollection: "tokensEtherlink-Testnet",
+    firebaseMemberCollection: "iMembersEtherlink-Testnet"
   },
   etherlink_mainnet: {
     network: "mainnet",
     explorerUrl: "https://explorer.etherlink.com",
     explorerApiUrl: "https://explorer.etherlink.com/api/v2",
     firebaseRootCollection: "idaosEtherlink",
-    firebaseRootTokenCollection: "tokensEtherlink"
+    firebaseRootTokenCollection: "tokensEtherlink",
+    firebaseMemberCollection: "iMembersEtherlink"
   }
 }
 

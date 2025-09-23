@@ -20,7 +20,14 @@ import { PageContainer, StyledTab, Search, DAOItemGrid, DAOItemCard, TabsContain
 
 export const DAOList: React.FC = () => {
   const { network, etherlink, account } = useTezos()
-  const { data: daos, isLoading, isLoadingWithFirebase, signerTokenBalances } = useAllDAOs(network)
+  const {
+    data: daos,
+    isLoading,
+    isLoadingWithFirebase,
+    signerTokenBalances,
+    myEtherlinkDaoAddresses,
+    isLoadingMyDaos
+  } = useAllDAOs(network)
 
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
@@ -89,13 +96,27 @@ export const DAOList: React.FC = () => {
       const accountAddress = account || etherlink?.account?.address
 
       return formattedDAOs.filter(dao => {
+        // Tezos and Lite DAOs
         if (dao.dao_type?.name !== "etherlink_onchain") return dao.votingAddresses.includes(accountAddress)
+
+        // Etherlink DAOs: prefer membership from iMembers, fallback to token presence
+        const addrLower = (dao?.address || dao?.id || "").toLowerCase()
+        const inMembers = (myEtherlinkDaoAddresses || []).includes(addrLower)
+        if (inMembers) return true
         return signerTokenBalances.includes(dao.token)
       })
     }
 
     return []
-  }, [daos, searchText, account, etherlink?.account?.address, formattedDAOs, signerTokenBalances])
+  }, [
+    daos,
+    searchText,
+    account,
+    etherlink?.account?.address,
+    formattedDAOs,
+    signerTokenBalances,
+    myEtherlinkDaoAddresses
+  ])
 
   const filterDAOs = (filter: string) => {
     setSearchText(filter.trim())
@@ -225,7 +246,9 @@ export const DAOList: React.FC = () => {
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                {!(account || etherlink?.isConnected) ? (
+                {network?.includes("etherlink") && isLoadingMyDaos ? (
+                  <LoadingLine color={theme.palette.secondary.main} height={3} barWidth={40} />
+                ) : !(account || etherlink?.isConnected) ? (
                   <ConnectMessage />
                 ) : myDAOs.length > 0 ? (
                   myDAOs.map((dao, i) => (

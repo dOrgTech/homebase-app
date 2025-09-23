@@ -10,6 +10,7 @@ interface FirestoreState {
   error: Record<string, string | null>
   unsubscribe?: Record<string, () => void>
   fetchCollection: (collectionName: string) => Promise<void>
+  fetchDoc: (collectionName: string, docId: string) => Promise<void>
 }
 
 const useFirestoreStore = create<FirestoreState>((set, get) => ({
@@ -83,6 +84,51 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
       set(state => ({
         error: { ...state.error, [collectionName]: (error as Error).message ?? "Unknown error" },
         loading: { ...state.loading, [collectionName]: false }
+      }))
+    }
+  },
+
+  // Subscribe to a single document and store it under the key `${collectionName}/${docId}`
+  fetchDoc: async (collectionName: string, docId: string) => {
+    const { loading } = get()
+    const key = `${collectionName}/${docId}`
+
+    if (!collectionName || !docId) return
+    if (loading[key]) return
+
+    set(state => ({
+      loading: { ...state.loading, [key]: true }
+    }))
+
+    try {
+      const docRef = doc(db, collectionName, docId)
+      const unsubscribe = onSnapshot(
+        docRef,
+        snapshot => {
+          const data = snapshot.data()
+          const payload = data ? [{ id: snapshot.id, ...data }] : []
+          set(state => ({
+            data: { ...state.data, [key]: payload },
+            loading: { ...state.loading, [key]: false }
+          }))
+        },
+        error => {
+          dbg("[FS:doc:error]", key, error)
+          set(state => ({
+            error: { ...state.error, [key]: (error as Error).message ?? "Unknown error" },
+            loading: { ...state.loading, [key]: false }
+          }))
+        }
+      )
+
+      set(state => ({
+        unsubscribe: { ...state.unsubscribe, [key]: unsubscribe }
+      }))
+    } catch (error) {
+      console.log("FirebaseError:fetchDoc", error)
+      set(state => ({
+        error: { ...state.error, [key]: (error as Error).message ?? "Unknown error" },
+        loading: { ...state.loading, [key]: false }
       }))
     }
   },

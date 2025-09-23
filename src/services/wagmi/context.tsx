@@ -835,6 +835,53 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const accountObj = useMemo(() => ({ address: address || "" }), [address])
 
+  // Firestore access (used here for membership doc)
+  const { data: firestoreData, loading: firestoreLoading, fetchDoc } = useFirestoreStore()
+
+  // iMembers collection mapping per Etherlink network
+  const firebaseMemberCollection = useMemo(() => {
+    return networkConfig[etherlinkNetwork as keyof typeof networkConfig]?.firebaseMemberCollection
+  }, [etherlinkNetwork])
+
+  // Subscribe to the member doc (checksum and lowercase variants) when connected
+  useEffect(() => {
+    if (!firebaseMemberCollection || !address) return
+    try {
+      fetchDoc(firebaseMemberCollection, address)
+      const lower = address.toLowerCase()
+      if (lower !== address) fetchDoc(firebaseMemberCollection, lower)
+    } catch (_) {
+      // noop
+    }
+  }, [firebaseMemberCollection, address, fetchDoc])
+
+  // Resolve My DAOs membership list from firestore data
+  const memberDocKey = useMemo(() => {
+    return firebaseMemberCollection && address ? `${firebaseMemberCollection}/${address}` : ""
+  }, [firebaseMemberCollection, address])
+
+  const memberDocKeyLower = useMemo(() => {
+    const lower = address?.toLowerCase?.() || ""
+    return firebaseMemberCollection && lower ? `${firebaseMemberCollection}/${lower}` : ""
+  }, [firebaseMemberCollection, address])
+
+  const myDaoAddresses = useMemo(() => {
+    const primary = memberDocKey ? firestoreData?.[memberDocKey] : undefined
+    const fallback = memberDocKeyLower ? firestoreData?.[memberDocKeyLower] : undefined
+    const record =
+      (primary && primary.length > 0 ? primary[0] : undefined) ||
+      (fallback && fallback.length > 0 ? fallback[0] : undefined)
+    const arr = Array.isArray(record?.daos) ? (record?.daos as string[]) : []
+    return arr.map(x => (typeof x === "string" ? x.toLowerCase() : x)).filter(Boolean)
+  }, [firestoreData, memberDocKey, memberDocKeyLower])
+
+  const isLoadingMyDaos = useMemo(() => {
+    if (!memberDocKey && !memberDocKeyLower) return false
+    return Boolean(
+      (memberDocKey && firestoreLoading?.[memberDocKey]) || (memberDocKeyLower && firestoreLoading?.[memberDocKeyLower])
+    )
+  }, [firestoreLoading, memberDocKey, memberDocKeyLower])
+
   useEffect(() => {
     if (!signer?.address) return
     getEtherTokenBalances(etherlinkNetwork, signer?.address).then(data => {
@@ -884,6 +931,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
       provider,
       signer,
       signerTokenBalances,
+      myDaoAddresses,
+      isLoadingMyDaos,
       account: accountObj,
       network: etherlinkNetwork,
       connect: connectWallet,
@@ -911,6 +960,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
       provider,
       signer,
       signerTokenBalances,
+      myDaoAddresses,
+      isLoadingMyDaos,
       accountObj,
       etherlinkNetwork,
       contractData,
@@ -940,6 +991,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
       provider,
       signer,
       signerTokenBalances,
+      myDaoAddresses,
+      isLoadingMyDaos,
       account: accountObj,
       network: etherlinkNetwork,
       connect: connectWallet,
@@ -951,6 +1004,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
       provider,
       signer,
       signerTokenBalances,
+      myDaoAddresses,
+      isLoadingMyDaos,
       accountObj,
       etherlinkNetwork,
       connectWallet,

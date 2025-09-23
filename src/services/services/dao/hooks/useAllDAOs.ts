@@ -6,7 +6,13 @@ import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 
 export const useAllDAOs = (network: Network) => {
-  const { daos: etherinkDaos, isLoadingDaos, signerTokenBalances } = useContext(EtherlinkContext)
+  const {
+    daos: etherinkDaos,
+    isLoadingDaos,
+    signerTokenBalances,
+    myDaoAddresses,
+    isLoadingMyDaos
+  } = useContext(EtherlinkContext)
 
   const queryData = useQuery(
     ["daos", network],
@@ -62,6 +68,8 @@ export const useAllDAOs = (network: Network) => {
   return {
     ...queryData,
     signerTokenBalances,
-    isLoadingWithFirebase: isLoadingDaos
+    isLoadingWithFirebase: isLoadingDaos,
+    myEtherlinkDaoAddresses: myDaoAddresses || [],
+    isLoadingMyDaos
   }
 }
