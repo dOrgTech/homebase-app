@@ -6,12 +6,13 @@ import { persist, createJSONStorage } from "zustand/middleware"
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
 
-import WrapperContractAbi from "@W3Mirror/homebase-evm-contracts/python/homebase_evm_contracts/abis/wrapper_v2.abi.json"
+import WrapperContractAbi from "assets/abis/hb_wrapper_v2.json"
 import HbWrapperWLegacyAbi from "assets/abis/hb_wrapper_w_legacy.json"
 
 import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
+import { EnvKey, getEnv } from "services/config"
 import { useNotification } from "modules/common/hooks/useNotification"
 
 interface EvmDaoCreateStore {
@@ -164,8 +165,11 @@ const useEvmDaoCreateStore = () => {
   const data = useEvmDaoCreateZustantStore()
   const history = useHistory()
   const { contractData } = useContext(EtherlinkContext)
-  const wrapperAddress = contractData?.wrapper_t
-  const wrapperAddressForWrapped = contractData?.wrapper_w || "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2" // Fallback to known address
+  const wrapperAddressOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_T_ADDRESS)
+  const wrapperWrappedOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_W_ADDRESS)
+  const wrapperAddress = wrapperAddressOverride || contractData?.wrapper_t
+  const wrapperAddressForWrapped =
+    wrapperWrappedOverride || contractData?.wrapper_w || "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2" // Fallback to known address
   const { etherlink } = useTezos()
   const notify = useNotification()
 
@@ -173,6 +177,10 @@ const useEvmDaoCreateStore = () => {
     const daoData = data.data
     console.log("=== Starting DAO Deployment ===")
     console.log("Full DAO Data:", daoData)
+
+    // Determine wrapper address before attempting deployment (for error reporting)
+    const selectedWrapperAddress =
+      daoData.tokenDeploymentMechanism === "wrapped" ? wrapperAddressForWrapped : wrapperAddress
 
     try {
       const proposalThreshold = daoData.quorum.proposalThreshold || daoData.quorum.proposalThresholdPercentage || 0
@@ -244,9 +252,6 @@ const useEvmDaoCreateStore = () => {
         totalMinutes: votingDurationInMinutes
       })
 
-      const selectedWrapperAddress =
-        daoData.tokenDeploymentMechanism === "wrapped" ? wrapperAddressForWrapped : wrapperAddress
-
       console.log("Contract addresses:", {
         wrapperAddress,
         wrapperAddressForWrapped,
@@ -294,12 +299,20 @@ const useEvmDaoCreateStore = () => {
         usingLegacyAbi: isUsingFallbackAddress && daoData.tokenDeploymentMechanism === "wrapped"
       })
 
+      // Preflight: verify contract code exists at address
+      const onChainCode = await etherlink.provider.getCode(selectedWrapperAddress)
+      if (!onChainCode || onChainCode === "0x") {
+        throw new Error(
+          `No contract code at ${selectedWrapperAddress}. Check network and wrapper address configuration.`
+        )
+      }
+
       const wrapperFactory: ethers.Contract = new ethers.Contract(selectedWrapperAddress, selectedAbi, etherlink.signer)
 
       console.log("Wrapper factory created:", {
         address: wrapperFactory.address || wrapperFactory.target,
-        hasDeployDAOwithToken: typeof wrapperFactory.deployDAOwithToken === "function",
-        hasDeployDAOwithWrappedToken: typeof wrapperFactory.deployDAOwithWrappedToken === "function"
+        hasDeployDAOwithToken: typeof (wrapperFactory as any).deployDAOwithToken === "function",
+        hasDeployDAOwithWrappedToken: typeof (wrapperFactory as any).deployDAOwithWrappedToken === "function"
       })
 
       // Validate timing values before deployment
@@ -485,9 +498,14 @@ const useEvmDaoCreateStore = () => {
       console.error("Error data:", error.data)
       console.error("Error reason:", error.reason)
       console.error("Error code:", error.code)
-
+      console.error("Deployment context:", {
+        selectedWrapperAddress,
+        tokenDeploymentMechanism: daoData.tokenDeploymentMechanism
+      })
       notify({
-        message: `Error deploying DAO: ${error?.reason || error?.shortMessage || error?.message || "Unknown error"}`,
+        message: `Error deploying DAO: ${
+          error?.reason || error?.shortMessage || error?.message || "Unknown error"
+        } (wrapper: ${selectedWrapperAddress})`,
         variant: "error"
       })
       setIsDeploying(false)

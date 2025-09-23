@@ -2,10 +2,8 @@
 # yarn lockfile v1
 
 
-"@W3Mirror/homebase-evm-contracts@^0.0.1":
-  version "0.0.1"
-  resolved "https://npm.pkg.github.com/download/@W3Mirror/homebase-evm-contracts/0.0.1/758b85a9d08b3b17a6c7ba704dcfd13b80b73a7a#758b85a9d08b3b17a6c7ba704dcfd13b80b73a7a"
-  integrity sha512-59mDTfnDiFYB1y+1LCtkaxehPwQ91HnygLZLNUE2yJbQsji+Lq2mM0tE8B7tOYkSIgcJNC4EXKdBfGpc3ttOQA==
+"@W3Mirror/homebase-evm-contracts@file:../homebase-evm-contracts":
+  version "0.0.0"
   dependencies:
     "@openzeppelin/contracts" "^5.0.2"
     "@openzeppelin/hardhat-upgrades" "^3.3.0"

@@ -4,7 +4,7 @@ import { TezosToolkit } from "@taquito/taquito"
 import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
 import { BeaconWallet } from "@taquito/beacon-wallet"
-import { EtherlinkContext } from "services/wagmi/context"
+import { EtherlinkWalletContext } from "services/wagmi/context"
 import { useNetwork } from "services/useNetwork"
 import { useChainId } from "wagmi"
 import { usePostHog } from "posthog-js/react"
@@ -37,7 +37,7 @@ export const useTezos = (): WalletConnectReturn => {
     network: etherlinkNetwork,
     provider: ethProvider,
     signer: ethSigner
-  } = useContext(EtherlinkContext)
+  } = useContext(EtherlinkWalletContext)
 
   const queryClient = useQueryClient()
   const posthog = usePostHog()

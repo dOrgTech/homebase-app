@@ -61,27 +61,47 @@ export const getCallDataFromBytes = (bytes: any) => {
   return "0x"
 }
 
-export function parseTransactionHash(input: string): string {
-  // Equivalent to input.substring(2, input.length - 1)
-  input = input.substring(2, input.length - 1)
+export function parseTransactionHash(input?: string): string {
+  if (!input || typeof input !== "string") return ""
+
+  const trimmed = input.trim()
+
+  // If already a 0x-prefixed 32-byte hash, return sans 0x
+  if (/^0x[0-9a-fA-F]{64}$/.test(trimmed)) {
+    return trimmed.slice(2)
+  }
+  // If a non-prefixed 32-byte hash, return as-is (lowercase for consistency)
+  if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+    return trimmed.toLowerCase()
+  }
+
+  // Try to handle Python-style bytes repr: b'\x12\xab...' or '\x12\xab...'
+  let raw = trimmed
+  const startsWithBQuote = (raw.startsWith("b'") && raw.endsWith("'")) || (raw.startsWith('b"') && raw.endsWith('"'))
+  const startsWithQuote = (raw.startsWith("'") && raw.endsWith("'")) || (raw.startsWith('"') && raw.endsWith('"'))
+  if (startsWithBQuote) {
+    raw = raw.substring(2, raw.length - 1)
+  } else if (startsWithQuote) {
+    raw = raw.substring(1, raw.length - 1)
+  }
 
   const byteValues: number[] = []
-
-  for (let i = 0; i < input.length; i++) {
-    if (input[i] === "\\" && input[i + 1] === "x") {
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i] === "\\" && raw[i + 1] === "x") {
       // Extract the two hex characters following '\x'
-      const hexValue = input.substring(i + 2, i + 4)
-      byteValues.push(parseInt(hexValue, 16))
-      i += 3 // Skip past the processed '\xNN' sequence
+      const hexValue = raw.substring(i + 2, i + 4)
+      if (hexValue.length === 2) {
+        byteValues.push(parseInt(hexValue, 16))
+        i += 3 // Skip past the processed '\xNN' sequence
+      }
     } else {
       // Add ASCII code for literal characters
-      byteValues.push(input.charCodeAt(i))
+      byteValues.push(raw.charCodeAt(i))
     }
   }
 
   // Convert bytes to hex string with zero-padding
   const hexString = byteValues.map(byte => byte.toString(16).padStart(2, "0")).join("")
-
   return hexString
 }
 
@@ -362,10 +382,29 @@ export function getDaoTokenOpsType(type: string, tokenSymbol: string) {
   return ""
 }
 
-export function getBlockExplorerUrl(network: string, executionHash: string) {
-  let txHash = parseTransactionHash(executionHash)
-  txHash = txHash.startsWith("0x") ? txHash : `0x${txHash}`
-  return networkConfig[network as keyof typeof networkConfig]?.explorerUrl + "/tx/" + txHash
+export function getBlockExplorerUrl(network: string, executionHash?: string) {
+  if (!executionHash || typeof executionHash !== "string") return ""
+
+  const base = networkConfig[network as keyof typeof networkConfig]?.explorerUrl
+  if (!base) return ""
+
+  // If executionHash is already a full tx hash, use it directly
+  const trimmed = executionHash.trim()
+  const isFullHash = /^0x[0-9a-fA-F]{64}$/.test(trimmed)
+  const isBareHash = /^[0-9a-fA-F]{64}$/.test(trimmed)
+
+  let txHash = ""
+  if (isFullHash) {
+    txHash = trimmed
+  } else if (isBareHash) {
+    txHash = `0x${trimmed.toLowerCase()}`
+  } else {
+    const parsed = parseTransactionHash(trimmed)
+    if (!parsed) return ""
+    txHash = parsed.startsWith("0x") ? parsed : `0x${parsed}`
+  }
+
+  return `${base}/tx/${txHash}`
 }
 
 export async function getEtherAddressDetails(network: string, address: string) {

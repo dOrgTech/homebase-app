@@ -16,10 +16,12 @@ export const Web3Provider = ({ children }: { children: ReactNode }) => {
     if (network?.includes("mainnet")) return etherlink.id
     return etherlinkTestnet.id
   }, [currentNetwork])
+  const connectkitOptions = useMemo(() => ({ initialChainId: ethInitialChainId }), [ethInitialChainId])
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider debugMode options={{ initialChainId: ethInitialChainId }}>
+        <ConnectKitProvider debugMode options={connectkitOptions}>
           {children}
         </ConnectKitProvider>
       </QueryClientProvider>

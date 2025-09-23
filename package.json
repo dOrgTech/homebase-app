@@ -18,7 +18,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@W3Mirror/homebase-evm-contracts": "^0.0.1",
+    "@W3Mirror/homebase-evm-contracts": "file:../homebase-evm-contracts",
     "@airgap/beacon-sdk": "^4.2.2",
     "@airgap/beacon-types": "^4.2.2",
     "@craco/craco": "^7.1.0",

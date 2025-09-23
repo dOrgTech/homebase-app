@@ -705,18 +705,8 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
     [decodeWithExplorerAbi]
   )
 
-  return {
-    contractData,
-    daos: daoData,
-    daoSelected,
-    daoRegistryDetails,
-    daoTreasuryTokens,
-    daoNfts,
-    daoProposals: allDaoProposals,
-    daoProposalSelected,
-    daoMembers,
-    daoProposalVoters,
-    selectDaoProposal: (proposalId: string) => {
+  const selectDaoProposal = useCallback(
+    (proposalId: string) => {
       selectedProposalIdRef.current = proposalId
       dbg("[UI:proposalSelect:request]", { id: proposalId, proposalsLoaded: allDaoProposals?.length })
       const proposal = allDaoProposals.find((proposal: any) => proposal.id === proposalId)
@@ -754,7 +744,11 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         })
       }
     },
-    selectDao: (daoId: string) => {
+    [allDaoProposals, buildProposalData, buildProposalDataAsync]
+  )
+
+  const selectDao = useCallback(
+    (daoId: string) => {
       const dao = daoData.find(dao => (dao?.id || "").toLowerCase() === (daoId || "").toLowerCase())
       if (dao) {
         dbg("[DAO:select]", daoId, "=>", { address: dao?.address, token: dao?.token })
@@ -762,12 +756,29 @@ const useEtherlinkDao = ({ network }: { network: string }) => {
         selectedDaoIdRef.current = daoId
       }
     },
+    [daoData]
+  )
+
+  return {
+    contractData,
+    daos: daoData,
+    daoSelected,
+    daoRegistryDetails,
+    daoTreasuryTokens,
+    daoNfts,
+    daoProposals: allDaoProposals,
+    daoProposalSelected,
+    daoMembers,
+    daoProposalVoters,
+    selectDaoProposal,
+    selectDao,
     isLoadingDaos,
     isLoadingDaoProposals
   }
 }
 
 export const EtherlinkContext = createContext<any | undefined>(undefined)
+export const EtherlinkWalletContext = createContext<any | undefined>(undefined)
 
 export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isProposalDialogOpen, setIsProposalDialogOpen] = useState(false)
@@ -780,19 +791,19 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const { address, isConnected, chain } = useWagmiAccount()
 
   const etherlinkNetwork = useMemo(() => {
-    if (chain?.name === "Etherlink") {
+    // Prefer explicit chain id/name from wagmi if present
+    if (chain?.id === etherlink.id || chain?.name === "Etherlink") {
       return "etherlink_mainnet"
     }
-    if (chain?.name === "Etherlink Testnet") {
+    if (chain?.id === etherlinkTestnet.id || chain?.name === "Etherlink Testnet") {
       return "etherlink_testnet"
     }
-    // If the global network isn't set to an Etherlink value,
-    // default to Etherlink mainnet for Etherlink pages.
+    // Align default with ConnectKit/Web3Provider initialChainId (testnet) when global context is non-etherlink
     if (!contextNetwork?.startsWith("etherlink")) {
-      return "etherlink_mainnet"
+      return "etherlink_testnet"
     }
     return contextNetwork
-  }, [chain?.name, contextNetwork])
+  }, [chain?.id, chain?.name, contextNetwork])
 
   const selectedChainId = useMemo(() => {
     // Default to Etherlink mainnet if ambiguous
@@ -819,10 +830,21 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     [switchChain, posthog, address]
   )
 
+  const connectWallet = useCallback(() => setOpen(true), [setOpen])
+  const disconnect = useCallback(() => disconnectEtherlink(wagmiConfig), [])
+
+  const accountObj = useMemo(() => ({ address: address || "" }), [address])
+
   useEffect(() => {
     if (!signer?.address) return
     getEtherTokenBalances(etherlinkNetwork, signer?.address).then(data => {
-      setSignerTokenBalances(data?.map((x: any) => x.token?.address))
+      const next = (data || []).map((x: any) => x.token?.address).filter(Boolean)
+      // Avoid re-render loops by only setting when changed
+      setSignerTokenBalances(prev => {
+        const a = Array.isArray(prev) ? prev.slice().sort() : []
+        const b = next.slice().sort()
+        return JSON.stringify(a) === JSON.stringify(b) ? prev : next
+      })
     })
   }, [signer?.address, etherlinkNetwork])
 
@@ -856,41 +878,90 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     network: etherlinkNetwork || ""
   })
 
+  const contextValue = useMemo(
+    () => ({
+      isConnected,
+      provider,
+      signer,
+      signerTokenBalances,
+      account: accountObj,
+      network: etherlinkNetwork,
+      connect: connectWallet,
+      contractData,
+      isProposalDialogOpen,
+      setIsProposalDialogOpen,
+      daos,
+      isLoadingDaos,
+      isLoadingDaoProposals,
+      daoSelected,
+      daoNfts,
+      daoRegistryDetails,
+      daoTreasuryTokens,
+      daoProposals,
+      daoProposalSelected,
+      daoMembers,
+      daoProposalVoters,
+      selectDaoProposal,
+      selectDao,
+      disconnect,
+      switchToNetwork
+    }),
+    [
+      isConnected,
+      provider,
+      signer,
+      signerTokenBalances,
+      accountObj,
+      etherlinkNetwork,
+      contractData,
+      isProposalDialogOpen,
+      daos,
+      isLoadingDaos,
+      isLoadingDaoProposals,
+      daoSelected,
+      daoNfts,
+      daoRegistryDetails,
+      daoTreasuryTokens,
+      daoProposals,
+      daoProposalSelected,
+      daoMembers,
+      daoProposalVoters,
+      selectDaoProposal,
+      selectDao,
+      disconnect,
+      switchToNetwork,
+      connectWallet
+    ]
+  )
+
+  const walletValue = useMemo(
+    () => ({
+      isConnected,
+      provider,
+      signer,
+      signerTokenBalances,
+      account: accountObj,
+      network: etherlinkNetwork,
+      connect: connectWallet,
+      disconnect,
+      switchToNetwork
+    }),
+    [
+      isConnected,
+      provider,
+      signer,
+      signerTokenBalances,
+      accountObj,
+      etherlinkNetwork,
+      connectWallet,
+      disconnect,
+      switchToNetwork
+    ]
+  )
+
   return (
-    <EtherlinkContext.Provider
-      value={{
-        isConnected,
-        provider,
-        signer,
-        signerTokenBalances,
-        account: {
-          address: address || ""
-        },
-        network: etherlinkNetwork,
-        connect: () => {
-          setOpen(true)
-        },
-        contractData,
-        isProposalDialogOpen,
-        setIsProposalDialogOpen,
-        daos,
-        isLoadingDaos,
-        isLoadingDaoProposals,
-        daoSelected,
-        daoNfts,
-        daoRegistryDetails,
-        daoTreasuryTokens,
-        daoProposals,
-        daoProposalSelected,
-        daoMembers,
-        daoProposalVoters,
-        selectDaoProposal,
-        selectDao,
-        disconnect: () => disconnectEtherlink(wagmiConfig),
-        switchToNetwork
-      }}
-    >
-      {children}
-    </EtherlinkContext.Provider>
+    <EtherlinkWalletContext.Provider value={walletValue}>
+      <EtherlinkContext.Provider value={contextValue}>{children}</EtherlinkContext.Provider>
+    </EtherlinkWalletContext.Provider>
   )
 }

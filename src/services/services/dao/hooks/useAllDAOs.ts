@@ -11,8 +11,23 @@ export const useAllDAOs = (network: Network) => {
   const queryData = useQuery(
     ["daos", network],
     async () => {
-      const homebase_daos = await getDAOs(network)
-      const lite_daos = await getLiteDAOs(network)
+      let homebase_daos = [] as any[]
+      let lite_daos = [] as any[]
+
+      // Skip Hasura when on Etherlink; otherwise, fetch and swallow errors
+      try {
+        homebase_daos = await getDAOs(network)
+      } catch (e) {
+        console.error("getDAOs failed", e)
+        homebase_daos = []
+      }
+
+      try {
+        lite_daos = await getLiteDAOs(network)
+      } catch (e) {
+        console.error("getLiteDAOs failed", e)
+        lite_daos = []
+      }
       const evm_daos =
         etherinkDaos?.map((dao: any) => ({
           ...dao,
@@ -33,7 +48,8 @@ export const useAllDAOs = (network: Network) => {
         })) || []
 
       if (network.includes("etherlink")) {
-        return [...homebase_daos, ...lite_daos, ...evm_daos]
+        // Do not include Homebase DAOs on Etherlink networks
+        return [...lite_daos, ...evm_daos]
       }
 
       return [...homebase_daos, ...lite_daos]
