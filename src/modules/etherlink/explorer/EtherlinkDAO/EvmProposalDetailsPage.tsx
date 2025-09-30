@@ -200,6 +200,7 @@ export const EvmProposalDetailsPage = () => {
 
   useEffect(() => {
     if (!proposalId) return
+    if (daoProposalSelected?.id === proposalId) return
     selectDaoProposal(proposalId)
     dbg("[UI:proposalDetails]", {
       proposalId,
@@ -207,7 +208,7 @@ export const EvmProposalDetailsPage = () => {
       daoDecimals: daoSelected?.decimals,
       proposalsLoaded: daoProposals?.length
     })
-  }, [proposalId, selectDaoProposal, daoSelected?.id, daoProposals?.length])
+  }, [proposalId, selectDaoProposal, daoSelected?.id, daoProposals?.length, daoProposalSelected?.id])
 
   return (
     <div>
