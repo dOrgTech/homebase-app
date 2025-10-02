@@ -8,6 +8,7 @@
     "build": "craco build && echo '/* /index.html 200' | cat >build/_redirects ",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "test": "playwright test --project=chromium",
+    "test:unit": "jest",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
     "test:codegen": "playwright codegen",

@@ -1,5 +1,4 @@
-import { Badge, Grid, Theme, Typography, styled } from "@material-ui/core"
-import dayjs from "dayjs"
+import { Grid, Theme, Typography, styled } from "@material-ui/core"
 import React from "react"
 import { toShortAddress } from "services/contracts/utils"
 import { Proposal } from "services/services/dao/mappers/proposal/types"

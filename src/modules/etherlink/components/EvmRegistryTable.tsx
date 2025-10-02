@@ -1,8 +1,7 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Button,
   Grid,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -128,8 +127,6 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
 export const EvmRegistryTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const [selectedItem, setSelectedItem] = useState<RowData>()
-  const [open, setOpen] = useState(false)
 
   return (
     <>

@@ -1,6 +1,5 @@
 import React, { useState } from "react"
 import { Grid, styled, Typography, Box, useMediaQuery, useTheme, makeStyles } from "@material-ui/core"
-import { useHistory } from "react-router"
 
 import { ReactComponent as LiteIcon } from "assets/img/lite-dao.svg"
 import { ReactComponent as FullIcon } from "assets/img/full-dao.svg"
@@ -8,7 +7,7 @@ import { ReactComponent as FullIcon } from "assets/img/full-dao.svg"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
-const LambdaCustomBox = styled(Grid)(({ theme }) => ({
+const LambdaCustomBox = styled(Grid)(() => ({
   "height": 273,
   "marginTop": 30,
   "background": "#1c2024",

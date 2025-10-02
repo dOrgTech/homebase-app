@@ -1,19 +1,13 @@
 import {
-  Button,
   DialogContent,
   Grid,
   Link,
   Popover,
   styled,
-  Table,
-  TableBody,
   TableCell,
-  TableHead,
   TableRow,
   Theme,
   Typography,
-  useMediaQuery,
-  useTheme,
   withStyles
 } from "@material-ui/core"
 

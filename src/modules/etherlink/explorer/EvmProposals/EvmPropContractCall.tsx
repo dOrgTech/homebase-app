@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { Grid, styled, Button, Box, Tooltip, useTheme } from "@material-ui/core"
+import { Grid, styled, Box, Tooltip } from "@material-ui/core"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { getContractDetails } from "modules/etherlink/utils"

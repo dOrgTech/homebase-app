@@ -1,6 +1,5 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { useContext } from "react"
-import { useEtherlinkDAOID } from "../router"
 import { EtherlinkContext } from "services/wagmi/context"
 import { Grid, MenuItem, Typography, useTheme } from "@material-ui/core"
 import { TitleText } from "components/ui/TitleText"
@@ -10,12 +9,18 @@ import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalL
 import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
 import Select from "@mui/material/Select"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
+import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
+import { IEvmProposal } from "modules/etherlink/types"
 
 export const EvmProposalsPage = () => {
   const [proposalType, setProposalType] = useQueryParam("type")
   const [proposalStatus, setProposalStatus] = useQueryParam("status")
-  const [proposalAuthor, setProposalAuthor] = useQueryParam("author")
-  const { daoProposals, isProposalDialogOpen, setIsProposalDialogOpen } = useContext(EtherlinkContext)
+  const [proposalAuthor] = useQueryParam("author")
+  const { daoProposals, daoSelected, isProposalDialogOpen, setIsProposalDialogOpen } = useContext(EtherlinkContext)
+  const processedProposals = useTimelineForProposals<IEvmProposal>(
+    daoProposals as unknown as IEvmProposal[],
+    daoSelected as any
+  )
 
   const theme = useTheme()
 
@@ -25,9 +30,9 @@ export const EvmProposalsPage = () => {
       (!proposalType && !proposalStatus) ||
       (proposalType === "all" && !proposalStatus)
     )
-      return daoProposals
+      return processedProposals
 
-    return daoProposals?.filter((proposal: any) => {
+    return processedProposals?.filter((proposal: any) => {
       if (proposalAuthor && proposalAuthor !== "all" && proposal.author === proposalAuthor) return true
       if (proposalType && proposalType !== "all" && proposal.type === proposalType) return true
       if (proposalStatus && proposalStatus !== "all" && proposal.status === proposalStatus) return true
@@ -40,7 +45,7 @@ export const EvmProposalsPage = () => {
 
       return false
     })
-  }, [daoProposals, proposalType, proposalStatus, proposalAuthor])
+  }, [processedProposals, proposalType, proposalStatus, proposalAuthor])
 
   return (
     <>
@@ -110,7 +115,7 @@ export const EvmProposalsPage = () => {
                 }}
               >
                 <Typography variant="body1" style={{ color: theme.palette.text.secondary }}>
-                  {daoProposals?.length || 0} Proposals
+                  {processedProposals?.length || 0} Proposals
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={3} style={{ textAlign: "right", justifyContent: "flex-end" }}>

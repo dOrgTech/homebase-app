@@ -4,7 +4,7 @@ import InputText from "components/ui/InputText"
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
 
 import { TitleBlock } from "modules/common/TitleBlock"
-import React, { useRef } from "react"
+import React from "react"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
 export const EvmDaoQuorum: React.FC = () => {

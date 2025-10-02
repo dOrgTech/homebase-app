@@ -1,5 +1,5 @@
-import React, { useContext, useMemo } from "react"
-import { Box, Grid, styled, useTheme, Typography, Paper } from "@material-ui/core"
+import React, { useContext } from "react"
+import { Box, Grid, styled, Typography, Paper } from "@material-ui/core"
 
 import { EtherlinkContext } from "services/wagmi/context"
 import { IEvmProposal } from "../types"

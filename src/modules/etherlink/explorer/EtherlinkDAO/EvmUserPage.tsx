@@ -37,7 +37,7 @@ const StatValue = styled(Typography)({
   fontWeight: 500
 })
 
-const DelegationBox = styled(Box)(({ theme }) => ({
+const DelegationBox = styled(Box)(() => ({
   background: "#1c2024",
   borderRadius: "8px",
   padding: "32px",
@@ -89,7 +89,7 @@ export const EvmUserPage = () => {
   const personalBalance = userTokenBalance
   const userDelegate = selfMember?.delegate
   const isSelfDelegated = userDelegate === signer?.address
-  const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
+  // const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
 
   const proposalByAuthor = useMemo(() => {
     return daoProposals?.filter((proposal: any) => proposal.author === userAddress)

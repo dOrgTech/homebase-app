@@ -166,7 +166,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
   const radioClasses = useRadioStyles()
 
   const saveStepInfo = (values: EvmDaoSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
-    const newValues: EvmDaoSettings = { ...values }
+    // const newValues: EvmDaoSettings = { ...values }
 
     setSubmitting(true)
   }

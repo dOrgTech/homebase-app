@@ -1,10 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { CircularProgress, Collapse, Grid, Typography, styled } from "@material-ui/core"
-import { ProposalItem } from "modules/explorer/pages/User"
+import React, { useEffect, useState } from "react"
+import { CircularProgress, Grid, Typography, styled } from "@material-ui/core"
 import { Link } from "react-router-dom"
-import { Proposal, ProposalStatus } from "services/services/dao/mappers/proposal/types"
-import { ProposalTableRow } from "modules/lite/explorer/components/ProposalTableRow"
+import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { Poll } from "models/Polls"
 import ReactPaginate from "react-paginate"
 import { EvmProposalItem } from "./EvmProposalItem"

@@ -80,13 +80,13 @@ interface EvmDaoVotingProps {
   initialValues?: IEvmVotingFormValues
 }
 
-export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit, initialValues = initialFormValues }) => {
-  const { data: daoData, touched, errors, setFieldValue } = useEvmDaoCreateStore()
-  const handleSubmit = (values: IEvmVotingFormValues) => {
-    if (onSubmit) {
-      onSubmit(values)
-    }
-  }
+export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit }) => {
+  const { data: daoData, setFieldValue } = useEvmDaoCreateStore()
+  // const handleSubmit = (values: IEvmVotingFormValues) => {
+  //   if (onSubmit) {
+  //     onSubmit(values)
+  //   }
+  // }
 
   return (
     <div className="evm-dao-voting">

@@ -1,12 +1,11 @@
 import React, { useState, useContext } from "react"
 import { ethers } from "ethers"
 import { EtherlinkContext } from "services/wagmi/context"
-import { Box, styled, Typography, Tabs, Tab, CircularProgress, Link } from "@material-ui/core"
+import { Box, styled, Typography, Tabs, Tab } from "@material-ui/core"
 import { Button } from "components/ui/Button"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useTezos } from "services/beacon/hooks/useTezos"
-import CheckCircleIcon from "@material-ui/icons/CheckCircle"
-import ErrorIcon from "@material-ui/icons/Error"
+import { TxStatus } from "./components/TxStatus"
 import ERC20_ABI from "assets/abis/erc20.json"
 import wrapperContractAbiJson from "assets/abis/wrapper.json"
 
@@ -23,32 +22,7 @@ const WrapContainer = styled(Box)({
   margin: "0 auto"
 })
 
-const StatusContainer = styled(Box)({
-  marginTop: "24px",
-  padding: "16px",
-  borderRadius: "4px",
-  backgroundColor: "rgba(255, 255, 255, 0.05)",
-  minHeight: "80px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px"
-})
-
-const StatusRow = styled(Box)({
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  fontSize: "14px",
-  color: "#9E9E9E"
-})
-
-const TxLink = styled(Link)({
-  "color": "#4FC3F7",
-  "textDecoration": "none",
-  "&:hover": {
-    textDecoration: "underline"
-  }
-})
+// Status UI moved into components/TxStatus.tsx
 
 const StyledTabs = styled(Tabs)({
   "marginBottom": "24px",
@@ -205,120 +179,13 @@ export const TokenBridge = () => {
             {!transactionState && (wrapTabValue === 0 ? "Wrap Tokens" : "Unwrap Tokens")}
           </Button>
 
-          {transactionState && (
-            <StatusContainer>
-              {transactionState === "waitingApproval" && (
-                <StatusRow>
-                  <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-                  <Typography>Waiting for approval transaction...</Typography>
-                </StatusRow>
-              )}
-
-              {transactionState === "approving" && (
-                <>
-                  <StatusRow>
-                    <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-                    <Typography>Approving tokens...</Typography>
-                  </StatusRow>
-                  {approvalTxHash && (
-                    <StatusRow>
-                      <Typography variant="caption">
-                        Approval tx:{" "}
-                        <TxLink
-                          href={`https://testnet.explorer.etherlink.com/tx/${approvalTxHash}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {approvalTxHash.slice(0, 10)}...{approvalTxHash.slice(-8)}
-                        </TxLink>
-                      </Typography>
-                    </StatusRow>
-                  )}
-                </>
-              )}
-
-              {transactionState === "waitingExecution" && (
-                <>
-                  <StatusRow>
-                    <CheckCircleIcon style={{ fontSize: "16px", color: "#4CAF50" }} />
-                    <Typography>Approval complete</Typography>
-                  </StatusRow>
-                  <StatusRow>
-                    <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-                    <Typography>Waiting for {wrapTabValue === 0 ? "wrap" : "unwrap"} transaction...</Typography>
-                  </StatusRow>
-                </>
-              )}
-
-              {transactionState === "executing" && (
-                <>
-                  {wrapTabValue === 0 && (
-                    <StatusRow>
-                      <CheckCircleIcon style={{ fontSize: "16px", color: "#4CAF50" }} />
-                      <Typography>Approval complete</Typography>
-                    </StatusRow>
-                  )}
-                  <StatusRow>
-                    <CircularProgress size={16} style={{ color: "#4FC3F7" }} />
-                    <Typography>{wrapTabValue === 0 ? "Wrapping" : "Unwrapping"} tokens...</Typography>
-                  </StatusRow>
-                  {executionTxHash && (
-                    <StatusRow>
-                      <Typography variant="caption">
-                        {wrapTabValue === 0 ? "Wrap" : "Unwrap"} tx:{" "}
-                        <TxLink
-                          href={`https://testnet.explorer.etherlink.com/tx/${executionTxHash}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {executionTxHash.slice(0, 10)}...{executionTxHash.slice(-8)}
-                        </TxLink>
-                      </Typography>
-                    </StatusRow>
-                  )}
-                </>
-              )}
-
-              {transactionState === "success" && (
-                <>
-                  <StatusRow>
-                    <CheckCircleIcon style={{ fontSize: "16px", color: "#4CAF50" }} />
-                    <Typography>Transaction completed successfully!</Typography>
-                  </StatusRow>
-                  {executionTxHash && (
-                    <StatusRow>
-                      <Typography variant="caption">
-                        View transaction:{" "}
-                        <TxLink
-                          href={`https://testnet.explorer.etherlink.com/tx/${executionTxHash}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {executionTxHash.slice(0, 10)}...{executionTxHash.slice(-8)}
-                        </TxLink>
-                      </Typography>
-                    </StatusRow>
-                  )}
-                </>
-              )}
-
-              {transactionState === "error" && (
-                <>
-                  <StatusRow>
-                    <ErrorIcon style={{ fontSize: "16px", color: "#f44336" }} />
-                    <Typography>Transaction failed</Typography>
-                  </StatusRow>
-                  {errorMessage && (
-                    <StatusRow>
-                      <Typography variant="caption" style={{ color: "#f44336" }}>
-                        {errorMessage}
-                      </Typography>
-                    </StatusRow>
-                  )}
-                </>
-              )}
-            </StatusContainer>
-          )}
+          <TxStatus
+            state={transactionState}
+            wrapMode={wrapTabValue === 0 ? "wrap" : "unwrap"}
+            approvalTxHash={approvalTxHash}
+            executionTxHash={executionTxHash}
+            errorMessage={errorMessage}
+          />
         </Box>
       </WrapContainer>
     </Box>

@@ -2,121 +2,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import ProgressBar from "react-customizable-progressbar"
 
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getTurnoutValue } from "services/utils/utils"
 import { useTokenDelegationSupported } from "services/contracts/token/hooks/useTokenDelegationSupported"
 import { EtherlinkContext } from "services/wagmi/context"
-import { LinearProgress } from "components/ui/LinearProgress"
 import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { EVM_PROPOSAL_CHOICES } from "../config"
-import { IEvmOffchainChoice, IEvmProposal, ITransactionStatus } from "../types"
-import dayjs from "dayjs"
-import {
-  ContainerVoteDetail as Container,
-  TitleContainer,
-  LinearContainer,
-  LegendContainer,
-  GraphicsContainer,
-  ProgressText,
-  HistoryItem,
-  HistoryValue,
-  HistoryKey
-} from "./styled"
-import { ContainerTitle } from "components/ui/Containers"
+import { IEvmProposal } from "../types"
+import { ContainerVoteDetail as Container, TitleContainer, LegendContainer, GraphicsContainer } from "./styled"
+import { RenderChoices } from "./RenderChoices"
+import { ProposalHistory } from "./ProposalHistory"
 
-const RenderChoices = ({
-  mode,
-  isMobileSmall,
-  choices,
-  tokenSymbol,
-  daoProposalSelected,
-  totalVoteCount
-}: {
-  mode: string
-  isMobileSmall: boolean
-  choices: any[]
-  tokenSymbol: string
-  daoProposalSelected: IEvmProposal
-  totalVoteCount: number
-}) => {
-  if (mode === "offchain") {
-    const totalVotees = choices?.reduce((acc, curr) => acc + curr.walletAddresses.length, 0)
-    return (
-      <>
-        {choices.map((choice: IEvmOffchainChoice, idx: number) => {
-          const voteCount = choice.walletAddresses.length
-          const linearProgressValue = (voteCount / totalVotees) * 100
-          const isFor = choice.name === "For"
-          const votePercentage = (choice.walletAddresses.length / totalVotees) * 100
-          return (
-            <LinearContainer container direction="column" style={{ gap: 20 }} key={`'option-'${idx}`}>
-              <Grid item container direction="row" alignItems="center">
-                <Grid item xs={12} lg={6} sm={6}>
-                  <Typography color="textPrimary" variant="body2">
-                    {choice.name}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} lg={6} sm={6} container justifyContent={isMobileSmall ? "flex-start" : "flex-end"}>
-                  <Typography color="textPrimary" variant="body2">
-                    {voteCount} Voters - {tokenSymbol}
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Grid item container direction="row" alignItems="center">
-                <Grid item xs={10} lg={11} sm={11}>
-                  <LinearProgress value={linearProgressValue} variant="success" />
-                </Grid>
-                <Grid item xs={2} lg={1} sm={1} container justifyContent="flex-end">
-                  <Typography color="textPrimary" variant="body2">
-                    {linearProgressValue}%
-                  </Typography>
-                </Grid>
-              </Grid>
-            </LinearContainer>
-          )
-        })}
-      </>
-    )
-  }
-  return (
-    <>
-      {choices.map((choice, idx) => {
-        const isFor = choice.name === "For"
-        const voteCount = isFor ? daoProposalSelected?.votesFor : daoProposalSelected?.votesAgainst
-        const linearProgressValue = totalVoteCount > 0 ? (voteCount / totalVoteCount) * 100 : 0
-
-        return (
-          <LinearContainer container direction="column" style={{ gap: 20 }} key={`'option-'${idx}`}>
-            <Grid item container direction="row" alignItems="center">
-              <Grid item xs={12} lg={6} sm={6}>
-                <Typography color="textPrimary" variant="body2">
-                  {choice.name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} lg={6} sm={6} container justifyContent={isMobileSmall ? "flex-start" : "flex-end"}>
-                <Typography color="textPrimary" variant="body2">
-                  {voteCount} Voters - {tokenSymbol}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid item container direction="row" alignItems="center">
-              <Grid item xs={10} lg={11} sm={11}>
-                <LinearProgress value={linearProgressValue} variant={isFor ? "success" : "error"} />
-              </Grid>
-              <Grid item xs={2} lg={1} sm={1} container justifyContent="flex-end">
-                <Typography color="textPrimary" variant="body2">
-                  {linearProgressValue}%
-                </Typography>
-              </Grid>
-            </Grid>
-          </LinearContainer>
-        )
-      })}
-    </>
-  )
-}
+// moved to ./RenderChoices to keep this file focused
 
 export const EvmProposalVoteDetail: React.FC<{
   poll: IEvmProposal
@@ -197,7 +95,6 @@ export const EvmProposalVoteDetail: React.FC<{
           {choices && choices?.length > 0 ? (
             <RenderChoices
               mode={daoProposalSelected.type}
-              isMobileSmall={isMobileSmall}
               choices={choices}
               tokenSymbol={tokenData?.symbol}
               daoProposalSelected={daoProposalSelected}
@@ -263,88 +160,12 @@ export const EvmProposalVoteDetail: React.FC<{
           </LegendContainer>
         </GraphicsContainer>
       </Container>
-      <Container container style={{ marginTop: 60, marginBottom: 12 }}>
-        <Grid item container direction="column" spacing={8} style={{ paddingLeft: 12, paddingRight: 12 }}>
-          {daoProposalSelected?.type !== "offchain" ? (
-            <Grid item container direction="row" spacing={8}>
-              {/* Quorum */}
-
-              <Grid item xs={isMobileSmall ? 12 : 4} container>
-                <Container item xs style={{ padding: 20 }}>
-                  <ContainerTitle color="textPrimary">Quorum</ContainerTitle>
-                  <Grid
-                    container
-                    direction="column"
-                    justifyContent={isMobileSmall ? "flex-start" : "center"}
-                    style={{ height: "100%" }}
-                    alignItems="center"
-                    wrap="nowrap"
-                  >
-                    <Grid item>
-                      <ProgressBar
-                        progress={votesQuorumPercentage}
-                        radius={70}
-                        strokeWidth={7}
-                        strokeColor="#81FEB7"
-                        trackStrokeWidth={4}
-                        trackStrokeColor={theme.palette.primary.light}
-                      >
-                        <div className="indicator">
-                          <ProgressText textcolor="#81FEB7">{`${votesQuorumPercentage}%`}</ProgressText>
-                        </div>
-                      </ProgressBar>
-                    </Grid>
-                  </Grid>
-                </Container>
-              </Grid>
-
-              {/* History */}
-              <Grid item xs={isMobileSmall ? 12 : 8} container>
-                <Grid container>
-                  <Container item md={12} xs={12} style={{ padding: "20px" }}>
-                    <ContainerTitle color="textPrimary" style={{ marginBottom: 24 }}>
-                      History
-                    </ContainerTitle>
-                    {daoProposalSelected?.statusHistoryMap?.map(
-                      (
-                        item: {
-                          status: ITransactionStatus
-                          timestamp: dayjs.Dayjs
-                          timestamp_human: string
-                        },
-                        index: number
-                      ) => {
-                        return (
-                          <HistoryItem
-                            item
-                            container
-                            direction="row"
-                            key={index}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            wrap="nowrap"
-                            xs={12}
-                            style={{ gap: 8 }}
-                          >
-                            <Grid item xs={5}>
-                              <HistoryKey color="textPrimary">{item.status}</HistoryKey>
-                            </Grid>
-                            <Grid item xs={5}>
-                              <HistoryValue align="right" color="textPrimary" variant="subtitle2">
-                                {item.timestamp_human}
-                              </HistoryValue>
-                            </Grid>
-                          </HistoryItem>
-                        )
-                      }
-                    )}
-                  </Container>
-                </Grid>
-              </Grid>
-            </Grid>
-          ) : null}
-        </Grid>
-      </Container>
+      {daoProposalSelected?.type !== "offchain" ? (
+        <ProposalHistory
+          votesQuorumPercentage={votesQuorumPercentage}
+          statusHistory={daoProposalSelected?.statusHistoryMap}
+        />
+      ) : null}
     </>
   )
 }

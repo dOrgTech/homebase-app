@@ -8,7 +8,6 @@ import { AddressText } from "modules/creator/token/ui"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 
 import { toShortAddress } from "services/contracts/utils"
-import { EVM_PROPOSAL_CHOICES } from "../config"
 import { useContext, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import ReactPaginate from "react-paginate"

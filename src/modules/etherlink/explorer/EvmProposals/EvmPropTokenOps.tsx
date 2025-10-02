@@ -1,4 +1,4 @@
-import { Grid, Typography, Box, Container, styled } from "@material-ui/core"
+import { Grid, Typography, Box, styled } from "@material-ui/core"
 import AddCircleIcon from "@mui/icons-material/AddCircle"
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"

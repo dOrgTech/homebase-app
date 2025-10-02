@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React from "react"
 import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
 import { GridContainer } from "modules/common/GridContainer"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"

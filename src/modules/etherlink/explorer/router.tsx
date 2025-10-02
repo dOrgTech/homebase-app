@@ -89,7 +89,7 @@ const EtherlinkDAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) 
     if (daoId && Array.isArray(daos) && daos.length) {
       selectDao(daoId)
     }
-  }, [daoId, etherlinkCtx?.daos])
+  }, [daoId, etherlinkCtx])
 
   return <EtherlinkDAOContext.Provider value={daoId}>{children}</EtherlinkDAOContext.Provider>
 }

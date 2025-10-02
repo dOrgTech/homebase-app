@@ -11,7 +11,7 @@ const InputContainer = styled(Grid)({
 })
 
 export const EvmPropEditRegistry: React.FC = () => {
-  const { daoRegistry, daoRegistryError, setDaoRegistry } = useEvmProposalOps()
+  const { daoRegistry, setDaoRegistry } = useEvmProposalOps()
 
   return (
     <InputContainer container spacing={2}>

@@ -1,6 +1,6 @@
 import React, { useCallback, useContext } from "react"
-import { Grid, styled, Typography, MenuItem, IconButton } from "@material-ui/core"
-import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
+import { Grid, styled, MenuItem, IconButton } from "@material-ui/core"
+import { RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { EtherlinkContext } from "services/wagmi/context"
@@ -9,16 +9,16 @@ const TransactionContainer = styled(Grid)({
   marginBottom: "20px"
 })
 
-const AddButton = styled(Grid)({
-  background: "#1c2024",
-  padding: "12px",
-  borderRadius: "4px",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginTop: "16px"
-})
+// const AddButton = styled(Grid)({
+//   background: "#1c2024",
+//   padding: "12px",
+//   borderRadius: "4px",
+//   cursor: "pointer",
+//   display: "flex",
+//   alignItems: "center",
+//   justifyContent: "center",
+//   marginTop: "16px"
+// })
 
 const InputContainer = styled(Grid)({
   background: "#1c2024",
@@ -59,11 +59,11 @@ export const EvmPropTransferAssets: React.FC = () => {
     [transferAssets.transactions, daoSelected?.registryAddress, setTransferAssets]
   )
 
-  const onAddTransaction = () => {
-    const transactions = [...transferAssets.transactions]
-    transactions.push({ assetType: "transferETH", assetSymbol: "XTZ", recipient: "", amount: "" })
-    setTransferAssets(transactions, daoSelected?.registryAddress)
-  }
+  // const onAddTransaction = () => {
+  //   const transactions = [...transferAssets.transactions]
+  //   transactions.push({ assetType: "transferETH", assetSymbol: "XTZ", recipient: "", amount: "" })
+  //   setTransferAssets(transactions, daoSelected?.registryAddress)
+  // }
 
   const onRemoveTransaction = (index: number) => {
     const transactions = [...transferAssets.transactions]

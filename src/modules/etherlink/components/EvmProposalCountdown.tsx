@@ -3,7 +3,7 @@ import { Timer } from "@mui/icons-material"
 import { Box } from "@mui/material"
 import { Typography } from "@mui/material"
 import dayjs from "dayjs"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { GridContainer } from "modules/common/GridContainer"
 
@@ -14,11 +14,17 @@ interface TimeLeft {
   seconds: number
 }
 
-export const EvmProposalCountdown = () => {
+export const EvmProposalCountdown = ({
+  overrideLabel,
+  overrideTarget
+}: {
+  overrideLabel?: string
+  overrideTarget?: any
+} = {}) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const { daoProposalSelected } = useContext(EtherlinkContext)
-  const timerLabel = daoProposalSelected?.timerLabel
-  const timerTargetDate = daoProposalSelected?.timerTargetDate
+  const timerLabel = overrideLabel ?? daoProposalSelected?.timerLabel
+  const timerTargetDate = overrideTarget ?? daoProposalSelected?.timerTargetDate
 
   useEffect(() => {
     const calculateTimeLeft = () => {

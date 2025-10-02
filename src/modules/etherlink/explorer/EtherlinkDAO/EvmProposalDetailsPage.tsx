@@ -6,6 +6,7 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalDetailCard"
 import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalVoteDetail"
 import { EvmProposalCountdown } from "modules/etherlink/components/EvmProposalCountdown"
+import { useProposalTimeline } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVoterList"
 import { ThumbDownAlt } from "@mui/icons-material"
 import { ThumbUpAlt } from "@mui/icons-material"
@@ -196,7 +197,7 @@ export const EvmProposalDetailsPage = () => {
   const proposalId = params?.proposalId
 
   const { daoSelected, daoProposals, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
-  const { isTimerActive } = daoProposalSelected
+  const { isTimerActive, timerLabel, timerTargetDate } = useProposalTimeline(daoProposalSelected, daoSelected)
 
   useEffect(() => {
     if (!proposalId) return
@@ -208,7 +209,15 @@ export const EvmProposalDetailsPage = () => {
       daoDecimals: daoSelected?.decimals,
       proposalsLoaded: daoProposals?.length
     })
-  }, [proposalId, selectDaoProposal, daoSelected?.id, daoProposals?.length, daoProposalSelected?.id])
+  }, [
+    proposalId,
+    selectDaoProposal,
+    daoSelected?.id,
+    daoProposals?.length,
+    daoProposalSelected?.id,
+    daoSelected?.decimals,
+    daoSelected?.token
+  ])
 
   return (
     <div>
@@ -222,7 +231,7 @@ export const EvmProposalDetailsPage = () => {
 
       <PageContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
         <Grid item xs={12} md={12} style={{ padding: "40px" }}>
-          {isTimerActive ? <EvmProposalCountdown /> : null}
+          {isTimerActive ? <EvmProposalCountdown overrideLabel={timerLabel} overrideTarget={timerTargetDate} /> : null}
           <RenderProposalAction />
         </Grid>
       </PageContainer>

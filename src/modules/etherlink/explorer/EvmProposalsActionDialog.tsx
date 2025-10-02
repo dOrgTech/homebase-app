@@ -2,7 +2,7 @@ import { Box, Container, Grid, styled, useMediaQuery, useTheme } from "@material
 import { Typography } from "@material-ui/core"
 import { NextButton } from "components/ui/NextButton"
 import { StyledTextField } from "components/ui/StyledTextField"
-import { LinearProgress, LinearProgressLoader } from "components/ui/LinearProgress"
+import { LinearProgressLoader } from "components/ui/LinearProgress"
 
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
@@ -33,13 +33,13 @@ const OptionContainer = styled(Grid)(({ theme }) => ({
   }
 }))
 
-const ActionText = styled(Typography)(({ theme }) => ({
+const ActionText = styled(Typography)(() => ({
   fontWeight: 400,
   fontSize: 20,
   marginBottom: 8
 }))
 
-const ActionDescriptionText = styled(Typography)(({ theme }) => ({
+const ActionDescriptionText = styled(Typography)(() => ({
   fontWeight: 300,
   fontSize: 16
 }))

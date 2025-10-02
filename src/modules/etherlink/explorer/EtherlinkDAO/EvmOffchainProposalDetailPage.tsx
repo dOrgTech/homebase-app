@@ -227,9 +227,9 @@ export const EvmOffchainProposalDetailsPage = () => {
   const params = useParams() as { proposalId: string }
   const proposalId = params?.proposalId
   const [daoProposalSelected, setDaoProposalSelected] = useState<IEvmProposal | undefined>(undefined)
-  const { daoSelected, daoProposals, selectDaoProposal } = useContext(EtherlinkContext)
+  const { daoSelected, daoProposals } = useContext(EtherlinkContext)
 
-  const theme = useTheme()
+  // const theme = useTheme()
 
   useEffect(() => {
     const proposal = daoProposals?.find((x: IEvmProposal) => x.id === proposalId)

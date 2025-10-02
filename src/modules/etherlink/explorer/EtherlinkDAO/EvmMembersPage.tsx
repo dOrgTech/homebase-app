@@ -3,7 +3,6 @@ import { TitleText } from "components/ui/TitleText"
 import { EvmMembersTable } from "modules/etherlink/components/EvmMembersTable"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useContext } from "react"
-import { VotingPowerWidget } from "modules/etherlink/components/VotingPowerWidget"
 
 interface EvmDaoMember {
   address: string
