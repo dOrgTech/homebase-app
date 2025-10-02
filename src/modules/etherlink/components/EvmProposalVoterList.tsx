@@ -1,8 +1,14 @@
-import { Grid, TableBody, Typography } from "@material-ui/core"
-import { TableHead, useMediaQuery, useTheme } from "@material-ui/core"
-import { Table } from "@material-ui/core"
-import { TableCell } from "@material-ui/core"
-import { TableRow } from "@material-ui/core"
+import {
+  Grid,
+  TableBody,
+  Typography,
+  TableHead,
+  useMediaQuery,
+  useTheme,
+  Table,
+  TableCell,
+  TableRow
+} from "components/ui"
 import { Blockie } from "modules/common/Blockie"
 import { AddressText } from "modules/creator/token/ui"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
@@ -12,7 +18,8 @@ import { useContext, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import ReactPaginate from "react-paginate"
 import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
-import { Container, CustomContent, Header, VotesRow, StyledTableCell, StyledTableRow, CopyIcon } from "./styled"
+import { etherlinkStyled as _est } from "components/ui"
+const { Container, CustomContent, Header, VotesRow, StyledTableCell, StyledTableRow, CopyIcon } = _est
 interface IVoter {
   voter: string
   option: number

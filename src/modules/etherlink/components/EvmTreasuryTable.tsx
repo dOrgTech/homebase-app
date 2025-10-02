@@ -1,9 +1,7 @@
-import { Typography } from "@material-ui/core"
+import { Typography } from "components/ui"
 import { SmallButton } from "modules/common/SmallButton"
-import { Grid } from "@material-ui/core"
-import { TableContainer } from "@material-ui/core"
-import { TableBody, TableCell, TableHead, TableRow } from "@material-ui/core"
-import { Table } from "@material-ui/core"
+import { Grid } from "components/ui"
+import { TableContainer, TableBody, TableCell, TableHead, TableRow, Table } from "components/ui"
 import { CopyButton } from "components/ui/CopyButton"
 import { useContext, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
@@ -12,7 +10,7 @@ import { useHistory } from "react-router-dom"
 import { toShortAddress } from "services/contracts/utils"
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab"
 import { makeStyles } from "@material-ui/core/styles"
-import { Card, CardContent, CardMedia } from "@material-ui/core"
+import { Card, CardContent, CardMedia } from "components/ui"
 
 const useStyles = makeStyles({
   toggleGroup: {

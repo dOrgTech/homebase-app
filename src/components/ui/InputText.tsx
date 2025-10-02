@@ -1,5 +1,5 @@
 import { withStyles } from "@material-ui/core"
-import { TextField } from "@mui/material"
+import { TextField } from "@material-ui/core"
 
 const InputText = withStyles(theme => ({
   root: {
@@ -16,6 +16,7 @@ const InputText = withStyles(theme => ({
     },
     "& .MuiInputBase-input": {
       "padding": 0,
+      "textAlign": "left",
       "&::placeholder": {
         fontWeight: 300,
         opacity: 1

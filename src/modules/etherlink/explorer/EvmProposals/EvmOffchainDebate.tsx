@@ -1,32 +1,11 @@
 import React from "react"
-import { Grid, styled, Typography, IconButton, FormControlLabel } from "@material-ui/core"
-import { Add as AddIcon, RemoveCircleOutline } from "@material-ui/icons"
+import { Grid, Typography, IconButton, FormControlLabel } from "components/ui"
+import { Add as AddIcon, RemoveCircleOutline } from "components/ui"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
-import { Switch } from "components/ui/Switch"
+import { Switch, InputContainer } from "components/ui"
 
-const InputContainer = styled(Grid)({
-  background: "#1c2024",
-  padding: "16px",
-  borderRadius: "4px",
-  marginBottom: "8px"
-})
-
-const AddButton = styled(Grid)({
-  background: "#1c2024",
-  padding: "12px",
-  borderRadius: "4px",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginTop: "16px"
-})
-
-const RemoveButton = styled(IconButton)({
-  color: "#FF4D4D",
-  padding: "4px"
-})
+// Styled components replaced by shared InputContainer and inline styles
 
 export const EvmOffchainDebate: React.FC = () => {
   const { offchainDebate, setOffchainDebate } = useEvmProposalOps()
@@ -116,20 +95,32 @@ export const EvmOffchainDebate: React.FC = () => {
             </Grid>
             <Grid item>
               {choices.length > 2 && (
-                <RemoveButton onClick={() => removeChoice(index)}>
+                <IconButton onClick={() => removeChoice(index)} style={{ color: "#FF4D4D", padding: 4 }}>
                   <RemoveCircleOutline />
-                </RemoveButton>
+                </IconButton>
               )}
             </Grid>
           </Grid>
         ))}
         <Grid item xs={12}>
-          <AddButton onClick={addChoice}>
+          <Grid
+            onClick={addChoice}
+            style={{
+              background: "#1c2024",
+              padding: 12,
+              borderRadius: 4,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 16
+            }}
+          >
             <AddIcon />
             <Typography color="textPrimary" style={{ marginLeft: 8 }}>
               Add Option
             </Typography>
-          </AddButton>
+          </Grid>
         </Grid>
       </InputContainer>
     </Grid>

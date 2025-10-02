@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Typography, CircularProgress, Link } from "@material-ui/core"
+import { Box, Typography, CircularProgress, Link } from "components/ui"
 import CheckCircleIcon from "@material-ui/icons/CheckCircle"
 import ErrorIcon from "@material-ui/icons/Error"
 

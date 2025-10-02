@@ -1,6 +1,5 @@
 import React from "react"
-import { Box, Container, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core"
-import { Typography } from "@material-ui/core"
+import { Box, Grid, useMediaQuery, useTheme, Typography } from "components/ui"
 import { NextButton } from "components/ui/NextButton"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { LinearProgressLoader } from "components/ui/LinearProgress"
@@ -20,36 +19,7 @@ import { EvmProposalOptions } from "../config"
 import { EvmOffchainDebate } from "./EvmProposals/EvmOffchainDebate"
 import { EProposalType } from "../types"
 
-// TODO: Move this to a shared component
-const OptionContainer = styled(Grid)(({ theme }) => ({
-  "minHeight": 80,
-  "background": theme.palette.primary.main,
-  "borderRadius": 8,
-  "padding": "35px 42px",
-  "marginBottom": 16,
-  "cursor": "pointer",
-  "height": 110,
-  "&:hover:enabled": {
-    background: theme.palette.secondary.dark,
-    scale: 1.01,
-    transition: "0.15s ease-in"
-  }
-}))
-
-const ActionText = styled(Typography)(() => ({
-  fontWeight: 400,
-  fontSize: 20,
-  marginBottom: 8
-}))
-
-const ActionDescriptionText = styled(Typography)(() => ({
-  fontWeight: 300,
-  fontSize: 16
-}))
-
-const TitleContainer = styled(Grid)({
-  marginBottom: 24
-})
+import { OptionContainer, ActionText, ActionDescriptionText, TitleContainer } from "components/ui"
 
 const renderModal = (modal: EProposalType) => {
   switch (modal) {
@@ -84,7 +54,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
     try {
       return BigInt(daoCtx?.daoSelected?.proposalThreshold || 0)
     } catch (_) {
-      return 0n
+      return BigInt(0)
     }
   }, [daoCtx?.daoSelected?.proposalThreshold])
 
@@ -128,16 +98,8 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        <Container>
-          <Box
-            gridGap={2}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              mb: 4
-            }}
-          >
+        <Grid>
+          <Box gridGap={2} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
             <StyledTextField
               placeholder="Proposal Title"
               fullWidth
@@ -172,15 +134,15 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
 
           {/* Voting power helper */}
           <Box
-            sx={{
+            style={{
               display: "flex",
               flexDirection: isMobileSmall ? "column" : "row",
               alignItems: isMobileSmall ? "stretch" : "center",
-              gap: 2,
-              mb: 3,
+              gap: 8,
+              marginBottom: 24,
               background: theme.palette.primary.main,
-              borderRadius: 1,
-              p: 2
+              borderRadius: 4,
+              padding: 16
             }}
           >
             <Typography color="textPrimary" style={{ flex: 1 }}>
@@ -210,7 +172,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             <BackButton onClick={prevStep.handler} />
             <NextButton onClick={nextStep.handler}>{nextStep.text}</NextButton>
           </Grid>
-        </Container>
+        </Grid>
       </ResponsiveDialog>
 
       <ResponsiveDialog

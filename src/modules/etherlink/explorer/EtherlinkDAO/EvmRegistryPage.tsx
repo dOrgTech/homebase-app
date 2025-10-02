@@ -1,4 +1,4 @@
-import { Grid, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Tooltip, useMediaQuery, useTheme } from "components/ui"
 import { CopyAddress } from "modules/common/CopyAddress"
 
 import React, { useContext, useMemo } from "react"

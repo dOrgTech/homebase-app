@@ -1,6 +1,5 @@
-import { Grid, Typography, Box, styled } from "@material-ui/core"
-import AddCircleIcon from "@mui/icons-material/AddCircle"
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle"
+import { Grid, Typography, Box, styled } from "components/ui"
+import { AddCircleIcon, RemoveCircleIcon } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useContext } from "react"

@@ -1,51 +1,13 @@
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import React from "react"
-import {
-  Grid,
-  styled,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Typography,
-  useMediaQuery,
-  useTheme
-} from "@material-ui/core"
+import { Grid, Table, TableBody, TableRow, Typography, useMediaQuery, useTheme } from "components/ui"
+import { CustomTableContainer, CustomTableCell, CustomTableCellValue, RowValue } from "components/ui"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { CopyButton } from "modules/common/CopyButton"
 
-const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
-  width: "inherit",
-  [theme.breakpoints.down("sm")]: {}
-}))
-
-const CustomTableCell = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingBottom: 0,
-    paddingLeft: "16px !important",
-    textAlign: "end"
-  }
-}))
-
-const CustomTableCellValue = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingTop: 0,
-    paddingRight: "16px !important",
-    textAlign: "end",
-    paddingBottom: 0
-  }
-}))
-
-const RowValue = styled(Typography)(({ theme }) => ({
-  fontWeight: 300,
-  fontSize: 18,
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 16
-  }
-}))
+// Styled components moved to components/ui/etherlink/SummaryTable
 
 export const EvmDaoSummary = () => {
   const theme = useTheme()

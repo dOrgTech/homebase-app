@@ -1,6 +1,5 @@
-import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme, InputText } from "components/ui"
 import { DescriptionText } from "components/ui/DaoCreator"
-import InputText from "components/ui/InputText"
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
 
 import { TitleBlock } from "modules/common/TitleBlock"

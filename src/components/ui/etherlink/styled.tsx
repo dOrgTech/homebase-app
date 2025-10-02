@@ -16,41 +16,41 @@ import { GridContainer } from "modules/common/GridContainer"
 
 import { ContentContainer } from "components/ui/ContentContainer"
 
-const OverflowCell = styled(TableCell)({
+export const OverflowCell = styled(TableCell)({
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
   maxWidth: 300
 })
 
-const OverflowItem = styled(Grid)({
+export const OverflowItem = styled(Grid)({
   whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
   maxWidth: 300
 })
 
-const CopyIcon = styled(FileCopyOutlined)({
+export const CopyIcon = styled(FileCopyOutlined)({
   marginLeft: 8,
   cursor: "pointer"
 })
 
-const Container = styled(Grid)({
+export const Container = styled(Grid)({
   gap: 16,
   padding: 16
 })
 
-const ContainerVoteDetail = styled(Grid)(({ theme }: { theme: Theme }) => ({
+export const ContainerVoteDetail = styled(Grid)(({ theme }: { theme: Theme }) => ({
   background: theme.palette.primary.main,
   borderRadius: 8
 }))
 
-const Header = styled(Typography)(({ theme }) => ({
+export const Header = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.light,
   fontWeight: 300
 }))
 
-const CustomContent = styled(DialogContent)(({ theme }) => ({
+export const CustomContent = styled(DialogContent)(({ theme }) => ({
   padding: 0,
   display: "grid",
   marginTop: 24,
@@ -61,7 +61,7 @@ const CustomContent = styled(DialogContent)(({ theme }) => ({
   }
 }))
 
-const VotesRow = styled(Typography)(({ theme }) => ({
+export const VotesRow = styled(Typography)(({ theme }) => ({
   cursor: "default",
   display: "block",
   whiteSpace: "nowrap",
@@ -75,23 +75,23 @@ const VotesRow = styled(Typography)(({ theme }) => ({
   }
 }))
 
-const StyledTableCell = styled(TableCell)({
+export const StyledTableCell = styled(TableCell)({
   "fontWeight": 300,
   "& p": {
     fontWeight: 300
   }
 })
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
+
+export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover
   },
-  // hide last border
   "&:last-child td, &:last-child th": {
     border: 0
   }
 }))
 
-const ProgressText = styled(Typography)(({ textcolor }: { textcolor: string }) => ({
+export const ProgressText = styled(Typography)(({ textcolor }: { textcolor: string }) => ({
   color: textcolor,
   display: "flex",
   alignItems: "center",
@@ -107,7 +107,7 @@ const ProgressText = styled(Typography)(({ textcolor }: { textcolor: string }) =
   top: 0
 }))
 
-const TitleContainer = styled(Grid)(({ theme }) => ({
+export const TitleContainer = styled(Grid)(({ theme }) => ({
   paddingTop: 18,
   paddingLeft: 46,
   paddingRight: 46,
@@ -118,56 +118,55 @@ const TitleContainer = styled(Grid)(({ theme }) => ({
   }
 }))
 
-const LinearContainer = styled(GridContainer)({
+export const LinearContainer = styled(GridContainer)({
   paddingBottom: 0,
   minHeight: 110
 })
 
-const LinearContainerOffchain = styled(GridContainer)(({ theme }: { theme: Theme }) => ({
+export const LinearContainerOffchain = styled(GridContainer)(({ theme }: { theme: Theme }) => ({
   background: theme.palette.secondary.light,
   borderRadius: 8
 }))
 
-const LegendContainer = styled(GridContainer)({
+export const LegendContainer = styled(GridContainer)({
   minHeight: 30,
   paddingBottom: 0
 })
 
-const GraphicsContainer = styled(Grid)({
+export const GraphicsContainer = styled(Grid)({
   paddingBottom: 25
 })
 
-const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
+export const HistoryItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
   marginTop: 8,
   paddingBottom: 4,
   display: "flex",
   height: "auto",
-
   [theme.breakpoints.down("sm")]: {
     width: "unset"
   }
 }))
 
-const HistoryKey = styled(Typography)({
+export const HistoryKey = styled(Typography)({
   fontSize: 18,
   fontWeight: 500,
   textTransform: "capitalize"
 })
 
-const HistoryValue = styled(Typography)({
+export const HistoryValue = styled(Typography)({
   fontSize: 18,
   fontWeight: 300,
   color: "#BFC5CA"
 })
 
-const LogoItem = styled("img")(({ theme }) => ({
+export const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
   [theme.breakpoints.down("sm")]: {
     height: 10
   }
 }))
 
-const TextContainer = styled(Typography)(({ theme }) => ({
+export const TextContainer = styled(Typography)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: 10,
@@ -177,7 +176,7 @@ const TextContainer = styled(Typography)(({ theme }) => ({
   }
 }))
 
-const EndTextContainer = styled(Typography)(({ theme }) => ({
+export const EndTextContainer = styled(Typography)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   gap: 10,
@@ -187,13 +186,13 @@ const EndTextContainer = styled(Typography)(({ theme }) => ({
   }
 }))
 
-const EndText = styled(Typography)(({ theme }) => ({
+export const EndText = styled(Typography)(({ theme }) => ({
   [theme.breakpoints.down("sm")]: {
     marginTop: 20
   }
 }))
 
-const Divider = styled(Typography)(({ theme }) => ({
+export const Divider = styled(Typography)(({ theme }) => ({
   marginLeft: 8,
   marginRight: 8,
   [theme.breakpoints.down("sm")]: {
@@ -201,7 +200,7 @@ const Divider = styled(Typography)(({ theme }) => ({
   }
 }))
 
-const StyledLink = styled(Link)(({ theme }) => ({
+export const StyledLink = styled(Link)(({ theme }) => ({
   fontFamily: "Roboto Flex",
   fontWeight: 300,
   fontSize: 16,
@@ -212,7 +211,7 @@ const StyledLink = styled(Link)(({ theme }) => ({
   }
 }))
 
-const CustomPopover = withStyles({
+export const CustomPopover = withStyles({
   paper: {
     "marginTop": 10,
     "padding": 8,
@@ -224,31 +223,4 @@ const CustomPopover = withStyles({
   }
 })(Popover)
 
-export {
-  OverflowCell,
-  OverflowItem,
-  CopyIcon,
-  Container,
-  ContainerVoteDetail,
-  Header,
-  CustomContent,
-  VotesRow,
-  StyledTableCell,
-  StyledTableRow,
-  ProgressText,
-  TitleContainer,
-  LinearContainer,
-  LinearContainerOffchain,
-  LegendContainer,
-  GraphicsContainer,
-  HistoryItem,
-  HistoryKey,
-  HistoryValue,
-  CustomPopover,
-  TextContainer,
-  EndTextContainer,
-  EndText,
-  Divider,
-  StyledLink,
-  LogoItem
-}
+export { ContentContainer }

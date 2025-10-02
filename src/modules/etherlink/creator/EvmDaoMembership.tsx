@@ -1,11 +1,8 @@
-import { IconButton, Typography } from "@material-ui/core"
-import { Button } from "components/ui/Button"
-import { Add, RemoveCircleOutline } from "@material-ui/icons"
-import { Box } from "@material-ui/core"
+import { IconButton, Typography, Button, Add, RemoveCircleOutline, Box, StyledTextField } from "components/ui"
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
-import { StyledTextField } from "components/ui/StyledTextField"
+// StyledTextField imported from components/ui
 import { isInvalidEvmAddress } from "../utils"
 
 interface Member {
@@ -113,7 +110,7 @@ export const EvmDaoMembership = () => {
           </DescriptionText>
         }
       />
-      <Box sx={{ width: "100%", margin: "20px 0px" }}>
+      <Box style={{ width: "100%", margin: "20px 0px" }}>
         <Typography variant="h6" style={{ color: "white" }}>
           Total Tokens:{" "}
           {members
@@ -121,18 +118,10 @@ export const EvmDaoMembership = () => {
             .reduce((acc, member) => parseFloat(acc.toString()) + parseFloat(member.amountOfTokens.toString()), 0)}
         </Typography>
       </Box>
-      <Box sx={{ width: "100%" }}>
+      <Box style={{ width: "100%" }}>
         {members.map((member, index) => (
-          <Box
-            key={index}
-            gridGap={2}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 4
-            }}
-          >
-            <Box sx={{ width: "70%" }}>
+          <Box key={index} gridGap={2} style={{ display: "flex", alignItems: "center", marginBottom: 32 }}>
+            <Box style={{ width: "70%" }}>
               <StyledTextField
                 fullWidth
                 variant="standard"
@@ -143,7 +132,7 @@ export const EvmDaoMembership = () => {
                 helperText={member.error}
               />
             </Box>
-            <Box sx={{ width: "30%", marginLeft: "10px" }}>
+            <Box style={{ width: "30%", marginLeft: "10px" }}>
               <StyledTextField
                 fullWidth
                 variant="standard"
@@ -158,7 +147,7 @@ export const EvmDaoMembership = () => {
                 <RemoveCircleOutline style={{ color: "white" }} />
               </IconButton>
             )}
-            {index === 0 && <Box sx={{ width: 40, height: 40 }} />}
+            {index === 0 && <Box style={{ width: 40, height: 40 }} />}
           </Box>
         ))}
 

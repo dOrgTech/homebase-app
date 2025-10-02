@@ -1,4 +1,4 @@
-import { Button, Grid, TableRow, TableBody, Table, Typography, TableCell, IconButton } from "@mui/material"
+import { Button, Grid, TableRow, TableBody, Table, Typography, TableCell, IconButton } from "components/ui"
 import { PageContainer } from "components/ui/DaoCreator"
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -8,8 +8,7 @@ import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalV
 import { EvmProposalCountdown } from "modules/etherlink/components/EvmProposalCountdown"
 import { useProposalTimeline } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVoterList"
-import { ThumbDownAlt } from "@mui/icons-material"
-import { ThumbUpAlt } from "@mui/icons-material"
+import { ThumbDownAlt, ThumbUpAlt } from "components/ui"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { CopyButton } from "modules/common/CopyButton"
@@ -146,7 +145,7 @@ const RenderProposalAction = () => {
             color="secondary"
             style={{ background: "rgb(113 214 156)" }}
           >
-            <ThumbUpAlt sx={{ mr: 1 }} /> Support
+            <ThumbUpAlt style={{ marginRight: 8 }} /> Support
           </Button>
           <Button
             onClick={() => {
@@ -168,7 +167,7 @@ const RenderProposalAction = () => {
             color="secondary"
             style={{ background: "red" }}
           >
-            <ThumbDownAlt sx={{ mr: 1 }} /> Reject
+            <ThumbDownAlt style={{ marginRight: 8 }} /> Reject
           </Button>
         </Grid>
         {hasUserCastedVote ? (

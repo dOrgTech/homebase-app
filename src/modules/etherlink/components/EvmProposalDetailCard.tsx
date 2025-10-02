@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
+import { Grid, Typography, useTheme, useMediaQuery } from "components/ui"
 import { GridContainer } from "modules/common/GridContainer"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
 import Share from "assets/img/share.svg"
@@ -11,7 +11,8 @@ import { Badge } from "components/ui/Badge"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
 import { CopyIcon } from "components/ui/icons/CopyIcon"
 import { IEvmProposal } from "../types"
-import { LogoItem, CustomPopover, TextContainer, EndTextContainer, EndText, Divider, StyledLink } from "./styled"
+import { etherlinkStyled as _est } from "components/ui"
+const { LogoItem, CustomPopover, TextContainer, EndTextContainer, EndText, Divider, StyledLink } = _est
 
 export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }> = ({ poll }) => {
   const theme = useTheme()

@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material"
+import { Grid } from "components/ui"
 import { TitleText } from "components/ui/TitleText"
 import { EvmMembersTable } from "modules/etherlink/components/EvmMembersTable"
 import { EtherlinkContext } from "services/wagmi/context"

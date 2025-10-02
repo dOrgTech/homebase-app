@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { Grid, styled, Box, Tooltip } from "@material-ui/core"
+import { Grid, Box, Tooltip } from "components/ui"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { getContractDetails } from "modules/etherlink/utils"
@@ -7,12 +7,7 @@ import { ethers } from "ethers"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ThemedTabButton } from "components/ui/ThemedTabButton"
 
-const InputContainer = styled(Grid)({
-  background: "#1c2024",
-  padding: "16px",
-  borderRadius: "4px",
-  marginBottom: "8px"
-})
+import { InputContainer } from "components/ui"
 
 export const EvmPropContractCall: React.FC = () => {
   const { network } = useTezos()
@@ -128,25 +123,17 @@ export const EvmPropContractCall: React.FC = () => {
 
         {activeTab === "writeMethods" && (
           <Box display="flex" width="100%">
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                width: "100%"
-              }}
-              style={{ gap: "10x" }}
-            >
+            <Box style={{ display: "flex", flexDirection: "row", width: "100%", gap: 10 }}>
               <StyledTextField
                 select
                 label=""
                 value={selectedMethod}
                 onChange={e => setSelectedMethod(e.target.value)}
                 variant="outlined"
-                sx={{ width: { xs: "100%", sm: "33%" } }}
+                style={{ width: "33%", marginRight: "10px" }}
                 SelectProps={{
                   native: true
                 }}
-                style={{ marginRight: "10px" }}
               >
                 <option value="">Select a method</option>
                 {writeMethods.map((method, index) => (
@@ -163,7 +150,7 @@ export const EvmPropContractCall: React.FC = () => {
                   generateCallData()
                 }}
                 variant="outlined"
-                sx={{ width: { xs: "100%", sm: "66%" } }}
+                style={{ width: "66%" }}
                 placeholder={
                   selectedMethod
                     ? writeMethods

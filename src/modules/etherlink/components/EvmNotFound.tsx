@@ -1,4 +1,4 @@
-import { Box, Typography } from "@material-ui/core"
+import { Box, Typography } from "components/ui"
 import { BackButton } from "modules/lite/components/BackButton"
 import React from "react"
 

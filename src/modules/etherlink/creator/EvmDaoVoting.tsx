@@ -1,56 +1,12 @@
-import { Grid, styled, Tooltip, Typography, withStyles } from "@material-ui/core"
-import { InfoRounded } from "@material-ui/icons"
+import { Grid, Tooltip, Typography } from "components/ui"
+import { InfoRounded } from "components/ui"
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import React from "react"
-import { TextField } from "@material-ui/core"
+import { StyledTextField } from "components/ui"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
-const TimeBox = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.dark,
-  borderRadius: 8,
-  width: 72,
-  minHeight: 59,
-  marginBottom: 16,
-  display: "grid",
-  [theme.breakpoints.down("sm")]: {
-    width: 160
-  }
-}))
-
-const TimeText = styled(Typography)({
-  marginTop: -20,
-  marginLeft: 16,
-  fontWeight: 300
-})
-
-const CustomTooltip = styled(Tooltip)({
-  marginLeft: 8
-})
-
-const InfoIconInput = styled(InfoRounded)(({ theme }) => ({
-  cursor: "default",
-  color: theme.palette.secondary.light,
-  height: 16,
-  width: 16,
-  marginLeft: 8
-}))
-
-const InputContainer = styled(Grid)({
-  paddingRight: 15,
-  ["@media (max-width:1167px)"]: {
-    paddingRight: 0
-  }
-})
-
-const StyledTextField = withStyles({
-  root: {
-    "& input": {
-      textAlign: "center",
-      color: "#fff"
-    }
-  }
-})(TextField)
+import { InputContainer } from "components/ui"
 
 const styles = {
   voting: {
@@ -104,18 +60,28 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
           <Grid container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Voting Delay
-              <CustomTooltip
+              <Tooltip
                 placement="bottom"
                 title="How much time between submitting a proposal and the start of the voting period"
               >
-                <InfoIconInput />
-              </CustomTooltip>
+                <InfoRounded style={{ cursor: "default", height: 16, width: 16, marginLeft: 8 }} />
+              </Tooltip>
             </Typography>
           </Grid>
 
           <Grid container direction="column">
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -125,11 +91,23 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.votingBlocksDay}
                   onChange={e => setFieldValue("voting.votingBlocksDay", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">days</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                days
+              </Typography>
             </Grid>
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -139,11 +117,23 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.votingBlocksHours}
                   onChange={e => setFieldValue("voting.votingBlocksHours", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">hours</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                hours
+              </Typography>
             </Grid>
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -153,8 +143,10 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.votingBlocksMinutes}
                   onChange={e => setFieldValue("voting.votingBlocksMinutes", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">minutes</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                minutes
+              </Typography>
             </Grid>
           </Grid>
         </InputContainer>
@@ -163,15 +155,25 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
           <Grid container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Voting Duration
-              <CustomTooltip placement="bottom" title="How long a proposal will be open for voting">
-                <InfoIconInput />
-              </CustomTooltip>
+              <Tooltip placement="bottom" title="How long a proposal will be open for voting">
+                <InfoRounded style={{ cursor: "default", height: 16, width: 16, marginLeft: 8 }} />
+              </Tooltip>
             </Typography>
           </Grid>
 
           <Grid container direction="column">
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -181,11 +183,23 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.proposalFlushBlocksDay}
                   onChange={e => setFieldValue("voting.proposalFlushBlocksDay", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">days</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                days
+              </Typography>
             </Grid>
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -195,11 +209,23 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.proposalFlushBlocksHours}
                   onChange={e => setFieldValue("voting.proposalFlushBlocksHours", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">hours</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                hours
+              </Typography>
             </Grid>
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -209,8 +235,10 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.proposalFlushBlocksMinutes}
                   onChange={e => setFieldValue("voting.proposalFlushBlocksMinutes", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">minutes</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                minutes
+              </Typography>
             </Grid>
           </Grid>
         </InputContainer>
@@ -219,15 +247,25 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
           <Grid container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Execution Delay
-              <CustomTooltip placement="bottom" title="After the proposal passes and before it can be executed.">
-                <InfoIconInput />
-              </CustomTooltip>
+              <Tooltip placement="bottom" title="After the proposal passes and before it can be executed.">
+                <InfoRounded style={{ cursor: "default", height: 16, width: 16, marginLeft: 8 }} />
+              </Tooltip>
             </Typography>
           </Grid>
 
           <Grid container direction="column">
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -237,11 +275,23 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.proposalExpiryBlocksDay}
                   onChange={e => setFieldValue("voting.proposalExpiryBlocksDay", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">days</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                days
+              </Typography>
             </Grid>
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -251,11 +301,23 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.proposalExpiryBlocksHours}
                   onChange={e => setFieldValue("voting.proposalExpiryBlocksHours", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">hours</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                hours
+              </Typography>
             </Grid>
             <Grid item container direction="row" alignItems="center">
-              <TimeBox item>
+              <Grid
+                item
+                style={{
+                  background: "#2F3438",
+                  borderRadius: 8,
+                  width: 72,
+                  minHeight: 59,
+                  marginBottom: 16,
+                  display: "grid"
+                }}
+              >
                 <StyledTextField
                   style={{ margin: "auto" }}
                   variant="standard"
@@ -265,8 +327,10 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   value={daoData.voting.proposalExpiryBlocksMinutes}
                   onChange={e => setFieldValue("voting.proposalExpiryBlocksMinutes", parseInt(e.target.value) || 0)}
                 />
-              </TimeBox>
-              <TimeText color="textSecondary">minutes</TimeText>
+              </Grid>
+              <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
+                minutes
+              </Typography>
             </Grid>
           </Grid>
         </InputContainer>

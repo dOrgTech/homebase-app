@@ -1,11 +1,10 @@
 import React, { useContext, useState } from "react"
-import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
+import { Grid, Typography, useTheme, useMediaQuery } from "components/ui"
 
 import { SmallButton } from "../../common/SmallButton"
 
-import SettingsIcon from "@mui/icons-material/Settings"
-import { IconButton } from "@mui/material"
-import { FileCopyOutlined } from "@material-ui/icons"
+import { Settings as SettingsIcon, IconButton } from "components/ui"
+import { FileCopyOutlined } from "components/ui"
 import { HeroContainer } from "components/ui/HeroContainer"
 import { ViewSettings } from "components/ui/ViewSettings"
 import { SubtitleText } from "components/ui/SubtitleText"

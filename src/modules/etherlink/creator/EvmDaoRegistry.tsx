@@ -1,9 +1,5 @@
 import { useState } from "react"
-import { TextField } from "@mui/material"
-import { IconButton, styled } from "@material-ui/core"
-import { Button } from "components/ui/Button"
-import { Add, RemoveCircleOutline } from "@material-ui/icons"
-import { Box } from "@material-ui/core"
+import { IconButton, Button, Add, RemoveCircleOutline, Box, StyledTextField } from "components/ui"
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
@@ -13,35 +9,7 @@ interface RegistryEntry {
   value: string
 }
 
-const StyledTextField = styled(TextField)({
-  "& .MuiInput-root": {
-    color: "#fff",
-    paddingBottom: "4px"
-  },
-  "& label": {
-    color: "#fff"
-  },
-  "& label.Mui-focused": {
-    color: "#fff"
-  },
-  "& .MuiInput-underline:before": {
-    borderBottomColor: "#ccc"
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "#fff"
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "#fff"
-    },
-    "&:hover fieldset": {
-      borderColor: "#fff"
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#fff"
-    }
-  }
-})
+// Use StyledTextField from src/components/ui
 
 const updateRegistryStore = (entries: RegistryEntry[], setFieldValue: (field: string, value: any) => void) => {
   const registryObject = entries.reduce((acc, entry) => {
@@ -98,18 +66,10 @@ export const EvmDaoRegistry = () => {
           </DescriptionText>
         }
       />
-      <Box sx={{ width: "100%" }}>
+      <Box style={{ width: "100%" }}>
         {entries.map((entry, index) => (
-          <Box
-            key={index}
-            gridGap={2}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 4
-            }}
-          >
-            <Box sx={{ width: "45%" }}>
+          <Box key={index} gridGap={2} style={{ display: "flex", alignItems: "center", marginBottom: 32 }}>
+            <Box style={{ width: "45%" }}>
               <StyledTextField
                 fullWidth
                 variant="standard"
@@ -118,7 +78,7 @@ export const EvmDaoRegistry = () => {
                 onChange={e => handleEntryChange(index, "key", e.target.value)}
               />
             </Box>
-            <Box sx={{ width: "45%", marginLeft: "10px" }}>
+            <Box style={{ width: "45%", marginLeft: "10px" }}>
               <StyledTextField
                 fullWidth
                 variant="standard"
@@ -132,7 +92,7 @@ export const EvmDaoRegistry = () => {
                 <RemoveCircleOutline style={{ color: "white" }} />
               </IconButton>
             )}
-            {index === 0 && <Box sx={{ width: 40, height: 40 }} />}
+            {index === 0 && <Box style={{ width: 40, height: 40 }} />}
           </Box>
         ))}
 

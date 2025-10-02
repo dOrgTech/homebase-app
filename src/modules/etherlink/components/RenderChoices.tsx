@@ -1,8 +1,9 @@
 import React from "react"
-import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme } from "components/ui"
 import { LinearProgress } from "components/ui/LinearProgress"
 import { IEvmOffchainChoice, IEvmProposal } from "../types"
-import { LinearContainer } from "./styled"
+import { etherlinkStyled as _est } from "components/ui"
+const { LinearContainer } = _est
 export const RenderChoices = ({
   mode,
   choices,

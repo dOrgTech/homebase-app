@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { ethers } from "ethers"
-import { Box, Grid, styled, Typography } from "@material-ui/core"
+import { Box, Grid, styled, Typography } from "components/ui"
 import { Button } from "components/ui/Button"
 import { HowToVote, People } from "@material-ui/icons"
 import { EtherlinkContext } from "services/wagmi/context"

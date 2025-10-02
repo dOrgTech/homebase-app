@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useContext, useEffect, useMemo, useState } from "react"
-import { Grid, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Typography, useMediaQuery, useTheme } from "components/ui"
 
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { getTurnoutValue } from "services/utils/utils"
@@ -10,7 +10,8 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmDaoUiOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { EVM_PROPOSAL_CHOICES } from "../config"
 import { IEvmProposal } from "../types"
-import { ContainerVoteDetail as Container, TitleContainer, LegendContainer, GraphicsContainer } from "./styled"
+import { etherlinkStyled as _est } from "components/ui"
+const { ContainerVoteDetail: Container, TitleContainer, LegendContainer, GraphicsContainer } = _est
 import { RenderChoices } from "./RenderChoices"
 import { ProposalHistory } from "./ProposalHistory"
 

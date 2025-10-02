@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "@material-ui/core"
+import { Box, Grid, Step, StepLabel, useMediaQuery, useTheme, Link } from "components/ui"
 import ProgressBar from "react-customizable-progressbar"
 import { useHistory } from "react-router"
 

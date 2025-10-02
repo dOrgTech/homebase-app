@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react"
 import { ethers } from "ethers"
 import { EtherlinkContext } from "services/wagmi/context"
-import { Box, styled, Typography, Tabs, Tab } from "@material-ui/core"
+import { Box, styled, Typography, Tabs, Tab } from "components/ui"
 import { Button } from "components/ui/Button"
 import { StyledTextField } from "components/ui/StyledTextField"
 import { useTezos } from "services/beacon/hooks/useTezos"

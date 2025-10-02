@@ -10,10 +10,11 @@ import {
   Typography,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "components/ui"
 import dayjs from "dayjs"
 import { TableContainer, MobileTableHeader, MobileTableRow } from "components/ui/Table"
-import { OverflowCell, OverflowItem } from "./styled"
+import { etherlinkStyled } from "components/ui"
+const { OverflowCell, OverflowItem } = etherlinkStyled
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
 

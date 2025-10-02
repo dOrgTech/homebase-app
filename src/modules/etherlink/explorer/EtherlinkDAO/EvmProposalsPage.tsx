@@ -1,13 +1,13 @@
 import { useMemo } from "react"
 import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
-import { Grid, MenuItem, Typography, useTheme } from "@material-ui/core"
+import { Grid, MenuItem, Typography, useTheme } from "components/ui"
 import { TitleText } from "components/ui/TitleText"
 import { HeroContainer } from "components/ui/HeroContainer"
 import { SmallButton } from "modules/common/SmallButton"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
-import Select from "@mui/material/Select"
+import { Select } from "components/ui"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
 import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { IEvmProposal } from "modules/etherlink/types"
@@ -67,7 +67,9 @@ export const EvmProposalsPage = () => {
                   defaultValue="all"
                   style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
                   value={proposalType || "all"}
-                  onChange={e => setProposalType(e.target.value)}
+                  onChange={(e: React.ChangeEvent<{ value: unknown }>) =>
+                    setProposalType((e.target.value as string) || "all")
+                  }
                 >
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="offchain">Off-Chain</MenuItem>
@@ -90,7 +92,9 @@ export const EvmProposalsPage = () => {
                   defaultValue="all"
                   style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
                   value={proposalStatus || "all"}
-                  onChange={e => setProposalStatus(e.target.value)}
+                  onChange={(e: React.ChangeEvent<{ value: unknown }>) =>
+                    setProposalStatus((e.target.value as string) || "all")
+                  }
                 >
                   <MenuItem value="all">All</MenuItem>
                   <MenuItem value="active">Active</MenuItem>

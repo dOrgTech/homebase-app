@@ -1,4 +1,4 @@
-import { Button, Grid, Typography, useMediaQuery, useTheme } from "@mui/material"
+import { Button, Grid, Typography, useMediaQuery, useTheme } from "components/ui"
 import { PageContainer } from "components/ui/DaoCreator"
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -7,8 +7,7 @@ import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalD
 import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalVoteDetail"
 import { EvmProposalCountdown } from "modules/etherlink/components/EvmProposalCountdown"
 import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVoterList"
-import { ThumbDownAlt } from "@mui/icons-material"
-import { ThumbUpAlt } from "@mui/icons-material"
+import { ThumbDownAlt, ThumbUpAlt } from "components/ui"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
@@ -16,7 +15,8 @@ import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 import { EvmChoiceItemSelected } from "../EvmProposals/EvmChoiceItemSelected"
 import { IEvmOffchainChoice, IEvmProposal } from "modules/etherlink/types"
 import { SmallButton } from "modules/common/SmallButton"
-import { LinearContainerOffchain as LinearContainer } from "modules/etherlink/components/styled"
+import { etherlinkStyled } from "components/ui"
+const LinearContainer = etherlinkStyled.LinearContainerOffchain
 
 const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IEvmProposal | undefined }) => {
   const { castOffchainVote } = useEvmProposalOps()
@@ -181,7 +181,7 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
               color="secondary"
               style={{ background: "rgb(113 214 156)" }}
             >
-              <ThumbUpAlt sx={{ mr: 1 }} /> Support
+              <ThumbUpAlt style={{ marginRight: 8 }} /> Support
             </Button>
             <Button
               onClick={() => {
@@ -204,7 +204,7 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
               color="secondary"
               style={{ background: "red" }}
             >
-              <ThumbDownAlt sx={{ mr: 1 }} /> Reject
+              <ThumbDownAlt style={{ marginRight: 8 }} /> Reject
             </Button>
           </Grid>
         )}

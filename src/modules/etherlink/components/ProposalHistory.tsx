@@ -1,8 +1,9 @@
 import React from "react"
-import { Grid, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, useMediaQuery, useTheme } from "components/ui"
 import ProgressBar from "react-customizable-progressbar"
 import dayjs from "dayjs"
-import { ContainerVoteDetail as Container, HistoryItem, HistoryKey, HistoryValue, ProgressText } from "./styled"
+import { etherlinkStyled as _est } from "components/ui"
+const { ContainerVoteDetail: Container, HistoryItem, HistoryKey, HistoryValue, ProgressText } = _est
 import { ContainerTitle } from "components/ui/Containers"
 
 export const ProposalHistory = ({

@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react"
-import { Grid, styled, MenuItem, IconButton } from "@material-ui/core"
+import { Grid, styled, MenuItem, IconButton } from "components/ui"
 import { RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledTextField } from "components/ui/StyledTextField"

@@ -1,4 +1,4 @@
-import { Grid, Typography, styled } from "@material-ui/core"
+import { Grid, Typography, styled } from "components/ui"
 import React from "react"
 import { toShortAddress } from "services/contracts/utils"
 import { Proposal } from "services/services/dao/mappers/proposal/types"

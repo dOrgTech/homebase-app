@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react"
-import { CircularProgress, Grid, Typography, styled } from "@material-ui/core"
+import { CircularProgress, Grid, Typography, styled } from "components/ui"
 import { Link } from "react-router-dom"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { Poll } from "models/Polls"
