@@ -200,14 +200,14 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         const selectedInterface = selectedPropType?.interface?.editRegistry
         if (!selectedInterface) return console.log("No interface found")
 
+        // Build the next registry state first, then encode with the updated values
+        const nextRegistry = { ...get().daoRegistry, [type]: value }
         const iface = new ethers.Interface(selectedInterface.interface)
-        const encodedData = iface.encodeFunctionData(selectedInterface.name, [
-          get().daoRegistry.key,
-          get().daoRegistry.value
-        ])
+        const encodedData = iface.encodeFunctionData(selectedInterface.name, [nextRegistry.key, nextRegistry.value])
 
         set({
-          daoRegistry: { ...get().daoRegistry, [type]: value },
+          daoRegistry: nextRegistry,
+          // Keep payload keys stable but always overwrite calldatas with freshly encoded value
           createProposalPayload: { ...get().createProposalPayload, calldatas: [encodedData] }
         })
       },
@@ -517,10 +517,25 @@ export const useEvmProposalOps = () => {
   ])
 
   const createProposal = useCallback(
-    async (payload: Record<string, any>) => {
+    async (payload: {
+      targets: string[]
+      values: (number | string | bigint)[]
+      calldatas: string[]
+      description: string
+    }) => {
       if (!daoSelected || !daoContract) return
-      console.log("createProposal", payload)
-      const tx = await daoContract.propose(...Object.values(payload))
+      const { targets, values, calldatas, description } = payload
+
+      // Basic guards to prevent malformed propose calls
+      if (!Array.isArray(targets) || !Array.isArray(values) || !Array.isArray(calldatas)) {
+        throw new Error("Invalid proposal payload: targets, values and calldatas must be arrays")
+      }
+      if (!(targets.length === values.length && values.length === calldatas.length)) {
+        throw new Error("Invalid proposal payload: targets/values/calldatas length mismatch")
+      }
+
+      console.log("createProposal", { targets, values, calldatas, description })
+      const tx = await daoContract.propose(targets, values, calldatas, description)
       console.log("Proposal transaction sent:", tx.hash)
       const receipt = await tx.wait()
       console.log("Proposal transaction confirmed:", receipt)

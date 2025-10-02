@@ -422,7 +422,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                 </SecondContainer>
                 {values.tokenDeploymentMechanism === "new" && (
                   <SecondContainer container item direction="row" wrap="wrap">
-                    <Grid container direction="row" alignItems="center" xs={8}>
+                    <Grid container item direction="row" alignItems="center" xs={8}>
                       <Grid item xs={1}>
                         <Checkbox
                           disableRipple

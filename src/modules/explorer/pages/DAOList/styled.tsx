@@ -1,3 +1,4 @@
+import React from "react"
 import { Button, Grid, styled, Theme } from "@material-ui/core"
 
 const PageContainer = styled("div")(({ theme }) => ({
@@ -18,26 +19,28 @@ const PageContainer = styled("div")(({ theme }) => ({
   ["@media (max-width:960px)"]: {}
 }))
 
-const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "fontSize": 18,
-  "height": 40,
-  "fontWeight": 400,
-  "paddingLeft": 20,
-  "paddingRight": 20,
-  "paddingTop": 0,
-  "paddingBottom": 0,
-  "borderRadius": 8,
-  "color": isSelected ? theme.palette.secondary.main : "#fff",
-  "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
-  "&:hover": {
-    backgroundColor: isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.secondary.dark,
-    borderRadius: 8,
-    borderTopLeftRadius: "8px !important",
-    borderTopRightRadius: "8px !important",
-    borderBottomLeftRadius: "8px !important",
-    borderBottomRightRadius: "8px !important"
-  }
-}))
+const StyledTab = styled(({ isSelected, ...other }: any) => <Button {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected?: boolean }) => ({
+    "fontSize": 18,
+    "height": 40,
+    "fontWeight": 400,
+    "paddingLeft": 20,
+    "paddingRight": 20,
+    "paddingTop": 0,
+    "paddingBottom": 0,
+    "borderRadius": 8,
+    "color": isSelected ? theme.palette.secondary.main : "#fff",
+    "backgroundColor": isSelected ? "rgba(129, 254, 183, 0.20)" : "inherit",
+    "&:hover": {
+      backgroundColor: isSelected ? "rgba(129, 254, 183, 0.20)" : theme.palette.secondary.dark,
+      borderRadius: 8,
+      borderTopLeftRadius: "8px !important",
+      borderTopRightRadius: "8px !important",
+      borderBottomLeftRadius: "8px !important",
+      borderBottomRightRadius: "8px !important"
+    }
+  })
+)
 
 const Search = styled(Grid)({
   width: "49.5%",
