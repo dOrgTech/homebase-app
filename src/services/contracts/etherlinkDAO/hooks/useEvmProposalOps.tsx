@@ -15,6 +15,7 @@ import { getEthSignature } from "services/utils/utils"
 import { saveLiteProposal, voteOnLiteProposal } from "services/services/lite/lite-services"
 import { EProposalType, IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modules/etherlink/types"
 import { isValidUrl, getDaoConfigType, getDaoTokenOpsType } from "modules/etherlink/utils"
+import HbTokenAbi from "assets/abis/hb_evm.json"
 
 interface EvmProposalCreateStore {
   currentStep: number
@@ -735,6 +736,51 @@ export const useEvmProposalOps = () => {
           }
           return console.log("offchainDebate", offchainPayload, proposalMetadata, signature, payloadBytes)
         } else {
+          // --- Preflight: ensure proposer has enough voting power ---
+          try {
+            const signerAddress = etherlink?.signer?.address
+            const tokenAddress = daoSelected?.token
+            const thresholdRaw = BigInt(daoSelected?.proposalThreshold || 0)
+
+            if (!signerAddress || !tokenAddress) throw new Error("Missing signer or token address")
+
+            const provider = etherlink?.provider || etherlink?.signer?.provider
+            if (!provider) throw new Error("No provider available")
+
+            const tokenContract = new ethers.Contract(tokenAddress, HbTokenAbi.abi, provider)
+            const votesRaw: bigint = await tokenContract.getVotes(signerAddress)
+
+            if (votesRaw < thresholdRaw) {
+              const dec = Number(daoSelected?.decimals || 0)
+              const toHuman = (x: bigint) => {
+                if (!dec) return x.toString()
+                const s = x.toString().padStart(dec + 1, "0")
+                const intPart = s.slice(0, -dec)
+                const frac = s.slice(-dec).replace(/0+$/, "")
+                return frac ? `${intPart}.${frac}` : intPart
+              }
+
+              openNotification({
+                message: `Insufficient voting power to propose. Required ≥ ${toHuman(thresholdRaw)}, you have ${toHuman(
+                  votesRaw
+                )}. Use 'Claim Voting Power' (self‑delegate) in the User tab and try again.`,
+                variant: "error",
+                autoHideDuration: 5000
+              })
+              setIsDeploying(false)
+              // Optional: route user to the delegation UI
+              try {
+                router.push(`/explorer/etherlink/dao/${daoSelected?.address}/user`)
+              } catch (_) {
+                // ignore routing errors
+              }
+              return
+            }
+          } catch (preflightErr) {
+            // If preflight fails due to read issues, continue to attempt the tx; wallet will still guard
+            console.log("Preflight check skipped due to error:", preflightErr)
+          }
+
           createProposal(zustantStore.createProposalPayload)
             .then((createdProposal: IEvmProposalTxn) => {
               console.log("createdProposal", createdProposal)
@@ -757,12 +803,14 @@ export const useEvmProposalOps = () => {
             })
             .catch(err => {
               console.log("Error creating proposal", err)
+              // Friendlier error for insufficient proposer votes
+              const dataHex: string | undefined = (err as any)?.data
+              const maybeInsufficientVotes = typeof dataHex === "string" && dataHex.startsWith("0xc242ee16")
+              const friendly = maybeInsufficientVotes
+                ? "You do not meet the proposal threshold. Delegate voting power to yourself, then try again."
+                : (err as any)?.shortMessage || "Failed to create proposal."
               setTimeout(() => {
-                openNotification({
-                  message: `Error creating proposal: ${err.shortMessage}`,
-                  variant: "error",
-                  autoHideDuration: 3000
-                })
+                openNotification({ message: friendly, variant: "error", autoHideDuration: 4000 })
               }, 500)
             })
             .finally(() => {

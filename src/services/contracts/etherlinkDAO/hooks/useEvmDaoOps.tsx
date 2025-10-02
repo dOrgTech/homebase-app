@@ -61,45 +61,35 @@ export const useEvmDaoOps = () => {
     [daoSelected, etherlink.signer]
   )
 
+  const refreshTokenStats = useCallback(async () => {
+    if (!etherlink?.provider || !tokenContract || !etherlink?.signer?.address) return
+    dbg("[TOKEN:refresh]")
+    try {
+      const [balance, weight] = await Promise.all([
+        tokenContract.balanceOf(etherlink?.signer?.address),
+        tokenContract.getVotes(etherlink?.signer?.address)
+      ])
+      const decimals = daoSelected?.decimals || 0
+      const balanceActual = Number(balance) / Math.pow(10, decimals)
+      const weightActual = Number(weight) / Math.pow(10, decimals)
+      setUserTokenBalance(balanceActual)
+      setUserVotingWeight(weightActual)
+    } catch (e) {
+      dbg("[TOKEN:refresh:error]", e)
+    }
+  }, [daoSelected?.decimals, etherlink?.provider, etherlink?.signer?.address, tokenContract])
+
   useEffect(() => {
     if (!etherlink?.provider || !tokenContract || !etherlink?.signer?.address) return
-    const getUserTokenBalance = async () => {
-      dbg("[TOKEN:balanceOf:start]", {
-        token: daoSelected?.token,
-        account: etherlink?.signer?.address,
-        decimals: daoSelected?.decimals
-      })
-      try {
-        const balance = await tokenContract.balanceOf(etherlink?.signer?.address)
-        dbg("[TOKEN:balanceOf:raw]", balance?.toString?.() ?? balance)
-        const balanceActual = Number(balance) / Math.pow(10, daoSelected?.decimals)
-        dbg("[TOKEN:balanceOf:calc]", balanceActual)
-        setUserTokenBalance(balanceActual)
-      } catch (e) {
-        dbg("[TOKEN:balanceOf:error]", e)
-        setUserTokenBalance(0)
-      }
-    }
-    const getUserVotingWeight = async () => {
-      dbg("[TOKEN:getVotes:start]", {
-        token: daoSelected?.token,
-        account: etherlink?.signer?.address,
-        decimals: daoSelected?.decimals
-      })
-      try {
-        const weight = await tokenContract.getVotes(etherlink?.signer?.address)
-        dbg("[TOKEN:getVotes:raw]", weight?.toString?.() ?? weight)
-        const weightActual = Number(weight) / Math.pow(10, daoSelected?.decimals)
-        dbg("[TOKEN:getVotes:calc]", weightActual)
-        setUserVotingWeight(weightActual)
-      } catch (e) {
-        dbg("[TOKEN:getVotes:error]", e)
-        setUserVotingWeight(0)
-      }
-    }
-    getUserTokenBalance()
-    getUserVotingWeight()
-  }, [daoSelected?.decimals, daoSelected?.token, etherlink?.provider, etherlink?.signer?.address, tokenContract])
+    refreshTokenStats()
+  }, [
+    daoSelected?.decimals,
+    daoSelected?.token,
+    etherlink?.provider,
+    etherlink?.signer?.address,
+    tokenContract,
+    refreshTokenStats
+  ])
 
   useEffect(() => {
     if (!etherlink?.provider || !daoSelected?.token) return
@@ -128,6 +118,7 @@ export const useEvmDaoOps = () => {
     userVotingWeight,
     proposalCreatedCount,
     proposalVotedCount,
+    refreshTokenStats,
     // TODO: Maybe remove
     loggedInUser: {
       address: etherlink?.signer?.address

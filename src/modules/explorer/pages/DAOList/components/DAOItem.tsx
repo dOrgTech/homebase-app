@@ -95,22 +95,24 @@ const ItemTextSmall = styled(Typography)({
   fontSize: 16
 })
 
-const Badge = styled(Grid)(({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
-  "borderRadius": "50px",
-  "padding": "7px 14px",
-  "height": "auto",
-  "boxSizing": "border-box",
-  "width": "fit-content",
-  "textAlign": "center",
-  "float": "right",
-  "background": "#2d433c",
-  "color": theme.palette.secondary.main,
-  "& > div": {
-    height: "100%"
-  },
-  "fontFamily": "Roboto Flex",
-  "fontWeight": 500
-}))
+const Badge = styled(({ dao_type, ...other }: any) => <Grid {...other} />)(
+  ({ theme, dao_type }: { theme: Theme; dao_type: string }) => ({
+    "borderRadius": "50px",
+    "padding": "7px 14px",
+    "height": "auto",
+    "boxSizing": "border-box",
+    "width": "fit-content",
+    "textAlign": "center",
+    "float": "right",
+    "background": "#2d433c",
+    "color": theme.palette.secondary.main,
+    "& > div": {
+      height: "100%"
+    },
+    "fontFamily": "Roboto Flex",
+    "fontWeight": 500
+  })
+)
 
 export const DAOItem: React.FC<{
   dao: {

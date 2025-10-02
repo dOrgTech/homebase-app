@@ -1,3 +1,4 @@
+import React from "react"
 import { Box, Container, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core"
 import { Typography } from "@material-ui/core"
 import { NextButton } from "components/ui/NextButton"
@@ -8,6 +9,8 @@ import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
 
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
+import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { EtherlinkContext } from "services/wagmi/context"
 import { EvmPropTransferAssets } from "./EvmProposals/EvmPropTransferAssets"
 import { EvmPropEditRegistry } from "./EvmProposals/EvmPropEditRegistry"
 import { EvmPropContractCall } from "./EvmProposals/EvmPropContractCall"
@@ -71,8 +74,29 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const theme = useTheme()
   const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, nextStep, prevStep } =
     useEvmProposalOps()
+  const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
+  const daoCtx = React.useContext(EtherlinkContext)
+  const [isDelegating, setIsDelegating] = React.useState(false)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const proposalTitle = EvmProposalOptions.find(option => option.modal === metadata.type)?.label
+
+  const thresholdRaw = React.useMemo(() => {
+    try {
+      return BigInt(daoCtx?.daoSelected?.proposalThreshold || 0)
+    } catch (_) {
+      return 0n
+    }
+  }, [daoCtx?.daoSelected?.proposalThreshold])
+
+  const decimals = Number(daoCtx?.daoSelected?.decimals || 0)
+  const toHuman = (x: bigint | number) => {
+    const v = typeof x === "number" ? BigInt(Math.trunc(x)) : x
+    if (!decimals) return v.toString()
+    const s = v.toString().padStart(decimals + 1, "0")
+    const intPart = s.slice(0, -decimals)
+    const frac = s.slice(-decimals).replace(/0+$/, "")
+    return frac ? `${intPart}.${frac}` : intPart
+  }
 
   return (
     <>
@@ -145,6 +169,43 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
               onChange={e => setMetadataFieldValue("discussionUrl", e.target.value)}
             />
           </Box>
+
+          {/* Voting power helper */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: isMobileSmall ? "column" : "row",
+              alignItems: isMobileSmall ? "stretch" : "center",
+              gap: 2,
+              mb: 3,
+              background: theme.palette.primary.main,
+              borderRadius: 1,
+              p: 2
+            }}
+          >
+            <Typography color="textPrimary" style={{ flex: 1 }}>
+              Voting power: {toHuman(BigInt(Math.max(0, Math.floor(userVotingWeight || 0))))} / Threshold:{" "}
+              {toHuman(thresholdRaw)}
+            </Typography>
+            <NextButton
+              disabled={isDelegating || !loggedInUser?.address || (userVotingWeight || 0) > 0}
+              onClick={() => {
+                if (!loggedInUser?.address) return
+                setIsDelegating(true)
+                daoDelegate(loggedInUser.address)
+                  .then(() => refreshTokenStats())
+                  .catch(() => {})
+                  .finally(() => setIsDelegating(false))
+              }}
+            >
+              {(userVotingWeight || 0) > 0
+                ? "Voting Power Ready"
+                : isDelegating
+                ? "Delegating..."
+                : "Self‑delegate (Claim Voting Power)"}
+            </NextButton>
+          </Box>
+
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <BackButton onClick={prevStep.handler} />
             <NextButton onClick={nextStep.handler}>{nextStep.text}</NextButton>
