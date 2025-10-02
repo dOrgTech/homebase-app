@@ -3,6 +3,7 @@ import { styled, Grid, Typography, useTheme, useMediaQuery } from "@material-ui/
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "components/ui/CopyButton"
+import { ContentContainer } from "components/ui/ContentContainer"
 import { toShortAddress } from "services/contracts/utils"
 import numbro from "numbro"
 import ReactPaginate from "react-paginate"
@@ -18,11 +19,9 @@ interface RowData {
   proposalsCreated: any[]
 }
 
-const CardContainer = styled(Grid)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  padding: "40px 48px",
-  borderRadius: 8
-}))
+const CardContainer = styled(ContentContainer)({
+  padding: "40px 48px"
+})
 
 const Value = styled(Typography)({
   marginTop: 8,

@@ -12,7 +12,8 @@ import {
   useTheme
 } from "@material-ui/core"
 import dayjs from "dayjs"
-import { MobileTableHeader, MobileTableRow, OverflowCell, OverflowItem, TableContainer } from "./styled"
+import { TableContainer, MobileTableHeader, MobileTableRow } from "components/ui/Table"
+import { OverflowCell, OverflowItem } from "./styled"
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
 

@@ -1,14 +1,13 @@
-import { Grid, Theme, Typography, styled } from "@material-ui/core"
+import { Grid, Typography, styled } from "@material-ui/core"
 import React from "react"
 import { toShortAddress } from "services/contracts/utils"
 import { Proposal } from "services/services/dao/mappers/proposal/types"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
+import { ContentContainer } from "components/ui/ContentContainer"
 
-const ContentBlockItem = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  padding: "37px 42px",
-  background: theme.palette.primary.main,
-  borderRadius: 8
-}))
+const ContentBlockItem = styled(ContentContainer)({
+  padding: "37px 42px"
+})
 
 const ProposalTitle = styled(Typography)({
   fontWeight: "bold"
