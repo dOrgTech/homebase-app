@@ -89,7 +89,6 @@ const MobileUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, 
                 </Typography>
                 <Value variant="body2" color="secondary">
                   {numbro(item.proposalsCreated?.length).format(formatConfig)}
-                  <Symbol variant="body2">{symbol}</Symbol>
                 </Value>
               </Grid>
               <Grid item xs={12}>
@@ -98,7 +97,6 @@ const MobileUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, 
                 </Typography>
                 <Value variant="body2" color="secondary">
                   {numbro(item.proposalsVoted?.length).format(formatConfig)}
-                  <Symbol variant="body2">{symbol}</Symbol>
                 </Value>
               </Grid>
             </Grid>
@@ -162,7 +160,6 @@ const DesktopUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick,
                 </Typography>
                 <Value variant="body2" color="secondary">
                   {numbro(item.proposalsCreated?.length).format(formatConfig)}
-                  <Symbol variant="body2">{symbol}</Symbol>
                 </Value>
               </Grid>
               <Grid item>
@@ -171,7 +168,6 @@ const DesktopUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick,
                 </Typography>
                 <Value variant="body2" color="secondary">
                   {numbro(item.proposalsVoted?.length).format(formatConfig)}
-                  <Symbol variant="body2">{symbol}</Symbol>
                 </Value>
               </Grid>
             </Grid>

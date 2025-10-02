@@ -16,6 +16,7 @@ import { saveLiteProposal, voteOnLiteProposal } from "services/services/lite/lit
 import { EProposalType, IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modules/etherlink/types"
 import { isValidUrl, getDaoConfigType, getDaoTokenOpsType } from "modules/etherlink/utils"
 import HbTokenAbi from "assets/abis/hb_evm.json"
+import { useProposalUiOverride } from "services/wagmi/etherlink/hooks/useProposalUiOverride"
 
 interface EvmProposalCreateStore {
   currentStep: number
@@ -447,6 +448,7 @@ export const useEvmProposalOps = () => {
   const openNotification = useNotification()
   const currentStep = zustantStore.currentStep
   const proposalType = zustantStore.getMetadataFieldValue("type")
+  const proposalUiOverride = useProposalUiOverride()
 
   const daoContract = useMemo(() => {
     console.log("DaoContract", daoSelected?.address, HbDaoAbi.abi)
@@ -517,6 +519,59 @@ export const useEvmProposalOps = () => {
     daoSelected?.token
   ])
 
+  // --- On-chain status helpers (for optimistic UI + fallback) ---
+  const computeOnchainProposalId = useCallback(async () => {
+    if (!daoContract || !daoProposalSelected?.id) return null
+    const meta = getProposalExecutionMetadata()
+    if (!meta) return null
+    try {
+      const targets = (daoProposalSelected?.targets || []) as string[]
+      const values = (daoProposalSelected?.values || []).map((v: any) => BigInt(v || 0)) as bigint[]
+      const calldatas = (daoProposalSelected?.callDatas || []) as string[]
+      const proposalId = await (daoContract as any).hashProposal(targets, values, calldatas, meta.hashHex)
+      return proposalId as bigint
+    } catch (e) {
+      console.log("computeOnchainProposalId error", e)
+      return null
+    }
+  }, [
+    daoContract,
+    daoProposalSelected?.callDatas,
+    daoProposalSelected?.id,
+    daoProposalSelected?.targets,
+    daoProposalSelected?.values,
+    getProposalExecutionMetadata
+  ])
+
+  const checkOnchainQueuedAndOverride = useCallback(async () => {
+    if (!daoContract || !daoProposalSelected?.id) return
+    try {
+      const pid = await computeOnchainProposalId()
+      if (!pid) return
+      let eta: bigint = 0n
+      try {
+        eta = await (daoContract as any).proposalEta(pid)
+      } catch (e) {
+        console.log("proposalEta read failed; will try proposalNeedsQueuing", e)
+      }
+      if (eta && eta > 0n) {
+        proposalUiOverride.setQueued(daoProposalSelected.id, Number(eta))
+        return
+      }
+      try {
+        const needsQueue: boolean = await (daoContract as any).proposalNeedsQueuing(pid)
+        if (needsQueue === false) {
+          const approxEta = Math.floor(Date.now() / 1000) + (daoSelected?.executionDelay || 0)
+          proposalUiOverride.setQueued(daoProposalSelected.id, approxEta)
+        }
+      } catch (_) {
+        // ignore
+      }
+    } catch (e) {
+      console.log("checkOnchainQueuedAndOverride error", e)
+    }
+  }, [computeOnchainProposalId, daoContract, daoProposalSelected?.id, daoSelected?.executionDelay, proposalUiOverride])
+
   const createProposal = useCallback(
     async (payload: {
       targets: string[]
@@ -574,14 +629,27 @@ export const useEvmProposalOps = () => {
 
     const receipt = await tx.wait()
     console.log("Queue transaction confirmed:", receipt)
-
+    // Optimistic UI: reflect queued state immediately
+    try {
+      await checkOnchainQueuedAndOverride()
+      if (!proposalUiOverride.overrides?.[daoProposalSelected.id]?.status) {
+        const approxEta = Math.floor(Date.now() / 1000) + (daoSelected?.executionDelay || 0)
+        proposalUiOverride.setQueued(daoProposalSelected.id, approxEta)
+      }
+    } catch (_) {
+      // ignore optimistic errors
+    }
     return receipt
   }, [
     daoContract,
     daoProposalSelected?.id,
     daoProposalSelected?.type,
     getProposalExecutionMetadata,
-    getProposalExecutionTargetAddress
+    getProposalExecutionTargetAddress,
+    checkOnchainQueuedAndOverride,
+    proposalUiOverride.overrides,
+    proposalUiOverride.setQueued,
+    daoSelected?.executionDelay
   ])
 
   const executeProposal = useCallback(async () => {
@@ -879,6 +947,7 @@ export const useEvmProposalOps = () => {
     castOffchainVote,
     queueForExecution,
     executeProposal,
+    checkOnchainQueuedAndOverride,
     signer: etherlink?.signer,
     nextStep,
     prevStep,

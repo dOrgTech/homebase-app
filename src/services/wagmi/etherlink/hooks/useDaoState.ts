@@ -40,7 +40,7 @@ export const useDaoState = ({ network }: { network: string }) => {
   const [daoMembers, setDaoMembers] = useState<IEvmFirebaseDAOMember[]>([])
   const [daoOffchainProposals, setDaoOffchainProposals] = useState<any[]>([])
 
-  const { data: firestoreData, fetchCollection } = useFirestoreStore()
+  const { data: firestoreData, fetchCollection, fetchDoc } = useFirestoreStore()
   const [refreshCount, setRefreshCount] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -245,6 +245,178 @@ export const useDaoState = ({ network }: { network: string }) => {
     network,
     recomputeDataAfter,
     refreshCount,
+    daoSelected?.executionDelay,
+    daoSelected?.quorum,
+    daoSelected?.totalSupply,
+    daoSelected?.votingDelay,
+    daoSelected?.votingDuration
+  ])
+
+  // Subscribe to the selected proposal document to reduce UI lag
+  useEffect(() => {
+    if (!daoSelected?.id || !firebaseRootCollection) return
+    const pid = selectedProposalIdRef.current
+    if (!pid) return
+    const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals/${pid}`
+    fetchDoc(daoProposalKey)
+  }, [daoSelected?.id, firebaseRootCollection, fetchDoc])
+
+  // When doc snapshot for the selected proposal arrives, update daoProposalSelected immediately
+  useEffect(() => {
+    if (!daoSelected?.id || !firebaseRootCollection) return
+    const pid = selectedProposalIdRef.current
+    if (!pid) return
+    const timeNow = dayjs()
+    const docKey = `${firebaseRootCollection}/${daoSelected.id}/proposals/${pid}`
+    const docArr = firestoreData?.[docKey] as IEvmFirebaseProposal[] | undefined
+    if (!docArr || docArr.length === 0) return
+    const p = docArr[0]
+
+    // Reuse the mapping logic inline to avoid waiting for the full collection snapshot
+    const proposalCreatedAt = dayjs.unix(p.createdAt?.seconds as unknown as number)
+    const votesInFavor = new BigNumber(p?.inFavor)
+    const votesAgainst = new BigNumber(p?.against)
+    const totalVotes = votesInFavor.plus(votesAgainst)
+    const totalVoteCount = Number(p?.votesFor) + Number(p?.votesAgainst)
+    const totalSupply = new BigNumber(daoSelected?.totalSupply ?? "1")
+    const votesPercentage = totalVotes.div(totalSupply).times(100)
+    const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
+    const daoTotalVotingWeight = new BigNumber(daoSelected?.totalSupply ?? "0")
+
+    const votingDelayInMinutes = daoSelected?.votingDelay || 1
+    const votingDurationInMinutes = daoSelected?.votingDuration || 1
+    const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
+    const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
+
+    const statusHistoryMap = Object.entries(p.statusHistory)
+      .map(([status, timestamp]: [string, any]) => ({
+        status,
+        timestamp: timestamp?.seconds as unknown as number,
+        timestamp_human: dayjs.unix(timestamp?.seconds as unknown as number).format("MMM DD, YYYY hh:mm A")
+      }))
+      .sort((a, b) => b.timestamp - a.timestamp)
+
+    const queuedStatus = statusHistoryMap.find(x => x.status === "queued")
+    let executionAvailableAt: any
+    if (queuedStatus) {
+      executionAvailableAt = dayjs.unix(queuedStatus.timestamp).add(daoSelected?.executionDelay, "seconds")
+    }
+
+    const statusContainsPending = statusHistoryMap.findIndex(x => x.status === "pending")
+    if (activeStartTimestamp.isBefore(timeNow)) {
+      statusHistoryMap.splice(statusContainsPending + 1, 0, {
+        status: "active",
+        timestamp: activeStartTimestamp.unix(),
+        timestamp_human: activeStartTimestamp.format("MMM DD, YYYY hh:mm A")
+      })
+      const votesInFavorWeight = new BigNumber(p?.inFavor)
+      const votesAgainstWeight = new BigNumber(p?.against)
+      if (votesInFavorWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
+        statusHistoryMap.splice(statusContainsPending + 2, 0, {
+          status: "passed",
+          timestamp: votingExpiresAt.unix(),
+          timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+        })
+      } else if (votesAgainstWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
+        statusHistoryMap.splice(statusContainsPending + 2, 0, {
+          status: "failed",
+          timestamp: votingExpiresAt.unix(),
+          timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+        })
+      }
+    }
+
+    const statusContainsPassed = statusHistoryMap.findIndex(x => x.status === "passed")
+    if (votingExpiresAt.isBefore(timeNow) && statusContainsPassed !== -1) {
+      statusHistoryMap.splice(statusContainsPassed + 1, 0, {
+        status: "queue_to_execute",
+        timestamp: votingExpiresAt.unix() + 1,
+        timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+      })
+    }
+
+    const statusContainsQueued = statusHistoryMap.findIndex(x => x.status === "queued")
+    if (votingExpiresAt.isBefore(timeNow)) {
+      if (votesPercentage.lt(daoSelected?.quorum)) {
+        statusHistoryMap.push({
+          status: "no quorum",
+          timestamp: votingExpiresAt.unix(),
+          timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+        })
+      } else if (statusContainsQueued === -1) {
+        if (statusHistoryMap.find(x => x.status === "failed")) {
+          statusHistoryMap.push({
+            status: "defeated",
+            timestamp: votingExpiresAt.unix(),
+            timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+          })
+        }
+      } else if (statusContainsQueued !== -1) {
+        if (statusHistoryMap.find(x => x.status === "passed")) {
+          const executionDelayInSeconds = daoSelected?.executionDelay || 0
+          const proposalExecutableAt = statusHistoryMap[statusContainsQueued].timestamp + executionDelayInSeconds
+          if (proposalExecutableAt < timeNow.unix()) {
+            statusHistoryMap.splice(statusContainsQueued + 1, 0, {
+              status: "executable",
+              timestamp: proposalExecutableAt,
+              timestamp_human: dayjs.unix(proposalExecutableAt).format("MMM DD, YYYY hh:mm A")
+            })
+          }
+        }
+      }
+    }
+
+    const callDatas = p?.callDatas
+    const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
+    const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
+    const proposalStatus = sortedStatusHistoryMap[0]?.status
+
+    let isTimerActive = false
+    let timerLabel = "Voting concluded"
+    let timerTargetDate: any = null
+    if (proposalStatus === "pending") {
+      isTimerActive = true
+      timerLabel = "Voting starts in"
+      timerTargetDate = activeStartTimestamp
+      recomputeDataAfter(activeStartTimestamp.diff(timeNow, "seconds"))
+    }
+    if (votingExpiresAt?.isAfter(timeNow) && activeStartTimestamp?.isBefore(timeNow)) {
+      isTimerActive = true
+      timerLabel = "Time left to vote"
+      timerTargetDate = votingExpiresAt
+      recomputeDataAfter(votingExpiresAt.diff(timeNow, "seconds"))
+    }
+    if (proposalStatus === "queued" && executionAvailableAt) {
+      isTimerActive = true
+      timerLabel = "Execution available in"
+      timerTargetDate = executionAvailableAt
+      recomputeDataAfter(executionAvailableAt.diff(timeNow, "seconds"))
+    }
+
+    const mapped = {
+      ...p,
+      createdAt: dayjs.unix(p.createdAt?.seconds as unknown as number),
+      callDataPlain,
+      isTimerActive,
+      timerLabel,
+      timerTargetDate,
+      statusHistoryMap: sortedStatusHistoryMap,
+      status: proposalStatus,
+      totalVotes: totalVotes,
+      totalVoteCount,
+      txHash: getBlockExplorerUrl(network, p?.executionHash),
+      votingStartTimestamp: activeStartTimestamp,
+      votingExpiresAt,
+      votesWeightPercentage: Number(votesPercentage.toFixed(2))
+    }
+
+    setDaoProposalSelected(mapped)
+  }, [
+    firestoreData,
+    daoSelected?.id,
+    firebaseRootCollection,
+    network,
+    recomputeDataAfter,
     daoSelected?.executionDelay,
     daoSelected?.quorum,
     daoSelected?.totalSupply,

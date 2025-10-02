@@ -1,6 +1,7 @@
 import { Button, Grid, TableRow, TableBody, Table, Typography, TableCell, IconButton } from "components/ui"
 import { PageContainer } from "components/ui/DaoCreator"
 import { useContext, useEffect, useState } from "react"
+import dayjs from "dayjs"
 import { useParams } from "react-router-dom"
 import { EtherlinkContext } from "services/wagmi/context"
 import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalDetailCard"
@@ -11,6 +12,7 @@ import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVo
 import { ThumbDownAlt, ThumbUpAlt } from "components/ui"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
+import { useProposalUiOverride } from "services/wagmi/etherlink/hooks/useProposalUiOverride"
 import { CopyButton } from "modules/common/CopyButton"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { dbg } from "utils/debug"
@@ -27,7 +29,11 @@ const RenderProposalAction = () => {
 
   const hasUserCastedVote = daoProposalVoters?.find((voter: any) => voter.voter === etherlink?.signer?.address)
 
-  if (daoProposalSelected?.status === "queue_to_execute") {
+  // Optimistic override: hide queue button immediately after success
+  const override = useProposalUiOverride(s => s.overrides[daoProposalSelected?.id || ""]) as any
+  const effectiveStatus = (override?.status as string) || daoProposalSelected?.status
+
+  if (effectiveStatus === "queue_to_execute") {
     //Show Queue for Execution Button
     return (
       <Grid container justifyContent="center">
@@ -66,7 +72,7 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (daoProposalSelected?.status === "executable") {
+  if (effectiveStatus === "executable") {
     // Show Execute Button
     return (
       <Grid container justifyContent="center">
@@ -105,7 +111,7 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (daoProposalSelected?.status === "executed") {
+  if (effectiveStatus === "executed") {
     return (
       <Grid container justifyContent="center">
         <Button
@@ -120,7 +126,7 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (daoProposalSelected?.status === "active" || daoProposalSelected?.status === "passed") {
+  if (effectiveStatus === "active" || effectiveStatus === "passed") {
     return (
       <>
         <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
@@ -178,7 +184,7 @@ const RenderProposalAction = () => {
       </>
     )
   }
-  if (isTimerActive || daoProposalSelected?.status === "queued") return null
+  if (isTimerActive || effectiveStatus === "queued") return null
 
   return (
     <Grid>
@@ -196,7 +202,10 @@ export const EvmProposalDetailsPage = () => {
   const proposalId = params?.proposalId
 
   const { daoSelected, daoProposals, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
+  const { checkOnchainQueuedAndOverride } = useEvmProposalOps()
+  const clearOverride = useProposalUiOverride(s => s.clear)
   const { isTimerActive, timerLabel, timerTargetDate } = useProposalTimeline(daoProposalSelected, daoSelected)
+  const override = useProposalUiOverride(s => s.overrides[daoProposalSelected?.id || ""]) as any
 
   useEffect(() => {
     if (!proposalId) return
@@ -218,6 +227,21 @@ export const EvmProposalDetailsPage = () => {
     daoSelected?.token
   ])
 
+  // Chain-state fallback: if the proposal is already queued on-chain, reflect immediately
+  useEffect(() => {
+    if (!daoProposalSelected?.id) return
+    checkOnchainQueuedAndOverride?.()
+  }, [daoProposalSelected?.id, checkOnchainQueuedAndOverride])
+
+  // Clear optimistic overrides once Firestore reflects queued/executed
+  useEffect(() => {
+    const s = daoProposalSelected?.status
+    if (!daoProposalSelected?.id) return
+    if (s === "queued" || s === "executed") {
+      clearOverride(daoProposalSelected.id)
+    }
+  }, [daoProposalSelected?.id, daoProposalSelected?.status, clearOverride])
+
   return (
     <div>
       <PageContainer style={{ gap: 30 }}>
@@ -230,7 +254,13 @@ export const EvmProposalDetailsPage = () => {
 
       <PageContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
         <Grid item xs={12} md={12} style={{ padding: "40px" }}>
-          {isTimerActive ? <EvmProposalCountdown overrideLabel={timerLabel} overrideTarget={timerTargetDate} /> : null}
+          {(() => {
+            const hasOverrideQueued = override?.status === "queued" && typeof override?.eta === "number"
+            const label = hasOverrideQueued ? "Execution available in" : timerLabel
+            const target = hasOverrideQueued ? dayjs.unix(override.eta) : timerTargetDate
+            const shouldShow = isTimerActive || hasOverrideQueued
+            return shouldShow ? <EvmProposalCountdown overrideLabel={label} overrideTarget={target} /> : null
+          })()}
           <RenderProposalAction />
         </Grid>
       </PageContainer>
