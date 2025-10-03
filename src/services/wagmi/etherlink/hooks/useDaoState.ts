@@ -267,8 +267,8 @@ export const useDaoState = ({ network }: { network: string }) => {
     if (!daoSelected?.id || !firebaseRootCollection) return
     const pid = selectedProposalIdRef.current
     if (!pid) return
-    const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals/${pid}`
-    fetchDoc(daoProposalKey)
+    const proposalsCollection = `${firebaseRootCollection}/${daoSelected.id}/proposals`
+    fetchDoc(proposalsCollection, pid)
   }, [daoSelected?.id, firebaseRootCollection, fetchDoc])
 
   // When doc snapshot for the selected proposal arrives, update daoProposalSelected immediately
