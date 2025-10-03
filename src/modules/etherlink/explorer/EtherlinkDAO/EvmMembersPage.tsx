@@ -4,21 +4,13 @@ import { EvmMembersTable } from "modules/etherlink/components/EvmMembersTable"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useContext } from "react"
 
-interface EvmDaoMember {
-  address: string
-  votingWeight: number
-  personalBalance: number
-  proposalsCreated: number
-  proposalsVoted: number
-}
-
 export const EvmMembersPage = () => {
   const { daoMembers, daoSelected } = useContext(EtherlinkContext)
   const decimals = daoSelected?.decimals || 0
-  const daoMemberData = daoMembers?.map((member: EvmDaoMember) => ({
+  const daoMemberData = daoMembers?.map((member: any) => ({
     address: member.address,
-    votingWeight: member.votingWeight,
-    personalBalance: member.personalBalance / 10 ** decimals,
+    votingWeight: Number(member.votingWeight || 0) / 10 ** decimals,
+    personalBalance: Number(member.personalBalance || 0) / 10 ** decimals,
     proposalsCreated: member.proposalsCreated,
     proposalsVoted: member.proposalsVoted
   }))

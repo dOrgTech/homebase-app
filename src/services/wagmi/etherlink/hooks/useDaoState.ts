@@ -134,41 +134,45 @@ export const useDaoState = ({ network }: { network: string }) => {
             timestamp: activeStartTimestamp.unix(),
             timestamp_human: activeStartTimestamp.format("MMM DD, YYYY hh:mm A")
           })
+        }
+
+        // After voting ends, derive final outcome using quorum of total votes, then majority
+        if (votingExpiresAt.isBefore(timeNow)) {
           const votesInFavorWeight = new BigNumber(p?.inFavor)
           const votesAgainstWeight = new BigNumber(p?.against)
-          if (votesInFavorWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
-            statusHistoryMap.splice(statusContainsPending + 2, 0, {
-              status: "passed",
-              timestamp: votingExpiresAt.unix(),
-              timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
-            })
-          } else if (votesAgainstWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
-            statusHistoryMap.splice(statusContainsPending + 2, 0, {
-              status: "failed",
-              timestamp: votingExpiresAt.unix(),
-              timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
-            })
-          }
-        }
+          const totalCast = votesInFavorWeight.plus(votesAgainstWeight)
+          const meetsQuorum = totalCast.div(daoTotalVotingWeight).times(100).gte(daoMinimumQuorum)
 
-        const statusContainsPassed = statusHistoryMap.findIndex(x => x.status === "passed")
-        if (votingExpiresAt.isBefore(timeNow) && statusContainsPassed !== -1) {
-          statusHistoryMap.splice(statusContainsPassed + 1, 0, {
-            status: "queue_to_execute",
-            timestamp: votingExpiresAt.unix() + 1,
-            timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
-          })
-        }
-
-        const statusContainsQueued = statusHistoryMap.findIndex(x => x.status === "queued")
-        if (votingExpiresAt.isBefore(timeNow)) {
-          if (votesPercentage.lt(daoSelected?.quorum)) {
+          if (!meetsQuorum) {
             statusHistoryMap.push({
               status: "no quorum",
               timestamp: votingExpiresAt.unix(),
               timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
             })
-          } else if (statusContainsQueued === -1) {
+          } else {
+            const isPassed = votesInFavorWeight.gt(votesAgainstWeight)
+            statusHistoryMap.push({
+              status: isPassed ? "passed" : "failed",
+              timestamp: votingExpiresAt.unix(),
+              timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+            })
+
+            // If passed but not yet queued on-chain, mark as ready-to-queue for UI affordance
+            const statusContainsPassed = statusHistoryMap.findIndex(x => x.status === "passed")
+            if (statusContainsPassed !== -1) {
+              statusHistoryMap.splice(statusContainsPassed + 1, 0, {
+                status: "queue_to_execute",
+                timestamp: votingExpiresAt.unix() + 1,
+                timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+              })
+            }
+          }
+        }
+
+        const statusContainsQueued = statusHistoryMap.findIndex(x => x.status === "queued")
+        if (votingExpiresAt.isBefore(timeNow)) {
+          if (statusContainsQueued === -1) {
+            // If voting ended, was not queued, and failed was determined, surface final 'defeated'
             if (statusHistoryMap.find(x => x.status === "failed")) {
               statusHistoryMap.push({
                 status: "defeated",
@@ -177,6 +181,7 @@ export const useDaoState = ({ network }: { network: string }) => {
               })
             }
           } else if (statusContainsQueued !== -1) {
+            // If queued and it passed, mark executable when delay elapsed
             if (statusHistoryMap.find(x => x.status === "passed")) {
               const executionDelayInSeconds = daoSelected?.executionDelay || 0
               const proposalExecutableAt = statusHistoryMap[statusContainsQueued].timestamp + executionDelayInSeconds
@@ -309,41 +314,45 @@ export const useDaoState = ({ network }: { network: string }) => {
         timestamp: activeStartTimestamp.unix(),
         timestamp_human: activeStartTimestamp.format("MMM DD, YYYY hh:mm A")
       })
+    }
+
+    // After voting ends, derive final outcome using quorum of total votes, then majority
+    if (votingExpiresAt.isBefore(timeNow)) {
       const votesInFavorWeight = new BigNumber(p?.inFavor)
       const votesAgainstWeight = new BigNumber(p?.against)
-      if (votesInFavorWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
-        statusHistoryMap.splice(statusContainsPending + 2, 0, {
-          status: "passed",
-          timestamp: votingExpiresAt.unix(),
-          timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
-        })
-      } else if (votesAgainstWeight.div(daoTotalVotingWeight).times(100).gt(daoMinimumQuorum)) {
-        statusHistoryMap.splice(statusContainsPending + 2, 0, {
-          status: "failed",
-          timestamp: votingExpiresAt.unix(),
-          timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
-        })
-      }
-    }
+      const totalCast = votesInFavorWeight.plus(votesAgainstWeight)
+      const meetsQuorum = totalCast.div(daoTotalVotingWeight).times(100).gte(daoMinimumQuorum)
 
-    const statusContainsPassed = statusHistoryMap.findIndex(x => x.status === "passed")
-    if (votingExpiresAt.isBefore(timeNow) && statusContainsPassed !== -1) {
-      statusHistoryMap.splice(statusContainsPassed + 1, 0, {
-        status: "queue_to_execute",
-        timestamp: votingExpiresAt.unix() + 1,
-        timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
-      })
-    }
-
-    const statusContainsQueued = statusHistoryMap.findIndex(x => x.status === "queued")
-    if (votingExpiresAt.isBefore(timeNow)) {
-      if (votesPercentage.lt(daoSelected?.quorum)) {
+      if (!meetsQuorum) {
         statusHistoryMap.push({
           status: "no quorum",
           timestamp: votingExpiresAt.unix(),
           timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
         })
-      } else if (statusContainsQueued === -1) {
+      } else {
+        const isPassed = votesInFavorWeight.gt(votesAgainstWeight)
+        statusHistoryMap.push({
+          status: isPassed ? "passed" : "failed",
+          timestamp: votingExpiresAt.unix(),
+          timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+        })
+
+        // If passed but not yet queued on-chain, mark as ready-to-queue for UI affordance
+        const statusContainsPassed = statusHistoryMap.findIndex(x => x.status === "passed")
+        if (statusContainsPassed !== -1) {
+          statusHistoryMap.splice(statusContainsPassed + 1, 0, {
+            status: "queue_to_execute",
+            timestamp: votingExpiresAt.unix() + 1,
+            timestamp_human: votingExpiresAt.format("MMM DD, YYYY hh:mm A")
+          })
+        }
+      }
+    }
+
+    const statusContainsQueued = statusHistoryMap.findIndex(x => x.status === "queued")
+    if (votingExpiresAt.isBefore(timeNow)) {
+      if (statusContainsQueued === -1) {
+        // If voting ended, was not queued, and failed was determined, surface final 'defeated'
         if (statusHistoryMap.find(x => x.status === "failed")) {
           statusHistoryMap.push({
             status: "defeated",
@@ -352,6 +361,7 @@ export const useDaoState = ({ network }: { network: string }) => {
           })
         }
       } else if (statusContainsQueued !== -1) {
+        // If queued and it passed, mark executable when delay elapsed
         if (statusHistoryMap.find(x => x.status === "passed")) {
           const executionDelayInSeconds = daoSelected?.executionDelay || 0
           const proposalExecutableAt = statusHistoryMap[statusContainsQueued].timestamp + executionDelayInSeconds

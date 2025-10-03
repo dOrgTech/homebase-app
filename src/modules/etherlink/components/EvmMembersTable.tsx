@@ -13,8 +13,8 @@ dayjs.extend(localizedFormat)
 
 interface RowData {
   address: string
-  votingWeight: string
-  personalBalance: string
+  votingWeight: number
+  personalBalance: number
   proposalsVoted: any[]
   proposalsCreated: any[]
 }
