@@ -43,8 +43,8 @@ export type IProposalStatus =
   | "passed" // voting period on and the proposal is passed
   | "no quorum" // legacy internal name
 
-// WeRule-style display statuses
-export type IWeRuleStatus =
+// UI display statuses
+export type IDisplayStatus =
   | "Pending"
   | "Active"
   | "Succeeded"
@@ -132,7 +132,7 @@ export interface IEvmProposal extends IEvmFirebaseProposal {
   isTimerActive: boolean
   proposalData: any[]
   status: IProposalStatus
-  displayStatus?: IWeRuleStatus
+  displayStatus?: IDisplayStatus
   readyToQueue?: boolean
   statusHistoryMap: {
     timestamp: dayjs.Dayjs

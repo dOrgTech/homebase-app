@@ -1,6 +1,6 @@
-// Utilities to map Homebase internal/Etherlink statuses to WeRule-style names
+// Utilities to map internal Etherlink proposal statuses to UI display names
 
-export type WeRuleStatus =
+export type DisplayStatus =
   | "Pending"
   | "Active"
   | "Succeeded"
@@ -13,7 +13,7 @@ export type WeRuleStatus =
   | "Canceled"
   | "Rejected"
 
-const LEGACY_TO_WERULE: Record<string, WeRuleStatus> = {
+const LEGACY_TO_DISPLAY: Record<string, DisplayStatus> = {
   // primary mappings
   "pending": "Pending",
   "active": "Active",
@@ -30,7 +30,7 @@ const LEGACY_TO_WERULE: Record<string, WeRuleStatus> = {
   "queue_to_execute": "Succeeded"
 }
 
-const QUERY_TO_WERULE: Record<string, WeRuleStatus> = {
+const QUERY_TO_DISPLAY: Record<string, DisplayStatus> = {
   // support existing query param values
   "all": "Pending", // sentinel, handled separately by callers
   "pending": "Pending",
@@ -49,16 +49,16 @@ const QUERY_TO_WERULE: Record<string, WeRuleStatus> = {
   "succeeded": "Succeeded"
 }
 
-export function toWeRuleStatus(status?: string | null): WeRuleStatus | undefined {
+export function toDisplayStatus(status?: string | null): DisplayStatus | undefined {
   if (!status) return undefined
   const key = String(status).toLowerCase()
-  return LEGACY_TO_WERULE[key]
+  return LEGACY_TO_DISPLAY[key]
 }
 
-export function parseStatusQuery(value?: string | null): WeRuleStatus | undefined {
+export function parseStatusQuery(value?: string | null): DisplayStatus | undefined {
   if (!value) return undefined
   const key = String(value).toLowerCase().replace(/\s+/g, "")
-  return QUERY_TO_WERULE[key]
+  return QUERY_TO_DISPLAY[key]
 }
 
 export function isReadyToQueue(status?: string | null): boolean {

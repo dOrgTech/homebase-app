@@ -11,7 +11,7 @@ import { Select } from "components/ui"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
 import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { IEvmProposal } from "modules/etherlink/types"
-import { parseStatusQuery, toWeRuleStatus } from "modules/etherlink/status"
+import { parseStatusQuery, toDisplayStatus } from "modules/etherlink/status"
 
 export const EvmProposalsPage = () => {
   const [proposalType, setProposalType] = useQueryParam("type")
@@ -40,7 +40,7 @@ export const EvmProposalsPage = () => {
         const desired = parseStatusQuery(proposalStatus)
         if (desired) {
           if (proposal.displayStatus === desired) return true
-          if (toWeRuleStatus(proposal.status) === desired) return true
+          if (toDisplayStatus(proposal.status) === desired) return true
         }
       }
 
