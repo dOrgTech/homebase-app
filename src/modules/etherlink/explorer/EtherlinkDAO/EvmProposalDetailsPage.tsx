@@ -32,8 +32,14 @@ const RenderProposalAction = () => {
   // Optimistic override: hide queue button immediately after success
   const override = useProposalUiOverride(s => s.overrides[daoProposalSelected?.id || ""]) as any
   const effectiveStatus = (override?.status as string) || daoProposalSelected?.status
+  const effectiveDisplayStatus = ((): string | undefined => {
+    if (!daoProposalSelected) return undefined
+    if (override?.status === "queued") return "Queued"
+    if (override?.status === "executed") return "Executed"
+    return daoProposalSelected?.displayStatus
+  })()
 
-  if (effectiveStatus === "queue_to_execute") {
+  if (daoProposalSelected?.readyToQueue) {
     //Show Queue for Execution Button
     return (
       <Grid container justifyContent="center">
@@ -72,7 +78,7 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (effectiveStatus === "executable") {
+  if (effectiveDisplayStatus === "Executable") {
     // Show Execute Button
     return (
       <Grid container justifyContent="center">
@@ -111,7 +117,7 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (effectiveStatus === "executed") {
+  if (effectiveDisplayStatus === "Executed") {
     return (
       <Grid container justifyContent="center">
         <Button
@@ -126,7 +132,7 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (effectiveStatus === "active" || effectiveStatus === "passed") {
+  if (effectiveDisplayStatus === "Active" || effectiveDisplayStatus === "Succeeded") {
     return (
       <>
         <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
@@ -184,7 +190,7 @@ const RenderProposalAction = () => {
       </>
     )
   }
-  if (isTimerActive || effectiveStatus === "queued") return null
+  if (isTimerActive || effectiveDisplayStatus === "Queued") return null
 
   return (
     <Grid>

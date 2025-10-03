@@ -11,6 +11,7 @@ import { Select } from "components/ui"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
 import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { IEvmProposal } from "modules/etherlink/types"
+import { parseStatusQuery, toWeRuleStatus } from "modules/etherlink/status"
 
 export const EvmProposalsPage = () => {
   const [proposalType, setProposalType] = useQueryParam("type")
@@ -35,7 +36,13 @@ export const EvmProposalsPage = () => {
     return processedProposals?.filter((proposal: any) => {
       if (proposalAuthor && proposalAuthor !== "all" && proposal.author === proposalAuthor) return true
       if (proposalType && proposalType !== "all" && proposal.type === proposalType) return true
-      if (proposalStatus && proposalStatus !== "all" && proposal.status === proposalStatus) return true
+      if (proposalStatus && proposalStatus !== "all") {
+        const desired = parseStatusQuery(proposalStatus)
+        if (desired) {
+          if (proposal.displayStatus === desired) return true
+          if (toWeRuleStatus(proposal.status) === desired) return true
+        }
+      }
 
       if (
         proposalType === "token" &&
@@ -97,14 +104,16 @@ export const EvmProposalsPage = () => {
                   }
                 >
                   <MenuItem value="all">All</MenuItem>
-                  <MenuItem value="active">Active</MenuItem>
-                  <MenuItem value="passed">Passed</MenuItem>
-                  <MenuItem value="executable">Executable</MenuItem>
-                  <MenuItem value="executed">Executed</MenuItem>
-                  <MenuItem value="expired">Expired</MenuItem>
-                  <MenuItem value="no quorum">No Quorum</MenuItem>
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="rejected">Rejected</MenuItem>
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Succeeded">Succeeded</MenuItem>
+                  <MenuItem value="Defeated">Defeated</MenuItem>
+                  <MenuItem value="NoQuorum">No Quorum</MenuItem>
+                  <MenuItem value="Queued">Queued</MenuItem>
+                  <MenuItem value="Executable">Executable</MenuItem>
+                  <MenuItem value="Executed">Executed</MenuItem>
+                  <MenuItem value="Expired">Expired</MenuItem>
+                  <MenuItem value="Pending">Pending</MenuItem>
+                  <MenuItem value="Rejected">Rejected</MenuItem>
                 </Select>
               </Grid>
               <Grid

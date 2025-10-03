@@ -105,7 +105,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
                   justifyContent={isMobileSmall ? "center" : "flex-start"}
                 >
                   <Grid item>
-                    <StatusBadge status={daoProposalSelected?.status} />
+                    <StatusBadge status={daoProposalSelected?.displayStatus || (daoProposalSelected as any)?.status} />
                   </Grid>
                   <Grid item>
                     <Badge status={daoProposalSelected.type} />

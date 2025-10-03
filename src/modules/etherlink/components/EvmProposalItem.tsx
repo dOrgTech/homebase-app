@@ -35,7 +35,7 @@ export const EvmProposalItem: React.FC<{
           <Grid item>
             <Grid container style={{ gap: 16 }} alignItems="center">
               <Grid item>
-                <StatusBadge status={proposal.status} />
+                <StatusBadge status={proposal.displayStatus || proposal.status} />
               </Grid>
               <Grid item>
                 <CreatedText variant="body1" color="textPrimary">

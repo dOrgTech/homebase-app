@@ -7,6 +7,7 @@ import { networkConfig } from "modules/etherlink/utils"
 import { getCallDataFromBytes, getBlockExplorerUrl } from "modules/etherlink/utils"
 import { fetchOffchainProposals } from "services/services/lite/lite-services"
 import { IEvmDAO, IEvmFirebaseContract, IEvmFirebaseDAOMember, IEvmFirebaseProposal } from "modules/etherlink/types"
+import { toWeRuleStatus, isReadyToQueue } from "modules/etherlink/status"
 import { useProposalData } from "../hooks/useProposalData"
 
 export const useDaoState = ({ network }: { network: string }) => {
@@ -200,6 +201,8 @@ export const useDaoState = ({ network }: { network: string }) => {
         const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
         const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
         const proposalStatus = sortedStatusHistoryMap[0]?.status
+        const displayStatus = toWeRuleStatus(proposalStatus)
+        const readyToQueue = isReadyToQueue(proposalStatus)
 
         let isTimerActive = false
         let timerLabel = "Voting concluded"
@@ -232,6 +235,8 @@ export const useDaoState = ({ network }: { network: string }) => {
           timerTargetDate,
           statusHistoryMap: sortedStatusHistoryMap,
           status: proposalStatus,
+          displayStatus,
+          readyToQueue,
           totalVotes: totalVotes,
           totalVoteCount,
           txHash: getBlockExplorerUrl(network, p?.executionHash),
@@ -380,6 +385,8 @@ export const useDaoState = ({ network }: { network: string }) => {
     const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
     const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
     const proposalStatus = sortedStatusHistoryMap[0]?.status
+    const displayStatus = toWeRuleStatus(proposalStatus)
+    const readyToQueue = isReadyToQueue(proposalStatus)
 
     let isTimerActive = false
     let timerLabel = "Voting concluded"
@@ -412,6 +419,8 @@ export const useDaoState = ({ network }: { network: string }) => {
       timerTargetDate,
       statusHistoryMap: sortedStatusHistoryMap,
       status: proposalStatus,
+      displayStatus,
+      readyToQueue,
       totalVotes: totalVotes,
       totalVoteCount,
       txHash: getBlockExplorerUrl(network, p?.executionHash),

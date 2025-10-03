@@ -41,6 +41,21 @@ export type IProposalStatus =
   | "executed" // proposal is executed
   | "failed" // voting period on and the proposal is failed
   | "passed" // voting period on and the proposal is passed
+  | "no quorum" // legacy internal name
+
+// WeRule-style display statuses
+export type IWeRuleStatus =
+  | "Pending"
+  | "Active"
+  | "Succeeded"
+  | "Defeated"
+  | "NoQuorum"
+  | "Queued"
+  | "Executable"
+  | "Executed"
+  | "Expired"
+  | "Canceled"
+  | "Rejected"
 
 export type IProposalType =
   | "contract call"
@@ -117,6 +132,8 @@ export interface IEvmProposal extends IEvmFirebaseProposal {
   isTimerActive: boolean
   proposalData: any[]
   status: IProposalStatus
+  displayStatus?: IWeRuleStatus
+  readyToQueue?: boolean
   statusHistoryMap: {
     timestamp: dayjs.Dayjs
     status: ITransactionStatus
