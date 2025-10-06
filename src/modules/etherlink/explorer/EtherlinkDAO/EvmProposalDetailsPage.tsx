@@ -36,6 +36,7 @@ const RenderProposalAction = () => {
   const effectiveDisplayStatus = ((): string | undefined => {
     if (!daoProposalSelected) return undefined
     if (override?.status === "queued") return "Queued"
+    if (override?.status === "executable") return "Executable"
     if (override?.status === "executed") return "Executed"
     return daoProposalSelected?.displayStatus
   })()

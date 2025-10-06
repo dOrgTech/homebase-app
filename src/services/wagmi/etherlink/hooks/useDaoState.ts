@@ -13,6 +13,8 @@ import { useProposalData } from "../hooks/useProposalData"
 export const useDaoState = ({ network }: { network: string }) => {
   const selectedDaoIdRef = useRef<string | null>(null)
   const selectedProposalIdRef = useRef<string | null>(null)
+  const prevDaoIdRef = useRef<string | null>(null)
+  const prevDocKeyRef = useRef<string | null>(null)
 
   const firebaseRootCollection = useMemo(() => {
     return networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection
@@ -42,6 +44,9 @@ export const useDaoState = ({ network }: { network: string }) => {
   const [daoOffchainProposals, setDaoOffchainProposals] = useState<any[]>([])
 
   const { data: firestoreData, fetchCollection, fetchDoc } = useFirestoreStore()
+  const fsClearRef = useRef<null | ((key: string) => void)>(null)
+  // Get a clearCollection function lazily to avoid re-renders; Zustand returns stable fn
+  fsClearRef.current = (useFirestoreStore.getState() as any).clearCollection
   const [refreshCount, setRefreshCount] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -265,11 +270,11 @@ export const useDaoState = ({ network }: { network: string }) => {
   // Subscribe to the selected proposal document to reduce UI lag
   useEffect(() => {
     if (!daoSelected?.id || !firebaseRootCollection) return
-    const pid = selectedProposalIdRef.current
+    const pid = (daoProposalSelected as any)?.id || selectedProposalIdRef.current
     if (!pid) return
     const proposalsCollection = `${firebaseRootCollection}/${daoSelected.id}/proposals`
     fetchDoc(proposalsCollection, pid)
-  }, [daoSelected?.id, firebaseRootCollection, fetchDoc])
+  }, [daoSelected?.id, firebaseRootCollection, daoProposalSelected?.id, fetchDoc])
 
   // When doc snapshot for the selected proposal arrives, update daoProposalSelected immediately
   useEffect(() => {
@@ -436,6 +441,8 @@ export const useDaoState = ({ network }: { network: string }) => {
     firebaseRootCollection,
     network,
     recomputeDataAfter,
+    refreshCount,
+    daoProposalSelected?.id,
     daoSelected?.executionDelay,
     daoSelected?.quorum,
     daoSelected?.totalSupply,
@@ -501,6 +508,25 @@ export const useDaoState = ({ network }: { network: string }) => {
       if (proposal?.type !== "offchain") {
         proposal.proposalData = proposalData.buildProposalData(proposal)
         setDaoProposalSelected(proposal)
+        // Ensure a doc subscription is established for the newly selected proposal
+        if (firebaseRootCollection && daoSelected?.id) {
+          const proposalsCollection = `${firebaseRootCollection}/${daoSelected.id}/proposals`
+          // Clean up previous doc listener if switching proposals
+          const prevKey = `${proposalsCollection}/${(daoProposalSelected as any)?.id || ""}`
+          const nextKey = `${proposalsCollection}/${proposalId}`
+          if (fsClearRef.current && prevKey && prevKey !== nextKey) {
+            try {
+              fsClearRef.current(prevKey)
+            } catch (_) {
+              // ignore cleanup errors
+            }
+          }
+          try {
+            fetchDoc(proposalsCollection, proposalId)
+          } catch (_) {
+            // ignore
+          }
+        }
         if (proposalData.isRawFallback(proposal.proposalData)) {
           proposalData.buildProposalDataAsync(proposal).then(upgraded => {
             if (Array.isArray(upgraded) && upgraded.length > 0 && !proposalData.isRawFallback(upgraded)) {
@@ -512,8 +538,27 @@ export const useDaoState = ({ network }: { network: string }) => {
         setDaoProposalSelected(proposal)
       }
     },
-    [proposalData, allDaoProposals]
+    [proposalData, allDaoProposals, firebaseRootCollection, daoSelected?.id, fetchDoc, daoProposalSelected]
   )
+
+  // Clear previous selected proposal listener when switching DAOs
+  useEffect(() => {
+    if (!firebaseRootCollection) return
+    const newDaoId = daoSelected?.id || null
+    const oldDaoId = prevDaoIdRef.current
+    if (newDaoId !== oldDaoId) {
+      const prevPid = selectedProposalIdRef.current
+      if (oldDaoId && prevPid && fsClearRef.current) {
+        const oldKey = `${firebaseRootCollection}/${oldDaoId}/proposals/${prevPid}`
+        try {
+          fsClearRef.current(oldKey)
+        } catch (_) {
+          // ignore
+        }
+      }
+      prevDaoIdRef.current = newDaoId
+    }
+  }, [daoSelected?.id, firebaseRootCollection])
 
   // Fetch voters for selected on-chain proposal
   useEffect(() => {

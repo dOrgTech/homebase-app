@@ -11,6 +11,8 @@ interface FirestoreState {
   unsubscribe?: Record<string, () => void>
   fetchCollection: (collectionName: string) => Promise<void>
   fetchDoc: (collectionName: string, docId: string) => Promise<void>
+  clearCollection: (collectionOrDocKey: string) => void
+  clearAll: () => void
 }
 
 const useFirestoreStore = create<FirestoreState>((set, get) => ({
