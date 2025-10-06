@@ -41,9 +41,10 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (chain?.id === etherlinkTestnet.id || chain?.name === "Etherlink Testnet") {
       return "etherlink_testnet"
     }
-    // Align default with ConnectKit/Web3Provider initialChainId (testnet) when global context is non-etherlink
+    // When the global context is non‑etherlink (first‑time visitors, shared links),
+    // default to mainnet so shared Etherlink links work for everyone.
     if (!contextNetwork?.startsWith("etherlink")) {
-      return "etherlink_testnet"
+      return "etherlink_mainnet"
     }
     return contextNetwork
   }, [chain?.id, chain?.name, contextNetwork])

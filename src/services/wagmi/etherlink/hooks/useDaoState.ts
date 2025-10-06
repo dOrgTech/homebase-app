@@ -200,8 +200,14 @@ export const useDaoState = ({ network }: { network: string }) => {
           }
         }
 
-        const callDatas = p?.callDatas
-        const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
+        const callDatas = (p as any)?.callDatas
+        let callDataPlain =
+          Array.isArray(callDatas) && callDatas.length > 0 ? callDatas.map((x: any) => getCallDataFromBytes(x)) : []
+        if ((!callDataPlain || callDataPlain.length === 0) && (p as any)?.calldata) {
+          const raw = String((p as any).calldata)
+          const formatted = raw.startsWith("0x") ? raw : `0x${raw}`
+          callDataPlain = [formatted]
+        }
         const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
         const proposalStatus = sortedStatusHistoryMap[0]?.status
         const displayStatus = toDisplayStatus(proposalStatus)
@@ -382,8 +388,14 @@ export const useDaoState = ({ network }: { network: string }) => {
       }
     }
 
-    const callDatas = p?.callDatas
-    const callDataPlain = callDatas?.map((x: any) => getCallDataFromBytes(x))
+    const callDatas = (p as any)?.callDatas
+    let callDataPlain =
+      Array.isArray(callDatas) && callDatas.length > 0 ? callDatas.map((x: any) => getCallDataFromBytes(x)) : []
+    if ((!callDataPlain || callDataPlain.length === 0) && (p as any)?.calldata) {
+      const raw = String((p as any).calldata)
+      const formatted = raw.startsWith("0x") ? raw : `0x${raw}`
+      callDataPlain = [formatted]
+    }
     const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
     const proposalStatus = sortedStatusHistoryMap[0]?.status
     const displayStatus = toDisplayStatus(proposalStatus)
@@ -494,6 +506,52 @@ export const useDaoState = ({ network }: { network: string }) => {
   const allDaoProposals = useMemo(() => {
     return [...daoProposals, ...daoOffchainPollList].sort((a, b) => a.createdAt.unix() - b.createdAt.unix()).reverse()
   }, [daoProposals, daoOffchainPollList])
+
+  // Ensure proposalData is populated even when the selected proposal
+  // originated from a direct doc subscription (i.e., not selected via list).
+  useEffect(() => {
+    if (!daoSelected?.id || !firebaseRootCollection) return
+    const pid = daoProposalSelected?.id
+    if (!pid) return
+    if ((daoProposalSelected as any)?.type === "offchain") return
+
+    const hasData =
+      Array.isArray((daoProposalSelected as any)?.proposalData) &&
+      (daoProposalSelected as any).proposalData.length > 0 &&
+      !proposalData.isRawFallback((daoProposalSelected as any).proposalData)
+
+    if (hasData) return
+
+    try {
+      const built = proposalData.buildProposalData(daoProposalSelected as any)
+      if (Array.isArray(built) && built.length > 0 && !proposalData.isRawFallback(built)) {
+        setDaoProposalSelected((prev: any) => {
+          if (!prev || prev.id !== pid) return prev as any
+          return { ...(prev as any), proposalData: built }
+        })
+        return
+      }
+    } catch (_) {
+      // ignore and try async path
+    }
+
+    // Fallback to explorer ABI decode asynchronously
+    proposalData.buildProposalDataAsync(daoProposalSelected as any).then(upgraded => {
+      if (Array.isArray(upgraded) && upgraded.length > 0 && !proposalData.isRawFallback(upgraded)) {
+        setDaoProposalSelected((prev: any) => {
+          if (!prev || prev.id !== pid) return prev as any
+          return { ...(prev as any), proposalData: upgraded }
+        })
+      }
+    })
+  }, [
+    daoSelected?.id,
+    firebaseRootCollection,
+    daoProposalSelected?.id,
+    (daoProposalSelected as any)?.callDataPlain,
+    (daoProposalSelected as any)?.type,
+    proposalData
+  ])
 
   const selectDaoProposal = useCallback(
     (proposalId: string) => {
