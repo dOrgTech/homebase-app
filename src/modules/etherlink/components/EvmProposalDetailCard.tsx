@@ -117,7 +117,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
                     <Badge status={daoProposalSelected.type} />
                   </Grid>
                   <Grid item>{/* TODO: @ashutoshpw FIX THIS <CommunityBadge id={"DAOID"} /> */}</Grid>
-                  <Grid item direction="row" style={{ gap: 10 }}>
+                  <Grid item container direction="row" style={{ gap: 10 }}>
                     <TextContainer color="textPrimary" variant="body2" style={{ fontSize: 14, marginBottom: 4 }}>
                       Posted by:
                     </TextContainer>

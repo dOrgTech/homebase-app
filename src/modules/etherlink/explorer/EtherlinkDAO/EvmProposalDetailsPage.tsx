@@ -225,15 +225,10 @@ export const EvmProposalDetailsPage = () => {
       daoDecimals: daoSelected?.decimals,
       proposalsLoaded: daoProposals?.length
     })
-  }, [
-    proposalId,
-    selectDaoProposal,
-    daoSelected?.id,
-    daoProposals?.length,
-    daoProposalSelected?.id,
-    daoSelected?.decimals,
-    daoSelected?.token
-  ])
+    // Intentionally keep dependencies minimal to avoid infinite re-selection loops
+    // when callback identities change during doc subscriptions and decoding.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposalId, daoProposalSelected?.id])
 
   // Chain-state fallback: if the proposal is already queued on-chain, reflect immediately
   useEffect(() => {

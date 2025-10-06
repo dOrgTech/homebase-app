@@ -35,7 +35,7 @@ export const EvmDaoQuorum: React.FC = () => {
         justifyContent="space-between"
         style={{ marginTop: 16 }}
       >
-        <Grid direction="row" item style={{ maxWidth: "60%" }}>
+        <Grid item style={{ maxWidth: "60%" }}>
           <Typography variant="subtitle1" color="textSecondary">
             Proposal Threshold ({data?.governanceToken?.symbol} Amount)
           </Typography>

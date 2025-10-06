@@ -555,7 +555,11 @@ export const useDaoState = ({ network }: { network: string }) => {
 
   const selectDaoProposal = useCallback(
     (proposalId: string) => {
+      // Avoid redundant re-selection loops
+      const prevSelected = selectedProposalIdRef.current
+      if (prevSelected === proposalId) return
       selectedProposalIdRef.current = proposalId
+
       const all = allDaoProposals
       const proposal = all.find((p: any) => p.id === proposalId)
       if (!proposal) return
@@ -564,7 +568,7 @@ export const useDaoState = ({ network }: { network: string }) => {
         setDaoProposalSelected(proposal)
         if (firebaseRootCollection && daoSelected?.id) {
           const proposalsCollection = `${firebaseRootCollection}/${daoSelected.id}/proposals`
-          const prevKey = `${proposalsCollection}/${(daoProposalSelected as any)?.id || ""}`
+          const prevKey = `${proposalsCollection}/${prevSelected || ""}`
           const nextKey = `${proposalsCollection}/${proposalId}`
           if (fsClearRef.current && prevKey && prevKey !== nextKey) {
             try {
@@ -586,7 +590,7 @@ export const useDaoState = ({ network }: { network: string }) => {
         setDaoProposalSelected(proposal)
       }
     },
-    [proposalData, allDaoProposals, firebaseRootCollection, daoSelected?.id, fetchDoc, daoProposalSelected]
+    [proposalData, allDaoProposals, firebaseRootCollection, daoSelected?.id, fetchDoc]
   )
 
   useEffect(() => {
