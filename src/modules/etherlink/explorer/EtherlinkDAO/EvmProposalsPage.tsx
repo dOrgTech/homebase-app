@@ -1,17 +1,18 @@
-import { useMemo } from "react"
+import React, { useMemo, useState, useCallback } from "react"
 import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
-import { Grid, MenuItem, Typography, useTheme } from "components/ui"
-import { TitleText } from "components/ui/TitleText"
-import { HeroContainer } from "components/ui/HeroContainer"
+import { Grid } from "components/ui"
 import { SmallButton } from "modules/common/SmallButton"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
-import { Select } from "components/ui"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
 import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { IEvmProposal } from "modules/etherlink/types"
 import { parseStatusQuery, toDisplayStatus } from "modules/etherlink/status"
+import { ProposalsShell } from "components/ui/ProposalsShell"
+import { TabPanel } from "modules/explorer/components/TabPanel"
+import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
+import { Filters } from "modules/explorer/pages/User/components/UserMovements"
 
 export const EvmProposalsPage = () => {
   const [proposalType, setProposalType] = useQueryParam("type")
@@ -22,126 +23,153 @@ export const EvmProposalsPage = () => {
     daoProposals as unknown as IEvmProposal[],
     daoSelected as any
   )
+  const [selectedTab, setSelectedTab] = useState(0)
+  const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  const [filters, setFilters] = useState<Filters>()
 
-  const theme = useTheme()
+  const onChangeTab = useCallback((idx: number) => {
+    setSelectedTab(idx)
+    setFilters(undefined)
+  }, [])
+
+  const tezosToDisplay: Record<string, string> = {
+    "pending": "Pending",
+    "active": "Active",
+    "passed": "Succeeded",
+    "rejected": "Rejected",
+    "no quorum": "NoQuorum",
+    "executable": "Executable",
+    "expired": "Expired",
+    "executed": "Executed",
+    "dropped": "Defeated"
+  }
+
+  const matchesOnchainFilter = (p: any) => {
+    if (!filters || !filters.onchainStatus || filters.onchainStatus.length === 0) return true
+    const disp = toDisplayStatus(p.displayStatus || p.status)
+    const labels = filters.onchainStatus.map(s => tezosToDisplay[String(s.label).toLowerCase()] || "")
+    return labels.includes(disp || "")
+  }
+
+  const isOffchainActive = (p: any) => {
+    const disp = toDisplayStatus(p.displayStatus || p.status)
+    return disp === "Active" || disp === "Pending"
+  }
+
+  const matchesEvmType = (p: any, kind?: string) => {
+    if (!kind || kind === "all") return true
+    const t = String(p?.type || "").toLowerCase()
+    const isToken = t.startsWith("mint") || t.startsWith("burn") || t === "token"
+    switch (kind) {
+      case "offchain":
+        return t === "offchain"
+      case "token":
+        return isToken
+      case "registry":
+        return t.includes("registry")
+      case "transfer":
+        return t.includes("transfer")
+      case "contract call":
+        return t.includes("contract call") || t.includes("contract_call") || t.includes("arbitrary")
+      case "voting delay":
+        return t.includes("voting delay")
+      case "voting period":
+        return t.includes("voting period")
+      case "proposal threshold":
+        return t.includes("proposal threshold")
+      default:
+        return true
+    }
+  }
 
   const filteredProposals = useMemo(() => {
-    if (
-      (proposalType === "all" && proposalStatus === "all") ||
-      (!proposalType && !proposalStatus) ||
-      (proposalType === "all" && !proposalStatus)
-    )
-      return processedProposals
+    let base = processedProposals || []
 
-    return processedProposals?.filter((proposal: any) => {
-      if (proposalAuthor && proposalAuthor !== "all" && proposal.author === proposalAuthor) return true
-      if (proposalType && proposalType !== "all" && proposal.type === proposalType) return true
-      if (proposalStatus && proposalStatus !== "all") {
-        const desired = parseStatusQuery(proposalStatus)
-        if (desired) {
-          if (proposal.displayStatus === desired) return true
-          if (toDisplayStatus(proposal.status) === desired) return true
-        }
-      }
-
+    // query param compatibility for type/status/author
+    if (!filters) {
       if (
-        proposalType === "token" &&
-        (proposal.type?.toLowerCase().startsWith("mint") || proposal.type?.toLowerCase().startsWith("burn"))
-      )
-        return true
+        (proposalType === "all" && proposalStatus === "all") ||
+        (!proposalType && !proposalStatus) ||
+        (proposalType === "all" && !proposalStatus)
+      ) {
+        base = processedProposals || []
+      } else {
+        base = (processedProposals || []).filter((proposal: any) => {
+          if (proposalAuthor && proposalAuthor !== "all" && proposal.author === proposalAuthor) return true
+          if (proposalType && proposalType !== "all" && proposal.type === proposalType) return true
+          if (proposalStatus && proposalStatus !== "all") {
+            const desired = parseStatusQuery(proposalStatus)
+            if (desired) {
+              if (proposal.displayStatus === desired) return true
+              if (toDisplayStatus(proposal.status) === desired) return true
+            }
+          }
+          if (
+            proposalType === "token" &&
+            (proposal.type?.toLowerCase().startsWith("mint") || proposal.type?.toLowerCase().startsWith("burn"))
+          )
+            return true
+          return false
+        })
+      }
+    }
 
-      return false
-    })
-  }, [processedProposals, proposalType, proposalStatus, proposalAuthor])
+    // apply unified filters when present
+    if (filters) {
+      if (selectedTab === 0) {
+        base = (processedProposals || [])
+          .filter(p => p.type !== "offchain")
+          .filter(matchesOnchainFilter)
+          .filter(p => matchesEvmType(p, filters.evmType))
+      } else {
+        base = (processedProposals || [])
+          .filter(p => p.type === "offchain")
+          .filter(p => {
+            if (!filters) return true
+            if (filters.offchainStatus === "all") return true
+            if (filters.offchainStatus === "active") return isOffchainActive(p)
+            if (filters.offchainStatus === "closed") return !isOffchainActive(p)
+            return true
+          })
+      }
+    }
+    return base
+  }, [processedProposals, proposalType, proposalStatus, proposalAuthor, filters, selectedTab])
 
   return (
     <>
-      <Grid item xs={12} style={{ marginBottom: 20 }}>
-        <TitleText color="textPrimary">Proposals</TitleText>
-      </Grid>
-      <Grid container direction="column" style={{ gap: 42, backgroundColor: "rgb(36, 40, 45)", padding: "10px" }}>
-        <HeroContainer item xs={12}>
-          <Grid container justifyContent="space-between" alignItems="center">
-            <Grid container spacing={2} alignItems="center" style={{ marginTop: 20 }}>
-              <Grid item xs={12} sm={3}>
-                <Typography variant="body2" color="textPrimary" gutterBottom>
-                  Type
-                </Typography>
-                <Select
-                  fullWidth
-                  labelId="proposal-type-select-label"
-                  id="proposal-type-select"
-                  defaultValue="all"
-                  style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
-                  value={proposalType || "all"}
-                  onChange={(e: React.ChangeEvent<{ value: unknown }>) =>
-                    setProposalType((e.target.value as string) || "all")
-                  }
-                >
-                  <MenuItem value="all">All</MenuItem>
-                  <MenuItem value="offchain">Off-Chain</MenuItem>
-                  <MenuItem value="token">Token Operation</MenuItem>
-                  <MenuItem value="registry">Registry</MenuItem>
-                  <MenuItem value="transfer">Transfer</MenuItem>
-                  <MenuItem value="contract call">Contract Call</MenuItem>
-                  <MenuItem value="voting delay">Voting Delay</MenuItem>
-                  <MenuItem value="voting period">Voting Period</MenuItem>
-                  <MenuItem value="proposal threshold">Proposal Threshold</MenuItem>
-                </Select>
-              </Grid>
-
-              <Grid item xs={12} sm={3}>
-                <Typography variant="body2" color="textPrimary" gutterBottom>
-                  Status
-                </Typography>
-                <Select
-                  fullWidth
-                  defaultValue="all"
-                  style={{ color: "#fff", border: "1px solid #ccc", height: "40px" }}
-                  value={proposalStatus || "all"}
-                  onChange={(e: React.ChangeEvent<{ value: unknown }>) =>
-                    setProposalStatus((e.target.value as string) || "all")
-                  }
-                >
-                  <MenuItem value="all">All</MenuItem>
-                  <MenuItem value="Active">Active</MenuItem>
-                  <MenuItem value="Succeeded">Succeeded</MenuItem>
-                  <MenuItem value="Defeated">Defeated</MenuItem>
-                  <MenuItem value="NoQuorum">No Quorum</MenuItem>
-                  <MenuItem value="Queued">Queued</MenuItem>
-                  <MenuItem value="Executable">Executable</MenuItem>
-                  <MenuItem value="Executed">Executed</MenuItem>
-                  <MenuItem value="Expired">Expired</MenuItem>
-                  <MenuItem value="Pending">Pending</MenuItem>
-                  <MenuItem value="Rejected">Rejected</MenuItem>
-                </Select>
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                sm={3}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                  height: "100%"
-                }}
-              >
-                <Typography variant="body1" style={{ color: theme.palette.text.secondary }}>
-                  {processedProposals?.length || 0} Proposals
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={3} style={{ textAlign: "right", justifyContent: "flex-end" }}>
-                <SmallButton variant="contained" color="secondary" onClick={() => setIsProposalDialogOpen(true)}>
-                  New Proposal
-                </SmallButton>
-              </Grid>
-            </Grid>
-          </Grid>
-        </HeroContainer>
-        <ProposalActionsDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
-      </Grid>
-      <EvmDaoProposalList proposals={filteredProposals} />
+      <ProposalsShell
+        selectedTab={selectedTab}
+        onChangeTab={onChangeTab}
+        onOpenFilters={() => setOpenFiltersDialog(true)}
+        rightActions={
+          <SmallButton variant="contained" color="secondary" onClick={() => setIsProposalDialogOpen(true)}>
+            New Proposal
+          </SmallButton>
+        }
+      >
+        <Grid item xs={12} style={{ marginTop: 38, gap: 16 }}>
+          <TabPanel value={selectedTab} index={0}>
+            <EvmDaoProposalList proposals={(filteredProposals || []).filter(p => p.type !== "offchain")} />
+          </TabPanel>
+          <TabPanel value={selectedTab} index={1}>
+            <EvmDaoProposalList proposals={(filteredProposals || []).filter(p => p.type === "offchain")} />
+          </TabPanel>
+        </Grid>
+      </ProposalsShell>
+      <ProposalActionsDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
+      <FilterProposalsDialog
+        open={openFiltersDialog}
+        handleClose={() => setOpenFiltersDialog(false)}
+        selectedTab={selectedTab}
+        showEvmType
+        saveFilters={(f: Filters) => {
+          // Align tab with type selection for better UX
+          if (f?.evmType === "offchain") setSelectedTab(1)
+          if (f?.evmType && f.evmType !== "offchain" && selectedTab === 1) setSelectedTab(0)
+          setFilters(f)
+        }}
+      />
     </>
   )
 }

@@ -117,6 +117,8 @@ export interface Filters {
   offchainStatus: OffchainStatus
   onchainStatus: StatusOption[]
   order: Order
+  // Optional: Etherlink EVM-only proposal type filter (e.g., token, registry, transfer, contract call, voting delay/period)
+  evmType?: string
 }
 
 export const UserMovements: React.FC<{

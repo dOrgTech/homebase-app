@@ -1,5 +1,6 @@
 import { Button, Grid, Typography, useMediaQuery, useTheme } from "components/ui"
 import { PageContainer } from "components/ui/DaoCreator"
+import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { EtherlinkContext } from "services/wagmi/context"
@@ -238,32 +239,30 @@ export const EvmOffchainProposalDetailsPage = () => {
 
   return (
     <div>
-      <PageContainer style={{ gap: 30 }}>
-        <Grid container style={{ gap: 30 }}>
-          <Grid item>
-            <EvmProposalDetailCard poll={daoProposalSelected} />
-          </Grid>
+      <Grid container style={{ gap: 30 }}>
+        <Grid item>
+          <EvmProposalDetailCard poll={daoProposalSelected} />
         </Grid>
-      </PageContainer>
+      </Grid>
 
-      <PageContainer style={{ gap: 10, color: "white", marginTop: 10, background: "#25282d" }}>
+      <ContentContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
         <Grid item xs={12} md={12} style={{ padding: "40px" }}>
           <RenderProposalAction daoProposalSelected={daoProposalSelected} />
         </Grid>
-      </PageContainer>
+      </ContentContainer>
 
       {daoProposalSelected?.type ? (
         <EvmProposalVoteDetail poll={daoProposalSelected} token={daoSelected?.token} />
       ) : null}
 
-      <PageContainer style={{ gap: 10, color: "white", padding: 40 }}>
+      <ContentContainer style={{ gap: 10, color: "white", padding: 40 }}>
         <Grid container>
           <Typography style={{ color: "white", fontSize: 20, fontWeight: 600 }}>Proposal Data</Typography>
         </Grid>
         <Grid style={{ color: "white", marginTop: 20 }} container>
           {daoProposalSelected?.description}
         </Grid>
-      </PageContainer>
+      </ContentContainer>
 
       <EvmProposalVoterList />
     </div>

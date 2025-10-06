@@ -41,7 +41,7 @@ export const Container = styled(Grid)({
 })
 
 export const ContainerVoteDetail = styled(Grid)(({ theme }: { theme: Theme }) => ({
-  background: theme.palette.primary.main,
+  background: theme.palette.primary.contrastText,
   borderRadius: 8
 }))
 

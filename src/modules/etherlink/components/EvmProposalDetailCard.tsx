@@ -1,6 +1,7 @@
 import React from "react"
 import { Grid, Typography, useTheme, useMediaQuery } from "components/ui"
-import { GridContainer } from "modules/common/GridContainer"
+import { ContentContainer } from "modules/explorer/components/ContentContainer"
+import { styled } from "@material-ui/core"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
 import Share from "assets/img/share.svg"
 import LinkIcon from "assets/img/link.svg"
@@ -13,6 +14,11 @@ import { CopyIcon } from "components/ui/icons/CopyIcon"
 import { IEvmProposal } from "../types"
 import { etherlinkStyled as _est } from "components/ui"
 const { LogoItem, CustomPopover, TextContainer, EndTextContainer, EndText, Divider, StyledLink } = _est
+
+const DetailsContainer = styled(ContentContainer)(({ theme }) => ({
+  padding: "32px 46px",
+  minHeight: 145
+}))
 
 export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }> = ({ poll }) => {
   const theme = useTheme()
@@ -45,7 +51,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
 
   return (
     <>
-      <GridContainer container style={{ gap: 50 }}>
+      <DetailsContainer container style={{ gap: 50 }}>
         <Grid container style={{ gap: 25 }}>
           <Grid
             item
@@ -155,7 +161,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
             </Grid>
           ) : null}
         </Grid>
-      </GridContainer>
+      </DetailsContainer>
     </>
   )
 }

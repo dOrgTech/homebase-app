@@ -1,5 +1,6 @@
 import { Button, Grid, TableRow, TableBody, Table, Typography, TableCell, IconButton } from "components/ui"
 import { PageContainer } from "components/ui/DaoCreator"
+import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { useContext, useEffect, useState } from "react"
 import dayjs from "dayjs"
 import { useParams } from "react-router-dom"
@@ -250,15 +251,14 @@ export const EvmProposalDetailsPage = () => {
 
   return (
     <div>
-      <PageContainer style={{ gap: 30 }}>
-        <Grid container style={{ gap: 30 }}>
-          <Grid item>
-            <EvmProposalDetailCard poll={daoProposalSelected} />
-          </Grid>
+      <Grid container style={{ gap: 30 }}>
+        <Grid item>
+          <EvmProposalDetailCard poll={daoProposalSelected} />
         </Grid>
-      </PageContainer>
+      </Grid>
 
-      <PageContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
+      {/** Dark content section matching Tezos detail panels */}
+      <ContentContainer style={{ gap: 10, color: "white", marginTop: 10 }}>
         <Grid item xs={12} md={12} style={{ padding: "40px" }}>
           {(() => {
             const hasOverrideQueued = override?.status === "queued" && typeof override?.eta === "number"
@@ -269,11 +269,11 @@ export const EvmProposalDetailsPage = () => {
           })()}
           <RenderProposalAction />
         </Grid>
-      </PageContainer>
+      </ContentContainer>
 
       <EvmProposalVoteDetail poll={daoProposalSelected} token={daoSelected?.token} />
 
-      <PageContainer style={{ gap: 10, color: "white", padding: 40 }}>
+      <ContentContainer style={{ gap: 10, color: "white", padding: 40 }}>
         <Grid container>
           <Typography style={{ color: "white", fontSize: 20, fontWeight: 600 }}>Proposal Data</Typography>
         </Grid>
@@ -320,7 +320,7 @@ export const EvmProposalDetailsPage = () => {
             }
           )}
         </Grid>
-      </PageContainer>
+      </ContentContainer>
 
       <EvmProposalVoterList />
     </div>

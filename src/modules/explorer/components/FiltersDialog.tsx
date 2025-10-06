@@ -12,6 +12,8 @@ interface Props {
   handleClose: () => void
   selectedTab: number
   saveFilters: (filters: Filters) => void
+  // When true, show Etherlink EVM proposal type section
+  showEvmType?: boolean
 }
 
 const SectionTitle = styled(Typography)({
@@ -48,12 +50,19 @@ export enum OffchainStatus {
   ALL = "all"
 }
 
-export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose, selectedTab, saveFilters }) => {
+export const FilterProposalsDialog: React.FC<Props> = ({
+  open,
+  handleClose,
+  selectedTab,
+  saveFilters,
+  showEvmType
+}) => {
   const [filters, setFilters] = useState<StatusOption[]>([])
   const [status, setStatus] = useState<StatusOption[]>([])
   const [offchainStatus, setOffchainStatus] = useState<OffchainStatus>(OffchainStatus.ALL)
   const proposalType = selectedTab === 0 ? ProposalType.ON_CHAIN : ProposalType.OFF_CHAIN
   const [order, setOrder] = useState<Order>(Order.RECENT)
+  const [evmType, setEvmType] = useState<string>("all")
 
   const isSelected = (item: StatusOption) => {
     return filters.includes(item) ? true : false
@@ -100,7 +109,8 @@ export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose, sele
       type: proposalType,
       offchainStatus: offchainStatus,
       onchainStatus: filters,
-      order: order
+      order: order,
+      evmType
     }
     saveFilters(filterObject)
     handleClose()
@@ -163,6 +173,40 @@ export const FilterProposalsDialog: React.FC<Props> = ({ open, handleClose, sele
             </Grid>
           )}
         </Container>
+
+        {/* Optional Etherlink EVM Type filter */}
+        {/** Shown only when consumer requests it via prop */}
+        {/** Values mirror the previous Etherlink UI dropdown */}
+        {/** "offchain" is available but typically used alongside the Off-Chain tab */}
+        {showEvmType ? (
+          <Container container direction="column">
+            <Grid item>
+              <SectionTitle>Type</SectionTitle>
+            </Grid>
+            <Grid item container direction="row">
+              {[
+                "all",
+                "offchain",
+                "token",
+                "registry",
+                "transfer",
+                "contract call",
+                "voting delay",
+                "voting period",
+                "proposal threshold"
+              ].map(option => (
+                <StatusButton
+                  key={`evm-type-${option}`}
+                  item
+                  onClick={() => setEvmType(option)}
+                  style={evmType === option ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+                >
+                  <Typography style={{ textTransform: "capitalize" }}>{option}</Typography>
+                </StatusButton>
+              ))}
+            </Grid>
+          </Container>
+        ) : null}
 
         <Container container direction="row" justifyContent="flex-end">
           <SmallButton color="secondary" variant="contained" onClick={showFilters}>

@@ -29,7 +29,7 @@ export const EvmDaoProposalList: React.FC<{
 }> = ({ proposals, showFullList = true }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const [offset, setOffset] = useState(0)
-  const offsetLimit = 50
+  const offsetLimit = 4
   const [filteredProposals, setFilteredProposals] = useState<ProposalObj[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -80,7 +80,7 @@ export const EvmDaoProposalList: React.FC<{
                 })}
               </Grid>
             ) : (
-              <Typography color="textPrimary">No proposals found</Typography>
+              <Typography color="textPrimary">No items</Typography>
             )}
           </Grid>
           {showFullList ? (

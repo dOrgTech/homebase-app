@@ -39,10 +39,7 @@ export const EvmProposalItem: React.FC<{
               </Grid>
               <Grid item>
                 <CreatedText variant="body1" color="textPrimary">
-                  Created at {formattedDate} by{" "}
-                  <span style={{ fontWeight: 600 }}>
-                    {proposal.author ? toShortAddress(proposal.author) : "unknown"}
-                  </span>
+                  Created {formattedDate}
                 </CreatedText>
               </Grid>
             </Grid>
