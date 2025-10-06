@@ -368,24 +368,29 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         // triggered when user enter recipient and amount & address
         const selectedInterface = proposalInterfaces.find(p => p.name === type)
         if (!selectedInterface) return console.error("No interface found")
+
         const payload = { daoTokenOps: { ...get().daoTokenOps, [type]: value } } as any
         const iface = new ethers.Interface(selectedInterface.interface)
+
         const targetAddress = value?.to || get().daoTokenOps[type]?.to
-        const targetAmount = value?.amount || get().daoTokenOps[type]?.amount || 0
-        const targetAmountWithDecimals = ethers.parseUnits(targetAmount, tokenDecimals)
-        console.log("targetAmountWithDecimals", targetAmountWithDecimals)
-        if (ethers.isAddress(targetAddress) && targetAmount && !isNaN(Number(targetAmount))) {
-          const encodedData = iface.encodeFunctionData(selectedInterface.name, [
-            targetAddress,
-            targetAmountWithDecimals
-          ])
+        const targetAmountStr = (value?.amount ?? get().daoTokenOps[type]?.amount ?? "") as string
+
+        // Only attempt to parse and encode when both fields are valid
+        const hasValidAddress = ethers.isAddress(targetAddress)
+        const hasValidAmount =
+          typeof targetAmountStr === "string" && targetAmountStr.trim() !== "" && !isNaN(Number(targetAmountStr))
+
+        if (hasValidAddress && hasValidAmount) {
+          const amountWithDecimals = ethers.parseUnits(targetAmountStr, tokenDecimals || 0)
+          const encodedData = iface.encodeFunctionData(selectedInterface.name, [targetAddress, amountWithDecimals])
           payload.createProposalPayload = {
             ...get().createProposalPayload,
             calldatas: [encodedData]
           }
         } else {
-          console.log("Invalid target address or amount", targetAddress, targetAmount, ethers.isAddress(targetAddress))
+          console.log("Invalid target address or amount", targetAddress, targetAmountStr, hasValidAddress)
         }
+
         console.log("payload", payload)
         set(payload)
       },

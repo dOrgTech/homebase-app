@@ -12,23 +12,58 @@ const StyledBody = styled(Grid)(({ theme }) => ({
     padding: 0,
     textAlign: "start"
   },
+  // Ensure multiline textarea content and placeholder align left
+  "& textarea": {
+    textAlign: "start"
+  },
 
   "& .MuiInputBase-input": {
     fontWeight: 300
+  },
+  "& .MuiInputBase-inputMultiline": {
+    textAlign: "start"
   }
 }))
 
-export const ProposalFormInput: React.FC<{ label?: string }> = ({ label, children }) => {
+export const ProposalFormInput: React.FC<{
+  label?: string
+  labelStyle?: React.CSSProperties
+  containerStyle?: React.CSSProperties
+  id?: string
+  required?: boolean
+  helpText?: string
+  errorText?: string
+}> = ({ label, labelStyle, containerStyle, id, required, helpText, errorText, children }) => {
+  const baseId = React.useMemo(() => id || `ff-${Math.random().toString(36).slice(2)}`, [id])
+  const labelId = `${baseId}-label`
+  const helpId = `${baseId}-help`
+
+  const enhancedChild = React.isValidElement(children)
+    ? React.cloneElement(children as any, {
+        "id": baseId,
+        "aria-labelledby": label ? labelId : undefined,
+        "aria-describedby": errorText || helpText ? helpId : undefined,
+        "required": required || undefined
+      })
+    : children
+
   return (
-    <Grid container direction="column" style={{ gap: 18 }}>
+    <Grid container direction="column" style={{ gap: 18, ...(containerStyle || {}) }}>
       {label ? (
         <Grid item>
-          <Typography style={{ fontWeight: 400 }} color="textPrimary">
+          <Typography id={labelId} style={{ fontWeight: 400, ...(labelStyle || {}) }} color="textPrimary">
             {label}
           </Typography>
         </Grid>
       ) : null}
-      <StyledBody>{children}</StyledBody>
+      <StyledBody>{enhancedChild}</StyledBody>
+      {(errorText || helpText) && (
+        <Grid item>
+          <Typography id={helpId} style={{ fontSize: 12 }} color={errorText ? "error" : "textSecondary"}>
+            {errorText || helpText}
+          </Typography>
+        </Grid>
+      )}
     </Grid>
   )
 }

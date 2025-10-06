@@ -1,8 +1,7 @@
 import React, { useCallback, useContext } from "react"
-import { Grid, styled, MenuItem, IconButton } from "components/ui"
+import { Grid, styled, MenuItem, IconButton, FormField, FormTextField } from "components/ui"
 import { RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
-import { StyledTextField } from "components/ui/StyledTextField"
 import { EtherlinkContext } from "services/wagmi/context"
 
 const TransactionContainer = styled(Grid)({
@@ -20,12 +19,7 @@ const TransactionContainer = styled(Grid)({
 //   marginTop: "16px"
 // })
 
-const InputContainer = styled(Grid)({
-  background: "#1c2024",
-  padding: "16px",
-  borderRadius: "4px",
-  marginBottom: "8px"
-})
+// Remove dark container in favor of per-field FormField wrappers
 
 const RemoveButton = styled(IconButton)({
   color: "#FF4D4D",
@@ -152,56 +146,63 @@ export const EvmPropTransferAssets: React.FC = () => {
     <Grid container direction="column">
       {transferAssets.transactions.map((transaction: ITransaction, index: number) => (
         <TransactionContainer key={index}>
-          <InputContainer container spacing={2}>
+          <Grid container spacing={3}>
             <Grid item xs={12} sm={3}>
-              <StyledTextField
-                select
-                fullWidth
-                label="Asset Type"
-                variant="standard"
-                value={getAssetType(transaction)}
-                onChange={e => handleAssetTypeChange(index, e as React.ChangeEvent<HTMLInputElement>)}
-              >
-                <MenuItem value="transferETH">XTZ</MenuItem>
-                {daoTreasuryTokens?.map((token: any) => (
-                  <MenuItem key={token.address} value={token.address}>
-                    {token.symbol}
-                  </MenuItem>
-                ))}
-                {daoNfts?.map((nft: any) => (
-                  <MenuItem key={`nft::${nft.token?.address}:${nft.id}`} value={`nft::${nft.token?.address}:${nft.id}`}>
-                    {nft.token?.symbol} - #{nft.id}
-                  </MenuItem>
-                ))}
-              </StyledTextField>
+              <FormField label="Asset Type" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+                <FormTextField
+                  select
+                  value={getAssetType(transaction)}
+                  onChange={e => handleAssetTypeChange(index, e as React.ChangeEvent<HTMLInputElement>)}
+                  inputProps={{ style: { fontSize: 14 } }}
+                >
+                  <MenuItem value="transferETH">XTZ</MenuItem>
+                  {daoTreasuryTokens?.map((token: any) => (
+                    <MenuItem key={token.address} value={token.address}>
+                      {token.symbol}
+                    </MenuItem>
+                  ))}
+                  {daoNfts?.map((nft: any) => (
+                    <MenuItem
+                      key={`nft::${nft.token?.address}:${nft.id}`}
+                      value={`nft::${nft.token?.address}:${nft.id}`}
+                    >
+                      {nft.token?.symbol} - #{nft.id}
+                    </MenuItem>
+                  ))}
+                </FormTextField>
+              </FormField>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <StyledTextField
-                fullWidth
-                label="Recipient Address"
-                variant="standard"
-                value={transaction.recipient}
-                onChange={e => onUpdateTransaction(index, [{ field: "recipient", value: e.target.value }])}
-              />
+              <FormField label="Recipient Address" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+                <FormTextField
+                  value={transaction.recipient}
+                  placeholder="0x..."
+                  onChange={e => onUpdateTransaction(index, [{ field: "recipient", value: e.target.value }])}
+                  inputProps={{ style: { fontSize: 14 } }}
+                />
+              </FormField>
             </Grid>
             {transaction.assetType !== "transferERC721" && (
               <Grid item xs={12} sm={2}>
-                <StyledTextField
-                  fullWidth
+                <FormField
                   label="Amount"
-                  type="number"
-                  variant="standard"
-                  inputProps={{
-                    inputMode: "numeric",
-                    pattern: "[0-9]*",
-                    min: "0.001",
-                    step: "0.000001"
-                  }}
-                  error={!transaction.amount}
-                  helperText={!transaction.amount ? "Amount must be a number" : ""}
-                  value={transaction.amount}
-                  onChange={e => onUpdateTransaction(index, [{ field: "amount", value: e.target.value }])}
-                />
+                  labelStyle={{ fontSize: 16 }}
+                  containerStyle={{ gap: 12 }}
+                  errorText={!transaction.amount ? "Amount must be a number" : ""}
+                >
+                  <FormTextField
+                    type="number"
+                    inputProps={{
+                      inputMode: "numeric",
+                      pattern: "[0-9]*",
+                      min: "0.001",
+                      step: "0.000001",
+                      style: { fontSize: 14 }
+                    }}
+                    value={transaction.amount}
+                    onChange={e => onUpdateTransaction(index, [{ field: "amount", value: e.target.value }])}
+                  />
+                </FormField>
               </Grid>
             )}
             <Grid item xs={12} sm={1} container alignItems="center" justifyContent="center">
@@ -211,7 +212,7 @@ export const EvmPropTransferAssets: React.FC = () => {
                 </RemoveButton>
               )}
             </Grid>
-          </InputContainer>
+          </Grid>
         </TransactionContainer>
       ))}
 

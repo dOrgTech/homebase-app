@@ -1,9 +1,8 @@
 import React from "react"
-import { Grid, Typography, IconButton, FormControlLabel } from "components/ui"
+import { Grid, Typography, IconButton, FormControlLabel, FormField, FormTextField } from "components/ui"
 import { Add as AddIcon, RemoveCircleOutline } from "components/ui"
-import { StyledTextField } from "components/ui/StyledTextField"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
-import { Switch, InputContainer } from "components/ui"
+import { Switch } from "components/ui"
 
 // Styled components replaced by shared InputContainer and inline styles
 
@@ -31,47 +30,47 @@ export const EvmOffchainDebate: React.FC = () => {
   }
 
   return (
-    <Grid container direction="column" spacing={2}>
-      <InputContainer container spacing={2}>
-        <Grid item xs={12}>
-          <Typography color="textPrimary" gutterBottom>
-            Poll Duration
-          </Typography>
+    <Grid container direction="column" style={{ gap: 24 }}>
+      <Grid item xs={12}>
+        <Typography color="textPrimary" gutterBottom>
+          Poll Duration
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={4}>
+            <FormField label="Days" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                type="number"
+                value={offchainDebate.expiry_days}
+                onChange={e => setOffchainDebate("expiry_days", e.target.value)}
+                inputProps={{ min: 0, style: { fontSize: 14 } }}
+              />
+            </FormField>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormField label="Hours" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                type="number"
+                value={offchainDebate.expiry_hours}
+                onChange={e => setOffchainDebate("expiry_hours", e.target.value)}
+                inputProps={{ min: 0, max: 23, style: { fontSize: 14 } }}
+              />
+            </FormField>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormField label="Minutes" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                type="number"
+                value={offchainDebate.expiry_minutes}
+                onChange={e => setOffchainDebate("expiry_minutes", e.target.value)}
+                inputProps={{ min: 0, max: 59, style: { fontSize: 14 } }}
+              />
+            </FormField>
+          </Grid>
         </Grid>
-        <Grid item xs={4}>
-          <StyledTextField
-            fullWidth
-            label="Days"
-            type="number"
-            value={offchainDebate.expiry_days}
-            onChange={e => setOffchainDebate("expiry_days", e.target.value)}
-            inputProps={{ min: 0 }}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <StyledTextField
-            fullWidth
-            label="Hours"
-            type="number"
-            value={offchainDebate.expiry_hours}
-            onChange={e => setOffchainDebate("expiry_hours", e.target.value)}
-            inputProps={{ min: 0, max: 23 }}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <StyledTextField
-            fullWidth
-            label="Minutes"
-            type="number"
-            value={offchainDebate.expiry_minutes}
-            onChange={e => setOffchainDebate("expiry_minutes", e.target.value)}
-            inputProps={{ min: 0, max: 59 }}
-          />
-        </Grid>
-      </InputContainer>
+      </Grid>
 
-      <InputContainer container spacing={2}>
-        <Grid item xs={12} container justifyContent="space-between" alignItems="center">
+      <Grid item xs={12}>
+        <Grid container justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
           <Typography color="textPrimary" gutterBottom>
             Poll Options
           </Typography>
@@ -83,25 +82,28 @@ export const EvmOffchainDebate: React.FC = () => {
             label={isMultiChoice ? "Multi Choice" : "Single Choice"}
           />
         </Grid>
-        {choices.map((choice, index) => (
-          <Grid item xs={12} key={index} container alignItems="center" spacing={1}>
-            <Grid item xs>
-              <StyledTextField
-                fullWidth
-                label={`Option ${index + 1}`}
-                value={choice}
-                onChange={e => handleChoiceChange(index, e.target.value)}
-              />
+        <Grid container direction="column" style={{ gap: 12 }}>
+          {choices.map((choice, index) => (
+            <Grid item key={index} container alignItems="center" spacing={1}>
+              <Grid item xs>
+                <FormField label={`Option ${index + 1}`} labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+                  <FormTextField
+                    value={choice}
+                    onChange={e => handleChoiceChange(index, e.target.value)}
+                    inputProps={{ style: { fontSize: 14 } }}
+                  />
+                </FormField>
+              </Grid>
+              <Grid item>
+                {choices.length > 2 && (
+                  <IconButton onClick={() => removeChoice(index)} style={{ color: "#FF4D4D", padding: 4 }}>
+                    <RemoveCircleOutline />
+                  </IconButton>
+                )}
+              </Grid>
             </Grid>
-            <Grid item>
-              {choices.length > 2 && (
-                <IconButton onClick={() => removeChoice(index)} style={{ color: "#FF4D4D", padding: 4 }}>
-                  <RemoveCircleOutline />
-                </IconButton>
-              )}
-            </Grid>
-          </Grid>
-        ))}
+          ))}
+        </Grid>
         <Grid item xs={12}>
           <Grid
             onClick={addChoice}
@@ -122,7 +124,7 @@ export const EvmOffchainDebate: React.FC = () => {
             </Typography>
           </Grid>
         </Grid>
-      </InputContainer>
+      </Grid>
     </Grid>
   )
 }

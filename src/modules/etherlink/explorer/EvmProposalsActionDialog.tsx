@@ -1,7 +1,7 @@
 import React from "react"
 import { Box, Grid, useMediaQuery, useTheme, Typography } from "components/ui"
 import { NextButton } from "components/ui/NextButton"
-import { StyledTextField } from "components/ui/StyledTextField"
+import { FormField, FormTextArea, FormTextField } from "components/ui"
 import { LinearProgressLoader } from "components/ui/LinearProgress"
 
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
@@ -99,38 +99,34 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         title={proposalTitle}
       >
         <Grid>
-          <Box gridGap={2} style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
-            <StyledTextField
-              placeholder="Proposal Title"
-              fullWidth
-              variant="standard"
-              label="Proposal Title"
-              style={{ height: "50px", textAlign: "left", marginBottom: "20px" }}
-              defaultValue={metadata.title}
-              onChange={e => setMetadataFieldValue("title", e.target.value)}
-            />
-            <StyledTextField
-              placeholder="Proposal Details"
-              label="Proposal Details"
-              multiline
-              minRows={5}
-              fullWidth
-              variant="standard"
-              style={{ marginBottom: "20px" }}
-              defaultValue={metadata.description}
-              onChange={e => setMetadataFieldValue("description", e.target.value)}
-            />
+          <Grid container direction="column" style={{ gap: 18, marginBottom: 32 }}>
+            <FormField label="Proposal Title" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                placeholder="Proposal Title"
+                defaultValue={metadata.title}
+                onChange={e => setMetadataFieldValue("title", e.target.value)}
+                inputProps={{ style: { fontSize: 14 } }}
+              />
+            </FormField>
 
-            <StyledTextField
-              label="Discussion URL"
-              placeholder="Discussion URL"
-              fullWidth
-              variant="standard"
-              style={{ marginBottom: "10px" }}
-              defaultValue={metadata.discussionUrl}
-              onChange={e => setMetadataFieldValue("discussionUrl", e.target.value)}
-            />
-          </Box>
+            <FormField label="Proposal Details" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextArea
+                placeholder="Proposal Details"
+                defaultValue={metadata.description}
+                onChange={e => setMetadataFieldValue("description", e.target.value)}
+                inputProps={{ style: { fontSize: 14, paddingTop: 12, paddingBottom: 12 } }}
+              />
+            </FormField>
+
+            <FormField label="Discussion URL" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                placeholder="Discussion URL"
+                defaultValue={metadata.discussionUrl}
+                onChange={e => setMetadataFieldValue("discussionUrl", e.target.value)}
+                inputProps={{ style: { fontSize: 14 } }}
+              />
+            </FormField>
+          </Grid>
 
           {/* Voting power helper */}
           <Box

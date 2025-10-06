@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { Grid, Box, Tooltip } from "components/ui"
-import { StyledTextField } from "components/ui/StyledTextField"
+import { Grid, Box, Tooltip, FormField, FormTextArea, FormTextField } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { getContractDetails } from "modules/etherlink/utils"
 import { ethers } from "ethers"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ThemedTabButton } from "components/ui/ThemedTabButton"
 
-import { InputContainer } from "components/ui"
+// Using FormField wrappers to match Tezos input styling
 
 export const EvmPropContractCall: React.FC = () => {
   const { network } = useTezos()
@@ -51,25 +50,27 @@ export const EvmPropContractCall: React.FC = () => {
   console.log("Write Methods", JSON.stringify(writeMethods, null, 2))
 
   return (
-    <InputContainer container spacing={2}>
+    <Grid container direction="column" style={{ gap: 18 }}>
       <Grid item xs={12}>
-        <StyledTextField
-          fullWidth
-          defaultValue={daoContractCall.targetAddress}
-          label="Target Contract Address"
-          variant="outlined"
-          onChange={e => setDaoContractCall("targetAddress", e.target.value)}
-        />
+        <FormField label="Target Contract Address" labelStyle={{ fontSize: 16 }}>
+          <FormTextField
+            defaultValue={daoContractCall.targetAddress}
+            placeholder="0x..."
+            onChange={e => setDaoContractCall("targetAddress", e.target.value)}
+            inputProps={{ style: { fontSize: 14 } }}
+          />
+        </FormField>
       </Grid>
       <Grid item xs={12}>
-        <StyledTextField
-          fullWidth
-          defaultValue={daoContractCall.value}
-          label="Value (XTZ)"
-          type="number"
-          variant="outlined"
-          onChange={e => setDaoContractCall("value", e.target.value)}
-        />
+        <FormField label="Value (XTZ)" labelStyle={{ fontSize: 16 }}>
+          <FormTextField
+            defaultValue={daoContractCall.value}
+            placeholder="0"
+            type="number"
+            onChange={e => setDaoContractCall("value", e.target.value)}
+            inputProps={{ style: { fontSize: 14 }, min: 0 }}
+          />
+        </FormField>
       </Grid>
       {/* This can be added if we add an option for the user to input the function definition */}
       {/* <Grid item xs={12}>
@@ -110,60 +111,62 @@ export const EvmPropContractCall: React.FC = () => {
         </Box>
 
         {activeTab === "callData" && (
-          <StyledTextField
-            fullWidth
-            defaultValue={daoContractCall.callData}
-            label="Call Data"
-            multiline
-            minRows={3}
-            variant="outlined"
-            onChange={e => setDaoContractCall("callData", e.target.value)}
-          />
+          <FormField label="Call Data" labelStyle={{ fontSize: 16 }}>
+            <FormTextArea
+              defaultValue={daoContractCall.callData}
+              placeholder="0x..."
+              onChange={e => setDaoContractCall("callData", e.target.value)}
+              inputProps={{ style: { fontSize: 14, paddingTop: 12, paddingBottom: 12 } }}
+            />
+          </FormField>
         )}
 
         {activeTab === "writeMethods" && (
           <Box display="flex" width="100%">
-            <Box style={{ display: "flex", flexDirection: "row", width: "100%", gap: 10 }}>
-              <StyledTextField
-                select
-                label=""
-                value={selectedMethod}
-                onChange={e => setSelectedMethod(e.target.value)}
-                variant="outlined"
-                style={{ width: "33%", marginRight: "10px" }}
-                SelectProps={{
-                  native: true
-                }}
-              >
-                <option value="">Select a method</option>
-                {writeMethods.map((method, index) => (
-                  <option key={index} value={method.name}>
-                    {method.name}
-                  </option>
-                ))}
-              </StyledTextField>
-              <StyledTextField
-                label="Input"
-                value={methodInput}
-                onChange={e => {
-                  setMethodInput(e.target.value)
-                  generateCallData()
-                }}
-                variant="outlined"
-                style={{ width: "66%" }}
-                placeholder={
-                  selectedMethod
-                    ? writeMethods
-                        .find(method => method.name === selectedMethod)
-                        ?.inputs?.map((input: { type: string; name: string }) => `${input.type} ${input.name}`)
-                        .join(", ") || "No inputs required"
-                    : "Select a method first"
-                }
-              />
+            <Box style={{ display: "flex", flexDirection: "row", width: "100%", gap: 24 }}>
+              <Box style={{ width: "33%" }}>
+                <FormField label="Method" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+                  <FormTextField
+                    select
+                    value={selectedMethod}
+                    onChange={e => setSelectedMethod(e.target.value as string)}
+                    SelectProps={{ native: true }}
+                    inputProps={{ style: { fontSize: 14 } }}
+                  >
+                    <option value="">Select a method</option>
+                    {writeMethods.map((method, index) => (
+                      <option key={index} value={method.name}>
+                        {method.name}
+                      </option>
+                    ))}
+                  </FormTextField>
+                </FormField>
+              </Box>
+
+              <Box style={{ width: "66%" }}>
+                <FormField label="Input" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+                  <FormTextField
+                    value={methodInput}
+                    onChange={e => {
+                      setMethodInput(e.target.value)
+                      generateCallData()
+                    }}
+                    inputProps={{ style: { fontSize: 14 } }}
+                    placeholder={
+                      selectedMethod
+                        ? writeMethods
+                            .find(method => method.name === selectedMethod)
+                            ?.inputs?.map((input: { type: string; name: string }) => `${input.type} ${input.name}`)
+                            .join(", ") || "No inputs required"
+                        : "Select a method first"
+                    }
+                  />
+                </FormField>
+              </Box>
             </Box>
           </Box>
         )}
       </Grid>
-    </InputContainer>
+    </Grid>
   )
 }

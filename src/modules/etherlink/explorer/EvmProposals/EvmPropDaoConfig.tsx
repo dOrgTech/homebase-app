@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
-import { Grid, styled, Typography, Box } from "components/ui"
-import { StyledTextField } from "components/ui/StyledTextField"
+import { Grid, styled, Typography, Box, FormField, FormTextField } from "components/ui"
 import {
   Timeline as TimelineIcon,
   HowToVote as HowToVoteIcon,
@@ -75,31 +74,31 @@ const TimeInput = ({
   return (
     <Box display="flex" flexDirection="column">
       <Typography color="textSecondary">{label}</Typography>
-      <Box display="flex" flexDirection="row">
-        <StyledTextField
-          label="Days"
-          type="number"
-          variant="standard"
-          value={days}
-          onChange={e => setDays(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
-          style={{ marginRight: "16px" }}
-        />
-        <StyledTextField
-          label="Hours"
-          type="number"
-          variant="standard"
-          value={hours}
-          onChange={e => setHours(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
-          style={{ marginRight: "16px" }}
-        />
-        <StyledTextField
-          label="Minutes"
-          type="number"
-          variant="standard"
-          value={minutes}
-          onChange={e => setMinutes(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
-          style={{ marginRight: "16px" }}
-        />
+      <Box display="flex" flexDirection="row" style={{ gap: 24 }}>
+        <FormField label="Days" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            type="number"
+            value={days}
+            onChange={e => setDays(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
+            inputProps={{ style: { fontSize: 14 }, min: 0 }}
+          />
+        </FormField>
+        <FormField label="Hours" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            type="number"
+            value={hours}
+            onChange={e => setHours(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
+            inputProps={{ style: { fontSize: 14 }, min: 0, max: 23 }}
+          />
+        </FormField>
+        <FormField label="Minutes" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            type="number"
+            value={minutes}
+            onChange={e => setMinutes(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
+            inputProps={{ style: { fontSize: 14 }, min: 0, max: 59 }}
+          />
+        </FormField>
       </Box>
     </Box>
   )
@@ -172,14 +171,14 @@ export const EvmPropDaoConfig = () => {
             <Typography color="textPrimary" gutterBottom>
               Change the minimum amount of Token ownership required to submit a proposal
             </Typography>
-            <StyledTextField
-              fullWidth
-              label="Threshold Amount"
-              type="number"
-              variant="standard"
-              value={daoConfig.proposalThreshold}
-              onChange={e => setDaoConfig("proposalThreshold", e.target.value)}
-            />
+            <FormField label="Threshold Amount" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                type="number"
+                value={daoConfig.proposalThreshold}
+                onChange={e => setDaoConfig("proposalThreshold", e.target.value)}
+                inputProps={{ style: { fontSize: 14 }, min: 0 }}
+              />
+            </FormField>
           </>
         )
       default:
