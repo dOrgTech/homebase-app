@@ -182,6 +182,7 @@ export const EvmTreasuryTable = () => {
                           assetType: "transferERC20",
                           assetSymbol: token.symbol,
                           assetAddress: token.address,
+                          assetDecimals: token.decimals,
                           recipient: "",
                           amount: token.balance
                         }

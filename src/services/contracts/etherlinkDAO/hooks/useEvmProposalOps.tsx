@@ -145,47 +145,61 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         const targets: string[] = []
         const callData: string[] = []
 
+        // Only attempt to encode when recipient is a valid address and amount/tokenId is > 0
         const validTransactions = transactions.filter((transaction: any) => {
           const isValidRecipient = transaction.recipient?.length > 0 && ethers.isAddress(transaction.recipient)
-          const isValidAmountOrTokenId = transaction.amount > 0 || transaction.tokenId > 0
+          const nAmount =
+            typeof transaction.amount === "string" ? Number(transaction.amount) : Number(transaction.amount || 0)
+          const nTokenId =
+            typeof transaction.tokenId === "string" ? Number(transaction.tokenId) : Number(transaction.tokenId || 0)
+          const isValidAmountOrTokenId = nAmount > 0 || nTokenId > 0
           return isValidRecipient && isValidAmountOrTokenId
         })
 
-        validTransactions.forEach((transaction: any) => {
+        // Build calldatas defensively; skip entries we cannot encode yet instead of throwing
+        for (const transaction of validTransactions) {
           const ifaceDef = proposalInterfaces.find(p => p.name === transaction.assetType)
-          if (!ifaceDef) return
+          if (!ifaceDef) continue
           const iface = new ethers.Interface(ifaceDef.interface)
-          if (!iface) return
 
-          let ifaceParams: any[] = []
-          if (transaction.assetType === "transferETH") {
-            ifaceParams = [transaction.recipient, ethers.parseEther(transaction.amount)]
-          } else if (transaction.assetType === "transferERC20") {
-            ifaceParams = [
-              transaction.assetAddress,
-              transaction.recipient,
-              ethers.parseUnits(transaction.amount, transaction.assetDecimals)
-            ]
-          } else if (transaction.assetType === "transferERC721") {
-            ifaceParams = [transaction.assetAddress, transaction.recipient, transaction.tokenId]
-          } else {
-            console.log("Invalid transaction type", transaction.assetType)
+          try {
+            let ifaceParams: any[] = []
+            if (transaction.assetType === "transferETH") {
+              // Amount must be a parseable decimal string
+              ifaceParams = [transaction.recipient, ethers.parseEther(String(transaction.amount))]
+            } else if (transaction.assetType === "transferERC20") {
+              const decimals = Number(transaction.assetDecimals ?? 18)
+              // Guard: decimals must be a finite number; fall back to 18
+              const safeDecimals = Number.isFinite(decimals) ? decimals : 18
+              ifaceParams = [
+                transaction.assetAddress,
+                transaction.recipient,
+                ethers.parseUnits(String(transaction.amount), safeDecimals)
+              ]
+            } else if (transaction.assetType === "transferERC721") {
+              ifaceParams = [transaction.assetAddress, transaction.recipient, BigInt(transaction.tokenId)]
+            } else {
+              console.log("Invalid transaction type", transaction.assetType)
+              continue
+            }
+
+            console.log("ifaceParams", transaction.assetType, ifaceDef.name, ifaceParams, {
+              amount: transaction.amount,
+              tokenId: transaction.tokenId
+            })
+            targets.push(daoRegistryAddress)
+            callData.push(iface.encodeFunctionData(ifaceDef.name, ifaceParams))
+          } catch (encodeErr) {
+            // Do not crash the UI on partial/invalid input; skip until input is valid
+            console.log("Skipping invalid transfer transaction while encoding", encodeErr)
           }
-          console.log("ifaceParams", transaction.assetType, ifaceDef.name, ifaceParams, {
-            amount: transaction.amount,
-            tokenId: transaction.tokenId
-          })
-          targets.push(daoRegistryAddress)
-          callData.push(iface.encodeFunctionData(ifaceDef.name, ifaceParams))
-        })
+        }
 
         const payload = {
           transferAssets: { transactions },
           createProposalPayload: {
-            // targets: Object.keys(transactions).map((key: any) => "0x18CA3b7277e25b952834911B1c2e9a9AB4436cA3"), // DAO Treasury Address
-            // targets: Object.keys(transactions).map((key: any) => transactions[key].recipient),
             targets,
-            values: validTransactions.map((key: any) => "0"),
+            values: validTransactions.map(() => "0"),
             calldatas: callData,
             description: get().createProposalPayload.description
           }

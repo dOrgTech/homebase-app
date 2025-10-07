@@ -1,4 +1,4 @@
-import { useState, createContext, ReactNode, useMemo, useEffect, useCallback } from "react"
+import { useState, createContext, ReactNode, useMemo, useEffect, useCallback, useRef } from "react"
 import { useSwitchChain, useAccount as useWagmiAccount } from "wagmi"
 import { disconnect as disconnectEtherlink } from "@wagmi/core"
 import { config as wagmiConfig } from "services/wagmi/config"
@@ -62,16 +62,18 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
       const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
       switchChain({ chainId: networkId })
 
-      // PostHog identify with updated network for EVM
-      if (posthog && address) {
-        posthog.identify(address, {
-          wallet_address: address,
-          network: network,
-          wallet_type: "evm"
-        })
-      }
+      // Best-effort PostHog identify; avoid tying this to posthog object identity
+      try {
+        if (address) {
+          posthog?.identify(address, {
+            wallet_address: address,
+            network: network,
+            wallet_type: "evm"
+          })
+        }
+      } catch (_) {}
     },
-    [switchChain, posthog, address]
+    [switchChain, address]
   )
 
   const connectWallet = useCallback(() => setOpen(true), [setOpen])
@@ -95,16 +97,21 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     })
   }, [signer?.address, etherlinkNetwork])
 
-  // PostHog identify for EVM wallet connection
+  // PostHog identify for EVM wallet connection (guard against loops on posthog updates)
+  const lastIdentityRef = useRef<string | null>(null)
   useEffect(() => {
-    if (isConnected && address && posthog) {
-      posthog.identify(address, {
+    if (!isConnected || !address) return
+    const key = `${address}|${etherlinkNetwork}`
+    if (lastIdentityRef.current === key) return
+    lastIdentityRef.current = key
+    try {
+      posthog?.identify(address, {
         wallet_address: address,
         network: etherlinkNetwork,
         wallet_type: "evm"
       })
-    }
-  }, [isConnected, address, etherlinkNetwork, posthog])
+    } catch (_) {}
+  }, [isConnected, address, etherlinkNetwork])
 
   const {
     contractData,

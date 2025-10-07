@@ -82,27 +82,34 @@ const EtherlinkDAOContext = React.createContext("")
 
 const EtherlinkDAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) => {
   // Auto-select the DAO in Etherlink context when route changes
-  const etherlinkCtx = useContext(EtherlinkContext)
+  const { selectDao, daos, network, switchToNetwork, daoSelected } = useContext(EtherlinkContext) as any
+  const attemptedSwitchRef = React.useRef(false)
+
+  // Reset the auto-switch guard when the DAO id changes
+  useEffect(() => {
+    attemptedSwitchRef.current = false
+  }, [daoId])
 
   useEffect(() => {
-    if (!etherlinkCtx) return
-    const { selectDao, daos, network, switchToNetwork } = etherlinkCtx as any
     if (!daoId || !Array.isArray(daos)) return
 
-    // If the DAO exists in the current network's list, select it.
-    const foundHere = daos.some((d: any) => (d?.id || "").toLowerCase() === daoId.toLowerCase())
+    const targetId = daoId.toLowerCase()
+    const foundHere = daos.some((d: any) => (d?.id || "").toLowerCase() === targetId)
+
     if (foundHere) {
-      selectDao(daoId)
+      if ((daoSelected?.id || "").toLowerCase() !== targetId) {
+        selectDao(daoId)
+      }
       return
     }
 
-    // If not found and we have daos loaded, try the alternate Etherlink network automatically.
-    // This helps when users open shared links without having selected a network first.
-    if (daos.length > 0) {
+    // If not found and we have a list, try alternate network once.
+    if (daos.length > 0 && !attemptedSwitchRef.current) {
+      attemptedSwitchRef.current = true
       const alt = network === "etherlink_testnet" ? "etherlink_mainnet" : "etherlink_testnet"
       switchToNetwork?.(alt)
     }
-  }, [daoId, etherlinkCtx])
+  }, [daoId, daos, network, selectDao, switchToNetwork, daoSelected?.id])
 
   return <EtherlinkDAOContext.Provider value={daoId}>{children}</EtherlinkDAOContext.Provider>
 }

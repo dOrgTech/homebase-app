@@ -68,7 +68,8 @@ const DelegationDescription = styled(Typography)({
   marginBottom: "24px"
 })
 
-const ENABLE_DELEGATION = false
+// Enable on-chain delegation UI for Etherlink ERC20Votes tokens
+const ENABLE_DELEGATION = true
 
 export const EvmUserPage = () => {
   const history = useHistory()
@@ -79,8 +80,15 @@ export const EvmUserPage = () => {
 
   const { daoMembers, daoSelected, daoProposals } = useContext(EtherlinkContext)
 
-  const { daoDelegate, signer, userTokenBalance, userVotingWeight, proposalCreatedCount, proposalVotedCount } =
-    useEvmDaoOps()
+  const {
+    daoDelegate,
+    signer,
+    userTokenBalance,
+    userVotingWeight,
+    proposalCreatedCount,
+    proposalVotedCount,
+    refreshTokenStats
+  } = useEvmDaoOps()
   const selfMember = daoMembers?.find((member: any) => member.address === signer?.address)
   console.log("selfMember", selfMember)
   console.log("daoSelected[EvmUserPage]", daoSelected)
@@ -176,6 +184,10 @@ export const EvmUserPage = () => {
                 onClick={() => {
                   daoDelegate(userAddress).finally(() => {
                     setIsLoading(false)
+                    // Refresh on-chain stats so the UI reflects new voting power immediately
+                    try {
+                      refreshTokenStats()
+                    } catch (_) {}
                   })
                 }}
                 style={{ width: "fit-content" }}
@@ -214,6 +226,10 @@ export const EvmUserPage = () => {
                     daoDelegate(delegateToAddress)
                       .then(() => {
                         setDelegateDialogOpen(false)
+                        // Best-effort refresh so balances/weight update without waiting for indexers
+                        try {
+                          refreshTokenStats()
+                        } catch (_) {}
                       })
                       .finally(() => {
                         setIsLoading(false)

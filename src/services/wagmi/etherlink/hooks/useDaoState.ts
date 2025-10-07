@@ -49,11 +49,24 @@ export const useDaoState = ({ network }: { network: string }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const recomputeDataAfter = useCallback((seconds: number) => {
+    // Prevent zero/negative delays from creating an immediate re-render loop.
+    // Only schedule when we actually have time left until the next boundary.
+    const ms = Math.floor(seconds * 1000)
+    if (ms <= 0) return
+
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
       timerRef.current = null
       setRefreshCount(c => c + 1)
-    }, Math.max(0, seconds) * 1000)
+    }, ms)
+  }, [])
+
+  // Clear any pending timers on unmount to avoid stray updates
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
   }, [])
 
   // Initial fetch triggers
