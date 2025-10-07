@@ -21,11 +21,29 @@ export const networkDotColorMap: Record<Network, string> = {
   etherlink_testnet: "#291F79"
 }
 
+// Infer the initial network from URL when no user selection exists yet
+const inferInitialNetworkFromPath = (): Network | undefined => {
+  try {
+    const path = window?.location?.pathname || ""
+    if (path.startsWith("/explorer/etherlink")) return "etherlink_mainnet"
+  } catch (e) {
+    // noop — window may be undefined in some build contexts
+  }
+  return undefined
+}
+
 export const getTezosNetwork = (): Network => {
   const storageNetwork = window.localStorage.getItem("homebase:network")
 
   if (storageNetwork) {
     return storageNetwork as Network
+  }
+
+  // If no stored selection, prefer Etherlink mainnet for Etherlink deep links
+  const urlInferred = inferInitialNetworkFromPath()
+  if (urlInferred) {
+    window.localStorage.setItem("homebase:network", urlInferred)
+    return urlInferred
   }
 
   const envNetwork = getEnv(EnvKey.REACT_APP_NETWORK).toString().toLowerCase() as Network

@@ -16,6 +16,10 @@ const StyledBody = styled(Grid)(({ theme }) => ({
   "& textarea": {
     textAlign: "start"
   },
+  // Normalize selects inside ProposalFormInput wrappers
+  "& .MuiSelect-select, & .MuiSelect-selectMenu": {
+    textAlign: "start"
+  },
 
   "& .MuiInputBase-input": {
     fontWeight: 300

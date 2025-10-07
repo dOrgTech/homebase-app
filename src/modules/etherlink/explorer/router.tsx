@@ -33,6 +33,16 @@ const EtherlinkDAORouteContent: React.FC = ({ children }) => {
   const [state, setState] = useState<DAOState>(DAOState.FOUND)
   const history = useHistory()
 
+  // Ensure a sensible default when landing directly on Etherlink routes
+  useEffect(() => {
+    const key = "homebase:network"
+    const stored = localStorage.getItem(key)
+    if (!stored) {
+      localStorage.setItem(key, "etherlink_mainnet")
+      changeNetwork("etherlink_mainnet" as Network)
+    }
+  }, [changeNetwork])
+
   useEffect(() => {
     ;(async () => {
       if (!data && !!error && !isLoading) {

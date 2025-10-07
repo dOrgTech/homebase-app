@@ -1,5 +1,5 @@
 import React, { useCallback, useContext } from "react"
-import { Grid, styled, MenuItem, IconButton, FormField, FormTextField } from "components/ui"
+import { Grid, styled, MenuItem, IconButton, FormField, FormTextField, FormSelect } from "components/ui"
 import { RemoveCircleOutline } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { EtherlinkContext } from "services/wagmi/context"
@@ -149,8 +149,7 @@ export const EvmPropTransferAssets: React.FC = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} sm={3}>
               <FormField label="Asset Type" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
-                <FormTextField
-                  select
+                <FormSelect
                   value={getAssetType(transaction)}
                   onChange={e => handleAssetTypeChange(index, e as React.ChangeEvent<HTMLInputElement>)}
                   inputProps={{ style: { fontSize: 14 } }}
@@ -169,7 +168,7 @@ export const EvmPropTransferAssets: React.FC = () => {
                       {nft.token?.symbol} - #{nft.id}
                     </MenuItem>
                   ))}
-                </FormTextField>
+                </FormSelect>
               </FormField>
             </Grid>
             <Grid item xs={12} sm={6}>

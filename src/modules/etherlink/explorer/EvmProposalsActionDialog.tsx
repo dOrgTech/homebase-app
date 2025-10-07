@@ -142,8 +142,12 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             }}
           >
             <Typography color="textPrimary" style={{ flex: 1 }}>
-              Voting power: {toHuman(BigInt(Math.max(0, Math.floor(userVotingWeight || 0))))} / Threshold:{" "}
-              {toHuman(thresholdRaw)}
+              Voting power:
+              {/* 
+              TODO: Fix this
+              {toHuman(BigInt(Math.max(0, Math.floor(userVotingWeight || 0))))} / Threshold:{" "}
+              {toHuman(thresholdRaw)} 
+              */}
             </Typography>
             <NextButton
               disabled={isDelegating || !loggedInUser?.address || (userVotingWeight || 0) > 0}

@@ -1,5 +1,5 @@
 import React from "react"
-import { Grid, Typography, IconButton, FormControlLabel, FormField, FormTextField } from "components/ui"
+import { Grid, Typography, IconButton, FormControlLabel, FormField, FormTextField, InputAdornment } from "components/ui"
 import { Add as AddIcon, RemoveCircleOutline } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { Switch } from "components/ui"
@@ -35,8 +35,8 @@ export const EvmOffchainDebate: React.FC = () => {
         <Typography color="textPrimary" gutterBottom>
           Poll Duration
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
+        <Grid container direction="column" spacing={2}>
+          <Grid item xs={12}>
             <FormField label="Days" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
                 type="number"
@@ -46,7 +46,7 @@ export const EvmOffchainDebate: React.FC = () => {
               />
             </FormField>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12}>
             <FormField label="Hours" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
                 type="number"
@@ -56,7 +56,7 @@ export const EvmOffchainDebate: React.FC = () => {
               />
             </FormField>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12}>
             <FormField label="Minutes" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
                 type="number"
@@ -84,23 +84,24 @@ export const EvmOffchainDebate: React.FC = () => {
         </Grid>
         <Grid container direction="column" style={{ gap: 12 }}>
           {choices.map((choice, index) => (
-            <Grid item key={index} container alignItems="center" spacing={1}>
-              <Grid item xs>
-                <FormField label={`Option ${index + 1}`} labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
-                  <FormTextField
-                    value={choice}
-                    onChange={e => handleChoiceChange(index, e.target.value)}
-                    inputProps={{ style: { fontSize: 14 } }}
-                  />
-                </FormField>
-              </Grid>
-              <Grid item>
-                {choices.length > 2 && (
-                  <IconButton onClick={() => removeChoice(index)} style={{ color: "#FF4D4D", padding: 4 }}>
-                    <RemoveCircleOutline />
-                  </IconButton>
-                )}
-              </Grid>
+            <Grid item key={index}>
+              <FormField label={`Option ${index + 1}`} labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+                <FormTextField
+                  value={choice}
+                  onChange={e => handleChoiceChange(index, e.target.value)}
+                  inputProps={{ style: { fontSize: 14 } }}
+                  InputProps={{
+                    endAdornment:
+                      choices.length > 2 ? (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => removeChoice(index)} style={{ color: "#FF4D4D", padding: 4 }}>
+                            <RemoveCircleOutline />
+                          </IconButton>
+                        </InputAdornment>
+                      ) : undefined
+                  }}
+                />
+              </FormField>
             </Grid>
           ))}
         </Grid>

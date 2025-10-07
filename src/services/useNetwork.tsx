@@ -1,9 +1,12 @@
 import { createContext, ReactNode, useContext, useState } from "react"
+import { getTezosNetwork } from "services/beacon"
 
 export const NetworkContext = createContext<any | undefined>(undefined)
 
 export const NetworkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [network, setNetwork] = useState<string>(localStorage.getItem("homebase:network") || "tezos")
+  const [network, setNetwork] = useState<string>(
+    localStorage.getItem("homebase:network") || (getTezosNetwork() as string)
+  )
   return <NetworkContext.Provider value={{ network, setNetwork }}>{children}</NetworkContext.Provider>
 }
 

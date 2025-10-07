@@ -6,7 +6,7 @@ import { HowToVote, People } from "@material-ui/icons"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
-import { StyledTextField } from "components/ui/StyledTextField"
+import { FormField, FormTextField } from "components/ui"
 import { useHistory } from "react-router-dom"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 import { TokenBridge } from "modules/etherlink/bridge/TokenBridge"
@@ -209,12 +209,23 @@ export const EvmUserPage = () => {
                 <Typography>Delegate your voting power to another member of the DAO.</Typography>
               </Grid>
               <Grid item xs={12}>
-                <StyledTextField
-                  fullWidth
-                  label="Delegate to"
-                  onChange={e => setDelegateToAddress(e.target.value)}
-                  value={delegateToAddress}
-                />
+                <FormField
+                  label="Delegate To"
+                  labelStyle={{ fontSize: 16 }}
+                  containerStyle={{ gap: 12 }}
+                  errorText={delegateToAddress && !isValidDelegateAddress ? "Enter a valid address (0x…)" : ""}
+                >
+                  <FormTextField
+                    value={delegateToAddress}
+                    placeholder="0x..."
+                    onChange={e => setDelegateToAddress(e.target.value)}
+                    inputProps={{
+                      style: { fontSize: 14, fontFamily: "monospace" },
+                      autoComplete: "off",
+                      spellCheck: false
+                    }}
+                  />
+                </FormField>
               </Grid>
               <Grid item xs={12}>
                 <Button
