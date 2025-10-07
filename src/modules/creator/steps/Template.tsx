@@ -117,7 +117,9 @@ export const Template = (): JSX.Element => {
             case "lambda":
               return history.push(`dao`)
             case "lite":
-              return history.push("/creator/etherlink/dao")
+              return history.push("/lite")
+            case "lambda-etherlink":
+              return history.push("/creator-evm/template")
             default:
               return history.push("/lite")
           }
