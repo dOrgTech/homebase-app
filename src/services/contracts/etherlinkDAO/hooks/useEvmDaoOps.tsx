@@ -33,6 +33,7 @@ export const useEvmDaoOps = () => {
   const { daoSelected, daoMembers } = useContext(EtherlinkContext)
   const [userVotingWeight, setUserVotingWeight] = useState(0)
   const [userTokenBalance, setUserTokenBalance] = useState(0)
+  const [userDelegateAddress, setUserDelegateAddress] = useState<string | null>(null)
   const selectedUser = daoMembers?.find((member: any) => member.address === loggedInUserAddress)
 
   const proposalCreatedCount = selectedUser?.proposalsCreated?.length || 0
@@ -49,31 +50,44 @@ export const useEvmDaoOps = () => {
 
   const daoDelegate = useCallback(
     async (targetAddress: string) => {
-      if (!daoSelected) return
-      console.log("Delegating to ", targetAddress)
-      const govContract = new ethers.Contract(daoSelected.token, HbTokenAbi.abi, etherlink.signer)
-      const tx = await govContract.delegate(targetAddress)
-      console.log("Transaction sent:", tx.hash)
-      const receipt = await tx.wait()
-      console.log("Transaction confirmed:", receipt)
-      return receipt
+      if (!daoSelected || !etherlink?.signer) return
+      try {
+        const govContract = new ethers.Contract(daoSelected.token, HbTokenAbi.abi, etherlink.signer)
+        const tx = await govContract.delegate(targetAddress)
+        openNotification({ message: "Delegation submitted…", variant: "info", autoHideDuration: 2000 })
+        const receipt = await tx.wait()
+        openNotification({ message: "Delegation confirmed", variant: "success", autoHideDuration: 3000 })
+        try {
+          await refreshTokenStats()
+        } catch (_) {}
+        return receipt
+      } catch (e: any) {
+        openNotification({
+          message: (e?.shortMessage as string) || (e?.message as string) || "Delegation failed",
+          variant: "error",
+          autoHideDuration: 4000
+        })
+        throw e
+      }
     },
-    [daoSelected, etherlink.signer]
+    [daoSelected, etherlink.signer, openNotification]
   )
 
   const refreshTokenStats = useCallback(async () => {
     if (!etherlink?.provider || !tokenContract || !etherlink?.signer?.address) return
     dbg("[TOKEN:refresh]")
     try {
-      const [balance, weight] = await Promise.all([
+      const [balance, weight, delegateAddr] = await Promise.all([
         tokenContract.balanceOf(etherlink?.signer?.address),
-        tokenContract.getVotes(etherlink?.signer?.address)
+        tokenContract.getVotes(etherlink?.signer?.address),
+        tokenContract.delegates(etherlink?.signer?.address)
       ])
       const decimals = daoSelected?.decimals || 0
       const balanceActual = Number(balance) / Math.pow(10, decimals)
       const weightActual = Number(weight) / Math.pow(10, decimals)
       setUserTokenBalance(balanceActual)
       setUserVotingWeight(weightActual)
+      setUserDelegateAddress(String(delegateAddr))
     } catch (e) {
       dbg("[TOKEN:refresh:error]", e)
     }
@@ -116,6 +130,7 @@ export const useEvmDaoOps = () => {
     signer: etherlink?.signer,
     userTokenBalance,
     userVotingWeight,
+    userDelegateAddress,
     proposalCreatedCount,
     proposalVotedCount,
     refreshTokenStats,

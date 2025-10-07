@@ -142,7 +142,7 @@ export const EvmTreasuryTable = () => {
             <TableCell>
               <Grid container direction="row" alignItems="center">
                 native token
-                <CopyButton text="0x1234567890abcdef" />
+                {/* <CopyButton text="0x1234567890abcdef" /> */}
               </Grid>
             </TableCell>
             <TableCell>

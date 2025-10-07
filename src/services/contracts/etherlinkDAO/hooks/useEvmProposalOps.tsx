@@ -810,6 +810,20 @@ export const useEvmProposalOps = () => {
               autoHideDuration: 3000,
               variant: "success"
             })
+            // Mirror on-chain success cleanup so step-based dialogs close
+            zustantStore.setCurrentStep(0)
+            zustantStore.setCreateProposalPayload({
+              targets: [],
+              values: [],
+              calldatas: [],
+              description: ""
+            })
+            zustantStore.setMetadata({
+              type: "",
+              title: "",
+              description: "",
+              discussionUrl: ""
+            })
             setIsProposalDialogOpen(false)
             router.push(`/explorer/etherlink/dao/${daoSelected?.address}/proposals`)
           } else {

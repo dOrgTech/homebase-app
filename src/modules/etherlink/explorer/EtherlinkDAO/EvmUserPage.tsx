@@ -85,6 +85,7 @@ export const EvmUserPage = () => {
     signer,
     userTokenBalance,
     userVotingWeight,
+    userDelegateAddress,
     proposalCreatedCount,
     proposalVotedCount,
     refreshTokenStats
@@ -95,8 +96,12 @@ export const EvmUserPage = () => {
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance
-  const userDelegate = selfMember?.delegate
-  const isSelfDelegated = userDelegate === signer?.address
+  const userDelegate = (userDelegateAddress || selfMember?.delegate || "").toLowerCase()
+  const userAddrLc = (signer?.address || "").toLowerCase()
+  const zeroAddress = "0x0000000000000000000000000000000000000000"
+  const isUndelegated = !userDelegate || userDelegate === zeroAddress
+  const isSelfDelegated = !!userAddrLc && userDelegate === userAddrLc
+  const hasBalance = (userTokenBalance || 0) > 0
   // const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
 
   const proposalByAuthor = useMemo(() => {
@@ -156,13 +161,18 @@ export const EvmUserPage = () => {
               If you can't or don't want to take part in the governance process, your voting privilege may be forwarded
               to another member of your choosing.
             </DelegationDescription>
+            {!isUndelegated && !isSelfDelegated && (
+              <Typography style={{ color: "#9E9E9E", fontFamily: "monospace" }}>
+                Currently delegated to: {userDelegate}
+              </Typography>
+            )}
             <Button
               variant="outlined"
               style={{ width: "fit-content" }}
               onClick={() => setDelegateDialogOpen(true)}
-              disabled={!ENABLE_DELEGATION}
+              disabled={!ENABLE_DELEGATION || !hasBalance}
             >
-              Set Delegate
+              {isUndelegated ? "Set Delegate" : "Change Delegate"}
             </Button>
           </DelegationBox>
         </Grid>
@@ -191,6 +201,7 @@ export const EvmUserPage = () => {
                   })
                 }}
                 style={{ width: "fit-content" }}
+                disabled={!hasBalance}
               >
                 Claim Voting Power
               </Button>
