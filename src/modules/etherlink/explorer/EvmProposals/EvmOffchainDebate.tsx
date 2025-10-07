@@ -30,13 +30,13 @@ export const EvmOffchainDebate: React.FC = () => {
   }
 
   return (
-    <Grid container direction="column" style={{ gap: 24 }}>
+    <Grid container direction="row" spacing={3}>
       <Grid item xs={12}>
         <Typography color="textPrimary" gutterBottom>
           Poll Duration
         </Typography>
-        <Grid container direction="column" spacing={2}>
-          <Grid item xs={12}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={4}>
             <FormField label="Days" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
                 type="number"
@@ -46,7 +46,7 @@ export const EvmOffchainDebate: React.FC = () => {
               />
             </FormField>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={4}>
             <FormField label="Hours" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
                 type="number"
@@ -56,7 +56,7 @@ export const EvmOffchainDebate: React.FC = () => {
               />
             </FormField>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={4}>
             <FormField label="Minutes" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
                 type="number"

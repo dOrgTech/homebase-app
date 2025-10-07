@@ -5,32 +5,31 @@ import { Grid } from "components/ui"
 import { SmallButton } from "modules/common/SmallButton"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
-import { useQueryParam } from "modules/home/hooks/useQueryParam"
 import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { IEvmProposal } from "modules/etherlink/types"
-import { parseStatusQuery, toDisplayStatus } from "modules/etherlink/status"
+import { toDisplayStatus } from "modules/etherlink/status"
 import { ProposalsShell } from "components/ui/ProposalsShell"
 import { TabPanel } from "modules/explorer/components/TabPanel"
 import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog"
 import { Filters } from "modules/explorer/pages/User/components/UserMovements"
+import { useQuerySyncedFilters } from "modules/etherlink/explorer/filters/useQuerySyncedFilters"
+import { displayStatusFromKey, PTypeKey } from "modules/etherlink/explorer/filters/queryFilters"
 
 export const EvmProposalsPage = () => {
-  const [proposalType, setProposalType] = useQueryParam("type")
-  const [proposalStatus, setProposalStatus] = useQueryParam("status")
-  const [proposalAuthor] = useQueryParam("author")
+  const { filters: qFilters, setFilters: setQFilters } = useQuerySyncedFilters()
   const { daoProposals, daoSelected, isProposalDialogOpen, setIsProposalDialogOpen } = useContext(EtherlinkContext)
   const processedProposals = useTimelineForProposals<IEvmProposal>(
     daoProposals as unknown as IEvmProposal[],
     daoSelected as any
   )
-  const [selectedTab, setSelectedTab] = useState(0)
+  const selectedTab = qFilters.type === "offchain" ? 1 : 0
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
-  const [filters, setFilters] = useState<Filters>()
-
-  const onChangeTab = useCallback((idx: number) => {
-    setSelectedTab(idx)
-    setFilters(undefined)
-  }, [])
+  const onChangeTab = useCallback(
+    (idx: number) => {
+      setQFilters({ type: idx === 1 ? "offchain" : "onchain" })
+    },
+    [setQFilters]
+  )
 
   const tezosToDisplay: Record<string, string> = {
     "pending": "Pending",
@@ -44,11 +43,14 @@ export const EvmProposalsPage = () => {
     "dropped": "Defeated"
   }
 
-  const matchesOnchainFilter = (p: any) => {
-    if (!filters || !filters.onchainStatus || filters.onchainStatus.length === 0) return true
+  const matchesOnchainStatusFromQuery = (p: any) => {
+    // status array comes normalized (hyphenated keys); empty or ['all'] means no filter
+    const statusKeys = Array.isArray(qFilters.status) ? (qFilters.status as string[]) : []
+    const filtered = (statusKeys || []).filter(s => s !== "all")
+    if (filtered.length === 0) return true
     const disp = toDisplayStatus(p.displayStatus || p.status)
-    const labels = filters.onchainStatus.map(s => tezosToDisplay[String(s.label).toLowerCase()] || "")
-    return labels.includes(disp || "")
+    const allowed = filtered.map(k => displayStatusFromKey(k as any)).filter(Boolean)
+    return allowed.includes(disp as any)
   }
 
   const isOffchainActive = (p: any) => {
@@ -56,85 +58,57 @@ export const EvmProposalsPage = () => {
     return disp === "Active" || disp === "Pending"
   }
 
-  const matchesEvmType = (p: any, kind?: string) => {
-    if (!kind || kind === "all") return true
+  const matchesPtypeKey = (p: any, key: PTypeKey) => {
     const t = String(p?.type || "").toLowerCase()
-    const isToken = t.startsWith("mint") || t.startsWith("burn") || t === "token"
-    switch (kind) {
-      case "offchain":
-        return t === "offchain"
-      case "token":
-        return isToken
-      case "registry":
-        return t.includes("registry")
-      case "transfer":
-        return t.includes("transfer")
-      case "contract call":
-        return t.includes("contract call") || t.includes("contract_call") || t.includes("arbitrary")
-      case "voting delay":
-        return t.includes("voting delay")
-      case "voting period":
-        return t.includes("voting period")
-      case "proposal threshold":
-        return t.includes("proposal threshold")
-      default:
-        return true
-    }
+    if (key === "mint") return t.startsWith("mint")
+    if (key === "burn") return t.startsWith("burn")
+    if (key === "registry") return t.includes("registry")
+    if (key === "transfer") return t.includes("transfer")
+    if (key === "contract-call")
+      return t.includes("contract call") || t.includes("contract_call") || t.includes("arbitrary")
+    if (key === "voting-delay") return t.includes("voting delay")
+    if (key === "voting-period") return t.includes("voting period")
+    if (key === "threshold") return t.includes("proposal threshold")
+    if (key === "quorum") return t.includes("quorum")
+    return true
   }
 
   const filteredProposals = useMemo(() => {
     let base = processedProposals || []
 
-    // query param compatibility for type/status/author
-    if (!filters) {
-      if (
-        (proposalType === "all" && proposalStatus === "all") ||
-        (!proposalType && !proposalStatus) ||
-        (proposalType === "all" && !proposalStatus)
-      ) {
-        base = processedProposals || []
-      } else {
-        base = (processedProposals || []).filter((proposal: any) => {
-          if (proposalAuthor && proposalAuthor !== "all" && proposal.author === proposalAuthor) return true
-          if (proposalType && proposalType !== "all" && proposal.type === proposalType) return true
-          if (proposalStatus && proposalStatus !== "all") {
-            const desired = parseStatusQuery(proposalStatus)
-            if (desired) {
-              if (proposal.displayStatus === desired) return true
-              if (toDisplayStatus(proposal.status) === desired) return true
-            }
-          }
-          if (
-            proposalType === "token" &&
-            (proposal.type?.toLowerCase().startsWith("mint") || proposal.type?.toLowerCase().startsWith("burn"))
-          )
-            return true
-          return false
-        })
-      }
+    // author filter (query param)
+    if (qFilters.author && qFilters.author !== "all") {
+      base = base.filter((p: any) => p.author === qFilters.author)
     }
 
-    // apply unified filters when present
-    if (filters) {
-      if (selectedTab === 0) {
-        base = (processedProposals || [])
-          .filter(p => p.type !== "offchain")
-          .filter(matchesOnchainFilter)
-          .filter(p => matchesEvmType(p, filters.evmType))
-      } else {
-        base = (processedProposals || [])
-          .filter(p => p.type === "offchain")
-          .filter(p => {
-            if (!filters) return true
-            if (filters.offchainStatus === "all") return true
-            if (filters.offchainStatus === "active") return isOffchainActive(p)
-            if (filters.offchainStatus === "closed") return !isOffchainActive(p)
-            return true
-          })
+    if (selectedTab === 0) {
+      // on-chain
+      base = base.filter(p => p.type !== "offchain").filter(matchesOnchainStatusFromQuery)
+      const ptypes = qFilters.ptype || []
+      if (ptypes.length > 0) {
+        base = base.filter((p: any) => (ptypes as PTypeKey[]).some(k => matchesPtypeKey(p, k)))
       }
+    } else {
+      // off-chain
+      base = base.filter(p => p.type === "offchain")
+      const offStatuses = (qFilters.status || []) as string[]
+      const hasActive = offStatuses.includes("active")
+      const hasClosed = offStatuses.includes("closed")
+      if (hasActive && !hasClosed) base = base.filter(isOffchainActive)
+      if (hasClosed && !hasActive) base = base.filter(p => !isOffchainActive(p))
     }
     return base
-  }, [processedProposals, proposalType, proposalStatus, proposalAuthor, filters, selectedTab])
+  }, [processedProposals, qFilters.author, qFilters.status, qFilters.ptype, selectedTab])
+
+  // Determine whether any filters are active for current tab to highlight the Filters pill
+  const isFiltered = useMemo(() => {
+    const hasAuthor = !!(qFilters.author && qFilters.author !== "all")
+    const statuses = (qFilters.status || []) as string[]
+    const hasOnchainStatus = selectedTab === 0 && statuses.some(s => s !== "all")
+    const hasPtype = selectedTab === 0 && (qFilters.ptype?.length || 0) > 0
+    const hasOffchainStatus = selectedTab === 1 && statuses.some(s => s === "active" || s === "closed")
+    return hasAuthor || hasOnchainStatus || hasPtype || hasOffchainStatus
+  }, [qFilters.author, qFilters.status, qFilters.ptype, selectedTab])
 
   return (
     <>
@@ -142,6 +116,7 @@ export const EvmProposalsPage = () => {
         selectedTab={selectedTab}
         onChangeTab={onChangeTab}
         onOpenFilters={() => setOpenFiltersDialog(true)}
+        isFiltered={isFiltered}
         rightActions={
           <SmallButton variant="contained" color="secondary" onClick={() => setIsProposalDialogOpen(true)}>
             New Proposal
@@ -164,10 +139,33 @@ export const EvmProposalsPage = () => {
         selectedTab={selectedTab}
         showEvmType
         saveFilters={(f: Filters) => {
-          // Align tab with type selection for better UX
-          if (f?.evmType === "offchain") setSelectedTab(1)
-          if (f?.evmType && f.evmType !== "offchain" && selectedTab === 1) setSelectedTab(0)
-          setFilters(f)
+          // Map dialog choices to query params
+          const type = f?.evmType === "offchain" ? "offchain" : "onchain"
+          const onchainStatusLabels = (f?.onchainStatus || []).map(s => String(s.label).toLowerCase())
+          // Convert dialog labels to canonical status keys
+          const statusFromDialog = onchainStatusLabels
+            .map(l => l.replace(/\s+/g, " ")) // normalize spaces
+            .map(l =>
+              l === "passed" ? "succeeded" : l === "failed" ? "defeated" : l === "no quorum" ? "no-quorum" : l
+            )
+          const offchainStatus = f?.offchainStatus || "all"
+          const status = type === "offchain" ? [offchainStatus] : statusFromDialog.length ? statusFromDialog : ["all"]
+
+          // ptype mapping from dialog evmType
+          const evmType = String(f?.evmType || "all").toLowerCase()
+          let ptype: PTypeKey[] = []
+          if (type === "onchain") {
+            if (evmType === "token") ptype = ["mint", "burn"]
+            else if (evmType === "registry") ptype = ["registry"]
+            else if (evmType === "transfer") ptype = ["transfer"]
+            else if (evmType === "contract call") ptype = ["contract-call"]
+            else if (evmType === "voting delay") ptype = ["voting-delay"]
+            else if (evmType === "voting period") ptype = ["voting-period"]
+            else if (evmType === "proposal threshold") ptype = ["threshold"]
+            else if (evmType === "all" || evmType === "offchain") ptype = []
+          }
+
+          setQFilters({ type, status: status as any, ptype })
         }}
       />
     </>

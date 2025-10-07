@@ -24,11 +24,16 @@ const TabsBox = styled(Grid)(({ theme }) => ({
   }
 }))
 
-const FiltersContainer = styled(Grid)({
+const FiltersContainer = styled(({ active, ...other }: any) => <Grid {...other} />)(({ theme, active }: any) => ({
   marginTop: 45,
   gap: 8,
-  cursor: "pointer"
-})
+  cursor: "pointer",
+  padding: "8px 12px",
+  borderRadius: 20,
+  transition: "background .15s ease, border-color .15s ease",
+  background: active ? "rgba(129, 254, 183, .12)" : "transparent",
+  border: active ? `1px solid ${theme.palette.secondary.main}` : "1px solid transparent"
+}))
 
 const StyledTab = styled(({ isSelected, ...other }: any) => <Button {...other} />)(
   ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
@@ -61,6 +66,8 @@ type Props = {
   onOpenFilters: () => void
   rightActions?: React.ReactNode
   children?: React.ReactNode
+  // When true, emphasize the Filter & Sort pill to indicate active filters
+  isFiltered?: boolean
 }
 
 export const ProposalsShell: React.FC<Props> = ({
@@ -70,7 +77,8 @@ export const ProposalsShell: React.FC<Props> = ({
   onChangeTab,
   onOpenFilters,
   rightActions,
-  children
+  children,
+  isFiltered = false
 }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
@@ -145,7 +153,16 @@ export const ProposalsShell: React.FC<Props> = ({
           </TabsContainer>
         </Grid>
 
-        <FiltersContainer onClick={onOpenFilters} xs={12} md={2} item container direction="row" alignItems="center">
+        <FiltersContainer
+          active={isFiltered}
+          onClick={onOpenFilters}
+          xs={12}
+          md={2}
+          item
+          container
+          direction="row"
+          alignItems="center"
+        >
           <FilterAltIcon style={{ color: theme.palette.secondary.main, marginRight: 6 }} fontSize="small" />
           <Typography color="secondary">Filter & Sort</Typography>
         </FiltersContainer>
