@@ -121,8 +121,8 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             <FormField label="Discussion URL" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
                 placeholder="Discussion URL"
-                defaultValue={metadata.discussionUrl}
-                onChange={e => setMetadataFieldValue("discussionUrl", e.target.value)}
+                value={metadata.discussionUrl}
+                onChange={e => setMetadataFieldValue("discussionUrl", (e.target.value || "").toLowerCase())}
                 inputProps={{ style: { fontSize: 14 } }}
               />
             </FormField>

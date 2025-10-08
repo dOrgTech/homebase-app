@@ -48,13 +48,13 @@ export const EvmProposalsPage = () => {
     const statusKeys = Array.isArray(qFilters.status) ? (qFilters.status as string[]) : []
     const filtered = (statusKeys || []).filter(s => s !== "all")
     if (filtered.length === 0) return true
-    const disp = toDisplayStatus(p.displayStatus || p.status)
+    const disp = toDisplayStatus(p.effectiveDisplayStatus || p.displayStatus || p.status)
     const allowed = filtered.map(k => displayStatusFromKey(k as any)).filter(Boolean)
     return allowed.includes(disp as any)
   }
 
   const isOffchainActive = (p: any) => {
-    const disp = toDisplayStatus(p.displayStatus || p.status)
+    const disp = toDisplayStatus(p.effectiveDisplayStatus || p.displayStatus || p.status)
     return disp === "Active" || disp === "Pending"
   }
 

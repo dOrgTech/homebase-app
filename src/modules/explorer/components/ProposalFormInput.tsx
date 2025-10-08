@@ -7,6 +7,14 @@ const StyledBody = styled(Grid)(({ theme }) => ({
   "background": theme.palette.primary.main,
   "padding": "0 20px",
   "minHeight": 54,
+  // Normalize InputBase/Select to blend with wrapper background
+  "& .MuiInputBase-root:not(.MuiInputBase-multiline)": {
+    background: "transparent",
+    minHeight: 54,
+    height: 54,
+    display: "flex",
+    alignItems: "center"
+  },
   "& input": {
     minHeight: 54,
     padding: 0,
@@ -18,11 +26,22 @@ const StyledBody = styled(Grid)(({ theme }) => ({
   },
   // Normalize selects inside ProposalFormInput wrappers
   "& .MuiSelect-select, & .MuiSelect-selectMenu": {
-    textAlign: "start"
+    textAlign: "start",
+    background: "transparent !important",
+    minHeight: 54,
+    height: 54,
+    display: "flex",
+    alignItems: "center",
+    padding: 0,
+    paddingRight: 28
+  },
+  "& .MuiSelect-icon": {
+    color: theme.palette.text.primary
   },
 
   "& .MuiInputBase-input": {
-    fontWeight: 300
+    fontWeight: 300,
+    color: theme.palette.text.primary
   },
   "& .MuiInputBase-inputMultiline": {
     textAlign: "start"

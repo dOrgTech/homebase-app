@@ -4,7 +4,7 @@ import { TezosToolkit } from "@taquito/taquito"
 import { connectWithBeacon, createTezos, Network, rpcNodes, TezosActionType } from "services/beacon"
 import { TezosContext } from "services/beacon/context"
 import { BeaconWallet } from "@taquito/beacon-wallet"
-import { EtherlinkWalletContext } from "services/wagmi/context"
+import { EtherlinkContext } from "services/wagmi/context"
 import { useNetwork } from "services/useNetwork"
 import { useChainId } from "wagmi"
 import { usePostHog } from "posthog-js/react"
@@ -37,7 +37,7 @@ export const useTezos = (): WalletConnectReturn => {
     network: etherlinkNetwork,
     provider: ethProvider,
     signer: ethSigner
-  } = useContext(EtherlinkWalletContext)
+  } = useContext(EtherlinkContext)
 
   const queryClient = useQueryClient()
   const posthog = usePostHog()
@@ -99,6 +99,10 @@ export const useTezos = (): WalletConnectReturn => {
    */
   const handleChangeNetwork = useCallback(
     async (newNetwork: Network) => {
+      // Keep global NetworkContext in sync immediately for UI consistency
+      try {
+        setNetwork(newNetwork)
+      } catch (_) {}
       // Network registration is now handled by PostHog identify
       localStorage.setItem("homebase:network", newNetwork)
 
@@ -119,6 +123,10 @@ export const useTezos = (): WalletConnectReturn => {
         // Only switch chain if we're changing to Etherlink network
         switchToNetwork(newNetwork)
       } else {
+        // When switching away from Etherlink, explicitly disconnect EVM wallet if connected
+        try {
+          if (isEtherlinkConnected) await disconnectEtherWallet()
+        } catch (_) {}
         await handleTezosNetworkChange(newNetwork)
       }
       queryClient.resetQueries()
@@ -181,13 +189,7 @@ export const useTezos = (): WalletConnectReturn => {
       })
     }
 
-    // Log out Etherlink if network is not etherlink
-    if (!network?.startsWith("etherlink") && isEtherlinkConnected) {
-      disconnectEtherWallet()
-      dispatch({
-        type: TezosActionType.RESET_TEZOS
-      })
-    }
+    // Do not auto-disconnect Etherlink here; disconnection handled explicitly on network change
   }, [network, etherlinkNetwork, isEtherlinkConnected, wallet, dispatch, disconnectEtherWallet])
 
   return {

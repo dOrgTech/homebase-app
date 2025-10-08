@@ -8,7 +8,7 @@ const Text = styled(Typography)(({ theme }) => ({
 }))
 export const CreatorBadge: React.FC<{ address: string | undefined }> = ({ address }) => {
   return (
-    <Grid container style={{ gap: 15 }}>
+    <Grid container wrap="nowrap" alignItems="center" style={{ gap: 15, width: "auto", display: "inline-flex" }}>
       <Grid item>
         <Grid container style={{ gap: 9 }} alignItems="center">
           <Blockie address={address || ""} size={27} />

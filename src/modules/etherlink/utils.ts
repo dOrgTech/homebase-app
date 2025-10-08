@@ -26,7 +26,16 @@ export const isInvalidEvmAddress = (address: string) => {
 }
 
 export const isValidUrl = (url: string) => {
-  return url.startsWith("http") || url.startsWith("https")
+  if (!url || typeof url !== "string") return false
+  try {
+    const parsed = new URL(url)
+    const protocol = (parsed.protocol || "").toLowerCase()
+    return protocol === "http:" || protocol === "https:"
+  } catch (_) {
+    // Fallback: tolerate missing scheme but starting with //
+    // e.g., //example.com/path
+    return /^https?:\/\//i.test(url)
+  }
 }
 
 // removed validateEvmTokenAddress (unused)

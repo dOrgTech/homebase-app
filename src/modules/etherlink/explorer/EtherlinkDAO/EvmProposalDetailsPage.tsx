@@ -9,81 +9,100 @@ import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalD
 import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalVoteDetail"
 import { EvmProposalCountdown } from "modules/etherlink/components/EvmProposalCountdown"
 import { useProposalTimeline } from "services/wagmi/etherlink/hooks/useProposalTimeline"
+import { usePastVoteWeight } from "services/wagmi/etherlink/hooks/usePastVoteWeight"
 import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVoterList"
 import { ThumbDownAlt, ThumbUpAlt } from "components/ui"
 import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { useProposalUiOverride } from "services/wagmi/etherlink/hooks/useProposalUiOverride"
 import { CopyButton } from "modules/common/CopyButton"
-import { useTezos } from "services/beacon/hooks/useTezos"
 import { dbg } from "utils/debug"
 
 const RenderProposalAction = () => {
   const [isDeploying, setIsDeploying] = useState(false)
-  const { daoProposalSelected, daoProposalVoters } = useContext(EtherlinkContext)
-  const { etherlink } = useTezos()
+  const { isConnected, connect, daoSelected, daoProposalSelected, daoProposalVoters, signer, provider } =
+    useContext(EtherlinkContext)
 
   const [isCastingVote, setIsCastingVote] = useState(false)
+  const [votedOptimistic, setVotedOptimistic] = useState(false)
   const openNotification = useNotification()
   const { castVote, queueForExecution, executeProposal } = useEvmProposalOps()
-  const isTimerActive = daoProposalSelected?.isTimerActive
+  // Reset optimistic-voted flag when switching proposals
+  useEffect(() => {
+    setVotedOptimistic(false)
+  }, [daoProposalSelected?.id])
+  const {
+    isTimerActive: isTimerActiveComputed,
+    timerLabel: timerLabelComputed,
+    effectiveDisplayStatus: liveDisplayStatus,
+    phase: livePhase
+  } = useProposalTimeline(daoProposalSelected, daoSelected)
 
-  const hasUserCastedVote = daoProposalVoters?.find((voter: any) => voter.voter === etherlink?.signer?.address)
+  const hasUserCastedVote = daoProposalVoters?.find((voter: any) => voter.voter === signer?.address)
+  const hasVoted = !!hasUserCastedVote || votedOptimistic
+  const {
+    loading: loadingPastWeight,
+    human: pastWeightHuman,
+    weight: pastWeightRaw
+  } = usePastVoteWeight(
+    { address: daoSelected?.address, token: daoSelected?.token, decimals: daoSelected?.decimals },
+    { id: daoProposalSelected?.id },
+    signer?.address,
+    (signer as any)?.provider || provider
+  )
 
   // Optimistic override: hide queue button immediately after success
   const override = useProposalUiOverride(s => s.overrides[daoProposalSelected?.id || ""]) as any
   const effectiveStatus = (override?.status as string) || daoProposalSelected?.status
   const effectiveDisplayStatus = ((): string | undefined => {
     if (!daoProposalSelected) return undefined
-    if (override?.status === "queued") return "Queued"
+    // If UI override indicates queued but the local timer has ended,
+    // treat as Executable to avoid waiting for Firestore refresh.
+    if (override?.status === "queued")
+      return !isTimerActiveComputed && timerLabelComputed === "Execution available in" ? "Executable" : "Queued"
     if (override?.status === "executable") return "Executable"
     if (override?.status === "executed") return "Executed"
-    return daoProposalSelected?.displayStatus
+    // Fallback priority: live computed status from timeline hook → Firestore display → raw status
+    const base = liveDisplayStatus || daoProposalSelected?.displayStatus || (daoProposalSelected as any)?.status
+    if (base === "Queued" && !isTimerActiveComputed && timerLabelComputed === "Execution available in")
+      return "Executable"
+    return base as string | undefined
   })()
 
-  if (daoProposalSelected?.readyToQueue) {
-    //Show Queue for Execution Button
+  // For non-timer states, surface a concise action label similar to WeRule
+  const renderStaticActionLabel = () => {
+    if (isTimerActiveComputed) return null
+    let label = "Voting has ended"
+    if (effectiveDisplayStatus === "Pending") label = "Voting begins in"
+    else if (effectiveDisplayStatus === "Active") label = "Voting ends in"
+    else if (effectiveDisplayStatus === "Queued") label = "Executable in"
     return (
-      <Grid container justifyContent="center">
-        <Button
-          variant="contained"
-          color="secondary"
-          disabled={isDeploying}
-          style={{ background: "rgb(113 214 156)" }}
-          onClick={() => {
-            setIsDeploying(true)
-            queueForExecution()
-              .then((receipt: any) => {
-                console.log("Queue receipt", receipt)
-                openNotification({
-                  message: "Proposal queued for execution",
-                  autoHideDuration: 2000,
-                  variant: "success"
-                })
-              })
-              .catch((error: any) => {
-                console.log("Queue error", error)
-                openNotification({
-                  message: "Error queuing proposal",
-                  autoHideDuration: 2000,
-                  variant: "error"
-                })
-              })
-              .finally(() => {
-                setIsDeploying(false)
-              })
-          }}
-        >
-          {isDeploying ? "Queuing..." : "Queue for Execution"}
-        </Button>
+      <Grid container justifyContent="center" style={{ marginBottom: 10 }}>
+        <Typography style={{ color: "white" }}>{label}</Typography>
       </Grid>
     )
   }
 
   if (effectiveDisplayStatus === "Executable") {
     // Show Execute Button
+    if (!isConnected) {
+      return (
+        <Grid container justifyContent="center">
+          {renderStaticActionLabel()}
+          <Button
+            variant="contained"
+            color="secondary"
+            style={{ background: "rgb(113 214 156)" }}
+            onClick={() => connect?.()}
+          >
+            Connect Wallet to Execute
+          </Button>
+        </Grid>
+      )
+    }
     return (
       <Grid container justifyContent="center">
+        {renderStaticActionLabel()}
         <Button
           variant="contained"
           color="secondary"
@@ -122,6 +141,7 @@ const RenderProposalAction = () => {
   if (effectiveDisplayStatus === "Executed") {
     return (
       <Grid container justifyContent="center">
+        {renderStaticActionLabel()}
         <Button
           variant="contained"
           color="secondary"
@@ -134,21 +154,129 @@ const RenderProposalAction = () => {
     )
   }
 
-  if (effectiveDisplayStatus === "Active" || effectiveDisplayStatus === "Succeeded") {
+  // Show Queue for Execution when proposal has succeeded OR when the
+  // derived ready-to-queue hint is present (parity with WeRule)
+  if (effectiveDisplayStatus === "Succeeded" || daoProposalSelected?.readyToQueue) {
+    return (
+      <Grid container justifyContent="center">
+        {renderStaticActionLabel()}
+        {!isConnected ? (
+          <Button
+            variant="contained"
+            color="secondary"
+            style={{ background: "rgb(113 214 156)" }}
+            onClick={() => connect?.()}
+          >
+            Connect Wallet to Queue
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="secondary"
+            disabled={isDeploying}
+            style={{ background: "rgb(113 214 156)" }}
+            onClick={() => {
+              setIsDeploying(true)
+              queueForExecution()
+                .then((receipt: any) => {
+                  console.log("Queue receipt", receipt)
+                  openNotification({
+                    message: "Proposal queued for execution",
+                    autoHideDuration: 2000,
+                    variant: "success"
+                  })
+                })
+                .catch((error: any) => {
+                  console.log("Queue error", error)
+                  openNotification({
+                    message: "Error queuing proposal",
+                    autoHideDuration: 2000,
+                    variant: "error"
+                  })
+                })
+                .finally(() => {
+                  setIsDeploying(false)
+                })
+            }}
+          >
+            {isDeploying ? "Queuing..." : "Queue for Execution"}
+          </Button>
+        )}
+      </Grid>
+    )
+  }
+
+  if (livePhase === "voting") {
+    if (!isConnected) {
+      return (
+        <Grid container justifyContent="center" style={{ gap: 10 }}>
+          {renderStaticActionLabel()}
+          <Button
+            variant="contained"
+            color="secondary"
+            style={{ background: "rgb(113 214 156)" }}
+            onClick={() => connect?.()}
+          >
+            Connect Wallet to Vote
+          </Button>
+        </Grid>
+      )
+    }
+    // If the user has already voted (from Firestore or optimistically), hide buttons and show a clear message.
+    if (hasVoted) {
+      return (
+        <>
+          <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
+            {renderStaticActionLabel()}
+            {isConnected && (
+              <Grid container justifyContent="center" style={{ marginBottom: 6 }}>
+                <Typography style={{ color: "#aaa", fontFamily: "monospace" }}>
+                  {loadingPastWeight || pastWeightHuman === null
+                    ? "Checking your voting weight..."
+                    : `Your voting weight for this proposal is ${pastWeightHuman}`}
+                </Typography>
+              </Grid>
+            )}
+          </Grid>
+          <Grid container justifyContent="center" style={{ marginTop: 10 }}>
+            <Typography style={{ color: "white" }}>You have already voted</Typography>
+          </Grid>
+        </>
+      )
+    }
     return (
       <>
         <Grid container style={{ gap: 10 }} alignItems="center" justifyContent="center">
+          {renderStaticActionLabel()}
+          {isConnected && (
+            <Grid container justifyContent="center" style={{ marginBottom: 6 }}>
+              <Typography style={{ color: "#aaa", fontFamily: "monospace" }}>
+                {loadingPastWeight || pastWeightHuman === null
+                  ? "Checking your voting weight..."
+                  : `Your voting weight for this proposal is ${pastWeightHuman}`}
+              </Typography>
+            </Grid>
+          )}
           <Button
-            disabled={isCastingVote}
+            disabled={isCastingVote || loadingPastWeight || (pastWeightRaw !== null && pastWeightRaw <= 0n)}
             onClick={() => {
               setIsCastingVote(true)
               castVote(daoProposalSelected?.id, true)
                 .then((receipt: any) => {
                   console.log("Receipt", receipt)
+                  setVotedOptimistic(true)
                   openNotification({
                     message: "Vote cast successfully",
                     autoHideDuration: 2000,
                     variant: "success"
+                  })
+                })
+                .catch((error: any) => {
+                  console.log("Vote error", error)
+                  openNotification({
+                    message: error?.message || "Error casting vote",
+                    autoHideDuration: 2000,
+                    variant: "error"
                   })
                 })
                 .finally(() => {
@@ -167,10 +295,19 @@ const RenderProposalAction = () => {
               castVote(daoProposalSelected?.id, false)
                 .then((receipt: any) => {
                   console.log("Receipt", receipt)
+                  setVotedOptimistic(true)
                   openNotification({
                     message: "Vote cast successfully",
                     autoHideDuration: 2000,
                     variant: "success"
+                  })
+                })
+                .catch((error: any) => {
+                  console.log("Vote error", error)
+                  openNotification({
+                    message: error?.message || "Error casting vote",
+                    autoHideDuration: 2000,
+                    variant: "error"
                   })
                 })
                 .finally(() => {
@@ -180,29 +317,18 @@ const RenderProposalAction = () => {
             variant="contained"
             color="secondary"
             style={{ background: "red" }}
+            disabled={isCastingVote || loadingPastWeight || (pastWeightRaw !== null && pastWeightRaw <= 0n)}
           >
             <ThumbDownAlt style={{ marginRight: 8 }} /> Reject
           </Button>
         </Grid>
-        {hasUserCastedVote ? (
-          <Grid container justifyContent="center" style={{ marginTop: 10 }}>
-            <Typography style={{ color: "white" }}>You have already voted</Typography>
-          </Grid>
-        ) : null}
       </>
     )
   }
-  if (isTimerActive || effectiveDisplayStatus === "Queued") return null
+  // If timer running or queued waiting, actions are managed above; otherwise show static label
+  if (isTimerActiveComputed || effectiveDisplayStatus === "Queued") return null
 
-  return (
-    <Grid>
-      <Typography style={{ color: "white" }}>
-        Proposal is not active
-        <br />
-        (No Quorum)
-      </Typography>
-    </Grid>
-  )
+  return <Grid>{renderStaticActionLabel()}</Grid>
 }
 
 export const EvmProposalDetailsPage = () => {
@@ -212,7 +338,13 @@ export const EvmProposalDetailsPage = () => {
   const { daoSelected, daoProposals, daoProposalSelected, selectDaoProposal } = useContext(EtherlinkContext)
   const { checkOnchainQueuedAndOverride } = useEvmProposalOps()
   const clearOverride = useProposalUiOverride(s => s.clear)
-  const { isTimerActive, timerLabel, timerTargetDate } = useProposalTimeline(daoProposalSelected, daoSelected)
+  const setExecutableOverride = useProposalUiOverride(s => s.setExecutable)
+  const {
+    isTimerActive,
+    timerLabel,
+    timerTargetDate,
+    effectiveDisplayStatus: headerDisplayStatus
+  } = useProposalTimeline(daoProposalSelected, daoSelected)
   const override = useProposalUiOverride(s => s.overrides[daoProposalSelected?.id || ""]) as any
 
   useEffect(() => {
@@ -236,6 +368,21 @@ export const EvmProposalDetailsPage = () => {
     checkOnchainQueuedAndOverride?.()
   }, [daoProposalSelected?.id, checkOnchainQueuedAndOverride])
 
+  // When override says 'queued' with an ETA, flip to 'executable' at ETA to reveal Execute button immediately
+  useEffect(() => {
+    const pid = daoProposalSelected?.id
+    if (!pid) return
+    if (override?.status !== "queued" || typeof override?.eta !== "number") return
+    const now = Math.floor(Date.now() / 1000)
+    const ms = (override.eta - now) * 1000
+    if (ms <= 0) {
+      setExecutableOverride(pid)
+      return
+    }
+    const t = setTimeout(() => setExecutableOverride(pid), ms)
+    return () => clearTimeout(t)
+  }, [daoProposalSelected?.id, override?.status, override?.eta, setExecutableOverride])
+
   // Clear optimistic overrides once Firestore reflects queued/executed
   useEffect(() => {
     const s = daoProposalSelected?.status
@@ -249,7 +396,7 @@ export const EvmProposalDetailsPage = () => {
     <div>
       <Grid container style={{ gap: 30 }}>
         <Grid item>
-          <EvmProposalDetailCard poll={daoProposalSelected} />
+          <EvmProposalDetailCard poll={daoProposalSelected} displayStatusOverride={headerDisplayStatus as any} />
         </Grid>
       </Grid>
 

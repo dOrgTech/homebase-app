@@ -49,16 +49,15 @@ export const useDaoState = ({ network }: { network: string }) => {
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const recomputeDataAfter = useCallback((seconds: number) => {
-    // Prevent zero/negative delays from creating an immediate re-render loop.
-    // Only schedule when we actually have time left until the next boundary.
+    // Prevent zero/negative delays from missing the exact boundary transition.
+    // Use a minimal delay when we're at or just past the boundary to force a quick recompute.
     const ms = Math.floor(seconds * 1000)
-    if (ms <= 0) return
-
+    const delay = Math.max(ms, 100)
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
       timerRef.current = null
       setRefreshCount(c => c + 1)
-    }, ms)
+    }, delay)
   }, [])
 
   // Clear any pending timers on unmount to avoid stray updates
@@ -482,39 +481,61 @@ export const useDaoState = ({ network }: { network: string }) => {
 
   const proposalData = useProposalData(network)
 
-  const daoOffchainPollList = daoOffchainProposals.map(x => ({
-    against: "tbd",
-    author: x.author,
-    callDataPlain: [],
-    callDatas: [],
-    calldata: "0x",
-    choices: x.choices,
-    createdAt: dayjs(x.createdAt),
-    description: x.description,
-    executionHash: "",
-    externalResource: x.externalLink,
-    hash: "",
-    id: x._id,
-    isVotingActive: true,
-    latestStage: "pending",
-    status: dayjs.unix(x.endTime).isAfter(dayjs()) ? "active" : "pending",
-    statusHistoryMap: [],
-    statusHistory: {},
-    targets: [],
-    title: x.name,
-    totalVotes: new BigNumber(0),
-    totalVoteCount: 0,
-    timerLabel: "Voting starts in",
-    transactions: [],
-    txHash: "",
-    type: "offchain",
-    values: [],
-    votesAgainst: 0,
-    votesFor: 1,
-    votesWeightPercentage: 0,
-    votingExpiresAt: dayjs.unix(x.endTime),
-    votingStartTimestamp: dayjs.unix(x.startTime)
-  }))
+  const daoOffchainPollList = daoOffchainProposals.map(x => {
+    // Normalize ms-based times from the offchain API
+    const start = dayjs(Number(x.startTime))
+    const end = dayjs(Number(x.endTime))
+    const now = dayjs()
+
+    // Derive a simple status tied to the explicit start/end window
+    const derivedStatus = now.isBefore(start) ? "pending" : now.isBefore(end) ? "active" : "expired"
+
+    // Timer affordances for the UI
+    let timerLabel = "Voting concluded"
+    let timerTargetDate = end
+    if (now.isBefore(start)) {
+      timerLabel = "Voting starts in"
+      timerTargetDate = start
+    } else if (now.isBefore(end)) {
+      timerLabel = "Time left to vote"
+      timerTargetDate = end
+    }
+
+    return {
+      against: "tbd",
+      author: x.author,
+      callDataPlain: [],
+      callDatas: [],
+      calldata: "0x",
+      choices: x.choices,
+      createdAt: dayjs(x.createdAt),
+      description: x.description,
+      executionHash: "",
+      externalResource: x.externalLink,
+      hash: "",
+      id: x._id,
+      isVotingActive: now.isAfter(start) && now.isBefore(end),
+      latestStage: "pending",
+      status: derivedStatus,
+      statusHistoryMap: [],
+      statusHistory: {},
+      targets: [],
+      title: x.name,
+      totalVotes: new BigNumber(0),
+      totalVoteCount: 0,
+      timerLabel,
+      timerTargetDate,
+      transactions: [],
+      txHash: "",
+      type: "offchain",
+      values: [],
+      votesAgainst: 0,
+      votesFor: 1,
+      votesWeightPercentage: 0,
+      votingExpiresAt: end,
+      votingStartTimestamp: start
+    }
+  })
 
   const allDaoProposals = useMemo(() => {
     return [...daoProposals, ...daoOffchainPollList].sort((a, b) => a.createdAt.unix() - b.createdAt.unix()).reverse()

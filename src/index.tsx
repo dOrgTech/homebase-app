@@ -23,7 +23,8 @@ createRoot(document.getElementById("root") as HTMLElement).render(
       api_host: process.env.REACT_APP_POSTHOG_HOST || "https://app.posthog.com",
       defaults: "2025-05-24",
       capture_exceptions: true, // This enables capturing exceptions using Error Tracking
-      debug: process.env.NODE_ENV === "development"
+      // Disable PostHog debug logs in all environments
+      debug: false
     }}
   >
     <PostHogErrorBoundary fallback={<ErrorNotice />}>

@@ -41,21 +41,17 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
     if (chain?.id === etherlinkTestnet.id || chain?.name === "Etherlink Testnet") {
       return "etherlink_testnet"
     }
-    // When the global context is non‑etherlink (first‑time visitors, shared links),
-    // default to mainnet so shared Etherlink links work for everyone.
+    // Align default with ConnectKit/Web3Provider initialChainId (testnet) when global context is non-etherlink
     if (!contextNetwork?.startsWith("etherlink")) {
-      return "etherlink_mainnet"
+      return "etherlink_testnet"
     }
     return contextNetwork
   }, [chain?.id, chain?.name, contextNetwork])
 
-  const selectedChainId = useMemo(() => {
-    // Default to Etherlink mainnet if ambiguous
-    return etherlinkNetwork === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
-  }, [etherlinkNetwork])
-
-  const provider = useEthersProvider({ chainId: selectedChainId })
-  const signer = useEthersSigner({ chainId: selectedChainId })
+  // Bind provider/signer to the wallet's active chain to avoid
+  // transient disconnects if the user is on a different Etherlink network.
+  const provider = useEthersProvider()
+  const signer = useEthersSigner()
 
   const switchToNetwork = useCallback(
     (network: string) => {
@@ -96,6 +92,8 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
       })
     })
   }, [signer?.address, etherlinkNetwork])
+
+  // Do not auto-switch chain here; allow the user/flows to switch explicitly.
 
   // PostHog identify for EVM wallet connection (guard against loops on posthog updates)
   const lastIdentityRef = useRef<string | null>(null)

@@ -108,7 +108,7 @@ export function canonicalType(value?: string | null): TypeKey {
 export function canonicalStatuses(
   value?: string | null,
   scope: TypeKey = "onchain"
-): (StatusKey | OffchainStatusKey)[] {
+): StatusKey[] | OffchainStatusKey[] {
   const raw = splitCsv(value)
   if (raw.length === 0) return ["all"]
 
@@ -132,9 +132,10 @@ export function canonicalStatuses(
     return unique.length === 0 ? ["all"] : unique
   }
 
-  // On-chain scope: pass-through canonical keys, ensure uniqueness
-  const unique = Array.from(new Set(mapped))
-  return unique.length === 0 ? ["all"] : unique
+  // On-chain scope: exclude any offchain-only values (like 'closed'), ensure uniqueness
+  const pass = mapped.filter((k): k is StatusKey => k !== ("closed" as any))
+  const unique = Array.from(new Set(pass))
+  return (unique.length === 0 ? ["all"] : unique) as StatusKey[]
 }
 
 export function canonicalPtypes(value?: string | null): PTypeKey[] {

@@ -105,7 +105,7 @@ const TimeInput = ({
 }
 export const EvmPropDaoConfig = () => {
   const { daoSelected } = useContext(EtherlinkContext)
-  const { currentStep, daoConfig, setDaoConfig } = useEvmProposalOps()
+  const { currentStep, daoConfig, setDaoConfig, openDaoConfigEditor } = useEvmProposalOps()
 
   const defaultVotingDelay = useMemo(() => {
     return {
@@ -194,27 +194,27 @@ export const EvmPropDaoConfig = () => {
         icon={<HowToVoteIcon fontSize="large" />}
         title="Quorum"
         description="Change the minimum required participation for a proposal to pass"
-        onClick={() => setDaoConfig("quorumNumerator", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("quorumNumerator")}
       />
       <ConfigOption
         icon={<TimelineIcon fontSize="large" />}
         title="Voting Delay"
         description="Change the wait time between posting a proposal and the start of voting"
-        onClick={() => setDaoConfig("votingDelay", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("votingDelay")}
       />
 
       <ConfigOption
         icon={<ScheduleIcon fontSize="large" />}
         title="Voting Period"
         description="Change how long voting lasts"
-        onClick={() => setDaoConfig("votingPeriod", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("votingPeriod")}
       />
 
       <ConfigOption
         icon={<AccountBalanceIcon fontSize="large" />}
         title="Proposal Threshold"
         description="Change the minimum amount of Token ownership required to submit a proposal"
-        onClick={() => setDaoConfig("proposalThreshold", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("proposalThreshold")}
       />
     </Grid>
   )

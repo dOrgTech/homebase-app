@@ -87,7 +87,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.votingBlocksDay}
                   onChange={e => setFieldValue("voting.votingBlocksDay", parseInt(e.target.value) || 0)}
                 />
@@ -113,7 +113,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.votingBlocksHours}
                   onChange={e => setFieldValue("voting.votingBlocksHours", parseInt(e.target.value) || 0)}
                 />
@@ -139,7 +139,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.votingBlocksMinutes}
                   onChange={e => setFieldValue("voting.votingBlocksMinutes", parseInt(e.target.value) || 0)}
                 />
@@ -179,7 +179,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalFlushBlocksDay}
                   onChange={e => setFieldValue("voting.proposalFlushBlocksDay", parseInt(e.target.value) || 0)}
                 />
@@ -205,7 +205,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalFlushBlocksHours}
                   onChange={e => setFieldValue("voting.proposalFlushBlocksHours", parseInt(e.target.value) || 0)}
                 />
@@ -231,7 +231,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalFlushBlocksMinutes}
                   onChange={e => setFieldValue("voting.proposalFlushBlocksMinutes", parseInt(e.target.value) || 0)}
                 />
@@ -271,7 +271,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalExpiryBlocksDay}
                   onChange={e => setFieldValue("voting.proposalExpiryBlocksDay", parseInt(e.target.value) || 0)}
                 />
@@ -297,7 +297,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalExpiryBlocksHours}
                   onChange={e => setFieldValue("voting.proposalExpiryBlocksHours", parseInt(e.target.value) || 0)}
                 />
@@ -323,7 +323,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   variant="standard"
                   type="number"
                   placeholder="0"
-                  inputProps={{ min: 0 }}
+                  inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalExpiryBlocksMinutes}
                   onChange={e => setFieldValue("voting.proposalExpiryBlocksMinutes", parseInt(e.target.value) || 0)}
                 />

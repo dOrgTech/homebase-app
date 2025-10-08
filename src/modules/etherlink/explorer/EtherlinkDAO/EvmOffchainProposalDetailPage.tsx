@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom"
 import { EtherlinkContext } from "services/wagmi/context"
 import { EvmProposalDetailCard } from "modules/etherlink/components/EvmProposalDetailCard"
 import { EvmProposalVoteDetail } from "modules/etherlink/components/EvmProposalVoteDetail"
+import { EvmOffchainVoteDetails } from "modules/etherlink/components/EvmOffchainVoteDetails"
 import { EvmProposalCountdown } from "modules/etherlink/components/EvmProposalCountdown"
 import { EvmProposalVoterList } from "modules/etherlink/components/EvmProposalVoterList"
 import { ThumbDownAlt, ThumbUpAlt } from "components/ui"
@@ -13,8 +14,9 @@ import { useNotification } from "modules/common/hooks/useNotification"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { ProposalStatus } from "services/services/dao/mappers/proposal/types"
 
-import { EvmChoiceItemSelected } from "../EvmProposals/EvmChoiceItemSelected"
+import { EvmChoiceItemSelectedCompat } from "../EvmProposals/EvmChoiceItemSelectedCompat"
 import { IEvmOffchainChoice, IEvmProposal } from "modules/etherlink/types"
+import { useProposalTimeline } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { SmallButton } from "modules/common/SmallButton"
 import { etherlinkStyled } from "components/ui"
 const LinearContainer = etherlinkStyled.LinearContainerOffchain
@@ -48,9 +50,10 @@ const RenderProposalAction = ({ daoProposalSelected }: { daoProposalSelected: IE
               style={{ gap: 30 }}
             >
               {daoProposalSelected?.choices?.map((choice: any) => (
-                <EvmChoiceItemSelected
-                  key={choice.id}
+                <EvmChoiceItemSelectedCompat
+                  key={String(choice._id || choice.id || choice.name)}
                   choice={choice}
+                  allChoices={daoProposalSelected?.choices as any}
                   setSelectedVotes={setSelectedOffchainVotes}
                   votes={selectedOffchainVotes}
                   multiple={false}
@@ -237,11 +240,13 @@ export const EvmOffchainProposalDetailsPage = () => {
     setDaoProposalSelected(proposal)
   }, [proposalId, daoProposals, daoSelected])
 
+  const { effectiveDisplayStatus } = useProposalTimeline(daoProposalSelected as any, daoSelected as any)
+
   return (
     <div>
       <Grid container style={{ gap: 30 }}>
         <Grid item>
-          <EvmProposalDetailCard poll={daoProposalSelected} />
+          <EvmProposalDetailCard poll={daoProposalSelected} displayStatusOverride={effectiveDisplayStatus} />
         </Grid>
       </Grid>
 
@@ -251,7 +256,9 @@ export const EvmOffchainProposalDetailsPage = () => {
         </Grid>
       </ContentContainer>
 
-      {daoProposalSelected?.type ? (
+      {daoProposalSelected?.type === "offchain" ? (
+        <EvmOffchainVoteDetails poll={daoProposalSelected} />
+      ) : daoProposalSelected?.type ? (
         <EvmProposalVoteDetail poll={daoProposalSelected} token={daoSelected?.token} />
       ) : null}
 

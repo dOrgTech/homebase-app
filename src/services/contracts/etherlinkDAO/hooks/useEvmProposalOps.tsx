@@ -17,6 +17,7 @@ import { EProposalType, IEvmOffchainChoiceForVote, IEvmProposalTxn } from "modul
 import { isValidUrl, getDaoConfigType, getDaoTokenOpsType } from "modules/etherlink/utils"
 import HbTokenAbi from "assets/abis/hb_evm.json"
 import { useProposalUiOverride } from "services/wagmi/etherlink/hooks/useProposalUiOverride"
+import { computeDaoConfigDefaults } from "./daoConfigDefaults"
 
 interface EvmProposalCreateStore {
   currentStep: number
@@ -238,26 +239,40 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
       setDaoContractCall: (type: "targetAddress" | "value" | "functionDefinition" | "callData", value: string) => {
         set({ daoContractCall: { ...get().daoContractCall, [type]: value } })
         if (type === "callData") {
+          // Keep calldatas aligned; default values to [0] if empty so arrays match
+          const existingValues = get().createProposalPayload.values
           set({
             createProposalPayload: {
               ...get().createProposalPayload,
-              calldatas: [value]
+              calldatas: [value],
+              values: (existingValues && existingValues.length > 0 ? existingValues : [0]) as any
             }
           })
         }
         if (type === "value") {
+          // Parse ETH value safely; default to 0 when empty/invalid
+          let parsed: any = 0
+          try {
+            const v = (value || "").trim()
+            parsed = v ? ethers.parseEther(v) : 0
+          } catch (_) {
+            parsed = 0
+          }
           set({
             createProposalPayload: {
               ...get().createProposalPayload,
-              values: [Number(value)]
+              values: [parsed]
             }
           })
         }
         if (type === "targetAddress") {
+          // Ensure targets exists and keep arrays aligned by defaulting values to [0] when empty
+          const existingValues = get().createProposalPayload.values
           set({
             createProposalPayload: {
               ...get().createProposalPayload,
-              targets: [value]
+              targets: [value],
+              values: (existingValues && existingValues.length > 0 ? existingValues : [0]) as any
             }
           })
         }
@@ -477,7 +492,7 @@ export const useEvmProposalOps = () => {
 
   const getProposalExecutionMetadata = useCallback(() => {
     if (!daoContract || !daoProposalSelected?.id || !daoSelected?.address)
-      return alert("No dao contract or proposal id")
+      throw new Error("No dao contract or proposal id")
 
     const concatenatedDescription = [
       daoProposalSelected.title,
@@ -510,7 +525,7 @@ export const useEvmProposalOps = () => {
 
   const getProposalExecutionTargetAddress = useCallback(() => {
     if (!daoContract || !daoProposalSelected?.id || !daoSelected?.address || !daoProposalSelected?.type)
-      return alert("No dao contract or proposal id")
+      throw new Error("No dao contract or proposal id")
 
     const proposalType = daoProposalSelected?.type?.toLowerCase()
     if (proposalType === "registry") {
@@ -537,6 +552,33 @@ export const useEvmProposalOps = () => {
     daoSelected?.registryAddress,
     daoSelected?.token
   ])
+
+  // Open the DAO config editor with current DAO settings prefilled
+  const openDaoConfigEditor = useCallback(
+    (type: "quorumNumerator" | "votingDelay" | "votingPeriod" | "proposalThreshold") => {
+      if (!daoSelected?.address) {
+        openNotification({ message: "DAO not loaded yet", variant: "error", autoHideDuration: 2500 })
+        return
+      }
+
+      // Prefill the chosen field BEFORE moving to step 3 so initial UI uses it
+      const defaults = computeDaoConfigDefaults(daoSelected as any)
+      const applyDefaultFor = (t: typeof type) => {
+        if (t === "quorumNumerator") return zustantStore.setDaoConfig("quorumNumerator", defaults.quorumNumerator)
+        if (t === "votingDelay") return zustantStore.setDaoConfig("votingDelay", defaults.votingDelay)
+        if (t === "votingPeriod") return zustantStore.setDaoConfig("votingPeriod", defaults.votingPeriod)
+        if (t === "proposalThreshold") return zustantStore.setDaoConfig("proposalThreshold", defaults.proposalThreshold)
+      }
+      applyDefaultFor(type)
+
+      // Stamp the type/address and move to the config step
+      zustantStore.setDaoConfig(type, undefined, daoSelected.address)
+
+      // Re-apply to refresh calldatas with the now-known address
+      applyDefaultFor(type)
+    },
+    [daoSelected, openNotification, zustantStore]
+  )
 
   // --- On-chain status helpers (for optimistic UI + fallback) ---
   const computeOnchainProposalId = useCallback(async () => {
@@ -598,7 +640,9 @@ export const useEvmProposalOps = () => {
       calldatas: string[]
       description: string
     }) => {
-      if (!daoSelected || !daoContract) return
+      if (!daoSelected || !daoContract) {
+        throw new Error("Wallet not connected or DAO contract unavailable. Connect your wallet and try again.")
+      }
       const { targets, values, calldatas, description } = payload
 
       // Basic guards to prevent malformed propose calls
@@ -621,7 +665,7 @@ export const useEvmProposalOps = () => {
 
   const castVote = useCallback(
     async (proposalId: string, support: boolean) => {
-      if (!daoContract || !proposalId) return alert("No dao contract or proposal id")
+      if (!daoContract || !proposalId) throw new Error("No dao contract or proposal id")
 
       const tx = await daoContract.castVote(proposalId?.toString(), support ? 1 : 0)
       console.log("Vote transaction sent:", tx.hash)
@@ -634,10 +678,10 @@ export const useEvmProposalOps = () => {
 
   const queueForExecution = useCallback(async () => {
     console.log(daoProposalSelected?.type)
-    if (!daoContract || !daoProposalSelected?.id) return alert("No dao contract or proposal id")
+    if (!daoContract || !daoProposalSelected?.id) throw new Error("No dao contract or proposal id")
 
     const metadata = getProposalExecutionMetadata()
-    if (!metadata) return alert("Could not get proposal metadata")
+    if (!metadata) throw new Error("Could not get proposal metadata")
 
     const targetAddress = getProposalExecutionTargetAddress()
     console.log("proposalAction targetAddress", targetAddress)
@@ -672,13 +716,13 @@ export const useEvmProposalOps = () => {
   ])
 
   const executeProposal = useCallback(async () => {
-    if (!daoContract) return
+    if (!daoContract) throw new Error("No dao contract or proposal id")
 
     const metadata = getProposalExecutionMetadata()
-    if (!metadata) return alert("Could not get proposal metadata")
+    if (!metadata) throw new Error("Could not get proposal metadata")
 
     const targetAddress = getProposalExecutionTargetAddress()
-    if (!targetAddress) return alert("No target address")
+    if (!targetAddress) throw new Error("No target address")
 
     const tx = await daoContract.execute([targetAddress], [0], metadata.calldata, metadata.hashHex)
     console.log("Execute transaction sent:", tx.hash)
@@ -758,6 +802,91 @@ export const useEvmProposalOps = () => {
         zustantStore.setCurrentStep(currentStep + 1)
       } else if (currentStep === selectedOption?.last_step) {
         // At Step 2 we call the Contract
+        // Validate payloads per proposal type before submitting
+        if (proposalType !== "off_chain_debate") {
+          const payload = { ...zustantStore.createProposalPayload }
+
+          // Type-aware validations and defaults
+          if (proposalType === "transfer_assets") {
+            const hasTransfers = Array.isArray(payload.targets) && payload.targets.length > 0
+            const hasCalldata = Array.isArray(payload.calldatas) && payload.calldatas.length > 0
+            if (!hasTransfers || !hasCalldata) {
+              openNotification({
+                message: "Add at least one valid transfer (recipient and amount)",
+                autoHideDuration: 3500,
+                variant: "error"
+              })
+              return
+            }
+            // Ensure arrays are the same length
+            if (!(payload.targets.length === payload.calldatas.length)) {
+              openNotification({
+                message: "Transfers are incomplete. Please review entries.",
+                autoHideDuration: 3500,
+                variant: "error"
+              })
+              return
+            }
+            // Values are ignored by treasury methods; keep zeroes aligned
+            payload.values = Array(payload.targets.length).fill(0)
+          }
+
+          if (proposalType === "contract_call") {
+            const tgt = zustantStore.daoContractCall?.targetAddress
+            const hasTarget = !!tgt && ethers.isAddress(tgt)
+            const hasCalldata = Array.isArray(payload.calldatas) && !!payload.calldatas[0]
+            if (!hasTarget || !hasCalldata) {
+              openNotification({
+                message: !hasTarget ? "Enter a valid target contract address" : "Enter contract calldata",
+                autoHideDuration: 3500,
+                variant: "error"
+              })
+              return
+            }
+            // Ensure arrays are aligned: one target, one calldata, one value (default 0)
+            payload.targets = [tgt]
+            payload.values = (payload.values && payload.values.length > 0 ? payload.values : [0]) as any
+            payload.calldatas = [payload.calldatas[0]]
+          }
+
+          if (proposalType === "edit_registry") {
+            // Ensure target is the registry address and calldata present
+            const reg = daoSelected?.registryAddress
+            const hasCalldata = Array.isArray(payload.calldatas) && !!payload.calldatas[0]
+            if (!reg || !hasCalldata) {
+              openNotification({
+                message: !reg ? "Missing DAO registry address" : "Enter a registry key/value",
+                autoHideDuration: 3500,
+                variant: "error"
+              })
+              return
+            }
+            payload.targets = [reg]
+            payload.values = [0]
+            payload.calldatas = [payload.calldatas[0]]
+          }
+
+          // Final generic guard for on-chain proposals
+          if (
+            !Array.isArray(payload.targets) ||
+            !Array.isArray(payload.values) ||
+            !Array.isArray(payload.calldatas) ||
+            payload.targets.length === 0 ||
+            !(payload.targets.length === payload.values.length && payload.values.length === payload.calldatas.length)
+          ) {
+            openNotification({
+              message: "Incomplete proposal data. Please complete required fields.",
+              autoHideDuration: 3500,
+              variant: "error"
+            })
+            return
+          }
+
+          // Overwrite the store payload just for this submission path
+          // (Do not mutate persistent fields beyond what caller expects.)
+          // Use the validated payload when sending the tx below
+          // Continue into submission flow with `payload`
+        }
         setIsDeploying(true)
 
         const { closeSnackbar } = openNotification({
@@ -882,7 +1011,36 @@ export const useEvmProposalOps = () => {
             console.log("Preflight check skipped due to error:", preflightErr)
           }
 
-          createProposal(zustantStore.createProposalPayload)
+          // Build a final payload with safe defaults/alignment per type
+          const finalPayload = { ...zustantStore.createProposalPayload }
+          if (proposalType === "transfer_assets") {
+            finalPayload.values = Array(finalPayload.targets.length).fill(0)
+          } else if (proposalType === "contract_call") {
+            const tgt = zustantStore.daoContractCall?.targetAddress
+            finalPayload.targets = [tgt]
+            finalPayload.values = (
+              finalPayload.values && finalPayload.values.length > 0 ? finalPayload.values : [0]
+            ) as any
+            finalPayload.calldatas = [finalPayload.calldatas[0]]
+          } else if (proposalType === "edit_registry") {
+            const reg = daoSelected?.registryAddress
+            finalPayload.targets = [reg]
+            finalPayload.values = [0]
+            finalPayload.calldatas = [finalPayload.calldatas[0]]
+          }
+
+          if (!daoContract) {
+            openNotification({
+              message: "Connect your wallet on Etherlink to submit the proposal.",
+              autoHideDuration: 3500,
+              variant: "error"
+            })
+            closeSnackbar()
+            setIsDeploying(false)
+            return
+          }
+
+          createProposal(finalPayload)
             .then((createdProposal: IEvmProposalTxn) => {
               console.log("createdProposal", createdProposal)
               setIsLoading(false)
@@ -982,6 +1140,7 @@ export const useEvmProposalOps = () => {
     executeProposal,
     checkOnchainQueuedAndOverride,
     signer: etherlink?.signer,
+    openDaoConfigEditor,
     nextStep,
     prevStep,
     isDeploying,
