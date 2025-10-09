@@ -1,4 +1,14 @@
-import { Button, Grid, TableRow, TableBody, Table, Typography, TableCell, IconButton } from "components/ui"
+import {
+  Button,
+  Grid,
+  TableRow,
+  TableBody,
+  Table,
+  Typography,
+  TableCell,
+  IconButton,
+  CircularProgress
+} from "components/ui"
 import { PageContainer } from "components/ui/DaoCreator"
 import { ContentContainer } from "modules/explorer/components/ContentContainer"
 import { useContext, useEffect, useState } from "react"
@@ -79,6 +89,18 @@ const RenderProposalAction = () => {
     return (
       <Grid container justifyContent="center" style={{ marginBottom: 10 }}>
         <Typography style={{ color: "white" }}>{label}</Typography>
+      </Grid>
+    )
+  }
+
+  if (isDeploying) {
+    const processingLabel = effectiveDisplayStatus === "Executable" ? "Executing proposal..." : "Queuing proposal..."
+
+    return (
+      <Grid container direction="column" alignItems="center" justifyContent="center" style={{ gap: 12 }}>
+        {renderStaticActionLabel()}
+        <CircularProgress size={28} style={{ color: "rgb(113 214 156)" }} />
+        <Typography style={{ color: "white" }}>{processingLabel}</Typography>
       </Grid>
     )
   }
@@ -199,7 +221,7 @@ const RenderProposalAction = () => {
                 })
             }}
           >
-            {isDeploying ? "Queuing..." : "Queue for Execution"}
+            Queue for Execution
           </Button>
         )}
       </Grid>
