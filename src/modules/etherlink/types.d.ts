@@ -76,6 +76,7 @@ export interface IEvmDAO {
   decimals: number
   description: string
   token: string
+  underlyingToken?: string
   registryAddress: string
   proposalThreshold: string
   totalSupply: string

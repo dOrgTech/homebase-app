@@ -47,14 +47,22 @@ export const TokenBridge = () => {
   const { etherlink } = useTezos()
   const { daoSelected } = useContext(EtherlinkContext)
 
+  const isValidAddress = (value: unknown): value is string => typeof value === "string" && ethers.isAddress(value)
+  const underlyingToken = daoSelected?.underlyingToken
+  const wrapperToken = daoSelected?.token
+
+  if (!isValidAddress(underlyingToken) || !isValidAddress(wrapperToken)) {
+    return null
+  }
+
   const wrapTokens = async () => {
     try {
       setTransactionState("waitingApproval")
       setErrorMessage(null)
 
       // Approval logic
-      const erc20Contract = new ethers.Contract(daoSelected.underlyingToken, ERC20_ABI, etherlink.signer)
-      const tx1 = await erc20Contract.approve(daoSelected.token, wrapAmount)
+      const erc20Contract = new ethers.Contract(underlyingToken, ERC20_ABI, etherlink.signer)
+      const tx1 = await erc20Contract.approve(wrapperToken, wrapAmount)
       setApprovalTxHash(tx1.hash)
       setTransactionState("approving")
       await tx1.wait()
@@ -62,9 +70,9 @@ export const TokenBridge = () => {
       await sleep(1000)
 
       // Wrap logic
-      console.log("wrapperContractAbiHumanReadable", etherlink.signer.address, daoSelected.underlyingToken)
+      console.log("wrapperContractAbiHumanReadable", etherlink.signer.address, underlyingToken)
       setTransactionState("waitingExecution")
-      const wrapperContract = new ethers.Contract(daoSelected.token, wrapperContractAbiJson, etherlink.signer)
+      const wrapperContract = new ethers.Contract(wrapperToken, wrapperContractAbiJson, etherlink.signer)
       const tx2 = await wrapperContract.depositFor(etherlink.signer.address, wrapAmount)
       setExecutionTxHash(tx2.hash)
       setTransactionState("executing")
@@ -92,7 +100,7 @@ export const TokenBridge = () => {
       setTransactionState("waitingExecution")
       setErrorMessage(null)
 
-      const wrapperContract = new ethers.Contract(daoSelected.token, wrapperContractAbiJson, etherlink.signer)
+      const wrapperContract = new ethers.Contract(wrapperToken, wrapperContractAbiJson, etherlink.signer)
       const tx = await wrapperContract.withdrawTo(etherlink.signer.address, wrapAmount)
       setExecutionTxHash(tx.hash)
       setTransactionState("executing")

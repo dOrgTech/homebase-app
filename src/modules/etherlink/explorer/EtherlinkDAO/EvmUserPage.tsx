@@ -102,6 +102,7 @@ export const EvmUserPage = () => {
   const isUndelegated = !userDelegate || userDelegate === zeroAddress
   const isSelfDelegated = !!userAddrLc && userDelegate === userAddrLc
   const hasBalance = (userTokenBalance || 0) > 0
+  const canShowBridge = !!daoSelected?.underlyingToken && ethers.isAddress(daoSelected.underlyingToken)
   // const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
 
   const proposalByAuthor = useMemo(() => {
@@ -265,9 +266,11 @@ export const EvmUserPage = () => {
           </ResponsiveDialog>
         </Grid>
 
-        <Grid item xs={12}>
-          <TokenBridge />
-        </Grid>
+        {canShowBridge && (
+          <Grid item xs={12}>
+            <TokenBridge />
+          </Grid>
+        )}
 
         <Grid item xs={12} md={12}>
           <Typography variant="h5" style={{ color: "#fff" }}>
