@@ -509,7 +509,9 @@ export const useEvmProposalOps = () => {
   const openNotification = useNotification()
   const currentStep = zustantStore.currentStep
   const proposalType = zustantStore.getMetadataFieldValue("type")
-  const proposalUiOverride = useProposalUiOverride()
+  const proposalOverrides = useProposalUiOverride(s => s.overrides)
+  const setOverrideQueued = useProposalUiOverride(s => s.setQueued)
+  const setOverrideExecuted = useProposalUiOverride(s => s.setExecuted)
 
   // Disable Next for transfer_assets only when no row is plausibly valid.
   // This avoids blocking on minor encoding issues and improves UX.
@@ -565,55 +567,56 @@ export const useEvmProposalOps = () => {
     ].join("0|||0")
 
     const encodedInput = ethers.toUtf8Bytes(concatenatedDescription)
-    const keccakHash = ethers.keccak256(encodedInput)
-    const hashHex = keccakHash
-    console.log(`queueForExecution: Keccak-256 hash: ${hashHex}`)
-    const callData = daoProposalSelected?.callDataPlain?.[0]
-    const expectedCallData = "0x06f3f9e6000000000000000000000000000000000000000000000000000000000000000f"
-    console.log(`queueForExecution: callData: ${callData}`, expectedCallData)
+    const hashHex = ethers.keccak256(encodedInput)
+
+    const targets = Array.isArray(daoProposalSelected.targets) ? daoProposalSelected.targets : []
+    const valuesRaw = Array.isArray(daoProposalSelected.values) ? daoProposalSelected.values : []
+    const rawCalldatas = Array.isArray((daoProposalSelected as any)?.callDatas)
+      ? (daoProposalSelected as any).callDatas
+      : daoProposalSelected.callDataPlain || []
+
+    const normalizeCalldata = (value: unknown) => {
+      if (typeof value !== "string") return "0x"
+      const trimmed = value.trim()
+      return trimmed.startsWith("0x") ? trimmed : `0x${trimmed}`
+    }
+
+    const normalizeValue = (value: unknown, index: number) => {
+      try {
+        if (typeof value === "bigint") return value
+        if (typeof value === "number") return BigInt(value)
+        if (typeof value === "string" && value.length > 0) return ethers.toBigInt(value)
+      } catch (err) {
+        console.warn("getProposalExecutionMetadata: invalid value entry", { index, value, err })
+      }
+      return 0n
+    }
+
+    const calldatas = rawCalldatas.map(normalizeCalldata)
+    const values = valuesRaw.map(normalizeValue)
+
+    const lengths = new Set([targets.length, values.length, calldatas.length])
+    if (targets.length === 0 || calldatas.length === 0 || lengths.size !== 1) {
+      throw new Error("Proposal action data is incomplete or mismatched. Try refreshing the proposal details.")
+    }
+
     return {
-      calldata: [callData],
-      hashHex: hashHex
+      hashHex,
+      targets,
+      values,
+      calldatas
     }
   }, [
     daoContract,
     daoProposalSelected?.callDataPlain,
+    daoProposalSelected?.id,
+    daoProposalSelected?.targets,
+    daoProposalSelected?.values,
     daoProposalSelected.description,
     daoProposalSelected.externalResource,
-    daoProposalSelected?.id,
     daoProposalSelected.title,
     daoProposalSelected.type,
     daoSelected?.address
-  ])
-
-  const getProposalExecutionTargetAddress = useCallback(() => {
-    if (!daoContract || !daoProposalSelected?.id || !daoSelected?.address || !daoProposalSelected?.type)
-      throw new Error("No dao contract or proposal id")
-
-    const proposalType = daoProposalSelected?.type?.toLowerCase()
-    if (proposalType === "registry") {
-      return daoSelected?.registryAddress
-    }
-    if (proposalType?.startsWith("mint")) {
-      return daoSelected?.token
-    }
-    if (proposalType?.startsWith("burn")) {
-      return daoSelected?.token
-    }
-    if (proposalType == "transfer") {
-      return daoSelected?.registryAddress
-    }
-    if (proposalType == "quorum") {
-      return daoSelected?.address
-    }
-    return daoSelected?.address
-  }, [
-    daoContract,
-    daoProposalSelected?.id,
-    daoProposalSelected?.type,
-    daoSelected?.address,
-    daoSelected?.registryAddress,
-    daoSelected?.token
   ])
 
   // Open the DAO config editor with current DAO settings prefilled
@@ -646,26 +649,20 @@ export const useEvmProposalOps = () => {
   // --- On-chain status helpers (for optimistic UI + fallback) ---
   const computeOnchainProposalId = useCallback(async () => {
     if (!daoContract || !daoProposalSelected?.id) return null
-    const meta = getProposalExecutionMetadata()
-    if (!meta) return null
     try {
-      const targets = (daoProposalSelected?.targets || []) as string[]
-      const values = (daoProposalSelected?.values || []).map((v: any) => BigInt(v || 0)) as bigint[]
-      const calldatas = (daoProposalSelected?.callDatas || []) as string[]
-      const proposalId = await (daoContract as any).hashProposal(targets, values, calldatas, meta.hashHex)
+      const meta = getProposalExecutionMetadata()
+      const proposalId = await (daoContract as any).hashProposal(
+        meta.targets,
+        meta.values,
+        meta.calldatas,
+        meta.hashHex
+      )
       return proposalId as bigint
     } catch (e) {
       console.log("computeOnchainProposalId error", e)
       return null
     }
-  }, [
-    daoContract,
-    daoProposalSelected?.callDatas,
-    daoProposalSelected?.id,
-    daoProposalSelected?.targets,
-    daoProposalSelected?.values,
-    getProposalExecutionMetadata
-  ])
+  }, [daoContract, daoProposalSelected?.id, getProposalExecutionMetadata])
 
   const checkOnchainQueuedAndOverride = useCallback(async () => {
     if (!daoContract || !daoProposalSelected?.id) return
@@ -679,14 +676,14 @@ export const useEvmProposalOps = () => {
         console.log("proposalEta read failed; will try proposalNeedsQueuing", e)
       }
       if (eta && eta > 0n) {
-        proposalUiOverride.setQueued(daoProposalSelected.id, Number(eta))
+        setOverrideQueued(daoProposalSelected.id, Number(eta))
         return
       }
       try {
         const needsQueue: boolean = await (daoContract as any).proposalNeedsQueuing(pid)
         if (needsQueue === false) {
           const approxEta = Math.floor(Date.now() / 1000) + (daoSelected?.executionDelay || 0)
-          proposalUiOverride.setQueued(daoProposalSelected.id, approxEta)
+          setOverrideQueued(daoProposalSelected.id, approxEta)
         }
       } catch (_) {
         // ignore
@@ -694,7 +691,7 @@ export const useEvmProposalOps = () => {
     } catch (e) {
       console.log("checkOnchainQueuedAndOverride error", e)
     }
-  }, [computeOnchainProposalId, daoContract, daoProposalSelected?.id, daoSelected?.executionDelay, proposalUiOverride])
+  }, [computeOnchainProposalId, daoContract, daoProposalSelected?.id, daoSelected?.executionDelay, setOverrideQueued])
 
   const createProposal = useCallback(
     async (payload: {
@@ -717,13 +714,45 @@ export const useEvmProposalOps = () => {
       }
 
       console.log("createProposal", { targets, values, calldatas, description })
-      const tx = await daoContract.propose(targets, values, calldatas, description)
-      console.log("Proposal transaction sent:", tx.hash)
-      const receipt = await tx.wait()
-      console.log("Proposal transaction confirmed:", receipt)
-      return receipt
+      try {
+        const tx = await daoContract.propose(targets, values, calldatas, description)
+        console.log("Proposal transaction sent:", tx.hash)
+        const receipt = await tx.wait()
+        console.log("Proposal transaction confirmed:", receipt)
+        return receipt
+      } catch (error: any) {
+        const revertSelector = (() => {
+          const candidates = [
+            error?.data,
+            error?.error?.data,
+            error?.error?.error?.data,
+            error?.info?.error?.data,
+            error?.data?.data,
+            error?.error?.data?.data,
+            error?.data?.originalError?.data
+          ]
+          for (const candidate of candidates) {
+            if (typeof candidate === "string" && candidate.startsWith("0x") && candidate.length >= 10) {
+              return candidate.slice(0, 10)
+            }
+          }
+          return null
+        })()
+
+        if (revertSelector === "0x31b75e4d") {
+          openNotification({
+            message:
+              "Duplicate proposal not allowed. This proposal matches an existing on-chain contract call. Please modify the action or description before submitting again.",
+            variant: "error",
+            autoHideDuration: 4000
+          })
+          throw new Error("Duplicate proposal detected")
+        }
+
+        throw error
+      }
     },
-    [daoSelected, daoContract]
+    [daoSelected, daoContract, openNotification]
   )
 
   const castVote = useCallback(
@@ -746,11 +775,9 @@ export const useEvmProposalOps = () => {
     const metadata = getProposalExecutionMetadata()
     if (!metadata) throw new Error("Could not get proposal metadata")
 
-    const targetAddress = getProposalExecutionTargetAddress()
-    console.log("proposalAction targetAddress", targetAddress)
     console.log("proposalAction metadata", metadata)
 
-    const tx = await daoContract.queue([targetAddress], [0], metadata.calldata, metadata.hashHex)
+    const tx = await daoContract.queue(metadata.targets, metadata.values, metadata.calldatas, metadata.hashHex)
     console.log("Queue transaction sent:", tx.hash)
 
     const receipt = await tx.wait()
@@ -758,9 +785,9 @@ export const useEvmProposalOps = () => {
     // Optimistic UI: reflect queued state immediately
     try {
       await checkOnchainQueuedAndOverride()
-      if (!proposalUiOverride.overrides?.[daoProposalSelected.id]?.status) {
+      if (!proposalOverrides?.[daoProposalSelected.id]?.status) {
         const approxEta = Math.floor(Date.now() / 1000) + (daoSelected?.executionDelay || 0)
-        proposalUiOverride.setQueued(daoProposalSelected.id, approxEta)
+        setOverrideQueued(daoProposalSelected.id, approxEta)
       }
     } catch (_) {
       // ignore optimistic errors
@@ -771,10 +798,9 @@ export const useEvmProposalOps = () => {
     daoProposalSelected?.id,
     daoProposalSelected?.type,
     getProposalExecutionMetadata,
-    getProposalExecutionTargetAddress,
     checkOnchainQueuedAndOverride,
-    proposalUiOverride.overrides,
-    proposalUiOverride.setQueued,
+    proposalOverrides,
+    setOverrideQueued,
     daoSelected?.executionDelay
   ])
 
@@ -784,29 +810,20 @@ export const useEvmProposalOps = () => {
     const metadata = getProposalExecutionMetadata()
     if (!metadata) throw new Error("Could not get proposal metadata")
 
-    const targetAddress = getProposalExecutionTargetAddress()
-    if (!targetAddress) throw new Error("No target address")
-
-    const tx = await daoContract.execute([targetAddress], [0], metadata.calldata, metadata.hashHex)
+    const tx = await daoContract.execute(metadata.targets, metadata.values, metadata.calldatas, metadata.hashHex)
     console.log("Execute transaction sent:", tx.hash)
 
     const receipt = await tx.wait()
     console.log("Execute transaction confirmed:", receipt)
     try {
       if (daoProposalSelected?.id) {
-        proposalUiOverride.setExecuted(daoProposalSelected.id)
+        setOverrideExecuted(daoProposalSelected.id)
       }
     } catch (_) {
       // ignore optimistic override errors
     }
     return receipt
-  }, [
-    daoContract,
-    daoProposalSelected?.id,
-    getProposalExecutionMetadata,
-    getProposalExecutionTargetAddress,
-    proposalUiOverride.setExecuted
-  ])
+  }, [daoContract, daoProposalSelected?.id, getProposalExecutionMetadata, setOverrideExecuted])
 
   const nextStep = {
     text: isLoading ? "Please wait..." : "Next",

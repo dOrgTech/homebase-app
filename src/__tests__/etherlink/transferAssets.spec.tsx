@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client"
 import { act } from "react-dom/test-utils"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { EtherlinkContext } from "services/wagmi/context"
+import { ethers } from "ethers"
 
 // Mock hooks that require wallet/providers
 jest.mock("services/beacon/hooks/useTezos", () => ({
@@ -143,5 +144,87 @@ describe("Transfer Assets flow (ERC-20/NFT)", () => {
     expect(latest!.isNextDisabled).toBe(false)
     expect(latest!.createProposalPayload.calldatas.length).toBe(1)
     expect(latest!.createProposalPayload.targets.length).toBe(1)
+  })
+})
+
+describe("queueForExecution", () => {
+  test("uses stored proposal tuples", async () => {
+    const queueWait = jest.fn().mockResolvedValue({ status: 1 })
+    const queueSpy = jest.fn().mockResolvedValue({ hash: "0xabc", wait: queueWait })
+
+    const contractStub = {
+      queue: queueSpy,
+      execute: jest.fn(),
+      hashProposal: jest.fn().mockResolvedValue(1n),
+      proposalEta: jest.fn().mockResolvedValue(0n),
+      proposalNeedsQueuing: jest.fn().mockResolvedValue(true)
+    }
+
+    const contractSpy = jest.spyOn(ethers, "Contract").mockReturnValue(contractStub as any)
+
+    const proposalTargets = ["0x441c3A385B1ed9e904125AD9B4EfF0942E746296"]
+    const proposalValues = ["0"]
+    const proposalCalldata = ["0x368b87720000000000000000000000000000000000000000000000000000000000000002"]
+
+    const contextValue = {
+      daoSelected: {
+        address: "0xDa0Da0Da0Da0Da0Da0Da0Da0Da0Da0Da0Da0Da0D",
+        executionDelay: 60,
+        registryAddress: "0xRegistry0000000000000000000000000000000000",
+        token: "0xToken000000000000000000000000000000000000"
+      },
+      daoProposalSelected: {
+        id: "1",
+        type: "contract call",
+        title: "Test Proposal",
+        description: "Do something",
+        externalResource: "https://example.com",
+        targets: proposalTargets,
+        values: proposalValues,
+        callDatas: proposalCalldata,
+        callDataPlain: proposalCalldata,
+        statusHistoryMap: [],
+        status: "passed"
+      },
+      setIsProposalDialogOpen: () => {},
+      daoTreasuryTokens: [],
+      daoNfts: [],
+      provider: {},
+      signer: {},
+      contractData: [],
+      daos: [],
+      isLoadingDaos: false,
+      isLoadingDaoProposals: false,
+      daoProposals: [],
+      daoMembers: [],
+      daoProposalVoters: [],
+      selectDaoProposal: () => {},
+      selectDao: () => {}
+    }
+
+    let latest: Api | null = null
+    renderWithContext(contextValue, api => (latest = api))
+
+    await waitFor(() => !!latest)
+
+    await act(async () => {
+      await latest!.queueForExecution()
+    })
+
+    const expectedHash = ethers.keccak256(
+      ethers.toUtf8Bytes(
+        [
+          contextValue.daoProposalSelected.title,
+          contextValue.daoProposalSelected.type,
+          contextValue.daoProposalSelected.description,
+          contextValue.daoProposalSelected.externalResource
+        ].join("0|||0")
+      )
+    )
+
+    expect(queueSpy).toHaveBeenCalledWith(proposalTargets, [0n], proposalCalldata, expectedHash)
+    expect(queueWait).toHaveBeenCalled()
+
+    contractSpy.mockRestore()
   })
 })
