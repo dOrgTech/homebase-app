@@ -18,6 +18,7 @@ import { isValidUrl, getDaoConfigType, getDaoTokenOpsType } from "modules/etherl
 import HbTokenAbi from "assets/abis/hb_evm.json"
 import { useProposalUiOverride } from "services/wagmi/etherlink/hooks/useProposalUiOverride"
 import { computeDaoConfigDefaults } from "./daoConfigDefaults"
+import { dbg } from "utils/debug"
 
 interface EvmProposalCreateStore {
   currentStep: number
@@ -146,16 +147,41 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
         const targets: string[] = []
         const callData: string[] = []
 
-        // Only attempt to encode when recipient is a valid address and amount/tokenId is > 0
+        // Only attempt to encode when recipient is a valid address and
+        // type-specific required values are present
+        dbg("EL-XFER:setTransferAssets:input", { count: transactions?.length || 0, registry: daoRegistryAddress })
         const validTransactions = transactions.filter((transaction: any) => {
-          const isValidRecipient = transaction.recipient?.length > 0 && ethers.isAddress(transaction.recipient)
-          const nAmount =
-            typeof transaction.amount === "string" ? Number(transaction.amount) : Number(transaction.amount || 0)
-          const nTokenId =
-            typeof transaction.tokenId === "string" ? Number(transaction.tokenId) : Number(transaction.tokenId || 0)
-          const isValidAmountOrTokenId = nAmount > 0 || nTokenId > 0
-          return isValidRecipient && isValidAmountOrTokenId
+          const rec = (transaction.recipient || "").trim()
+          const isValidRecipient = rec.length > 0 && ethers.isAddress(rec)
+          if (!isValidRecipient) return false
+          const nAmount = Number(typeof transaction.amount === "string" ? transaction.amount : transaction.amount || 0)
+          const tokenIdStr = String(transaction.tokenId ?? "")
+          const nTokenId = Number(tokenIdStr)
+          if (transaction.assetType === "transferERC721") {
+            // Accept tokenId 0 as valid, require a valid NFT contract address
+            return (
+              tokenIdStr !== "" &&
+              Number.isFinite(nTokenId) &&
+              nTokenId >= 0 &&
+              typeof transaction.assetAddress === "string" &&
+              ethers.isAddress(transaction.assetAddress)
+            )
+          }
+          if (transaction.assetType === "transferETH") {
+            return Number.isFinite(nAmount) && nAmount > 0
+          }
+          if (transaction.assetType === "transferERC20") {
+            return (
+              Number.isFinite(nAmount) &&
+              nAmount > 0 &&
+              typeof transaction.assetAddress === "string" &&
+              ethers.isAddress(transaction.assetAddress)
+            )
+          }
+          // Unknown type: exclude
+          return false
         })
+        dbg("EL-XFER:setTransferAssets:valid", { validCount: validTransactions.length, txs: validTransactions })
 
         // Build calldatas defensively; skip entries we cannot encode yet instead of throwing
         for (const transaction of validTransactions) {
@@ -164,35 +190,36 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           const iface = new ethers.Interface(ifaceDef.interface)
 
           try {
+            const rec = (transaction.recipient || "").trim()
             let ifaceParams: any[] = []
             if (transaction.assetType === "transferETH") {
               // Amount must be a parseable decimal string
-              ifaceParams = [transaction.recipient, ethers.parseEther(String(transaction.amount))]
+              ifaceParams = [rec, ethers.parseEther(String(transaction.amount))]
             } else if (transaction.assetType === "transferERC20") {
               const decimals = Number(transaction.assetDecimals ?? 18)
               // Guard: decimals must be a finite number; fall back to 18
               const safeDecimals = Number.isFinite(decimals) ? decimals : 18
-              ifaceParams = [
-                transaction.assetAddress,
-                transaction.recipient,
-                ethers.parseUnits(String(transaction.amount), safeDecimals)
-              ]
+              ifaceParams = [transaction.assetAddress, rec, ethers.parseUnits(String(transaction.amount), safeDecimals)]
             } else if (transaction.assetType === "transferERC721") {
-              ifaceParams = [transaction.assetAddress, transaction.recipient, BigInt(transaction.tokenId)]
+              const tokenIdStr = String(transaction.tokenId)
+              const tokenIdBig = BigInt(tokenIdStr)
+              ifaceParams = [transaction.assetAddress, rec, tokenIdBig]
             } else {
               console.log("Invalid transaction type", transaction.assetType)
               continue
             }
 
-            console.log("ifaceParams", transaction.assetType, ifaceDef.name, ifaceParams, {
-              amount: transaction.amount,
-              tokenId: transaction.tokenId
-            })
-            targets.push(daoRegistryAddress)
+            dbg("EL-XFER:setTransferAssets:encode", { type: transaction.assetType, params: ifaceParams })
+            if (typeof daoRegistryAddress === "string" && ethers.isAddress(daoRegistryAddress)) {
+              targets.push(daoRegistryAddress)
+            } else {
+              dbg("EL-XFER:setTransferAssets:skipInvalidRegistry", String(daoRegistryAddress))
+              continue
+            }
             callData.push(iface.encodeFunctionData(ifaceDef.name, ifaceParams))
           } catch (encodeErr) {
             // Do not crash the UI on partial/invalid input; skip until input is valid
-            console.log("Skipping invalid transfer transaction while encoding", encodeErr)
+            dbg("EL-XFER:setTransferAssets:encodeError", String((encodeErr as any)?.message || encodeErr))
           }
         }
 
@@ -205,7 +232,7 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
             description: get().createProposalPayload.description
           }
         }
-        console.log("payload", payload)
+        dbg("EL-XFER:setTransferAssets:payload", { targets: targets.length, calldatas: callData.length })
         set(payload)
       },
       daoRegistry: {
@@ -483,6 +510,42 @@ export const useEvmProposalOps = () => {
   const currentStep = zustantStore.currentStep
   const proposalType = zustantStore.getMetadataFieldValue("type")
   const proposalUiOverride = useProposalUiOverride()
+
+  // Disable Next for transfer_assets only when no row is plausibly valid.
+  // This avoids blocking on minor encoding issues and improves UX.
+  const isNextDisabled = useMemo(() => {
+    const step = zustantStore.currentStep
+    const type = zustantStore.getMetadataFieldValue("type")
+    if (step >= 2 && type === "transfer_assets") {
+      const txs = (zustantStore.transferAssets?.transactions || []) as any[]
+      const anyValid = txs.some(tx => {
+        const rec = (tx?.recipient || "").trim()
+        const hasRecipient = !!rec && ethers.isAddress(rec)
+        if (!hasRecipient) return false
+        if (tx?.assetType === "transferERC721") {
+          const tokenIdStr = String(tx?.tokenId ?? "")
+          const addr = String(tx?.assetAddress || "")
+          return tokenIdStr !== "" && ethers.isAddress(addr)
+        }
+        if (tx?.assetType === "transferERC20") {
+          const nAmount = Number(typeof tx?.amount === "string" ? tx.amount : tx?.amount || 0)
+          const addr = String(tx?.assetAddress || "")
+          return Number.isFinite(nAmount) && nAmount > 0 && ethers.isAddress(addr)
+        }
+        const nAmount = Number(typeof tx?.amount === "string" ? tx.amount : tx?.amount || 0)
+        return Number.isFinite(nAmount) && nAmount > 0
+      })
+      dbg("EL-XFER:isNextDisabled", {
+        step,
+        type,
+        rows: txs.length,
+        anyValid,
+        payload: zustantStore.createProposalPayload
+      })
+      return !anyValid
+    }
+    return false
+  }, [zustantStore.currentStep, zustantStore.transferAssets?.transactions, zustantStore.getMetadataFieldValue("type")])
 
   const daoContract = useMemo(() => {
     console.log("DaoContract", daoSelected?.address, HbDaoAbi.abi)
@@ -817,15 +880,34 @@ export const useEvmProposalOps = () => {
         // At Step 2 we call the Contract
         // Validate payloads per proposal type before submitting
         if (proposalType !== "off_chain_debate") {
-          const payload = { ...zustantStore.createProposalPayload }
+          let payload = { ...zustantStore.createProposalPayload }
 
           // Type-aware validations and defaults
           if (proposalType === "transfer_assets") {
+            // Fallback: attempt to (re)build from current transaction rows before erroring
+            if (!Array.isArray(payload.calldatas) || payload.calldatas.length === 0) {
+              const txs = (zustantStore.transferAssets?.transactions || []) as any[]
+              try {
+                dbg("EL-XFER:nextStep:rebuild:start", { txs })
+                // Use store.getState() to read the freshly updated payload synchronously
+                zustantStore.setTransferAssets(txs, daoSelected?.registryAddress as string)
+                const latest = useEvmProposalCreateZustantStore.getState().createProposalPayload
+                payload = { ...latest }
+                dbg("EL-XFER:nextStep:rebuild:end", {
+                  targets: payload.targets?.length || 0,
+                  calldatas: payload.calldatas?.length || 0
+                })
+              } catch (e) {
+                dbg("EL-XFER:nextStep:rebuild:error", String((e as any)?.message || e))
+              }
+            }
+
             const hasTransfers = Array.isArray(payload.targets) && payload.targets.length > 0
             const hasCalldata = Array.isArray(payload.calldatas) && payload.calldatas.length > 0
             if (!hasTransfers || !hasCalldata) {
               openNotification({
-                message: "Add at least one valid transfer (recipient and amount)",
+                message:
+                  "Add at least one valid transfer (recipient + amount for tokens, or recipient + tokenId for NFTs)",
                 autoHideDuration: 3500,
                 variant: "error"
               })
@@ -1157,6 +1239,7 @@ export const useEvmProposalOps = () => {
     nextStep,
     prevStep,
     isDeploying,
+    isNextDisabled,
     ...zustantStore
   }
 }

@@ -42,7 +42,7 @@ const renderModal = (modal: EProposalType) => {
 
 export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean; handleClose: () => void }) => {
   const theme = useTheme()
-  const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, nextStep, prevStep } =
+  const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, isNextDisabled, nextStep, prevStep } =
     useEvmProposalOps()
   const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
   const daoCtx = React.useContext(EtherlinkContext)
@@ -191,7 +191,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         )}
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <BackButton disabled={isDeploying} onClick={prevStep.handler} />
-          <NextButton disabled={isLoading || isDeploying} onClick={nextStep.handler}>
+          <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
             {nextStep.text}
           </NextButton>
         </Grid>

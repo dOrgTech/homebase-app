@@ -16,15 +16,31 @@ export const useTreasury = (network: string, registryAddress?: string) => {
         setDaoRegistryDetails({ balance: ethBalance })
       }),
       getEtherTokenBalances(network, registryAddress).then(data => {
-        setDaoTreasuryTokens(
-          data?.map((token: any) => ({
-            address: token.token.address,
-            balance: ethers.formatUnits(token.value, Number(token.token.decimals)),
-            decimals: Number(token.token.decimals),
-            symbol: token.token?.symbol || "Unknown",
-            name: token.token?.name || "Unknown"
-          }))
-        )
+        // Keep only fungible tokens (ERC‑20). Blockscout exposes token.token.type
+        const mapped = (data || [])
+          .map((token: any) => {
+            const type = String(token?.token?.type || "").toUpperCase()
+            const address = token?.token?.address || token?.token?.contract_address || token?.token?.address_hash || ""
+            return {
+              address,
+              balance: ethers.formatUnits(token?.value, Number(token?.token?.decimals || 0)),
+              decimals: Number(token?.token?.decimals || 0),
+              symbol: token?.token?.symbol || "Unknown",
+              name: token?.token?.name || "Unknown",
+              type
+            }
+          })
+          // Filter out NFTs/collectibles shown separately under daoNfts
+          .filter((t: any) => {
+            const ty = t?.type || ""
+            if (!ty) return true // be permissive if type missing
+            // Accept ERC20 only
+            return ty.includes("ERC20") || ty.includes("ERC-20")
+          })
+          // Ensure we only include tokens with a valid contract address
+          .filter((t: any) => typeof t?.address === "string" && ethers.isAddress(t.address))
+
+        setDaoTreasuryTokens(mapped)
       }),
       getEtherlinkDAONfts(network, registryAddress).then(data => {
         setDaoNfts(data?.items)
