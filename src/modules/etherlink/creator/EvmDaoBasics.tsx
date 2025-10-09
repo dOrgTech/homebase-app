@@ -354,32 +354,38 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                 </SecondContainer>
                 {values.tokenDeploymentMechanism === "new" && (
                   <SecondContainer container item direction="row" wrap="wrap">
-                    <Grid container item direction="row" alignItems="center" xs={8}>
-                      <Grid item xs={1}>
-                        <Checkbox
-                          disableRipple
-                          checked={values.nonTransferable}
-                          inputProps={{
-                            "aria-label": "Non-transferable"
-                          }}
-                          onChange={() => {
-                            setFieldValue("nonTransferable", !values.nonTransferable)
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs>
-                        <Typography color="textSecondary" style={{ display: "flex", alignItems: "center" }}>
-                          Non-transferable
-                          <Tooltip
-                            placement="bottom"
-                            title={`
-                                This action is not reversible. When checked, tokens cannot be transferred between addresses.
-                            `}
+                    <Grid item xs={8}>
+                      <FormControlLabel
+                        style={{ marginLeft: 0 }}
+                        control={
+                          <Checkbox
+                            id="non-transferable"
+                            disableRipple
+                            checked={values.nonTransferable}
+                            inputProps={{ "aria-label": "Non-transferable" }}
+                            onChange={() => {
+                              setFieldValue("nonTransferable", !values.nonTransferable)
+                            }}
+                          />
+                        }
+                        label={
+                          <Typography
+                            component="span"
+                            color="textSecondary"
+                            style={{ display: "flex", alignItems: "center" }}
                           >
-                            <InfoIcon style={{ marginLeft: 8 }} />
-                          </Tooltip>
-                        </Typography>
-                      </Grid>
+                            Non-transferable
+                            <Tooltip
+                              placement="bottom"
+                              title={`
+                                This action is not reversible. When checked, tokens cannot be transferred between addresses.
+                              `}
+                            >
+                              <InfoIcon style={{ marginLeft: 8 }} />
+                            </Tooltip>
+                          </Typography>
+                        }
+                      />
                     </Grid>
                   </SecondContainer>
                 )}
