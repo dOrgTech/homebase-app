@@ -729,8 +729,21 @@ export const useEvmProposalOps = () => {
 
     const receipt = await tx.wait()
     console.log("Execute transaction confirmed:", receipt)
+    try {
+      if (daoProposalSelected?.id) {
+        proposalUiOverride.setExecuted(daoProposalSelected.id)
+      }
+    } catch (_) {
+      // ignore optimistic override errors
+    }
     return receipt
-  }, [daoContract, getProposalExecutionMetadata, getProposalExecutionTargetAddress])
+  }, [
+    daoContract,
+    daoProposalSelected?.id,
+    getProposalExecutionMetadata,
+    getProposalExecutionTargetAddress,
+    proposalUiOverride.setExecuted
+  ])
 
   const nextStep = {
     text: isLoading ? "Please wait..." : "Next",

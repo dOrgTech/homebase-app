@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-type ProposalStatusOverride = "queued" | "executable"
+type ProposalStatusOverride = "queued" | "executable" | "executed"
 
 type OverrideEntry = {
   status?: ProposalStatusOverride
@@ -12,6 +12,7 @@ interface ProposalUiOverrideState {
   overrides: Record<string, OverrideEntry | undefined>
   setQueued: (proposalId: string, eta?: number) => void
   setExecutable: (proposalId: string) => void
+  setExecuted: (proposalId: string) => void
   clear: (proposalId: string) => void
 }
 
@@ -29,6 +30,13 @@ export const useProposalUiOverride = create<ProposalUiOverrideState>(set => ({
       overrides: {
         ...state.overrides,
         [proposalId]: { status: "executable", updatedAt: Date.now() }
+      }
+    })),
+  setExecuted: proposalId =>
+    set(state => ({
+      overrides: {
+        ...state.overrides,
+        [proposalId]: { status: "executed", updatedAt: Date.now() }
       }
     })),
   clear: proposalId =>

@@ -56,7 +56,11 @@ const RenderProposalAction = () => {
     weight: pastWeightRaw
   } = usePastVoteWeight(
     { address: daoSelected?.address, token: daoSelected?.token, decimals: daoSelected?.decimals },
-    { id: daoProposalSelected?.id },
+    {
+      id: daoProposalSelected?.id,
+      status: liveDisplayStatus || daoProposalSelected?.status,
+      displayStatus: daoProposalSelected?.displayStatus
+    },
     signer?.address,
     (signer as any)?.provider || provider
   )
@@ -68,6 +72,7 @@ const RenderProposalAction = () => {
     if (!daoProposalSelected) return undefined
     // If UI override indicates queued but the local timer has ended,
     // treat as Executable to avoid waiting for Firestore refresh.
+    if (override?.status === "executed") return "Executed"
     if (override?.status === "queued")
       return !isTimerActiveComputed && timerLabelComputed === "Execution available in" ? "Executable" : "Queued"
     if (override?.status === "executable") return "Executable"

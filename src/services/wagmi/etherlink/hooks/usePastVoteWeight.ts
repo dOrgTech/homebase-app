@@ -12,6 +12,8 @@ type DaoLike = {
 
 type ProposalLike = {
   id?: string
+  status?: string | null
+  displayStatus?: string | null
 }
 
 export function usePastVoteWeight(
@@ -58,7 +60,7 @@ export function usePastVoteWeight(
     return () => {
       cancelled = true
     }
-  }, [dao?.address, dao?.token, proposal?.id, signerAddress, provider])
+  }, [dao?.address, dao?.token, proposal?.id, proposal?.status, proposal?.displayStatus, signerAddress, provider])
 
   const decimals = dao?.decimals || 0
   const human = useMemo(() => {
