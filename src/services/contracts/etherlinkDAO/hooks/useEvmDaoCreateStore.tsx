@@ -57,7 +57,7 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
           proposalThresholdPercentage: 0,
           proposalThreshold: 0
         },
-        members: [{ address: "", amountOfTokens: 0 }],
+        members: [{ address: "", amountOfTokens: 0, error: "" }],
         voting: {
           votingBlocksDay: 0,
           votingBlocksHours: 0,
@@ -554,7 +554,7 @@ const useEvmDaoCreateStore = () => {
                 variant: "error"
               })
             }
-            // Clear members when using wrapped token
+            // Clear members when using wrapped token to avoid mismatch with zero initial supply
             data.setFieldValue("members", [])
           }
         }
@@ -587,7 +587,6 @@ const useEvmDaoCreateStore = () => {
         if (data.currentStep === 4 && data.data.tokenDeploymentMechanism === "new") {
           console.log("Validating members at step 4:", data.data.members)
           const memberErrorExists = data.data.members.some((member: any) => member.error)
-          const memberZeroAllocation = data.data.members.some((member: any) => Number(member.amountOfTokens) === 0)
           const invalidAddresses = data.data.members.filter(
             (member: any) => !/^0x[a-fA-F0-9]{40}$/.test(member.address)
           )
@@ -605,7 +604,11 @@ const useEvmDaoCreateStore = () => {
               message: "Please fix all errors in the members section",
               variant: "error"
             })
-          } else if (memberZeroAllocation) {
+          }
+
+          const memberZeroAllocation = data.data.members.some((member: any) => Number(member.amountOfTokens) === 0)
+
+          if (memberZeroAllocation) {
             return notify({
               message: "All members must have a token allocation",
               variant: "error"

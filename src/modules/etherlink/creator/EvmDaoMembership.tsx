@@ -16,7 +16,44 @@ export const EvmDaoMembership = () => {
   const members = data.members as Member[]
   const isWrappedToken = data.tokenDeploymentMechanism === "wrapped"
 
-  // If wrapped token is selected, show a message instead
+  const handleMemberChange = (index: number, field: keyof Member, value: string) => {
+    const newMembers = [...members]
+    if (field === "amountOfTokens" && Number(value) < 0) {
+      newMembers[index].error = "Token amount must be non-negative"
+      setFieldValue("members", newMembers)
+      return
+    }
+    newMembers[index] = {
+      ...newMembers[index],
+      [field]: value,
+      error: ""
+    }
+    if (field === "address") {
+      const trimmedValue = value.trim()
+      const isDuplicateAddress = members.some((member: Member) => member.address === trimmedValue)
+
+      if (isDuplicateAddress) {
+        newMembers[index].error = "Address already exists"
+      } else if (isInvalidEvmAddress(trimmedValue)) {
+        newMembers[index].error = "Enter a valid etherlink address"
+      } else {
+        newMembers[index].error = ""
+      }
+    }
+    setFieldValue("members", newMembers)
+  }
+
+  const handleAddMember = () => {
+    setFieldValue("members", [...members, { address: "", amountOfTokens: 0, error: "" }])
+  }
+
+  const handleRemoveMember = (index: number) => {
+    setFieldValue(
+      "members",
+      members.filter((_, i) => i !== index)
+    )
+  }
+
   if (isWrappedToken) {
     return (
       <Box>
@@ -58,44 +95,6 @@ export const EvmDaoMembership = () => {
           </Typography>
         </Box>
       </Box>
-    )
-  }
-
-  const handleMemberChange = (index: number, field: keyof Member, value: string) => {
-    const newMembers = [...members]
-    if (field === "amountOfTokens" && Number(value) < 0) {
-      newMembers[index].error = "Token amount must be non-negative"
-      setFieldValue("members", newMembers)
-      return
-    }
-    newMembers[index] = {
-      ...newMembers[index],
-      [field]: value,
-      error: ""
-    }
-    if (field === "address") {
-      const trimmedValue = value.trim()
-      const isDuplicateAddress = members.some((member: Member) => member.address === trimmedValue)
-
-      if (isDuplicateAddress) {
-        newMembers[index].error = "Address already exists"
-      } else if (isInvalidEvmAddress(trimmedValue)) {
-        newMembers[index].error = "Enter a valid etherlink address"
-      } else {
-        newMembers[index].error = ""
-      }
-    }
-    setFieldValue("members", newMembers)
-  }
-
-  const handleAddMember = () => {
-    setFieldValue("members", [...members, { address: "", amountOfTokens: 0, error: "" }])
-  }
-
-  const handleRemoveMember = (index: number) => {
-    setFieldValue(
-      "members",
-      members.filter((_, i) => i !== index)
     )
   }
 
