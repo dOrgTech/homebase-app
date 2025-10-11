@@ -1,5 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react"
-import { useContext } from "react"
+import React, { useMemo, useState, useCallback, useContext, useEffect } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { Grid } from "components/ui"
 import { SmallButton } from "modules/common/SmallButton"
@@ -14,6 +13,7 @@ import { FilterProposalsDialog } from "modules/explorer/components/FiltersDialog
 import { Filters } from "modules/explorer/pages/User/components/UserMovements"
 import { useQuerySyncedFilters } from "modules/etherlink/explorer/filters/useQuerySyncedFilters"
 import { displayStatusFromKey, PTypeKey } from "modules/etherlink/explorer/filters/queryFilters"
+import { isFeatureEnabled } from "utils/features"
 
 export const EvmProposalsPage = () => {
   const { filters: qFilters, setFilters: setQFilters } = useQuerySyncedFilters()
@@ -22,13 +22,20 @@ export const EvmProposalsPage = () => {
     daoProposals as unknown as IEvmProposal[],
     daoSelected as any
   )
-  const selectedTab = qFilters.type === "offchain" ? 1 : 0
+  const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
+  const selectedTab = offchainEnabled && qFilters.type === "offchain" ? 1 : 0
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
+  useEffect(() => {
+    if (!offchainEnabled && qFilters.type === "offchain") {
+      setQFilters({ type: "onchain" })
+    }
+  }, [offchainEnabled, qFilters.type, setQFilters])
   const onChangeTab = useCallback(
     (idx: number) => {
+      if (!offchainEnabled && idx === 1) return
       setQFilters({ type: idx === 1 ? "offchain" : "onchain" })
     },
-    [setQFilters]
+    [offchainEnabled, setQFilters]
   )
 
   const tezosToDisplay: Record<string, string> = {
@@ -48,14 +55,23 @@ export const EvmProposalsPage = () => {
     const statusKeys = Array.isArray(qFilters.status) ? (qFilters.status as string[]) : []
     const filtered = (statusKeys || []).filter(s => s !== "all")
     if (filtered.length === 0) return true
-    const disp = toDisplayStatus(p.effectiveDisplayStatus || p.displayStatus || p.status)
+    const ds = (p as any).effectiveDisplayStatus || (p as any).displayStatus
+    const disp = (ds as any) || toDisplayStatus((p as any).status)
     const allowed = filtered.map(k => displayStatusFromKey(k as any)).filter(Boolean)
     return allowed.includes(disp as any)
   }
 
+  const resolveDisplayStatus = (p: any) => toDisplayStatus(p.effectiveDisplayStatus || p.displayStatus || p.status)
+
   const isOffchainActive = (p: any) => {
-    const disp = toDisplayStatus(p.effectiveDisplayStatus || p.displayStatus || p.status)
+    const disp = resolveDisplayStatus(p)
     return disp === "Active" || disp === "Pending"
+  }
+
+  const offchainStatusKeyForProposal = (p: any): "active" | "closed" | "no-quorum" => {
+    const disp = resolveDisplayStatus(p)
+    if (disp === "NoQuorum") return "no-quorum"
+    return isOffchainActive(p) ? "active" : "closed"
   }
 
   const matchesPtypeKey = (p: any, key: PTypeKey) => {
@@ -88,17 +104,16 @@ export const EvmProposalsPage = () => {
       if (ptypes.length > 0) {
         base = base.filter((p: any) => (ptypes as PTypeKey[]).some(k => matchesPtypeKey(p, k)))
       }
-    } else {
+    } else if (offchainEnabled) {
       // off-chain
       base = base.filter(p => p.type === "offchain")
-      const offStatuses = (qFilters.status || []) as string[]
-      const hasActive = offStatuses.includes("active")
-      const hasClosed = offStatuses.includes("closed")
-      if (hasActive && !hasClosed) base = base.filter(isOffchainActive)
-      if (hasClosed && !hasActive) base = base.filter(p => !isOffchainActive(p))
+      const offStatuses = ((qFilters.status || []) as string[]).filter(s => s !== "all")
+      if (offStatuses.length > 0) {
+        base = base.filter(p => offStatuses.includes(offchainStatusKeyForProposal(p)))
+      }
     }
     return base
-  }, [processedProposals, qFilters.author, qFilters.status, qFilters.ptype, selectedTab])
+  }, [processedProposals, qFilters.author, qFilters.status, qFilters.ptype, selectedTab, offchainEnabled])
 
   // Determine whether any filters are active for current tab to highlight the Filters pill
   const isFiltered = useMemo(() => {
@@ -106,9 +121,10 @@ export const EvmProposalsPage = () => {
     const statuses = (qFilters.status || []) as string[]
     const hasOnchainStatus = selectedTab === 0 && statuses.some(s => s !== "all")
     const hasPtype = selectedTab === 0 && (qFilters.ptype?.length || 0) > 0
-    const hasOffchainStatus = selectedTab === 1 && statuses.some(s => s === "active" || s === "closed")
+    const hasOffchainStatus =
+      offchainEnabled && selectedTab === 1 && statuses.some(s => s === "active" || s === "closed" || s === "no-quorum")
     return hasAuthor || hasOnchainStatus || hasPtype || hasOffchainStatus
-  }, [qFilters.author, qFilters.status, qFilters.ptype, selectedTab])
+  }, [qFilters.author, qFilters.status, qFilters.ptype, selectedTab, offchainEnabled])
 
   return (
     <>
@@ -117,6 +133,7 @@ export const EvmProposalsPage = () => {
         onChangeTab={onChangeTab}
         onOpenFilters={() => setOpenFiltersDialog(true)}
         isFiltered={isFiltered}
+        showOffchainTab={offchainEnabled}
         rightActions={
           <SmallButton variant="contained" color="secondary" onClick={() => setIsProposalDialogOpen(true)}>
             New Proposal
@@ -127,9 +144,11 @@ export const EvmProposalsPage = () => {
           <TabPanel value={selectedTab} index={0}>
             <EvmDaoProposalList proposals={(filteredProposals || []).filter(p => p.type !== "offchain")} />
           </TabPanel>
-          <TabPanel value={selectedTab} index={1}>
-            <EvmDaoProposalList proposals={(filteredProposals || []).filter(p => p.type === "offchain")} />
-          </TabPanel>
+          {offchainEnabled ? (
+            <TabPanel value={selectedTab} index={1}>
+              <EvmDaoProposalList proposals={(filteredProposals || []).filter(p => p.type === "offchain")} />
+            </TabPanel>
+          ) : null}
         </Grid>
       </ProposalsShell>
       <ProposalActionsDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
@@ -138,6 +157,7 @@ export const EvmProposalsPage = () => {
         handleClose={() => setOpenFiltersDialog(false)}
         selectedTab={selectedTab}
         showEvmType
+        offchainEnabled={offchainEnabled}
         saveFilters={(f: Filters) => {
           // Map dialog choices to query params
           const type = f?.evmType === "offchain" ? "offchain" : "onchain"
@@ -146,7 +166,15 @@ export const EvmProposalsPage = () => {
           const statusFromDialog = onchainStatusLabels
             .map(l => l.replace(/\s+/g, " ")) // normalize spaces
             .map(l =>
-              l === "passed" ? "succeeded" : l === "failed" ? "defeated" : l === "no quorum" ? "no-quorum" : l
+              l === "passed"
+                ? "succeeded"
+                : l === "failed"
+                ? "defeated"
+                : l === "no quorum"
+                ? "no-quorum"
+                : l === "dropped"
+                ? "defeated"
+                : l
             )
           const offchainStatus = f?.offchainStatus || "all"
           const status = type === "offchain" ? [offchainStatus] : statusFromDialog.length ? statusFromDialog : ["all"]

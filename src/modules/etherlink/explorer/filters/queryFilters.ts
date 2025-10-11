@@ -16,7 +16,7 @@ export type StatusKey =
   | "rejected"
   | "defeated"
 
-export type OffchainStatusKey = "all" | "active" | "closed"
+export type OffchainStatusKey = "all" | "active" | "closed" | "no-quorum"
 
 export type PTypeKey =
   | "registry"
@@ -125,8 +125,13 @@ export function canonicalStatuses(
     // allow 'active' explicitly; any non-active maps to 'closed'
     const keep: OffchainStatusKey[] = []
     for (const k of mapped) {
-      if (k === "active") keep.push("active")
-      else keep.push("closed")
+      if (k === "active") {
+        keep.push("active")
+      } else if (k === "no-quorum") {
+        keep.push("no-quorum")
+      } else {
+        keep.push("closed")
+      }
     }
     const unique = Array.from(new Set(keep))
     return unique.length === 0 ? ["all"] : unique
@@ -185,8 +190,8 @@ export function serializeFiltersToSearch(filters: ParsedFilters, prevSearch: str
   const statuses = (filters.status || []).filter(Boolean) as string[]
   const statusSet = Array.from(new Set(statuses))
   if (filters.type === "offchain") {
-    // offchain supports 'active' or 'closed'; omit when 'all' or empty
-    const off = statusSet.filter(s => s === "active" || s === "closed")
+    // offchain supports 'active', 'closed', or 'no-quorum'; omit when 'all' or empty
+    const off = statusSet.filter(s => s === "active" || s === "closed" || s === "no-quorum")
     if (off.length === 1) sp.set("status", off[0])
     if (off.length > 1) sp.set("status", off.sort().join(","))
   } else {

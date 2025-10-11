@@ -14,6 +14,8 @@ interface Props {
   saveFilters: (filters: Filters) => void
   // When true, show Etherlink EVM proposal type section
   showEvmType?: boolean
+  // Toggles Off-Chain-specific options; defaults to true
+  offchainEnabled?: boolean
 }
 
 const SectionTitle = styled(Typography)({
@@ -47,6 +49,7 @@ interface StatusOption {
 export enum OffchainStatus {
   ACTIVE = "active",
   CLOSED = "closed",
+  NO_QUORUM = "no-quorum",
   ALL = "all"
 }
 
@@ -55,14 +58,26 @@ export const FilterProposalsDialog: React.FC<Props> = ({
   handleClose,
   selectedTab,
   saveFilters,
-  showEvmType
+  showEvmType,
+  offchainEnabled = true
 }) => {
   const [filters, setFilters] = useState<StatusOption[]>([])
   const [status, setStatus] = useState<StatusOption[]>([])
   const [offchainStatus, setOffchainStatus] = useState<OffchainStatus>(OffchainStatus.ALL)
-  const proposalType = selectedTab === 0 ? ProposalType.ON_CHAIN : ProposalType.OFF_CHAIN
+  const isOffchainTab = offchainEnabled && selectedTab === 1
+  const proposalType = isOffchainTab ? ProposalType.OFF_CHAIN : ProposalType.ON_CHAIN
   const [order, setOrder] = useState<Order>(Order.RECENT)
   const [evmType, setEvmType] = useState<string>("all")
+
+  useEffect(() => {
+    // Off-chain tab should force the type filter to "offchain" so downstream
+    // consumers can reliably detect the scope even when the type section is hidden.
+    if (!isOffchainTab) {
+      setEvmType(prev => (prev === "offchain" ? "all" : prev))
+    } else {
+      setEvmType("offchain")
+    }
+  }, [selectedTab, isOffchainTab])
 
   const isSelected = (item: StatusOption) => {
     return filters.includes(item) ? true : false
@@ -83,8 +98,11 @@ export const FilterProposalsDialog: React.FC<Props> = ({
   const findStatus = () => {
     const values = Object.values(ProposalStatus)
     for (const item in values) {
+      const raw = values[item] as string
+      // For EVM proposals, prefer the term 'defeated' instead of Tezos 'dropped'
+      const label = showEvmType && raw === "dropped" ? "defeated" : raw
       const obj = {
-        label: values[item],
+        label,
         selected: false
       }
       setStatus(oldArray => [...oldArray, obj])
@@ -107,7 +125,7 @@ export const FilterProposalsDialog: React.FC<Props> = ({
   const showFilters = () => {
     const filterObject: Filters = {
       type: proposalType,
-      offchainStatus: offchainStatus,
+      offchainStatus: isOffchainTab ? offchainStatus : OffchainStatus.ALL,
       onchainStatus: filters,
       order: order,
       evmType
@@ -139,7 +157,7 @@ export const FilterProposalsDialog: React.FC<Props> = ({
           <Grid item>
             <SectionTitle>Proposal Status</SectionTitle>
           </Grid>
-          {selectedTab === 0 ? (
+          {!isOffchainTab ? (
             <Grid item container direction="row">
               {status.length > 0 &&
                 status.map((item, index) => {
@@ -170,6 +188,17 @@ export const FilterProposalsDialog: React.FC<Props> = ({
               >
                 <Typography>Closed</Typography>
               </StatusButton>
+              {showEvmType ? (
+                <StatusButton
+                  item
+                  onClick={() => saveOffchainStatus(OffchainStatus.NO_QUORUM)}
+                  style={
+                    offchainStatus === OffchainStatus.NO_QUORUM ? { backgroundColor: "#fff", color: "#1c1f23" } : {}
+                  }
+                >
+                  <Typography>No Quorum</Typography>
+                </StatusButton>
+              ) : null}
             </Grid>
           )}
         </Container>
@@ -178,7 +207,7 @@ export const FilterProposalsDialog: React.FC<Props> = ({
         {/** Shown only when consumer requests it via prop */}
         {/** Values mirror the previous Etherlink UI dropdown */}
         {/** "offchain" is available but typically used alongside the Off-Chain tab */}
-        {showEvmType ? (
+        {showEvmType && !isOffchainTab ? (
           <Container container direction="column">
             <Grid item>
               <SectionTitle>Type</SectionTitle>
@@ -186,7 +215,6 @@ export const FilterProposalsDialog: React.FC<Props> = ({
             <Grid item container direction="row">
               {[
                 "all",
-                "offchain",
                 "token",
                 "registry",
                 "transfer",
@@ -194,16 +222,18 @@ export const FilterProposalsDialog: React.FC<Props> = ({
                 "voting delay",
                 "voting period",
                 "proposal threshold"
-              ].map(option => (
-                <StatusButton
-                  key={`evm-type-${option}`}
-                  item
-                  onClick={() => setEvmType(option)}
-                  style={evmType === option ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
-                >
-                  <Typography style={{ textTransform: "capitalize" }}>{option}</Typography>
-                </StatusButton>
-              ))}
+              ]
+                .concat(offchainEnabled ? ["offchain"] : [])
+                .map(option => (
+                  <StatusButton
+                    key={`evm-type-${option}`}
+                    item
+                    onClick={() => setEvmType(option)}
+                    style={evmType === option ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+                  >
+                    <Typography style={{ textTransform: "capitalize" }}>{option}</Typography>
+                  </StatusButton>
+                ))}
             </Grid>
           </Container>
         ) : null}

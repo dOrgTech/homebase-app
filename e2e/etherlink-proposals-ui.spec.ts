@@ -6,6 +6,17 @@ import { test, expect } from "@playwright/test"
 const EXAMPLE_ETHERLINK_DAO =
   process.env.E2E_ETHERLINK_DAO_ADDRESS || "0x7a2C766A2b11a3D7AB984883Cff64388aDb8c1Aa"
 
+const parseEnabledFeatures = (raw?: string) => {
+  if (!raw) return []
+  return raw
+    .split(/[\s,]+/)
+    .map(token => token.trim().toLowerCase())
+    .filter(Boolean)
+}
+
+const ENABLED_FEATURES = parseEnabledFeatures(process.env.REACT_APP_ENABLED_FEATURES)
+const OFFCHAIN_ENABLED = ENABLED_FEATURES.includes("etherlink-offchain-debate")
+
 test.describe("etherlink proposals ui", () => {
   test("renders shell with tabs, filter, and new proposal", async ({ page }) => {
     await page.goto(`/explorer/etherlink/dao/${EXAMPLE_ETHERLINK_DAO}/proposals`)
@@ -16,7 +27,7 @@ test.describe("etherlink proposals ui", () => {
 
     // Tabs
     await expect(page.getByRole("button", { name: /On-Chain/i })).toBeVisible()
-    await expect(page.getByRole("button", { name: /Off-Chain/i })).toBeVisible()
+    await expect(page.getByRole("button", { name: /Off-Chain/i })).toHaveCount(OFFCHAIN_ENABLED ? 1 : 0)
 
     // Filter trigger and New Proposal action
     await expect(page.getByText(/Filter & Sort/i)).toBeVisible()

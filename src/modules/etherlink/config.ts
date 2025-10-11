@@ -19,7 +19,7 @@ export const STEPS = [
 export const EvmProposalOptions = [
   {
     label: "Off-Chain Debate",
-    description: "Post a thesis and have tokenized arguments around it",
+    description: "Create an off-chain poll for your community",
     modal: "off_chain_debate",
     proposal_type: () => "off_chain_debate",
     last_step: 2,

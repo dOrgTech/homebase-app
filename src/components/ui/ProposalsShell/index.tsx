@@ -68,6 +68,7 @@ type Props = {
   children?: React.ReactNode
   // When true, emphasize the Filter & Sort pill to indicate active filters
   isFiltered?: boolean
+  showOffchainTab?: boolean
 }
 
 export const ProposalsShell: React.FC<Props> = ({
@@ -78,10 +79,19 @@ export const ProposalsShell: React.FC<Props> = ({
   onOpenFilters,
   rightActions,
   children,
-  isFiltered = false
+  isFiltered = false,
+  showOffchainTab = true
 }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+
+  const resolvedSubtitle = React.useMemo(() => {
+    if (showOffchainTab) return subtitle
+    if (subtitle.includes("Off-Chain")) {
+      return "Create, view, and vote on proposals"
+    }
+    return subtitle
+  }, [showOffchainTab, subtitle])
 
   const ShellHeroContainer = styled(ContentContainer)({
     background: "inherit !important",
@@ -117,7 +127,7 @@ export const ProposalsShell: React.FC<Props> = ({
               </Grid>
               <Grid container direction="row">
                 <Typography variant="body1" style={{ color: theme.palette.primary.light }}>
-                  {subtitle}
+                  {resolvedSubtitle}
                 </Typography>
               </Grid>
             </Grid>
@@ -139,17 +149,19 @@ export const ProposalsShell: React.FC<Props> = ({
                 On-Chain
               </StyledTab>
             </Grid>
-            <Grid item>
-              <StyledTab
-                startIcon={selectedTab === 1 ? <UnlinkActive /> : <UnlinkInactive />}
-                disableElevation={true}
-                variant="contained"
-                onClick={() => onChangeTab(1)}
-                isSelected={selectedTab === 1}
-              >
-                Off-Chain
-              </StyledTab>
-            </Grid>
+            {showOffchainTab ? (
+              <Grid item>
+                <StyledTab
+                  startIcon={selectedTab === 1 ? <UnlinkActive /> : <UnlinkInactive />}
+                  disableElevation={true}
+                  variant="contained"
+                  onClick={() => onChangeTab(1)}
+                  isSelected={selectedTab === 1}
+                >
+                  Off-Chain
+                </StyledTab>
+              </Grid>
+            ) : null}
           </TabsContainer>
         </Grid>
 

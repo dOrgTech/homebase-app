@@ -20,6 +20,7 @@ import { EvmOffchainDebate } from "./EvmProposals/EvmOffchainDebate"
 import { EProposalType } from "../types"
 
 import { OptionContainer, ActionText, ActionDescriptionText, TitleContainer } from "components/ui"
+import { isFeatureEnabled } from "utils/features"
 
 const renderModal = (modal: EProposalType) => {
   switch (modal) {
@@ -48,6 +49,16 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const daoCtx = React.useContext(EtherlinkContext)
   const [isDelegating, setIsDelegating] = React.useState(false)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
+  const availableOptions = React.useMemo(() => {
+    if (offchainEnabled) return EvmProposalOptions
+    return EvmProposalOptions.filter(option => option.modal !== "off_chain_debate")
+  }, [offchainEnabled])
+  React.useEffect(() => {
+    if (!offchainEnabled && metadata.type === "off_chain_debate") {
+      setMetadataFieldValue("type", "")
+    }
+  }, [offchainEnabled, metadata.type, setMetadataFieldValue])
   const proposalTitle = EvmProposalOptions.find(option => option.modal === metadata.type)?.label
 
   const thresholdRaw = React.useMemo(() => {
@@ -75,7 +86,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
         <Grid container spacing={2}>
-          {EvmProposalOptions.map((option: any, index) => (
+          {availableOptions.map((option: any, index) => (
             <Grid
               item
               xs={isMobileSmall ? 12 : 4}
