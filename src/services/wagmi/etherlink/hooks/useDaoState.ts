@@ -119,10 +119,25 @@ export const useDaoState = ({ network }: { network: string }) => {
         const votesAgainst = new BigNumber(p?.against)
         const totalVotes = votesInFavor.plus(votesAgainst)
         const totalVoteCount = Number(p?.votesFor) + Number(p?.votesAgainst)
-        const totalSupply = new BigNumber(daoSelected?.totalSupply ?? "1")
-        const votesPercentage = totalVotes.div(totalSupply).times(100)
+        // Prefer per-proposal totalSupply (snapshot from indexer) and guard zero to avoid Infinity
+        const denomSupply = new BigNumber(((p as any)?.totalSupply ?? daoSelected?.totalSupply) || "0")
+        const votesPercentage = denomSupply.gt(0) ? totalVotes.div(denomSupply).times(100) : new BigNumber(0)
+        try {
+          console.log("[useDaoState] votes% (list)", {
+            proposalId: (p as any)?.id,
+            daoId: daoSelected?.id,
+            denomSupply: denomSupply.toString(),
+            proposalTotalSupply: (p as any)?.totalSupply,
+            daoTotalSupply: daoSelected?.totalSupply,
+            inFavor: (p as any)?.inFavor,
+            against: (p as any)?.against,
+            totalVotes: totalVotes.toString(),
+            votesPercentage: votesPercentage.toString()
+          })
+        } catch (_) {}
+
         const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
-        const daoTotalVotingWeight = new BigNumber(daoSelected?.totalSupply ?? "0")
+        const daoTotalVotingWeight = denomSupply
 
         const votingDelayInMinutes = daoSelected?.votingDelay || 1
         const votingDurationInMinutes = daoSelected?.votingDuration || 1
@@ -157,7 +172,28 @@ export const useDaoState = ({ network }: { network: string }) => {
           const votesInFavorWeight = new BigNumber(p?.inFavor)
           const votesAgainstWeight = new BigNumber(p?.against)
           const totalCast = votesInFavorWeight.plus(votesAgainstWeight)
-          const meetsQuorum = totalCast.div(daoTotalVotingWeight).times(100).gte(daoMinimumQuorum)
+          const meetsQuorum = daoTotalVotingWeight.gt(0)
+            ? totalCast.div(daoTotalVotingWeight).times(100).gte(daoMinimumQuorum)
+            : false
+          try {
+            console.log("[useDaoState] quorum (selected)", {
+              proposalId: (p as any)?.id,
+              totalCast: totalCast.toString(),
+              denomSupply: denomSupply.toString(),
+              daoMinimumQuorum: daoSelected?.quorum,
+              meetsQuorum
+            })
+          } catch (_) {}
+
+          try {
+            console.log("[useDaoState] quorum (list)", {
+              proposalId: (p as any)?.id,
+              totalCast: totalCast.toString(),
+              denomSupply: denomSupply.toString(),
+              daoMinimumQuorum: daoSelected?.quorum,
+              meetsQuorum
+            })
+          } catch (_) {}
 
           if (!meetsQuorum) {
             statusHistoryMap.push({
@@ -307,10 +343,25 @@ export const useDaoState = ({ network }: { network: string }) => {
     const votesAgainst = new BigNumber(p?.against)
     const totalVotes = votesInFavor.plus(votesAgainst)
     const totalVoteCount = Number(p?.votesFor) + Number(p?.votesAgainst)
-    const totalSupply = new BigNumber(daoSelected?.totalSupply ?? "1")
-    const votesPercentage = totalVotes.div(totalSupply).times(100)
+    // Prefer per-proposal totalSupply (snapshot from indexer) and guard zero to avoid Infinity
+    const denomSupply = new BigNumber(((p as any)?.totalSupply ?? daoSelected?.totalSupply) || "0")
+    const votesPercentage = denomSupply.gt(0) ? totalVotes.div(denomSupply).times(100) : new BigNumber(0)
+    try {
+      console.log("[useDaoState] votes% (selected)", {
+        proposalId: (p as any)?.id,
+        daoId: daoSelected?.id,
+        denomSupply: denomSupply.toString(),
+        proposalTotalSupply: (p as any)?.totalSupply,
+        daoTotalSupply: daoSelected?.totalSupply,
+        inFavor: (p as any)?.inFavor,
+        against: (p as any)?.against,
+        totalVotes: totalVotes.toString(),
+        votesPercentage: votesPercentage.toString()
+      })
+    } catch (_) {}
+
     const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
-    const daoTotalVotingWeight = new BigNumber(daoSelected?.totalSupply ?? "0")
+    const daoTotalVotingWeight = denomSupply
 
     const votingDelayInMinutes = daoSelected?.votingDelay || 1
     const votingDurationInMinutes = daoSelected?.votingDuration || 1
@@ -345,7 +396,9 @@ export const useDaoState = ({ network }: { network: string }) => {
       const votesInFavorWeight = new BigNumber(p?.inFavor)
       const votesAgainstWeight = new BigNumber(p?.against)
       const totalCast = votesInFavorWeight.plus(votesAgainstWeight)
-      const meetsQuorum = totalCast.div(daoTotalVotingWeight).times(100).gte(daoMinimumQuorum)
+      const meetsQuorum = daoTotalVotingWeight.gt(0)
+        ? totalCast.div(daoTotalVotingWeight).times(100).gte(daoMinimumQuorum)
+        : false
 
       if (!meetsQuorum) {
         statusHistoryMap.push({

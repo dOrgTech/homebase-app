@@ -18,6 +18,11 @@ export const ProposalHistory = ({
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
+  const safePct = Number.isFinite(votesQuorumPercentage) ? Math.max(0, Math.min(100, votesQuorumPercentage)) : 0
+  try {
+    console.log("[ProposalHistory] input/output", { input: votesQuorumPercentage, safePct })
+  } catch (_) {}
+
   return (
     <Grid item container direction="row" spacing={4} style={{ marginTop: 32, marginBottom: 12 }}>
       {/* Quorum card */}
@@ -34,7 +39,7 @@ export const ProposalHistory = ({
           >
             <Grid item>
               <ProgressBar
-                progress={votesQuorumPercentage}
+                progress={safePct}
                 radius={70}
                 strokeWidth={7}
                 strokeColor="#81FEB7"
@@ -42,9 +47,7 @@ export const ProposalHistory = ({
                 trackStrokeColor={theme.palette.primary.light}
               >
                 <div className="indicator">
-                  <ProgressText textcolor="#81FEB7">
-                    {`${formatNumber(new BigNumber(votesQuorumPercentage || 0))}%`}
-                  </ProgressText>
+                  <ProgressText textcolor="#81FEB7">{`${formatNumber(new BigNumber(safePct || 0))}%`}</ProgressText>
                 </div>
               </ProgressBar>
             </Grid>

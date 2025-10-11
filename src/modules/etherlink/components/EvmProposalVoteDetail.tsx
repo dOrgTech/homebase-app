@@ -66,6 +66,12 @@ export const EvmProposalVoteDetail: React.FC<{
   }, [poll, network, token, tokenData, totalVoteCount])
 
   const votesQuorumPercentage = daoProposalSelected?.votesWeightPercentage
+  try {
+    console.log("[EvmProposalVoteDetail] votesQuorumPercentage", {
+      id: (daoProposalSelected as any)?.id,
+      votesQuorumPercentage
+    })
+  } catch (_) {}
   return (
     <>
       <Container container direction="column" style={{ marginTop: 12, marginBottom: 12 }}>
