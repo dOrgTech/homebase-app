@@ -6,6 +6,8 @@ export const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
 }))
 
 export const CustomTableCell = styled(TableCell)(({ theme }) => ({
+  color: "white",
+  borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
   [theme.breakpoints.down("sm")]: {
     paddingBottom: 0,
     paddingLeft: "16px !important",
@@ -14,6 +16,8 @@ export const CustomTableCell = styled(TableCell)(({ theme }) => ({
 }))
 
 export const CustomTableCellValue = styled(TableCell)(({ theme }) => ({
+  color: "white",
+  borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
   [theme.breakpoints.down("sm")]: {
     paddingTop: 0,
     paddingRight: "16px !important",
@@ -27,5 +31,15 @@ export const RowValue = styled(Typography)(({ theme }) => ({
   fontSize: 18,
   [theme.breakpoints.down("sm")]: {
     fontSize: 16
+  }
+}))
+
+export const SummaryHeaderCell = styled(TableCell)(({ theme }) => ({
+  color: "white",
+  fontWeight: 500,
+  borderBottom: "1px solid rgba(255, 255, 255, 0.16)",
+  [theme.breakpoints.down("sm")]: {
+    paddingLeft: "16px !important",
+    paddingRight: "16px !important"
   }
 }))

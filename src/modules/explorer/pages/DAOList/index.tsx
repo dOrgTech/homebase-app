@@ -1,7 +1,8 @@
-import { CircularProgress, Grid, Link, Typography, useMediaQuery, useTheme } from "@material-ui/core"
+import { Button, CircularProgress, Grid, Link, Paper, Typography, useMediaQuery, useTheme } from "@material-ui/core"
 import { Navbar } from "../../components/Toolbar"
 import { TabPanel } from "modules/explorer/components/TabPanel"
-import React, { useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
+import { useHistory, useLocation } from "react-router-dom"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useAllDAOs } from "services/services/dao/hooks/useAllDAOs"
 import { ConnectMessage } from "./components/ConnectMessage"
@@ -16,10 +17,25 @@ import ReactPaginate from "react-paginate"
 import "./styles.css"
 import { LoadingLine } from "components/ui/LoadingLine"
 import { useQueryParam } from "modules/home/hooks/useQueryParam"
+import { getBlockExplorerUrl } from "modules/etherlink/utils"
+import AnalyticsService from "services/services/analytics"
+import { useRef } from "react"
 import { PageContainer, StyledTab, Search, DAOItemGrid, DAOItemCard, TabsContainer } from "./styled"
 
 export const DAOList: React.FC = () => {
   const { network, etherlink, account } = useTezos()
+  const history = useHistory()
+  const location = useLocation()
+
+  // Helper: clear multiple query params in a single history update to avoid push loops
+  const clearQueryParams = useCallback(
+    (keys: string[]) => {
+      const sp = new URLSearchParams(location.search)
+      keys.forEach(k => sp.delete(k))
+      history.replace({ pathname: location.pathname, search: sp.toString() })
+    },
+    [history, location.pathname, location.search]
+  )
   const {
     data: daos,
     isLoading,
@@ -34,6 +50,11 @@ export const DAOList: React.FC = () => {
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
   const [searchText, setSearchText] = useQueryParam("q")
+  const [postDeploy, setPostDeploy] = useQueryParam("postDeploy")
+  const [txParam, setTxParam] = useQueryParam("tx")
+  const [daoParam, setDaoParam] = useQueryParam("dao")
+  const [networkParam, setNetworkParam] = useQueryParam("network")
+  const explorerNetwork = (networkParam || network) as string
   const [selectedTab, setSelectedTab] = React.useState(0)
   const [currentPage, setCurrentPage] = useState(0)
 
@@ -66,6 +87,63 @@ export const DAOList: React.FC = () => {
       return []
     }
   }, [daos])
+
+  // Track banner show once
+  const hasTrackedBannerRef = useRef(false)
+  useEffect(() => {
+    if (postDeploy === "dao-created" && !hasTrackedBannerRef.current) {
+      hasTrackedBannerRef.current = true
+      try {
+        AnalyticsService.track("DAO Deployed Banner Shown", {
+          network: explorerNetwork,
+          hasDaoParam: Boolean(daoParam),
+          hasTxParam: Boolean(txParam)
+        })
+      } catch (_) {}
+    }
+  }, [postDeploy, explorerNetwork, daoParam, txParam])
+
+  // Auto-detect when the newly created DAO appears in the list and clear the banner.
+  useEffect(() => {
+    if (postDeploy !== "dao-created") return
+    if (!Array.isArray(formattedDAOs) || formattedDAOs.length === 0) return
+
+    const byAddress = daoParam
+      ? formattedDAOs.find(
+          (d: any) =>
+            d?.dao_type?.name === "etherlink_onchain" &&
+            (d?.address || d?.id || "").toLowerCase() === (daoParam || "").toLowerCase()
+        )
+      : null
+
+    if (byAddress) {
+      // Clear banner params then deep-link to the DAO page
+      try {
+        clearQueryParams(["postDeploy", "tx", "network", "dao"]) // keep q
+        history.push(`/explorer/etherlink/dao/${(daoParam || "").toLowerCase()}/overview`)
+        AnalyticsService.track("DAO Indexed Detected", {
+          matchedBy: "dao",
+          network: explorerNetwork
+        })
+      } catch (_) {}
+      return
+    }
+
+    // Fallback: if no explicit dao param, clear banner once a DAO with the same name appears
+    if (!daoParam && searchText) {
+      const q = String(searchText).trim().toLowerCase()
+      const byName = formattedDAOs.find(
+        (d: any) => d?.dao_type?.name === "etherlink_onchain" && (d?.name || "").trim().toLowerCase() === q
+      )
+      if (byName) {
+        clearQueryParams(["postDeploy", "tx", "network", "dao"]) // keep q
+        AnalyticsService.track("DAO Indexed Detected", {
+          matchedBy: "name",
+          network: explorerNetwork
+        })
+      }
+    }
+  }, [postDeploy, formattedDAOs, daoParam, searchText, clearQueryParams, history])
 
   const currentDAOs = useMemo(() => {
     if (daos) {
@@ -140,6 +218,50 @@ export const DAOList: React.FC = () => {
       <Navbar disableMobileMenu />
       <PageContainer>
         <Grid container style={{ gap: 32 }} direction="column">
+          {postDeploy === "dao-created" && (
+            <Grid item>
+              <Paper elevation={0} style={{ padding: 16, border: `1px solid ${theme.palette.secondary.main}` }}>
+                <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
+                  <Grid item xs={12} md>
+                    <Typography variant="h6" color="textPrimary" style={{ marginBottom: 4 }}>
+                      DAO deployed
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      We’re indexing it now. It should appear here shortly.
+                    </Typography>
+                  </Grid>
+                  <Grid item>
+                    {txParam ? (
+                      <Button
+                        color="secondary"
+                        variant="outlined"
+                        href={getBlockExplorerUrl(explorerNetwork, String(txParam))}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ marginRight: 8 }}
+                      >
+                        View transaction
+                      </Button>
+                    ) : null}
+                    <Button
+                      onClick={() => {
+                        clearQueryParams(["postDeploy", "tx", "dao", "network"]) // keep q
+                        try {
+                          AnalyticsService.track("DAO Deployed Banner Dismissed", {
+                            network: explorerNetwork
+                          })
+                        } catch (_) {}
+                      }}
+                      color="default"
+                      variant="text"
+                    >
+                      Dismiss
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+          )}
           <Grid item style={{ width: "inherit" }}>
             <Grid
               container

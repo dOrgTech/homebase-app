@@ -22,6 +22,9 @@ export const EvmDaoQuorum: React.FC = () => {
       />
       <StyledSliderWithValue
         defaultValue={getIn("quorum.returnedTokenPercentage")}
+        min={1}
+        max={99}
+        step={1}
         onChange={(newValue: number) => {
           setFieldValue("quorum.returnedTokenPercentage", newValue || 0)
         }}

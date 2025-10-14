@@ -170,7 +170,7 @@ const useEvmDaoCreateStore = () => {
   const wrapperAddress = wrapperAddressOverride || contractData?.wrapper_t
   const wrapperAddressForWrapped =
     wrapperWrappedOverride || contractData?.wrapper_w || "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2" // Fallback to known address
-  const { etherlink } = useTezos()
+  const { etherlink, network } = useTezos()
   const notify = useNotification()
 
   const deployDaoWithWrapper = useCallback(async () => {
@@ -489,7 +489,17 @@ const useEvmDaoCreateStore = () => {
       const receipt = await wrapper.wait()
       // .hash "0xa42621d950bf85d88e35e26b48eb69edd1d0c35b59ee282e3672b0e164ee9aba"
       console.log("Transaction confirmed:", receipt)
-      history.push(`/explorer/daos?q=${daoData.name}`)
+      try {
+        const params = new URLSearchParams()
+        if (daoData?.name) params.set("q", String(daoData.name))
+        params.set("postDeploy", "dao-created")
+        if (wrapper?.hash) params.set("tx", String(wrapper.hash))
+        if (network) params.set("network", String(network))
+        history.push(`/explorer/daos?${params.toString()}`)
+      } catch (_) {
+        // Fallback to legacy behavior if URLSearchParams fails for any reason
+        history.push(`/explorer/daos?q=${encodeURIComponent(daoData.name || "")}&postDeploy=dao-created`)
+      }
       // history.push("/explorer/etherlink/dao/0x287915D27CC4FC967Ca10AA20242d80d99caCe5e/overview")
     } catch (error: any) {
       console.error("=== DAO Deployment Error ===")
