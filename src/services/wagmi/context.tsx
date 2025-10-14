@@ -28,6 +28,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const { setOpen } = useModal()
   const { switchChain } = useSwitchChain()
   const { network: contextNetwork } = useNetwork()
+  const { setNetwork } = useNetwork()
   const [signerTokenBalances, setSignerTokenBalances] = useState<any[]>([])
   const posthog = usePostHog()
 
@@ -57,9 +58,18 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const switchToNetwork = useCallback(
     (network: string) => {
       const networkId = network === "etherlink_mainnet" ? etherlink.id : etherlinkTestnet.id
+      // Switch wallet chain
       switchChain({ chainId: networkId })
 
-      // Best-effort PostHog identify; avoid tying this to posthog object identity
+      // Keep app-level network in sync so data layer follows immediately
+      try {
+        setNetwork(network)
+      } catch (_) {}
+      try {
+        window?.localStorage?.setItem?.("homebase:network", network)
+      } catch (_) {}
+
+      // Best-effort PostHog identify
       try {
         if (address) {
           posthog?.identify(address, {
@@ -70,7 +80,7 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
         }
       } catch (_) {}
     },
-    [switchChain, address]
+    [switchChain, address, setNetwork]
   )
 
   const connectWallet = useCallback(() => setOpen(true), [setOpen])
