@@ -34,18 +34,19 @@ export const EtherlinkProvider: React.FC<{ children: ReactNode }> = ({ children 
   const { address, isConnected, chain } = useWagmiAccount()
 
   const etherlinkNetwork = useMemo(() => {
-    // Prefer explicit chain id/name from wagmi if present
+    // App network selection takes precedence for data fetching/UI state.
+    if (contextNetwork?.startsWith("etherlink")) {
+      return contextNetwork
+    }
+    // Otherwise, infer from connected wallet chain when available
     if (chain?.id === etherlink.id || chain?.name === "Etherlink") {
       return "etherlink_mainnet"
     }
     if (chain?.id === etherlinkTestnet.id || chain?.name === "Etherlink Testnet") {
       return "etherlink_testnet"
     }
-    // Align default with ConnectKit/Web3Provider initialChainId (testnet) when global context is non-etherlink
-    if (!contextNetwork?.startsWith("etherlink")) {
-      return "etherlink_testnet"
-    }
-    return contextNetwork
+    // Default to testnet when no explicit app selection or wallet chain
+    return "etherlink_testnet"
   }, [chain?.id, chain?.name, contextNetwork])
 
   // Bind provider/signer to the wallet's active chain to avoid

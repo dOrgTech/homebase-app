@@ -48,6 +48,9 @@ export const useDaoState = ({ network }: { network: string }) => {
   const [refreshCount, setRefreshCount] = useState(0)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Track previous root collection to cleanup listeners and avoid stale data flashes
+  const prevRootCollectionRef = useRef<string | null>(null)
+
   const recomputeDataAfter = useCallback((seconds: number) => {
     // Prevent zero/negative delays from missing the exact boundary transition.
     // Use a minimal delay when we're at or just past the boundary to force a quick recompute.
@@ -74,6 +77,23 @@ export const useDaoState = ({ network }: { network: string }) => {
     if (firebaseRootCollection) fetchCollection(firebaseRootCollection)
     if (firebaseRootTokenCollection) fetchCollection(firebaseRootTokenCollection)
   }, [fetchCollection, firebaseRootCollection, firebaseRootTokenCollection])
+
+  // When the root collection changes (i.e., network change), clear previous data promptly
+  useEffect(() => {
+    const prevKey = prevRootCollectionRef.current
+    if (prevKey && prevKey !== firebaseRootCollection && fsClearRef.current) {
+      try {
+        fsClearRef.current(prevKey)
+      } catch (_) {}
+    }
+
+    // Reset local state so UI reflects the network switch immediately
+    setDaoData([])
+    setDaoSelected(null)
+    setIsLoadingDaos(!!firebaseRootCollection)
+
+    prevRootCollectionRef.current = firebaseRootCollection || null
+  }, [firebaseRootCollection])
 
   // Map Firestore data to DAOs and contracts
   useEffect(() => {

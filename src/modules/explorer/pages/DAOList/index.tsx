@@ -23,6 +23,19 @@ import { useRef } from "react"
 import { PageContainer, StyledTab, Search, DAOItemGrid, DAOItemCard, TabsContainer } from "./styled"
 
 export const DAOList: React.FC = () => {
+  type FormattedDAO = {
+    id: string
+    address: string
+    name: string
+    description: string
+    symbol: string
+    token: string
+    dao_type: { name: string }
+    votingAddresses: string[]
+    votingAddressesCount: number
+    allowPublicAccess: boolean
+    holders_count?: number
+  }
   const { network, etherlink, account } = useTezos()
   const history = useHistory()
   const location = useLocation()
@@ -61,10 +74,10 @@ export const DAOList: React.FC = () => {
   const [offset, setOffset] = useState(0)
   const pageCount = Math.ceil(daos ? daos.length / 16 : 0)
 
-  const formattedDAOs = useMemo(() => {
+  const formattedDAOs = useMemo<FormattedDAO[]>(() => {
     if (daos) {
       return daos
-        .map(dao => {
+        .map((dao: any): FormattedDAO => {
           const votingAddressesCount =
             dao.dao_type.name === "lite" ? dao.votingAddressesCount : dao.ledgers ? dao.ledgers?.length : 0
           return {
@@ -77,12 +90,12 @@ export const DAOList: React.FC = () => {
             dao_type: {
               name: dao.dao_type.name
             },
-            votingAddresses: dao.ledgers?.map((l: { holder: { address: any } }) => l.holder.address) || [],
+            votingAddresses: dao.ledgers?.map((l: { holder: { address: string } }) => l.holder.address) || [],
             votingAddressesCount: votingAddressesCount || dao.holders_count || 0,
             allowPublicAccess: dao.dao_type.name === "lite" ? dao.allowPublicAccess : true
           }
         })
-        .sort((a, b) => b.votingAddressesCount - a.votingAddressesCount)
+        .sort((a: FormattedDAO, b: FormattedDAO) => b.votingAddressesCount - a.votingAddressesCount)
     } else {
       return []
     }
@@ -110,7 +123,7 @@ export const DAOList: React.FC = () => {
 
     const byAddress = daoParam
       ? formattedDAOs.find(
-          (d: any) =>
+          (d: FormattedDAO) =>
             d?.dao_type?.name === "etherlink_onchain" &&
             (d?.address || d?.id || "").toLowerCase() === (daoParam || "").toLowerCase()
         )
@@ -133,7 +146,7 @@ export const DAOList: React.FC = () => {
     if (!daoParam && searchText) {
       const q = String(searchText).trim().toLowerCase()
       const byName = formattedDAOs.find(
-        (d: any) => d?.dao_type?.name === "etherlink_onchain" && (d?.name || "").trim().toLowerCase() === q
+        (d: FormattedDAO) => d?.dao_type?.name === "etherlink_onchain" && (d?.name || "").trim().toLowerCase() === q
       )
       if (byName) {
         clearQueryParams(["postDeploy", "tx", "network", "dao"]) // keep q
@@ -145,11 +158,11 @@ export const DAOList: React.FC = () => {
     }
   }, [postDeploy, formattedDAOs, daoParam, searchText, clearQueryParams, history])
 
-  const currentDAOs = useMemo(() => {
+  const currentDAOs = useMemo<FormattedDAO[]>(() => {
     if (daos) {
       if (searchText) {
         return formattedDAOs.filter(
-          formattedDao =>
+          (formattedDao: FormattedDAO) =>
             (formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())) ||
             (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
         )
@@ -162,18 +175,18 @@ export const DAOList: React.FC = () => {
     return []
   }, [daos, searchText, offset, formattedDAOs])
 
-  const myDAOs = useMemo(() => {
+  const myDAOs = useMemo<FormattedDAO[]>(() => {
     if (daos) {
       if (searchText) {
         return formattedDAOs.filter(
-          formattedDao =>
+          (formattedDao: FormattedDAO) =>
             (formattedDao.name && formattedDao.name.toLowerCase().includes(searchText.toLowerCase())) ||
             (formattedDao.symbol && formattedDao.symbol.toLowerCase().includes(searchText.toLowerCase()))
         )
       }
       const accountAddress = account || etherlink?.account?.address
 
-      return formattedDAOs.filter(dao => {
+      return formattedDAOs.filter((dao: FormattedDAO) => {
         // Tezos and Lite DAOs
         if (dao.dao_type?.name !== "etherlink_onchain") return dao.votingAddresses.includes(accountAddress)
 
@@ -338,7 +351,7 @@ export const DAOList: React.FC = () => {
           <Grid item>
             <TabPanel value={selectedTab} index={0}>
               <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                {currentDAOs.map((dao, i) =>
+                {currentDAOs.map((dao: FormattedDAO, i: number) =>
                   dao.allowPublicAccess ? (
                     <DAOItemCard key={`dao-${i}`} item>
                       <DAOItem dao={dao} />
@@ -378,7 +391,7 @@ export const DAOList: React.FC = () => {
                   ) : !(account || etherlink?.isConnected) ? (
                     <ConnectMessage />
                   ) : myDAOs.length > 0 ? (
-                    myDAOs.map((dao, i) => (
+                    myDAOs.map((dao: FormattedDAO, i: number) => (
                       <DAOItemCard key={`mine-${i}`} item>
                         <DAOItem dao={dao} />
                       </DAOItemCard>

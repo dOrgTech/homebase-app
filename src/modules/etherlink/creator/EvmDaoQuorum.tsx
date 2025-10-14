@@ -50,6 +50,7 @@ export const EvmDaoQuorum: React.FC = () => {
           <InputText
             type="number"
             placeholder="0"
+            style={{ minWidth: 120 }}
             inputProps={{
               min: "0",
               step: "1"
