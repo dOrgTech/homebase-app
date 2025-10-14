@@ -178,30 +178,33 @@ export const DAOList: React.FC = () => {
           <Grid item>
             <Grid container>
               <Grid item>
-                <TabsContainer container>
-                  <Grid item>
-                    <StyledTab
-                      startIcon={selectedTab === 0 ? <TabsSelectedIcon /> : <TabsIcon />}
-                      variant="contained"
-                      disableElevation={true}
-                      onClick={() => handleChangeTab(0)}
-                      isSelected={selectedTab === 0}
-                    >
-                      All
-                    </StyledTab>
-                  </Grid>
-                  <Grid item>
-                    <StyledTab
-                      startIcon={selectedTab === 1 ? <MyDAOsSelectedIcon /> : <MyDAOsIcon />}
-                      disableElevation={true}
-                      variant="contained"
-                      onClick={() => handleChangeTab(1)}
-                      isSelected={selectedTab === 1}
-                    >
-                      My DAOs
-                    </StyledTab>
-                  </Grid>
-                </TabsContainer>
+                {/* Only show tabs on Tezos networks (non-Etherlink). */}
+                {!network?.startsWith("etherlink") ? (
+                  <TabsContainer container>
+                    <Grid item>
+                      <StyledTab
+                        startIcon={selectedTab === 0 ? <TabsSelectedIcon /> : <TabsIcon />}
+                        variant="contained"
+                        disableElevation={true}
+                        onClick={() => handleChangeTab(0)}
+                        isSelected={selectedTab === 0}
+                      >
+                        All
+                      </StyledTab>
+                    </Grid>
+                    <Grid item>
+                      <StyledTab
+                        startIcon={selectedTab === 1 ? <MyDAOsSelectedIcon /> : <MyDAOsIcon />}
+                        disableElevation={true}
+                        variant="contained"
+                        onClick={() => handleChangeTab(1)}
+                        isSelected={selectedTab === 1}
+                      >
+                        My DAOs
+                      </StyledTab>
+                    </Grid>
+                  </TabsContainer>
+                ) : null}
               </Grid>
             </Grid>
           </Grid>
@@ -244,23 +247,26 @@ export const DAOList: React.FC = () => {
                 ) : null}
               </DAOItemGrid>
             </TabPanel>
-            <TabPanel value={selectedTab} index={1}>
-              <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
-                {network?.includes("etherlink") && isLoadingMyDaos ? (
-                  <LoadingLine color={theme.palette.secondary.main} height={3} barWidth={40} />
-                ) : !(account || etherlink?.isConnected) ? (
-                  <ConnectMessage />
-                ) : myDAOs.length > 0 ? (
-                  myDAOs.map((dao, i) => (
-                    <DAOItemCard key={`mine-${i}`} item>
-                      <DAOItem dao={dao} />
-                    </DAOItemCard>
-                  ))
-                ) : (
-                  <Typography color="textPrimary">You have not joined any DAO</Typography>
-                )}
-              </DAOItemGrid>
-            </TabPanel>
+            {/* My DAOs tab content is only relevant on Tezos networks. */}
+            {!network?.startsWith("etherlink") ? (
+              <TabPanel value={selectedTab} index={1}>
+                <DAOItemGrid container justifyContent={isMobileSmall ? "center" : "flex-start"}>
+                  {network?.includes("etherlink") && isLoadingMyDaos ? (
+                    <LoadingLine color={theme.palette.secondary.main} height={3} barWidth={40} />
+                  ) : !(account || etherlink?.isConnected) ? (
+                    <ConnectMessage />
+                  ) : myDAOs.length > 0 ? (
+                    myDAOs.map((dao, i) => (
+                      <DAOItemCard key={`mine-${i}`} item>
+                        <DAOItem dao={dao} />
+                      </DAOItemCard>
+                    ))
+                  ) : (
+                    <Typography color="textPrimary">You have not joined any DAO</Typography>
+                  )}
+                </DAOItemGrid>
+              </TabPanel>
+            ) : null}
           </Grid>
         </Grid>
       </PageContainer>
