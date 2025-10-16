@@ -39,4 +39,5 @@ node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
-/playwright/.cache/
+/playwright/.cache/contract-call-layout-fixed.png
+e2e/contract-call-layout.spec.ts

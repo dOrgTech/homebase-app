@@ -6,15 +6,16 @@ import { ethers } from "ethers"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { ThemedTabButton } from "components/ui/ThemedTabButton"
 
-// Using FormField wrappers to match Tezos input styling
-
 export const EvmPropContractCall: React.FC = () => {
   const { network } = useTezos()
   const { daoContractCall, setDaoContractCall } = useEvmProposalOps()
   const [writeMethods, setWriteMethods] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState<"callData" | "writeMethods">("callData")
+  const [activeTab, setActiveTab] = useState<"callData" | "writeMethods" | "computeCallData">("callData")
   const [selectedMethod, setSelectedMethod] = useState<string>("")
   const [methodInput, setMethodInput] = useState<string>("")
+  const [functionSignature, setFunctionSignature] = useState<string>("")
+  const [parsedInputs, setParsedInputs] = useState<{ type: string; name: string }[]>([])
+  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({})
 
   const generateCallData = useCallback(() => {
     if (!selectedMethod || !daoContractCall.targetAddress) return
@@ -35,6 +36,138 @@ export const EvmPropContractCall: React.FC = () => {
     }
   }, [selectedMethod, daoContractCall.targetAddress, writeMethods, methodInput, setDaoContractCall])
 
+  const parseFunctionSignature = useCallback((signature: string) => {
+    try {
+      // Parse function signature like: transfer(address to, uint256 amount)
+      const match = signature.match(/^(\w+)\((.*)\)$/)
+      if (!match) {
+        setParsedInputs([])
+        return
+      }
+
+      const paramsString = match[2].trim()
+      if (!paramsString) {
+        // Allow functions with no parameters (e.g., totalSupply())
+        setParsedInputs([])
+        return
+      }
+
+      // Split parameters and parse each one
+      // Handle array types by looking for balanced brackets
+      const params: { type: string; name: string }[] = []
+      let currentParam = ""
+      let bracketDepth = 0
+
+      for (let i = 0; i < paramsString.length; i++) {
+        const char = paramsString[i]
+        if (char === "[") {
+          bracketDepth++
+          currentParam += char
+        } else if (char === "]") {
+          bracketDepth--
+          currentParam += char
+        } else if (char === "," && bracketDepth === 0) {
+          // Process the accumulated parameter
+          const parts = currentParam.trim().split(/\s+/)
+          if (parts.length >= 2) {
+            params.push({
+              type: parts[0],
+              name: parts.slice(1).join(" ")
+            })
+          }
+          currentParam = ""
+        } else {
+          currentParam += char
+        }
+      }
+
+      // Process the last parameter
+      if (currentParam.trim()) {
+        const parts = currentParam.trim().split(/\s+/)
+        if (parts.length >= 2) {
+          params.push({
+            type: parts[0],
+            name: parts.slice(1).join(" ")
+          })
+        }
+      }
+
+      setParsedInputs(params)
+      // Reset input values when signature changes
+      setInputValues({})
+    } catch (error) {
+      console.error("Error parsing function signature:", error)
+      setParsedInputs([])
+    }
+  }, [])
+
+  const computeCallDataFromSignature = useCallback(() => {
+    if (!functionSignature) return
+
+    try {
+      // Build the function ABI from the signature
+      const functionName = functionSignature.match(/^(\w+)/)?.[1]
+      if (!functionName) return
+
+      const inputs = parsedInputs.map(input => ({
+        type: input.type,
+        name: input.name
+      }))
+
+      const abi = [
+        {
+          name: functionName,
+          type: "function",
+          inputs: inputs,
+          outputs: []
+        }
+      ]
+
+      const iface = new ethers.Interface(abi)
+
+      // Get the values in the correct order
+      // Validate that all required inputs have values
+      const values = parsedInputs.map(input => {
+        const value = inputValues[input.name] || ""
+        if (!value) {
+          // Don't encode if any input is missing
+          return null
+        }
+        return value
+      })
+
+      // Only encode if all inputs have values or if there are no inputs
+      if (values.includes(null) && parsedInputs.length > 0) {
+        return
+      }
+
+      // Encode the function data
+      const callData = iface.encodeFunctionData(
+        functionName,
+        values.filter(v => v !== null)
+      )
+      setDaoContractCall("callData", callData)
+    } catch (error) {
+      console.error("Error computing callData from signature:", error)
+      alert("Error computing callData. Check your function signature and inputs.")
+    }
+  }, [functionSignature, parsedInputs, inputValues, setDaoContractCall])
+
+  useEffect(() => {
+    parseFunctionSignature(functionSignature)
+  }, [functionSignature, parseFunctionSignature])
+
+  useEffect(() => {
+    // Debounce the computation to avoid excessive re-encoding
+    const timeoutId = setTimeout(() => {
+      if (activeTab === "computeCallData") {
+        computeCallDataFromSignature()
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [activeTab, parsedInputs, inputValues, computeCallDataFromSignature])
+
   useEffect(() => {
     if (daoContractCall.targetAddress) {
       getContractDetails(daoContractCall.targetAddress, network).then(data => {
@@ -50,41 +183,34 @@ export const EvmPropContractCall: React.FC = () => {
   console.log("Write Methods", JSON.stringify(writeMethods, null, 2))
 
   return (
-    <Grid container direction="column" style={{ gap: 18 }}>
+    <Grid container direction="row" style={{ gap: 18 }}>
+      {/* Row 1: Target Contract Address and Value in the same row */}
       <Grid item xs={12}>
-        <FormField label="Target Contract Address" labelStyle={{ fontSize: 16 }}>
-          <FormTextField
-            defaultValue={daoContractCall.targetAddress}
-            placeholder="0x..."
-            onChange={e => setDaoContractCall("targetAddress", e.target.value)}
-            inputProps={{ style: { fontSize: 14 } }}
-          />
-        </FormField>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={8}>
+            <FormField label="Target Contract Address" labelStyle={{ fontSize: 16 }}>
+              <FormTextField
+                defaultValue={daoContractCall.targetAddress}
+                placeholder="0x..."
+                onChange={e => setDaoContractCall("targetAddress", e.target.value)}
+                inputProps={{ style: { fontSize: 14 } }}
+              />
+            </FormField>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FormField label="Value (ETH)" labelStyle={{ fontSize: 16 }}>
+              <FormTextField
+                defaultValue={daoContractCall.value}
+                placeholder="0"
+                type="number"
+                onChange={e => setDaoContractCall("value", e.target.value)}
+                inputProps={{ style: { fontSize: 14 }, min: 0 }}
+              />
+            </FormField>
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <FormField label="Value (ETH)" labelStyle={{ fontSize: 16 }}>
-          <FormTextField
-            defaultValue={daoContractCall.value}
-            placeholder="0"
-            type="number"
-            onChange={e => setDaoContractCall("value", e.target.value)}
-            inputProps={{ style: { fontSize: 14 }, min: 0 }}
-          />
-        </FormField>
-      </Grid>
-      {/* This can be added if we add an option for the user to input the function definition */}
-      {/* <Grid item xs={12}>
-        <StyledTextField
-          fullWidth
-          defaultValue={daoContractCall.functionDefinition}
-          label="Function JSON Definition"
-          multiline
-          minRows={3}
-          variant="outlined"
-          onChange={e => setDaoContractCall("functionDefinition", e.target.value)}
-        />
-      </Grid> */}
-
+      {/* Row 2: Tabs and Content */}
       <Grid item xs={12}>
         <Box>
           <ThemedTabButton active={activeTab === "callData"} onClick={() => setActiveTab("callData")}>
@@ -108,6 +234,9 @@ export const EvmPropContractCall: React.FC = () => {
               </ThemedTabButton>
             </span>
           </Tooltip>
+          <ThemedTabButton active={activeTab === "computeCallData"} onClick={() => setActiveTab("computeCallData")}>
+            Compute CallData
+          </ThemedTabButton>
         </Box>
 
         {activeTab === "callData" && (
@@ -164,6 +293,46 @@ export const EvmPropContractCall: React.FC = () => {
                 </FormField>
               </Box>
             </Box>
+          </Box>
+        )}
+
+        {activeTab === "computeCallData" && (
+          <Box display="flex" flexDirection="column" width="100%" style={{ gap: 16 }}>
+            <FormField label="Function to Call" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                value={functionSignature}
+                onChange={e => setFunctionSignature(e.target.value)}
+                placeholder="e.g., transfer(address to, uint256 amount)"
+                inputProps={{ style: { fontSize: 14 } }}
+              />
+            </FormField>
+
+            {parsedInputs.length > 0 && (
+              <Box>
+                <Box style={{ marginBottom: 12, fontSize: 16, fontWeight: 500, color: "#fff" }}>Function Arguments</Box>
+                {parsedInputs.map((input, index) => (
+                  <Box key={index} style={{ marginBottom: 12 }}>
+                    <FormField
+                      label={`${input.name} (${input.type})`}
+                      labelStyle={{ fontSize: 14 }}
+                      containerStyle={{ gap: 8 }}
+                    >
+                      <FormTextField
+                        value={inputValues[input.name] || ""}
+                        onChange={e => {
+                          setInputValues(prev => ({
+                            ...prev,
+                            [input.name]: e.target.value
+                          }))
+                        }}
+                        placeholder={`Enter ${input.name}`}
+                        inputProps={{ style: { fontSize: 14 } }}
+                      />
+                    </FormField>
+                  </Box>
+                ))}
+              </Box>
+            )}
           </Box>
         )}
       </Grid>
