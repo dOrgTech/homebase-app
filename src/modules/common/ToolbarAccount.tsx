@@ -19,23 +19,15 @@ const StyledPopover = styled(Popover)({
   }
 })
 
-const AddressBarWrapper: React.FC<any> = ({ variant, onClick, ...props }) => {
-  const theme = useTheme()
-  const background = variant === "common" ? theme.palette.primary.dark : theme.palette.primary.main
-  const StyledGrid = styled(Grid)(({ theme }) => ({
-    borderRadius: 8,
-    background: background,
-    paddingLeft: 16,
-    paddingRight: 16,
-    paddingTop: 5,
-    paddingBottom: 6,
-    boxSizing: "border-box"
-  }))
-
-  return <StyledGrid onClick={onClick} item {...props} />
-}
-
-AddressBarWrapper.displayName = "AddressBarWrapper"
+const AddressBarWrapper = styled(Grid)(({ theme }) => ({
+  borderRadius: 8,
+  background: theme.palette.primary.dark,
+  paddingLeft: 16,
+  paddingRight: 16,
+  paddingTop: 5,
+  paddingBottom: 6,
+  boxSizing: "border-box"
+}))
 
 const AddressContainer = styled(Grid)({
   cursor: "pointer"
@@ -70,11 +62,11 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"))
 
   const { open: openUserMenuSheet } = useActionSheet(ActionSheet.UserMenu)
+  const { open: openNetworkSheet } = useActionSheet(ActionSheet.Network)
   const walletAddress = network.startsWith("etherlink") ? etherlink.account?.address : tzAccountAddress
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
   const [popperOpen, setPopperOpen] = useState(false)
-  const [networkPopperOpen, setNetworkPopperOpen] = useState(false)
 
   // Methods for Common - Start
 
@@ -89,7 +81,11 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
   }
 
   const handleNetworkClick = (event: React.MouseEvent<any>) => {
-    setNetworkPopperOpen(!networkPopperOpen)
+    try {
+      openNetworkSheet()
+    } finally {
+      setPopperOpen(false)
+    }
   }
 
   // Methods for Common - End
@@ -112,7 +108,13 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
         <Grid item>
           <Grid container alignItems="center" style={{ gap: 8 }}>
             <Grid item>{variant === "common" ? <ChangeNetworkButton_Common /> : <ChangeNetworkButton_Explorer />}</Grid>
-            <AddressBarWrapper onClick={handleAddressbarClick} variant={variant}>
+            <AddressBarWrapper
+              item
+              onClick={handleAddressbarClick}
+              style={{
+                background: variant === "common" ? theme.palette.primary.dark : theme.palette.primary.main
+              }}
+            >
               <AddressContainer
                 container
                 alignItems="center"
