@@ -121,7 +121,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
                 style={{ gap: variant === "explorer" ? 16 : 8 }}
               >
                 <Grid item>
-                  <ProfileAvatar size={22} address={account} />
+                  <ProfileAvatar size={22} address={walletAddress || ""} />
                 </Grid>
                 <Grid item>
                   {variant === "common" ? (
@@ -156,7 +156,7 @@ export const ToolbarAccount: React.FC<any> = ({ children, variant = "common" }) 
             }}
           >
             <AddressMenu id="address-menu">
-              <AddressMenuItem container alignItems="center" onClick={() => handleCopy(account)}>
+              <AddressMenuItem container alignItems="center" onClick={() => handleCopy(walletAddress!)}>
                 <AddressMenuIcon item>
                   <FileCopyOutlined color="inherit" fontSize="inherit" />
                 </AddressMenuIcon>
