@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import { Grid, useMediaQuery, useTheme } from "components/ui"
 import ProgressBar from "react-customizable-progressbar"
 import dayjs from "dayjs"
@@ -7,6 +7,7 @@ import BigNumber from "bignumber.js"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 const { ContainerVoteDetail: Container, HistoryItem, HistoryKey, HistoryValue, ProgressText } = _est
 import { ContainerTitle } from "components/ui/Containers"
+import { EtherlinkContext } from "services/wagmi/context"
 
 export const ProposalHistory = ({
   votesQuorumPercentage,
@@ -17,8 +18,12 @@ export const ProposalHistory = ({
 }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const { daoSelected } = useContext(EtherlinkContext)
 
   const safePct = Number.isFinite(votesQuorumPercentage) ? Math.max(0, Math.min(100, votesQuorumPercentage)) : 0
+  const quorumThreshold = daoSelected?.quorum || 0
+  const isQuorumMet = safePct >= quorumThreshold
+
   try {
     console.log("[ProposalHistory] input/output", { input: votesQuorumPercentage, safePct })
   } catch (_) {}
@@ -28,7 +33,9 @@ export const ProposalHistory = ({
       {/* Quorum card */}
       <Grid item xs={isMobileSmall ? 12 : 4} container>
         <Container item xs style={{ padding: 20 }}>
-          <ContainerTitle color="textPrimary">Quorum</ContainerTitle>
+          <ContainerTitle color="textPrimary">
+            Quorum <span style={{ color: isQuorumMet ? "#4CAF50" : "#F44336" }}>{isQuorumMet ? "Met" : "Not Met"}</span>
+          </ContainerTitle>
           <Grid
             container
             direction="column"
