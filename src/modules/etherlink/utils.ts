@@ -270,3 +270,11 @@ export async function getContractWriteMethods(contractAddress: string, network: 
   const data = await response.json()
   return data as IContractWriteMethod[]
 }
+
+export async function getTokenHolders(network: string, tokenAddress: string) {
+  const response = await fetch(
+    networkConfig[network as keyof typeof networkConfig]?.explorerApiUrl + "/tokens/" + tokenAddress + "/holders"
+  )
+  const data = await response.json()
+  return data
+}

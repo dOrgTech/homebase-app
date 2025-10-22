@@ -1,5 +1,17 @@
 import React, { useMemo, useState } from "react"
-import { styled, Grid, Typography, useTheme, useMediaQuery } from "components/ui"
+import {
+  styled,
+  Grid,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  CircularProgress
+} from "components/ui"
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "components/ui/CopyButton"
@@ -13,27 +25,42 @@ dayjs.extend(localizedFormat)
 
 interface RowData {
   address: string
-  votingWeight: number
   personalBalance: number
-  proposalsVoted: any[]
-  proposalsCreated: any[]
 }
 
-const CardContainer = styled(ContentContainer)({
-  padding: "40px 48px"
+const TableHeader = styled(Grid)(({ theme }) => ({
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  paddingBottom: 20,
+  marginBottom: 20
+}))
+
+const HeaderText = styled(Typography)({
+  fontWeight: 500,
+  textTransform: "uppercase",
+  fontSize: 14
 })
 
-const Value = styled(Typography)({
-  marginTop: 8,
-  fontWeight: 300,
-  gap: 6,
+const TableContainer = styled(ContentContainer)({
+  width: "100%",
+  padding: "20px 24px"
+})
+
+const MemberRow = styled(TableRow)(({ theme }) => ({
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover
+  }
+}))
+
+const AddressCell = styled(TableCell)({
   display: "flex",
-  textTransform: "uppercase"
+  alignItems: "center",
+  gap: 8,
+  borderBottom: "none"
 })
 
-const Symbol = styled(Typography)({
-  marginLeft: 4,
-  fontWeight: 300
+const BalanceCell = styled(TableCell)({
+  textAlign: "right",
+  borderBottom: "none"
 })
 
 const formatConfig = {
@@ -43,159 +70,77 @@ const formatConfig = {
   trimMantissa: true
 }
 
-interface UserTable {
+const MembersTableContent: React.FC<{
   data: RowData[]
   symbol: string
   handlePageClick: (event: { selected: number }) => void
   pageCount: number
   currentPage: number
   offset: number
-}
-
-const MobileUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset }) => {
+  isMobile: boolean
+}> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset, isMobile }) => {
   const slicedData = useMemo(() => data.slice(offset, offset + 8), [data, offset])
+
   return (
     <>
-      <Grid container style={{ gap: 32 }}>
-        {slicedData.map((item, i) => (
-          <CardContainer key={`usersrow-${i}`} container direction="row" style={{ gap: 24 }}>
-            <Grid item container direction="row" alignItems="center" xs={12} style={{ gap: 8 }}>
-              <Blockie address={item.address} size={24} />
-              <Typography style={{ fontWeight: 300 }} color="textPrimary" variant="body2">
-                {toShortAddress(item.address)}
-              </Typography>
-              <CopyButton text={item.address} />
-            </Grid>
-            <Grid item container direction="row" xs={12} style={{ gap: 20 }}>
-              <Grid item xs={12}>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Voting Weight
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.votingWeight).format(formatConfig)}
-                </Value>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Personal Balance
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.personalBalance).format(formatConfig)}
-                </Value>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Proposals Created
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.proposalsCreated?.length).format(formatConfig)}
-                </Value>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Proposals Voted
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.proposalsVoted?.length).format(formatConfig)}
-                </Value>
-              </Grid>
-            </Grid>
-          </CardContainer>
-        ))}
-        <Grid container direction="row" justifyContent="flex-end">
-          <ReactPaginate
-            previousLabel={"<"}
-            breakLabel="..."
-            nextLabel=">"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={2}
-            pageCount={pageCount}
-            renderOnZeroPageCount={null}
-            containerClassName={"pagination"}
-            activeClassName={"active"}
-            forcePage={currentPage}
-            nextClassName="nextButton"
-            previousClassName="nextButton"
-          />
-        </Grid>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <HeaderText color="textPrimary">ADDRESS</HeaderText>
+              </TableCell>
+              <TableCell align="right">
+                <HeaderText color="textPrimary">BALANCE</HeaderText>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {slicedData.map((item, i) => (
+              <MemberRow key={`member-${i}`}>
+                <AddressCell>
+                  <Blockie address={item.address} size={24} />
+                  <Typography color="textPrimary" variant="body2">
+                    {isMobile ? toShortAddress(item.address) : item.address}
+                  </Typography>
+                  <CopyButton text={item.address} />
+                </AddressCell>
+                <BalanceCell>
+                  <Typography color="textPrimary" variant="body2">
+                    {numbro(item.personalBalance).format(formatConfig)} {symbol}
+                  </Typography>
+                </BalanceCell>
+              </MemberRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Grid container direction="row" justifyContent="flex-end" style={{ marginTop: 20 }}>
+        <ReactPaginate
+          previousLabel={"<"}
+          breakLabel="..."
+          nextLabel=">"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={2}
+          pageCount={pageCount}
+          renderOnZeroPageCount={null}
+          containerClassName={"pagination"}
+          activeClassName={"active"}
+          forcePage={currentPage}
+          nextClassName="nextButton"
+          previousClassName="nextButton"
+        />
       </Grid>
     </>
   )
 }
 
-const DesktopUsersTable: React.FC<UserTable> = ({ data, symbol, handlePageClick, pageCount, currentPage, offset }) => {
-  const slicedData = useMemo(() => data.slice(offset, offset + 8), [data, offset])
-  return (
-    <>
-      <Grid container style={{ gap: 32 }}>
-        {slicedData.map((item, i) => (
-          <CardContainer key={`usersrow-${i}`} container direction="row" style={{ gap: 24 }}>
-            <Grid item container direction="row" alignItems="center" xs={12} style={{ gap: 8 }}>
-              <Blockie address={item.address} size={24} />
-              <Typography style={{ fontWeight: 300 }} color="textPrimary" variant="body2">
-                {item.address}
-              </Typography>
-              <CopyButton text={item.address} />
-            </Grid>
-            <Grid item container direction="row" xs={12} justifyContent="space-between">
-              <Grid item>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Voting Weight
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.votingWeight).format(formatConfig)}
-                </Value>
-              </Grid>
-              <Grid item>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Personal Balance
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.personalBalance).format(formatConfig)}
-                </Value>
-              </Grid>
-              <Grid item>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Proposals Created
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.proposalsCreated?.length).format(formatConfig)}
-                </Value>
-              </Grid>
-              <Grid item>
-                <Typography color="textPrimary" variant="body2" style={{ fontWeight: 500 }}>
-                  Proposals Voted
-                </Typography>
-                <Value variant="body2" color="secondary">
-                  {numbro(item.proposalsVoted?.length).format(formatConfig)}
-                </Value>
-              </Grid>
-            </Grid>
-          </CardContainer>
-        ))}
-
-        <Grid container direction="row" justifyContent="flex-end">
-          <ReactPaginate
-            previousLabel={"<"}
-            breakLabel="..."
-            nextLabel=">"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={2}
-            pageCount={pageCount}
-            renderOnZeroPageCount={null}
-            containerClassName={"pagination"}
-            activeClassName={"active"}
-            forcePage={currentPage}
-            nextClassName="nextButton"
-            previousClassName="nextButton"
-          />
-        </Grid>
-      </Grid>
-    </>
-  )
-}
-
-export const EvmMembersTable: React.FC<{ data: RowData[]; symbol: string }> = ({ data, symbol }) => {
+export const EvmMembersTable: React.FC<{ data: RowData[]; symbol: string; isLoading?: boolean }> = ({
+  data,
+  symbol,
+  isLoading = false
+}) => {
   const theme = useTheme()
   const isExtraSmall = useMediaQuery(theme.breakpoints.down(820))
   const [currentPage, setCurrentPage] = useState(0)
@@ -215,27 +160,27 @@ export const EvmMembersTable: React.FC<{ data: RowData[]; symbol: string }> = ({
     }
   }
 
+  if (isLoading) {
+    return (
+      <Grid container justifyContent="center" alignItems="center" style={{ minHeight: 200 }}>
+        <CircularProgress color="secondary" />
+      </Grid>
+    )
+  }
+
   if (!data?.length) {
     return <Typography color="textSecondary">No members found</Typography>
   }
 
-  return isExtraSmall ? (
-    <MobileUsersTable
+  return (
+    <MembersTableContent
       data={data}
       symbol={symbol}
       handlePageClick={handlePageClick}
       pageCount={pageCount}
       currentPage={currentPage}
       offset={offset}
-    />
-  ) : (
-    <DesktopUsersTable
-      data={data}
-      symbol={symbol}
-      handlePageClick={handlePageClick}
-      pageCount={pageCount}
-      currentPage={currentPage}
-      offset={offset}
+      isMobile={isExtraSmall}
     />
   )
 }
