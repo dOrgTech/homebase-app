@@ -518,6 +518,7 @@ export const useEvmProposalOps = () => {
   const isNextDisabled = useMemo(() => {
     const step = zustantStore.currentStep
     const type = zustantStore.getMetadataFieldValue("type")
+
     if (step >= 2 && type === "transfer_assets") {
       const txs = (zustantStore.transferAssets?.transactions || []) as any[]
       const anyValid = txs.some(tx => {
@@ -546,8 +547,25 @@ export const useEvmProposalOps = () => {
       })
       return !anyValid
     }
+
+    if (step >= 2 && type === "contract_call") {
+      const targetAddress = zustantStore.daoContractCall?.targetAddress || ""
+      const callData = zustantStore.daoContractCall?.callData || ""
+
+      const hasValidTarget = !!targetAddress && ethers.isAddress(targetAddress)
+      const hasValidCallData = !!callData && callData.startsWith("0x") && callData.length > 2
+
+      return !hasValidTarget || !hasValidCallData
+    }
+
     return false
-  }, [zustantStore.currentStep, zustantStore.transferAssets?.transactions, zustantStore.getMetadataFieldValue("type")])
+  }, [
+    zustantStore.currentStep,
+    zustantStore.transferAssets?.transactions,
+    zustantStore.daoContractCall?.targetAddress,
+    zustantStore.daoContractCall?.callData,
+    zustantStore.getMetadataFieldValue("type")
+  ])
 
   const daoContract = useMemo(() => {
     console.log("DaoContract", daoSelected?.address, HbDaoAbi.abi)
