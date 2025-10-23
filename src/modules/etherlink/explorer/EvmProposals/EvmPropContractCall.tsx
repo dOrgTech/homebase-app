@@ -198,7 +198,7 @@ export const EvmPropContractCall: React.FC = () => {
             </FormField>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <FormField label="Value (ETH)" labelStyle={{ fontSize: 16 }}>
+            <FormField label="Value (XTZ)" labelStyle={{ fontSize: 16 }}>
               <FormTextField
                 defaultValue={daoContractCall.value}
                 placeholder="0"

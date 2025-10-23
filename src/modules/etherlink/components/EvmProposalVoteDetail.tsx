@@ -172,6 +172,10 @@ export const EvmProposalVoteDetail: React.FC<{
         <ProposalHistory
           votesQuorumPercentage={votesQuorumPercentage}
           statusHistory={daoProposalSelected?.statusHistoryMap}
+          inFavor={daoProposalSelected?.inFavor}
+          against={daoProposalSelected?.against}
+          totalSupply={daoProposalSelected?.totalSupply}
+          decimals={tokenData?.decimals}
         />
       ) : null}
     </>
