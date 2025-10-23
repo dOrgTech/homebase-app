@@ -3,19 +3,22 @@ import { Grid, Typography, useMediaQuery, useTheme } from "components/ui"
 import { LinearProgress } from "components/ui/LinearProgress"
 import { IEvmOffchainChoice, IEvmProposal } from "../types"
 import { etherlinkStyled as _est } from "components/ui"
+import { formatVotingWeight } from "services/contracts/utils"
 const { LinearContainer } = _est
 export const RenderChoices = ({
   mode,
   choices,
   tokenSymbol,
   daoProposalSelected,
-  totalVoteCount
+  totalVoteCount: _totalVoteCount,
+  decimals
 }: {
   mode: string
   choices: any[]
   tokenSymbol: string
   daoProposalSelected: IEvmProposal
   totalVoteCount: number
+  decimals: number
 }) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
@@ -58,12 +61,25 @@ export const RenderChoices = ({
     )
   }
 
+  // Calculate total voting weight for percentage calculation
+  const totalVotingWeight = BigInt(daoProposalSelected?.inFavor || "0") + BigInt(daoProposalSelected?.against || "0")
+
   return (
     <>
       {choices.map((choice, idx) => {
         const isFor = choice.name === "For"
         const voteCount = isFor ? daoProposalSelected?.votesFor : daoProposalSelected?.votesAgainst
-        const linearProgressValue = totalVoteCount > 0 ? (voteCount / totalVoteCount) * 100 : 0
+        const votingWeight = isFor
+          ? BigInt(daoProposalSelected?.inFavor || "0")
+          : BigInt(daoProposalSelected?.against || "0")
+
+        // Calculate percentage based on voting weight, not voter count
+        // Convert to Number before division to preserve decimal precision
+        const linearProgressValue =
+          totalVotingWeight > 0n ? (Number(votingWeight) / Number(totalVotingWeight)) * 100 : 0
+
+        // Format the voting weight with decimals and abbreviations
+        const formattedWeight = formatVotingWeight(votingWeight, decimals)
 
         return (
           <LinearContainer container direction="column" style={{ gap: 20 }} key={`onchain-option-${idx}`}>
@@ -75,7 +91,7 @@ export const RenderChoices = ({
               </Grid>
               <Grid item xs={12} lg={6} sm={6} container justifyContent={isMobileSmall ? "flex-start" : "flex-end"}>
                 <Typography color="textPrimary" variant="body2">
-                  {voteCount} Voters - {tokenSymbol}
+                  {formattedWeight} {tokenSymbol} ({voteCount} {voteCount === 1 ? "Voter" : "Voters"})
                 </Typography>
               </Grid>
             </Grid>
@@ -85,7 +101,7 @@ export const RenderChoices = ({
               </Grid>
               <Grid item xs={2} lg={1} sm={1} container justifyContent="flex-end">
                 <Typography color="textPrimary" variant="body2">
-                  {linearProgressValue}%
+                  {linearProgressValue.toFixed(2)}%
                 </Typography>
               </Grid>
             </Grid>

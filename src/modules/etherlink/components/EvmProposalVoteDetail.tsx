@@ -106,6 +106,7 @@ export const EvmProposalVoteDetail: React.FC<{
               tokenSymbol={tokenData?.symbol}
               daoProposalSelected={daoProposalSelected}
               totalVoteCount={totalVoteCount}
+              decimals={tokenData?.decimals || 0}
             />
           ) : null}
 
