@@ -105,7 +105,19 @@ export const theme = createTheme({
     },
     MuiMenu: {
       paper: {
-        backgroundColor: "#2f3438"
+        backgroundColor: "#2f3438",
+        zIndex: 1000002,
+        pointerEvents: "auto"
+      }
+    },
+    MuiMenuItem: {
+      root: {
+        pointerEvents: "auto"
+      }
+    },
+    MuiListItem: {
+      root: {
+        pointerEvents: "auto"
       }
     },
     MuiSlider: {

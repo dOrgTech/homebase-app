@@ -3,6 +3,33 @@ import dayjs from "dayjs"
 import React, { useContext, useEffect, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { GridContainer } from "modules/common/GridContainer"
+import { styled } from "@material-ui/core"
+
+const TimeUnitBox = styled(Box)({
+  fontSize: "24px",
+  fontFamily: "monospace",
+  fontWeight: "bold",
+  borderRadius: 4,
+  boxShadow: "0px 1px 3px rgba(0,0,0,0.2)",
+  padding: "8px 16px",
+  minWidth: "80px",
+  textAlign: "center",
+  ["@media (max-width: 425px)"]: {
+    fontSize: "18px",
+    padding: "6px 12px",
+    minWidth: "60px"
+  }
+})
+
+const TimeUnitLabel = styled(Typography)({
+  color: "white",
+  fontSize: "14px",
+  marginTop: "4px",
+  textAlign: "center",
+  ["@media (max-width: 425px)"]: {
+    fontSize: "12px"
+  }
+})
 
 interface TimeLeft {
   days: number
@@ -57,25 +84,18 @@ export const EvmProposalCountdown = ({
     <Grid
       direction="column"
       alignItems="center"
-      style={{ marginRight: 20, backgroundColor: "#222", borderRadius: 8, paddingBottom: 8, paddingTop: 8 }}
+      style={{
+        marginRight: 20,
+        backgroundColor: "#222",
+        borderRadius: 8,
+        paddingBottom: 8,
+        paddingTop: 8,
+        minWidth: 0,
+        flex: "0 1 auto"
+      }}
     >
-      <Box
-        style={{
-          fontSize: "24px",
-          fontFamily: "monospace",
-          fontWeight: "bold",
-          borderRadius: 4,
-          boxShadow: "0px 1px 3px rgba(0,0,0,0.2)",
-          padding: "8px 16px",
-          minWidth: "80px",
-          textAlign: "center"
-        }}
-      >
-        {value.toString().padStart(2, "0")}
-      </Box>
-      <Typography style={{ color: "white", fontSize: "14px", marginTop: "4px", textAlign: "center" }}>
-        {unit}
-      </Typography>
+      <TimeUnitBox>{value.toString().padStart(2, "0")}</TimeUnitBox>
+      <TimeUnitLabel>{unit}</TimeUnitLabel>
     </Grid>
   ))
 
@@ -87,7 +107,16 @@ export const EvmProposalCountdown = ({
           {timerLabel}
         </Typography>
       </Box>
-      <Box style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "white" }}>
+      <Box
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          flexWrap: "wrap",
+          gap: "8px"
+        }}
+      >
         {timeLeft.days > 0 && <TimeUnit value={timeLeft.days} unit="Days" />}
         <TimeUnit value={timeLeft.hours} unit="Hours" />
         <TimeUnit value={timeLeft.minutes} unit="Minutes" />

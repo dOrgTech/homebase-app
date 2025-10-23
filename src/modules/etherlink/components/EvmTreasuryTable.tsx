@@ -143,7 +143,7 @@ export const EvmTreasuryTable = () => {
   )
 
   const renderTokenView = () => (
-    <TableContainer>
+    <TableContainer style={{ overflowX: "auto", maxWidth: "100%" }}>
       <Table>
         <TableHead>
           <TableRow>

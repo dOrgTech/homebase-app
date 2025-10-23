@@ -443,40 +443,49 @@ export const EvmProposalDetailsPage = () => {
 
       <EvmProposalVoteDetail poll={daoProposalSelected} token={daoSelected?.token} />
 
-      <ContentContainer style={{ gap: 10, color: "white", padding: 40 }}>
+      <ContentContainer style={{ gap: 10, color: "white", padding: 40, overflowX: "auto" }}>
         <Grid container>
           <Typography style={{ color: "white", fontSize: 20, fontWeight: 600 }}>Proposal Data</Typography>
         </Grid>
-        <Grid container>
+        <Grid container style={{ overflowX: "auto", maxWidth: "100%" }}>
           {daoProposalSelected?.proposalData?.map(
             ({ parameter, value }: { parameter: string; value: string }, idx: number) => {
               console.log("callDataXYB", { parameter, value })
               const textValue = value?.length > 64 ? value.slice(0, 8) + "..." + value.slice(-4) : value
               return (
-                <Grid key={idx}>
+                <Grid key={idx} style={{ minWidth: "100%" }}>
                   <Table
                     aria-label="simple table"
-                    style={{ background: "#222222", borderRadius: 8, border: "1px solid #555555", marginTop: "20px" }}
+                    style={{
+                      background: "#222222",
+                      borderRadius: 8,
+                      border: "1px solid #555555",
+                      marginTop: "20px",
+                      tableLayout: "fixed",
+                      width: "100%"
+                    }}
                   >
                     <TableBody>
                       <TableRow>
-                        <TableCell>
+                        <TableCell style={{ width: "30%" }}>
                           <Typography style={{ color: "white" }}>Parameter</Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell style={{ width: "70%", wordBreak: "break-all" }}>
                           <Typography style={{ color: "white" }}>{parameter}</Typography>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>
+                        <TableCell style={{ width: "30%" }}>
                           <Typography style={{ color: "white" }}>Value</Typography>
                         </TableCell>
-                        <TableCell>
-                          <div style={{ display: "flex", alignItems: "center" }}>
-                            <Typography style={{ color: "white" }}>{textValue}</Typography>
+                        <TableCell style={{ width: "70%", wordBreak: "break-all" }}>
+                          <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                            <Typography style={{ color: "white", wordBreak: "break-all", flex: 1 }}>
+                              {textValue}
+                            </Typography>
                             <IconButton
                               onClick={() => navigator.clipboard.writeText(value)}
-                              style={{ marginLeft: 8, padding: 4 }}
+                              style={{ marginLeft: 8, padding: 4, flexShrink: 0 }}
                             >
                               <CopyButton text={value} />
                             </IconButton>
