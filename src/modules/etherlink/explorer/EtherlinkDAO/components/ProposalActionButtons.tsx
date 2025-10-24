@@ -160,8 +160,8 @@ export const ProposalActionButtons = () => {
     )
   }
 
-  // Show Queue for Execution when proposal has succeeded OR when the
-  // derived ready-to-queue hint is present (parity with WeRule)
+  // Show Queue for Execution when proposal has succeeded OR when the derived
+  // ready-to-queue hint is present
   if (effectiveDisplayStatus === "Succeeded" || daoProposalSelected?.readyToQueue) {
     return (
       <Grid container justifyContent="center">

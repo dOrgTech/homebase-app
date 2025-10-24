@@ -57,16 +57,20 @@ export const getTezosNetwork = (): Network => {
   return envNetwork
 }
 
-export const createWallet = (network: Network) =>
-  new BeaconWallet({
+export const createWallet = (network: Network) => {
+  const networkType = getNetworkTypeByEnvNetwork(network)
+  return new BeaconWallet({
     name: "Homebase",
     iconUrl: "https://tezostaquito.io/img/favicon.png",
-    preferredNetwork: network as NetworkType,
+    network: {
+      type: networkType
+    },
     walletConnectOptions: {
       projectId: "1641355e825aeaa926e843dd38b04f6f", // Project ID can be customised
       relayUrl: "wss://relay.walletconnect.com" // WC2 relayUrl can be customised
     }
   })
+}
 
 export const createTezos = (network: Network) => {
   const tezos = new TezosToolkit(rpcNodes[network])
@@ -94,14 +98,9 @@ export const connectWithBeacon = async (
   network: Network
   wallet: BeaconWallet
 }> => {
-  const networkType = getNetworkTypeByEnvNetwork(envNetwork)
   const wallet = createWallet(envNetwork)
 
-  await wallet.requestPermissions({
-    network: {
-      type: networkType
-    }
-  })
+  await wallet.requestPermissions()
 
   const accounts: any[] = JSON.parse(localStorage.getItem("beacon:accounts") as string)
 

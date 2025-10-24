@@ -91,8 +91,8 @@
     "url": "^0.11.4",
     "util": "^0.12.5",
     "valid-url": "^1.0.9",
-    "viem": "^2.17.4",
-    "wagmi": "^2.10.10",
+    "viem": "2.17.4",
+    "wagmi": "2.10.10",
     "yup": "^0.32.9"
   },
   "devDependencies": {
@@ -129,12 +129,16 @@
     "react-error-overlay": "6.0.9",
     "@walletconnect/core": "2.14.0",
     "@walletconnect/types": "2.14.0",
-    "@walletconnect/utils": "2.14.0"
+    "@walletconnect/utils": "2.14.0",
+    "viem": "2.17.4",
+    "wagmi": "2.10.10"
   },
   "overrides": {
     "@walletconnect/core": "2.14.0",
     "@walletconnect/types": "2.14.0",
-    "@walletconnect/utils": "2.14.0"
+    "@walletconnect/utils": "2.14.0",
+    "viem": "2.17.4",
+    "wagmi": "2.10.10"
   },
   "eslintConfig": {
     "extends": [
