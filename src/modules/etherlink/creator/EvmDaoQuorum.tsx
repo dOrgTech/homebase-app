@@ -26,7 +26,7 @@ export const EvmDaoQuorum: React.FC = () => {
         max={99}
         step={1}
         onChange={(newValue: number) => {
-          setFieldValue("quorum.returnedTokenPercentage", newValue || 0)
+          setFieldValue("quorum.returnedTokenPercentage", newValue || 4)
         }}
       />
       <Grid container item xs={isMobile ? 12 : 12} direction="column" style={{ marginTop: 25 }}>

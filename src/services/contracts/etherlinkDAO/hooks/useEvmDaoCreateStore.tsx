@@ -53,7 +53,7 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
           tokenDecimals: 0
         },
         quorum: {
-          returnedTokenPercentage: 0,
+          returnedTokenPercentage: 4,
           proposalThresholdPercentage: 0,
           proposalThreshold: 0
         },
