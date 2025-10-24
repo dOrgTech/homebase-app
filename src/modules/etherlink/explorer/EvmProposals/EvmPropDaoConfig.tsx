@@ -143,7 +143,7 @@ export const EvmPropDaoConfig = () => {
         return (
           <>
             <Typography color="textPrimary" gutterBottom>
-              Change the wait time between posting a proposal and the start of voting
+              Change the wait time between posting a proposal and the start of voting. Use 0 for immediate start.
             </Typography>
             <TimeInput
               label="Voting Delay Duration"

@@ -159,8 +159,8 @@ export const useDaoState = ({ network }: { network: string }) => {
         const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
         const daoTotalVotingWeight = denomSupply
 
-        const votingDelayInMinutes = daoSelected?.votingDelay || 1
-        const votingDurationInMinutes = daoSelected?.votingDuration || 1
+        const votingDelayInMinutes = daoSelected?.votingDelay ?? 1
+        const votingDurationInMinutes = daoSelected?.votingDuration ?? 1
         const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
         const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
 
@@ -276,6 +276,12 @@ export const useDaoState = ({ network }: { network: string }) => {
           const formatted = raw.startsWith("0x") ? raw : `0x${raw}`
           callDataPlain = [formatted]
         }
+        // Some indexers use `callData` (camelCase); support it as a final fallback
+        if ((!callDataPlain || callDataPlain.length === 0) && (p as any)?.callData) {
+          const raw2 = String((p as any).callData)
+          const formatted2 = raw2.startsWith("0x") ? raw2 : `0x${raw2}`
+          callDataPlain = [formatted2]
+        }
         const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
         const proposalStatus = sortedStatusHistoryMap[0]?.status
         const displayStatus = toDisplayStatus(proposalStatus)
@@ -383,8 +389,8 @@ export const useDaoState = ({ network }: { network: string }) => {
     const daoMinimumQuorum = new BigNumber(daoSelected?.quorum ?? "0")
     const daoTotalVotingWeight = denomSupply
 
-    const votingDelayInMinutes = daoSelected?.votingDelay || 1
-    const votingDurationInMinutes = daoSelected?.votingDuration || 1
+    const votingDelayInMinutes = daoSelected?.votingDelay ?? 1
+    const votingDurationInMinutes = daoSelected?.votingDuration ?? 1
     const activeStartTimestamp = proposalCreatedAt.add(votingDelayInMinutes, "minutes")
     const votingExpiresAt = activeStartTimestamp.add(votingDurationInMinutes, "minutes")
 
@@ -481,6 +487,12 @@ export const useDaoState = ({ network }: { network: string }) => {
       const formatted = raw.startsWith("0x") ? raw : `0x${raw}`
       callDataPlain = [formatted]
     }
+    // Some indexers use `callData` (camelCase); support it as a final fallback
+    if ((!callDataPlain || callDataPlain.length === 0) && (p as any)?.callData) {
+      const raw2 = String((p as any).callData)
+      const formatted2 = raw2.startsWith("0x") ? raw2 : `0x${raw2}`
+      callDataPlain = [formatted2]
+    }
     const sortedStatusHistoryMap = statusHistoryMap.sort((a, b) => b.timestamp - a.timestamp)
     const proposalStatus = sortedStatusHistoryMap[0]?.status
     const displayStatus = toDisplayStatus(proposalStatus)
@@ -527,7 +539,12 @@ export const useDaoState = ({ network }: { network: string }) => {
       votesWeightPercentage: Number(votesPercentage.toFixed(2))
     }
 
-    setDaoProposalSelected(mapped)
+    // Preserve previously computed proposalData to avoid blanking details on refresh
+    setDaoProposalSelected((prev: any) => {
+      const same = prev && (prev as any).id === (p as any)?.id
+      const carry = same && Array.isArray((prev as any)?.proposalData) ? (prev as any).proposalData : undefined
+      return carry && carry.length > 0 ? { ...(mapped as any), proposalData: carry } : (mapped as any)
+    })
   }, [
     firestoreData,
     daoSelected?.id,
@@ -622,31 +639,37 @@ export const useDaoState = ({ network }: { network: string }) => {
     if (!pid) return
     if ((daoProposalSelected as any)?.type === "offchain") return
 
-    const hasData =
-      Array.isArray((daoProposalSelected as any)?.proposalData) &&
-      (daoProposalSelected as any).proposalData.length > 0 &&
-      !proposalData.isRawFallback((daoProposalSelected as any).proposalData)
+    const hasAnyData = Array.isArray((daoProposalSelected as any)?.proposalData)
+      ? (daoProposalSelected as any).proposalData.length > 0
+      : false
 
-    if (hasData) return
-
-    try {
-      const built = proposalData.buildProposalData(daoProposalSelected as any)
-      if (Array.isArray(built) && built.length > 0 && !proposalData.isRawFallback(built)) {
-        setDaoProposalSelected((prev: any) => {
-          if (!prev || prev.id !== pid) return prev as any
-          return { ...(prev as any), proposalData: built }
-        })
-        return
+    // If no entries yet, compute a synchronous fallback immediately (even if raw)
+    if (!hasAnyData) {
+      try {
+        const fallback = proposalData.buildProposalData(daoProposalSelected as any)
+        if (Array.isArray(fallback) && fallback.length > 0) {
+          setDaoProposalSelected((prev: any) => {
+            if (!prev || prev.id !== pid) return prev as any
+            const already = Array.isArray((prev as any)?.proposalData) && (prev as any).proposalData.length > 0
+            if (already) return prev as any
+            return { ...(prev as any), proposalData: fallback }
+          })
+        }
+      } catch (_) {
+        // ignore; async path below may still succeed
       }
-    } catch (_) {
-      // ignore and try async path
     }
 
-    // Fallback to explorer ABI decode asynchronously
+    // Attempt asynchronous decode via explorer ABI; upgrade if it yields non-fallback
     proposalData.buildProposalDataAsync(daoProposalSelected as any).then(upgraded => {
       if (Array.isArray(upgraded) && upgraded.length > 0 && !proposalData.isRawFallback(upgraded)) {
         setDaoProposalSelected((prev: any) => {
           if (!prev || prev.id !== pid) return prev as any
+          try {
+            const a = JSON.stringify((prev as any)?.proposalData || [])
+            const b = JSON.stringify(upgraded)
+            if (a === b) return prev as any
+          } catch (_) {}
           return { ...(prev as any), proposalData: upgraded }
         })
       }

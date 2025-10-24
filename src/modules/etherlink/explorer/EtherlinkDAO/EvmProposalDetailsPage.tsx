@@ -37,7 +37,16 @@ export const EvmProposalDetailsPage = () => {
 
       <EvmProposalVoteDetail poll={daoProposalSelected} token={daoSelected?.token} />
 
-      <ProposalDataSection proposalData={daoProposalSelected?.proposalData} />
+      <ProposalDataSection
+        proposalData={daoProposalSelected?.proposalData}
+        proposalType={daoProposalSelected?.type}
+        tokenSymbol={daoSelected?.symbol}
+        decimals={daoSelected?.decimals}
+        nativeDecimals={18}
+        targets={daoProposalSelected?.targets}
+        callDataPlain={daoProposalSelected?.callDataPlain}
+        values={daoProposalSelected?.values}
+      />
 
       <EvmProposalVoterList />
     </div>

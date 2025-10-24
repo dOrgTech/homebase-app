@@ -75,23 +75,28 @@ export function computeTimeline(
     timerTargetDate = votingExpiresAt
     phase = "voting"
     effectiveDisplayStatus = "Active"
-  } else if (Array.isArray(proposal.statusHistoryMap)) {
-    const queued = proposal.statusHistoryMap.find(x => x.status === "queued")
-    if (queued) {
-      const ts = dayjs.isDayjs(queued.timestamp) ? queued.timestamp : dayjs.unix(queued.timestamp || 0)
-      const execAt = ts.add(daoSelected.executionDelay || 0, "seconds")
-      if (execAt.isAfter(now)) {
-        isTimerActive = true
-        timerLabel = "Execution available in"
-        timerTargetDate = execAt
-        phase = "queuedWait"
-        effectiveDisplayStatus = "Queued"
-      } else {
-        phase = "executable"
-        effectiveDisplayStatus = "Executable"
+  } else {
+    // Check for queued status if statusHistoryMap exists
+    if (Array.isArray(proposal.statusHistoryMap)) {
+      const queued = proposal.statusHistoryMap.find(x => x.status === "queued")
+      if (queued) {
+        const ts = dayjs.isDayjs(queued.timestamp) ? queued.timestamp : dayjs.unix(queued.timestamp || 0)
+        const execAt = ts.add(daoSelected.executionDelay || 0, "seconds")
+        if (execAt.isAfter(now)) {
+          isTimerActive = true
+          timerLabel = "Execution available in"
+          timerTargetDate = execAt
+          phase = "queuedWait"
+          effectiveDisplayStatus = "Queued"
+        } else {
+          phase = "executable"
+          effectiveDisplayStatus = "Executable"
+        }
       }
     }
+
     // If voting has ended and not queued/executed yet, compute immediate outcome
+    // This calculation should run regardless of statusHistoryMap presence
     if (!effectiveDisplayStatus && now.isAfter(votingExpiresAt)) {
       phase = "postVoting"
       try {

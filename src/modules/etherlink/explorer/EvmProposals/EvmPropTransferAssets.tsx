@@ -268,9 +268,14 @@ export const EvmPropTransferAssets: React.FC = () => {
                   }
                   inputProps={{ style: { fontSize: 14 } }}
                 />
-                {process.env.REACT_APP_DEBUG_ETHERLINK && transaction.assetType === "transferERC721" && (
+                {transaction.assetType === "transferERC721" && (
                   <Typography color="textSecondary" style={{ fontSize: 12, marginTop: 6 }}>
                     NFT addr: {transaction.assetAddress || "(missing)"} | tokenId: {String(transaction.tokenId || "")}
+                  </Typography>
+                )}
+                {transaction.assetType === "transferERC20" && (
+                  <Typography color="textSecondary" style={{ fontSize: 12, marginTop: 6 }}>
+                    ERC20 addr: {transaction.assetAddress || "(missing)"}
                   </Typography>
                 )}
               </FormField>

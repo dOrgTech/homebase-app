@@ -159,6 +159,12 @@ export const HistoryValue = styled(Typography)({
   color: "#BFC5CA"
 })
 
+export const AssetLabel = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  fontSize: 14,
+  fontWeight: 500
+}))
+
 export const LogoItem = styled("img")(({ theme }) => ({
   cursor: "pointer",
   [theme.breakpoints.down("sm")]: {

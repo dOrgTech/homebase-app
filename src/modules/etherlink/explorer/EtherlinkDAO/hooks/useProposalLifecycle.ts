@@ -63,9 +63,17 @@ export const useProposalLifecycle = ({
   // Clear optimistic overrides once Firestore reflects queued/executed
   useEffect(() => {
     const s = daoProposalSelected?.status
-    if (!daoProposalSelected?.id) return
-    if (s === "queued" || s === "executed") {
+    const os = override?.status
+    if (!daoProposalSelected?.id || !os) return
+
+    // Only clear override when Firestore has caught up to or superseded the optimistic state
+    const shouldClear =
+      (os === "queued" && (s === "queued" || s === "executed")) ||
+      (os === "executable" && (s === "executable" || s === "executed")) ||
+      (os === "executed" && s === "executed")
+
+    if (shouldClear) {
       clearOverride(daoProposalSelected.id)
     }
-  }, [daoProposalSelected?.id, daoProposalSelected?.status, clearOverride])
+  }, [daoProposalSelected?.id, daoProposalSelected?.status, override?.status, clearOverride])
 }

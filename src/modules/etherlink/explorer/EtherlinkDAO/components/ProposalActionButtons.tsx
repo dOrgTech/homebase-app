@@ -65,13 +65,11 @@ export const ProposalActionButtons = () => {
   const effectiveStatus = (override?.status as string) || daoProposalSelected?.status
   const effectiveDisplayStatus = ((): string | undefined => {
     if (!daoProposalSelected) return undefined
-    // If UI override indicates queued but the local timer has ended,
-    // treat as Executable to avoid waiting for Firestore refresh.
+    // UI override takes precedence (optimistic updates for queue/execute actions)
     if (override?.status === "executed") return "Executed"
+    if (override?.status === "executable") return "Executable"
     if (override?.status === "queued")
       return !isTimerActiveComputed && timerLabelComputed === "Execution available in" ? "Executable" : "Queued"
-    if (override?.status === "executable") return "Executable"
-    if (override?.status === "executed") return "Executed"
     // Fallback priority: live computed status from timeline hook → Firestore display → raw status
     const base = liveDisplayStatus || daoProposalSelected?.displayStatus || (daoProposalSelected as any)?.status
     if (base === "Queued" && !isTimerActiveComputed && timerLabelComputed === "Execution available in")
