@@ -40,21 +40,22 @@ export const useAllDAOs = (network: Network) => {
   const queryData = useQuery(
     ["daos", network],
     async () => {
-      // On Etherlink networks, do not fetch/merge Tezos data.
-      if (String(network).includes("etherlink")) {
-        return [] as any[]
-      }
+      const isEtherlinkNetwork = String(network).includes("etherlink")
 
       let homebase_daos = [] as any[]
       let lite_daos = [] as any[]
 
-      try {
-        homebase_daos = await getDAOs(network)
-      } catch (e) {
-        console.error("getDAOs failed", e)
-        homebase_daos = []
+      // Only fetch Homebase DAOs on Tezos networks (they are Tezos-specific)
+      if (!isEtherlinkNetwork) {
+        try {
+          homebase_daos = await getDAOs(network)
+        } catch (e) {
+          console.error("getDAOs failed", e)
+          homebase_daos = []
+        }
       }
 
+      // Always fetch Lite DAOs - they work on all networks including Etherlink
       try {
         lite_daos = await getLiteDAOs(network)
       } catch (e) {
@@ -72,7 +73,8 @@ export const useAllDAOs = (network: Network) => {
 
   // Compose final list based on network.
   const isEtherlink = String(network).includes("etherlink")
-  const combinedData = isEtherlink ? evmDaos : queryData.data || []
+  // On Etherlink: combine EVM DAOs + Lite DAOs; On Tezos: combine Homebase + Lite DAOs
+  const combinedData = isEtherlink ? [...evmDaos, ...(queryData.data || [])] : queryData.data || []
   const isLoading = isEtherlink ? Boolean(isLoadingDaos) : Boolean(queryData.isLoading)
 
   return {
