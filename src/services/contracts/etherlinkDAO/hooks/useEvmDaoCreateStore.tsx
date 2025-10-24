@@ -53,7 +53,7 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
           tokenDecimals: 0
         },
         quorum: {
-          returnedTokenPercentage: 0,
+          returnedTokenPercentage: 4,
           proposalThresholdPercentage: 0,
           proposalThreshold: 0
         },
@@ -578,16 +578,21 @@ const useEvmDaoCreateStore = () => {
             proposalFlush: Object.entries(data.data.voting)
               .filter(([key]) => key.startsWith("proposalFlush"))
               .reduce((acc, [_, value]) => acc + (Number(value) || 0), 0),
+            // votingBlock corresponds to Voting Delay; allow zero for immediate start
             votingBlock: Object.entries(data.data.voting)
               .filter(([key]) => key.startsWith("votingBlock"))
               .reduce((acc, [_, value]) => acc + (Number(value) || 0), 0)
           }
 
-          if (votingData.proposalExpiry === 0 || votingData.proposalFlush === 0 || votingData.votingBlock === 0) {
+          // Require non-zero for voting period and execution delay; allow zero for voting delay
+          if (votingData.proposalExpiry === 0 || votingData.proposalFlush === 0) {
             return notify({
               message: "Please add valid values for all time periods",
               variant: "error"
             })
+          }
+          if (votingData.votingBlock < 0) {
+            return notify({ message: "Voting Delay cannot be negative", variant: "error" })
           }
         }
 

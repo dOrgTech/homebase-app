@@ -136,20 +136,21 @@ export const ProposalsShell: React.FC<Props> = ({
       </ShellHeroContainer>
 
       <TabsBox item>
-        <Grid item>
-          <TabsContainer container>
-            <Grid item>
-              <StyledTab
-                startIcon={selectedTab === 0 ? <LinkActive /> : <LinkInactive />}
-                variant="contained"
-                disableElevation={true}
-                onClick={() => onChangeTab(0)}
-                isSelected={selectedTab === 0}
-              >
-                On-Chain
-              </StyledTab>
-            </Grid>
-            {showOffchainTab ? (
+        {showOffchainTab ? (
+          <Grid item>
+            <TabsContainer container>
+              <Grid item>
+                <StyledTab
+                  startIcon={selectedTab === 0 ? <LinkActive /> : <LinkInactive />}
+                  variant="contained"
+                  disableElevation={true}
+                  onClick={() => onChangeTab(0)}
+                  isSelected={selectedTab === 0}
+                >
+                  On-Chain
+                </StyledTab>
+              </Grid>
+
               <Grid item>
                 <StyledTab
                   startIcon={selectedTab === 1 ? <UnlinkActive /> : <UnlinkInactive />}
@@ -161,10 +162,9 @@ export const ProposalsShell: React.FC<Props> = ({
                   Off-Chain
                 </StyledTab>
               </Grid>
-            ) : null}
-          </TabsContainer>
-        </Grid>
-
+            </TabsContainer>
+          </Grid>
+        ) : null}
         <FiltersContainer
           active={isFiltered}
           onClick={onOpenFilters}

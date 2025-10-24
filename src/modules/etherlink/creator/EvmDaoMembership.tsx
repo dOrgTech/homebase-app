@@ -1,5 +1,5 @@
-import { IconButton, Typography, Button, Add, RemoveCircleOutline, Box, StyledTextField } from "components/ui"
-import { DescriptionText } from "components/ui/DaoCreator"
+import { IconButton, Typography, Button, Add, RemoveCircleOutline, Box, StyledTextField, Grid } from "components/ui"
+import { DescriptionText, CustomInputContainer, ErrorText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 // StyledTextField imported from components/ui
@@ -119,35 +119,42 @@ export const EvmDaoMembership = () => {
       </Box>
       <Box style={{ width: "100%" }}>
         {members.map((member, index) => (
-          <Box key={index} gridGap={2} style={{ display: "flex", alignItems: "center", marginBottom: 32 }}>
-            <Box style={{ width: "70%" }}>
-              <StyledTextField
-                fullWidth
-                variant="standard"
-                value={member.address}
-                label="Member Address"
-                onChange={e => handleMemberChange(index, "address", e.target.value)}
-                error={!!member.error}
-                helperText={member.error}
-              />
-            </Box>
-            <Box style={{ width: "30%", marginLeft: "10px" }}>
-              <StyledTextField
-                fullWidth
-                variant="standard"
-                type="number"
-                label="Amount of tokens"
-                value={member.amountOfTokens}
-                onChange={e => handleMemberChange(index, "amountOfTokens", e.target.value)}
-              />
-            </Box>
-            {index >= 1 && (
-              <IconButton onClick={() => handleRemoveMember(index)} size="small">
-                <RemoveCircleOutline style={{ color: "white" }} />
-              </IconButton>
-            )}
-            {index === 0 && <Box style={{ width: 40, height: 40 }} />}
-          </Box>
+          <Grid key={index} container spacing={2} style={{ marginBottom: 32 }} alignItems="flex-end">
+            <Grid item xs={12} sm={7}>
+              <Typography variant="subtitle1" color="textSecondary">
+                Member Address
+              </Typography>
+              <CustomInputContainer>
+                <StyledTextField
+                  value={member.address}
+                  placeholder="0x..."
+                  onChange={e => handleMemberChange(index, "address", e.target.value)}
+                />
+              </CustomInputContainer>
+              {member.error && <ErrorText>{member.error}</ErrorText>}
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <Typography variant="subtitle1" color="textSecondary">
+                Amount of Tokens
+              </Typography>
+              <CustomInputContainer>
+                <StyledTextField
+                  type="number"
+                  placeholder="0"
+                  value={member.amountOfTokens}
+                  inputProps={{ min: 0, step: 1 }}
+                  onChange={e => handleMemberChange(index, "amountOfTokens", e.target.value)}
+                />
+              </CustomInputContainer>
+            </Grid>
+            <Grid item xs={12} sm={2} style={{ textAlign: "center" }}>
+              {index >= 1 && (
+                <IconButton onClick={() => handleRemoveMember(index)} size="small">
+                  <RemoveCircleOutline style={{ color: "white" }} />
+                </IconButton>
+              )}
+            </Grid>
+          </Grid>
         ))}
 
         <Button variant="outlined" startIcon={<Add />} onClick={handleAddMember}>

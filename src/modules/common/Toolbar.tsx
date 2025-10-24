@@ -73,8 +73,19 @@ const Header = styled(Grid)(({ theme }) => ({
 
   ["@media (max-width:960px)"]: {},
 
+  ["@media (max-width:768px)"]: {
+    flexDirection: "column",
+    alignItems: "center"
+  },
+
   ["@media (max-width:645px)"]: {
-    flexDirection: "column"
+    flexDirection: "column",
+    alignItems: "center"
+  },
+
+  ["@media (max-width:425px)"]: {
+    flexDirection: "column",
+    alignItems: "center"
   }
 }))
 
@@ -157,11 +168,16 @@ export const Navbar: React.FC<{
 }> = ({ mode, children, disableMobileMenu }) => {
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("xs"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   return (
     <StyledAppBar>
       <StyledToolbar>
-        <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
-          <Grid item>
+        <Header container alignItems="center" wrap="wrap" justifyContent={isMobileSmall ? "center" : "space-between"}>
+          <Grid
+            item
+            xs={isMobileSmall ? 12 : undefined}
+            style={isMobileSmall ? { display: "flex", justifyContent: "center", marginBottom: "16px" } : undefined}
+          >
             <Box onClick={() => (location.href = `/explorer`)}>
               <ToolbarContainer container alignItems="center" wrap="nowrap">
                 <Grid item>
@@ -176,8 +192,8 @@ export const Navbar: React.FC<{
             </Box>
           </Grid>
 
-          <Grid item>
-            <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
+          <Grid item xs={isMobileSmall ? 12 : undefined}>
+            <Grid container justifyContent={isMobileSmall ? "center" : "flex-end"}>
               <ToolbarAccount>{children}</ToolbarAccount>
             </Grid>
           </Grid>

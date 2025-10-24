@@ -56,10 +56,23 @@ export const useExplorerAbi = (network: string) => {
           if (sel && sel === selector) {
             const decoded = decodeCalldataWithEthers(functionAbi, callDataHex)
             const functionName = decoded?.functionName || m?.name || "call"
-            const params = decoded?.decodedData
+            const params: any[] = Array.isArray(decoded?.decodedData) ? (decoded?.decodedData as any[]) : []
+            const inputs = Array.isArray(m?.inputs) ? m.inputs : []
+            const args = inputs.map((inp: any, i: number) => ({
+              name: inp?.name || `arg${i}`,
+              type: inp?.type || inp?.internalType || "bytes",
+              value: params[i]
+            }))
+            const signature = functionAbi.replace(/^function\s+/, "")
             const proposalInterface = proposalInterfaces.find((x: any) => x.name === functionName)
             const label = proposalInterface?.label || functionName
-            return { parameter: label, value: Array.isArray(params) ? params.join(", ") : String(params) }
+            return {
+              parameter: label,
+              value: args.map((a: any) => `${a.name}: ${String(a.value)}`).join(", "),
+              functionName,
+              signature,
+              args
+            }
           }
         }
       } catch (_) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react"
-import { Grid, Box, Tooltip, FormField, FormTextArea, FormTextField } from "components/ui"
+import { Grid, Box, Tooltip, FormField, FormTextArea, FormTextField, Typography } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { getContractDetails } from "modules/etherlink/utils"
 import { ethers } from "ethers"
@@ -10,12 +10,13 @@ export const EvmPropContractCall: React.FC = () => {
   const { network } = useTezos()
   const { daoContractCall, setDaoContractCall } = useEvmProposalOps()
   const [writeMethods, setWriteMethods] = useState<any[]>([])
-  const [activeTab, setActiveTab] = useState<"callData" | "writeMethods" | "computeCallData">("callData")
+  const [activeTab, setActiveTab] = useState<"callData" | "writeMethods" | "computeCallData">("computeCallData")
   const [selectedMethod, setSelectedMethod] = useState<string>("")
   const [methodInput, setMethodInput] = useState<string>("")
   const [functionSignature, setFunctionSignature] = useState<string>("")
   const [parsedInputs, setParsedInputs] = useState<{ type: string; name: string }[]>([])
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({})
+  const [calldataError, setCalldataError] = useState<string>("")
 
   const generateCallData = useCallback(() => {
     if (!selectedMethod || !daoContractCall.targetAddress) return
@@ -102,12 +103,18 @@ export const EvmPropContractCall: React.FC = () => {
   }, [])
 
   const computeCallDataFromSignature = useCallback(() => {
-    if (!functionSignature) return
+    if (!functionSignature) {
+      setCalldataError("")
+      return
+    }
 
     try {
       // Build the function ABI from the signature
       const functionName = functionSignature.match(/^(\w+)/)?.[1]
-      if (!functionName) return
+      if (!functionName) {
+        setCalldataError("")
+        return
+      }
 
       const inputs = parsedInputs.map(input => ({
         type: input.type,
@@ -138,6 +145,7 @@ export const EvmPropContractCall: React.FC = () => {
 
       // Only encode if all inputs have values or if there are no inputs
       if (values.includes(null) && parsedInputs.length > 0) {
+        setCalldataError("")
         return
       }
 
@@ -147,9 +155,13 @@ export const EvmPropContractCall: React.FC = () => {
         values.filter(v => v !== null)
       )
       setDaoContractCall("callData", callData)
+      setCalldataError("")
     } catch (error) {
       console.error("Error computing callData from signature:", error)
-      alert("Error computing callData. Check your function signature and inputs.")
+      const errorMessage =
+        (error as any)?.message || "Error computing callData. Check your function signature and inputs."
+      setCalldataError(errorMessage)
+      setDaoContractCall("callData", "")
     }
   }, [functionSignature, parsedInputs, inputValues, setDaoContractCall])
 
@@ -198,7 +210,7 @@ export const EvmPropContractCall: React.FC = () => {
             </FormField>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <FormField label="Value (ETH)" labelStyle={{ fontSize: 16 }}>
+            <FormField label="Value (XTZ)" labelStyle={{ fontSize: 16 }}>
               <FormTextField
                 defaultValue={daoContractCall.value}
                 placeholder="0"
@@ -213,8 +225,8 @@ export const EvmPropContractCall: React.FC = () => {
       {/* Row 2: Tabs and Content */}
       <Grid item xs={12}>
         <Box>
-          <ThemedTabButton active={activeTab === "callData"} onClick={() => setActiveTab("callData")}>
-            CallData
+          <ThemedTabButton active={activeTab === "computeCallData"} onClick={() => setActiveTab("computeCallData")}>
+            Compute CallData
           </ThemedTabButton>
           <Tooltip
             title="The contract should be verified by the author on Blockscout"
@@ -234,8 +246,8 @@ export const EvmPropContractCall: React.FC = () => {
               </ThemedTabButton>
             </span>
           </Tooltip>
-          <ThemedTabButton active={activeTab === "computeCallData"} onClick={() => setActiveTab("computeCallData")}>
-            Compute CallData
+          <ThemedTabButton active={activeTab === "callData"} onClick={() => setActiveTab("callData")}>
+            CallData
           </ThemedTabButton>
         </Box>
 
@@ -309,7 +321,7 @@ export const EvmPropContractCall: React.FC = () => {
 
             {parsedInputs.length > 0 && (
               <Box>
-                <Box style={{ marginBottom: 12, fontSize: 16, fontWeight: 500, color: "#fff" }}>Function Arguments</Box>
+                <Typography style={{ marginBottom: 12, fontSize: 16 }}>Function Arguments</Typography>
                 {parsedInputs.map((input, index) => (
                   <Box key={index} style={{ marginBottom: 12 }}>
                     <FormField
@@ -333,6 +345,20 @@ export const EvmPropContractCall: React.FC = () => {
                 ))}
               </Box>
             )}
+
+            <FormField label="Call Data (Hex)" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                value={daoContractCall.callData}
+                placeholder="Complete the inputs to compute calldata"
+                disabled
+                inputProps={{ style: { fontSize: 14 } }}
+              />
+              {calldataError && (
+                <Typography color="error" style={{ fontSize: 14, marginTop: 8 }}>
+                  {calldataError}
+                </Typography>
+              )}
+            </FormField>
           </Box>
         )}
       </Grid>

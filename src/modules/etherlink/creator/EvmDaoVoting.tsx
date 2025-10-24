@@ -7,6 +7,8 @@ import { StyledTextField } from "components/ui"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
 import { InputContainer } from "components/ui"
+import { useTezos } from "services/beacon/hooks/useTezos"
+import { getVotingDefaults } from "./votingDefaults"
 
 const styles = {
   voting: {
@@ -38,11 +40,52 @@ interface EvmDaoVotingProps {
 
 export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit }) => {
   const { data: daoData, setFieldValue } = useEvmDaoCreateStore()
-  // const handleSubmit = (values: IEvmVotingFormValues) => {
-  //   if (onSubmit) {
-  //     onSubmit(values)
-  //   }
-  // }
+  const { network } = useTezos()
+
+  // Initialize sensible defaults per Etherlink network when fields are blank (all zeros)
+  React.useEffect(() => {
+    const isEtherlinkTestnet = network === "etherlink_testnet"
+    const isEtherlinkMainnet = network === "etherlink_mainnet"
+
+    if (!(isEtherlinkTestnet || isEtherlinkMainnet)) return
+
+    // Voting Delay defaults
+    const delayDays = Number(daoData.voting.votingBlocksDay) || 0
+    const delayHours = Number(daoData.voting.votingBlocksHours) || 0
+    const delayMinutes = Number(daoData.voting.votingBlocksMinutes) || 0
+    const delayUnset = delayDays === 0 && delayHours === 0 && delayMinutes === 0
+    const votingDefaults = getVotingDefaults(network)
+
+    if (delayUnset) {
+      setFieldValue("voting.votingBlocksDay", votingDefaults?.voting.votingBlocksDay || 0)
+      setFieldValue("voting.votingBlocksHours", votingDefaults?.voting.votingBlocksHours || 0)
+      setFieldValue("voting.votingBlocksMinutes", votingDefaults?.voting.votingBlocksMinutes || 0)
+    }
+
+    // Voting Duration defaults
+    const durDays = Number(daoData.voting.proposalFlushBlocksDay) || 0
+    const durHours = Number(daoData.voting.proposalFlushBlocksHours) || 0
+    const durMinutes = Number(daoData.voting.proposalFlushBlocksMinutes) || 0
+    const durationUnset = durDays === 0 && durHours === 0 && durMinutes === 0
+
+    if (durationUnset) {
+      setFieldValue("voting.proposalFlushBlocksDay", votingDefaults?.voting.proposalFlushBlocksDay || 0)
+      setFieldValue("voting.proposalFlushBlocksHours", votingDefaults?.voting.proposalFlushBlocksHours || 0)
+      setFieldValue("voting.proposalFlushBlocksMinutes", votingDefaults?.voting.proposalFlushBlocksMinutes || 0)
+    }
+
+    // Execution Delay defaults
+    const execDays = Number(daoData.voting.proposalExpiryBlocksDay) || 0
+    const execHours = Number(daoData.voting.proposalExpiryBlocksHours) || 0
+    const execMinutes = Number(daoData.voting.proposalExpiryBlocksMinutes) || 0
+    const execUnset = execDays === 0 && execHours === 0 && execMinutes === 0
+
+    if (execUnset) {
+      setFieldValue("voting.proposalExpiryBlocksDay", votingDefaults?.voting.proposalExpiryBlocksDay || 0)
+      setFieldValue("voting.proposalExpiryBlocksHours", votingDefaults?.voting.proposalExpiryBlocksHours || 0)
+      setFieldValue("voting.proposalExpiryBlocksMinutes", votingDefaults?.voting.proposalExpiryBlocksMinutes || 0)
+    }
+  }, [network, daoData.voting, setFieldValue])
 
   return (
     <div className="evm-dao-voting">

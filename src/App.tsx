@@ -76,6 +76,11 @@ const App: React.FC = () => {
           variantError: ErrorSnackbar.toString(),
           variantInfo: InfoSnackbar.toString()
         }}
+        style={{ zIndex: 1000003 }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
       >
         {/* <TanStackQueryClientProvider client={tsQueryClient}> */}
         <QueryClientProvider client={queryClient}>

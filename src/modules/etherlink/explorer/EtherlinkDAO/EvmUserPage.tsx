@@ -96,12 +96,26 @@ export const EvmUserPage = () => {
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance
-  const userDelegate = (userDelegateAddress || selfMember?.delegate || "").toLowerCase()
   const userAddrLc = (signer?.address || "").toLowerCase()
   const zeroAddress = "0x0000000000000000000000000000000000000000"
-  const isUndelegated = !userDelegate || userDelegate === zeroAddress
-  const isSelfDelegated = !!userAddrLc && userDelegate === userAddrLc
-  const hasBalance = (userTokenBalance || 0) > 0
+  // Determine delegation state strictly from on-chain assigned delegate
+  const delegateLc = (userDelegateAddress || "").toLowerCase()
+  const isNotDelegatingNotClaimed = delegateLc === zeroAddress && !!userDelegateAddress
+  const isNotDelegatingClaimed = !!userAddrLc && delegateLc === userAddrLc
+  const isDelegating = !!delegateLc && delegateLc !== zeroAddress && delegateLc !== userAddrLc
+  // Human-readable status for current delegation mode
+  const delegationStatusText = userDelegateAddress
+    ? isNotDelegatingNotClaimed
+      ? "not delegating - not claimed"
+      : isNotDelegatingClaimed
+      ? "not delegating - claimed"
+      : isDelegating
+      ? "delegating"
+      : ""
+    : ""
+  // For vote-directly label, compare voting weight vs personal balance
+  const EPS = 1e-9
+  const onlyVotingOnOwnBehalf = Math.abs((userVotingWeight || 0) - (userTokenBalance || 0)) < EPS
   const canShowBridge = !!daoSelected?.underlyingToken && ethers.isAddress(daoSelected.underlyingToken)
   // const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
 
@@ -162,18 +176,19 @@ export const EvmUserPage = () => {
               If you can't or don't want to take part in the governance process, your voting privilege may be forwarded
               to another member of your choosing.
             </DelegationDescription>
-            {!isUndelegated && !isSelfDelegated && (
+            {delegationStatusText && <Typography style={{ color: "#9E9E9E" }}>{delegationStatusText}</Typography>}
+            {isDelegating && (
               <Typography style={{ color: "#9E9E9E", fontFamily: "monospace" }}>
-                Currently delegated to: {userDelegate}
+                Currently delegated to: {delegateLc}
               </Typography>
             )}
             <Button
               variant="outlined"
               style={{ width: "fit-content" }}
               onClick={() => setDelegateDialogOpen(true)}
-              disabled={!ENABLE_DELEGATION || !hasBalance}
+              disabled={!ENABLE_DELEGATION}
             >
-              {isUndelegated ? "Set Delegate" : "Change Delegate"}
+              {isNotDelegatingNotClaimed || !userDelegateAddress ? "Set Delegate" : "Change Delegate"}
             </Button>
           </DelegationBox>
         </Grid>
@@ -186,26 +201,31 @@ export const EvmUserPage = () => {
               This also allows other members to delegate their vote to you, so that you may participate in the
               governance process on their behalf.
             </DelegationDescription>
+            {delegationStatusText && <Typography style={{ color: "#9E9E9E" }}>{delegationStatusText}</Typography>}
 
-            {isSelfDelegated ? (
-              <Typography style={{ color: "#9E9E9E" }}>Only voting on your behalf</Typography>
+            {isNotDelegatingClaimed ? (
+              <Typography style={{ color: "#9E9E9E" }}>
+                {onlyVotingOnOwnBehalf ? "only voting on your behalf" : "representing multiple accounts"}
+              </Typography>
             ) : (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  daoDelegate(userAddress).finally(() => {
-                    setIsLoading(false)
-                    // Refresh on-chain stats so the UI reflects new voting power immediately
-                    try {
-                      refreshTokenStats()
-                    } catch (_) {}
-                  })
-                }}
-                style={{ width: "fit-content" }}
-                disabled={!hasBalance}
-              >
-                Claim Voting Power
-              </Button>
+              <>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    daoDelegate(userAddress).finally(() => {
+                      setIsLoading(false)
+                      // Refresh on-chain stats so the UI reflects new voting power immediately
+                      try {
+                        refreshTokenStats()
+                      } catch (_) {}
+                    })
+                  }}
+                  style={{ width: "fit-content" }}
+                  disabled={!ENABLE_DELEGATION || !userAddress}
+                >
+                  Claim Voting Power
+                </Button>
+              </>
             )}
           </DelegationBox>
 

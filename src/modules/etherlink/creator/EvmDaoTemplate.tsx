@@ -26,26 +26,32 @@ export const EvmDaoTemplate = (): JSX.Element => {
   return (
     <Box>
       <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />
-      <Grid container justifyContent={isMobileSmall ? "center" : "space-between"} direction="row">
+      <Grid
+        container
+        justifyContent={isMobileSmall ? "center" : "space-between"}
+        direction="row"
+        spacing={isMobileSmall ? 2 : 0}
+      >
         <Grid
           item
           container
           direction="column"
           justifyContent="flex-start"
           alignItems="center"
-          xs={isMobileSmall ? 12 : 5}
+          xs={12}
+          sm={12}
+          md={5}
           onClick={() => handleTemplateSelect("full")}
           style={{
             height: 273,
             marginTop: 30,
             background: "#1c2024",
             borderRadius: 8,
-            maxWidth: 342,
-            width: "-webkit-fill-available",
+            maxWidth: isMobileSmall ? "100%" : 342,
+            width: isMobileSmall ? "100%" : "-webkit-fill-available",
             textAlign: "start",
             cursor: "pointer",
             paddingBottom: 0,
-            flexBasis: "47%",
             padding: "33px 38px 0px",
             border: selectedTemplate === "full" ? "3px solid rgba(129, 254, 183, 0.4)" : undefined
           }}
@@ -71,19 +77,20 @@ export const EvmDaoTemplate = (): JSX.Element => {
           direction="column"
           justifyContent="flex-start"
           alignItems="center"
-          xs={isMobileSmall ? 12 : 5}
+          xs={12}
+          sm={12}
+          md={5}
           onClick={() => handleTemplateSelect("lite")}
           style={{
             height: 273,
             marginTop: 30,
             background: "#1c2024",
             borderRadius: 8,
-            maxWidth: 342,
-            width: "-webkit-fill-available",
+            maxWidth: isMobileSmall ? "100%" : 342,
+            width: isMobileSmall ? "100%" : "-webkit-fill-available",
             textAlign: "start",
             cursor: "pointer",
             paddingBottom: 0,
-            flexBasis: "47%",
             padding: "33px 38px 0px",
             border: selectedTemplate === "lite" ? "3px solid rgba(129, 254, 183, 0.4)" : undefined
           }}

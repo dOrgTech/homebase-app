@@ -60,6 +60,10 @@ You will be taken to the DAO Creator, from which you will be asked to choose on 
 - **`Quorum threshold`**: currently a natural number representing the total amount of votes required for a proposal to pass. Each token staked in a vote operation represents a vote. Therefore, with a quorum threshold of 500, a vote that stakes 500 tokens would make the proposal pass.
 - **`Maximum proposal size`**
 
+### Etherlink (EVM) DAO Settings
+
+- Voting Delay: you can set the Voting Delay to 0 to start voting immediately when a proposal is created. Voting Period and Execution Delay must be greater than 0.
+
 **Distribution Settings**:
 
 - **`TokenHolders`**: initial token holder addresses and their initial balances. At least 1 is required.

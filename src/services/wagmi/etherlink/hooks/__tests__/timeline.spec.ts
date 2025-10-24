@@ -35,4 +35,29 @@ describe("computeTimeline", () => {
     expect(res.isTimerActive).toBe(true)
     expect(res.timerLabel).toBe("Execution available in")
   })
+
+  it("handles 0-minute voting delay - proposal should be active immediately", () => {
+    const daoWithZeroDelay = { votingDelay: 0, votingDuration: 30, executionDelay: 60 }
+    const createdAt = dayjs()
+    const proposal: any = { createdAt }
+    // Current time is exactly at creation time
+    const now = createdAt
+    const res = computeTimeline(proposal, daoWithZeroDelay as any, now)
+    // With 0 delay, voting should be active immediately (not pending)
+    expect(res.phase).toBe("voting")
+    expect(res.effectiveDisplayStatus).toBe("Active")
+    expect(res.isTimerActive).toBe(true)
+    expect(res.timerLabel).toBe("Time left to vote")
+  })
+
+  it("handles 0-minute voting delay - no pre-voting phase", () => {
+    const daoWithZeroDelay = { votingDelay: 0, votingDuration: 30, executionDelay: 60 }
+    const createdAt = dayjs()
+    const proposal: any = { createdAt }
+    // Even 1 second after creation, should still be in voting phase
+    const now = createdAt.add(1, "second")
+    const res = computeTimeline(proposal, daoWithZeroDelay as any, now)
+    expect(res.phase).toBe("voting")
+    expect(res.effectiveDisplayStatus).toBe("Active")
+  })
 })

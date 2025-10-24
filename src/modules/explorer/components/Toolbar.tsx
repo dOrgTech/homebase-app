@@ -10,12 +10,17 @@ import { Header, StyledAppBar, StyledToolbar, LogoText, LogoItem, ToolbarContain
 export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobileMenu, children }) => {
   const theme = useTheme()
   const isMobileExtraSmall = useMediaQuery(theme.breakpoints.down("mobile"))
+  const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
 
   return (
     <StyledAppBar>
       <StyledToolbar>
         <Header container alignItems="center" wrap="wrap" justifyContent={"space-between"}>
-          <Grid item>
+          <Grid
+            item
+            xs={isMobileSmall ? 12 : undefined}
+            style={isMobileSmall ? { display: "flex", justifyContent: "center" } : undefined}
+          >
             <Box onClick={() => (location.href = `/explorer`)}>
               <ToolbarContainer container alignItems="center" wrap="nowrap">
                 <Grid item>
@@ -30,7 +35,7 @@ export const Navbar: React.FC<{ disableMobileMenu?: boolean }> = ({ disableMobil
             </Box>
           </Grid>
 
-          <Grid item>
+          <Grid item xs={isMobileSmall ? 12 : undefined}>
             <Grid container justifyContent={isMobileExtraSmall ? "center" : "flex-end"}>
               <ToolbarAccount>{children}</ToolbarAccount>
             </Grid>

@@ -38,18 +38,6 @@ export const EvmProposalsPage = () => {
     [offchainEnabled, setQFilters]
   )
 
-  const tezosToDisplay: Record<string, string> = {
-    "pending": "Pending",
-    "active": "Active",
-    "passed": "Succeeded",
-    "rejected": "Rejected",
-    "no quorum": "NoQuorum",
-    "executable": "Executable",
-    "expired": "Expired",
-    "executed": "Executed",
-    "dropped": "Defeated"
-  }
-
   const matchesOnchainStatusFromQuery = (p: any) => {
     // status array comes normalized (hyphenated keys); empty or ['all'] means no filter
     const statusKeys = Array.isArray(qFilters.status) ? (qFilters.status as string[]) : []

@@ -58,3 +58,33 @@ export const getBlockie = (address: string): string => {
 
   return blockies.create({ seed: address }).toDataURL()
 }
+
+/**
+ * Format voting weight with decimal adjustment and abbreviations (K, M, B, T)
+ * @param amount - The raw amount as string or BigInt
+ * @param decimals - Token decimals
+ * @returns Formatted string with abbreviation
+ */
+export const formatVotingWeight = (amount: string | bigint, decimals: number): string => {
+  const amountBigInt = typeof amount === "string" ? BigInt(amount) : amount
+  const divisor = BigInt(10) ** BigInt(decimals)
+  const nominalValue = amountBigInt / divisor
+
+  const value = Number(nominalValue)
+
+  if (value < 1000) {
+    return value.toFixed(0)
+  } else if (value < 1000000) {
+    const result = value / 1000
+    return result === Math.floor(result) ? `${result.toFixed(0)}K` : `${result.toFixed(1)}K`
+  } else if (value < 1000000000) {
+    const result = value / 1000000
+    return result === Math.floor(result) ? `${result.toFixed(0)}M` : `${result.toFixed(1)}M`
+  } else if (value < 1000000000000) {
+    const result = value / 1000000000
+    return result === Math.floor(result) ? `${result.toFixed(0)}B` : `${result.toFixed(1)}B`
+  } else {
+    const result = value / 1000000000000
+    return result === Math.floor(result) ? `${result.toFixed(0)}T` : `${result.toFixed(1)}T`
+  }
+}
