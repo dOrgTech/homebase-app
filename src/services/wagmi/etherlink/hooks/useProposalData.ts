@@ -15,7 +15,7 @@ export const useProposalData = (network: string) => {
       const frag = iface.getFunction(functionAbi)
       const decoded = decodeCalldataWithEthers(functionAbi, callDataHex)
       const fnName = decoded?.functionName || frag?.name || "call"
-      const params: any[] = Array.isArray(decoded?.decodedData) ? (decoded?.decodedData as any[]) : []
+      const params: unknown[] = Array.isArray(decoded?.decodedData) ? (decoded?.decodedData as any[]) : []
       const inputs = Array.isArray((frag as any)?.inputs) ? ((frag as any).inputs as any[]) : []
       const signature = functionAbi.replace(/^function\s+/, "")
 

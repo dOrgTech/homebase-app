@@ -69,8 +69,6 @@ export const TokenBridge = () => {
 
       await sleep(1000)
 
-      // Wrap logic
-      console.log("wrapperContractAbiHumanReadable", etherlink.signer.address, underlyingToken)
       setTransactionState("waitingExecution")
       const wrapperContract = new ethers.Contract(wrapperToken, wrapperContractAbiJson, etherlink.signer)
       const tx2 = await wrapperContract.depositFor(etherlink.signer.address, wrapAmount)

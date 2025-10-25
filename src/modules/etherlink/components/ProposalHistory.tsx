@@ -37,10 +37,6 @@ export const ProposalHistory = ({
   const turnoutPercentage = totalSupplyBigInt > 0n ? (Number(totalVotes) / Number(totalSupplyBigInt)) * 100 : 0
   const formattedTotalVotes = decimals !== undefined ? formatVotingWeight(totalVotes, decimals) : "0"
 
-  try {
-    console.log("[ProposalHistory] input/output", { input: votesQuorumPercentage, safePct })
-  } catch (_) {}
-
   return (
     <Grid item container direction="row" spacing={4} style={{ marginTop: 32, marginBottom: 12 }}>
       {/* Quorum card */}

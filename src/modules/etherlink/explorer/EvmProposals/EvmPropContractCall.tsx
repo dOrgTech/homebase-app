@@ -187,7 +187,6 @@ export const EvmPropContractCall: React.FC = () => {
           ? data.abi.filter((method: any) => method.type === "function" && method.stateMutability === "nonpayable")
           : []
         setWriteMethods(methods || [])
-        console.log({ writeMethods: methods })
       })
     }
   }, [daoContractCall.targetAddress, network])

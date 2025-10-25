@@ -227,7 +227,6 @@ function _decodedCallData(possibleInterfaces: any[], callData: string) {
   }
   for (const iface of possibleInterfaces) {
     const decodedDataPair = decodeCalldataWithEthers(iface.interface?.[0], formattedCallData)
-    console.log("callDataXYB decodedDataPair", decodedDataPair)
     const functionName = decodedDataPair?.functionName
     const functionParams = decodedDataPair?.decodedData
     const label = iface?.label

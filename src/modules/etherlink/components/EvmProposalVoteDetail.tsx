@@ -66,33 +66,10 @@ export const EvmProposalVoteDetail: React.FC<{
   }, [poll, network, token, tokenData, totalVoteCount])
 
   const votesQuorumPercentage = daoProposalSelected?.votesWeightPercentage
-  try {
-    console.log("[EvmProposalVoteDetail] votesQuorumPercentage", {
-      id: (daoProposalSelected as any)?.id,
-      votesQuorumPercentage
-    })
-  } catch (_) {}
+
   return (
     <>
       <Container container direction="column" style={{ marginTop: 12, marginBottom: 12 }}>
-        {/* Disabled as Data is wrong in Firebase */}
-        {/* <TitleContainer item>
-        <Typography variant={"body2"} color="textPrimary">
-          Voter Turnout
-        </Typography>
-      </TitleContainer>
-      <LinearContainer container direction="column" style={{ gap: 20 }}>
-        <Grid item container direction="row" alignItems="center">
-          <Grid item xs={12} lg={12} sm={12}>
-            <LinearProgress
-              style={{ width: "100%", marginRight: "4px", height: "10px" }}
-              color="secondary"
-              value={50}
-              variant="determinate"
-            />
-          </Grid>
-        </Grid>
-      </LinearContainer> */}
         <TitleContainer item>
           <Typography variant={"h4"} color="textPrimary">
             Voting Results

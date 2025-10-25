@@ -141,7 +141,6 @@ export const Template = (): JSX.Element => {
     setError(false)
     setTemplate(templateValue)
   }
-  console.log({ isMobileSmall })
   return (
     <Box>
       <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />
