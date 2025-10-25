@@ -186,14 +186,6 @@ const useEvmDaoCreateStore = () => {
       const proposalThreshold = daoData.quorum.proposalThreshold || daoData.quorum.proposalThresholdPercentage || 0
       const quorumThreshold = daoData.quorum.returnedTokenPercentage
 
-      console.log("Quorum settings:", {
-        proposalThreshold,
-        quorumThreshold,
-        rawQuorum: daoData.quorum,
-        proposalThresholdField: daoData.quorum.proposalThreshold,
-        proposalThresholdPercentageField: daoData.quorum.proposalThresholdPercentage
-      })
-
       // Convert execution delay values to numbers
       const executionDelayDays = Number(daoData.voting.proposalExpiryBlocksDay) || 0
       const executionDelayHours = Number(daoData.voting.proposalExpiryBlocksHours) || 0
@@ -202,18 +194,6 @@ const useEvmDaoCreateStore = () => {
       const executationDelayinSeconds =
         executionDelayDays * 24 * 60 * 60 + executionDelayHours * 60 * 60 + executionDelayMinutes * 60
 
-      console.log("Execution delay calculation:", {
-        days: executionDelayDays,
-        hours: executionDelayHours,
-        minutes: executionDelayMinutes,
-        totalSeconds: executationDelayinSeconds,
-        originalValues: {
-          days: daoData.voting.proposalExpiryBlocksDay,
-          hours: daoData.voting.proposalExpiryBlocksHours,
-          minutes: daoData.voting.proposalExpiryBlocksMinutes
-        }
-      })
-
       // Convert all values to numbers to avoid string concatenation
       const votingDelayDays = Number(daoData.voting.votingBlocksDay) || 0
       const votingDelayHours = Number(daoData.voting.votingBlocksHours) || 0
@@ -221,43 +201,12 @@ const useEvmDaoCreateStore = () => {
 
       const votingDelayInMinutes = votingDelayDays * 24 * 60 + votingDelayHours * 60 + votingDelayMinutes
 
-      console.log("Voting delay calculation:", {
-        days: votingDelayDays,
-        hours: votingDelayHours,
-        minutes: votingDelayMinutes,
-        totalMinutes: votingDelayInMinutes,
-        originalValues: {
-          days: daoData.voting.votingBlocksDay,
-          hours: daoData.voting.votingBlocksHours,
-          minutes: daoData.voting.votingBlocksMinutes,
-          types: {
-            days: typeof daoData.voting.votingBlocksDay,
-            hours: typeof daoData.voting.votingBlocksHours,
-            minutes: typeof daoData.voting.votingBlocksMinutes
-          }
-        }
-      })
-
       // Convert voting duration values
       const votingDurationDays = Number(daoData.voting.proposalFlushBlocksDay) || 0
       const votingDurationHours = Number(daoData.voting.proposalFlushBlocksHours) || 0
       const votingDurationMinutes = Number(daoData.voting.proposalFlushBlocksMinutes) || 0
 
       const votingDurationInMinutes = votingDurationDays * 24 * 60 + votingDurationHours * 60 + votingDurationMinutes
-
-      console.log("Voting duration calculation:", {
-        days: votingDurationDays,
-        hours: votingDurationHours,
-        minutes: votingDurationMinutes,
-        totalMinutes: votingDurationInMinutes
-      })
-
-      console.log("Contract addresses:", {
-        wrapperAddress,
-        wrapperAddressForWrapped,
-        selectedWrapperAddress,
-        contractData
-      })
       console.log("Token deployment mechanism:", daoData.tokenDeploymentMechanism)
       console.log("Signer:", etherlink.signer)
 
@@ -287,17 +236,6 @@ const useEvmDaoCreateStore = () => {
             ? HbWrapperWLegacyAbi.abi
             : wrapperAbi
           : wrapperAbi
-
-      console.log("Creating wrapper factory with:", {
-        address: selectedWrapperAddress,
-        tokenDeploymentMechanism: daoData.tokenDeploymentMechanism,
-        hasAbi: !!selectedAbi,
-        abiLength: selectedAbi?.length,
-        hasSigner: !!etherlink.signer,
-        usingWrappedAbi: daoData.tokenDeploymentMechanism === "wrapped",
-        isUsingFallbackAddress,
-        usingLegacyAbi: isUsingFallbackAddress && daoData.tokenDeploymentMechanism === "wrapped"
-      })
 
       // Preflight: verify contract code exists at address
       const onChainCode = await etherlink.provider.getCode(selectedWrapperAddress)
@@ -455,20 +393,6 @@ const useEvmDaoCreateStore = () => {
           values: Object.values(registryForDeploy).map(v => String(v)),
           transferrable: !daoData.nonTransferable // Note: fixed spelling to match ABI
         }
-        console.log("Deploying new token DAO with object:", daoCreateObject)
-        console.log("Members data:", {
-          members: daoData.members,
-          addresses: daoCreateObject.initialMembers,
-          memberAmounts: memberAmounts,
-          initialAmountsWithSettings: daoCreateObject.initialAmounts,
-          decimals: daoData.governanceToken.tokenDecimals,
-          daoSettings: {
-            votingDelayInMinutes,
-            votingDurationInMinutes,
-            proposalThreshold,
-            quorumThreshold
-          }
-        })
 
         try {
           wrapper = await wrapperFactory.deployDAOwithToken(daoCreateObject)
@@ -502,16 +426,6 @@ const useEvmDaoCreateStore = () => {
       }
       // history.push("/explorer/etherlink/dao/0x287915D27CC4FC967Ca10AA20242d80d99caCe5e/overview")
     } catch (error: any) {
-      console.error("=== DAO Deployment Error ===")
-      console.error("Full error object:", error)
-      console.error("Error stack:", error.stack)
-      console.error("Error data:", error.data)
-      console.error("Error reason:", error.reason)
-      console.error("Error code:", error.code)
-      console.error("Deployment context:", {
-        selectedWrapperAddress,
-        tokenDeploymentMechanism: daoData.tokenDeploymentMechanism
-      })
       notify({
         message: `Error deploying DAO: ${
           error?.reason || error?.shortMessage || error?.message || "Unknown error"

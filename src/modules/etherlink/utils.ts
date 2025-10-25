@@ -126,11 +126,6 @@ export function decodeCalldataWithEthers(functionAbi: string, callDataHex: strin
     return { decoded, functionName, decodedData: convertBigIntToString(decoded) }
   } catch (error) {
     if (isRetry) {
-      console.log("error:decodeCalldataWithEthers", {
-        functionAbi,
-        callDataHexValue,
-        error
-      })
       return { decoded: [], functionName: "", decodedData: [] }
     }
 
