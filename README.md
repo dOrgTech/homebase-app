@@ -12,7 +12,7 @@ The following dependencies are required to run homebase-app:
 
 | Dependency | Version             |
 | ---------- | ------------------- |
-| Node       | `v18.20.0` or above |
+| Node       | `v22.14.0` or above |
 | Yarn       | `v1.22.*` or above  |
 
 # Third Party Services
@@ -59,6 +59,10 @@ You will be taken to the DAO Creator, from which you will be asked to choose on 
 - **`Transfer amounts`** **(Treasury only)**: maximum and minimum amounts that can be transferred in a treasury proposal transfer. Currently only supports `XTZ`
 - **`Quorum threshold`**: currently a natural number representing the total amount of votes required for a proposal to pass. Each token staked in a vote operation represents a vote. Therefore, with a quorum threshold of 500, a vote that stakes 500 tokens would make the proposal pass.
 - **`Maximum proposal size`**
+
+### Etherlink (EVM) DAO Settings
+
+- Voting Delay: you can set the Voting Delay to 0 to start voting immediately when a proposal is created. Voting Period and Execution Delay must be greater than 0.
 
 **Distribution Settings**:
 

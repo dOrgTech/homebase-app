@@ -502,7 +502,7 @@ const QuorumForm = ({
         <StylerContainer container direction="row" alignItems="center">
           <GridNoPadding item xs={8} sm={10}>
             <StyledSlider
-              min={2}
+              min={1}
               max={99}
               value={fixedQuorum}
               onChange={(e: any, newValue: any) => {

@@ -3,50 +3,21 @@ import { TitleBlock } from "modules/common/TitleBlock"
 import React from "react"
 import {
   Grid,
-  styled,
   Table,
   TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
   TableRow,
   Typography,
   useMediaQuery,
-  useTheme
-} from "@material-ui/core"
+  useTheme,
+  TableHead,
+  TableCell
+} from "components/ui"
+import { CustomTableContainer, CustomTableCell, CustomTableCellValue, RowValue, SummaryHeaderCell } from "components/ui"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 import { CopyAddress } from "modules/common/CopyAddress"
 import { CopyButton } from "modules/common/CopyButton"
 
-const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
-  width: "inherit",
-  [theme.breakpoints.down("sm")]: {}
-}))
-
-const CustomTableCell = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingBottom: 0,
-    paddingLeft: "16px !important",
-    textAlign: "end"
-  }
-}))
-
-const CustomTableCellValue = styled(TableCell)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    paddingTop: 0,
-    paddingRight: "16px !important",
-    textAlign: "end",
-    paddingBottom: 0
-  }
-}))
-
-const RowValue = styled(Typography)(({ theme }) => ({
-  fontWeight: 300,
-  fontSize: 18,
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 16
-  }
-}))
+// Styled components moved to components/ui/etherlink/SummaryTable
 
 export const EvmDaoSummary = () => {
   const theme = useTheme()
@@ -145,6 +116,143 @@ export const EvmDaoSummary = () => {
             </TableBody>
           </Table>
         </CustomTableContainer>
+
+        {/* Initial Members (only for new token deployment) */}
+        {data?.tokenDeploymentMechanism !== "wrapped" && (
+          <div style={{ marginTop: 32 }}>
+            <Typography variant="h6" style={{ color: "white", marginBottom: 8, lineHeight: 1.3 }}>
+              Initial Members ({data?.members?.length || 0})
+            </Typography>
+            <CustomTableContainer>
+              <Table aria-label="members table">
+                <TableHead>
+                  <TableRow>
+                    <SummaryHeaderCell>#</SummaryHeaderCell>
+                    <SummaryHeaderCell>Address</SummaryHeaderCell>
+                    <SummaryHeaderCell align="right">Amount</SummaryHeaderCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {Array.isArray(data?.members) && data.members.length > 0 ? (
+                    data.members.map((member: { address: string; amountOfTokens: number }, index: number) => (
+                      <TableRow key={`${member.address}-${index}`}>
+                        <CustomTableCell component="th" scope="row">
+                          <Typography style={{ color: "white", textAlign: "left" }}>{index + 1}</Typography>
+                        </CustomTableCell>
+                        <CustomTableCellValue align="left">
+                          {typeof member.address === "string" && member.address.startsWith("0x") ? (
+                            <RowValue style={isMobileSmall ? { width: "max-content" } : {}}>
+                              {isMobileSmall ? (
+                                <CopyAddress address={member.address} />
+                              ) : (
+                                <>
+                                  <Grid
+                                    container
+                                    style={{ color: "white" }}
+                                    direction="row"
+                                    alignItems="center"
+                                    justifyContent="flex-start"
+                                  >
+                                    {member.address}
+                                    <CopyButton text={member.address} />
+                                  </Grid>
+                                </>
+                              )}
+                            </RowValue>
+                          ) : (
+                            <RowValue style={isMobileSmall ? { width: "max-content" } : { color: "white" }}>
+                              {member.address}
+                            </RowValue>
+                          )}
+                        </CustomTableCellValue>
+                        <CustomTableCellValue align="right">
+                          <RowValue style={isMobileSmall ? { width: "max-content" } : { color: "white" }}>
+                            {String(member.amountOfTokens)}
+                          </RowValue>
+                        </CustomTableCellValue>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <CustomTableCell component="th" scope="row">
+                        <Typography style={{ color: "white", textAlign: "left" }}>—</Typography>
+                      </CustomTableCell>
+                      <CustomTableCellValue align="left">
+                        <RowValue style={{ color: "white" }}>No members</RowValue>
+                      </CustomTableCellValue>
+                      <CustomTableCellValue align="right">
+                        <RowValue style={{ color: "white" }}>-</RowValue>
+                      </CustomTableCellValue>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CustomTableContainer>
+          </div>
+        )}
+
+        {/* Registry Entries */}
+        <div style={{ marginTop: 32 }}>
+          <Typography variant="h6" style={{ color: "white", marginBottom: 8, lineHeight: 1.3 }}>
+            Registry Entries
+          </Typography>
+          <CustomTableContainer>
+            <Table aria-label="registry table">
+              <TableHead>
+                <TableRow>
+                  <SummaryHeaderCell>Key</SummaryHeaderCell>
+                  <SummaryHeaderCell align="right">Value</SummaryHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {data?.registry && Object.keys(data.registry).length > 0 ? (
+                  Object.entries(data.registry).map(([key, value]: [string, any]) => (
+                    <TableRow key={`registry-${key}`}>
+                      <CustomTableCell component="th" scope="row">
+                        <Typography style={{ color: "white", textAlign: "left" }}>{key}</Typography>
+                      </CustomTableCell>
+                      <CustomTableCellValue align="right">
+                        {typeof value === "string" && value.startsWith("0x") ? (
+                          <RowValue style={isMobileSmall ? { width: "max-content" } : {}}>
+                            {isMobileSmall ? (
+                              <CopyAddress address={value} />
+                            ) : (
+                              <>
+                                <Grid
+                                  container
+                                  style={{ color: "white" }}
+                                  direction="row"
+                                  alignItems="center"
+                                  justifyContent="flex-end"
+                                >
+                                  {value}
+                                  <CopyButton text={value} />
+                                </Grid>
+                              </>
+                            )}
+                          </RowValue>
+                        ) : (
+                          <RowValue style={isMobileSmall ? { width: "max-content" } : { color: "white" }}>
+                            {String(value)}
+                          </RowValue>
+                        )}
+                      </CustomTableCellValue>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <CustomTableCell component="th" scope="row">
+                      <Typography style={{ color: "white", textAlign: "left" }}>No registry entries</Typography>
+                    </CustomTableCell>
+                    <CustomTableCellValue align="right">
+                      <RowValue style={{ color: "white" }}>-</RowValue>
+                    </CustomTableCellValue>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CustomTableContainer>
+        </div>
 
         {isWrappedToken && (
           <Grid

@@ -1,9 +1,8 @@
-import React, { useEffect } from "react"
-import { Button, Divider, Grid, styled, Theme, Typography, useMediaQuery, useTheme } from "@material-ui/core"
-import { Choice } from "models/Choice"
+import React from "react"
+import { Button, Grid, styled, Typography, useMediaQuery, useTheme } from "components/ui"
 import { IEvmOffchainChoice } from "modules/etherlink/types"
 
-const StyledContainer = styled(Grid)(({ theme }: { theme: Theme }) => ({
+const StyledContainer = styled(Grid)(({ theme }: any) => ({
   borderRadius: 8,
   minHeight: 75,
   border: "none",

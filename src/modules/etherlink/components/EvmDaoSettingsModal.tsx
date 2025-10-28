@@ -6,12 +6,11 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Typography,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "components/ui"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 
 import { EtherlinkContext } from "services/wagmi/context"

@@ -1,13 +1,8 @@
-import { useState } from "react"
-import { TextField } from "@mui/material"
-import { IconButton, styled, Typography } from "@material-ui/core"
-import { Button } from "components/ui/Button"
-import { Add, RemoveCircleOutline } from "@material-ui/icons"
-import { Box } from "@material-ui/core"
-import { DescriptionText } from "components/ui/DaoCreator"
+import { IconButton, Typography, Button, Add, RemoveCircleOutline, Box, StyledTextField, Grid } from "components/ui"
+import { DescriptionText, CustomInputContainer, ErrorText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
-import { StyledTextField } from "components/ui/StyledTextField"
+// StyledTextField imported from components/ui
 import { isInvalidEvmAddress } from "../utils"
 
 interface Member {
@@ -21,7 +16,44 @@ export const EvmDaoMembership = () => {
   const members = data.members as Member[]
   const isWrappedToken = data.tokenDeploymentMechanism === "wrapped"
 
-  // If wrapped token is selected, show a message instead
+  const handleMemberChange = (index: number, field: keyof Member, value: string) => {
+    const newMembers = [...members]
+    if (field === "amountOfTokens" && Number(value) < 0) {
+      newMembers[index].error = "Token amount must be non-negative"
+      setFieldValue("members", newMembers)
+      return
+    }
+    newMembers[index] = {
+      ...newMembers[index],
+      [field]: value,
+      error: ""
+    }
+    if (field === "address") {
+      const trimmedValue = value.trim()
+      const isDuplicateAddress = members.some((member: Member) => member.address === trimmedValue)
+
+      if (isDuplicateAddress) {
+        newMembers[index].error = "Address already exists"
+      } else if (isInvalidEvmAddress(trimmedValue)) {
+        newMembers[index].error = "Enter a valid etherlink address"
+      } else {
+        newMembers[index].error = ""
+      }
+    }
+    setFieldValue("members", newMembers)
+  }
+
+  const handleAddMember = () => {
+    setFieldValue("members", [...members, { address: "", amountOfTokens: 0, error: "" }])
+  }
+
+  const handleRemoveMember = (index: number) => {
+    setFieldValue(
+      "members",
+      members.filter((_, i) => i !== index)
+    )
+  }
+
   if (isWrappedToken) {
     return (
       <Box>
@@ -66,44 +98,6 @@ export const EvmDaoMembership = () => {
     )
   }
 
-  const handleMemberChange = (index: number, field: keyof Member, value: string) => {
-    const newMembers = [...members]
-    if (field === "amountOfTokens" && Number(value) < 0) {
-      newMembers[index].error = "Token amount must be non-negative"
-      setFieldValue("members", newMembers)
-      return
-    }
-    newMembers[index] = {
-      ...newMembers[index],
-      [field]: value,
-      error: ""
-    }
-    if (field === "address") {
-      const trimmedValue = value.trim()
-      const isDuplicateAddress = members.some((member: Member) => member.address === trimmedValue)
-
-      if (isDuplicateAddress) {
-        newMembers[index].error = "Address already exists"
-      } else if (isInvalidEvmAddress(trimmedValue)) {
-        newMembers[index].error = "Enter a valid etherlink address"
-      } else {
-        newMembers[index].error = ""
-      }
-    }
-    setFieldValue("members", newMembers)
-  }
-
-  const handleAddMember = () => {
-    setFieldValue("members", [...members, { address: "", amountOfTokens: 0, error: "" }])
-  }
-
-  const handleRemoveMember = (index: number) => {
-    setFieldValue(
-      "members",
-      members.filter((_, i) => i !== index)
-    )
-  }
-
   return (
     <Box>
       <TitleBlock
@@ -115,7 +109,7 @@ export const EvmDaoMembership = () => {
           </DescriptionText>
         }
       />
-      <Box sx={{ width: "100%", margin: "20px 0px" }}>
+      <Box style={{ width: "100%", margin: "20px 0px" }}>
         <Typography variant="h6" style={{ color: "white" }}>
           Total Tokens:{" "}
           {members
@@ -123,45 +117,44 @@ export const EvmDaoMembership = () => {
             .reduce((acc, member) => parseFloat(acc.toString()) + parseFloat(member.amountOfTokens.toString()), 0)}
         </Typography>
       </Box>
-      <Box sx={{ width: "100%" }}>
+      <Box style={{ width: "100%" }}>
         {members.map((member, index) => (
-          <Box
-            key={index}
-            gridGap={2}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 4
-            }}
-          >
-            <Box sx={{ width: "70%" }}>
-              <StyledTextField
-                fullWidth
-                variant="standard"
-                value={member.address}
-                label="Member Address"
-                onChange={e => handleMemberChange(index, "address", e.target.value)}
-                error={!!member.error}
-                helperText={member.error}
-              />
-            </Box>
-            <Box sx={{ width: "30%", marginLeft: "10px" }}>
-              <StyledTextField
-                fullWidth
-                variant="standard"
-                type="number"
-                label="Amount of tokens"
-                value={member.amountOfTokens}
-                onChange={e => handleMemberChange(index, "amountOfTokens", e.target.value)}
-              />
-            </Box>
-            {index >= 1 && (
-              <IconButton onClick={() => handleRemoveMember(index)} size="small">
-                <RemoveCircleOutline style={{ color: "white" }} />
-              </IconButton>
-            )}
-            {index === 0 && <Box sx={{ width: 40, height: 40 }} />}
-          </Box>
+          <Grid key={index} container spacing={2} style={{ marginBottom: 32 }} alignItems="flex-end">
+            <Grid item xs={12} sm={7}>
+              <Typography variant="subtitle1" color="textSecondary">
+                Member Address
+              </Typography>
+              <CustomInputContainer>
+                <StyledTextField
+                  value={member.address}
+                  placeholder="0x..."
+                  onChange={e => handleMemberChange(index, "address", e.target.value)}
+                />
+              </CustomInputContainer>
+              {member.error && <ErrorText>{member.error}</ErrorText>}
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <Typography variant="subtitle1" color="textSecondary">
+                Amount of Tokens
+              </Typography>
+              <CustomInputContainer>
+                <StyledTextField
+                  type="number"
+                  placeholder="0"
+                  value={member.amountOfTokens}
+                  inputProps={{ min: 0, step: 1 }}
+                  onChange={e => handleMemberChange(index, "amountOfTokens", e.target.value)}
+                />
+              </CustomInputContainer>
+            </Grid>
+            <Grid item xs={12} sm={2} style={{ textAlign: "center" }}>
+              {index >= 1 && (
+                <IconButton onClick={() => handleRemoveMember(index)} size="small">
+                  <RemoveCircleOutline style={{ color: "white" }} />
+                </IconButton>
+              )}
+            </Grid>
+          </Grid>
         ))}
 
         <Button variant="outlined" startIcon={<Add />} onClick={handleAddMember}>

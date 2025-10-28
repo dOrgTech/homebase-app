@@ -1,8 +1,7 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Button,
   Grid,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -11,9 +10,11 @@ import {
   Typography,
   useMediaQuery,
   useTheme
-} from "@material-ui/core"
+} from "components/ui"
 import dayjs from "dayjs"
-import { MobileTableHeader, MobileTableRow, OverflowCell, OverflowItem, TableContainer } from "./styled"
+import { TableContainer, MobileTableHeader, MobileTableRow } from "components/ui/Table"
+import { etherlinkStyled } from "components/ui"
+const { OverflowCell, OverflowItem } = etherlinkStyled
 const localizedFormat = require("dayjs/plugin/localizedFormat")
 dayjs.extend(localizedFormat)
 
@@ -128,8 +129,6 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
 export const EvmRegistryTable: React.FC<{ data: RowData[] }> = ({ data }) => {
   const theme = useTheme()
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
-  const [selectedItem, setSelectedItem] = useState<RowData>()
-  const [open, setOpen] = useState(false)
 
   return (
     <>

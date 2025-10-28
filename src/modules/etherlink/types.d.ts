@@ -41,6 +41,21 @@ export type IProposalStatus =
   | "executed" // proposal is executed
   | "failed" // voting period on and the proposal is failed
   | "passed" // voting period on and the proposal is passed
+  | "no quorum" // legacy internal name
+
+// UI display statuses
+export type IDisplayStatus =
+  | "Pending"
+  | "Active"
+  | "Succeeded"
+  | "Defeated"
+  | "NoQuorum"
+  | "Queued"
+  | "Executable"
+  | "Executed"
+  | "Expired"
+  | "Canceled"
+  | "Rejected"
 
 export type IProposalType =
   | "contract call"
@@ -61,6 +76,7 @@ export interface IEvmDAO {
   decimals: number
   description: string
   token: string
+  underlyingToken?: string
   registryAddress: string
   proposalThreshold: string
   totalSupply: string
@@ -117,6 +133,8 @@ export interface IEvmProposal extends IEvmFirebaseProposal {
   isTimerActive: boolean
   proposalData: any[]
   status: IProposalStatus
+  displayStatus?: IDisplayStatus
+  readyToQueue?: boolean
   statusHistoryMap: {
     timestamp: dayjs.Dayjs
     status: ITransactionStatus

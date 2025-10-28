@@ -16,7 +16,9 @@ import { EvmMembersPage } from "./EtherlinkDAO/EvmMembersPage"
 import { EvmRegistryPage } from "./EtherlinkDAO/EvmRegistryPage"
 import { EvmProposalDetailsPage } from "./EtherlinkDAO/EvmProposalDetailsPage"
 import { EvmUserPage } from "./EtherlinkDAO/EvmUserPage"
+import { EtherlinkContext } from "services/wagmi/context"
 import { EvmOffchainProposalDetailsPage } from "./EtherlinkDAO/EvmOffchainProposalDetailPage"
+import { dbg } from "utils/debug"
 
 enum DAOState {
   NOT_FOUND = 0,
@@ -31,13 +33,28 @@ const EtherlinkDAORouteContent: React.FC = ({ children }) => {
   const [state, setState] = useState<DAOState>(DAOState.FOUND)
   const history = useHistory()
 
+  // Ensure a sensible default when landing directly on Etherlink routes
+  useEffect(() => {
+    const key = "homebase:network"
+    const stored = localStorage.getItem(key)
+    if (!stored) {
+      localStorage.setItem(key, "etherlink_mainnet")
+      changeNetwork("etherlink_mainnet" as Network)
+    }
+  }, [changeNetwork])
+
   useEffect(() => {
     ;(async () => {
       if (!data && !!error && !isLoading) {
         try {
           await tezos.contract.at(daoId)
+          dbg("[ROUTER:existenceCheck]", {
+            daoId,
+            note: "Tezos contract.at used on Etherlink route → NOT_INDEXED if resolves"
+          })
           setState(DAOState.NOT_INDEXED)
         } catch (e) {
+          dbg("[ROUTER:existenceCheck]", { daoId, note: "Tezos contract.at failed → NOT_FOUND", error: String(e) })
           setState(DAOState.NOT_FOUND)
         }
       }
@@ -74,6 +91,36 @@ const EtherlinkDAORoute: React.FC<RouteProps> = ({ children, ...props }) => {
 const EtherlinkDAOContext = React.createContext("")
 
 const EtherlinkDAOProvider: React.FC<{ daoId: string }> = ({ daoId, children }) => {
+  // Auto-select the DAO in Etherlink context when route changes
+  const { selectDao, daos, network, switchToNetwork, daoSelected } = useContext(EtherlinkContext) as any
+  const attemptedSwitchRef = React.useRef(false)
+
+  // Reset the auto-switch guard when the DAO id changes
+  useEffect(() => {
+    attemptedSwitchRef.current = false
+  }, [daoId])
+
+  useEffect(() => {
+    if (!daoId || !Array.isArray(daos)) return
+
+    const targetId = daoId.toLowerCase()
+    const foundHere = daos.some((d: any) => (d?.id || "").toLowerCase() === targetId)
+
+    if (foundHere) {
+      if ((daoSelected?.id || "").toLowerCase() !== targetId) {
+        selectDao(daoId)
+      }
+      return
+    }
+
+    // If not found and we have a list, try alternate network once.
+    if (daos.length > 0 && !attemptedSwitchRef.current) {
+      attemptedSwitchRef.current = true
+      const alt = network === "etherlink_testnet" ? "etherlink_mainnet" : "etherlink_testnet"
+      switchToNetwork?.(alt)
+    }
+  }, [daoId, daos, network, selectDao, switchToNetwork, daoSelected?.id])
+
   return <EtherlinkDAOContext.Provider value={daoId}>{children}</EtherlinkDAOContext.Provider>
 }
 

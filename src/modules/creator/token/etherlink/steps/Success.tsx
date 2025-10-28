@@ -23,7 +23,6 @@ export const Success: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
 
   useEffect(() => {
-    console.log({ location })
     if (location && location.state && location.state.address) {
       setAddress(location.state.address)
     } else {

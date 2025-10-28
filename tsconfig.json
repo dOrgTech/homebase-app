@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2019",
+    "target": "ES2020",
     "baseUrl": "./src",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["node", "lodash", "react"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["node", "lodash", "react", "jest"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -18,7 +18,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "react": ["./node_modules/@types/react"]
+      "react": ["./node_modules/@types/react"],
+      // Ensure subpath imports like `utils/features` resolve to the folder,
+      // not the top-level `src/utils.ts` file.
+      "utils/*": ["utils/*"]
     }
   },
   "include": ["src/global.d.ts", "src"]

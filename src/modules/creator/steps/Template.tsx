@@ -117,7 +117,9 @@ export const Template = (): JSX.Element => {
             case "lambda":
               return history.push(`dao`)
             case "lite":
-              return history.push("/creator/etherlink/dao")
+              return history.push("/lite")
+            case "lambda-etherlink":
+              return history.push("/creator-evm/template")
             default:
               return history.push("/lite")
           }
@@ -139,7 +141,6 @@ export const Template = (): JSX.Element => {
     setError(false)
     setTemplate(templateValue)
   }
-  console.log({ isMobileSmall })
   return (
     <Box>
       <TitleBlock title={"DAO Creator"} description={"Create an organization by picking a template below."} />

@@ -5,7 +5,7 @@ export const GridContainer = styled(Grid)(({ theme }) => ({
   borderRadius: 8,
   cursor: "pointer",
   padding: "32px 46px",
-  background: theme.palette.primary.main,
+  background: theme.palette.primary.contrastText,
   [theme.breakpoints.down("sm")]: {
     padding: "35px 25px"
   }

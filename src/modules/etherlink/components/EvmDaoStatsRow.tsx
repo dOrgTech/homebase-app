@@ -1,41 +1,11 @@
-import React, { useContext, useMemo } from "react"
-import { Box, Grid, styled, useTheme, Typography, Paper } from "@material-ui/core"
+import React, { useContext } from "react"
+import { Box, Grid } from "components/ui"
+import { Item, ItemContent, ItemTitle, ItemValue } from "components/ui"
 
 import { EtherlinkContext } from "services/wagmi/context"
 import { IEvmProposal } from "../types"
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#24282d",
-  borderRadius: 8,
-  color: theme.palette.text.primary,
-  height: 84,
-  display: "flex",
-  padding: "33px 40px 30px 40px",
-  flexDirection: "column",
-  gap: 8
-}))
-
-const ItemContent = styled(Grid)({
-  gap: 8
-})
-
-const ItemTitle = styled(Typography)(({ theme }) => ({
-  fontSize: 18,
-  fontWeight: 500,
-  [theme.breakpoints.down("md")]: {
-    fontSize: 15
-  }
-}))
-
-const ItemValue = styled(Typography)(({ theme }) => ({
-  fontSize: 32,
-  fontWeight: 300,
-  overflowX: "scroll",
-  cursor: "default",
-  [theme.breakpoints.down("sm")]: {
-    fontSize: 28
-  }
-}))
+// Styled components moved to components/ui/etherlink/Stats
 
 export const EvmDaoStatsRow = () => {
   const { daoSelected, daoProposals } = useContext(EtherlinkContext)
@@ -46,7 +16,7 @@ export const EvmDaoStatsRow = () => {
   const activeProposalsCount = daoProposals.filter((proposal: IEvmProposal) => proposal.status === "active")?.length
 
   return (
-    <Box sx={{ flexGrow: 1, width: "inherit" }}>
+    <Box style={{ flexGrow: 1, width: "inherit" }}>
       <Grid container spacing={4}>
         {[
           {

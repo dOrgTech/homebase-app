@@ -112,7 +112,7 @@ export const useDAO = (address: string) => {
       }
     },
     {
-      enabled: !!address,
+      enabled: !!address && !network?.startsWith("etherlink"),
       refetchInterval: 30000,
       refetchOnWindowFocus: false
     }

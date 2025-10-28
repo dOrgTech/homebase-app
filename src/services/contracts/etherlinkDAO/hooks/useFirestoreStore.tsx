@@ -2,6 +2,7 @@
 import { create } from "zustand"
 import { collection, CollectionReference, doc, DocumentData, getDocs, onSnapshot } from "firebase/firestore"
 import { db } from "../firebase-config"
+import { dbg } from "utils/debug"
 
 interface FirestoreState {
   data: Record<string, any[]>
@@ -9,6 +10,9 @@ interface FirestoreState {
   error: Record<string, string | null>
   unsubscribe?: Record<string, () => void>
   fetchCollection: (collectionName: string) => Promise<void>
+  fetchDoc: (collectionName: string, docId: string) => Promise<void>
+  clearCollection: (collectionOrDocKey: string) => void
+  clearAll: () => void
 }
 
 const useFirestoreStore = create<FirestoreState>((set, get) => ({
@@ -42,7 +46,17 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
       const unsubscribe = onSnapshot(
         collectionRef,
         snapshot => {
-          console.log("collectionData", snapshot.docs)
+          dbg("[FS] collection:", collectionName, "count:", snapshot.size)
+          try {
+            if (snapshot.size > 0) {
+              const first = snapshot.docs[0]?.data() as Record<string, unknown>
+              if (first) {
+                dbg("[FS] sample doc keys:", Object.keys(first))
+              }
+            }
+          } catch (_) {
+            // noop
+          }
 
           const collectionData = snapshot.docs.map(doc => ({
             id: doc?.id,
@@ -55,7 +69,7 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
           }))
         },
         error => {
-          console.log("FirebaseError", error)
+          dbg("[FS:error]", collectionName, error)
           set(state => ({
             error: { ...state.error, [collectionName]: (error as Error).message ?? "Unknown error" },
             loading: { ...state.loading, [collectionName]: false }
@@ -72,6 +86,51 @@ const useFirestoreStore = create<FirestoreState>((set, get) => ({
       set(state => ({
         error: { ...state.error, [collectionName]: (error as Error).message ?? "Unknown error" },
         loading: { ...state.loading, [collectionName]: false }
+      }))
+    }
+  },
+
+  // Subscribe to a single document and store it under the key `${collectionName}/${docId}`
+  fetchDoc: async (collectionName: string, docId: string) => {
+    const { loading } = get()
+    const key = `${collectionName}/${docId}`
+
+    if (!collectionName || !docId) return
+    if (loading[key]) return
+
+    set(state => ({
+      loading: { ...state.loading, [key]: true }
+    }))
+
+    try {
+      const docRef = doc(db, collectionName, docId)
+      const unsubscribe = onSnapshot(
+        docRef,
+        snapshot => {
+          const data = snapshot.data()
+          const payload = data ? [{ id: snapshot.id, ...data }] : []
+          set(state => ({
+            data: { ...state.data, [key]: payload },
+            loading: { ...state.loading, [key]: false }
+          }))
+        },
+        error => {
+          dbg("[FS:doc:error]", key, error)
+          set(state => ({
+            error: { ...state.error, [key]: (error as Error).message ?? "Unknown error" },
+            loading: { ...state.loading, [key]: false }
+          }))
+        }
+      )
+
+      set(state => ({
+        unsubscribe: { ...state.unsubscribe, [key]: unsubscribe }
+      }))
+    } catch (error) {
+      console.log("FirebaseError:fetchDoc", error)
+      set(state => ({
+        error: { ...state.error, [key]: (error as Error).message ?? "Unknown error" },
+        loading: { ...state.loading, [key]: false }
       }))
     }
   },

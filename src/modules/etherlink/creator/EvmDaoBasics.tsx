@@ -1,6 +1,18 @@
 import { Form, FormikErrors } from "formik"
 import { Formik } from "formik"
-import { Box } from "@mui/material"
+import {
+  Box,
+  Grid,
+  Typography,
+  useMediaQuery,
+  useTheme,
+  InputAdornment,
+  Tooltip,
+  Checkbox,
+  RadioGroup,
+  FormControlLabel,
+  FormControl
+} from "components/ui"
 import { TitleBlock } from "modules/common/TitleBlock"
 import {
   DescriptionText,
@@ -10,80 +22,15 @@ import {
   TextareaContainer,
   CustomTextarea
 } from "components/ui/DaoCreator"
+import { StyledTextField } from "components/ui"
 import React from "react"
-import { TextField, withStyles } from "@material-ui/core"
-import {
-  Grid,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  InputAdornment,
-  Tooltip,
-  Checkbox,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  makeStyles
-} from "@material-ui/core"
+import { StyledRadio } from "components/ui"
 
 import { ErrorText } from "modules/creator/token/ui"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
-const CustomFormikTextField = withStyles({
-  root: {
-    "& .MuiInput-root": {
-      fontWeight: 300,
-      textAlign: "initial"
-    },
-    "& .MuiInputBase-input": {
-      textAlign: "initial"
-    },
-    "& .MuiInputBase-root": {
-      textWeight: 300
-    },
-    "& .MuiInput-underline:before": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:hover:before": {
-      borderBottom: "none !important"
-    },
-    "& .MuiInput-underline:after": {
-      borderBottom: "none !important"
-    }
-  }
-})(TextField)
-
-const useRadioStyles = makeStyles({
-  root: {
-    "&:hover": {
-      backgroundColor: "transparent"
-    }
-  },
-  icon: {
-    "width": 24,
-    "height": 24,
-    "borderRadius": "50%",
-    "backgroundColor": "#2F3438",
-    "border": "2px solid #fff",
-
-    "input:disabled ~ &": {
-      boxShadow: "none",
-      background: "rgba(206,217,224,.5)"
-    }
-  },
-  checkedIcon: {
-    "&:before": {
-      borderRadius: "50%",
-      display: "block",
-      width: 24,
-      height: 24,
-      background: "radial-gradient(#81FEB7,#81FEB7 27%,#2F3438 27%)",
-      content: '""'
-    }
-  }
-})
+// Use CustomFormikTextField from components/ui/DaoCreator and StyledRadio from components/ui
 
 interface EvmDaoBasicsProps {
   // Add props as needed
@@ -163,10 +110,9 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
   const { data: daoData, setFieldValue, getIn } = useEvmDaoCreateStore()
-  const radioClasses = useRadioStyles()
 
   const saveStepInfo = (values: EvmDaoSettings, { setSubmitting }: { setSubmitting: (b: boolean) => void }) => {
-    const newValues: EvmDaoSettings = { ...values }
+    // const newValues: EvmDaoSettings = { ...values }
 
     setSubmitting(true)
   }
@@ -215,7 +161,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                       DAO Name{" "}
                     </Typography>
                     <CustomInputContainer>
-                      <CustomFormikTextField
+                      <StyledTextField
                         name="name"
                         type="text"
                         placeholder="DAO Name"
@@ -252,15 +198,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                       >
                         <FormControlLabel
                           value="new"
-                          control={
-                            <Radio
-                              className={radioClasses.root}
-                              checked={values.tokenDeploymentMechanism === "new"}
-                              disableRipple
-                              checkedIcon={<span className={`${radioClasses.icon} ${radioClasses.checkedIcon}`} />}
-                              icon={<span className={radioClasses.icon} />}
-                            />
-                          }
+                          control={<StyledRadio checked={values.tokenDeploymentMechanism === "new"} disableRipple />}
                           label={
                             <Box>
                               <Typography
@@ -281,13 +219,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                         <FormControlLabel
                           value="wrapped"
                           control={
-                            <Radio
-                              className={radioClasses.root}
-                              checked={values.tokenDeploymentMechanism === "wrapped"}
-                              disableRipple
-                              checkedIcon={<span className={`${radioClasses.icon} ${radioClasses.checkedIcon}`} />}
-                              icon={<span className={radioClasses.icon} />}
-                            />
+                            <StyledRadio checked={values.tokenDeploymentMechanism === "wrapped"} disableRipple />
                           }
                           label={
                             <Box>
@@ -319,7 +251,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           Ticker Symbol{" "}
                         </Typography>
                         <CustomInputContainer>
-                          <CustomFormikTextField
+                          <StyledTextField
                             name="governanceToken.symbol"
                             type="text"
                             placeholder="ETH"
@@ -340,7 +272,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           Token Decimals{" "}
                         </Typography>
                         <CustomInputContainer>
-                          <CustomFormikTextField
+                          <StyledTextField
                             name="governanceToken.tokenDecimals"
                             type="number"
                             placeholder="18"
@@ -375,7 +307,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           Underlying Token Address{" "}
                         </Typography>
                         <CustomInputContainer>
-                          <CustomFormikTextField
+                          <StyledTextField
                             name="underlyingTokenAddress"
                             type="text"
                             placeholder="0x..."
@@ -396,7 +328,7 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                           Wrapped Token Symbol{" "}
                         </Typography>
                         <CustomInputContainer>
-                          <CustomFormikTextField
+                          <StyledTextField
                             name="wrappedTokenSymbol"
                             type="text"
                             placeholder="wETH"
@@ -422,32 +354,38 @@ export const EvmDaoBasics: React.FC<EvmDaoBasicsProps> = () => {
                 </SecondContainer>
                 {values.tokenDeploymentMechanism === "new" && (
                   <SecondContainer container item direction="row" wrap="wrap">
-                    <Grid container direction="row" alignItems="center" xs={8}>
-                      <Grid item xs={1}>
-                        <Checkbox
-                          disableRipple
-                          checked={values.nonTransferable}
-                          inputProps={{
-                            "aria-label": "Non-transferable"
-                          }}
-                          onChange={() => {
-                            setFieldValue("nonTransferable", !values.nonTransferable)
-                          }}
-                        />
-                      </Grid>
-                      <Grid item xs>
-                        <Typography color="textSecondary" style={{ display: "flex", alignItems: "center" }}>
-                          Non-transferable
-                          <Tooltip
-                            placement="bottom"
-                            title={`
-                                This action is not reversible. When checked, tokens cannot be transferred between addresses.
-                            `}
+                    <Grid item xs={8}>
+                      <FormControlLabel
+                        style={{ marginLeft: 0 }}
+                        control={
+                          <Checkbox
+                            id="non-transferable"
+                            disableRipple
+                            checked={values.nonTransferable}
+                            inputProps={{ "aria-label": "Non-transferable" }}
+                            onChange={() => {
+                              setFieldValue("nonTransferable", !values.nonTransferable)
+                            }}
+                          />
+                        }
+                        label={
+                          <Typography
+                            component="span"
+                            color="textSecondary"
+                            style={{ display: "flex", alignItems: "center" }}
                           >
-                            <InfoIcon style={{ marginLeft: 8 }} />
-                          </Tooltip>
-                        </Typography>
-                      </Grid>
+                            Non-transferable
+                            <Tooltip
+                              placement="bottom"
+                              title={`
+                                This action is not reversible. When checked, tokens cannot be transferred between addresses.
+                              `}
+                            >
+                              <InfoIcon style={{ marginLeft: 8 }} />
+                            </Tooltip>
+                          </Typography>
+                        }
+                      />
                     </Grid>
                   </SecondContainer>
                 )}

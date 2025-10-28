@@ -8,6 +8,7 @@ import { SmallButton } from "modules/common/SmallButton"
 import { Filters } from "../pages/User/components/UserMovements"
 import StatusButton from "components/ui/StatusButton"
 import { ProposalType, OffchainStatus, Order, StatusOption } from "../types.d"
+import { isFeatureEnabled } from "utils/features"
 
 export interface Props {
   open: boolean
@@ -26,6 +27,7 @@ const Container = styled(Grid)({
 })
 
 export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, saveFilters }) => {
+  const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
   const [filters, setFilters] = useState<StatusOption[]>([])
   const [onchainStatus, setOnchainStatus] = useState<StatusOption[]>([])
   const [offchainStatus, setOffchainStatus] = useState<OffchainStatus>(OffchainStatus.ALL)
@@ -56,6 +58,7 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
   }
 
   const saveType = (status: ProposalType) => {
+    if (status === ProposalType.OFF_CHAIN && !offchainEnabled) return
     if (proposalType === status) {
       setProposalType(ProposalType.ALL)
     } else {
@@ -74,9 +77,10 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
   }
 
   const showFilters = () => {
+    const effectiveType = offchainEnabled ? proposalType : ProposalType.ON_CHAIN
     const filterObject: Filters = {
-      type: proposalType,
-      offchainStatus: offchainStatus,
+      type: effectiveType,
+      offchainStatus: offchainEnabled ? offchainStatus : OffchainStatus.ALL,
       onchainStatus: filters,
       order: order
     }
@@ -100,7 +104,10 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
     setOnchainStatus([])
     findStatus()
     setOffchainStatus(OffchainStatus.ALL)
-  }, [])
+    if (!offchainEnabled) {
+      setProposalType(ProposalType.ON_CHAIN)
+    }
+  }, [offchainEnabled])
 
   return (
     <>
@@ -133,13 +140,15 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
             >
               <Typography>On-chain</Typography>
             </StatusButton>
-            <StatusButton
-              item
-              onClick={() => saveType(ProposalType.OFF_CHAIN)}
-              style={proposalType === ProposalType.OFF_CHAIN ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
-            >
-              <Typography>Off-chain</Typography>
-            </StatusButton>
+            {offchainEnabled ? (
+              <StatusButton
+                item
+                onClick={() => saveType(ProposalType.OFF_CHAIN)}
+                style={proposalType === ProposalType.OFF_CHAIN ? { backgroundColor: "#fff", color: "#1c1f23" } : {}}
+              >
+                <Typography>Off-chain</Typography>
+              </StatusButton>
+            ) : null}
           </Grid>
         </Container>
 
@@ -165,7 +174,7 @@ export const FilterUserProposalsDialog: React.FC<Props> = ({ open, handleClose, 
           </Container>
         ) : null}
 
-        {proposalType === ProposalType.OFF_CHAIN ? (
+        {offchainEnabled && proposalType === ProposalType.OFF_CHAIN ? (
           <Container container direction="column">
             <Grid item>
               <SectionTitle>Off-Chain Proposal Status</SectionTitle>
