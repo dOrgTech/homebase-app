@@ -7,7 +7,8 @@ import {
   TransferERC20ProposalRenderer,
   TransferERC721ProposalRenderer,
   ContractCallProposalRenderer,
-  ConfigChangeProposalRenderer
+  ConfigChangeProposalRenderer,
+  BatchProposalRenderer
 } from "modules/etherlink/components/proposalRenderers"
 
 const StyledContentContainer = styled(ContentContainer)(({ theme }) => ({
@@ -50,6 +51,20 @@ export const ProposalDataSection = ({
 
   const renderProposalData = () => {
     const type = proposalType?.toLowerCase() || ""
+
+    if (type === "batch") {
+      return (
+        <BatchProposalRenderer
+          proposalData={proposalData}
+          targets={targets}
+          callDataPlain={callDataPlain}
+          values={values}
+          tokenSymbol={tokenSymbol}
+          decimals={decimals}
+          nativeDecimals={nativeDecimals}
+        />
+      )
+    }
 
     // Registry proposal
     if (type === "registry") {

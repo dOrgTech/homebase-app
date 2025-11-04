@@ -17,6 +17,7 @@ import { EvmPropDaoConfig } from "./EvmProposals/EvmPropDaoConfig"
 import EvmPropTokenOps from "./EvmProposals/EvmPropTokenOps"
 import { EvmProposalOptions } from "../config"
 import { EvmOffchainDebate } from "./EvmProposals/EvmOffchainDebate"
+import { EvmPropBatchActions } from "./EvmProposals/EvmPropBatchActions"
 import { EProposalType } from "../types"
 
 import { OptionContainer, ActionText, ActionDescriptionText, TitleContainer } from "components/ui"
@@ -24,6 +25,8 @@ import { isFeatureEnabled } from "utils/features"
 
 const renderModal = (modal: EProposalType) => {
   switch (modal) {
+    case "batch_actions":
+      return <EvmPropBatchActions />
     case "transfer_assets":
       return <EvmPropTransferAssets />
     case "edit_registry":

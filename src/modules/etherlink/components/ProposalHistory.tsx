@@ -54,7 +54,7 @@ export const ProposalHistory = ({
             container
             direction="column"
             justifyContent={isMobileSmall ? "flex-start" : "center"}
-            style={{ height: "100%" }}
+            style={{ height: "100%", paddingBottom: 20 }}
             alignItems="center"
             wrap="nowrap"
           >

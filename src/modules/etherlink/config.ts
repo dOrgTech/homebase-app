@@ -18,6 +18,14 @@ export const STEPS = [
 
 export const EvmProposalOptions = [
   {
+    label: "Create Batch Actions",
+    description: "Upload a CSV and batch multiple actions into one proposal",
+    modal: "batch_actions",
+    proposal_type: () => "batch",
+    last_step: 2,
+    interface: {}
+  },
+  {
     label: "Off-Chain Debate",
     description: "Create an off-chain poll for your community",
     modal: "off_chain_debate",
@@ -102,81 +110,94 @@ export const EvmProposalOptions = [
   }
 ]
 
+export const enabledBatchActionTypes = [
+  "transfer_eth",
+  "transfer_erc20",
+  "transfer_erc721",
+  "registry_set",
+  "mint",
+  "burn",
+  "update_quorum",
+  "set_voting_delay",
+  "set_voting_period",
+  "set_proposal_threshold",
+  "contract_call"
+]
+
 export const proposalInterfaces = [
   {
-    tags: ["registry"],
+    tags: ["registry", "batch"],
     interface: ["function editRegistry(string key, string Value)"],
     name: "editRegistry"
   },
   {
-    tags: ["token"],
+    tags: ["token", "batch"],
     interface: ["function mint(address to, uint256 amount)"],
     name: "mint"
   },
   {
-    tags: ["token"],
+    tags: ["token", "batch"],
     interface: ["function burn(address from, uint256 amount)"],
     name: "burn"
   },
-  // Support common burn variants used by ERC20Burnable and others
   {
-    tags: ["token", "burn"],
+    tags: ["token", "burn", "batch"],
     interface: ["function burnFrom(address from, uint256 amount)"],
     name: "burnFrom"
   },
   {
-    tags: ["token", "burn"],
+    tags: ["token", "burn", "batch"],
     interface: ["function burn(uint256 amount)"],
     name: "burn"
   },
   {
-    tags: ["transfer"],
+    tags: ["transfer", "batch"],
     interface: ["function transferETH(address to, uint256 amount)"],
     name: "transferETH"
   },
   {
-    tags: ["transfer"],
+    tags: ["transfer", "batch"],
     interface: ["function transferERC20(address token, address to, uint256 amount)"],
     name: "transferERC20"
   },
   {
-    tags: ["transfer"],
+    tags: ["transfer", "batch"],
     interface: ["function transferERC721(address token, address to, uint256 tokenId)"],
     name: "transferERC721"
   },
   {
     name: "mint",
     interface: ["function mint(address to, uint256 amount)"],
-    tags: ["token", "mint"]
+    tags: ["token", "mint", "batch"]
   },
   {
     name: "burn",
     interface: ["function burn(address from, uint256 amount)"],
-    tags: ["token", "burn"]
+    tags: ["token", "burn", "batch"]
   },
   {
-    tags: ["quorum"],
+    tags: ["quorum", "batch"],
     label: "Update Quorum",
     unit: "%",
     interface: ["function updateQuorumNumerator(uint256 newQuorumNumerator)"],
     name: "updateQuorumNumerator"
   },
   {
-    tags: ["voting delay"],
+    tags: ["voting delay", "batch"],
     label: "Update Voting Delay",
     unit: "seconds",
     interface: ["function setVotingDelay(uint48 newVotingDelay)"],
     name: "setVotingDelay"
   },
   {
-    tags: ["voting period"],
+    tags: ["voting period", "batch"],
     label: "Update Voting Period",
     unit: "seconds",
     interface: ["function setVotingPeriod(uint32 newVotingPeriod)"],
     name: "setVotingPeriod"
   },
   {
-    tags: ["proposal threshold"],
+    tags: ["proposal threshold", "batch"],
     label: "Update Proposal Threshold",
     unit: "tokens",
     interface: ["function setProposalThreshold(uint256 newProposalThreshold)"],

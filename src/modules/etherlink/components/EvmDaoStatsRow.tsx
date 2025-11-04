@@ -4,16 +4,18 @@ import { Item, ItemContent, ItemTitle, ItemValue } from "components/ui"
 
 import { EtherlinkContext } from "services/wagmi/context"
 import { IEvmProposal } from "../types"
-
-// Styled components moved to components/ui/etherlink/Stats
+import { useDaoMembers } from "../hooks/useDaoMembers"
 
 export const EvmDaoStatsRow = () => {
-  const { daoSelected, daoProposals } = useContext(EtherlinkContext)
+  const { daoSelected, daoProposals, network, provider } = useContext(EtherlinkContext)
   const awaitingExecutionCount = daoProposals.filter(
     (proposal: IEvmProposal) => proposal.status === "executable"
   )?.length
 
   const activeProposalsCount = daoProposals.filter((proposal: IEvmProposal) => proposal.status === "active")?.length
+
+  const decimals = daoSelected?.decimals || 0
+  const { data: daoMemberData = [] } = useDaoMembers(network || "", daoSelected?.token || "", decimals, provider)
 
   return (
     <Box style={{ flexGrow: 1, width: "inherit" }}>
@@ -21,7 +23,7 @@ export const EvmDaoStatsRow = () => {
         {[
           {
             title: "Members",
-            value: daoSelected?.holders
+            value: daoMemberData?.length || "-"
           },
           {
             title: "Active Proposals",

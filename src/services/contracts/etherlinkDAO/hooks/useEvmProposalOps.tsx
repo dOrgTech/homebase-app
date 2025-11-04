@@ -3,6 +3,7 @@ import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 
 import { useCallback, useContext, useMemo, useState } from "react"
+import { useQueryClient } from "react-query"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
 
@@ -19,6 +20,9 @@ import HbTokenAbi from "assets/abis/hb_evm.json"
 import { useProposalUiOverride } from "services/wagmi/etherlink/hooks/useProposalUiOverride"
 import { computeDaoConfigDefaults } from "./daoConfigDefaults"
 import { dbg } from "utils/debug"
+import { useBatchProposalOps } from "./useBatchProposalOps"
+import useFirestoreStore from "./useFirestoreStore"
+import { networkConfig } from "modules/etherlink/utils"
 
 interface EvmProposalCreateStore {
   currentStep: number
@@ -31,6 +35,10 @@ interface EvmProposalCreateStore {
   }
   transferAssets: {
     transactions: any
+  }
+  batch: {
+    actions: any[]
+    errors: string[]
   }
   daoRegistry: {
     key: string
@@ -47,6 +55,11 @@ interface EvmProposalCreateStore {
   }
   setCreateProposalPayload: (payload: any) => void
   setTransferAssets: (transactions: any[], daoRegistryAddress: string) => void
+  setBatchActions: (actions: any[]) => void
+  addBatchAction: (action: any) => void
+  updateBatchAction: (index: number, action: any) => void
+  removeBatchAction: (index: number) => void
+  setBatchErrors: (errors: string[]) => void
   daoContractCall: {
     targetAddress: string
     value: string
@@ -107,7 +120,7 @@ interface EvmProposalCreateStore {
   ) => void
 }
 
-const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
+export const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
   persist(
     (set, get) => ({
       currentStep: 0,
@@ -143,6 +156,27 @@ const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()(
           }
         ]
       },
+      batch: {
+        actions: [],
+        errors: []
+      },
+      setBatchActions: (actions: any[]) => set({ batch: { ...get().batch, actions } }),
+      addBatchAction: (action: any) => set({ batch: { ...get().batch, actions: [...get().batch.actions, action] } }),
+      updateBatchAction: (index: number, action: any) => {
+        const list = [...get().batch.actions]
+        if (index >= 0 && index < list.length) {
+          list[index] = action
+          set({ batch: { ...get().batch, actions: list } })
+        }
+      },
+      removeBatchAction: (index: number) => {
+        const list = [...get().batch.actions]
+        if (index >= 0 && index < list.length) {
+          list.splice(index, 1)
+          set({ batch: { ...get().batch, actions: list } })
+        }
+      },
+      setBatchErrors: (errors: string[]) => set({ batch: { ...get().batch, errors } }),
       setTransferAssets: (transactions: any[], daoRegistryAddress: string) => {
         const targets: string[] = []
         const callData: string[] = []
@@ -504,6 +538,8 @@ export const useEvmProposalOps = () => {
   const { etherlink, network } = useTezos()
   const { daoSelected, daoProposalSelected, setIsProposalDialogOpen } = useContext(EtherlinkContext)
   const router = useHistory()
+  const queryClient = useQueryClient()
+  const { fetchCollection } = useFirestoreStore()
 
   const zustantStore = useEvmProposalCreateZustantStore()
   const openNotification = useNotification()
@@ -558,12 +594,18 @@ export const useEvmProposalOps = () => {
       return !hasValidTarget || !hasValidCallData
     }
 
+    if (step >= 2 && type === "batch_actions") {
+      const actions = (zustantStore.batch?.actions || []) as any[]
+      return actions.length === 0
+    }
+
     return false
   }, [
     zustantStore.currentStep,
     zustantStore.transferAssets?.transactions,
     zustantStore.daoContractCall?.targetAddress,
     zustantStore.daoContractCall?.callData,
+    zustantStore.batch?.actions,
     zustantStore.getMetadataFieldValue("type")
   ])
 
@@ -840,8 +882,51 @@ export const useEvmProposalOps = () => {
     } catch (_) {
       // ignore optimistic override errors
     }
+
+    queryClient.invalidateQueries(["daoMembers"])
+    queryClient.invalidateQueries(["dao", daoSelected?.address])
+    queryClient.invalidateQueries(["proposals", daoSelected?.address])
+    queryClient.invalidateQueries(["proposal", daoSelected?.address])
+
+    if (daoSelected?.id && network) {
+      const firebaseRootCollection = networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection
+      if (firebaseRootCollection) {
+        const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals`
+        const daoMembersKey = `${firebaseRootCollection}/${daoSelected.id}/members`
+        fetchCollection(daoProposalKey)
+        fetchCollection(daoMembersKey)
+      }
+    }
+
+    setTimeout(() => {
+      queryClient.invalidateQueries(["daoMembers"])
+      queryClient.invalidateQueries(["dao", daoSelected?.address])
+      queryClient.invalidateQueries(["proposals", daoSelected?.address])
+      queryClient.invalidateQueries(["proposal", daoSelected?.address])
+
+      if (daoSelected?.id && network) {
+        const firebaseRootCollection = networkConfig[network as keyof typeof networkConfig]?.firebaseRootCollection
+        if (firebaseRootCollection) {
+          const daoProposalKey = `${firebaseRootCollection}/${daoSelected.id}/proposals`
+          const daoMembersKey = `${firebaseRootCollection}/${daoSelected.id}/members`
+          fetchCollection(daoProposalKey)
+          fetchCollection(daoMembersKey)
+        }
+      }
+    }, 5000)
+
     return receipt
-  }, [daoContract, daoProposalSelected?.id, getProposalExecutionMetadata, setOverrideExecuted])
+  }, [
+    daoContract,
+    daoProposalSelected?.id,
+    getProposalExecutionMetadata,
+    setOverrideExecuted,
+    queryClient,
+    daoSelected?.address,
+    daoSelected?.id,
+    network,
+    fetchCollection
+  ])
 
   const nextStep = {
     text: isLoading ? "Please wait..." : "Next",
@@ -996,6 +1081,29 @@ export const useEvmProposalOps = () => {
             payload.calldatas = [payload.calldatas[0]]
           }
 
+          if (proposalType === "batch_actions") {
+            try {
+              const meta = zustantStore.getMetadata()
+              const built = await prepareBatchFromActions()
+              const kind =
+                built._actionKinds && built._actionKinds.length > 1 ? "batch" : built._actionKinds?.[0] || "batch"
+              const description = `${meta.title}0|||0${kind}0|||0${meta.description}0|||0${meta.discussionUrl}`
+              payload = {
+                targets: built.targets,
+                values: built.values as any,
+                calldatas: built.calldatas,
+                description
+              }
+            } catch (e: any) {
+              openNotification({
+                message: String(e?.message || e),
+                autoHideDuration: 3500,
+                variant: "error"
+              })
+              return
+            }
+          }
+
           // Final generic guard for on-chain proposals
           if (
             !Array.isArray(payload.targets) ||
@@ -1012,10 +1120,7 @@ export const useEvmProposalOps = () => {
             return
           }
 
-          // Overwrite the store payload just for this submission path
-          // (Do not mutate persistent fields beyond what caller expects.)
-          // Use the validated payload when sending the tx below
-          // Continue into submission flow with `payload`
+          zustantStore.setCreateProposalPayload(payload)
         }
         setIsDeploying(true)
 
@@ -1142,7 +1247,7 @@ export const useEvmProposalOps = () => {
           }
 
           // Build a final payload with safe defaults/alignment per type
-          const finalPayload = { ...zustantStore.createProposalPayload }
+          const finalPayload = { ...useEvmProposalCreateZustantStore.getState().createProposalPayload }
           if (proposalType === "transfer_assets") {
             finalPayload.values = Array(finalPayload.targets.length).fill(0)
           } else if (proposalType === "contract_call") {
@@ -1157,6 +1262,8 @@ export const useEvmProposalOps = () => {
             finalPayload.targets = [reg]
             finalPayload.values = [0]
             finalPayload.calldatas = [finalPayload.calldatas[0]]
+          } else if (proposalType === "batch_actions") {
+            // Batch actions payload is already prepared above
           }
 
           if (!daoContract) {
@@ -1260,6 +1367,8 @@ export const useEvmProposalOps = () => {
     [etherlink.account.address, network, openNotification]
   )
 
+  const { parseBatchCsv, prepareBatchFromActions } = useBatchProposalOps({ etherlink, zustantStore })
+
   return {
     isLoading,
     setIsLoading,
@@ -1275,6 +1384,10 @@ export const useEvmProposalOps = () => {
     prevStep,
     isDeploying,
     isNextDisabled,
+    parseBatchCsv,
+    prepareBatchFromActions,
+    batchActions: zustantStore.batch.actions,
+    batchErrors: zustantStore.batch.errors,
     ...zustantStore
   }
 }

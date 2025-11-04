@@ -41,15 +41,15 @@ interface EvmDaoVotingProps {
 export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit }) => {
   const { data: daoData, setFieldValue } = useEvmDaoCreateStore()
   const { network } = useTezos()
+  const defaultsAppliedRef = React.useRef(false)
 
-  // Initialize sensible defaults per Etherlink network when fields are blank (all zeros)
   React.useEffect(() => {
     const isEtherlinkTestnet = network === "etherlink_testnet"
     const isEtherlinkMainnet = network === "etherlink_mainnet"
 
     if (!(isEtherlinkTestnet || isEtherlinkMainnet)) return
+    if (defaultsAppliedRef.current) return
 
-    // Voting Delay defaults
     const delayDays = Number(daoData.voting.votingBlocksDay) || 0
     const delayHours = Number(daoData.voting.votingBlocksHours) || 0
     const delayMinutes = Number(daoData.voting.votingBlocksMinutes) || 0
@@ -62,7 +62,6 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
       setFieldValue("voting.votingBlocksMinutes", votingDefaults?.voting.votingBlocksMinutes || 0)
     }
 
-    // Voting Duration defaults
     const durDays = Number(daoData.voting.proposalFlushBlocksDay) || 0
     const durHours = Number(daoData.voting.proposalFlushBlocksHours) || 0
     const durMinutes = Number(daoData.voting.proposalFlushBlocksMinutes) || 0
@@ -74,7 +73,6 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
       setFieldValue("voting.proposalFlushBlocksMinutes", votingDefaults?.voting.proposalFlushBlocksMinutes || 0)
     }
 
-    // Execution Delay defaults
     const execDays = Number(daoData.voting.proposalExpiryBlocksDay) || 0
     const execHours = Number(daoData.voting.proposalExpiryBlocksHours) || 0
     const execMinutes = Number(daoData.voting.proposalExpiryBlocksMinutes) || 0
@@ -85,6 +83,8 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
       setFieldValue("voting.proposalExpiryBlocksHours", votingDefaults?.voting.proposalExpiryBlocksHours || 0)
       setFieldValue("voting.proposalExpiryBlocksMinutes", votingDefaults?.voting.proposalExpiryBlocksMinutes || 0)
     }
+
+    defaultsAppliedRef.current = true
   }, [network, daoData.voting, setFieldValue])
 
   return (
@@ -105,7 +105,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
               Voting Delay
               <Tooltip
                 placement="bottom"
-                title="How much time between submitting a proposal and the start of the voting period"
+                title="How much time between submitting a proposal and the start of the voting period. Use 0 for immediate start."
               >
                 <InfoRounded style={{ cursor: "default", height: 16, width: 16, marginLeft: 8 }} />
               </Tooltip>
@@ -198,7 +198,7 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
           <Grid container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Voting Duration
-              <Tooltip placement="bottom" title="How long a proposal will be open for voting">
+              <Tooltip placement="bottom" title="How long a proposal will be open for voting. Must be greater than 0.">
                 <InfoRounded style={{ cursor: "default", height: 16, width: 16, marginLeft: 8 }} />
               </Tooltip>
             </Typography>
@@ -290,7 +290,10 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
           <Grid container direction="row">
             <Typography style={styles.voting} variant="subtitle1" color="textSecondary">
               Execution Delay
-              <Tooltip placement="bottom" title="After the proposal passes and before it can be executed.">
+              <Tooltip
+                placement="bottom"
+                title="After the proposal passes and before it can be executed. Must be greater than 0."
+              >
                 <InfoRounded style={{ cursor: "default", height: 16, width: 16, marginLeft: 8 }} />
               </Tooltip>
             </Typography>

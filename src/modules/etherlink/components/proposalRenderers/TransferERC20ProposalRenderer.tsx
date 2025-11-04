@@ -7,11 +7,13 @@ import { ContainerVoteDetail, Header } from "components/ui/etherlink/styled"
 interface TransferERC20ProposalRendererProps {
   proposalData: { parameter: string; value: string }[]
   decimals?: number
+  compact?: boolean
 }
 
 export const TransferERC20ProposalRenderer: React.FC<TransferERC20ProposalRendererProps> = ({
   proposalData,
-  decimals = 18
+  decimals = 18,
+  compact = false
 }) => {
   // For Transfer ERC20, the proposalData structure is an array of parameter objects:
   // [
@@ -46,7 +48,6 @@ export const TransferERC20ProposalRenderer: React.FC<TransferERC20ProposalRender
   )
   const amountRaw = amountParam?.value || "0"
 
-  // Format the amount with decimals
   const formatAmount = (value: string) => {
     try {
       if (value && !isNaN(Number(value)) && value.length > 10) {
@@ -57,6 +58,27 @@ export const TransferERC20ProposalRenderer: React.FC<TransferERC20ProposalRender
     } catch {
       return value
     }
+  }
+
+  const content = (
+    <>
+      <Grid item style={{ marginBottom: 16 }}>
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>Token Address:</Header>
+        <ShortenedValueField value={tokenAddress} label="Token Address" />
+      </Grid>
+      <Grid item style={{ marginBottom: 16 }}>
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>To Address:</Header>
+        <ShortenedValueField value={toAddress} label="To Address" />
+      </Grid>
+      <Grid item>
+        <Header style={{ fontSize: 14, marginBottom: 8 }}>Amount:</Header>
+        <ShortenedValueField value={formatAmount(amountRaw)} label="Amount" />
+      </Grid>
+    </>
+  )
+
+  if (compact) {
+    return <>{content}</>
   }
 
   return (
@@ -70,18 +92,7 @@ export const TransferERC20ProposalRenderer: React.FC<TransferERC20ProposalRender
           Transfer ERC20 Token
         </Typography>
       </Grid>
-      <Grid item style={{ marginBottom: 16 }}>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>Token Address:</Header>
-        <ShortenedValueField value={tokenAddress} label="Token Address" />
-      </Grid>
-      <Grid item style={{ marginBottom: 16 }}>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>To Address:</Header>
-        <ShortenedValueField value={toAddress} label="To Address" />
-      </Grid>
-      <Grid item>
-        <Header style={{ fontSize: 14, marginBottom: 8 }}>Amount:</Header>
-        <ShortenedValueField value={formatAmount(amountRaw)} label="Amount" />
-      </Grid>
+      {content}
     </ContainerVoteDetail>
   )
 }

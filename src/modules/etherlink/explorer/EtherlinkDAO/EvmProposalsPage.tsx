@@ -68,6 +68,7 @@ export const EvmProposalsPage = () => {
     if (key === "burn") return t.startsWith("burn")
     if (key === "registry") return t.includes("registry")
     if (key === "transfer") return t.includes("transfer")
+    if (key === "batch") return t.includes("batch")
     if (key === "contract-call")
       return t.includes("contract call") || t.includes("contract_call") || t.includes("arbitrary")
     if (key === "voting-delay") return t.includes("voting delay")
@@ -174,6 +175,7 @@ export const EvmProposalsPage = () => {
             if (evmType === "token") ptype = ["mint", "burn"]
             else if (evmType === "registry") ptype = ["registry"]
             else if (evmType === "transfer") ptype = ["transfer"]
+            else if (evmType === "batch") ptype = ["batch"]
             else if (evmType === "contract call") ptype = ["contract-call"]
             else if (evmType === "voting delay") ptype = ["voting-delay"]
             else if (evmType === "voting period") ptype = ["voting-period"]

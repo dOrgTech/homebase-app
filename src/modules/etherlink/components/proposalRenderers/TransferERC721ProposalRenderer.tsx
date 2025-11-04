@@ -5,9 +5,13 @@ import { ContainerVoteDetail, Header } from "components/ui/etherlink/styled"
 
 interface TransferERC721ProposalRendererProps {
   proposalData: { parameter: string; value: string }[]
+  compact?: boolean
 }
 
-export const TransferERC721ProposalRenderer: React.FC<TransferERC721ProposalRendererProps> = ({ proposalData }) => {
+export const TransferERC721ProposalRenderer: React.FC<TransferERC721ProposalRendererProps> = ({
+  proposalData,
+  compact = false
+}) => {
   // For Transfer ERC721 (NFT), the proposalData structure is an array of parameter objects:
   // [
   //   { parameter: "Function", value: "transferERC721" },
@@ -35,23 +39,13 @@ export const TransferERC721ProposalRenderer: React.FC<TransferERC721ProposalRend
   )
   const toAddress = toParam?.value || ""
 
-  // Find the "tokenId" parameter
   const tokenIdParam = proposalData.find(
     item => item.parameter.toLowerCase().includes("tokenid") && item.parameter.toLowerCase().includes("uint")
   )
   const tokenId = tokenIdParam?.value || "0"
 
-  return (
-    <ContainerVoteDetail
-      container
-      direction="column"
-      style={{ border: "1px solid #575757", marginTop: 20, padding: 20 }}
-    >
-      <Grid item style={{ marginBottom: 20 }}>
-        <Typography variant="h3" color="textPrimary">
-          Transfer ERC721 NFT
-        </Typography>
-      </Grid>
+  const content = (
+    <>
       <Grid item style={{ marginBottom: 16 }}>
         <Header style={{ fontSize: 14, marginBottom: 8 }}>NFT Contract Address:</Header>
         <ShortenedValueField value={tokenAddress} label="NFT Contract Address" />
@@ -64,6 +58,25 @@ export const TransferERC721ProposalRenderer: React.FC<TransferERC721ProposalRend
         <Header style={{ fontSize: 14, marginBottom: 8 }}>Token ID:</Header>
         <ShortenedValueField value={tokenId} label="Token ID" />
       </Grid>
+    </>
+  )
+
+  if (compact) {
+    return <>{content}</>
+  }
+
+  return (
+    <ContainerVoteDetail
+      container
+      direction="column"
+      style={{ border: "1px solid #575757", marginTop: 20, padding: 20 }}
+    >
+      <Grid item style={{ marginBottom: 20 }}>
+        <Typography variant="h3" color="textPrimary">
+          Transfer ERC721 NFT
+        </Typography>
+      </Grid>
+      {content}
     </ContainerVoteDetail>
   )
 }

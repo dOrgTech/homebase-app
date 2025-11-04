@@ -61,6 +61,9 @@ export { default as InfoRounded } from "@material-ui/icons/InfoRounded"
 export { default as FileCopyOutlined } from "@material-ui/icons/FileCopyOutlined"
 export { default as AddCircleIcon } from "@material-ui/icons/AddCircle"
 export { default as RemoveCircleIcon } from "@material-ui/icons/RemoveCircle"
+export { default as CloseIcon } from "@material-ui/icons/Close"
+export { default as EditIcon } from "@material-ui/icons/Edit"
+export { default as DeleteIcon } from "@material-ui/icons/Delete"
 
 // Local UI wrappers
 export * from "./Button"

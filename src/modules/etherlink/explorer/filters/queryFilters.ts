@@ -28,6 +28,7 @@ export type PTypeKey =
   | "voting-delay"
   | "voting-period"
   | "threshold"
+  | "batch"
   | "token" // alias (read time)
 
 export interface ParsedFilters {
@@ -75,6 +76,7 @@ const PTYPE_CANON_MAP: Record<string, PTypeKey> = {
   "threshold": "threshold",
   "proposal-threshold": "threshold",
   "proposal threshold": "threshold",
+  "batch": "batch",
   // alias
   "token": "token"
 }
