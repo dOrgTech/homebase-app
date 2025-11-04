@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import {
   Box,
   Grid,
@@ -11,10 +11,12 @@ import {
   DeleteIcon,
   FileCopyOutlined
 } from "components/ui"
-import { FormField, FormTextField, FormSelect } from "components/ui"
+import { FormField, FormTextField, FormSelect, MenuItem } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { enabledBatchActionTypes } from "modules/etherlink/config"
 import { ethers } from "ethers"
+import { EtherlinkContext } from "services/wagmi/context"
+import { toShortAddress } from "services/contracts/utils"
 
 type BatchActionType =
   | "transfer_eth"
@@ -82,13 +84,16 @@ export const EvmPropBatchActions: React.FC = () => {
   const {
     batchActions,
     batchErrors,
+    batchWarnings,
     setBatchActions,
     setBatchErrors,
+    setBatchWarnings,
     addBatchAction,
     updateBatchAction,
     removeBatchAction,
     parseBatchCsv
   } = useEvmProposalOps()
+  const { daoTreasuryTokens, daoNfts } = useContext(EtherlinkContext)
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
   const formSectionRef = React.useRef<HTMLDivElement | null>(null)
@@ -101,9 +106,10 @@ export const EvmPropBatchActions: React.FC = () => {
     const reader = new FileReader()
     reader.onload = () => {
       const text = String(reader.result || "")
-      const { actions, errors } = parseBatchCsv(text)
+      const { actions, errors, warnings } = parseBatchCsv(text)
       setBatchActions(actions)
       setBatchErrors(errors)
+      setBatchWarnings(warnings || [])
     }
     reader.readAsText(f)
     // Reset input so the same file can be re-selected
@@ -171,21 +177,101 @@ export const EvmPropBatchActions: React.FC = () => {
     URL.revokeObjectURL(url)
   }
 
+  const isErc721 = (n: any) => {
+    const t = String(n?.token?.type || n?.token_type || n?.token?.standard || "").toUpperCase()
+    return t.includes("ERC721") || t.includes("ERC-721")
+  }
+
+  const resolveNftContractAddress = (nft: any): string | undefined => {
+    return (
+      nft?.token?.address ||
+      nft?.token?.contract_address ||
+      nft?.token?.address_hash ||
+      nft?.contract?.address ||
+      nft?.contract_address ||
+      nft?.token_address ||
+      nft?.collection?.address ||
+      undefined
+    )
+  }
+
+  const getAssetDisplayLabel = (
+    asset: string,
+    tokenId: string | undefined,
+    daoTreasuryTokens: any[],
+    daoNfts: any[]
+  ): string => {
+    if (!asset || !ethers.isAddress(asset)) return asset || "Unknown"
+
+    if (tokenId !== undefined && tokenId !== "") {
+      const nft = daoNfts.find((n: any) => {
+        const nAddr = resolveNftContractAddress(n)
+        const nTid = String(n?.token_id ?? n?.id)
+        return nAddr?.toLowerCase() === asset.toLowerCase() && nTid === tokenId
+      })
+      if (nft) {
+        const sym = nft?.token?.symbol || "NFT"
+        const short = asset ? toShortAddress(asset) : ""
+        return short ? `${sym} #${tokenId} · ${short}` : `${sym} #${tokenId}`
+      }
+    }
+
+    const token = daoTreasuryTokens.find((t: any) => String(t?.address || "").toLowerCase() === asset.toLowerCase())
+    if (token) {
+      const sym = token?.symbol || ""
+      const short = asset ? toShortAddress(asset) : ""
+      return sym && short ? `${sym} · ${short}` : sym || short || asset
+    }
+
+    return toShortAddress(asset) || asset
+  }
+
+  const isAssetInTreasury = (asset: string, tokenId: string | undefined): boolean => {
+    if (!asset || !ethers.isAddress(asset)) return false
+
+    if (tokenId !== undefined && tokenId !== "") {
+      const nft = daoNfts?.find((n: any) => {
+        const nAddr = resolveNftContractAddress(n)
+        const nTid = String(n?.token_id ?? n?.id)
+        return nAddr?.toLowerCase() === asset.toLowerCase() && nTid === tokenId
+      })
+      return !!nft
+    }
+
+    const token = daoTreasuryTokens?.find((t: any) => String(t?.address || "").toLowerCase() === asset.toLowerCase())
+    return !!token
+  }
+
   const ActionRow: React.FC<{ action: BatchAction; index: number }> = ({ action, index }) => {
     const summarize = () => {
       switch (action.type) {
         case "transfer_eth":
-          return `Transfer ${action.amount} ETH to ${action.to}`
-        case "transfer_erc20":
-          return `Transfer ${action.amount} of ${action.asset} to ${action.to}`
-        case "transfer_erc721":
-          return `Transfer tokenId ${action.tokenId} of ${action.asset} to ${action.to}`
+          return `Transfer ${action.amount} ETH to ${action.to ? toShortAddress(action.to) : action.to}`
+        case "transfer_erc20": {
+          const assetLabel = getAssetDisplayLabel(action.asset || "", undefined, daoTreasuryTokens || [], daoNfts || [])
+          const inTreasury = action.asset ? isAssetInTreasury(action.asset, undefined) : false
+          const warningBadge = !inTreasury && action.asset ? " ⚠️" : ""
+          return `Transfer ${action.amount} of ${assetLabel}${warningBadge} to ${
+            action.to ? toShortAddress(action.to) : action.to
+          }`
+        }
+        case "transfer_erc721": {
+          const assetLabel = getAssetDisplayLabel(
+            action.asset || "",
+            String(action.tokenId || ""),
+            daoTreasuryTokens || [],
+            daoNfts || []
+          )
+          const inTreasury = action.asset ? isAssetInTreasury(action.asset, String(action.tokenId || "")) : false
+          const warningBadge = !inTreasury && action.asset ? " ⚠️" : ""
+          return `Transfer ${assetLabel}${warningBadge} to ${action.to ? toShortAddress(action.to) : action.to}`
+        }
         case "registry_set":
           return `Set registry ${action.key} = ${action.value}`
         case "mint":
-          return `Mint ${action.amount} to ${action.to}`
+          return `Mint ${action.amount} to ${action.to ? toShortAddress(action.to) : action.to}`
         case "burn":
-          return `Burn ${action.amount} from ${action.from}`
+          return `Burn ${action.amount} from ${action.from ? toShortAddress(action.from) : action.from}`
         case "update_quorum":
           return `Update quorum to ${action.value}%`
         case "set_voting_delay":
@@ -195,7 +281,7 @@ export const EvmPropBatchActions: React.FC = () => {
         case "set_proposal_threshold":
           return `Set proposal threshold to ${action.value}`
         case "contract_call":
-          return `Contract call -> ${action.target}`
+          return `Contract call -> ${action.target ? toShortAddress(action.target) : action.target}`
         default:
           return `${action.type}`
       }
@@ -400,6 +486,22 @@ export const EvmPropBatchActions: React.FC = () => {
         </Box>
       )}
 
+      {batchWarnings && batchWarnings.length > 0 && (
+        <Box style={{ background: "#4a3a2b", padding: 12, borderRadius: 4, position: "relative" }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+            <Typography color="textPrimary">CSV Warnings (non-blocking)</Typography>
+            <IconButton size="small" onClick={() => setBatchWarnings([])} style={{ padding: 4 }}>
+              <CloseIcon style={{ fontSize: 18 }} />
+            </IconButton>
+          </Box>
+          {batchWarnings.map((w: string, i: number) => (
+            <Typography key={i} color="textSecondary">
+              ⚠️ {w}
+            </Typography>
+          ))}
+        </Box>
+      )}
+
       <Typography color="textPrimary" variant="h6">
         Review Actions ({batchActions.length})
       </Typography>
@@ -440,33 +542,212 @@ export const EvmPropBatchActions: React.FC = () => {
 
                 {draft.type.startsWith("transfer_") && (
                   <>
-                    {draft.type !== "transfer_eth" && (
+                    {draft.type === "transfer_erc20" && (
                       <FormField label="Asset">
-                        <FormTextField
-                          value={draft.asset || ""}
-                          onChange={e => setDraft(p => ({ ...p, asset: e.target.value }))}
-                        />
+                        <FormSelect
+                          value={
+                            draft.asset && isAssetInTreasury(draft.asset, undefined)
+                              ? draft.asset
+                              : draft.asset
+                              ? "__custom__"
+                              : ""
+                          }
+                          onChange={e => {
+                            const val = e.target.value
+                            if (val === "__custom__") {
+                              setDraft(p => ({ ...p, asset: "__custom__" }))
+                            } else if (val !== "") {
+                              setDraft(p => ({ ...p, asset: val }))
+                            } else {
+                              setDraft(p => ({ ...p, asset: "" }))
+                            }
+                          }}
+                          inputProps={{ style: { fontSize: 14 } }}
+                          SelectProps={{
+                            displayEmpty: true,
+                            renderValue: (selected: any) => {
+                              const val = String(selected || "")
+                              if (val === "__custom__" || val === "") return "Select asset or enter custom address"
+                              const token = (daoTreasuryTokens || []).find(
+                                (t: any) => String(t?.address || "").toLowerCase() === val.toLowerCase()
+                              )
+                              if (token) {
+                                const sym = token?.symbol || ""
+                                const short = val ? toShortAddress(val) : ""
+                                return sym && short ? `${sym} · ${short}` : sym || short || val
+                              }
+                              return toShortAddress(val) || val
+                            }
+                          }}
+                        >
+                          <MenuItem value="">Select asset</MenuItem>
+                          {(daoTreasuryTokens || [])
+                            .filter((token: any) => {
+                              const ty = String(token?.type || "").toUpperCase()
+                              const isFungible = !ty || ty.includes("ERC20") || ty.includes("ERC-20")
+                              const hasValidAddress =
+                                typeof token?.address === "string" && ethers.isAddress(token.address)
+                              return isFungible && hasValidAddress
+                            })
+                            .map((token: any) => (
+                              <MenuItem key={token.address} value={token.address}>
+                                {token.symbol}
+                              </MenuItem>
+                            ))}
+                          <MenuItem value="__custom__">Custom Address</MenuItem>
+                        </FormSelect>
                       </FormField>
                     )}
-                    {draft.type === "transfer_erc721" ? (
-                      <FormField label="Token ID">
-                        <FormTextField
-                          value={draft.tokenId || ""}
-                          onChange={e => setDraft(p => ({ ...p, tokenId: e.target.value }))}
-                        />
+                    {draft.type === "transfer_erc20" &&
+                      (draft.asset === "__custom__" || (draft.asset && !isAssetInTreasury(draft.asset, undefined))) && (
+                        <FormField label="Custom Asset Address">
+                          <FormTextField
+                            value={draft.asset === "__custom__" ? "" : draft.asset || ""}
+                            placeholder="0x..."
+                            onChange={e => setDraft(p => ({ ...p, asset: e.target.value }))}
+                            inputProps={{ style: { fontSize: 14 } }}
+                          />
+                          {draft.asset && !isAssetInTreasury(draft.asset, undefined) && (
+                            <Typography color="textSecondary" style={{ fontSize: 12, marginTop: 6 }}>
+                              ⚠️ Asset not in treasury - ensure DAO has approval or balance
+                            </Typography>
+                          )}
+                        </FormField>
+                      )}
+                    {draft.type === "transfer_erc721" && (
+                      <FormField label="NFT">
+                        <FormSelect
+                          value={
+                            draft.asset && draft.tokenId && isAssetInTreasury(draft.asset, String(draft.tokenId))
+                              ? `nft::${draft.asset}:${draft.tokenId}`
+                              : draft.asset && draft.tokenId
+                              ? "__custom__"
+                              : draft.asset || ""
+                          }
+                          onChange={e => {
+                            const val = e.target.value
+                            if (val === "__custom__") {
+                              setDraft(p => ({ ...p, asset: "__custom__", tokenId: "" }))
+                            } else if (val.startsWith("nft::")) {
+                              const parts = val.split("::")[1]?.split(":") || []
+                              const addr = parts[0]
+                              const tid = parts[1]
+                              setDraft(p => ({ ...p, asset: addr, tokenId: tid }))
+                            } else if (val !== "") {
+                              setDraft(p => ({ ...p, asset: val, tokenId: "" }))
+                            } else {
+                              setDraft(p => ({ ...p, asset: "", tokenId: "" }))
+                            }
+                          }}
+                          inputProps={{ style: { fontSize: 14 } }}
+                          SelectProps={{
+                            displayEmpty: true,
+                            renderValue: (selected: any) => {
+                              const val = String(selected || "")
+                              if (val === "__custom__" || val === "") return "Select NFT or enter custom address"
+                              if (val.startsWith("nft::")) {
+                                const parts = val.split("::")[1]?.split(":") || []
+                                const addr = parts[0]
+                                const tid = parts[1]
+                                const nft = (daoNfts || []).find((n: any) => {
+                                  const nAddr = resolveNftContractAddress(n)
+                                  const nTid = String(n?.token_id ?? n?.id)
+                                  return nAddr?.toLowerCase() === addr?.toLowerCase() && nTid === tid
+                                })
+                                const sym = nft?.token?.symbol || "NFT"
+                                const short = addr ? toShortAddress(addr) : ""
+                                return short ? `${sym} #${tid} · ${short}` : `${sym} #${tid}`
+                              }
+                              return toShortAddress(val) || val
+                            }
+                          }}
+                        >
+                          <MenuItem value="">Select NFT</MenuItem>
+                          {(daoNfts || [])
+                            .filter((n: any) => isErc721(n))
+                            .map((n: any) => {
+                              const addr = resolveNftContractAddress(n)
+                              const tid = String(n?.token_id ?? n?.id)
+                              const value = `nft::${addr}:${tid}`
+                              return (
+                                <MenuItem key={value} value={value} disabled={!addr}>
+                                  {n.token?.symbol} #{tid}
+                                  {!addr && (
+                                    <Typography color="textSecondary" style={{ marginLeft: 8, fontSize: 12 }}>
+                                      (contract unknown)
+                                    </Typography>
+                                  )}
+                                </MenuItem>
+                              )
+                            })}
+                          <MenuItem value="__custom__">Custom Address</MenuItem>
+                        </FormSelect>
                       </FormField>
-                    ) : (
+                    )}
+                    {draft.type === "transfer_erc721" &&
+                      (draft.asset === "__custom__" ||
+                        (draft.asset && !isAssetInTreasury(draft.asset, String(draft.tokenId || "")))) && (
+                        <>
+                          <FormField label="Custom NFT Contract Address">
+                            <FormTextField
+                              value={draft.asset === "__custom__" ? "" : draft.asset || ""}
+                              placeholder="0x..."
+                              onChange={e => setDraft(p => ({ ...p, asset: e.target.value }))}
+                              inputProps={{ style: { fontSize: 14 } }}
+                            />
+                            {draft.asset && !isAssetInTreasury(draft.asset, String(draft.tokenId || "")) && (
+                              <Typography color="textSecondary" style={{ fontSize: 12, marginTop: 6 }}>
+                                ⚠️ NFT not in treasury - ensure DAO owns this token
+                              </Typography>
+                            )}
+                          </FormField>
+                          <FormField label="Token ID">
+                            <FormTextField
+                              value={draft.tokenId || ""}
+                              onChange={e => setDraft(p => ({ ...p, tokenId: e.target.value }))}
+                              inputProps={{ style: { fontSize: 14 } }}
+                            />
+                          </FormField>
+                        </>
+                      )}
+                    {draft.type === "transfer_erc721" &&
+                      draft.asset &&
+                      draft.asset !== "__custom__" &&
+                      (daoNfts || []).find((n: any) => {
+                        const nAddr = resolveNftContractAddress(n)
+                        const nTid = String(n?.token_id ?? n?.id)
+                        return (
+                          nAddr?.toLowerCase() === draft.asset?.toLowerCase() && nTid === String(draft.tokenId || "")
+                        )
+                      }) && (
+                        <FormField label="Token ID">
+                          <Typography color="textSecondary" style={{ fontSize: 14, paddingTop: 12, paddingBottom: 12 }}>
+                            Token ID: {draft.tokenId} (from selected NFT)
+                          </Typography>
+                        </FormField>
+                      )}
+                    {draft.type !== "transfer_erc721" && (
                       <FormField label="Amount">
                         <FormTextField
+                          type="number"
                           value={draft.amount || ""}
                           onChange={e => setDraft(p => ({ ...p, amount: e.target.value }))}
+                          inputProps={{
+                            inputMode: "numeric",
+                            pattern: "[0-9]*",
+                            min: "0.001",
+                            step: "0.000001",
+                            style: { fontSize: 14 }
+                          }}
                         />
                       </FormField>
                     )}
                     <FormField label="To">
                       <FormTextField
                         value={draft.to || ""}
+                        placeholder="0x..."
                         onChange={e => setDraft(p => ({ ...p, to: e.target.value }))}
+                        inputProps={{ style: { fontSize: 14 } }}
                       />
                     </FormField>
                   </>

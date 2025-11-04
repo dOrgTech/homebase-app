@@ -39,6 +39,7 @@ interface EvmProposalCreateStore {
   batch: {
     actions: any[]
     errors: string[]
+    warnings: string[]
   }
   daoRegistry: {
     key: string
@@ -60,6 +61,7 @@ interface EvmProposalCreateStore {
   updateBatchAction: (index: number, action: any) => void
   removeBatchAction: (index: number) => void
   setBatchErrors: (errors: string[]) => void
+  setBatchWarnings: (warnings: string[]) => void
   daoContractCall: {
     targetAddress: string
     value: string
@@ -158,7 +160,8 @@ export const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()
       },
       batch: {
         actions: [],
-        errors: []
+        errors: [],
+        warnings: []
       },
       setBatchActions: (actions: any[]) => set({ batch: { ...get().batch, actions } }),
       addBatchAction: (action: any) => set({ batch: { ...get().batch, actions: [...get().batch.actions, action] } }),
@@ -177,6 +180,7 @@ export const useEvmProposalCreateZustantStore = create<EvmProposalCreateStore>()
         }
       },
       setBatchErrors: (errors: string[]) => set({ batch: { ...get().batch, errors } }),
+      setBatchWarnings: (warnings: string[]) => set({ batch: { ...get().batch, warnings } }),
       setTransferAssets: (transactions: any[], daoRegistryAddress: string) => {
         const targets: string[] = []
         const callData: string[] = []
@@ -536,7 +540,8 @@ export const useEvmProposalOps = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDeploying, setIsDeploying] = useState(false)
   const { etherlink, network } = useTezos()
-  const { daoSelected, daoProposalSelected, setIsProposalDialogOpen } = useContext(EtherlinkContext)
+  const { daoSelected, daoProposalSelected, setIsProposalDialogOpen, daoTreasuryTokens, daoNfts } =
+    useContext(EtherlinkContext)
   const router = useHistory()
   const queryClient = useQueryClient()
   const { fetchCollection } = useFirestoreStore()
@@ -1367,7 +1372,12 @@ export const useEvmProposalOps = () => {
     [etherlink.account.address, network, openNotification]
   )
 
-  const { parseBatchCsv, prepareBatchFromActions } = useBatchProposalOps({ etherlink, zustantStore })
+  const { parseBatchCsv, prepareBatchFromActions } = useBatchProposalOps({
+    etherlink,
+    zustantStore,
+    daoTreasuryTokens,
+    daoNfts
+  })
 
   return {
     isLoading,
@@ -1388,6 +1398,7 @@ export const useEvmProposalOps = () => {
     prepareBatchFromActions,
     batchActions: zustantStore.batch.actions,
     batchErrors: zustantStore.batch.errors,
+    batchWarnings: zustantStore.batch.warnings,
     ...zustantStore
   }
 }

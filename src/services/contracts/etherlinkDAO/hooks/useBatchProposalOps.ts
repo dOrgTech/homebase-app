@@ -47,129 +47,173 @@ export function parseCsvSimple(text: string): { header: string[]; rows: string[]
 interface BatchProposalOpsParams {
   etherlink: any
   zustantStore: any
+  daoTreasuryTokens?: any[]
+  daoNfts?: any[]
 }
 
-export const useBatchProposalOps = ({ etherlink, zustantStore }: BatchProposalOpsParams) => {
-  const { daoSelected } = useContext(EtherlinkContext)
+export const useBatchProposalOps = ({
+  etherlink,
+  zustantStore,
+  daoTreasuryTokens,
+  daoNfts
+}: BatchProposalOpsParams) => {
+  const context = useContext(EtherlinkContext)
+  const daoSelected = context?.daoSelected
 
-  const parseBatchCsv = useCallback((text: string) => {
-    try {
-      const parsed = parseCsvSimple(text)
-      const idx = (name: string) =>
-        parsed.header.findIndex(h => (h || "").toLowerCase().trim() === name.toLowerCase().trim())
-      const col = (arr: string[], name: string) => {
-        const i = idx(name)
-        return i >= 0 && i < arr.length ? arr[i] : ""
+  const parseBatchCsv = useCallback(
+    (text: string) => {
+      try {
+        const parsed = parseCsvSimple(text)
+        const idx = (name: string) =>
+          parsed.header.findIndex(h => (h || "").toLowerCase().trim() === name.toLowerCase().trim())
+        const col = (arr: string[], name: string) => {
+          const i = idx(name)
+          return i >= 0 && i < arr.length ? arr[i] : ""
+        }
+        const rows: any[] = parsed.rows.map(r => ({
+          type: col(r, "type"),
+          asset: col(r, "asset"),
+          to: col(r, "to"),
+          from: col(r, "from"),
+          amount: col(r, "amount"),
+          tokenId: col(r, "tokenId"),
+          key: col(r, "key"),
+          value: col(r, "value"),
+          target: col(r, "target"),
+          function: col(r, "function"),
+          params: col(r, "params"),
+          rawCalldata: col(r, "rawCalldata"),
+          ethValue: col(r, "ethValue")
+        }))
+        const actions: any[] = []
+        const errors: string[] = []
+        const warnings: string[] = []
+        const asStr = (v: any) => (v === undefined || v === null ? "" : String(v))
+        rows.forEach((row, idx) => {
+          const rowNum = idx + 2
+          const type = asStr(row.type).trim().toLowerCase()
+          const asset = asStr(row.asset).trim()
+          const to = asStr(row.to).trim()
+          const from = asStr(row.from).trim()
+          const amount = asStr(row.amount).trim()
+          const tokenId = asStr(row.tokenId).trim()
+          const key = asStr(row.key).trim()
+          const value = asStr(row.value).trim()
+          const target = asStr(row.target).trim()
+          const func = asStr(row.function).trim()
+          const params = asStr(row.params).trim()
+          const rawCalldata = asStr(row.rawCalldata).trim()
+          const ethValue = asStr(row.ethValue).trim()
+
+          const pushError = (m: string) => errors.push(`Row ${rowNum}: ${m}`)
+          const pushWarning = (m: string) => warnings.push(`Row ${rowNum}: ${m}`)
+
+          if (type && !enabledBatchActionTypes.includes(type as any)) {
+            return pushError(`action type '${type}' is not enabled`)
+          }
+
+          switch (type) {
+            case "transfer_eth":
+              if (!to || !ethers.isAddress(to)) return pushError("transfer_eth requires valid 'to' address")
+              if (!amount) return pushError("transfer_eth requires 'amount'")
+              actions.push({ type, to, amount })
+              break
+            case "transfer_erc20":
+              if (!asset || !ethers.isAddress(asset)) return pushError("transfer_erc20 requires valid 'asset' address")
+              if (!to || !ethers.isAddress(to)) return pushError("transfer_erc20 requires valid 'to' address")
+              if (!amount) return pushError("transfer_erc20 requires 'amount'")
+              if (daoTreasuryTokens && daoTreasuryTokens.length > 0) {
+                const found = daoTreasuryTokens.find(
+                  (t: any) => String(t?.address || "").toLowerCase() === asset.toLowerCase()
+                )
+                if (!found) {
+                  pushWarning("Asset not in treasury - ensure DAO has approval or balance")
+                }
+              }
+              actions.push({ type, asset, to, amount })
+              break
+            case "transfer_erc721":
+              if (!asset || !ethers.isAddress(asset)) return pushError("transfer_erc721 requires valid 'asset' address")
+              if (!to || !ethers.isAddress(to)) return pushError("transfer_erc721 requires valid 'to' address")
+              if (tokenId === "") return pushError("transfer_erc721 requires 'tokenId'")
+              if (daoNfts && daoNfts.length > 0) {
+                const resolveNftContractAddress = (nft: any): string | undefined => {
+                  return (
+                    nft?.token?.address ||
+                    nft?.token?.contract_address ||
+                    nft?.token?.address_hash ||
+                    nft?.contract?.address ||
+                    nft?.contract_address ||
+                    nft?.token_address ||
+                    nft?.collection?.address ||
+                    undefined
+                  )
+                }
+                const found = daoNfts.find((n: any) => {
+                  const nAddr = resolveNftContractAddress(n)
+                  const nTid = String(n?.token_id ?? n?.id)
+                  return nAddr?.toLowerCase() === asset.toLowerCase() && nTid === tokenId
+                })
+                if (!found) {
+                  pushWarning("NFT not in treasury - ensure DAO owns this token")
+                }
+              }
+              actions.push({ type, asset, to, tokenId })
+              break
+            case "registry_set":
+              if (!key || !value) return pushError("registry_set requires 'key' and 'value'")
+              actions.push({ type, key, value })
+              break
+            case "mint":
+              if (!to || !ethers.isAddress(to)) return pushError("mint requires valid 'to' address")
+              if (!amount) return pushError("mint requires 'amount'")
+              actions.push({ type, to, amount })
+              break
+            case "burn":
+              if (!from || !ethers.isAddress(from)) return pushError("burn requires valid 'from' address")
+              if (!amount) return pushError("burn requires 'amount'")
+              actions.push({ type, from, amount })
+              break
+            case "update_quorum":
+              if (!value) return pushError("update_quorum requires 'value' (percent)")
+              actions.push({ type, value })
+              break
+            case "set_voting_delay":
+              if (!value) return pushError("set_voting_delay requires 'value' (seconds)")
+              actions.push({ type, value })
+              break
+            case "set_voting_period":
+              if (!value) return pushError("set_voting_period requires 'value' (seconds)")
+              actions.push({ type, value })
+              break
+            case "set_proposal_threshold":
+              if (!value) return pushError("set_proposal_threshold requires 'value'")
+              actions.push({ type, value })
+              break
+            case "contract_call":
+              if (!target || !ethers.isAddress(target))
+                return pushError("contract_call requires valid 'target' address")
+              if (rawCalldata) {
+                if (!rawCalldata.startsWith("0x")) return pushError("rawCalldata must be 0x-hex")
+                actions.push({ type, target, rawCalldata, ethValue })
+              } else if (func) {
+                actions.push({ type, target, func, params, ethValue })
+              } else {
+                return pushError("contract_call requires either 'function' or 'rawCalldata'")
+              }
+              break
+            default:
+              if (type) return pushError(`unknown type '${type}'`)
+              break
+          }
+        })
+        return { actions, errors, warnings }
+      } catch (e: any) {
+        return { actions: [], errors: [String(e?.message || e)], warnings: [] }
       }
-      const rows: any[] = parsed.rows.map(r => ({
-        type: col(r, "type"),
-        asset: col(r, "asset"),
-        to: col(r, "to"),
-        from: col(r, "from"),
-        amount: col(r, "amount"),
-        tokenId: col(r, "tokenId"),
-        key: col(r, "key"),
-        value: col(r, "value"),
-        target: col(r, "target"),
-        function: col(r, "function"),
-        params: col(r, "params"),
-        rawCalldata: col(r, "rawCalldata"),
-        ethValue: col(r, "ethValue")
-      }))
-      const actions: any[] = []
-      const errors: string[] = []
-      const asStr = (v: any) => (v === undefined || v === null ? "" : String(v))
-      rows.forEach((row, idx) => {
-        const rowNum = idx + 2
-        const type = asStr(row.type).trim().toLowerCase()
-        const asset = asStr(row.asset).trim()
-        const to = asStr(row.to).trim()
-        const from = asStr(row.from).trim()
-        const amount = asStr(row.amount).trim()
-        const tokenId = asStr(row.tokenId).trim()
-        const key = asStr(row.key).trim()
-        const value = asStr(row.value).trim()
-        const target = asStr(row.target).trim()
-        const func = asStr(row.function).trim()
-        const params = asStr(row.params).trim()
-        const rawCalldata = asStr(row.rawCalldata).trim()
-        const ethValue = asStr(row.ethValue).trim()
-
-        const pushError = (m: string) => errors.push(`Row ${rowNum}: ${m}`)
-
-        if (type && !enabledBatchActionTypes.includes(type as any)) {
-          return pushError(`action type '${type}' is not enabled`)
-        }
-
-        switch (type) {
-          case "transfer_eth":
-            if (!to || !ethers.isAddress(to)) return pushError("transfer_eth requires valid 'to' address")
-            if (!amount) return pushError("transfer_eth requires 'amount'")
-            actions.push({ type, to, amount })
-            break
-          case "transfer_erc20":
-            if (!asset || !ethers.isAddress(asset)) return pushError("transfer_erc20 requires valid 'asset' address")
-            if (!to || !ethers.isAddress(to)) return pushError("transfer_erc20 requires valid 'to' address")
-            if (!amount) return pushError("transfer_erc20 requires 'amount'")
-            actions.push({ type, asset, to, amount })
-            break
-          case "transfer_erc721":
-            if (!asset || !ethers.isAddress(asset)) return pushError("transfer_erc721 requires valid 'asset' address")
-            if (!to || !ethers.isAddress(to)) return pushError("transfer_erc721 requires valid 'to' address")
-            if (tokenId === "") return pushError("transfer_erc721 requires 'tokenId'")
-            actions.push({ type, asset, to, tokenId })
-            break
-          case "registry_set":
-            if (!key || !value) return pushError("registry_set requires 'key' and 'value'")
-            actions.push({ type, key, value })
-            break
-          case "mint":
-            if (!to || !ethers.isAddress(to)) return pushError("mint requires valid 'to' address")
-            if (!amount) return pushError("mint requires 'amount'")
-            actions.push({ type, to, amount })
-            break
-          case "burn":
-            if (!from || !ethers.isAddress(from)) return pushError("burn requires valid 'from' address")
-            if (!amount) return pushError("burn requires 'amount'")
-            actions.push({ type, from, amount })
-            break
-          case "update_quorum":
-            if (!value) return pushError("update_quorum requires 'value' (percent)")
-            actions.push({ type, value })
-            break
-          case "set_voting_delay":
-            if (!value) return pushError("set_voting_delay requires 'value' (seconds)")
-            actions.push({ type, value })
-            break
-          case "set_voting_period":
-            if (!value) return pushError("set_voting_period requires 'value' (seconds)")
-            actions.push({ type, value })
-            break
-          case "set_proposal_threshold":
-            if (!value) return pushError("set_proposal_threshold requires 'value'")
-            actions.push({ type, value })
-            break
-          case "contract_call":
-            if (!target || !ethers.isAddress(target)) return pushError("contract_call requires valid 'target' address")
-            if (rawCalldata) {
-              if (!rawCalldata.startsWith("0x")) return pushError("rawCalldata must be 0x-hex")
-              actions.push({ type, target, rawCalldata, ethValue })
-            } else if (func) {
-              actions.push({ type, target, func, params, ethValue })
-            } else {
-              return pushError("contract_call requires either 'function' or 'rawCalldata'")
-            }
-            break
-          default:
-            if (type) return pushError(`unknown type '${type}'`)
-            break
-        }
-      })
-      return { actions, errors }
-    } catch (e: any) {
-      return { actions: [], errors: [String(e?.message || e)] }
-    }
-  }, [])
+    },
+    [daoTreasuryTokens, daoNfts]
+  )
 
   const prepareBatchFromActions = useCallback(async () => {
     if (!daoSelected?.address) throw new Error("DAO not loaded")
