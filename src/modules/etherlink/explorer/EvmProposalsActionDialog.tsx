@@ -1,13 +1,15 @@
-import { Box, Container, Grid, styled, useMediaQuery, useTheme } from "@material-ui/core"
-import { Typography } from "@material-ui/core"
+import React from "react"
+import { Box, Grid, useMediaQuery, useTheme, Typography } from "components/ui"
 import { NextButton } from "components/ui/NextButton"
-import { StyledTextField } from "components/ui/StyledTextField"
-import { LinearProgress, LinearProgressLoader } from "components/ui/LinearProgress"
+import { FormField, FormTextArea, FormTextField } from "components/ui"
+import { LinearProgressLoader } from "components/ui/LinearProgress"
 
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
 
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
+import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
+import { EtherlinkContext } from "services/wagmi/context"
 import { EvmPropTransferAssets } from "./EvmProposals/EvmPropTransferAssets"
 import { EvmPropEditRegistry } from "./EvmProposals/EvmPropEditRegistry"
 import { EvmPropContractCall } from "./EvmProposals/EvmPropContractCall"
@@ -17,36 +19,8 @@ import { EvmProposalOptions } from "../config"
 import { EvmOffchainDebate } from "./EvmProposals/EvmOffchainDebate"
 import { EProposalType } from "../types"
 
-// TODO: Move this to a shared component
-const OptionContainer = styled(Grid)(({ theme }) => ({
-  "minHeight": 80,
-  "background": theme.palette.primary.main,
-  "borderRadius": 8,
-  "padding": "35px 42px",
-  "marginBottom": 16,
-  "cursor": "pointer",
-  "height": 110,
-  "&:hover:enabled": {
-    background: theme.palette.secondary.dark,
-    scale: 1.01,
-    transition: "0.15s ease-in"
-  }
-}))
-
-const ActionText = styled(Typography)(({ theme }) => ({
-  fontWeight: 400,
-  fontSize: 20,
-  marginBottom: 8
-}))
-
-const ActionDescriptionText = styled(Typography)(({ theme }) => ({
-  fontWeight: 300,
-  fontSize: 16
-}))
-
-const TitleContainer = styled(Grid)({
-  marginBottom: 24
-})
+import { OptionContainer, ActionText, ActionDescriptionText, TitleContainer } from "components/ui"
+import { isFeatureEnabled } from "utils/features"
 
 const renderModal = (modal: EProposalType) => {
   switch (modal) {
@@ -69,10 +43,41 @@ const renderModal = (modal: EProposalType) => {
 
 export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean; handleClose: () => void }) => {
   const theme = useTheme()
-  const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, nextStep, prevStep } =
+  const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, isNextDisabled, nextStep, prevStep } =
     useEvmProposalOps()
+  const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
+  const daoCtx = React.useContext(EtherlinkContext)
+  const [isDelegating, setIsDelegating] = React.useState(false)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
+  const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
+  const availableOptions = React.useMemo(() => {
+    if (offchainEnabled) return EvmProposalOptions
+    return EvmProposalOptions.filter(option => option.modal !== "off_chain_debate")
+  }, [offchainEnabled])
+  React.useEffect(() => {
+    if (!offchainEnabled && metadata.type === "off_chain_debate") {
+      setMetadataFieldValue("type", "")
+    }
+  }, [offchainEnabled, metadata.type, setMetadataFieldValue])
   const proposalTitle = EvmProposalOptions.find(option => option.modal === metadata.type)?.label
+
+  const thresholdRaw = React.useMemo(() => {
+    try {
+      return BigInt(daoCtx?.daoSelected?.proposalThreshold || 0)
+    } catch (_) {
+      return BigInt(0)
+    }
+  }, [daoCtx?.daoSelected?.proposalThreshold])
+
+  const decimals = Number(daoCtx?.daoSelected?.decimals || 0)
+  const toHuman = (x: bigint | number) => {
+    const v = typeof x === "number" ? BigInt(Math.trunc(x)) : x
+    if (!decimals) return v.toString()
+    const s = v.toString().padStart(decimals + 1, "0")
+    const intPart = s.slice(0, -decimals)
+    const frac = s.slice(-decimals).replace(/0+$/, "")
+    return frac ? `${intPart}.${frac}` : intPart
+  }
 
   return (
     <>
@@ -81,7 +86,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
         <Grid container spacing={2}>
-          {EvmProposalOptions.map((option: any, index) => (
+          {availableOptions.map((option: any, index) => (
             <Grid
               item
               xs={isMobileSmall ? 12 : 4}
@@ -104,52 +109,81 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        <Container>
+        <Grid>
+          <Grid container direction="column" style={{ gap: 18, marginBottom: 32 }}>
+            <FormField label="Proposal Title" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                placeholder="Proposal Title"
+                defaultValue={metadata.title}
+                onChange={e => setMetadataFieldValue("title", e.target.value)}
+                inputProps={{ style: { fontSize: 14 } }}
+              />
+            </FormField>
+
+            <FormField label="Proposal Details" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextArea
+                placeholder="Proposal Details"
+                defaultValue={metadata.description}
+                onChange={e => setMetadataFieldValue("description", e.target.value)}
+                inputProps={{ style: { fontSize: 14, paddingTop: 12, paddingBottom: 12 } }}
+              />
+            </FormField>
+
+            <FormField label="Discussion URL" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                placeholder="Discussion URL"
+                value={metadata.discussionUrl}
+                onChange={e => setMetadataFieldValue("discussionUrl", (e.target.value || "").toLowerCase())}
+                inputProps={{ style: { fontSize: 14 } }}
+              />
+            </FormField>
+          </Grid>
+
+          {/* Voting power helper */}
           <Box
-            gridGap={2}
-            sx={{
+            style={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              mb: 4
+              flexDirection: isMobileSmall ? "column" : "row",
+              alignItems: isMobileSmall ? "stretch" : "center",
+              gap: 8,
+              marginBottom: 24,
+              background: theme.palette.primary.main,
+              borderRadius: 4,
+              padding: 16
             }}
           >
-            <StyledTextField
-              placeholder="Proposal Title"
-              fullWidth
-              variant="standard"
-              label="Proposal Title"
-              style={{ height: "50px", textAlign: "left", marginBottom: "20px" }}
-              defaultValue={metadata.title}
-              onChange={e => setMetadataFieldValue("title", e.target.value)}
-            />
-            <StyledTextField
-              placeholder="Proposal Details"
-              label="Proposal Details"
-              multiline
-              minRows={5}
-              fullWidth
-              variant="standard"
-              style={{ marginBottom: "20px" }}
-              defaultValue={metadata.description}
-              onChange={e => setMetadataFieldValue("description", e.target.value)}
-            />
-
-            <StyledTextField
-              label="Discussion URL"
-              placeholder="Discussion URL"
-              fullWidth
-              variant="standard"
-              style={{ marginBottom: "10px" }}
-              defaultValue={metadata.discussionUrl}
-              onChange={e => setMetadataFieldValue("discussionUrl", e.target.value)}
-            />
+            <Typography color="textPrimary" style={{ flex: 1 }}>
+              Voting power:
+              {/* 
+              TODO: Fix this
+              {toHuman(BigInt(Math.max(0, Math.floor(userVotingWeight || 0))))} / Threshold:{" "}
+              {toHuman(thresholdRaw)} 
+              */}
+            </Typography>
+            <NextButton
+              disabled={isDelegating || !loggedInUser?.address || (userVotingWeight || 0) > 0}
+              onClick={() => {
+                if (!loggedInUser?.address) return
+                setIsDelegating(true)
+                daoDelegate(loggedInUser.address)
+                  .then(() => refreshTokenStats())
+                  .catch(() => {})
+                  .finally(() => setIsDelegating(false))
+              }}
+            >
+              {(userVotingWeight || 0) > 0
+                ? "Voting Power Ready"
+                : isDelegating
+                ? "Delegating..."
+                : "Self‑delegate (Claim Voting Power)"}
+            </NextButton>
           </Box>
+
           <Grid container direction="row" justifyContent="space-between" alignItems="center">
             <BackButton onClick={prevStep.handler} />
             <NextButton onClick={nextStep.handler}>{nextStep.text}</NextButton>
           </Grid>
-        </Container>
+        </Grid>
       </ResponsiveDialog>
 
       <ResponsiveDialog
@@ -168,7 +202,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         )}
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <BackButton disabled={isDeploying} onClick={prevStep.handler} />
-          <NextButton disabled={isLoading || isDeploying} onClick={nextStep.handler}>
+          <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
             {nextStep.text}
           </NextButton>
         </Grid>

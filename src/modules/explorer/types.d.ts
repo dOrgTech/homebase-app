@@ -10,6 +10,7 @@ export enum ProposalType {
 export enum OffchainStatus {
   ACTIVE = "active",
   CLOSED = "closed",
+  NO_QUORUM = "no-quorum",
   ALL = "all"
 }
 

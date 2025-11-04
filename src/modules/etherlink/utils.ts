@@ -1,4 +1,4 @@
-import { ethers, FunctionFragment } from "ethers"
+import { ethers } from "ethers"
 import { proposalInterfaces } from "./config"
 import { IContractWriteMethod, IProposalType } from "./types"
 
@@ -8,14 +8,16 @@ export const networkConfig = {
     explorerUrl: "https://testnet.explorer.etherlink.com",
     explorerApiUrl: "https://testnet.explorer.etherlink.com/api/v2",
     firebaseRootCollection: "idaosEtherlink-Testnet",
-    firebaseRootTokenCollection: "tokensEtherlink-Testnet"
+    firebaseRootTokenCollection: "tokensEtherlink-Testnet",
+    firebaseMemberCollection: "iMembersEtherlink-Testnet"
   },
   etherlink_mainnet: {
     network: "mainnet",
     explorerUrl: "https://explorer.etherlink.com",
     explorerApiUrl: "https://explorer.etherlink.com/api/v2",
     firebaseRootCollection: "idaosEtherlink",
-    firebaseRootTokenCollection: "tokensEtherlink"
+    firebaseRootTokenCollection: "tokensEtherlink",
+    firebaseMemberCollection: "iMembersEtherlink"
   }
 }
 
@@ -24,12 +26,19 @@ export const isInvalidEvmAddress = (address: string) => {
 }
 
 export const isValidUrl = (url: string) => {
-  return url.startsWith("http") || url.startsWith("https")
+  if (!url || typeof url !== "string") return false
+  try {
+    const parsed = new URL(url)
+    const protocol = (parsed.protocol || "").toLowerCase()
+    return protocol === "http:" || protocol === "https:"
+  } catch (_) {
+    // Fallback: tolerate missing scheme but starting with //
+    // e.g., //example.com/path
+    return /^https?:\/\//i.test(url)
+  }
 }
 
-export const validateEvmTokenAddress = (address: string) => {
-  return ethers.isAddress(address)
-}
+// removed validateEvmTokenAddress (unused)
 
 export const getCallDataFromBytes = (bytes: any) => {
   // Handle case where bytes is already a hex string
@@ -47,84 +56,65 @@ export const getCallDataFromBytes = (bytes: any) => {
     return `0x${hexString}`
   }
 
+  // Handle Firebase Uint8Array bytes (common return type for Firestore 'bytes' fields)
+  if (bytes && typeof bytes === "object" && bytes.constructor && bytes.constructor.name === "Uint8Array") {
+    const arr = bytes as Uint8Array
+    const hexString = Array.from(arr)
+      .map((b: number) => b.toString(16).padStart(2, "0"))
+      .join("")
+    return `0x${hexString}`
+  }
+
   // If bytes is neither string nor has toUint8Array method, return a default value
   console.warn("getCallDataFromBytes: Invalid input type", bytes)
   return "0x"
 }
 
-export function parseTransactionHash(input: string): string {
-  // Equivalent to input.substring(2, input.length - 1)
-  input = input.substring(2, input.length - 1)
+export function parseTransactionHash(input?: string): string {
+  if (!input || typeof input !== "string") return ""
+
+  const trimmed = input.trim()
+
+  // If already a 0x-prefixed 32-byte hash, return sans 0x
+  if (/^0x[0-9a-fA-F]{64}$/.test(trimmed)) {
+    return trimmed.slice(2)
+  }
+  // If a non-prefixed 32-byte hash, return as-is (lowercase for consistency)
+  if (/^[0-9a-fA-F]{64}$/.test(trimmed)) {
+    return trimmed.toLowerCase()
+  }
+
+  // Try to handle Python-style bytes repr: b'\x12\xab...' or '\x12\xab...'
+  let raw = trimmed
+  const startsWithBQuote = (raw.startsWith("b'") && raw.endsWith("'")) || (raw.startsWith('b"') && raw.endsWith('"'))
+  const startsWithQuote = (raw.startsWith("'") && raw.endsWith("'")) || (raw.startsWith('"') && raw.endsWith('"'))
+  if (startsWithBQuote) {
+    raw = raw.substring(2, raw.length - 1)
+  } else if (startsWithQuote) {
+    raw = raw.substring(1, raw.length - 1)
+  }
 
   const byteValues: number[] = []
-
-  for (let i = 0; i < input.length; i++) {
-    if (input[i] === "\\" && input[i + 1] === "x") {
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i] === "\\" && raw[i + 1] === "x") {
       // Extract the two hex characters following '\x'
-      const hexValue = input.substring(i + 2, i + 4)
-      byteValues.push(parseInt(hexValue, 16))
-      i += 3 // Skip past the processed '\xNN' sequence
+      const hexValue = raw.substring(i + 2, i + 4)
+      if (hexValue.length === 2) {
+        byteValues.push(parseInt(hexValue, 16))
+        i += 3 // Skip past the processed '\xNN' sequence
+      }
     } else {
       // Add ASCII code for literal characters
-      byteValues.push(input.charCodeAt(i))
+      byteValues.push(raw.charCodeAt(i))
     }
   }
 
   // Convert bytes to hex string with zero-padding
   const hexString = byteValues.map(byte => byte.toString(16).padStart(2, "0")).join("")
-
   return hexString
 }
 
-export const getCallDataForProposal = (
-  proposalType:
-    | "quorum"
-    | "voting delay"
-    | "voting period"
-    | "proposal threshold"
-    | "quorumNumerator"
-    | "votingDelay"
-    | "votingPeriod"
-    | "proposalThreshold",
-  {
-    title,
-    description,
-    externalResource
-  }: {
-    title: string
-    description: string
-    externalResource: string
-  },
-  value: any
-) => {
-  let ifaceDef, iface: any, encodedData: any
-
-  if (["quorum", "quorumNumerator"].includes(proposalType)) {
-    ifaceDef = proposalInterfaces.find(p => p.name === "updateQuorumNumerator")
-    if (!ifaceDef) return
-    iface = new ethers.Interface(ifaceDef.interface)
-    encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-  }
-  if (["voting delay", "votingDelay"].includes(proposalType)) {
-    ifaceDef = proposalInterfaces.find(p => p.name === "setVotingDelay")
-    if (!ifaceDef) return
-    iface = new ethers.Interface(ifaceDef.interface)
-    encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-  }
-  if (["voting period", "votingPeriod"].includes(proposalType)) {
-    ifaceDef = proposalInterfaces.find(p => p.name === "setVotingPeriod")
-    if (!ifaceDef) return
-    iface = new ethers.Interface(ifaceDef.interface)
-    encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-  }
-  if (["proposal threshold", "proposalThreshold"].includes(proposalType)) {
-    ifaceDef = proposalInterfaces.find(p => p.name === "setProposalThreshold")
-    if (!ifaceDef) return
-    iface = new ethers.Interface(ifaceDef.interface)
-    encodedData = iface.encodeFunctionData(ifaceDef.name, [value])
-  }
-  return encodedData
-}
+// removed getCallDataForProposal (unused)
 
 export function decodeCalldataWithEthers(functionAbi: string, callDataHex: string, isRetry = false): any {
   const callDataHexValue = callDataHex.startsWith("0x") ? callDataHex : `0x${callDataHex}`
@@ -136,11 +126,6 @@ export function decodeCalldataWithEthers(functionAbi: string, callDataHex: strin
     return { decoded, functionName, decodedData: convertBigIntToString(decoded) }
   } catch (error) {
     if (isRetry) {
-      console.log("error:decodeCalldataWithEthers", {
-        functionAbi,
-        callDataHexValue,
-        error
-      })
       return { decoded: [], functionName: "", decodedData: [] }
     }
 
@@ -148,76 +133,7 @@ export function decodeCalldataWithEthers(functionAbi: string, callDataHex: strin
   }
 }
 
-// TODO: Remove this function later
-export function decodeFunctionParameters(functionAbi: FunctionFragment | string, hexString: string): any[] {
-  if (typeof functionAbi === "string") {
-    functionAbi = FunctionFragment.from(functionAbi)
-  }
-
-  // Utility function to convert hex string to Uint8Array
-  const hexToBytes = (hex: string): Uint8Array => {
-    return ethers.getBytes(hex)
-  }
-
-  // Utility function to convert a subset of bytes to BigInt
-  const bytesToBigInt = (bytes: Uint8Array): bigint => {
-    return BigInt("0x" + Buffer.from(bytes).toString("hex"))
-  }
-
-  // Convert the hex string to bytes
-  const dataBytes: Uint8Array = hexToBytes(hexString)
-
-  // Remove the first 4 bytes (function selector)
-  const dataWithoutSelector: Uint8Array = dataBytes.slice(4)
-
-  // Initialize decoding variables
-  let offset = 0
-  const decodedParams: any[] = []
-
-  for (const param of functionAbi.inputs) {
-    const paramType = param.type
-
-    if (paramType === "string") {
-      // String type decoding (dynamic)
-
-      // Read the 32-byte offset
-      const paramOffsetBytes = dataWithoutSelector.slice(offset, offset + 32)
-      const paramOffset: bigint = bytesToBigInt(paramOffsetBytes)
-      const paramOffsetInt = Number(paramOffset)
-
-      // Decode length of the string
-      const lengthBytes = dataWithoutSelector.slice(paramOffsetInt, paramOffsetInt + 32)
-      const length: bigint = bytesToBigInt(lengthBytes)
-      const lengthInt = Number(length)
-
-      // Extract the actual string data
-      const stringBytes = dataWithoutSelector.slice(paramOffsetInt + 32, paramOffsetInt + 32 + lengthInt)
-      const decodedString = ethers.toUtf8String(stringBytes)
-
-      decodedParams.push(decodedString)
-    } else if (paramType === "address") {
-      // Address type decoding (last 20 bytes of the 32-byte slot)
-      const addressBytes = dataWithoutSelector.slice(offset + 12, offset + 32)
-      const addressHex = ethers.hexlify(addressBytes)
-      const checksumAddress = ethers.getAddress(addressHex)
-
-      decodedParams.push(checksumAddress)
-    } else if (paramType.startsWith("uint") || paramType.startsWith("int")) {
-      // Uint or Int type decoding (entire 32 bytes)
-      const uintBytes = dataWithoutSelector.slice(offset, offset + 32)
-      const uintValue = bytesToBigInt(uintBytes).toString()
-
-      decodedParams.push(uintValue)
-    } else {
-      throw new Error(`Unsupported parameter type: ${paramType}`)
-    }
-
-    // Move to the next 32-byte slot
-    offset += 32
-  }
-
-  return decodedParams
-}
+// removed decodeFunctionParameters (unused)
 
 export function convertBigIntToString(obj: unknown): unknown {
   if (typeof obj === "bigint") {
@@ -233,111 +149,7 @@ export function convertBigIntToString(obj: unknown): unknown {
   }
   return obj
 }
-
-export function decodeFunctionParametersLegacy(functionAbiString: string, hexString: string): any[] {
-  const functionAbi = FunctionFragment.from(functionAbiString)
-  // Helper function to convert a hex string to a Uint8Array
-  function hexToBytes(hex: string): Uint8Array {
-    if (hex.startsWith("0x")) {
-      hex = hex.slice(2)
-    }
-    if (hex.length % 2 !== 0) {
-      hex = "0" + hex
-    }
-    const bytes = new Uint8Array(hex.length / 2)
-    for (let i = 0; i < bytes.length; i++) {
-      bytes[i] = parseInt(hex.substr(i * 2, 2), 16)
-    }
-    return bytes
-  }
-
-  // Helper function to convert a Uint8Array to a BigInt
-  function bytesToBigInt(bytes: Uint8Array): bigint {
-    let value = BigInt(0)
-    for (let i = 0; i < bytes.length; i++) {
-      value = (value << BigInt(8)) + BigInt(bytes[i])
-    }
-    return value
-  }
-
-  // Helper function to convert a Uint8Array to a hex string
-  function bytesToHex(bytes: Uint8Array): string {
-    return Array.from(bytes)
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join("")
-  }
-
-  try {
-    // Convert the hex string to bytes
-    const dataBytes = hexToBytes(hexString)
-
-    // Ensure the data is at least 4 bytes for the function selector
-    if (dataBytes.length < 4) {
-      throw new Error("Hex string is too short to contain a function selector.")
-    }
-
-    // Remove the first 4 bytes (function selector)
-    const dataWithoutSelector = dataBytes.slice(4)
-
-    // Initialize decoding variables
-    let offset = 0
-    const decodedParams: any[] = []
-
-    for (const param of functionAbi.inputs) {
-      switch (param.type) {
-        case "string": {
-          // Decode the offset to the string data
-          const paramOffsetBytes = dataWithoutSelector.slice(offset, offset + 32)
-          const paramOffset = Number(bytesToBigInt(paramOffsetBytes))
-
-          // Decode the length of the string
-          const lengthBytes = dataWithoutSelector.slice(paramOffset, paramOffset + 32)
-          const length = Number(bytesToBigInt(lengthBytes))
-
-          // Extract the actual string data
-          const stringBytes = dataWithoutSelector.slice(paramOffset + 32, paramOffset + 32 + length)
-          const decoder = new TextDecoder()
-          const decodedString = decoder.decode(stringBytes)
-
-          decodedParams.push(decodedString)
-          break
-        }
-
-        case "address": {
-          // Decode the address (last 20 bytes of the 32-byte slot)
-          const addressBytes = dataWithoutSelector.slice(offset + 12, offset + 32)
-          const addressHex = "0x" + bytesToHex(addressBytes)
-          decodedParams.push(addressHex)
-          break
-        }
-
-        default:
-          if (param.type.startsWith("uint")) {
-            // Decode unsigned integers (e.g., uint256)
-            const uintBytes = dataWithoutSelector.slice(offset, offset + 32)
-            const uintValue = bytesToHex(uintBytes)
-            // const uintValueHex = ethers.hexlify(uintBytes)
-            // const uintValueBigNumber = ethers.toNumber(uintValueHex)
-            // const uintValueBigNumberX = ethers.toNumber(uintBytes)
-            decodedParams.push({
-              value: uintValue,
-              bytes: uintBytes
-            })
-          } else {
-            throw new Error(`Unsupported parameter type: ${param.type}`)
-          }
-      }
-
-      // Move to the next 32-byte slot
-      offset += 32
-    }
-
-    return decodedParams
-  } catch (error) {
-    console.log("error:decodeFunctionParametersLegacy", { functionAbiString, hexString, error })
-    return []
-  }
-}
+// removed decodeFunctionParametersLegacy (unused)
 
 export function getDaoConfigType(type: string) {
   if (type === "quorumNumerator") return "quorum"
@@ -353,10 +165,29 @@ export function getDaoTokenOpsType(type: string, tokenSymbol: string) {
   return ""
 }
 
-export function getBlockExplorerUrl(network: string, executionHash: string) {
-  let txHash = parseTransactionHash(executionHash)
-  txHash = txHash.startsWith("0x") ? txHash : `0x${txHash}`
-  return networkConfig[network as keyof typeof networkConfig]?.explorerUrl + "/tx/" + txHash
+export function getBlockExplorerUrl(network: string, executionHash?: string) {
+  if (!executionHash || typeof executionHash !== "string") return ""
+
+  const base = networkConfig[network as keyof typeof networkConfig]?.explorerUrl
+  if (!base) return ""
+
+  // If executionHash is already a full tx hash, use it directly
+  const trimmed = executionHash.trim()
+  const isFullHash = /^0x[0-9a-fA-F]{64}$/.test(trimmed)
+  const isBareHash = /^[0-9a-fA-F]{64}$/.test(trimmed)
+
+  let txHash = ""
+  if (isFullHash) {
+    txHash = trimmed
+  } else if (isBareHash) {
+    txHash = `0x${trimmed.toLowerCase()}`
+  } else {
+    const parsed = parseTransactionHash(trimmed)
+    if (!parsed) return ""
+    txHash = parsed.startsWith("0x") ? parsed : `0x${parsed}`
+  }
+
+  return `${base}/tx/${txHash}`
 }
 
 export async function getEtherAddressDetails(network: string, address: string) {
@@ -391,7 +222,6 @@ function _decodedCallData(possibleInterfaces: any[], callData: string) {
   }
   for (const iface of possibleInterfaces) {
     const decodedDataPair = decodeCalldataWithEthers(iface.interface?.[0], formattedCallData)
-    console.log("callDataXYB decodedDataPair", decodedDataPair)
     const functionName = decodedDataPair?.functionName
     const functionParams = decodedDataPair?.decodedData
     const label = iface?.label
@@ -433,4 +263,12 @@ export async function getContractWriteMethods(contractAddress: string, network: 
   )
   const data = await response.json()
   return data as IContractWriteMethod[]
+}
+
+export async function getTokenHolders(network: string, tokenAddress: string) {
+  const response = await fetch(
+    networkConfig[network as keyof typeof networkConfig]?.explorerApiUrl + "/tokens/" + tokenAddress + "/holders"
+  )
+  const data = await response.json()
+  return data
 }

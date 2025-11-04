@@ -39,16 +39,27 @@ export const getDAO = async (address: string) => {
 }
 
 export const getDAOs = async (network: string) => {
-  const response = await client.request<GetAllDAOsDTO>(GET_DAOS_QUERY, {
-    network
-  })
+  // Do not query Hasura when on Etherlink networks
+  if (network?.startsWith("etherlink")) {
+    return []
+  }
 
-  const response_v2 = await client_v2.request<GetAllDAOsDTO>(GET_DAOS_QUERY_V2, {
-    network
-  })
+  let daos: DAOListItem[] = []
+  let daos_v2: DAOListItem[] = []
 
-  const daos = response.daos
-  const daos_v2 = response_v2.daos
+  try {
+    const response = await client.request<GetAllDAOsDTO>(GET_DAOS_QUERY, { network })
+    daos = response?.daos || []
+  } catch (err) {
+    console.error("Failed to fetch Homebase DAOs (v1)", err)
+  }
+
+  try {
+    const response_v2 = await client_v2.request<GetAllDAOsDTO>(GET_DAOS_QUERY_V2, { network })
+    daos_v2 = response_v2?.daos || []
+  } catch (err) {
+    console.error("Failed to fetch Homebase DAOs (v2)", err)
+  }
 
   return [...daos, ...daos_v2]
 }

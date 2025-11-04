@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
-import { Grid, styled, Typography, Slider, Box } from "@material-ui/core"
-import { StyledTextField } from "components/ui/StyledTextField"
+import { Grid, styled, Typography, Box, FormField, FormTextField } from "components/ui"
 import {
   Timeline as TimelineIcon,
   HowToVote as HowToVoteIcon,
   Schedule as ScheduleIcon,
-  AccountBalance as AccountBalanceIcon,
-  ArrowBack as ArrowBackIcon
+  AccountBalance as AccountBalanceIcon
 } from "@material-ui/icons"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
@@ -76,38 +74,38 @@ const TimeInput = ({
   return (
     <Box display="flex" flexDirection="column">
       <Typography color="textSecondary">{label}</Typography>
-      <Box display="flex" flexDirection="row">
-        <StyledTextField
-          label="Days"
-          type="number"
-          variant="standard"
-          value={days}
-          onChange={e => setDays(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
-          style={{ marginRight: "16px" }}
-        />
-        <StyledTextField
-          label="Hours"
-          type="number"
-          variant="standard"
-          value={hours}
-          onChange={e => setHours(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
-          style={{ marginRight: "16px" }}
-        />
-        <StyledTextField
-          label="Minutes"
-          type="number"
-          variant="standard"
-          value={minutes}
-          onChange={e => setMinutes(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
-          style={{ marginRight: "16px" }}
-        />
+      <Box display="flex" flexDirection="row" style={{ gap: 24 }}>
+        <FormField label="Days" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            type="number"
+            value={days}
+            onChange={e => setDays(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
+            inputProps={{ style: { fontSize: 14 }, min: 0 }}
+          />
+        </FormField>
+        <FormField label="Hours" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            type="number"
+            value={hours}
+            onChange={e => setHours(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
+            inputProps={{ style: { fontSize: 14 }, min: 0, max: 23 }}
+          />
+        </FormField>
+        <FormField label="Minutes" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+          <FormTextField
+            type="number"
+            value={minutes}
+            onChange={e => setMinutes(Number(e.target.value) >= 0 ? Number(e.target.value) : 0)}
+            inputProps={{ style: { fontSize: 14 }, min: 0, max: 59 }}
+          />
+        </FormField>
       </Box>
     </Box>
   )
 }
 export const EvmPropDaoConfig = () => {
   const { daoSelected } = useContext(EtherlinkContext)
-  const { currentStep, daoConfig, setDaoConfig } = useEvmProposalOps()
+  const { currentStep, daoConfig, setDaoConfig, openDaoConfigEditor } = useEvmProposalOps()
 
   const defaultVotingDelay = useMemo(() => {
     return {
@@ -145,7 +143,7 @@ export const EvmPropDaoConfig = () => {
         return (
           <>
             <Typography color="textPrimary" gutterBottom>
-              Change the wait time between posting a proposal and the start of voting
+              Change the wait time between posting a proposal and the start of voting. Use 0 for immediate start.
             </Typography>
             <TimeInput
               label="Voting Delay Duration"
@@ -173,14 +171,14 @@ export const EvmPropDaoConfig = () => {
             <Typography color="textPrimary" gutterBottom>
               Change the minimum amount of Token ownership required to submit a proposal
             </Typography>
-            <StyledTextField
-              fullWidth
-              label="Threshold Amount"
-              type="number"
-              variant="standard"
-              value={daoConfig.proposalThreshold}
-              onChange={e => setDaoConfig("proposalThreshold", e.target.value)}
-            />
+            <FormField label="Threshold Amount" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
+              <FormTextField
+                type="number"
+                value={daoConfig.proposalThreshold}
+                onChange={e => setDaoConfig("proposalThreshold", e.target.value)}
+                inputProps={{ style: { fontSize: 14 }, min: 0 }}
+              />
+            </FormField>
           </>
         )
       default:
@@ -196,27 +194,27 @@ export const EvmPropDaoConfig = () => {
         icon={<HowToVoteIcon fontSize="large" />}
         title="Quorum"
         description="Change the minimum required participation for a proposal to pass"
-        onClick={() => setDaoConfig("quorumNumerator", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("quorumNumerator")}
       />
       <ConfigOption
         icon={<TimelineIcon fontSize="large" />}
         title="Voting Delay"
         description="Change the wait time between posting a proposal and the start of voting"
-        onClick={() => setDaoConfig("votingDelay", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("votingDelay")}
       />
 
       <ConfigOption
         icon={<ScheduleIcon fontSize="large" />}
         title="Voting Period"
         description="Change how long voting lasts"
-        onClick={() => setDaoConfig("votingPeriod", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("votingPeriod")}
       />
 
       <ConfigOption
         icon={<AccountBalanceIcon fontSize="large" />}
         title="Proposal Threshold"
         description="Change the minimum amount of Token ownership required to submit a proposal"
-        onClick={() => setDaoConfig("proposalThreshold", undefined, daoSelected?.address)}
+        onClick={() => openDaoConfigEditor("proposalThreshold")}
       />
     </Grid>
   )

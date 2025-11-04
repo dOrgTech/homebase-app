@@ -1,8 +1,6 @@
-import { Grid, Typography, Box, Container, styled } from "@material-ui/core"
-import AddCircleIcon from "@mui/icons-material/AddCircle"
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle"
+import { Grid, Typography, Box, styled, FormField, FormTextField } from "components/ui"
+import { AddCircleIcon, RemoveCircleIcon } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
-import { StyledTextField } from "components/ui/StyledTextField"
 import { useContext } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { isInvalidEvmAddress } from "modules/etherlink/utils"
@@ -78,31 +76,42 @@ const TokenOperationForm: React.FC<TokenOperationFormProps> = ({
         {icon}
         <Typography color="textPrimary">Enter the recipient address and amount to {type}</Typography>
       </Box>
-      <StyledTextField
-        fullWidth
+      <FormField
         label="Recipient Address"
-        variant="standard"
-        value={values?.to ?? ""}
-        error={values?.to ? isInvalidEvmAddress(values?.to) : false}
-        helperText={values.to && isInvalidEvmAddress(values.to) ? "Invalid Ethereum address" : ""}
-        onChange={e =>
-          onChange(type, { to: e.target.value, amount: values?.amount ?? "" }, tokenSymbol, tokenAddress, tokenDecimals)
-        }
-        style={{ marginBottom: "16px" }}
-      />
-      <StyledTextField
-        fullWidth
+        labelStyle={{ fontSize: 16 }}
+        containerStyle={{ gap: 12 }}
+        errorText={values.to && isInvalidEvmAddress(values.to) ? "Invalid Ethereum address" : ""}
+      >
+        <FormTextField
+          value={values?.to ?? ""}
+          placeholder="0x..."
+          inputProps={{ style: { fontSize: 14 } }}
+          onChange={e =>
+            onChange(
+              type,
+              { to: e.target.value, amount: values?.amount ?? "" },
+              tokenSymbol,
+              tokenAddress,
+              tokenDecimals
+            )
+          }
+        />
+      </FormField>
+      <FormField
         label="Amount"
-        type="number"
-        variant="standard"
-        inputProps={{ min: "0" }}
-        value={values.amount}
-        error={values.amount ? parseFloat(values.amount) <= 0 : false}
-        helperText={values.amount && parseFloat(values.amount) <= 0 ? "Amount must be greater than 0" : ""}
-        onChange={e =>
-          onChange(type, { to: values?.to ?? "", amount: e.target.value }, tokenSymbol, tokenAddress, tokenDecimals)
-        }
-      />
+        labelStyle={{ fontSize: 16 }}
+        containerStyle={{ gap: 12 }}
+        errorText={values.amount && parseFloat(values.amount) <= 0 ? "Amount must be greater than 0" : ""}
+      >
+        <FormTextField
+          type="number"
+          inputProps={{ min: "0", style: { fontSize: 14 } }}
+          value={values.amount}
+          onChange={e =>
+            onChange(type, { to: values?.to ?? "", amount: e.target.value }, tokenSymbol, tokenAddress, tokenDecimals)
+          }
+        />
+      </FormField>
     </Grid>
   </Grid>
 )

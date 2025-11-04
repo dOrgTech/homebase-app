@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
-import { Box, Select, MenuItem, Typography, Slider, Paper, styled, SelectChangeEvent, Grid } from "@mui/material"
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"
+import { Box, MenuItem, Typography, Slider, Paper, Grid, KeyboardArrowDownIcon } from "components/ui"
+import { StyledPaper, StyledSelect } from "components/ui"
 
 export interface Org {
   symbol: string
@@ -19,25 +19,7 @@ export const generateMembers = (): Member[] => {
   }))
 }
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  minWidth: 520,
-  height: 30,
-  backgroundColor: theme.palette.grey[200],
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center"
-}))
-
-const StyledSelect = styled(Select)(({ theme }) => ({
-  "& .MuiSelect-select": {
-    paddingRight: theme.spacing(4),
-    fontWeight: 600,
-    backgroundColor: "transparent"
-  },
-  "&:before, &:after": {
-    display: "none"
-  }
-}))
+// StyledPaper and StyledSelect come from components/ui/etherlink
 
 export const VotingPowerStats: React.FC<{
   membersCount: number
@@ -46,12 +28,12 @@ export const VotingPowerStats: React.FC<{
   votingPowerPercentage: number
 }> = ({ membersCount, membersPercentage, votingPower, votingPowerPercentage }) => {
   return (
-    <Grid container justifyContent="space-between" px={4}>
+    <Grid container justifyContent="space-between" style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Grid item>
         <Typography variant="body1" style={{ color: "white" }}>
           Number of Members
         </Typography>
-        <Typography variant="h5" sx={{ mt: 1 }} style={{ color: "white" }}>
+        <Typography variant="h5" style={{ color: "white", marginTop: 8 }}>
           {membersCount}
         </Typography>
         <Typography variant="body1" style={{ color: "white" }}>
@@ -62,7 +44,7 @@ export const VotingPowerStats: React.FC<{
         <Typography variant="body1" style={{ color: "white" }}>
           Voting Power
         </Typography>
-        <Typography variant="h5" sx={{ mt: 1 }} style={{ color: "white" }}>
+        <Typography variant="h5" style={{ color: "white", marginTop: 8 }}>
           {votingPower.toFixed(2)}
         </Typography>
         <Typography variant="body1" style={{ color: "white" }}>
@@ -104,7 +86,7 @@ export const VotingPowerWidget: React.FC<{ tokenSymbol: string }> = ({ tokenSymb
   return (
     <Box pr={1.5}>
       <StyledPaper elevation={0}>
-        <Typography variant="body2" fontWeight={600} sx={{ mr: 1 }}>
+        <Typography variant="body2" style={{ fontWeight: 600, marginRight: 8 }}>
           Drag slider to check
         </Typography>
         <Box position="relative">
@@ -126,13 +108,13 @@ export const VotingPowerWidget: React.FC<{ tokenSymbol: string }> = ({ tokenSymb
       </StyledPaper>
 
       <Paper
-        sx={{
+        style={{
           minWidth: 520,
           height: 180,
-          bgcolor: "grey.900",
-          border: 1,
-          borderColor: "grey.200",
-          px: 2,
+          backgroundColor: "#111",
+          border: "1px solid #eee",
+          paddingLeft: 16,
+          paddingRight: 16,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center"
@@ -145,13 +127,13 @@ export const VotingPowerWidget: React.FC<{ tokenSymbol: string }> = ({ tokenSymb
           votingPowerPercentage={votingPowerPercentage}
         />
 
-        <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+        <Box style={{ marginTop: 16, display: "flex", justifyContent: "center" }}>
           <Slider
             value={sliderValue}
             onChange={(_, value) => setSliderValue(value as number)}
             min={1}
             max={100}
-            sx={{ width: 430 }}
+            style={{ width: 430 }}
           />
         </Box>
       </Paper>

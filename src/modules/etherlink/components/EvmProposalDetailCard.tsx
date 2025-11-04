@@ -1,6 +1,7 @@
-import React, { useContext } from "react"
-import { Grid, Typography, useTheme, useMediaQuery } from "@material-ui/core"
-import { GridContainer } from "modules/common/GridContainer"
+import React from "react"
+import { Grid, Typography, useTheme, useMediaQuery } from "components/ui"
+import { ContentContainer } from "modules/explorer/components/ContentContainer"
+import { styled } from "@material-ui/core"
 import { CreatorBadge } from "modules/lite/explorer/components/CreatorBadge"
 import Share from "assets/img/share.svg"
 import LinkIcon from "assets/img/link.svg"
@@ -11,9 +12,19 @@ import { Badge } from "components/ui/Badge"
 import { StatusBadge } from "modules/explorer/components/StatusBadge"
 import { CopyIcon } from "components/ui/icons/CopyIcon"
 import { IEvmProposal } from "../types"
-import { LogoItem, CustomPopover, TextContainer, EndTextContainer, EndText, Divider, StyledLink } from "./styled"
+import { etherlinkStyled as _est } from "components/ui"
+import { CopyButton } from "components/ui"
+const { LogoItem, CustomPopover, TextContainer, EndTextContainer, EndText, Divider, StyledLink } = _est
 
-export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }> = ({ poll }) => {
+const DetailsContainer = styled(ContentContainer)(({ theme }) => ({
+  padding: "32px 46px",
+  minHeight: 145
+}))
+
+export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined; displayStatusOverride?: string }> = ({
+  poll,
+  displayStatusOverride
+}) => {
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const daoProposalSelected = poll
@@ -44,7 +55,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
 
   return (
     <>
-      <GridContainer container style={{ gap: 50 }}>
+      <DetailsContainer container style={{ gap: 50 }}>
         <Grid container style={{ gap: 25 }}>
           <Grid
             item
@@ -104,17 +115,28 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
                   justifyContent={isMobileSmall ? "center" : "flex-start"}
                 >
                   <Grid item>
-                    <StatusBadge status={daoProposalSelected?.status} />
+                    <StatusBadge
+                      status={
+                        (displayStatusOverride as any) ??
+                        (daoProposalSelected?.displayStatus as any) ??
+                        ((daoProposalSelected as any)?.status as any)
+                      }
+                    />
                   </Grid>
                   <Grid item>
                     <Badge status={daoProposalSelected.type} />
                   </Grid>
                   <Grid item>{/* TODO: @ashutoshpw FIX THIS <CommunityBadge id={"DAOID"} /> */}</Grid>
-                  <Grid item direction="row" style={{ gap: 10 }}>
+                  <Grid item container direction="row" alignItems="center" style={{ gap: 10 }}>
                     <TextContainer color="textPrimary" variant="body2" style={{ fontSize: 14, marginBottom: 4 }}>
                       Posted by:
                     </TextContainer>
                     <CreatorBadge address={daoProposalSelected?.author} />
+                    {daoProposalSelected?.author ? (
+                      <Grid item>
+                        <CopyButton ariaLabel="Copy author address" text={daoProposalSelected?.author || ""} />
+                      </Grid>
+                    ) : null}
                   </Grid>
                 </Grid>
               </Grid>
@@ -154,7 +176,7 @@ export const EvmProposalDetailCard: React.FC<{ poll: IEvmProposal | undefined }>
             </Grid>
           ) : null}
         </Grid>
-      </GridContainer>
+      </DetailsContainer>
     </>
   )
 }

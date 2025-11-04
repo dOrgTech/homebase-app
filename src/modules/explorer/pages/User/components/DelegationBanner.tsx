@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useEffect, useState } from "react"
-import { Box, CircularProgress, Grid, Theme, Typography, styled, withStyles } from "@material-ui/core"
+import React, { useEffect, useState } from "react"
+import { CircularProgress, Grid, Theme, Typography, styled, withStyles } from "@material-ui/core"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 import { Edit } from "@material-ui/icons"
 import { DelegationDialog } from "./DelegationModal"
@@ -8,7 +8,7 @@ import { useDelegationStatus } from "services/contracts/token/hooks/useDelegatio
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { useTokenVoteWeight } from "services/contracts/token/hooks/useTokenVoteWeight"
 import BigNumber from "bignumber.js"
-import { parseUnits, toShortAddress } from "services/contracts/utils"
+import { parseUnits } from "services/contracts/utils"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 import { CopyButton } from "modules/common/CopyButton"
 
@@ -169,7 +169,7 @@ export const Delegation: React.FC<{ daoId: string }> = ({ daoId }) => {
                 <DelegationText container direction="row" alignItems="center" style={{ gap: 8 }}>
                   {matchTextToStatus(delegationStatus)}
                   {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (
-                    <ProfileAvatar size={22} address={delegatedTo ? toShortAddress(delegatedTo) : ""} />
+                    <ProfileAvatar size={22} address={delegatedTo || ""} />
                   )}
                   {delegationStatus === DelegationsType.DELEGATING ? delegatedTo : null}
                   {delegationStatus === DelegationsType.NOT_DELEGATING ? null : (

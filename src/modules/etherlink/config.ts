@@ -19,7 +19,7 @@ export const STEPS = [
 export const EvmProposalOptions = [
   {
     label: "Off-Chain Debate",
-    description: "Post a thesis and have tokenized arguments around it",
+    description: "Create an off-chain poll for your community",
     modal: "off_chain_debate",
     proposal_type: () => "off_chain_debate",
     last_step: 2,
@@ -116,6 +116,17 @@ export const proposalInterfaces = [
   {
     tags: ["token"],
     interface: ["function burn(address from, uint256 amount)"],
+    name: "burn"
+  },
+  // Support common burn variants used by ERC20Burnable and others
+  {
+    tags: ["token", "burn"],
+    interface: ["function burnFrom(address from, uint256 amount)"],
+    name: "burnFrom"
+  },
+  {
+    tags: ["token", "burn"],
+    interface: ["function burn(uint256 amount)"],
     name: "burn"
   },
   {

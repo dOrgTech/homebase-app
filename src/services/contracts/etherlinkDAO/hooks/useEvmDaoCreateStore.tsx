@@ -5,13 +5,14 @@ import { persist, createJSONStorage } from "zustand/middleware"
 
 import { STEPS } from "modules/etherlink/config"
 import { useHistory } from "react-router-dom"
-import HbWrapperAbi from "assets/abis/hb_wrapper.json"
-import HbWrapperWAbi from "assets/abis/hb_wrapper_w.json"
+
+import WrapperContractAbi from "assets/abis/hb_wrapper_v2.json"
 import HbWrapperWLegacyAbi from "assets/abis/hb_wrapper_w_legacy.json"
 
 import { useCallback, useContext, useState } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { EtherlinkContext } from "services/wagmi/context"
+import { EnvKey, getEnv } from "services/config"
 import { useNotification } from "modules/common/hooks/useNotification"
 
 interface EvmDaoCreateStore {
@@ -52,11 +53,11 @@ const useEvmDaoCreateZustantStore = create<EvmDaoCreateStore>()(
           tokenDecimals: 0
         },
         quorum: {
-          returnedTokenPercentage: 0,
+          returnedTokenPercentage: 4,
           proposalThresholdPercentage: 0,
           proposalThreshold: 0
         },
-        members: [{ address: "", amountOfTokens: 0 }],
+        members: [{ address: "", amountOfTokens: 0, error: "" }],
         voting: {
           votingBlocksDay: 0,
           votingBlocksHours: 0,
@@ -164,9 +165,12 @@ const useEvmDaoCreateStore = () => {
   const data = useEvmDaoCreateZustantStore()
   const history = useHistory()
   const { contractData } = useContext(EtherlinkContext)
-  const wrapperAddress = contractData?.wrapper_t
-  const wrapperAddressForWrapped = contractData?.wrapper_w || "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2" // Fallback to known address
-  const { etherlink } = useTezos()
+  const wrapperAddressOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_T_ADDRESS)
+  const wrapperWrappedOverride = getEnv(EnvKey.REACT_APP_EVM_WRAPPER_W_ADDRESS)
+  const wrapperAddress = wrapperAddressOverride || contractData?.wrapper_t
+  const wrapperAddressForWrapped =
+    wrapperWrappedOverride || contractData?.wrapper_w || "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2" // Fallback to known address
+  const { etherlink, network } = useTezos()
   const notify = useNotification()
 
   const deployDaoWithWrapper = useCallback(async () => {
@@ -174,17 +178,13 @@ const useEvmDaoCreateStore = () => {
     console.log("=== Starting DAO Deployment ===")
     console.log("Full DAO Data:", daoData)
 
+    // Determine wrapper address before attempting deployment (for error reporting)
+    const selectedWrapperAddress =
+      daoData.tokenDeploymentMechanism === "wrapped" ? wrapperAddressForWrapped : wrapperAddress
+
     try {
       const proposalThreshold = daoData.quorum.proposalThreshold || daoData.quorum.proposalThresholdPercentage || 0
       const quorumThreshold = daoData.quorum.returnedTokenPercentage
-
-      console.log("Quorum settings:", {
-        proposalThreshold,
-        quorumThreshold,
-        rawQuorum: daoData.quorum,
-        proposalThresholdField: daoData.quorum.proposalThreshold,
-        proposalThresholdPercentageField: daoData.quorum.proposalThresholdPercentage
-      })
 
       // Convert execution delay values to numbers
       const executionDelayDays = Number(daoData.voting.proposalExpiryBlocksDay) || 0
@@ -194,18 +194,6 @@ const useEvmDaoCreateStore = () => {
       const executationDelayinSeconds =
         executionDelayDays * 24 * 60 * 60 + executionDelayHours * 60 * 60 + executionDelayMinutes * 60
 
-      console.log("Execution delay calculation:", {
-        days: executionDelayDays,
-        hours: executionDelayHours,
-        minutes: executionDelayMinutes,
-        totalSeconds: executationDelayinSeconds,
-        originalValues: {
-          days: daoData.voting.proposalExpiryBlocksDay,
-          hours: daoData.voting.proposalExpiryBlocksHours,
-          minutes: daoData.voting.proposalExpiryBlocksMinutes
-        }
-      })
-
       // Convert all values to numbers to avoid string concatenation
       const votingDelayDays = Number(daoData.voting.votingBlocksDay) || 0
       const votingDelayHours = Number(daoData.voting.votingBlocksHours) || 0
@@ -213,46 +201,12 @@ const useEvmDaoCreateStore = () => {
 
       const votingDelayInMinutes = votingDelayDays * 24 * 60 + votingDelayHours * 60 + votingDelayMinutes
 
-      console.log("Voting delay calculation:", {
-        days: votingDelayDays,
-        hours: votingDelayHours,
-        minutes: votingDelayMinutes,
-        totalMinutes: votingDelayInMinutes,
-        originalValues: {
-          days: daoData.voting.votingBlocksDay,
-          hours: daoData.voting.votingBlocksHours,
-          minutes: daoData.voting.votingBlocksMinutes,
-          types: {
-            days: typeof daoData.voting.votingBlocksDay,
-            hours: typeof daoData.voting.votingBlocksHours,
-            minutes: typeof daoData.voting.votingBlocksMinutes
-          }
-        }
-      })
-
       // Convert voting duration values
       const votingDurationDays = Number(daoData.voting.proposalFlushBlocksDay) || 0
       const votingDurationHours = Number(daoData.voting.proposalFlushBlocksHours) || 0
       const votingDurationMinutes = Number(daoData.voting.proposalFlushBlocksMinutes) || 0
 
       const votingDurationInMinutes = votingDurationDays * 24 * 60 + votingDurationHours * 60 + votingDurationMinutes
-
-      console.log("Voting duration calculation:", {
-        days: votingDurationDays,
-        hours: votingDurationHours,
-        minutes: votingDurationMinutes,
-        totalMinutes: votingDurationInMinutes
-      })
-
-      const selectedWrapperAddress =
-        daoData.tokenDeploymentMechanism === "wrapped" ? wrapperAddressForWrapped : wrapperAddress
-
-      console.log("Contract addresses:", {
-        wrapperAddress,
-        wrapperAddressForWrapped,
-        selectedWrapperAddress,
-        contractData
-      })
       console.log("Token deployment mechanism:", daoData.tokenDeploymentMechanism)
       console.log("Signer:", etherlink.signer)
 
@@ -273,30 +227,30 @@ const useEvmDaoCreateStore = () => {
 
       // Use legacy ABI if using the fallback address
       const isUsingFallbackAddress = selectedWrapperAddress === "0xf4B3022b0fb4e8A73082ba9081722d6a276195c2"
+      const wrapperAbi = Array.isArray(WrapperContractAbi)
+        ? (WrapperContractAbi as any)
+        : (WrapperContractAbi as any)?.abi
       const selectedAbi =
         daoData.tokenDeploymentMechanism === "wrapped"
           ? isUsingFallbackAddress
             ? HbWrapperWLegacyAbi.abi
-            : HbWrapperWAbi.abi
-          : HbWrapperAbi.abi
+            : wrapperAbi
+          : wrapperAbi
 
-      console.log("Creating wrapper factory with:", {
-        address: selectedWrapperAddress,
-        tokenDeploymentMechanism: daoData.tokenDeploymentMechanism,
-        hasAbi: !!selectedAbi,
-        abiLength: selectedAbi?.length,
-        hasSigner: !!etherlink.signer,
-        usingWrappedAbi: daoData.tokenDeploymentMechanism === "wrapped",
-        isUsingFallbackAddress,
-        usingLegacyAbi: isUsingFallbackAddress && daoData.tokenDeploymentMechanism === "wrapped"
-      })
+      // Preflight: verify contract code exists at address
+      const onChainCode = await etherlink.provider.getCode(selectedWrapperAddress)
+      if (!onChainCode || onChainCode === "0x") {
+        throw new Error(
+          `No contract code at ${selectedWrapperAddress}. Check network and wrapper address configuration.`
+        )
+      }
 
       const wrapperFactory: ethers.Contract = new ethers.Contract(selectedWrapperAddress, selectedAbi, etherlink.signer)
 
       console.log("Wrapper factory created:", {
         address: wrapperFactory.address || wrapperFactory.target,
-        hasDeployDAOwithToken: typeof wrapperFactory.deployDAOwithToken === "function",
-        hasDeployDAOwithWrappedToken: typeof wrapperFactory.deployDAOwithWrappedToken === "function"
+        hasDeployDAOwithToken: typeof (wrapperFactory as any).deployDAOwithToken === "function",
+        hasDeployDAOwithWrappedToken: typeof (wrapperFactory as any).deployDAOwithWrappedToken === "function"
       })
 
       // Validate timing values before deployment
@@ -418,6 +372,15 @@ const useEvmDaoCreateStore = () => {
           quorumThreshold.toString() // DAO setting 4: quorum threshold
         ]
 
+        // Ensure description is also persisted on-chain via registry for indexers
+        const registryForDeploy = (() => {
+          const base: Record<string, string> = { ...(daoData.registry || {}) } as any
+          if (daoData.description && !base["description"]) {
+            base["description"] = String(daoData.description)
+          }
+          return base
+        })()
+
         const daoCreateObject = {
           name: daoData.name || "",
           symbol: daoData.governanceToken.symbol || "",
@@ -426,24 +389,10 @@ const useEvmDaoCreateStore = () => {
           executionDelay: Math.floor(executationDelayinSeconds),
           initialMembers: daoData.members.map((member: any) => member.address),
           initialAmounts: initialAmountsWithSettings,
-          keys: Object.keys(daoData.registry || {}),
-          values: Object.values(daoData.registry || {}).map(v => String(v)),
+          keys: Object.keys(registryForDeploy),
+          values: Object.values(registryForDeploy).map(v => String(v)),
           transferrable: !daoData.nonTransferable // Note: fixed spelling to match ABI
         }
-        console.log("Deploying new token DAO with object:", daoCreateObject)
-        console.log("Members data:", {
-          members: daoData.members,
-          addresses: daoCreateObject.initialMembers,
-          memberAmounts: memberAmounts,
-          initialAmountsWithSettings: daoCreateObject.initialAmounts,
-          decimals: daoData.governanceToken.tokenDecimals,
-          daoSettings: {
-            votingDelayInMinutes,
-            votingDurationInMinutes,
-            proposalThreshold,
-            quorumThreshold
-          }
-        })
 
         try {
           wrapper = await wrapperFactory.deployDAOwithToken(daoCreateObject)
@@ -464,18 +413,23 @@ const useEvmDaoCreateStore = () => {
       const receipt = await wrapper.wait()
       // .hash "0xa42621d950bf85d88e35e26b48eb69edd1d0c35b59ee282e3672b0e164ee9aba"
       console.log("Transaction confirmed:", receipt)
-      history.push(`/explorer/daos?q=${daoData.name}`)
+      try {
+        const params = new URLSearchParams()
+        if (daoData?.name) params.set("q", String(daoData.name))
+        params.set("postDeploy", "dao-created")
+        if (wrapper?.hash) params.set("tx", String(wrapper.hash))
+        if (network) params.set("network", String(network))
+        history.push(`/explorer/daos?${params.toString()}`)
+      } catch (_) {
+        // Fallback to legacy behavior if URLSearchParams fails for any reason
+        history.push(`/explorer/daos?q=${encodeURIComponent(daoData.name || "")}&postDeploy=dao-created`)
+      }
       // history.push("/explorer/etherlink/dao/0x287915D27CC4FC967Ca10AA20242d80d99caCe5e/overview")
     } catch (error: any) {
-      console.error("=== DAO Deployment Error ===")
-      console.error("Full error object:", error)
-      console.error("Error stack:", error.stack)
-      console.error("Error data:", error.data)
-      console.error("Error reason:", error.reason)
-      console.error("Error code:", error.code)
-
       notify({
-        message: `Error deploying DAO: ${error?.reason || error?.shortMessage || error?.message || "Unknown error"}`,
+        message: `Error deploying DAO: ${
+          error?.reason || error?.shortMessage || error?.message || "Unknown error"
+        } (wrapper: ${selectedWrapperAddress})`,
         variant: "error"
       })
       setIsDeploying(false)
@@ -524,7 +478,7 @@ const useEvmDaoCreateStore = () => {
                 variant: "error"
               })
             }
-            // Clear members when using wrapped token
+            // Clear members when using wrapped token to avoid mismatch with zero initial supply
             data.setFieldValue("members", [])
           }
         }
@@ -538,16 +492,21 @@ const useEvmDaoCreateStore = () => {
             proposalFlush: Object.entries(data.data.voting)
               .filter(([key]) => key.startsWith("proposalFlush"))
               .reduce((acc, [_, value]) => acc + (Number(value) || 0), 0),
+            // votingBlock corresponds to Voting Delay; allow zero for immediate start
             votingBlock: Object.entries(data.data.voting)
               .filter(([key]) => key.startsWith("votingBlock"))
               .reduce((acc, [_, value]) => acc + (Number(value) || 0), 0)
           }
 
-          if (votingData.proposalExpiry === 0 || votingData.proposalFlush === 0 || votingData.votingBlock === 0) {
+          // Require non-zero for voting period and execution delay; allow zero for voting delay
+          if (votingData.proposalExpiry === 0 || votingData.proposalFlush === 0) {
             return notify({
               message: "Please add valid values for all time periods",
               variant: "error"
             })
+          }
+          if (votingData.votingBlock < 0) {
+            return notify({ message: "Voting Delay cannot be negative", variant: "error" })
           }
         }
 
@@ -557,7 +516,6 @@ const useEvmDaoCreateStore = () => {
         if (data.currentStep === 4 && data.data.tokenDeploymentMechanism === "new") {
           console.log("Validating members at step 4:", data.data.members)
           const memberErrorExists = data.data.members.some((member: any) => member.error)
-          const memberZeroAllocation = data.data.members.some((member: any) => Number(member.amountOfTokens) === 0)
           const invalidAddresses = data.data.members.filter(
             (member: any) => !/^0x[a-fA-F0-9]{40}$/.test(member.address)
           )
@@ -575,7 +533,11 @@ const useEvmDaoCreateStore = () => {
               message: "Please fix all errors in the members section",
               variant: "error"
             })
-          } else if (memberZeroAllocation) {
+          }
+
+          const memberZeroAllocation = data.data.members.some((member: any) => Number(member.amountOfTokens) === 0)
+
+          if (memberZeroAllocation) {
             return notify({
               message: "All members must have a token allocation",
               variant: "error"

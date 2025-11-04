@@ -20,3 +20,14 @@ export const TableContainer = styled(ContentContainer)({
 export const TableContainerGrid = styled(Grid)({
   width: "100%"
 })
+
+export const MobileTableHeader = styled(Grid)({
+  width: "100%",
+  padding: 20,
+  borderBottom: "0.3px solid #3D3D3D"
+})
+
+export const MobileTableRow = styled(Grid)({
+  padding: "30px",
+  borderBottom: "0.3px solid #3D3D3D"
+})

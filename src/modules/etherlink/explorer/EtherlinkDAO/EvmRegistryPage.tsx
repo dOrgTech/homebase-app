@@ -1,12 +1,11 @@
-import { Button, Grid, Tooltip, useMediaQuery, useTheme } from "@material-ui/core"
+import { Grid, Tooltip, useMediaQuery, useTheme } from "components/ui"
 import { CopyAddress } from "modules/common/CopyAddress"
 
-import React, { useContext, useMemo, useState } from "react"
+import React, { useContext, useMemo } from "react"
 import { useDAO } from "services/services/dao/hooks/useDAO"
 
 import { Hero } from "modules/explorer/components/Hero"
 import { HeroTitle } from "modules/explorer/components/HeroTitle"
-import { RegistryTable } from "modules/explorer/pages/Registry/components/RegistryTable"
 import { useIsProposalButtonDisabled } from "../../../../services/contracts/baseDAO/hooks/useCycleInfo"
 import { InfoIcon } from "modules/explorer/components/styled/InfoIcon"
 import { MainButton } from "modules/common/MainButton"

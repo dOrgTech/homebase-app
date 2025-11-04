@@ -51,26 +51,28 @@ const SubtitleText = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.light
 }))
 
-const StyledTab = styled(Button)(({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
-  "fontSize": 18,
-  "height": 40,
-  "fontWeight": 600,
-  "paddingLeft": 20,
-  "paddingRight": 20,
-  "paddingTop": 0,
-  "paddingBottom": 0,
-  "borderRadius": 8,
-  "color": isSelected ? theme.palette.secondary.main : "#fff",
-  "backgroundColor": isSelected ? "#2B3036" : "inherit",
-  "&:hover": {
-    backgroundColor: isSelected ? "#2B3036" : theme.palette.secondary.dark,
-    borderRadius: 8,
-    borderTopLeftRadius: "8px !important",
-    borderTopRightRadius: "8px !important",
-    borderBottomLeftRadius: "8px !important",
-    borderBottomRightRadius: "8px !important"
-  }
-}))
+const StyledTab = styled(({ isSelected, ...other }: any) => <Button {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    "fontSize": 18,
+    "height": 40,
+    "fontWeight": 600,
+    "paddingLeft": 20,
+    "paddingRight": 20,
+    "paddingTop": 0,
+    "paddingBottom": 0,
+    "borderRadius": 8,
+    "color": isSelected ? theme.palette.secondary.main : "#fff",
+    "backgroundColor": isSelected ? "#2B3036" : "inherit",
+    "&:hover": {
+      backgroundColor: isSelected ? "#2B3036" : theme.palette.secondary.dark,
+      borderRadius: 8,
+      borderTopLeftRadius: "8px !important",
+      borderTopRightRadius: "8px !important",
+      borderBottomLeftRadius: "8px !important",
+      borderBottomRightRadius: "8px !important"
+    }
+  })
+)
 
 const ActivityContainer = styled(Grid)(({ theme }) => ({
   background: theme.palette.primary.contrastText,
@@ -115,6 +117,8 @@ export interface Filters {
   offchainStatus: OffchainStatus
   onchainStatus: StatusOption[]
   order: Order
+  // Optional: Etherlink EVM-only proposal type filter (e.g., token, registry, transfer, contract call, voting delay/period)
+  evmType?: string
 }
 
 export const UserMovements: React.FC<{

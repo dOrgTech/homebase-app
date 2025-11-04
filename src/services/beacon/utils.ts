@@ -21,11 +21,29 @@ export const networkDotColorMap: Record<Network, string> = {
   etherlink_testnet: "#291F79"
 }
 
+// Infer the initial network from URL when no user selection exists yet
+const inferInitialNetworkFromPath = (): Network | undefined => {
+  try {
+    const path = window?.location?.pathname || ""
+    if (path.startsWith("/explorer/etherlink")) return "etherlink_mainnet"
+  } catch (e) {
+    // noop — window may be undefined in some build contexts
+  }
+  return undefined
+}
+
 export const getTezosNetwork = (): Network => {
   const storageNetwork = window.localStorage.getItem("homebase:network")
 
   if (storageNetwork) {
     return storageNetwork as Network
+  }
+
+  // If no stored selection, prefer Etherlink mainnet for Etherlink deep links
+  const urlInferred = inferInitialNetworkFromPath()
+  if (urlInferred) {
+    window.localStorage.setItem("homebase:network", urlInferred)
+    return urlInferred
   }
 
   const envNetwork = getEnv(EnvKey.REACT_APP_NETWORK).toString().toLowerCase() as Network
@@ -39,16 +57,20 @@ export const getTezosNetwork = (): Network => {
   return envNetwork
 }
 
-export const createWallet = (network: Network) =>
-  new BeaconWallet({
+export const createWallet = (network: Network) => {
+  const networkType = getNetworkTypeByEnvNetwork(network)
+  return new BeaconWallet({
     name: "Homebase",
     iconUrl: "https://tezostaquito.io/img/favicon.png",
-    preferredNetwork: network as NetworkType,
+    network: {
+      type: networkType
+    },
     walletConnectOptions: {
       projectId: "1641355e825aeaa926e843dd38b04f6f", // Project ID can be customised
       relayUrl: "wss://relay.walletconnect.com" // WC2 relayUrl can be customised
     }
   })
+}
 
 export const createTezos = (network: Network) => {
   const tezos = new TezosToolkit(rpcNodes[network])
@@ -76,14 +98,9 @@ export const connectWithBeacon = async (
   network: Network
   wallet: BeaconWallet
 }> => {
-  const networkType = getNetworkTypeByEnvNetwork(envNetwork)
   const wallet = createWallet(envNetwork)
 
-  await wallet.requestPermissions({
-    network: {
-      type: networkType
-    }
-  })
+  await wallet.requestPermissions()
 
   const accounts: any[] = JSON.parse(localStorage.getItem("beacon:accounts") as string)
 

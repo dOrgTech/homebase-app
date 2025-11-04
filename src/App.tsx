@@ -10,8 +10,7 @@ import { DAOExplorerRouter } from "modules/explorer/router"
 import { CreatorProvider } from "modules/creator/state"
 import ScrollToTop from "modules/common/ScrollToTop"
 import { theme } from "theme"
-import { WagmiProvider } from "wagmi"
-import { config as wagmiConfig } from "services/wagmi/config"
+// WagmiProvider is provided at the root via Web3Provider (index.tsx)
 
 import { TZKTSubscriptionsProvider } from "services/bakingBad/context/TZKTSubscriptions"
 import { WarningFooter } from "modules/common/WarningFooter"
@@ -21,8 +20,6 @@ import { ExplorerFooter } from "modules/common/Footer"
 import { FAQ } from "modules/home/FAQ"
 import { EnvKey, HUMANITEZ_DAO, getEnv } from "services/config"
 import { DAOCreatorRouter } from "modules/creator/router"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { CommunityCreator } from "modules/lite/creator"
 import { EtherlinkDAOCreatorRouter } from "modules/etherlink/router"
 
@@ -79,67 +76,68 @@ const App: React.FC = () => {
           variantError: ErrorSnackbar.toString(),
           variantInfo: InfoSnackbar.toString()
         }}
+        style={{ zIndex: 1000003 }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
       >
-        <WagmiProvider config={wagmiConfig}>
-          {/* <TanStackQueryClientProvider client={tsQueryClient}> */}
-          <QueryClientProvider client={queryClient}>
-            <ActionSheetProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box bgcolor="primary.dark" position="absolute" width="100%">
-                  <Router>
-                    <ScrollToTop />
-                    <Switch>
-                      <Route path="/creator-evm">
-                        <ThemeProvider theme={legacyTheme}>
-                          <EtherlinkDAOCreatorRouter />
-                        </ThemeProvider>
-                      </Route>
-                      <Route path="/creator">
-                        <CreatorProvider>
-                          <ThemeProvider theme={legacyTheme}>
-                            <DAOCreatorRouter />
-                          </ThemeProvider>
-                        </CreatorProvider>
-                        {/* <WarningFooter
-                      text={
-                        "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                      }
-                    /> */}
-                      </Route>
-                      <Route path="/lite">
-                        <ThemeProvider theme={legacyTheme}>
-                          <CommunityCreator />
-                        </ThemeProvider>
-                      </Route>
-                      <Route path="/explorer">
-                        <TZKTSubscriptionsProvider>
-                          <DAOExplorerRouter />
-                        </TZKTSubscriptionsProvider>
+        {/* <TanStackQueryClientProvider client={tsQueryClient}> */}
+        <QueryClientProvider client={queryClient}>
+          <ActionSheetProvider>
+            <Box bgcolor="primary.dark" position="absolute" width="100%">
+              <Router>
+                <ScrollToTop />
+                <Switch>
+                  <Route path="/creator-evm">
+                    <ThemeProvider theme={legacyTheme}>
+                      <EtherlinkDAOCreatorRouter />
+                    </ThemeProvider>
+                  </Route>
+                  <Route path="/creator">
+                    <CreatorProvider>
+                      <ThemeProvider theme={legacyTheme}>
+                        <DAOCreatorRouter />
+                      </ThemeProvider>
+                    </CreatorProvider>
+                    {/* <WarningFooter
+                    text={
+                      "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
+                    }
+                  /> */}
+                  </Route>
+                  <Route path="/lite">
+                    <ThemeProvider theme={legacyTheme}>
+                      <CommunityCreator />
+                    </ThemeProvider>
+                  </Route>
+                  <Route path="/explorer">
+                    <TZKTSubscriptionsProvider>
+                      <DAOExplorerRouter />
+                    </TZKTSubscriptionsProvider>
 
-                        {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
-                          <>
-                            {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
-                            <WarningFooter
-                              text={
-                                "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
-                              }
-                            />
-                          </>
-                        ) : null}
-                        <ExplorerFooter></ExplorerFooter>
-                      </Route>
-                      <Route path="/faq">
-                        <FAQ />
-                      </Route>
-                      <Redirect to="/explorer" />
-                    </Switch>
-                  </Router>
-                </Box>
-              </LocalizationProvider>
-            </ActionSheetProvider>
-          </QueryClientProvider>
-          {/* </TanStackQueryClientProvider> */}
-        </WagmiProvider>
+                    {window.location.href.indexOf(HUMANITEZ_DAO) !== -1 ? (
+                      <>
+                        {/* Special case for this DAO which was created before FA1.2 fix was created for the smart contract */}
+                        <WarningFooter
+                          text={
+                            "The Homebase contract can't transfer FA1.2 tokens. Please make sure any and all tokens you send to the DAO treasury are implementing the FA2 standard."
+                          }
+                        />
+                      </>
+                    ) : null}
+                    <ExplorerFooter></ExplorerFooter>
+                  </Route>
+                  <Route path="/faq">
+                    <FAQ />
+                  </Route>
+                  <Redirect to="/explorer" />
+                </Switch>
+              </Router>
+            </Box>
+          </ActionSheetProvider>
+        </QueryClientProvider>
+        {/* </TanStackQueryClientProvider> */}
       </SnackbarProvider>
     </ThemeProvider>
   )

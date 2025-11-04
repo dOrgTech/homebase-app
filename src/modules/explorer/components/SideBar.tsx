@@ -42,12 +42,13 @@ const SidebarButton = styled(IconButton)(({ theme }) => ({
   }
 }))
 
-const IconContainer = styled("span")(({ theme }: { theme: Theme }) => ({
-  "& > svg > *": {
-    fill: ({ isSelected }: { isSelected: boolean }) =>
-      isSelected ? theme.palette.secondary.main : theme.palette.text.secondary
-  }
-}))
+const IconContainer = styled(({ isSelected, ...other }: any) => <span {...other} />)(
+  ({ theme, isSelected }: { theme: Theme; isSelected: boolean }) => ({
+    "& > svg > *": {
+      fill: isSelected ? theme.palette.secondary.main : theme.palette.text.secondary
+    }
+  })
+)
 
 const ButtonIcon = ({
   Icon,
@@ -67,16 +68,18 @@ const ButtonIcon = ({
   )
 }
 
-const StyledBottomBar = styled(Grid)(({ theme, visible }: { theme: Theme; visible: boolean }) => ({
-  position: "fixed",
-  height: 55,
-  bottom: visible ? 0 : -55,
-  backgroundColor: theme.palette.primary.main,
-  borderTop: `2px solid ${theme.palette.primary.light}`,
-  zIndex: 10000,
-  width: "100%",
-  transition: "bottom 0.5s"
-}))
+const StyledBottomBar = styled(({ visible, ...other }: any) => <Grid {...other} />)(
+  ({ theme, visible }: { theme: Theme; visible: boolean }) => ({
+    position: "fixed",
+    height: 55,
+    bottom: visible ? 0 : -55,
+    backgroundColor: theme.palette.primary.main,
+    borderTop: `2px solid ${theme.palette.primary.light}`,
+    zIndex: 10000,
+    width: "100%",
+    transition: "bottom 0.5s"
+  })
+)
 
 const BottomNavBar: React.FC = ({ children }) => {
   const [prevScrollPos, setPrevScrollPos] = useState(0)

@@ -1,10 +1,6 @@
 import { useState } from "react"
-import { TextField } from "@mui/material"
-import { IconButton, styled } from "@material-ui/core"
-import { Button } from "components/ui/Button"
-import { Add, RemoveCircleOutline } from "@material-ui/icons"
-import { Box } from "@material-ui/core"
-import { DescriptionText } from "components/ui/DaoCreator"
+import { IconButton, Button, Add, RemoveCircleOutline, Box, StyledTextField, Grid, Typography } from "components/ui"
+import { DescriptionText, CustomInputContainer } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
@@ -13,35 +9,7 @@ interface RegistryEntry {
   value: string
 }
 
-const StyledTextField = styled(TextField)({
-  "& .MuiInput-root": {
-    color: "#fff",
-    paddingBottom: "4px"
-  },
-  "& label": {
-    color: "#fff"
-  },
-  "& label.Mui-focused": {
-    color: "#fff"
-  },
-  "& .MuiInput-underline:before": {
-    borderBottomColor: "#ccc"
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "#fff"
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "#fff"
-    },
-    "&:hover fieldset": {
-      borderColor: "#fff"
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#fff"
-    }
-  }
-})
+// Use StyledTextField from src/components/ui
 
 const updateRegistryStore = (entries: RegistryEntry[], setFieldValue: (field: string, value: any) => void) => {
   const registryObject = entries.reduce((acc, entry) => {
@@ -98,42 +66,41 @@ export const EvmDaoRegistry = () => {
           </DescriptionText>
         }
       />
-      <Box sx={{ width: "100%" }}>
+      <Box style={{ width: "100%" }}>
         {entries.map((entry, index) => (
-          <Box
-            key={index}
-            gridGap={2}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: 4
-            }}
-          >
-            <Box sx={{ width: "45%" }}>
-              <StyledTextField
-                fullWidth
-                variant="standard"
-                value={entry.key}
-                label="Key"
-                onChange={e => handleEntryChange(index, "key", e.target.value)}
-              />
-            </Box>
-            <Box sx={{ width: "45%", marginLeft: "10px" }}>
-              <StyledTextField
-                fullWidth
-                variant="standard"
-                value={entry.value}
-                label="Value"
-                onChange={e => handleEntryChange(index, "value", e.target.value)}
-              />
-            </Box>
-            {index >= 1 && (
-              <IconButton onClick={() => handleRemoveEntry(index)} size="small">
-                <RemoveCircleOutline style={{ color: "white" }} />
-              </IconButton>
-            )}
-            {index === 0 && <Box sx={{ width: 40, height: 40 }} />}
-          </Box>
+          <Grid key={index} container spacing={2} style={{ marginBottom: 32 }} alignItems="flex-end">
+            <Grid item xs={12} sm={5}>
+              <Typography variant="subtitle1" color="textSecondary">
+                Key
+              </Typography>
+              <CustomInputContainer>
+                <StyledTextField
+                  value={entry.key}
+                  placeholder="Enter key"
+                  onChange={e => handleEntryChange(index, "key", e.target.value)}
+                />
+              </CustomInputContainer>
+            </Grid>
+            <Grid item xs={12} sm={5}>
+              <Typography variant="subtitle1" color="textSecondary">
+                Value
+              </Typography>
+              <CustomInputContainer>
+                <StyledTextField
+                  value={entry.value}
+                  placeholder="Enter value"
+                  onChange={e => handleEntryChange(index, "value", e.target.value)}
+                />
+              </CustomInputContainer>
+            </Grid>
+            <Grid item xs={12} sm={2} style={{ textAlign: "center" }}>
+              {index >= 1 && (
+                <IconButton onClick={() => handleRemoveEntry(index)} size="small">
+                  <RemoveCircleOutline style={{ color: "white" }} />
+                </IconButton>
+              )}
+            </Grid>
+          </Grid>
         ))}
 
         <Button variant="outlined" startIcon={<Add />} onClick={handleAddEntry}>

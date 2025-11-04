@@ -506,9 +506,7 @@ const ContractInteractionForm = ({
 
                   await result.confirmation(1)
                   window.location.reload()
-                  console.log("RESULT", result)
                 } catch (error) {
-                  console.log("ERROR", error)
                   const errorMessage = error instanceof Error ? error.message : "An unknown error occurred"
                   nofity({
                     message: `Error: ${errorMessage}`,

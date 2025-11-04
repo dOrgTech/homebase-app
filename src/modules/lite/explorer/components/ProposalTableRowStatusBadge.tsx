@@ -18,19 +18,21 @@ const getStatusColor = (status: ProposalStatus, theme: Theme): string => {
   return statusToColor[status]
 }
 
-const Badge = styled(Grid)(({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
-  "borderRadius": 50,
-  "boxSizing": "border-box",
-  "minWidth": 87,
-  "textAlign": "center",
-  "padding": "4px 16px",
+const Badge = styled(({ status, ...other }: any) => <Grid {...other} />)(
+  ({ status, theme }: { status: ProposalStatus; theme: Theme }) => ({
+    "borderRadius": 50,
+    "boxSizing": "border-box",
+    "minWidth": 87,
+    "textAlign": "center",
+    "padding": "4px 16px",
 
-  "background": hexToRgba(getStatusColor(status, theme), 0.4),
-  "color": getStatusColor(status, theme),
-  "& > div": {
-    height: "100%"
-  }
-}))
+    "background": hexToRgba(getStatusColor(status, theme), 0.4),
+    "color": getStatusColor(status, theme),
+    "& > div": {
+      height: "100%"
+    }
+  })
+)
 
 const Text = styled(Typography)({
   fontWeight: 500,

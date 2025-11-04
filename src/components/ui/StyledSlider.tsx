@@ -40,18 +40,30 @@ export const CustomSliderValue = styled(withTheme(Paper))(props => ({
 
 export const StyledSliderWithValue = ({
   defaultValue,
-  onChange
+  onChange,
+  min = 0,
+  max = 100,
+  step = 1
 }: {
   defaultValue: number
   onChange: (newValue: any) => void
+  min?: number
+  max?: number
+  step?: number
 }) => {
   const sliderValueRef = useRef<HTMLSpanElement>(null)
   const debounceTimeout = useRef<NodeJS.Timeout>()
+  const safeMin = typeof min === "number" ? min : 0
+  const safeMax = typeof max === "number" ? max : 100
+  const initialValue = Math.max(safeMin, Math.min(safeMax, Number.isFinite(defaultValue) ? defaultValue : 0))
   return (
     <Grid container direction="row" alignItems="center" style={{ marginTop: 8, paddingLeft: 6 }}>
       <Grid item xs={8} sm={10}>
         <StyledSlider
-          defaultValue={defaultValue}
+          defaultValue={initialValue}
+          min={safeMin}
+          max={safeMax}
+          step={step}
           onChange={(value: any, newValue: any) => {
             if (sliderValueRef.current) {
               sliderValueRef.current.innerHTML = `${newValue}%`
@@ -72,7 +84,7 @@ export const StyledSliderWithValue = ({
             color="textSecondary"
             style={{ padding: "15%", textAlign: "center" }}
           >
-            {defaultValue}%
+            {initialValue}%
           </Typography>
         </CustomSliderValue>
       </Grid>
