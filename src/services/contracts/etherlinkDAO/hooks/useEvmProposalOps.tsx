@@ -1,6 +1,6 @@
 import { ethers } from "ethers"
 import { create } from "zustand"
-import { persist, createJSONStorage } from "zustand/middleware"
+import { persist } from "zustand/middleware"
 
 import { useCallback, useContext, useMemo, useState } from "react"
 import { useQueryClient } from "react-query"
