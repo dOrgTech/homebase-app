@@ -9,7 +9,9 @@ import {
   CloseIcon,
   EditIcon,
   DeleteIcon,
-  FileCopyOutlined
+  FileCopyOutlined,
+  ExpandMoreIcon,
+  ExpandLessIcon
 } from "components/ui"
 import { FormField, FormTextField, FormSelect, MenuItem } from "components/ui"
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
@@ -97,6 +99,7 @@ export const EvmPropBatchActions: React.FC = () => {
 
   const fileInputRef = React.useRef<HTMLInputElement | null>(null)
   const formSectionRef = React.useRef<HTMLDivElement | null>(null)
+  const [csvSectionExpanded, setCsvSectionExpanded] = React.useState(false)
 
   const onChooseFile = () => fileInputRef.current?.click()
 
@@ -457,75 +460,23 @@ export const EvmPropBatchActions: React.FC = () => {
       <input ref={fileInputRef} type="file" accept=".csv" onChange={onFile} style={{ display: "none" }} />
 
       <Typography color="textPrimary" variant="h6">
-        CSV File Format Instructions
+        Batch Actions ({batchActions.length})
       </Typography>
-      <Typography color="textSecondary">
-        Your CSV file must have a header row with the following columns in this exact order:
-      </Typography>
-      <Box style={{ background: theme.palette.background.default, padding: 12, borderRadius: 4 }}>
-        <Typography style={{ fontFamily: "monospace", fontSize: 12 }}>{header}</Typography>
-      </Box>
+      <Typography color="textSecondary">Add multiple actions to execute together in a single proposal</Typography>
 
-      <Box display="flex" style={{ gap: 8 }}>
-        <Button variant="contained" color="primary" onClick={onChooseFile}>
-          Upload CSV
-        </Button>
-        <Button variant="outlined" onClick={downloadSample}>
-          Download Sample CSV
-        </Button>
-      </Box>
-
-      {batchErrors.length > 0 && (
-        <Box style={{ background: "#4a2b2b", padding: 12, borderRadius: 4, position: "relative" }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
-            <Typography color="textPrimary">CSV Errors</Typography>
-            <IconButton size="small" onClick={() => setBatchErrors([])} style={{ padding: 4 }}>
-              <CloseIcon style={{ fontSize: 18 }} />
-            </IconButton>
-          </Box>
-          {batchErrors.map((e: string, i: number) => (
-            <Typography key={i} color="textSecondary">
-              {e}
-            </Typography>
-          ))}
-        </Box>
-      )}
-
-      {batchWarnings && batchWarnings.length > 0 && (
-        <Box style={{ background: "#4a3a2b", padding: 12, borderRadius: 4, position: "relative" }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
-            <Typography color="textPrimary">CSV Warnings (non-blocking)</Typography>
-            <IconButton size="small" onClick={() => setBatchWarnings([])} style={{ padding: 4 }}>
-              <CloseIcon style={{ fontSize: 18 }} />
-            </IconButton>
-          </Box>
-          {batchWarnings.map((w: string, i: number) => (
-            <Typography key={i} color="textSecondary">
-              ⚠️ {w}
-            </Typography>
-          ))}
-        </Box>
-      )}
-
-      <Typography color="textPrimary" variant="h6">
-        Review Actions ({batchActions.length})
-      </Typography>
       <Box>
         {batchActions.map((a: any, i: number) => (
           <ActionRow key={`${i}`} action={a as any} index={i} />
         ))}
-      </Box>
-
-      <Box display="flex" style={{ gap: 8 }}>
-        <Button variant="text" onClick={() => (editIndex !== null ? cancelEdit() : setShowAdd(s => !s))}>
-          {showAdd ? "Cancel" : "Add Action"}
-        </Button>
-        {batchActions.length > 0 && (
-          <Button variant="text" onClick={downloadActionsAsCsv}>
-            Download CSV
-          </Button>
+        {batchActions.length === 0 && (
+          <Box
+            style={{ background: theme.palette.background.default, padding: 24, borderRadius: 4, textAlign: "center" }}
+          >
+            <Typography color="textSecondary">No actions added yet</Typography>
+          </Box>
         )}
       </Box>
+
       <Box>
         {showAdd && (
           <div ref={formSectionRef}>
@@ -869,6 +820,106 @@ export const EvmPropBatchActions: React.FC = () => {
               </Grid>
             </Box>
           </div>
+        )}
+      </Box>
+
+      {!showAdd && (
+        <Box display="flex" style={{ gap: 8, flexWrap: "wrap" }}>
+          <Button variant="contained" color="primary" onClick={() => setShowAdd(true)}>
+            + Add Action
+          </Button>
+          {batchActions.length > 0 && (
+            <Button variant="outlined" onClick={downloadActionsAsCsv}>
+              Download CSV
+            </Button>
+          )}
+        </Box>
+      )}
+
+      <Box
+        style={{
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 4,
+          marginTop: 8
+        }}
+      >
+        <Box
+          onClick={() => setCsvSectionExpanded(prev => !prev)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: 12,
+            cursor: "pointer",
+            background: theme.palette.background.default,
+            borderRadius: csvSectionExpanded ? "4px 4px 0 0" : 4
+          }}
+        >
+          <Box>
+            <Typography color="textPrimary" style={{ fontWeight: 500 }}>
+              Advanced: Import from CSV
+            </Typography>
+            <Typography color="textSecondary" style={{ fontSize: 12, marginTop: 4 }}>
+              Upload a CSV file to batch import multiple actions
+            </Typography>
+          </Box>
+          <IconButton size="small" style={{ padding: 8 }}>
+            {csvSectionExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+        </Box>
+
+        {csvSectionExpanded && (
+          <Box style={{ padding: 16, borderTop: `1px solid ${theme.palette.divider}` }}>
+            <Grid container direction="column" style={{ gap: 16 }}>
+              <Typography color="textSecondary">
+                Your CSV file must have a header row with the following columns in this exact order:
+              </Typography>
+              <Box style={{ background: theme.palette.background.paper, padding: 12, borderRadius: 4 }}>
+                <Typography style={{ fontFamily: "monospace", fontSize: 12 }}>{header}</Typography>
+              </Box>
+
+              <Box display="flex" style={{ gap: 8 }}>
+                <Button variant="contained" color="primary" onClick={onChooseFile}>
+                  Upload CSV
+                </Button>
+                <Button variant="outlined" onClick={downloadSample}>
+                  Download Sample CSV
+                </Button>
+              </Box>
+
+              {batchErrors.length > 0 && (
+                <Box style={{ background: "#4a2b2b", padding: 12, borderRadius: 4, position: "relative" }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+                    <Typography color="textPrimary">CSV Errors</Typography>
+                    <IconButton size="small" onClick={() => setBatchErrors([])} style={{ padding: 4 }}>
+                      <CloseIcon style={{ fontSize: 18 }} />
+                    </IconButton>
+                  </Box>
+                  {batchErrors.map((e: string, i: number) => (
+                    <Typography key={i} color="textSecondary">
+                      {e}
+                    </Typography>
+                  ))}
+                </Box>
+              )}
+
+              {batchWarnings && batchWarnings.length > 0 && (
+                <Box style={{ background: "#4a3a2b", padding: 12, borderRadius: 4, position: "relative" }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+                    <Typography color="textPrimary">CSV Warnings (non-blocking)</Typography>
+                    <IconButton size="small" onClick={() => setBatchWarnings([])} style={{ padding: 4 }}>
+                      <CloseIcon style={{ fontSize: 18 }} />
+                    </IconButton>
+                  </Box>
+                  {batchWarnings.map((w: string, i: number) => (
+                    <Typography key={i} color="textSecondary">
+                      ⚠️ {w}
+                    </Typography>
+                  ))}
+                </Box>
+              )}
+            </Grid>
+          </Box>
         )}
       </Box>
 

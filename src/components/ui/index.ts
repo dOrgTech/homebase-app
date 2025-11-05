@@ -64,6 +64,8 @@ export { default as RemoveCircleIcon } from "@material-ui/icons/RemoveCircle"
 export { default as CloseIcon } from "@material-ui/icons/Close"
 export { default as EditIcon } from "@material-ui/icons/Edit"
 export { default as DeleteIcon } from "@material-ui/icons/Delete"
+export { default as ExpandMoreIcon } from "@material-ui/icons/ExpandMore"
+export { default as ExpandLessIcon } from "@material-ui/icons/ExpandLess"
 
 // Local UI wrappers
 export * from "./Button"
