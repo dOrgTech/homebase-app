@@ -146,7 +146,7 @@ export const EvmPropBatchActions: React.FC = () => {
         action.to || "",
         action.from || "",
         isConfigAction ? "" : action.amount || "",
-        action.tokenId !== undefined ? action.tokenId : "",
+        action.tokenId !== undefined && action.tokenId !== null ? String(action.tokenId) : "",
         action.key || "",
         isConfigAction ? action.value || "" : action.value || "",
         action.target || "",
@@ -258,11 +258,16 @@ export const EvmPropBatchActions: React.FC = () => {
         case "transfer_erc721": {
           const assetLabel = getAssetDisplayLabel(
             action.asset || "",
-            String(action.tokenId || ""),
+            action.tokenId !== undefined && action.tokenId !== null ? String(action.tokenId) : "",
             daoTreasuryTokens || [],
             daoNfts || []
           )
-          const inTreasury = action.asset ? isAssetInTreasury(action.asset, String(action.tokenId || "")) : false
+          const inTreasury = action.asset
+            ? isAssetInTreasury(
+                action.asset,
+                action.tokenId !== undefined && action.tokenId !== null ? String(action.tokenId) : ""
+              )
+            : false
           const warningBadge = !inTreasury && action.asset ? " ⚠️" : ""
           return `Transfer ${assetLabel}${warningBadge} to ${action.to ? toShortAddress(action.to) : action.to}`
         }
@@ -581,19 +586,29 @@ export const EvmPropBatchActions: React.FC = () => {
                           }}
                         >
                           <MenuItem value="">Select asset</MenuItem>
-                          {(daoTreasuryTokens || [])
-                            .filter((token: any) => {
+                          {(() => {
+                            const filteredTokens = (daoTreasuryTokens || []).filter((token: any) => {
                               const ty = String(token?.type || "").toUpperCase()
                               const isFungible = !ty || ty.includes("ERC20") || ty.includes("ERC-20")
                               const hasValidAddress =
                                 typeof token?.address === "string" && ethers.isAddress(token.address)
                               return isFungible && hasValidAddress
                             })
-                            .map((token: any) => (
+
+                            if (filteredTokens.length === 0) {
+                              return (
+                                <MenuItem value="" disabled>
+                                  &lt;No Tokens Available&gt;
+                                </MenuItem>
+                              )
+                            }
+
+                            return filteredTokens.map((token: any) => (
                               <MenuItem key={token.address} value={token.address}>
                                 {token.symbol}
                               </MenuItem>
-                            ))}
+                            ))
+                          })()}
                           <MenuItem value="__custom__">Custom Address</MenuItem>
                         </FormSelect>
                       </FormField>
@@ -663,9 +678,18 @@ export const EvmPropBatchActions: React.FC = () => {
                           }}
                         >
                           <MenuItem value="">Select NFT</MenuItem>
-                          {(daoNfts || [])
-                            .filter((n: any) => isErc721(n))
-                            .map((n: any) => {
+                          {(() => {
+                            const filteredNfts = (daoNfts || []).filter((n: any) => isErc721(n))
+
+                            if (filteredNfts.length === 0) {
+                              return (
+                                <MenuItem value="" disabled>
+                                  &lt;No NFTs Available&gt;
+                                </MenuItem>
+                              )
+                            }
+
+                            return filteredNfts.map((n: any) => {
                               const addr = resolveNftContractAddress(n)
                               const tid = String(n?.token_id ?? n?.id)
                               const value = `nft::${addr}:${tid}`
@@ -679,14 +703,19 @@ export const EvmPropBatchActions: React.FC = () => {
                                   )}
                                 </MenuItem>
                               )
-                            })}
+                            })
+                          })()}
                           <MenuItem value="__custom__">Custom Address</MenuItem>
                         </FormSelect>
                       </FormField>
                     )}
                     {draft.type === "transfer_erc721" &&
                       (draft.asset === "__custom__" ||
-                        (draft.asset && !isAssetInTreasury(draft.asset, String(draft.tokenId || "")))) && (
+                        (draft.asset &&
+                          !isAssetInTreasury(
+                            draft.asset,
+                            draft.tokenId !== undefined && draft.tokenId !== null ? String(draft.tokenId) : ""
+                          ))) && (
                         <>
                           <FormField label="Custom NFT Contract Address">
                             <FormTextField
@@ -695,15 +724,19 @@ export const EvmPropBatchActions: React.FC = () => {
                               onChange={e => setDraft(p => ({ ...p, asset: e.target.value }))}
                               inputProps={{ style: { fontSize: 14 } }}
                             />
-                            {draft.asset && !isAssetInTreasury(draft.asset, String(draft.tokenId || "")) && (
-                              <Typography color="textSecondary" style={{ fontSize: 12, marginTop: 6 }}>
-                                ⚠️ NFT not in treasury - ensure DAO owns this token
-                              </Typography>
-                            )}
+                            {draft.asset &&
+                              !isAssetInTreasury(
+                                draft.asset,
+                                draft.tokenId !== undefined && draft.tokenId !== null ? String(draft.tokenId) : ""
+                              ) && (
+                                <Typography color="textSecondary" style={{ fontSize: 12, marginTop: 6 }}>
+                                  ⚠️ NFT not in treasury - ensure DAO owns this token
+                                </Typography>
+                              )}
                           </FormField>
                           <FormField label="Token ID">
                             <FormTextField
-                              value={draft.tokenId || ""}
+                              value={draft.tokenId !== undefined && draft.tokenId !== null ? String(draft.tokenId) : ""}
                               onChange={e => setDraft(p => ({ ...p, tokenId: e.target.value }))}
                               inputProps={{ style: { fontSize: 14 } }}
                             />
@@ -717,7 +750,8 @@ export const EvmPropBatchActions: React.FC = () => {
                         const nAddr = resolveNftContractAddress(n)
                         const nTid = String(n?.token_id ?? n?.id)
                         return (
-                          nAddr?.toLowerCase() === draft.asset?.toLowerCase() && nTid === String(draft.tokenId || "")
+                          nAddr?.toLowerCase() === draft.asset?.toLowerCase() &&
+                          nTid === (draft.tokenId !== undefined && draft.tokenId !== null ? String(draft.tokenId) : "")
                         )
                       }) && (
                         <FormField label="Token ID">

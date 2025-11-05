@@ -1,4 +1,5 @@
 import { Button, Grid, Typography, CircularProgress, ThumbDownAlt, ThumbUpAlt } from "components/ui"
+import { ApproveButton, RejectButton } from "modules/etherlink/components/VotingButtons"
 import { useContext, useEffect, useState } from "react"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useProposalTimeline } from "services/wagmi/etherlink/hooks/useProposalTimeline"
@@ -263,7 +264,7 @@ export const ProposalActionButtons = () => {
               </Typography>
             </Grid>
           )}
-          <Button
+          <ApproveButton
             disabled={isCastingVote || loadingPastWeight || (pastWeightRaw !== null && pastWeightRaw <= 0n)}
             onClick={() => {
               setIsCastingVote(true)
@@ -291,11 +292,10 @@ export const ProposalActionButtons = () => {
             }}
             variant="contained"
             color="secondary"
-            style={{ background: "rgb(113 214 156)" }}
           >
             <ThumbUpAlt style={{ marginRight: 8 }} /> Support
-          </Button>
-          <Button
+          </ApproveButton>
+          <RejectButton
             onClick={() => {
               setIsCastingVote(true)
               castVote(daoProposalSelected?.id, false)
@@ -322,11 +322,10 @@ export const ProposalActionButtons = () => {
             }}
             variant="contained"
             color="secondary"
-            style={{ background: "red" }}
             disabled={isCastingVote || loadingPastWeight || (pastWeightRaw !== null && pastWeightRaw <= 0n)}
           >
             <ThumbDownAlt style={{ marginRight: 8 }} /> Reject
-          </Button>
+          </RejectButton>
         </Grid>
       </>
     )
