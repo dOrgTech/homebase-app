@@ -1,5 +1,4 @@
 import BigNumber from "bignumber.js"
-import { Token } from "models/Token"
 import { useState, useContext, useEffect, useMemo } from "react"
 import { useQuery } from "react-query"
 import { TZKTSubscriptionsContext } from "services/bakingBad/context/TZKTSubscriptions"
@@ -154,7 +153,7 @@ export const useDAO = (address: string) => {
           },
           description: dao.description,
           data: {
-            network: "etherlink_testnet"
+            network: network
           },
           start_level: 0,
           period: "0",
@@ -214,7 +213,7 @@ export const useDAO = (address: string) => {
           max_proposal_size: 0,
           max_xtz_amount: "0",
           min_xtz_amount: "0",
-          network: "etherlink_testnet",
+          network: network,
           slash_division_value: "0",
           slash_scale_value: "0"
         } as any)

@@ -10,6 +10,8 @@ export interface IEvmFirebaseContract {
   // wrapper: IEthereumAddress // Not in use and deprecated
   wrapper_t: IEthereumAddress
   wrapper_w: IEthereumAddress
+  nativeCurrency: string
+  symbol: string
 }
 
 export interface IEvmOffchainChoiceForVote {

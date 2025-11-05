@@ -67,7 +67,7 @@ const useStyles = makeStyles({
 })
 
 export const EvmTreasuryTable = () => {
-  const { daoSelected, daoRegistryDetails, daoTreasuryTokens, daoNfts } = useContext(EtherlinkContext)
+  const { daoSelected, daoRegistryDetails, daoTreasuryTokens, daoNfts, contractData } = useContext(EtherlinkContext)
   const { setMetadataFieldValue, setTransferAssets, setCurrentStep } = useEvmProposalOps()
   const history = useHistory()
   const [view, setView] = useState("tokens")
@@ -156,8 +156,8 @@ export const EvmTreasuryTable = () => {
         </TableHead>
         <TableBody>
           <TableRow>
-            <TableCell>Etherink Testnet</TableCell>
-            <TableCell>XTZ</TableCell>
+            <TableCell>{contractData?.nativeCurrency || "Tezos"}</TableCell>
+            <TableCell>{contractData?.symbol || "XTZ"}</TableCell>
             <TableCell>{daoRegistryDetails?.balance}</TableCell>
             <TableCell>
               <Grid container direction="row" alignItems="center">
