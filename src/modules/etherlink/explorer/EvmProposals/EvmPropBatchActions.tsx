@@ -828,11 +828,11 @@ export const EvmPropBatchActions: React.FC = () => {
           <Button variant="contained" color="primary" onClick={() => setShowAdd(true)}>
             + Add Action
           </Button>
-          {batchActions.length > 0 && (
+          {/* {batchActions.length > 0 && (
             <Button variant="outlined" onClick={downloadActionsAsCsv}>
               Download CSV
             </Button>
-          )}
+          )} */}
         </Box>
       )}
 
