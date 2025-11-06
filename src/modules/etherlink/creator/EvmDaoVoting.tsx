@@ -3,7 +3,7 @@ import { InfoRounded } from "components/ui"
 import { DescriptionText } from "components/ui/DaoCreator"
 import { TitleBlock } from "modules/common/TitleBlock"
 import React from "react"
-import { StyledTextField } from "components/ui"
+import { NumberInput } from "components/ui"
 import useEvmDaoCreateStore from "services/contracts/etherlinkDAO/hooks/useEvmDaoCreateStore"
 
 import { InputContainer } from "components/ui"
@@ -125,14 +125,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.votingBlocksDay}
-                  onChange={e => setFieldValue("voting.votingBlocksDay", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.votingBlocksDay", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -151,14 +150,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.votingBlocksHours}
-                  onChange={e => setFieldValue("voting.votingBlocksHours", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.votingBlocksHours", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -177,14 +175,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.votingBlocksMinutes}
-                  onChange={e => setFieldValue("voting.votingBlocksMinutes", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.votingBlocksMinutes", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -217,14 +214,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalFlushBlocksDay}
-                  onChange={e => setFieldValue("voting.proposalFlushBlocksDay", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.proposalFlushBlocksDay", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -243,14 +239,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalFlushBlocksHours}
-                  onChange={e => setFieldValue("voting.proposalFlushBlocksHours", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.proposalFlushBlocksHours", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -269,14 +264,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalFlushBlocksMinutes}
-                  onChange={e => setFieldValue("voting.proposalFlushBlocksMinutes", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.proposalFlushBlocksMinutes", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -312,14 +306,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalExpiryBlocksDay}
-                  onChange={e => setFieldValue("voting.proposalExpiryBlocksDay", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.proposalExpiryBlocksDay", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -338,14 +331,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalExpiryBlocksHours}
-                  onChange={e => setFieldValue("voting.proposalExpiryBlocksHours", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.proposalExpiryBlocksHours", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>
@@ -364,14 +356,13 @@ export const EvmDaoVoting: React.FC<EvmDaoVotingProps> = ({ onSubmit: _onSubmit 
                   display: "grid"
                 }}
               >
-                <StyledTextField
+                <NumberInput
                   style={{ margin: "auto" }}
                   variant="standard"
-                  type="number"
                   placeholder="0"
                   inputProps={{ min: 0, style: { textAlign: "center" } }}
                   value={daoData.voting.proposalExpiryBlocksMinutes}
-                  onChange={e => setFieldValue("voting.proposalExpiryBlocksMinutes", parseInt(e.target.value) || 0)}
+                  onChange={value => setFieldValue("voting.proposalExpiryBlocksMinutes", value)}
                 />
               </Grid>
               <Typography color="textSecondary" style={{ marginTop: -20, marginLeft: 16, fontWeight: 300 }}>

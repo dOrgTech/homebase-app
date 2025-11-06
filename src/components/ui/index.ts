@@ -70,6 +70,7 @@ export { default as ExpandLessIcon } from "@material-ui/icons/ExpandLess"
 // Local UI wrappers
 export * from "./Button"
 export * from "./StyledTextField"
+export * from "./NumberInput"
 export { default as InputText } from "./InputText"
 export * from "./Switch"
 export * from "./LinearProgress"
