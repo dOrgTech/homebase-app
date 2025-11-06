@@ -39,7 +39,6 @@ export const EvmPropContractCall: React.FC = () => {
 
   const parseFunctionSignature = useCallback((signature: string) => {
     try {
-      // Parse function signature like: transfer(address to, uint256 amount)
       const match = signature.match(/^(\w+)\((.*)\)$/)
       if (!match) {
         setParsedInputs([])
@@ -48,16 +47,14 @@ export const EvmPropContractCall: React.FC = () => {
 
       const paramsString = match[2].trim()
       if (!paramsString) {
-        // Allow functions with no parameters (e.g., totalSupply())
         setParsedInputs([])
         return
       }
 
-      // Split parameters and parse each one
-      // Handle array types by looking for balanced brackets
       const params: { type: string; name: string }[] = []
       let currentParam = ""
       let bracketDepth = 0
+      let paramIndex = 0
 
       for (let i = 0; i < paramsString.length; i++) {
         const char = paramsString[i]
@@ -68,21 +65,25 @@ export const EvmPropContractCall: React.FC = () => {
           bracketDepth--
           currentParam += char
         } else if (char === "," && bracketDepth === 0) {
-          // Process the accumulated parameter
           const parts = currentParam.trim().split(/\s+/)
           if (parts.length >= 2) {
             params.push({
               type: parts[0],
               name: parts.slice(1).join(" ")
             })
+          } else if (parts.length === 1) {
+            params.push({
+              type: parts[0],
+              name: `param${paramIndex}`
+            })
           }
+          paramIndex++
           currentParam = ""
         } else {
           currentParam += char
         }
       }
 
-      // Process the last parameter
       if (currentParam.trim()) {
         const parts = currentParam.trim().split(/\s+/)
         if (parts.length >= 2) {
@@ -90,11 +91,15 @@ export const EvmPropContractCall: React.FC = () => {
             type: parts[0],
             name: parts.slice(1).join(" ")
           })
+        } else if (parts.length === 1) {
+          params.push({
+            type: parts[0],
+            name: `param${paramIndex}`
+          })
         }
       }
 
       setParsedInputs(params)
-      // Reset input values when signature changes
       setInputValues({})
     } catch (error) {
       console.error("Error parsing function signature:", error)
