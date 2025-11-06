@@ -1,7 +1,7 @@
 import { Grid, Typography, Paper, styled } from "@material-ui/core"
 
 export const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#24282d",
+  backgroundColor: theme.palette.primary.main,
   borderRadius: 8,
   color: theme.palette.text.primary,
   height: 84,
@@ -32,3 +32,7 @@ export const ItemValue = styled(Typography)(({ theme }) => ({
     fontSize: 28
   }
 }))
+
+export const StatsContainer = styled(Grid)({
+  marginBottom: "40px"
+})

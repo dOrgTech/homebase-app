@@ -45,7 +45,7 @@ export const EvmDaoTemplate = (): JSX.Element => {
           style={{
             height: 273,
             marginTop: 30,
-            background: "#1c2024",
+            background: theme.palette.primary.main,
             borderRadius: 8,
             maxWidth: isMobileSmall ? "100%" : 342,
             width: isMobileSmall ? "100%" : "-webkit-fill-available",
@@ -84,7 +84,7 @@ export const EvmDaoTemplate = (): JSX.Element => {
           style={{
             height: 273,
             marginTop: 30,
-            background: "#1c2024",
+            background: theme.palette.primary.main,
             borderRadius: 8,
             maxWidth: isMobileSmall ? "100%" : 342,
             width: isMobileSmall ? "100%" : "-webkit-fill-available",

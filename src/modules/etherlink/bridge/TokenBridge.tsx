@@ -13,21 +13,21 @@ async function sleep(ms: number) {
   await new Promise(resolve => setTimeout(resolve, ms))
 }
 
-const WrapContainer = styled(Box)({
-  background: "#1c2024",
+const WrapContainer = styled(Box)(({ theme }) => ({
+  background: theme.palette.primary.main,
   borderRadius: "8px",
   padding: "24px",
   marginBottom: "40px",
   maxWidth: "400px",
   margin: "0 auto"
-})
+}))
 
 // Status UI moved into components/TxStatus.tsx
 
-const StyledTabs = styled(Tabs)({
+const StyledTabs = styled(Tabs)(({ theme }) => ({
   "marginBottom": "24px",
   "& .MuiTab-root": {
-    "color": "#9E9E9E",
+    "color": theme.palette.text.secondary,
     "&.Mui-selected": {
       color: "#fff"
     }
@@ -35,7 +35,7 @@ const StyledTabs = styled(Tabs)({
   "& .MuiTabs-indicator": {
     backgroundColor: "#fff"
   }
-})
+}))
 
 export const TokenBridge = () => {
   const [wrapTabValue, setWrapTabValue] = useState(0)
@@ -127,7 +127,7 @@ export const TokenBridge = () => {
         <Typography variant="h5" style={{ marginBottom: "8px", color: "#fff", fontSize: "24px", fontWeight: 700 }}>
           Convert {daoSelected?.symbol} &lt;&gt; underlying
         </Typography>
-        <Typography style={{ marginBottom: "24px", color: "#9E9E9E" }}>
+        <Typography color="textSecondary" style={{ marginBottom: "24px" }}>
           Use this to wrap your underlying tokens into governance tokens, or unwrap them back.
         </Typography>
         <StyledTabs

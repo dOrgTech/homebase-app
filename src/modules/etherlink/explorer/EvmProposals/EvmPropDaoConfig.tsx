@@ -10,16 +10,16 @@ import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmP
 import { StyledSliderWithValue } from "components/ui/StyledSlider"
 import { EtherlinkContext } from "services/wagmi/context"
 
-const OptionContainer = styled(Grid)({
-  "background": "#1c2024",
+const OptionContainer = styled(Grid)(({ theme }) => ({
+  "background": theme.palette.primary.main,
   "padding": "20px",
   "borderRadius": "8px",
   "cursor": "pointer",
   "height": "100%",
   "&:hover": {
-    background: "#3F444A"
+    background: theme.palette.secondary.dark
   }
-})
+}))
 
 const IconContainer = styled(Box)({
   marginBottom: "16px"
