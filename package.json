@@ -108,6 +108,7 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "craco-esbuild": "^0.6.1",
+    "dotenv": "^17.2.3",
     "esbuild": "^0.25.10",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
