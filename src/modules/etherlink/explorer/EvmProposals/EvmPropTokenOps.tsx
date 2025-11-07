@@ -70,8 +70,8 @@ const TokenOperationForm: React.FC<TokenOperationFormProps> = ({
   tokenAddress,
   tokenDecimals
 }) => (
-  <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
-    <Grid item xs={12} style={{ marginBottom: "20px" }}>
+  <Grid container spacing={0} style={{ gap: 0 }}>
+    <Grid item xs={12}>
       <Box display="flex" alignItems="center" justifyContent="center" style={{ gap: "8px", marginBottom: "16px" }}>
         {icon}
         <Typography color="textPrimary">Enter the recipient address and amount to {type}</Typography>
@@ -79,7 +79,7 @@ const TokenOperationForm: React.FC<TokenOperationFormProps> = ({
       <FormField
         label="Recipient Address"
         labelStyle={{ fontSize: 16 }}
-        containerStyle={{ gap: 12 }}
+        containerStyle={{ gap: 12, marginBottom: 20 }}
         errorText={values.to && isInvalidEvmAddress(values.to) ? "Invalid Ethereum address" : ""}
       >
         <FormTextField
@@ -148,7 +148,7 @@ const EvmPropTokenOps = () => {
     )
   }
   return (
-    <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
+    <Grid container spacing={0} style={{ gap: 0, marginBottom: 0 }}>
       <ConfigOption
         icon={<AddCircleIcon fontSize="large" />}
         title="Mint"

@@ -195,20 +195,38 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        {isDeploying ? (
-          <>
-            <Typography>Deploying Proposal...</Typography>
-            <LinearProgressLoader />
-          </>
-        ) : (
-          renderModal(metadata.type as EProposalType)
-        )}
-        <Grid container direction="row" justifyContent="space-between" alignItems="center">
-          <BackButton disabled={isDeploying} onClick={prevStep.handler} />
-          <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
-            {nextStep.text}
-          </NextButton>
-        </Grid>
+        <Box
+          style={{
+            flexGrow: 1,
+            overflowY: "auto",
+            overflowX: "hidden",
+            minHeight: 0
+          }}
+        >
+          {isDeploying ? (
+            <>
+              <Typography>Deploying Proposal...</Typography>
+              <LinearProgressLoader />
+            </>
+          ) : (
+            renderModal(metadata.type as EProposalType)
+          )}
+        </Box>
+        <Box
+          style={{
+            borderTop: `1px solid ${theme.palette.divider}`,
+            paddingTop: 20,
+            marginTop: 20,
+            flexShrink: 0
+          }}
+        >
+          <Grid container direction="row" justifyContent="space-between" alignItems="center">
+            <BackButton disabled={isDeploying} onClick={prevStep.handler} />
+            <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
+              {nextStep.text}
+            </NextButton>
+          </Grid>
+        </Box>
       </ResponsiveDialog>
     </>
   )

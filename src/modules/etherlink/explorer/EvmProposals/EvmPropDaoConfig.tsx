@@ -186,10 +186,10 @@ export const EvmPropDaoConfig = () => {
     }
   }
 
-  if (currentStep == 3) return <Box style={{ marginBottom: "20px" }}>{renderSelectedOption()}</Box>
+  if (currentStep == 3) return <Box style={{ marginBottom: 0 }}>{renderSelectedOption()}</Box>
 
   return (
-    <Grid container spacing={0} style={{ gap: 0, marginBottom: "30px" }}>
+    <Grid container spacing={0} style={{ gap: 0, marginBottom: 0 }}>
       <ConfigOption
         icon={<HowToVoteIcon fontSize="large" />}
         title="Quorum"

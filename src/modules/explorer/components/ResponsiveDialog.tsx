@@ -5,7 +5,9 @@ import CloseButton from "modules/common/CloseButton"
 import BackButton from "modules/common/BackButton"
 
 const Content = styled(Grid)({
-  padding: "40px 48px"
+  padding: "40px 48px",
+  flexGrow: 1,
+  overflow: "hidden"
 })
 
 const TitleText = styled(Typography)(({ theme }) => ({
@@ -22,7 +24,9 @@ const TitleText = styled(Typography)(({ theme }) => ({
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthMd": {
     width: "-webkit-fill-available",
-    height: "-webkit-fill-available"
+    maxHeight: "calc(100vh - 96px)",
+    display: "flex",
+    flexDirection: "column"
   },
   "& .MuiDialog-paperWidthXs": {
     width: "-webkit-fill-available",

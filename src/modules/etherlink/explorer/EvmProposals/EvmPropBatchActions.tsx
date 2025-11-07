@@ -456,7 +456,7 @@ export const EvmPropBatchActions: React.FC = () => {
   }
 
   return (
-    <Grid container direction="column" style={{ gap: 16 }}>
+    <Grid container direction="column" style={{ gap: 16, marginBottom: 0 }}>
       <input ref={fileInputRef} type="file" accept=".csv" onChange={onFile} style={{ display: "none" }} />
 
       <Typography color="textPrimary" variant="h6">
