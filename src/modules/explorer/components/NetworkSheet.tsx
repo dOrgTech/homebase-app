@@ -1,5 +1,5 @@
-import { styled, Grid, Typography, capitalize, Button } from "@material-ui/core"
-import React, { useContext, useMemo, useState } from "react"
+import { styled, Grid, Typography, Tooltip } from "@material-ui/core"
+import React, { useContext, useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network, getNetworkDisplayName, networkDotColorMap, rpcNodes } from "services/beacon"
 import { ResponsiveDialog } from "./ResponsiveDialog"
@@ -8,13 +8,15 @@ import { ContentContainer } from "./ContentContainer"
 import { ActionTypes, CreatorContext } from "modules/creator/state"
 import { EtherlinkContext } from "services/wagmi/context"
 
-const SheetItem = styled(ContentContainer)({
+const SheetItem = styled(ContentContainer)<{ disabled?: boolean }>(({ disabled }) => ({
   "height": 50,
   "& > *": {
     height: "100%"
   },
-  "cursor": "pointer"
-})
+  "cursor": disabled ? "not-allowed" : "pointer",
+  "opacity": disabled ? 0.5 : 1,
+  "pointerEvents": disabled ? "none" : "auto"
+}))
 
 interface Props {
   open: boolean
@@ -23,19 +25,10 @@ interface Props {
 
 const SUPPORTED_NETWORKS = Object.keys(rpcNodes) as Network[]
 
-const StyledButton = styled(Button)({
-  padding: "8px 24px",
-  textTransform: "none",
-  minWidth: 100
-})
-
 export const NetworkSheet: React.FC<Props> = props => {
   const { network, changeNetwork } = useTezos()
   const { dispatch } = useContext(CreatorContext)
-  const { daoSelected, network: etherlinkNetwork } = useContext(EtherlinkContext)
-
-  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const [targetNetwork, setTargetNetwork] = useState<Network | null>(null)
+  const { daoSelected } = useContext(EtherlinkContext)
 
   const options = useMemo(() => SUPPORTED_NETWORKS.filter(n => n !== network), [network])
 
@@ -46,40 +39,26 @@ export const NetworkSheet: React.FC<Props> = props => {
 
   const handleNetworkClick = (networkOption: Network) => {
     if (isOnEtherlinkDAO) {
-      setTargetNetwork(networkOption)
-      setConfirmDialogOpen(true)
-    } else {
-      props.onClose()
-      changeNetwork(networkOption)
-      dispatch({
-        type: ActionTypes.CLEAR_CACHE
-      })
+      return
     }
-  }
-
-  const handleConfirmNetworkChange = () => {
-    if (targetNetwork) {
-      setConfirmDialogOpen(false)
-      props.onClose()
-      changeNetwork(targetNetwork)
-      dispatch({
-        type: ActionTypes.CLEAR_CACHE
-      })
-      window.location.href = "/explorer/daos"
-    }
-  }
-
-  const handleCancelNetworkChange = () => {
-    setConfirmDialogOpen(false)
-    setTargetNetwork(null)
+    props.onClose()
+    changeNetwork(networkOption)
+    dispatch({
+      type: ActionTypes.CLEAR_CACHE
+    })
   }
 
   return (
-    <>
-      <ResponsiveDialog open={props.open} onClose={props.onClose} title={"Choose Network"}>
-        <Grid container direction={"column"} style={{ gap: 20 }}>
-          {options.map((networkOption, i) => (
-            <SheetItem item key={`network-${i}`} onClick={() => handleNetworkClick(networkOption)}>
+    <ResponsiveDialog open={props.open} onClose={props.onClose} title={"Choose Network"}>
+      <Grid container direction={"column"} style={{ gap: 20 }}>
+        {options.map((networkOption, i) => {
+          const item = (
+            <SheetItem
+              item
+              key={`network-${i}`}
+              disabled={isOnEtherlinkDAO}
+              onClick={() => handleNetworkClick(networkOption)}
+            >
               <Grid container justifyContent="center" alignItems="center" style={{ gap: 8 }}>
                 <Grid item>
                   <ColorDot color={networkDotColorMap[networkOption]} />
@@ -91,33 +70,19 @@ export const NetworkSheet: React.FC<Props> = props => {
                 </Grid>
               </Grid>
             </SheetItem>
-          ))}
-        </Grid>
-      </ResponsiveDialog>
+          )
 
-      <ResponsiveDialog open={confirmDialogOpen} onClose={handleCancelNetworkChange} title={"Network Change"}>
-        <Grid container direction="column" style={{ gap: 24 }}>
-          <Grid item>
-            <Typography variant="body1" color="textPrimary">
-              The DAO you are currently viewing exists on <strong>{getNetworkDisplayName(etherlinkNetwork)}</strong>.
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant="body1" color="textPrimary">
-              Switching to <strong>{targetNetwork && getNetworkDisplayName(targetNetwork)}</strong> will redirect you to
-              the DAO Explorer.
-            </Typography>
-          </Grid>
-          <Grid item container direction="row" justifyContent="flex-end" style={{ gap: 12 }}>
-            <StyledButton variant="outlined" onClick={handleCancelNetworkChange}>
-              Cancel
-            </StyledButton>
-            <StyledButton variant="contained" color="secondary" onClick={handleConfirmNetworkChange}>
-              Continue
-            </StyledButton>
-          </Grid>
-        </Grid>
-      </ResponsiveDialog>
-    </>
+          if (isOnEtherlinkDAO) {
+            return (
+              <Tooltip key={`network-${i}`} title="Can't change network while viewing a DAO or Proposal" arrow>
+                <div>{item}</div>
+              </Tooltip>
+            )
+          }
+
+          return item
+        })}
+      </Grid>
+    </ResponsiveDialog>
   )
 }

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
+import BigNumber from "bignumber.js"
 import { ethers } from "ethers"
 import { Box, Grid, Typography } from "components/ui"
 import { Button } from "components/ui/Button"
@@ -6,6 +7,7 @@ import { HowToVote, People } from "@material-ui/icons"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import { FormField, FormTextField } from "components/ui"
 import { useHistory } from "react-router-dom"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
@@ -41,6 +43,11 @@ export const EvmUserPage = () => {
   const userAddress = signer?.address
   const votingWeight = userVotingWeight
   const personalBalance = userTokenBalance
+  const formattedVotingWeight = useMemo(() => String(formatNumber(new BigNumber(votingWeight ?? 0))), [votingWeight])
+  const formattedPersonalBalance = useMemo(
+    () => String(formatNumber(new BigNumber(personalBalance ?? 0))),
+    [personalBalance]
+  )
   const userAddrLc = (signer?.address || "").toLowerCase()
   const zeroAddress = "0x0000000000000000000000000000000000000000"
   // Determine delegation state strictly from on-chain assigned delegate
@@ -87,7 +94,7 @@ export const EvmUserPage = () => {
               <ItemTitle color="textPrimary">Voting Weight</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{votingWeight}</ItemValue>
+              <ItemValue color="textPrimary">{formattedVotingWeight}</ItemValue>
             </Grid>
           </Item>
         </Grid>
@@ -97,7 +104,7 @@ export const EvmUserPage = () => {
               <ItemTitle color="textPrimary">{daoSelected?.symbol} Balance</ItemTitle>
             </ItemContent>
             <Grid item>
-              <ItemValue color="textPrimary">{personalBalance}</ItemValue>
+              <ItemValue color="textPrimary">{formattedPersonalBalance}</ItemValue>
             </Grid>
           </Item>
         </Grid>

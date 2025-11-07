@@ -32,8 +32,7 @@ export const EvmRegistryPage: React.FC = () => {
     return Object.entries(daoSelected?.registry).map(([key, value]) => ({
       key,
       value: value as string,
-      onClick: () => {},
-      lastUpdated: ""
+      onClick: () => {}
     }))
   }, [daoSelected?.registry])
 
@@ -78,7 +77,6 @@ export const EvmRegistryPage: React.FC = () => {
             data={registryList.map(rItem => ({
               key: rItem.key,
               value: rItem.value,
-              lastUpdated: rItem.lastUpdated,
               onClick: () => {
                 setMetadataFieldValue("type", "edit_registry")
                 setDaoRegistry("key", rItem.key)

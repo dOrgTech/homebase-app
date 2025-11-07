@@ -15,7 +15,6 @@ import {
 import dayjs from "dayjs"
 import { Blockie } from "modules/common/Blockie"
 import { CopyButton } from "components/ui/CopyButton"
-import { ContentContainer } from "components/ui/ContentContainer"
 import { toShortAddress } from "services/contracts/utils"
 import numbro from "numbro"
 import ReactPaginate from "react-paginate"
@@ -40,9 +39,10 @@ const HeaderText = styled(Typography)({
   fontSize: 14
 })
 
-const TableContainer = styled(ContentContainer)({
+const TableWrapper = styled("div")({
   width: "100%",
-  padding: "20px 24px"
+  padding: 0,
+  margin: 0
 })
 
 const MemberRow = styled(TableRow)(({ theme }) => ({
@@ -83,7 +83,7 @@ const MembersTableContent: React.FC<{
 
   return (
     <>
-      <TableContainer>
+      <TableWrapper>
         <Table>
           <TableHead>
             <TableRow>
@@ -114,7 +114,7 @@ const MembersTableContent: React.FC<{
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableWrapper>
 
       <Grid container direction="row" justifyContent="flex-end" style={{ marginTop: 20 }}>
         <ReactPaginate
