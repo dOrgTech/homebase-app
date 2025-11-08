@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import BigNumber from "bignumber.js"
 import { ethers } from "ethers"
-import { Box, Grid, Typography } from "components/ui"
+import { Box, Grid, Typography, styled } from "components/ui"
 import { Button } from "components/ui/Button"
 import { HowToVote, People } from "@material-ui/icons"
 import { EtherlinkContext } from "services/wagmi/context"
@@ -14,6 +14,43 @@ import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalL
 import { TokenBridge } from "modules/etherlink/bridge/TokenBridge"
 import { StatsContainer, Item, ItemContent, ItemTitle, ItemValue } from "components/ui/etherlink/Stats"
 import { DelegationBox, AddressDisplay, DelegationTitle, DelegationDescription } from "components/ui/etherlink/styled"
+import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
+
+const UserProfileCard = styled(Box)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  borderRadius: 8,
+  padding: "32px",
+  marginBottom: "40px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "32px"
+}))
+
+const UserInfoSection = styled(Grid)({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: "16px"
+})
+
+const UserAddress = styled(Typography)({
+  color: "#fff",
+  fontSize: "14px",
+  fontFamily: "monospace",
+  wordBreak: "break-all"
+})
+
+const StatsGrid = styled(Grid)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "repeat(4, 1fr)",
+  gap: "16px",
+  [theme.breakpoints.down("md")]: {
+    gridTemplateColumns: "repeat(2, 1fr)"
+  },
+  [theme.breakpoints.down("sm")]: {
+    gridTemplateColumns: "1fr"
+  }
+}))
 
 // Enable on-chain delegation UI for Etherlink ERC20Votes tokens
 const ENABLE_DELEGATION = true
@@ -85,10 +122,13 @@ export const EvmUserPage = () => {
 
   return (
     <Box>
-      <AddressDisplay>{userAddress}</AddressDisplay>
+      <UserProfileCard>
+        <UserInfoSection>
+          <ProfileAvatar address={userAddress || ""} size={50} />
+          <UserAddress>{userAddress}</UserAddress>
+        </UserInfoSection>
 
-      <StatsContainer container spacing={3}>
-        <Grid item xs={12} sm={6} lg={3}>
+        <StatsGrid>
           <Item>
             <ItemContent item container direction="row" alignItems="center">
               <ItemTitle color="textPrimary">Voting Weight</ItemTitle>
@@ -97,8 +137,7 @@ export const EvmUserPage = () => {
               <ItemValue color="textPrimary">{formattedVotingWeight}</ItemValue>
             </Grid>
           </Item>
-        </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+
           <Item>
             <ItemContent item container direction="row" alignItems="center">
               <ItemTitle color="textPrimary">{daoSelected?.symbol} Balance</ItemTitle>
@@ -107,8 +146,7 @@ export const EvmUserPage = () => {
               <ItemValue color="textPrimary">{formattedPersonalBalance}</ItemValue>
             </Grid>
           </Item>
-        </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+
           <Item
             style={{ cursor: "pointer" }}
             onClick={() =>
@@ -122,8 +160,7 @@ export const EvmUserPage = () => {
               <ItemValue color="textPrimary">{proposalCreatedCount}</ItemValue>
             </Grid>
           </Item>
-        </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
+
           <Item>
             <ItemContent item container direction="row" alignItems="center">
               <ItemTitle color="textPrimary">Votes Cast</ItemTitle>
@@ -132,10 +169,10 @@ export const EvmUserPage = () => {
               <ItemValue color="textPrimary">{proposalVotedCount}</ItemValue>
             </Grid>
           </Item>
-        </Grid>
-      </StatsContainer>
+        </StatsGrid>
+      </UserProfileCard>
 
-      <Typography variant="h5" style={{ marginBottom: "24px", color: "#fff" }}>
+      <Typography variant="h5" style={{ marginBottom: "8px", color: "#fff" }}>
         Delegation settings
       </Typography>
 
