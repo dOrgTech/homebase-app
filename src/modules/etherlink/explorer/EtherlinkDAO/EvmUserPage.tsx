@@ -3,7 +3,8 @@ import BigNumber from "bignumber.js"
 import { ethers } from "ethers"
 import { Box, Grid, Typography, styled } from "components/ui"
 import { Button } from "components/ui/Button"
-import { HowToVote, People } from "@material-ui/icons"
+import { HowToVote } from "@material-ui/icons"
+import HandshakeIcon from "@mui/icons-material/Handshake"
 import { EtherlinkContext } from "services/wagmi/context"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
 import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
@@ -183,7 +184,7 @@ export const EvmUserPage = () => {
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <DelegationBox>
-            <People style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
+            <HandshakeIcon style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
             <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
             <DelegationDescription>
               If you can't or don't want to take part in the governance process, your voting privilege may be forwarded
