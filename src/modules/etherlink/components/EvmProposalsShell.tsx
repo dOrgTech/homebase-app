@@ -14,19 +14,27 @@ const TabsContainer = styled(Grid)({
   gap: 16
 })
 
+const ShellHeroContainer = styled(ContentContainer)({
+  background: "inherit !important",
+  paddingTop: 0,
+  padding: "0px",
+  display: "inline-flex",
+  alignItems: "center"
+})
+
 const TabsBox = styled(Grid)(({ theme }) => ({
   background: "#24282D",
   borderRadius: 8,
-  padding: "40px 56px",
+  padding: "24px 56px 36px",
   minHeight: 300,
   width: "100%",
   [theme.breakpoints.down("sm")]: {
-    padding: "30px 36px"
+    padding: "20px 32px 28px"
   }
 }))
 
 const FiltersContainer = styled(({ active, ...other }: any) => <Grid {...other} />)(({ theme, active }: any) => ({
-  marginTop: 45,
+  marginTop: 16,
   gap: 8,
   cursor: "pointer",
   padding: "8px 12px",
@@ -85,16 +93,8 @@ export const EvmProposalsShell: React.FC<Props> = ({
   const theme = useTheme()
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("xs"))
 
-  const ShellHeroContainer = styled(ContentContainer)({
-    background: "inherit !important",
-    paddingTop: 0,
-    padding: "0px",
-    display: "inline-flex",
-    alignItems: "center"
-  })
-
   return (
-    <Grid container direction="column" style={{ gap: 42 }}>
+    <Grid container direction="column" style={{ gap: 16 }}>
       <ShellHeroContainer item xs={12}>
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item container direction="row">
@@ -152,7 +152,7 @@ export const EvmProposalsShell: React.FC<Props> = ({
             </TabsContainer>
           </Grid>
         ) : null}
-        <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ marginTop: 45 }}>
+        <Grid container direction="row" justifyContent="space-between" alignItems="center" style={{ marginTop: 16 }}>
           <FiltersContainer
             active={isFiltered}
             onClick={onOpenFilters}
