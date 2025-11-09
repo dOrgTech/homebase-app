@@ -34,6 +34,16 @@ const UserInfoSection = styled(Grid)({
   gap: "16px"
 })
 
+const DelegationSectionCard = styled(Box)(({ theme }) => ({
+  background: theme.palette.primary.main,
+  borderRadius: 8,
+  padding: "32px",
+  marginBottom: "40px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px"
+}))
+
 const UserAddress = styled(Typography)({
   color: "#fff",
   fontSize: "14px",
@@ -173,139 +183,143 @@ export const EvmUserPage = () => {
         </StatsGrid>
       </UserProfileCard>
 
-      <Typography variant="h5" style={{ marginBottom: "8px", color: "#fff" }}>
-        Delegation settings
-      </Typography>
+      <DelegationSectionCard>
+        <Typography variant="h5" style={{ color: "#fff" }}>
+          Delegation settings
+        </Typography>
 
-      <Typography color="textSecondary" style={{ marginBottom: "16px" }}>
-        You can either delegate your vote or accept delegations, but not both at the same time.
-      </Typography>
+        <Typography color="textSecondary" style={{ marginBottom: "16px" }}>
+          You can either delegate your vote or accept delegations, but not both at the same time.
+        </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <DelegationBox>
-            <HandshakeIcon style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
-            <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
-            <DelegationDescription>
-              If you can't or don't want to take part in the governance process, your voting privilege may be forwarded
-              to another member of your choosing.
-            </DelegationDescription>
-            {delegationStatusText && <Typography color="textSecondary">{delegationStatusText}</Typography>}
-            {isDelegating && (
-              <Typography color="textSecondary" style={{ fontFamily: "monospace" }}>
-                Currently delegated to: {delegateLc}
-              </Typography>
-            )}
-            <Button
-              variant="outlined"
-              style={{ width: "fit-content" }}
-              onClick={() => setDelegateDialogOpen(true)}
-              disabled={!ENABLE_DELEGATION}
-            >
-              {isNotDelegatingNotClaimed || !userDelegateAddress ? "Set Delegate" : "Change Delegate"}
-            </Button>
-          </DelegationBox>
-        </Grid>
+        <Grid container spacing={3} wrap="nowrap">
+          <Grid item xs={12} md={6}>
+            <DelegationBox>
+              <HandshakeIcon style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
+              <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
+              <DelegationDescription>
+                If you can't or don't want to take part in the governance process, your voting privilege may be
+                forwarded to another member of your choosing.
+              </DelegationDescription>
+              {isDelegating && (
+                <Typography color="textSecondary" style={{ fontFamily: "monospace" }}>
+                  Currently delegated to: {delegateLc}
+                </Typography>
+              )}
+              <Button
+                variant="outlined"
+                style={{ width: "fit-content" }}
+                onClick={() => setDelegateDialogOpen(true)}
+                disabled={!ENABLE_DELEGATION}
+              >
+                {isNotDelegatingNotClaimed || !userDelegateAddress ? "Set Delegate" : "Change Delegate"}
+              </Button>
+            </DelegationBox>
+          </Grid>
 
-        <Grid item xs={12} md={6}>
-          <DelegationBox>
-            <HowToVote style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
-            <DelegationTitle>VOTE DIRECTLY</DelegationTitle>
-            <DelegationDescription>
-              This also allows other members to delegate their vote to you, so that you may participate in the
-              governance process on their behalf.
-            </DelegationDescription>
-            {delegationStatusText && <Typography color="textSecondary">{delegationStatusText}</Typography>}
+          <Grid item xs={12} md={6}>
+            <DelegationBox>
+              <HowToVote style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
+              <DelegationTitle>VOTE DIRECTLY</DelegationTitle>
+              <DelegationDescription>
+                This also allows other members to delegate their vote to you, so that you may participate in the
+                governance process on their behalf.
+              </DelegationDescription>
 
-            {isNotDelegatingClaimed ? (
-              <Typography color="textSecondary">
-                {onlyVotingOnOwnBehalf ? "only voting on your behalf" : "representing multiple accounts"}
-              </Typography>
-            ) : (
-              <>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    daoDelegate(userAddress).finally(() => {
-                      setIsLoading(false)
-                      // Refresh on-chain stats so the UI reflects new voting power immediately
-                      try {
-                        refreshTokenStats()
-                      } catch (_) {}
-                    })
-                  }}
-                  style={{ width: "fit-content" }}
-                  disabled={!ENABLE_DELEGATION || !userAddress}
-                >
-                  Claim Voting Power
-                </Button>
-              </>
-            )}
-          </DelegationBox>
-
-          <ResponsiveDialog
-            open={delegateDialogOpen}
-            onClose={() => {
-              setDelegateDialogOpen(false)
-            }}
-            title="Delegate Voting Power"
-          >
-            <Grid container spacing={4}>
-              <Grid item xs={12}>
-                <Typography>Delegate your voting power to another member of the DAO.</Typography>
-              </Grid>
-              <Grid item xs={12}>
-                <FormField
-                  label="Delegate To"
-                  labelStyle={{ fontSize: 16 }}
-                  containerStyle={{ gap: 12 }}
-                  errorText={delegateToAddress && !isValidDelegateAddress ? "Enter a valid address (0x…)" : ""}
-                >
-                  <FormTextField
-                    value={delegateToAddress}
-                    placeholder="0x..."
-                    onChange={e => setDelegateToAddress(e.target.value)}
-                    inputProps={{
-                      style: { fontSize: 14, fontFamily: "monospace" },
-                      autoComplete: "off",
-                      spellCheck: false
-                    }}
-                  />
-                </FormField>
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  variant="outlined"
-                  style={{ width: "fit-content" }}
-                  disabled={!isValidDelegateAddress || isLoading}
-                  onClick={() => {
-                    setIsLoading(true)
-                    daoDelegate(delegateToAddress)
-                      .then(() => {
-                        setDelegateDialogOpen(false)
-                        // Best-effort refresh so balances/weight update without waiting for indexers
+              {isNotDelegatingClaimed ? (
+                <Typography color="textSecondary">
+                  {onlyVotingOnOwnBehalf ? "only voting on your behalf" : "representing multiple accounts"}
+                </Typography>
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      daoDelegate(userAddress).finally(() => {
+                        setIsLoading(false)
+                        // Refresh on-chain stats so the UI reflects new voting power immediately
                         try {
                           refreshTokenStats()
                         } catch (_) {}
                       })
-                      .finally(() => {
-                        setIsLoading(false)
-                      })
-                  }}
-                >
-                  {isLoading ? "Delegating..." : "Delegate"}
-                </Button>
-              </Grid>
-            </Grid>
-          </ResponsiveDialog>
-        </Grid>
+                    }}
+                    style={{ width: "fit-content" }}
+                    disabled={!ENABLE_DELEGATION || !userAddress}
+                  >
+                    Claim Voting Power
+                  </Button>
+                </>
+              )}
+            </DelegationBox>
 
-        {canShowBridge && (
+            <ResponsiveDialog
+              open={delegateDialogOpen}
+              onClose={() => {
+                setDelegateDialogOpen(false)
+              }}
+              title="Delegate Voting Power"
+            >
+              <Grid container spacing={4}>
+                <Grid item xs={12}>
+                  <Typography>Delegate your voting power to another member of the DAO.</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <FormField
+                    label="Delegate To"
+                    labelStyle={{ fontSize: 16 }}
+                    containerStyle={{ gap: 12 }}
+                    errorText={delegateToAddress && !isValidDelegateAddress ? "Enter a valid address (0x…)" : ""}
+                  >
+                    <FormTextField
+                      value={delegateToAddress}
+                      placeholder="0x..."
+                      onChange={e => setDelegateToAddress(e.target.value)}
+                      inputProps={{
+                        style: { fontSize: 14, fontFamily: "monospace" },
+                        autoComplete: "off",
+                        spellCheck: false
+                      }}
+                    />
+                  </FormField>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button
+                    variant="outlined"
+                    style={{ width: "fit-content" }}
+                    disabled={!isValidDelegateAddress || isLoading}
+                    onClick={() => {
+                      setIsLoading(true)
+                      daoDelegate(delegateToAddress)
+                        .then(() => {
+                          setDelegateDialogOpen(false)
+                          // Best-effort refresh so balances/weight update without waiting for indexers
+                          try {
+                            refreshTokenStats()
+                          } catch (_) {}
+                        })
+                        .finally(() => {
+                          setIsLoading(false)
+                        })
+                    }}
+                  >
+                    {isLoading ? "Delegating..." : "Delegate"}
+                  </Button>
+                </Grid>
+              </Grid>
+            </ResponsiveDialog>
+          </Grid>
+        </Grid>
+      </DelegationSectionCard>
+
+      {canShowBridge && (
+        <Grid container spacing={3}>
           <Grid item xs={12}>
             <TokenBridge />
           </Grid>
-        )}
+        </Grid>
+      )}
 
+      <Grid container spacing={3}>
         <Grid item xs={12} md={12}>
           <Typography variant="h5" style={{ color: "#fff" }}>
             Proposals Created

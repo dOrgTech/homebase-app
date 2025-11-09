@@ -231,15 +231,17 @@ export const CustomPopover = withStyles(theme => ({
 }))(Popover)
 
 export const DelegationBox = styled(Box)(({ theme }) => ({
-  background: theme.palette.primary.main,
-  borderRadius: "8px",
+  background: theme.palette.primary.dark,
+  borderRadius: 12,
   padding: "32px",
   marginBottom: "20px",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   textAlign: "center",
-  gap: "16px"
+  gap: "16px",
+  border: `1px solid ${theme.palette.primary.light}`,
+  boxShadow: theme.shadows[8]
 }))
 
 export const AddressDisplay = styled(Typography)({
@@ -249,11 +251,13 @@ export const AddressDisplay = styled(Typography)({
   marginBottom: "20px"
 })
 
-export const DelegationTitle = styled(Typography)({
+export const DelegationTitle = styled(Typography)(({ theme }) => ({
   fontSize: "24px",
-  color: "#fff",
-  marginBottom: "16px"
-})
+  color: theme.palette.common.white,
+  marginBottom: "16px",
+  textTransform: "uppercase",
+  letterSpacing: 1
+}))
 
 export const DelegationDescription = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,

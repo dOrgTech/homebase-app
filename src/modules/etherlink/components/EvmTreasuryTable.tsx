@@ -77,16 +77,25 @@ export const EvmTreasuryTable = () => {
     return <Typography>Loading treasury data...</Typography>
   }
 
-  console.log({ daoNfts })
-
-  const renderNFTView = () => (
-    <div className={classes.nftGrid}>
-      {[...daoNfts]
-        .filter((n: any) => {
+  const renderNFTView = () => {
+    const nftList = Array.isArray(daoNfts)
+      ? daoNfts.filter((n: any) => {
           const t = String(n?.token?.type || n?.token_type || n?.token?.standard || "").toUpperCase()
           return t.includes("ERC721") || t.includes("ERC-721")
         })
-        .map(nft => (
+      : []
+
+    if (!nftList.length) {
+      return (
+        <Grid container direction="column" alignItems="center" justifyContent="center" style={{ padding: 48 }}>
+          <Typography color="textSecondary">No NFTs exist for this DAO</Typography>
+        </Grid>
+      )
+    }
+
+    return (
+      <div className={classes.nftGrid}>
+        {nftList.map(nft => (
           <Card key={nft?.id} className={classes.nftCard}>
             <CardMedia
               className={classes.nftImage}
@@ -139,8 +148,9 @@ export const EvmTreasuryTable = () => {
             </CardContent>
           </Card>
         ))}
-    </div>
-  )
+      </div>
+    )
+  }
 
   const renderTokenView = () => (
     <TableContainer style={{ overflowX: "auto", maxWidth: "100%" }}>
