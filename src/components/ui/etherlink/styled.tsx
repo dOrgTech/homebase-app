@@ -231,7 +231,6 @@ export const CustomPopover = withStyles(theme => ({
 }))(Popover)
 
 export const DelegationBox = styled(Box)(({ theme }) => ({
-  background: theme.palette.primary.dark,
   borderRadius: 12,
   padding: "32px",
   marginBottom: "20px",
@@ -240,7 +239,6 @@ export const DelegationBox = styled(Box)(({ theme }) => ({
   alignItems: "center",
   textAlign: "center",
   gap: "16px",
-  border: `1px solid ${theme.palette.primary.light}`,
   boxShadow: theme.shadows[8]
 }))
 

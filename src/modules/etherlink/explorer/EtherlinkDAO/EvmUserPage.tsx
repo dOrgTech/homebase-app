@@ -13,8 +13,8 @@ import { FormField, FormTextField } from "components/ui"
 import { useHistory } from "react-router-dom"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
 import { TokenBridge } from "modules/etherlink/bridge/TokenBridge"
-import { StatsContainer, Item, ItemContent, ItemTitle, ItemValue } from "components/ui/etherlink/Stats"
-import { DelegationBox, AddressDisplay, DelegationTitle, DelegationDescription } from "components/ui/etherlink/styled"
+import { Item, ItemContent, ItemTitle, ItemValue } from "components/ui/etherlink/Stats"
+import { DelegationBox, DelegationTitle, DelegationDescription } from "components/ui/etherlink/styled"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
 
 const UserProfileCard = styled(Box)(({ theme }) => ({
@@ -73,7 +73,7 @@ export const EvmUserPage = () => {
   const [delegateDialogOpen, setDelegateDialogOpen] = useState(false)
   const [isValidDelegateAddress, setIsValidDelegateAddress] = useState(false)
 
-  const { daoMembers, daoSelected, daoProposals } = useContext(EtherlinkContext)
+  const { daoMembers, daoSelected, daoProposals, isConnected } = useContext(EtherlinkContext)
 
   const {
     daoDelegate,
@@ -184,7 +184,7 @@ export const EvmUserPage = () => {
       </UserProfileCard>
 
       <DelegationSectionCard>
-        <Typography variant="h5" style={{ color: "#fff" }}>
+        <Typography variant="h2" style={{ color: "#fff" }}>
           Delegation settings
         </Typography>
 
@@ -192,9 +192,9 @@ export const EvmUserPage = () => {
           You can either delegate your vote or accept delegations, but not both at the same time.
         </Typography>
 
-        <Grid container spacing={3} wrap="nowrap">
-          <Grid item xs={12} md={6}>
-            <DelegationBox>
+        <Grid container spacing={3} wrap="nowrap" alignItems="stretch">
+          <Grid item xs={12} md={6} style={{ display: "flex" }}>
+            <DelegationBox style={{ flex: 1 }}>
               <HandshakeIcon style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
               <DelegationTitle>DELEGATE YOUR VOTE</DelegationTitle>
               <DelegationDescription>
@@ -210,15 +210,15 @@ export const EvmUserPage = () => {
                 variant="outlined"
                 style={{ width: "fit-content" }}
                 onClick={() => setDelegateDialogOpen(true)}
-                disabled={!ENABLE_DELEGATION}
+                disabled={!ENABLE_DELEGATION || !isConnected}
               >
                 {isNotDelegatingNotClaimed || !userDelegateAddress ? "Set Delegate" : "Change Delegate"}
               </Button>
             </DelegationBox>
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <DelegationBox>
+          <Grid item xs={12} md={6} style={{ display: "flex" }}>
+            <DelegationBox style={{ flex: 1 }}>
               <HowToVote style={{ fontSize: 48, color: "#fff", marginBottom: "16px" }} />
               <DelegationTitle>VOTE DIRECTLY</DelegationTitle>
               <DelegationDescription>
@@ -321,8 +321,8 @@ export const EvmUserPage = () => {
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={12}>
-          <Typography variant="h5" style={{ color: "#fff" }}>
-            Proposals Created
+          <Typography variant="h2" style={{ color: "#fff" }}>
+            Activity History
           </Typography>
         </Grid>
         <Grid item xs={12} md={12}>
