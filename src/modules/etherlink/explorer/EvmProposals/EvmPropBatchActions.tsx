@@ -284,6 +284,7 @@ export const EvmPropBatchActions: React.FC = () => {
   const [editIndex, setEditIndex] = React.useState<number | null>(null)
   const [draft, setDraft] = React.useState<BatchAction>({ type: "transfer_eth", amount: "", to: "" })
 
+  // TODO: Do this for "Advanced Import from CSV Expand"
   React.useEffect(() => {
     if (showAdd && formSectionRef.current) {
       setTimeout(() => {

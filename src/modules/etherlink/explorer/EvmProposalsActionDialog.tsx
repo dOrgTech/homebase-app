@@ -95,14 +95,14 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         title={proposalTitle}
       >
         <div
-          className="hb-wrapper"
-          style={{
-            flexWrap: "nowrap",
-            display: "flex",
-            flexDirection: "column",
-            boxSizing: "border-box",
-            maxHeight: "calc(100vh - 250px)"
-          }}
+          style={
+            {
+              flexWrap: "nowrap",
+              display: "flex",
+              flexDirection: "column",
+              boxSizing: "border-box"
+            } as React.CSSProperties
+          }
         >
           <Grid container direction="column" style={{ gap: 18, marginBottom: 32 }}>
             <FormField label="Proposal Title" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
@@ -183,7 +183,13 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
       >
         <div
           className="hb-wrapper"
-          style={{ flexWrap: "nowrap", display: "flex", flexDirection: "column", boxSizing: "border-box" }}
+          style={{
+            flexWrap: "nowrap",
+            display: "flex",
+            flexDirection: "column",
+            boxSizing: "border-box",
+            maxHeight: "calc(100vh - 250px)"
+          }}
         >
           <Box
             style={{
