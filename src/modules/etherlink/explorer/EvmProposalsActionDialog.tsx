@@ -64,24 +64,6 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   }, [offchainEnabled, metadata.type, setMetadataFieldValue])
   const proposalTitle = EvmProposalOptions.find(option => option.modal === metadata.type)?.label
 
-  const thresholdRaw = React.useMemo(() => {
-    try {
-      return BigInt(daoCtx?.daoSelected?.proposalThreshold || 0)
-    } catch (_) {
-      return BigInt(0)
-    }
-  }, [daoCtx?.daoSelected?.proposalThreshold])
-
-  const decimals = Number(daoCtx?.daoSelected?.decimals || 0)
-  const toHuman = (x: bigint | number) => {
-    const v = typeof x === "number" ? BigInt(Math.trunc(x)) : x
-    if (!decimals) return v.toString()
-    const s = v.toString().padStart(decimals + 1, "0")
-    const intPart = s.slice(0, -decimals)
-    const frac = s.slice(-decimals).replace(/0+$/, "")
-    return frac ? `${intPart}.${frac}` : intPart
-  }
-
   return (
     <>
       <ResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
@@ -112,7 +94,16 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        <Grid>
+        <div
+          className="hb-wrapper"
+          style={{
+            flexWrap: "nowrap",
+            display: "flex",
+            flexDirection: "column",
+            boxSizing: "border-box",
+            maxHeight: "calc(100vh - 250px)"
+          }}
+        >
           <Grid container direction="column" style={{ gap: 18, marginBottom: 32 }}>
             <FormField label="Proposal Title" labelStyle={{ fontSize: 16 }} containerStyle={{ gap: 12 }}>
               <FormTextField
@@ -157,11 +148,6 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
           >
             <Typography color="textPrimary" style={{ flex: 1 }}>
               Voting power:
-              {/* 
-              TODO: Fix this
-              {toHuman(BigInt(Math.max(0, Math.floor(userVotingWeight || 0))))} / Threshold:{" "}
-              {toHuman(thresholdRaw)} 
-              */}
             </Typography>
             <NextButton
               disabled={isDelegating || !loggedInUser?.address || (userVotingWeight || 0) > 0}
@@ -186,7 +172,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             <BackButton onClick={prevStep.handler} />
             <NextButton onClick={nextStep.handler}>{nextStep.text}</NextButton>
           </Grid>
-        </Grid>
+        </div>
       </ResponsiveDialog>
 
       <ResponsiveDialog
@@ -195,38 +181,43 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
       >
-        <Box
-          style={{
-            flexGrow: 1,
-            overflowY: "auto",
-            overflowX: "hidden",
-            minHeight: 0
-          }}
+        <div
+          className="hb-wrapper"
+          style={{ flexWrap: "nowrap", display: "flex", flexDirection: "column", boxSizing: "border-box" }}
         >
-          {isDeploying ? (
-            <>
-              <Typography>Deploying Proposal...</Typography>
-              <LinearProgressLoader />
-            </>
-          ) : (
-            renderModal(metadata.type as EProposalType)
-          )}
-        </Box>
-        <Box
-          style={{
-            borderTop: `1px solid ${theme.palette.divider}`,
-            paddingTop: 20,
-            marginTop: 20,
-            flexShrink: 0
-          }}
-        >
-          <Grid container direction="row" justifyContent="space-between" alignItems="center">
-            <BackButton disabled={isDeploying} onClick={prevStep.handler} />
-            <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
-              {nextStep.text}
-            </NextButton>
-          </Grid>
-        </Box>
+          <Box
+            style={{
+              flexGrow: 1,
+              overflowY: "auto",
+              overflowX: "hidden",
+              minHeight: 0
+            }}
+          >
+            {isDeploying ? (
+              <>
+                <Typography>Deploying Proposal...</Typography>
+                <LinearProgressLoader />
+              </>
+            ) : (
+              renderModal(metadata.type as EProposalType)
+            )}
+          </Box>
+          <Box
+            style={{
+              borderTop: `1px solid ${theme.palette.divider}`,
+              paddingTop: 20,
+              marginTop: 20,
+              flexShrink: 0
+            }}
+          >
+            <Grid container direction="row" justifyContent="space-between" alignItems="center">
+              <BackButton disabled={isDeploying} onClick={prevStep.handler} />
+              <NextButton disabled={isLoading || isDeploying || isNextDisabled} onClick={nextStep.handler}>
+                {nextStep.text}
+              </NextButton>
+            </Grid>
+          </Box>
+        </div>
       </ResponsiveDialog>
     </>
   )

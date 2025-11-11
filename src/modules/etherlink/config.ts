@@ -110,19 +110,7 @@ export const EvmProposalOptions = [
   }
 ]
 
-export const enabledBatchActionTypes = [
-  "transfer_eth",
-  "transfer_erc20",
-  "transfer_erc721",
-  "registry_set",
-  "mint",
-  "burn",
-  "update_quorum",
-  "set_voting_delay",
-  "set_voting_period",
-  "set_proposal_threshold",
-  "contract_call"
-]
+export const enabledBatchActionTypes = ["transfer", "mint", "burn"]
 
 export const proposalInterfaces = [
   {

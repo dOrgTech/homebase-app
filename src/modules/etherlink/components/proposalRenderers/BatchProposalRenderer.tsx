@@ -4,11 +4,7 @@ import { ethers } from "ethers"
 import { ContainerVoteDetail } from "components/ui/etherlink/styled"
 import { TransferETHProposalRenderer } from "./TransferETHProposalRenderer"
 import { TransferERC20ProposalRenderer } from "./TransferERC20ProposalRenderer"
-import { TransferERC721ProposalRenderer } from "./TransferERC721ProposalRenderer"
-import { RegistryProposalRenderer } from "./RegistryProposalRenderer"
 import { MintBurnProposalRenderer } from "./MintBurnProposalRenderer"
-import { ConfigChangeProposalRenderer } from "./ConfigChangeProposalRenderer"
-import { ContractCallProposalRenderer } from "./ContractCallProposalRenderer"
 import { proposalInterfaces } from "modules/etherlink/config"
 
 const ActionContainer = styled(Box)({
@@ -119,26 +115,14 @@ export const BatchProposalRenderer: React.FC<BatchProposalRendererProps> = ({
 
     if (functionName.includes("transfereth")) {
       displayName = "Transfer XTZ"
-    } else if (functionName.includes("transfererc721")) {
-      displayName = "Transfer ERC721 NFT"
     } else if (functionName.includes("transfererc20")) {
       displayName = "Transfer ERC20 Token"
-    } else if (functionName.includes("editregistry") || functionName.includes("setregistry")) {
-      displayName = "Update Registry"
     } else if (functionName.includes("mint")) {
       displayName = tokenSymbol ? `Mint ${tokenSymbol} Tokens` : "Mint Tokens"
     } else if (functionName.includes("burn")) {
       displayName = tokenSymbol ? `Burn ${tokenSymbol} Tokens` : "Burn Tokens"
-    } else if (functionName.includes("quorum")) {
-      displayName = "Change Quorum"
-    } else if (functionName.includes("votingdelay")) {
-      displayName = "Change Voting Delay"
-    } else if (functionName.includes("votingperiod")) {
-      displayName = "Change Voting Period"
-    } else if (functionName.includes("proposalthreshold")) {
-      displayName = "Change Proposal Threshold"
     } else {
-      displayName = "Contract Call"
+      displayName = "Unknown Action"
     }
 
     if (targetAddress) {
@@ -170,16 +154,8 @@ export const BatchProposalRenderer: React.FC<BatchProposalRendererProps> = ({
       )
     }
 
-    if (functionName.includes("transfererc721")) {
-      return <TransferERC721ProposalRenderer proposalData={action} compact={true} />
-    }
-
     if (functionName.includes("transfererc20")) {
       return <TransferERC20ProposalRenderer proposalData={action} decimals={decimals} compact={true} />
-    }
-
-    if (functionName.includes("editregistry") || functionName.includes("setregistry")) {
-      return <RegistryProposalRenderer proposalData={action} compact={true} />
     }
 
     if (functionName.includes("mint") || functionName.includes("burn")) {
@@ -195,28 +171,10 @@ export const BatchProposalRenderer: React.FC<BatchProposalRendererProps> = ({
       )
     }
 
-    if (
-      functionName.includes("quorum") ||
-      functionName.includes("votingdelay") ||
-      functionName.includes("votingperiod") ||
-      functionName.includes("proposalthreshold")
-    ) {
-      let proposalType = "configuration"
-      if (functionName.includes("quorum")) proposalType = "quorum"
-      else if (functionName.includes("votingdelay")) proposalType = "voting delay"
-      else if (functionName.includes("votingperiod")) proposalType = "voting period"
-      else if (functionName.includes("proposalthreshold")) proposalType = "proposal threshold"
-
-      return <ConfigChangeProposalRenderer proposalData={action} proposalType={proposalType} compact={true} />
-    }
-
     return (
-      <ContractCallProposalRenderer
-        proposalData={action}
-        targets={actionTargets}
-        callDataPlain={actionCallDataPlain}
-        compact={true}
-      />
+      <Grid container direction="column">
+        <Typography color="textSecondary">Unknown action type</Typography>
+      </Grid>
     )
   }
 
