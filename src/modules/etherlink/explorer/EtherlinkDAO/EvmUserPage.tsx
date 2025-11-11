@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import BigNumber from "bignumber.js"
 import { ethers } from "ethers"
-import { Box, Grid, Typography, styled } from "components/ui"
+import { Box, Grid, Typography, styled, IconButton } from "components/ui"
 import { Button } from "components/ui/Button"
 import { HowToVote } from "@material-ui/icons"
 import HandshakeIcon from "@mui/icons-material/Handshake"
@@ -11,11 +11,13 @@ import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
 import { formatNumber } from "modules/explorer/utils/FormatNumber"
 import { FormField, FormTextField } from "components/ui"
 import { useHistory } from "react-router-dom"
-import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
+import { EvmActivityHistory } from "modules/etherlink/components/EvmActivityHistory"
 import { TokenBridge } from "modules/etherlink/bridge/TokenBridge"
 import { Item, ItemContent, ItemTitle, ItemValue } from "components/ui/etherlink/Stats"
 import { DelegationBox, DelegationTitle, DelegationDescription } from "components/ui/etherlink/styled"
 import { ProfileAvatar } from "modules/explorer/components/styled/ProfileAvatar"
+import { toShortAddress } from "services/contracts/utils"
+import { CopyButton, EditIcon } from "components/ui"
 
 const UserProfileCard = styled(Box)(({ theme }) => ({
   background: theme.palette.primary.main,
@@ -62,6 +64,47 @@ const StatsGrid = styled(Grid)(({ theme }) => ({
     gridTemplateColumns: "1fr"
   }
 }))
+
+const DelegationAddressRow = styled(Box)({
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+  marginBottom: "16px"
+})
+
+const DelegationAddressText = styled(Typography)({
+  color: "#fff",
+  fontSize: "14px",
+  fontFamily: "monospace"
+})
+
+const DelegationAddressActions = styled(Box)({
+  display: "flex",
+  alignItems: "center",
+  gap: "8px"
+})
+
+const WhiteCopyButton = styled(Box)({
+  "cursor": "pointer",
+  "display": "flex",
+  "alignItems": "center",
+  "justifyContent": "center",
+  "height": "32px",
+  "width": "32px",
+  "marginTop": 0,
+  "& > div": {
+    marginTop: "0 !important",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  "& svg": {
+    filter: "brightness(0) invert(1)",
+    color: "#fff",
+    width: "18px",
+    height: "18px"
+  }
+})
 
 // Enable on-chain delegation UI for Etherlink ERC20Votes tokens
 const ENABLE_DELEGATION = true
@@ -118,10 +161,6 @@ export const EvmUserPage = () => {
   const onlyVotingOnOwnBehalf = Math.abs((userVotingWeight || 0) - (userTokenBalance || 0)) < EPS
   const canShowBridge = !!daoSelected?.underlyingToken && ethers.isAddress(daoSelected.underlyingToken)
   // const isDelegatedToOther = userDelegate?.length > 0 && userDelegate !== signer?.address
-
-  const proposalByAuthor = useMemo(() => {
-    return daoProposals?.filter((proposal: any) => proposal.author === userAddress)
-  }, [daoProposals, userAddress])
 
   useEffect(() => {
     if (ethers.isAddress(delegateToAddress)) {
@@ -201,19 +240,43 @@ export const EvmUserPage = () => {
                 If you can't or don't want to take part in the governance process, your voting privilege may be
                 forwarded to another member of your choosing.
               </DelegationDescription>
-              {isDelegating && (
-                <Typography color="textSecondary" style={{ fontFamily: "monospace" }}>
-                  Currently delegated to: {delegateLc}
-                </Typography>
+              {isDelegating ? (
+                <DelegationAddressRow>
+                  <Typography color="textSecondary">Currently delegated to:</Typography>
+                  <DelegationAddressActions>
+                    <DelegationAddressText color="textSecondary">
+                      {toShortAddress(userDelegateAddress || "")}
+                    </DelegationAddressText>
+                    <WhiteCopyButton>
+                      <CopyButton text={userDelegateAddress || ""} />
+                    </WhiteCopyButton>
+                    <IconButton
+                      onClick={() => setDelegateDialogOpen(true)}
+                      size="small"
+                      style={{
+                        padding: "4px",
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "32px",
+                        height: "32px"
+                      }}
+                    >
+                      <EditIcon style={{ fontSize: 18, width: "18px", height: "18px" }} />
+                    </IconButton>
+                  </DelegationAddressActions>
+                </DelegationAddressRow>
+              ) : (
+                <Button
+                  variant="outlined"
+                  style={{ width: "fit-content" }}
+                  onClick={() => setDelegateDialogOpen(true)}
+                  disabled={!ENABLE_DELEGATION || !isConnected}
+                >
+                  Set Delegate
+                </Button>
               )}
-              <Button
-                variant="outlined"
-                style={{ width: "fit-content" }}
-                onClick={() => setDelegateDialogOpen(true)}
-                disabled={!ENABLE_DELEGATION || !isConnected}
-              >
-                {isNotDelegatingNotClaimed || !userDelegateAddress ? "Set Delegate" : "Change Delegate"}
-              </Button>
             </DelegationBox>
           </Grid>
 
@@ -319,14 +382,9 @@ export const EvmUserPage = () => {
         </Grid>
       )}
 
-      <Grid container spacing={3}>
+      <Grid container>
         <Grid item xs={12} md={12}>
-          <Typography variant="h2" style={{ color: "#fff" }}>
-            Activity History
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <EvmDaoProposalList proposals={proposalByAuthor} />
+          <EvmActivityHistory userAddress={userAddress} />
         </Grid>
       </Grid>
     </Box>
