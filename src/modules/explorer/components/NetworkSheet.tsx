@@ -1,4 +1,4 @@
-import { styled, Grid, Typography, Tooltip } from "@material-ui/core"
+import { styled, Grid, Typography, Tooltip, GridProps } from "@material-ui/core"
 import React, { useContext, useMemo } from "react"
 import { useTezos } from "services/beacon/hooks/useTezos"
 import { Network, getNetworkDisplayName, networkDotColorMap, rpcNodes } from "services/beacon"
@@ -8,15 +8,30 @@ import { ContentContainer } from "./ContentContainer"
 import { ActionTypes, CreatorContext } from "modules/creator/state"
 import { EtherlinkContext } from "services/wagmi/context"
 
-const SheetItem = styled(ContentContainer)<{ disabled?: boolean }>(({ disabled }) => ({
+const StyledContentContainer = styled(ContentContainer)({
   "height": 50,
   "& > *": {
     height: "100%"
-  },
-  "cursor": disabled ? "not-allowed" : "pointer",
-  "opacity": disabled ? 0.5 : 1,
-  "pointerEvents": disabled ? "none" : "auto"
-}))
+  }
+})
+
+interface SheetItemProps extends GridProps {
+  disabled?: boolean
+}
+
+const SheetItem: React.FC<SheetItemProps> = ({ disabled, ...props }) => {
+  return (
+    <StyledContentContainer
+      {...props}
+      style={{
+        ...props.style,
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? "none" : "auto"
+      }}
+    />
+  )
+}
 
 interface Props {
   open: boolean

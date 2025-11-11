@@ -27,10 +27,6 @@ export const EvmMembersPage = () => {
   return (
     <Grid container>
       <Grid item xs={12} style={{ marginBottom: 20 }}>
-        <TitleText color="textPrimary">Members</TitleText>
-      </Grid>
-
-      <Grid item xs={12} style={{ marginBottom: 20 }}>
         <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item xs={6}>
             <SearchInput search={setSearchText} defaultValue="" placeholder="Find member by address..." />
@@ -43,7 +39,7 @@ export const EvmMembersPage = () => {
         </Grid>
       </Grid>
 
-      <Grid item style={{ width: "inherit", marginTop: 20 }}>
+      <Grid item style={{ width: "inherit", marginTop: 10 }}>
         {isLoading ? (
           <Grid container justifyContent="center" alignItems="center" style={{ minHeight: 200 }}>
             <CircularProgress color="secondary" />

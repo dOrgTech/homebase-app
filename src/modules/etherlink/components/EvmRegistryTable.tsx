@@ -43,6 +43,16 @@ const MobileRegistryTable: React.FC<Props> = ({ data }) => {
     })
   }
 
+  if (data.length === 0) {
+    return (
+      <Grid container direction="column" alignItems="center" justifyContent="center" style={{ padding: 40 }}>
+        <Typography align="center" variant="h6" color="textSecondary">
+          There are no items in this DAO's registry
+        </Typography>
+      </Grid>
+    )
+  }
+
   return (
     <Grid container direction="column" alignItems="center">
       <MobileTableHeader item>
@@ -109,6 +119,16 @@ const DesktopRegistryTable: React.FC<Props> = ({ data }) => {
       variant: "success",
       autoHideDuration: 2000
     })
+  }
+
+  if (data.length === 0) {
+    return (
+      <Grid container direction="column" alignItems="center" justifyContent="center" style={{ padding: 40 }}>
+        <Typography align="center" variant="h6" color="textSecondary">
+          There are no items in this DAO's registry
+        </Typography>
+      </Grid>
+    )
   }
 
   return (
