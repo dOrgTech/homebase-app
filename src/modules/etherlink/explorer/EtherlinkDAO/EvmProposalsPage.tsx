@@ -3,7 +3,7 @@ import { EtherlinkContext } from "services/wagmi/context"
 import { Grid } from "components/ui"
 import { SmallButton } from "modules/common/SmallButton"
 import { EvmDaoProposalList } from "modules/etherlink/components/EvmDaoProposalList"
-import { ProposalActionsDialog } from "modules/explorer/components/ProposalActionsDialog"
+import { EvmProposalsActionDialog } from "modules/etherlink/explorer/EvmProposalsActionDialog"
 import { useTimelineForProposals } from "services/wagmi/etherlink/hooks/useProposalTimeline"
 import { IEvmProposal } from "modules/etherlink/types"
 import { toDisplayStatus } from "modules/etherlink/status"
@@ -165,7 +165,7 @@ export const EvmProposalsPage = () => {
           ) : null}
         </Grid>
       </EvmProposalsShell>
-      <ProposalActionsDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
+      <EvmProposalsActionDialog open={isProposalDialogOpen} handleClose={() => setIsProposalDialogOpen(false)} />
       <FilterProposalsDialog
         open={openFiltersDialog}
         handleClose={() => setOpenFiltersDialog(false)}

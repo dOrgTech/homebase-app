@@ -1,11 +1,13 @@
 import React from "react"
 import { useTheme, useMediaQuery, Dialog, styled, Grid, Typography } from "@material-ui/core"
-import { BottomSheet } from "./BottomSheet"
+import { BottomSheet } from "modules/explorer/components/BottomSheet"
 import CloseButton from "modules/common/CloseButton"
 import BackButton from "modules/common/BackButton"
 
 const Content = styled(Grid)({
-  padding: "40px 48px"
+  padding: "40px 48px",
+  flexGrow: 1,
+  overflow: "hidden"
 })
 
 const TitleText = styled(Typography)(({ theme }) => ({
@@ -22,7 +24,9 @@ const TitleText = styled(Typography)(({ theme }) => ({
 const CustomDialog = styled(Dialog)({
   "& .MuiDialog-paperWidthMd": {
     width: "-webkit-fill-available",
-    height: "-webkit-fill-available"
+    maxHeight: "calc(100vh - 96px)",
+    display: "flex",
+    flexDirection: "column"
   },
   "& .MuiDialog-paperWidthXs": {
     width: "-webkit-fill-available",
@@ -36,7 +40,7 @@ const CustomDialog = styled(Dialog)({
   }
 })
 
-export const ResponsiveDialog: React.FC<{
+export const EvmResponsiveDialog: React.FC<{
   open: boolean
   onClose: () => void
   onGoBack?: () => void
@@ -79,7 +83,6 @@ export const ResponsiveDialog: React.FC<{
     <CustomDialog
       open={open}
       onClose={(event: any, reason) => {
-        // TODO: Comment this while creating PR
         if (reason && reason === "backdropClick") return
         onClose()
       }}
@@ -103,24 +106,5 @@ export const ResponsiveDialog: React.FC<{
         {children}
       </Content>
     </CustomDialog>
-  )
-}
-
-export const ProposalFormResponsiveDialog: React.FC<{ open: boolean; onClose: () => void; children: any }> = ({
-  open,
-  onClose,
-  children
-}) => {
-  const theme = useTheme()
-  const isSmall = useMediaQuery(theme.breakpoints.down("sm"))
-
-  return isSmall ? (
-    <BottomSheet open={open} onDismiss={onClose}>
-      {children}
-    </BottomSheet>
-  ) : (
-    <Dialog open={open} onClose={onClose}>
-      {children}
-    </Dialog>
   )
 }

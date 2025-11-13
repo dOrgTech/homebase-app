@@ -4,12 +4,11 @@ import { NextButton } from "components/ui/NextButton"
 import { FormField, FormTextArea, FormTextField } from "components/ui"
 import { LinearProgressLoader } from "components/ui/LinearProgress"
 
-import { ResponsiveDialog } from "modules/explorer/components/ResponsiveDialog"
+import { EvmResponsiveDialog } from "../components/EvmResponsiveDialog"
 import { BackButton } from "modules/lite/components/BackButton"
 
 import { useEvmProposalOps } from "services/contracts/etherlinkDAO/hooks/useEvmProposalOps"
 import { useEvmDaoOps } from "services/contracts/etherlinkDAO/hooks/useEvmDaoOps"
-import { EtherlinkContext } from "services/wagmi/context"
 import { EvmPropTransferAssets } from "./EvmProposals/EvmPropTransferAssets"
 import { EvmPropEditRegistry } from "./EvmProposals/EvmPropEditRegistry"
 import { EvmPropContractCall } from "./EvmProposals/EvmPropContractCall"
@@ -49,7 +48,6 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
   const { isLoading, currentStep, metadata, setMetadataFieldValue, isDeploying, isNextDisabled, nextStep, prevStep } =
     useEvmProposalOps()
   const { daoDelegate, userVotingWeight, loggedInUser, refreshTokenStats } = useEvmDaoOps()
-  const daoCtx = React.useContext(EtherlinkContext)
   const [isDelegating, setIsDelegating] = React.useState(false)
   const isMobileSmall = useMediaQuery(theme.breakpoints.down("sm"))
   const offchainEnabled = isFeatureEnabled("etherlink-offchain-debate")
@@ -66,7 +64,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
 
   return (
     <>
-      <ResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
+      <EvmResponsiveDialog open={open} onClose={handleClose} title={"New Proposal"} template="xs">
         <TitleContainer container direction="row">
           <Typography color="textPrimary">Select Proposal Type</Typography>
         </TitleContainer>
@@ -87,9 +85,9 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             </Grid>
           ))}
         </Grid>
-      </ResponsiveDialog>
+      </EvmResponsiveDialog>
 
-      <ResponsiveDialog
+      <EvmResponsiveDialog
         open={currentStep === 1}
         onClose={() => setMetadataFieldValue("type", "")}
         title={proposalTitle}
@@ -173,9 +171,9 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             <NextButton onClick={nextStep.handler}>{nextStep.text}</NextButton>
           </Grid>
         </div>
-      </ResponsiveDialog>
+      </EvmResponsiveDialog>
 
-      <ResponsiveDialog
+      <EvmResponsiveDialog
         template="md"
         open={currentStep >= 2}
         onClose={() => setMetadataFieldValue("type", "")}
@@ -224,7 +222,7 @@ export const EvmProposalsActionDialog = ({ open, handleClose }: { open: boolean;
             </Grid>
           </Box>
         </div>
-      </ResponsiveDialog>
+      </EvmResponsiveDialog>
     </>
   )
 }
